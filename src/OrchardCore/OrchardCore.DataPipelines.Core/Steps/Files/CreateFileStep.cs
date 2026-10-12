@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Files;
 
@@ -8,7 +9,9 @@ namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Writes the rows it reads to a file, such as a CSV file or an Excel workbook, which the next steps deliver. The rows
-/// are written as they arrive, so a large file never needs to fit in memory.
+/// are written as they arrive, so a large file never needs to fit in memory. With several connections, a workbook
+/// gets a worksheet per connection, named after the step it comes from; other formats write the rows of every
+/// connection, mapped by name to the fields of the first one.
 /// </summary>
 public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings>
 {
@@ -33,6 +36,9 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.File;
 
     public override string Icon => "fa-solid fa-file-export";
+
+    public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
+        => [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true, AllowsMany = true }];
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
@@ -72,25 +78,32 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
         var file = context.Run.CreateFile(DataPipelineTemplate.WithExtension(name, format.Extension), format.ContentType);
         var input = context.GetInput();
 
-        // The fields of the first batch win over the described ones, in case they differ at run time.
-        await using var enumerator = input.ReadBatchesAsync(context.CancellationToken).GetAsyncEnumerator(context.CancellationToken);
-        var first = await enumerator.MoveNextAsync() ? enumerator.Current : null;
-        var fields = first?.Fields ?? input.Fields;
-
         var options = new DataFileOptions
         {
             Delimiter = string.IsNullOrEmpty(settings.Delimiter) ? "," : settings.Delimiter,
             HasHeaderRow = settings.IncludeHeader,
             UseDisplayNames = settings.UseDisplayNames,
-            SheetName = settings.SheetName,
             Indented = settings.Indented,
         };
 
+        var sheetNames = (settings.SheetName ?? string.Empty).Split('\n').Select(line => line.Trim()).ToArray();
         long count;
 
         await using (var stream = new FileStream(file.Path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 16 * 1024, FileOptions.Asynchronous))
         {
-            count = await format.WriteAsync(stream, fields, Remaining(first, enumerator, context.CancellationToken), options, context.CancellationToken);
+            if (format is IDataWorkbookFormat workbook && input.FieldSets.Count > 1)
+            {
+                count = await WriteSheetsAsync(workbook, stream, input, sheetNames, options, context.CancellationToken);
+            }
+            else
+            {
+                options.SheetName = sheetNames.FirstOrDefault(sheetName => sheetName.Length > 0);
+
+                // The fields of the first batch win over the described ones, in case they differ at run time.
+                await using var reader = await DataPipelineRowReader.OpenAsync(input, context.CancellationToken);
+
+                count = await format.WriteAsync(stream, reader.Fields, ToBatches(reader.Fields, reader.ReadRowsAsync()), options, context.CancellationToken);
+            }
         }
 
         file.RowCount = count;
@@ -98,6 +111,69 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
         context.LogInformation(S["Created the file '{0}' with {1} rows.", file.FileName, count]);
 
         await context.GetOutput().WriteFileAsync(file, context.CancellationToken);
+    }
+
+    // Writes each connection to its own worksheet, named with the line of the sheet names at its position, or after
+    // the step it comes from.
+    private static async Task<long> WriteSheetsAsync(
+        IDataWorkbookFormat workbook,
+        Stream stream,
+        DataPipelineInput input,
+        string[] sheetNames,
+        DataFileOptions options,
+        CancellationToken cancellationToken)
+    {
+        var sheets = new List<DataSheet>();
+        var enumerators = new List<IAsyncEnumerator<DataBatch>>();
+
+        try
+        {
+            for (var connection = 0; connection < input.FieldSets.Count; connection++)
+            {
+                // The fields of the first batch win over the described ones, in case they differ at run time.
+                var enumerator = input.ReadConnectionBatchesAsync(connection, cancellationToken).GetAsyncEnumerator(cancellationToken);
+                enumerators.Add(enumerator);
+
+                var first = await enumerator.MoveNextAsync() ? enumerator.Current : null;
+                var name = connection < sheetNames.Length && sheetNames[connection].Length > 0
+                    ? sheetNames[connection]
+                    : connection < input.ConnectionLabels.Count ? input.ConnectionLabels[connection] : null;
+
+                sheets.Add(new DataSheet(name, first?.Fields ?? input.FieldSets[connection], Remaining(first, enumerator, cancellationToken)));
+            }
+
+            var counts = await workbook.WriteSheetsAsync(stream, sheets, options, cancellationToken);
+
+            return counts.Sum();
+        }
+        finally
+        {
+            foreach (var enumerator in enumerators)
+            {
+                await enumerator.DisposeAsync();
+            }
+        }
+    }
+
+    private static async IAsyncEnumerable<DataBatch> ToBatches(IReadOnlyList<DataField> fields, IAsyncEnumerable<object[]> rows)
+    {
+        var batch = new List<object[]>(DataSourceQuery.DefaultBatchSize);
+
+        await foreach (var row in rows)
+        {
+            batch.Add(row);
+
+            if (batch.Count == DataSourceQuery.DefaultBatchSize)
+            {
+                yield return new DataBatch(fields, batch);
+                batch = new List<object[]>(DataSourceQuery.DefaultBatchSize);
+            }
+        }
+
+        if (batch.Count > 0)
+        {
+            yield return new DataBatch(fields, batch);
+        }
     }
 
     private static async IAsyncEnumerable<DataBatch> Remaining(DataBatch first, IAsyncEnumerator<DataBatch> enumerator, [EnumeratorCancellation] CancellationToken cancellationToken)

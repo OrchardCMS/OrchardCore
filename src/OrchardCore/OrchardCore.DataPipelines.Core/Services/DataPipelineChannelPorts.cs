@@ -17,11 +17,13 @@ internal sealed class DataPipelineChannelInput : DataPipelineInput
         DataPipelinePort port,
         IReadOnlyList<IReadOnlyList<DataField>> fieldSets,
         IReadOnlyList<DataPipelineEdge> edges,
+        IReadOnlyList<string> connectionLabels,
         DataPipelineStepMetrics metrics)
     {
         Port = port;
         FieldSets = fieldSets ?? [];
         _edges = edges ?? [];
+        ConnectionLabels = connectionLabels ?? [];
         _metrics = metrics;
     }
 
@@ -33,9 +35,31 @@ internal sealed class DataPipelineChannelInput : DataPipelineInput
 
     public override IReadOnlyList<IReadOnlyList<DataField>> FieldSets { get; }
 
+    public override IReadOnlyList<string> ConnectionLabels { get; }
+
     public override async IAsyncEnumerable<DataBatch> ReadBatchesAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        await foreach (var item in ReadAsync(cancellationToken))
+        await foreach (var item in ReadAsync(_edges, cancellationToken))
+        {
+            if (item is DataBatch batch)
+            {
+                _metrics.AddRowsIn(batch.Count);
+
+                yield return batch;
+            }
+        }
+    }
+
+    public override async IAsyncEnumerable<DataBatch> ReadConnectionBatchesAsync(int connection, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(connection);
+
+        if (connection >= _edges.Count)
+        {
+            yield break;
+        }
+
+        await foreach (var item in ReadAsync([_edges[connection]], cancellationToken))
         {
             if (item is DataBatch batch)
             {
@@ -48,7 +72,7 @@ internal sealed class DataPipelineChannelInput : DataPipelineInput
 
     public override async IAsyncEnumerable<DataPipelineFile> ReadFilesAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        await foreach (var item in ReadAsync(cancellationToken))
+        await foreach (var item in ReadAsync(_edges, cancellationToken))
         {
             if (item is DataPipelineFile file)
             {
@@ -67,11 +91,11 @@ internal sealed class DataPipelineChannelInput : DataPipelineInput
         }
     }
 
-    private async IAsyncEnumerable<object> ReadAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+    private static async IAsyncEnumerable<object> ReadAsync(IReadOnlyList<DataPipelineEdge> edges, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        foreach (var edge in _edges)
+        foreach (var edge in edges)
         {
-            var reader = edge.Channel.Reader;
+            var reader = edge.Reader;
 
             while (true)
             {

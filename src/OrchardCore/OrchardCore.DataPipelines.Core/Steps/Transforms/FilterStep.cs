@@ -26,10 +26,12 @@ public sealed class FilterStep : DataPipelineStepType<FilterStepSettings>
     /// </summary>
     public const string Unmatched = "Unmatched";
 
+    private readonly IExpressionFunctionCatalog _functions;
     private readonly IStringLocalizer S;
 
-    public FilterStep(IStringLocalizer<FilterStep> localizer)
+    public FilterStep(IExpressionFunctionCatalog functions, IStringLocalizer<FilterStep> localizer)
     {
+        _functions = functions;
         S = localizer;
     }
 
@@ -67,7 +69,7 @@ public sealed class FilterStep : DataPipelineStepType<FilterStepSettings>
             return Task.CompletedTask;
         }
 
-        var expression = DataPipelineFormulas.TryCompile(settings.Condition, fields, S, out var error);
+        var expression = DataPipelineFormulas.TryCompile(settings.Condition, fields, _functions, S, out var error);
 
         if (expression is null)
         {
@@ -99,7 +101,7 @@ public sealed class FilterStep : DataPipelineStepType<FilterStepSettings>
         {
             if (!ReferenceEquals(compiledFor, batch.Fields))
             {
-                expression = DataPipelineFormulas.TryCompile(settings.Condition, batch.Fields, S, out var compileError)
+                expression = DataPipelineFormulas.TryCompile(settings.Condition, batch.Fields, _functions, S, out var compileError)
                     ?? throw new InvalidOperationException(S["The condition is invalid: {0}", compileError]);
                 compiledFor = batch.Fields;
             }

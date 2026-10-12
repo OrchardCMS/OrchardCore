@@ -70,7 +70,9 @@ public sealed class DataField
     public IList<DataFieldReference> References { get; set; } = [];
 
     /// <summary>
-    /// Creates a copy of this field with another name and label, keeping its type, group and description.
+    /// Creates a copy of this field with another name and label, keeping its type, group, description, and the data
+    /// sets it references. The copy isn't <see cref="IsKeyFilterable"/>: a data source filters its fields by their own
+    /// names.
     /// </summary>
     /// <param name="name">The technical name of the copy.</param>
     /// <param name="displayName">The label of the copy, or <see langword="null"/> to use <paramref name="name"/>.</param>
@@ -80,5 +82,6 @@ public sealed class DataField
         {
             Description = Description,
             IsIdentifier = IsIdentifier,
+            References = [.. References ?? []],
         };
 }

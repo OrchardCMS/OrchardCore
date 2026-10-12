@@ -7,6 +7,7 @@ using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataSources;
+using OrchardCore.DataSources.Expressions;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -82,6 +83,38 @@ public sealed class DataPipelineStepEditorsTests
             Assert.Equal(["Label", "Total"], settings.Fields.Select(field => field.Name));
             Assert.Equal(["UPPER([Name])", "[Price] * 2"], settings.Fields.Select(field => field.Formula));
         });
+    }
+
+    [Theory]
+    [InlineData(CalculatedFieldsStep.StepName)]
+    [InlineData(FilterStep.StepName)]
+    public async Task Editor_FormulaStep_ListsTheRowFunctionsOfTheCatalog(string stepType)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, [new DataPipelineStep { StepId = "formula", Type = stepType }]);
+        IReadOnlyList<string> rowFunctions = null;
+
+        await context.UsingTenantScopeAsync(scope =>
+        {
+            rowFunctions = scope.ServiceProvider.GetRequiredService<IExpressionFunctionCatalog>().Functions
+                .Where(function => !function.IsAggregate)
+                .Select(function => function.Name)
+                .ToList();
+
+            return Task.CompletedTask;
+        });
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "formula");
+
+        // Assert
+        var listed = editor.QuerySelectorAll("[data-dp-insert-function]").Select(item => item.GetAttribute("data-dp-insert-function")).ToList();
+        Assert.Equal(rowFunctions, listed);
+        Assert.Contains("UPPER", listed);
+        Assert.DoesNotContain("SUM", listed);
+        Assert.NotNull(editor.QuerySelector("[data-dp-function-search]"));
+        Assert.NotNull(editor.QuerySelector("[data-dp-formula-scope]"));
     }
 
     [Theory]

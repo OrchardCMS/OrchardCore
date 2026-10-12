@@ -36,7 +36,9 @@ public sealed class CreateFileStepSettings
     public string Delimiter { get; set; } = ",";
 
     /// <summary>
-    /// Gets or sets the name of the worksheet of a workbook.
+    /// Gets or sets the name of the worksheet of a workbook. When the input has several connections, each one writes
+    /// its own worksheet: the lines of the value name them in the order of the connections, and a worksheet without a
+    /// line is named after the step its connection comes from.
     /// </summary>
     public string SheetName { get; set; }
 

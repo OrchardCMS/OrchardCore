@@ -15,10 +15,12 @@ public sealed class CalculatedFieldsStep : DataPipelineStepType<CalculatedFields
     /// </summary>
     public const string StepName = "CalculatedFields";
 
+    private readonly IExpressionFunctionCatalog _functions;
     private readonly IStringLocalizer S;
 
-    public CalculatedFieldsStep(IStringLocalizer<CalculatedFieldsStep> localizer)
+    public CalculatedFieldsStep(IExpressionFunctionCatalog functions, IStringLocalizer<CalculatedFieldsStep> localizer)
     {
+        _functions = functions;
         S = localizer;
     }
 
@@ -125,7 +127,7 @@ public sealed class CalculatedFieldsStep : DataPipelineStepType<CalculatedFields
                 continue;
             }
 
-            var expression = DataPipelineFormulas.TryCompile(field.Formula, fields, S, out var error);
+            var expression = DataPipelineFormulas.TryCompile(field.Formula, fields, _functions, S, out var error);
 
             if (expression is null)
             {

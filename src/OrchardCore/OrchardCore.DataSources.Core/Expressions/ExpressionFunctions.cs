@@ -191,19 +191,7 @@ public static partial class ExpressionFunctions
         int maxArguments,
         Func<IReadOnlyList<DataFieldType>, DataFieldType> returnType,
         Func<object[], object> invoke)
-    {
-        return new ExpressionFunction
-        {
-            Name = name,
-            Category = category,
-            Signature = signature,
-            Description = description,
-            MinArguments = minArguments,
-            MaxArguments = maxArguments,
-            ReturnType = returnType,
-            Invoke = (args, _) => invoke(args),
-        };
-    }
+        => ExpressionFunction.CreateScalar(name, category, signature, description, minArguments, maxArguments, returnType, invoke);
 
     private static ExpressionFunction Aggregated(
         string name,
@@ -212,21 +200,7 @@ public static partial class ExpressionFunctions
         bool requiresNumericArgument,
         Func<IReadOnlyList<DataFieldType>, DataFieldType> returnType,
         Func<IReadOnlyList<object>, object> aggregate)
-    {
-        return new ExpressionFunction
-        {
-            Name = name,
-            Category = AggregateCategory,
-            Signature = signature,
-            Description = description,
-            MinArguments = 1,
-            MaxArguments = 1,
-            IsAggregate = true,
-            RequiresNumericArgument = requiresNumericArgument,
-            ReturnType = returnType,
-            Aggregate = aggregate,
-        };
-    }
+        => ExpressionFunction.CreateAggregate(name, signature, description, requiresNumericArgument, returnType, aggregate);
 
     private static Func<IReadOnlyList<DataFieldType>, DataFieldType> Returns(DataFieldType dataType)
     {

@@ -29,12 +29,28 @@ public abstract class DataPipelineInput
     public abstract IReadOnlyList<IReadOnlyList<DataField>> FieldSets { get; }
 
     /// <summary>
+    /// Gets the labels of the connections of the input, in the order of the connections: the titles of the steps they
+    /// come from.
+    /// </summary>
+    public abstract IReadOnlyList<string> ConnectionLabels { get; }
+
+    /// <summary>
     /// Reads the batches of rows of a record input until the steps upstream are done. An input with several
     /// connections reads them one after the other.
     /// </summary>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>The batches.</returns>
     public abstract IAsyncEnumerable<DataBatch> ReadBatchesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Reads the batches of rows of one connection of a record input until the step upstream is done, such as to write
+    /// each connection to its own worksheet. Read the connections in their order, each one once, and don't mix it with
+    /// <see cref="ReadBatchesAsync(CancellationToken)"/>.
+    /// </summary>
+    /// <param name="connection">The position of the connection, from 0 to the number of <see cref="FieldSets"/>.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>The batches.</returns>
+    public abstract IAsyncEnumerable<DataBatch> ReadConnectionBatchesAsync(int connection, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Reads the files of a file input until the steps upstream are done.

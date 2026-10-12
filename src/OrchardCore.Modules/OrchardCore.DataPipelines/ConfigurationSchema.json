@@ -8,11 +8,17 @@
           "type": "object",
           "description": "The limits of data pipelines, used by the 'OrchardCore.DataPipelines' feature. Can be set for all tenants or per tenant. See https://docs.orchardcore.net/en/latest/reference/modules/DataPipelines/.",
           "properties": {
-            "MaxRowsInMemory": {
+            "StepMemoryLimitMegabytes": {
               "type": "integer",
-              "description": "The number of rows a step that must see every row before it writes any, such as a sort or the right input of a join, may hold in memory. A run fails rather than exhausting the memory of the server.",
+              "description": "The memory, in megabytes, a step that must see many rows at once may use, such as a sort, the right input of a join, the groups of a summary, or the keys of a deduplication. The rows that don't fit are written to temporary files of the run.",
               "minimum": 1,
-              "default": 1000000
+              "default": 32
+            },
+            "MaxConcurrentRuns": {
+              "type": "integer",
+              "description": "The number of runs of a tenant that execute at the same time. The other runs wait, queued, for one to end.",
+              "minimum": 1,
+              "default": 4
             },
             "RunRetentionDays": {
               "type": "integer",

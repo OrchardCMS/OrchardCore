@@ -218,6 +218,33 @@ public sealed class DataPipelineExecutorTests : IDisposable
     }
 
     [Fact]
+    public async Task ExecuteAsync_DiamondIntoMultiInputStep_KeepsTheOrderOfEachConnectionAndDeletesWhatWaitedOnDisk()
+    {
+        // Arrange: the union reads its second connection after the first, so the rows of the second wait on disk.
+        var definition = Define(
+            [
+                Step("s", nameof(NumbersSource), 20_000),
+                Step("left", nameof(DoubleTransform)),
+                Step("right", nameof(DoubleTransform)),
+                Step("u", nameof(UnionTransform)),
+                Step("c", nameof(CollectDestination)),
+            ],
+            [Connect("s", "left"), Connect("s", "right"), Connect("left", "u"), Connect("right", "u"), Connect("u", "c")]);
+
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+        // Act
+        var result = await CreateExecutor().ExecuteAsync(definition, CreateRun(timeout.Token));
+
+        // Assert
+        Assert.Equal(DataPipelineRunStatus.Succeeded, result.Status);
+
+        var expected = Enumerable.Range(1, 20_000).Select(number => (long)number).ToList();
+        Assert.Equal([.. expected, .. expected], _collector.Rows("c").Select(row => Convert.ToInt64(row[0])));
+        Assert.Empty(Directory.GetFiles(_temp, "*", SearchOption.AllDirectories));
+    }
+
+    [Fact]
     public async Task ExecuteAsync_StepThrows_FailsRunAndStopsOtherSteps()
     {
         // Arrange

@@ -30,6 +30,7 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
     private const string HeaderStyle = "4";
     private const int MaxCellText = 32_767;
     private const int MaxSheetName = 31;
+    private const int MaxWorksheetRows = 1_048_576;
 
     private const string SpreadsheetNamespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private const string RelationshipsNamespace = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
@@ -109,12 +110,13 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
             for (var index = 0; index < sheets.Count; index++)
             {
                 var sheet = sheets[index];
+                var name = names[index];
                 var count = 0L;
 
                 await WritePartAsync(
                     archive,
                     WorksheetPath(index),
-                    async writer => count = await WriteWorksheetAsync(writer, sheet, options, cancellationToken),
+                    async writer => count = await WriteWorksheetAsync(writer, sheet, name, options, cancellationToken),
                     cancellationToken);
 
                 counts[index] = count;
@@ -662,8 +664,10 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
 
     // Cells and rows are written without references: their positions place them. Incrementing references would make
     // the compressed worksheet about twice as large.
-    private static async Task<long> WriteWorksheetAsync(XmlWriter writer, DataSheet sheet, DataFileOptions options, CancellationToken cancellationToken)
+    private async Task<long> WriteWorksheetAsync(XmlWriter writer, DataSheet sheet, string sheetName, DataFileOptions options, CancellationToken cancellationToken)
     {
+        // Excel doesn't open the rows of a worksheet past this one.
+        var maxRows = MaxWorksheetRows - (options.HasHeaderRow ? 1 : 0);
         var fields = sheet.Fields;
         var types = new DataFieldType[fields.Count];
 
@@ -695,6 +699,11 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
         {
             foreach (var row in batch.Rows)
             {
+                if (count == maxRows)
+                {
+                    throw new InvalidOperationException(S["The worksheet '{0}' can hold {1} rows at most. Write the rows to a CSV file, or split them into several worksheets.", sheetName, maxRows]);
+                }
+
                 await writer.WriteStartElementAsync(null, "row", SpreadsheetNamespace);
 
                 for (var index = 0; index < types.Length; index++)

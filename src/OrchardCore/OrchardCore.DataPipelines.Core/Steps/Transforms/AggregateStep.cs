@@ -6,8 +6,10 @@ namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Groups the rows by the values of some fields and summarizes each group, such as the number of orders and the
-/// revenue per customer. Without group fields, it summarizes every row into one. Groups compare their values exactly;
-/// the step keeps one entry per group in memory, and the values of a median.
+/// revenue per customer. Without group fields, it summarizes every row into one. Groups compare their values exactly,
+/// and come out in the order they first appear. The step keeps the groups in memory, up to
+/// <see cref="DataPipelineOptions.StepMemoryLimitMegabytes"/>, with <see cref="DataAggregator"/>; the values of a median
+/// and of a distinct count stay in memory with their group.
 /// </summary>
 public sealed class AggregateStep : DataPipelineStepType<AggregateStepSettings>
 {
@@ -54,74 +56,32 @@ public sealed class AggregateStep : DataPipelineStepType<AggregateStepSettings>
         ArgumentNullException.ThrowIfNull(context);
 
         var settings = GetSettings(context.Step);
-        var limit = DataPipelineFormulas.GetOptions(context.Services).MaxRowsInMemory;
-        var groups = new Dictionary<string, Group>(StringComparer.Ordinal);
-        var order = new List<Group>();
 
-        Plan plan = null;
-        IReadOnlyList<DataField> plannedFor = null;
+        await using var reader = await DataPipelineRowReader.OpenAsync(context.GetInput(), context.CancellationToken);
 
-        await foreach (var batch in context.GetInput().ReadBatchesAsync(context.CancellationToken))
+        var plan = BuildPlan(reader.Fields, settings, out var errors);
+
+        if (errors.Count > 0)
         {
-            if (!ReferenceEquals(plannedFor, batch.Fields))
+            throw new InvalidOperationException(errors[0]);
+        }
+
+        var measures = plan.Measures.Select(measure => new DataMeasure(measure.Function, measure.SourceIndex)).ToArray();
+        var groups = DataAggregator.AggregateAsync(reader.ReadRowsAsync(), plan.GroupIndexes, measures, DataPipelineRowReader.CreateSpillOptions(context), context.CancellationToken);
+
+        await DataPipelineRowReader.WriteRowsAsync(context.GetOutput(), plan.Fields, Coerce(groups, plan), context.CancellationToken);
+    }
+
+    private static async IAsyncEnumerable<object[]> Coerce(IAsyncEnumerable<object[]> groups, Plan plan)
+    {
+        await foreach (var group in groups)
+        {
+            for (var index = plan.GroupIndexes.Length; index < group.Length; index++)
             {
-                plan = BuildPlan(batch.Fields, settings, out var errors);
-
-                if (errors.Count > 0)
-                {
-                    throw new InvalidOperationException(errors[0]);
-                }
-
-                plannedFor = batch.Fields;
+                group[index] = DataValues.Coerce(group[index], plan.Fields[index].Type);
             }
 
-            foreach (var row in batch.Rows)
-            {
-                var key = DataPipelineKeys.Build(row, plan.GroupIndexes, ignoreCase: false);
-
-                if (!groups.TryGetValue(key, out var group))
-                {
-                    if (groups.Count >= limit)
-                    {
-                        throw new InvalidOperationException(S["The step can summarize {0} groups at most.", limit]);
-                    }
-
-                    group = new Group(plan.GroupIndexes.Select(index => row[index]).ToArray(), plan.Measures.Select(measure => new Accumulator(measure.Function)).ToArray());
-                    groups[key] = group;
-                    order.Add(group);
-                }
-
-                for (var index = 0; index < plan.Measures.Count; index++)
-                {
-                    var measure = plan.Measures[index];
-                    group.Accumulators[index].Add(measure.SourceIndex < 0 ? true : row[measure.SourceIndex]);
-                }
-            }
-        }
-
-        // Without group fields, an empty input still has one summary row, like a SQL aggregate.
-        if (order.Count == 0 && settings.GroupBy.Count == 0)
-        {
-            plan ??= BuildPlan(context.GetInput().Fields, settings, out _);
-            order.Add(new Group([], plan.Measures.Select(measure => new Accumulator(measure.Function)).ToArray()));
-        }
-
-        if (plan is null)
-        {
-            return;
-        }
-
-        var output = context.GetOutput();
-
-        foreach (var chunk in order.Chunk(DataSourceQuery.DefaultBatchSize))
-        {
-            var rows = chunk
-                .Select(group => group.Values
-                    .Concat(group.Accumulators.Select((accumulator, index) => DataValues.Coerce(accumulator.Result(), plan.Fields[plan.GroupIndexes.Length + index].Type)))
-                    .ToArray())
-                .ToList();
-
-            await output.WriteAsync(new DataBatch(plan.Fields, rows), context.CancellationToken);
+            yield return group;
         }
     }
 
@@ -212,92 +172,4 @@ public sealed class AggregateStep : DataPipelineStepType<AggregateStepSettings>
     private sealed record Measure(DataAggregate Function, int SourceIndex);
 
     private sealed record Plan(DataField[] Fields, int[] GroupIndexes, List<Measure> Measures);
-
-    private sealed record Group(object[] Values, Accumulator[] Accumulators);
-
-    /// <summary>
-    /// Computes one aggregate as the rows arrive, without keeping them, except for a median.
-    /// </summary>
-    private sealed class Accumulator
-    {
-        private readonly DataAggregate _function;
-        private readonly HashSet<string> _distinct;
-        private readonly List<object> _values;
-        private long _count;
-        private decimal _sum;
-        private bool _hasSum;
-        private object _extreme;
-
-        public Accumulator(DataAggregate function)
-        {
-            _function = function;
-
-            if (function == DataAggregate.CountDistinct)
-            {
-                _distinct = new HashSet<string>(StringComparer.Ordinal);
-            }
-            else if (function == DataAggregate.Median)
-            {
-                _values = [];
-            }
-        }
-
-        public void Add(object value)
-        {
-            if (DataValues.IsEmpty(value))
-            {
-                return;
-            }
-
-            _count++;
-
-            switch (_function)
-            {
-                case DataAggregate.CountDistinct:
-                    _distinct.Add(DataPipelineKeys.Build([value], [0], ignoreCase: false));
-                    break;
-
-                case DataAggregate.Median:
-                    _values.Add(value);
-                    break;
-
-                case DataAggregate.Sum or DataAggregate.Average:
-                    if (DataValues.Coerce(value, DataFieldType.Decimal) is decimal number)
-                    {
-                        _sum += number;
-                        _hasSum = true;
-                    }
-
-                    break;
-
-                case DataAggregate.Min:
-                    if (_extreme is null || DataValues.Compare(value, _extreme) < 0)
-                    {
-                        _extreme = value;
-                    }
-
-                    break;
-
-                case DataAggregate.Max:
-                    if (_extreme is null || DataValues.Compare(value, _extreme) > 0)
-                    {
-                        _extreme = value;
-                    }
-
-                    break;
-            }
-        }
-
-        public object Result()
-            => _function switch
-            {
-                DataAggregate.Count => _count,
-                DataAggregate.CountDistinct => (long)_distinct.Count,
-                DataAggregate.Sum => _hasSum ? _sum : null,
-                DataAggregate.Average => _hasSum && _count > 0 ? _sum / _count : null,
-                DataAggregate.Min or DataAggregate.Max => _extreme,
-                DataAggregate.Median => DataAggregations.Median(_values),
-                _ => null,
-            };
-    }
 }

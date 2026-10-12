@@ -1,14 +1,13 @@
 using System.Globalization;
 using System.Text;
-using OrchardCore.DataSources;
 
-namespace OrchardCore.DataPipelines.Steps;
+namespace OrchardCore.DataSources.Operations;
 
 /// <summary>
-/// Builds the keys steps use to group, deduplicate and join rows. Numbers compare by value (<c>2</c> equals
+/// Builds the keys that group, deduplicate and join rows. Numbers compare by value (<c>2</c> equals
 /// <c>2.0</c>), and text compares exactly unless asked to ignore case. Two missing values are equal.
 /// </summary>
-public static class DataPipelineKeys
+public static class DataKeys
 {
     private const char Separator = '\u001F';
 

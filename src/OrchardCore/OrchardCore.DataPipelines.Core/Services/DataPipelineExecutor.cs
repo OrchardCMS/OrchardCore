@@ -158,16 +158,20 @@ public sealed class DataPipelineExecutor
         // Wire the edges of the steps that run, and of the previewed ports.
         var edges = new Dictionary<DataPipelineConnection, DataPipelineEdge>();
 
+        // A step with several inputs may read them one after the other, so the steps writing to its other inputs must
+        // not wait for it: what it doesn't read yet waits in temporary files of the run.
+        var spillDirectory = Path.Combine(string.IsNullOrEmpty(run.TemporaryDirectory) ? Path.GetTempPath() : run.TemporaryDirectory, "edges", Guid.NewGuid().ToString("n"));
+
         foreach (var stepId in graph.Order)
         {
             var analysis = graph.Analysis.GetStep(stepId);
-            var unbounded = analysis.IncomingConnections.Values.Sum(connections => connections.Count) > 1;
+            var spill = analysis.IncomingConnections.Values.Sum(connections => connections.Count) > 1;
 
             foreach (var connection in analysis.IncomingConnections.Values.SelectMany(connections => connections))
             {
                 if (graph.Contains(connection.SourceStepId))
                 {
-                    edges[connection] = new DataPipelineEdge(unbounded);
+                    edges[connection] = new DataPipelineEdge(spill ? spillDirectory : null, token);
                 }
             }
         }
@@ -179,7 +183,7 @@ public sealed class DataPipelineExecutor
             if (capture.SourceStepId is not null)
             {
                 // The outputs of the previewed step.
-                var edge = new DataPipelineEdge(unbounded: true);
+                var edge = new DataPipelineEdge(spillDirectory, token);
                 capture.Edges.Add(edge);
                 AddEdge(captureEdges, (capture.SourceStepId, capture.Port.Name), edge);
             }
@@ -188,7 +192,7 @@ public sealed class DataPipelineExecutor
                 // The inputs of a previewed destination.
                 foreach (var connection in capture.Connections)
                 {
-                    var edge = new DataPipelineEdge(unbounded: true);
+                    var edge = new DataPipelineEdge(spillDirectory, token);
                     capture.Edges.Add(edge);
                     AddEdge(captureEdges, (connection.SourceStepId, connection.SourcePort), edge);
                 }
@@ -207,10 +211,12 @@ public sealed class DataPipelineExecutor
             foreach (var port in analysis.InputPorts)
             {
                 var connections = analysis.IncomingConnections.TryGetValue(port.Name, out var list) ? list : [];
-                var portEdges = connections.Where(edges.ContainsKey).Select(connection => edges[connection]).ToList();
+                var connected = connections.Where(edges.ContainsKey).ToList();
+                var portEdges = connected.Select(connection => edges[connection]).ToList();
+                var labels = connected.Select(connection => GetLabel(graph.Analysis.GetStep(connection.SourceStepId))).ToList();
                 var fieldSets = analysis.Inputs.TryGetValue(port.Name, out var sets) ? sets : [];
 
-                inputs[port.Name] = new DataPipelineChannelInput(port, fieldSets, portEdges, metrics);
+                inputs[port.Name] = new DataPipelineChannelInput(port, fieldSets, portEdges, labels, metrics);
             }
 
             var outputs = new Dictionary<string, DataPipelineChannelOutput>(StringComparer.Ordinal);
@@ -371,6 +377,17 @@ public sealed class DataPipelineExecutor
         return result;
     }
 
+    // The title of a step, or the name of its type when it has none.
+    private static string GetLabel(DataPipelineStepAnalysis analysis)
+    {
+        if (!string.IsNullOrWhiteSpace(analysis?.Step?.Title))
+        {
+            return analysis.Step.Title.Trim();
+        }
+
+        return analysis?.StepType?.DisplayName.Value ?? analysis?.Step?.Type;
+    }
+
     private static void AddEdge(Dictionary<(string StepId, string Port), List<DataPipelineEdge>> map, (string StepId, string Port) key, DataPipelineEdge edge)
     {
         if (!map.TryGetValue(key, out var list))
@@ -437,7 +454,7 @@ public sealed class DataPipelineExecutor
             {
                 foreach (var edge in Edges)
                 {
-                    await foreach (var item in edge.Channel.Reader.ReadAllAsync(cancellationToken))
+                    await foreach (var item in edge.Reader.ReadAllAsync(cancellationToken))
                     {
                         if (item is DataBatch batch)
                         {

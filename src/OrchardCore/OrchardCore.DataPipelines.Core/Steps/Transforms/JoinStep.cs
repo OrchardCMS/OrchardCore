@@ -1,14 +1,16 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataSources;
+using OrchardCore.DataSources.Operations;
 
 namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Combines each row of the left input with the rows of the right input whose key fields hold the same values, like a
-/// SQL join. The step holds the right input in memory, up to <see cref="DataPipelineOptions.MaxRowsInMemory"/>, and
-/// streams the left one, so connect the smaller data set to the right. A field of the right input whose name the left
-/// input already has gets a prefix.
+/// SQL join, with <see cref="DataJoin"/>. The step reads the right input first: when it fits in
+/// <see cref="DataPipelineOptions.StepMemoryLimitMegabytes"/>, the left rows stream through it, so connect the smaller
+/// data set to the right; otherwise both inputs are sorted in temporary files and merged. A field of the right input
+/// whose name the left input already has gets a prefix.
 /// </summary>
 public sealed class JoinStep : DataPipelineStepType<JoinStepSettings>
 {
@@ -72,139 +74,30 @@ public sealed class JoinStep : DataPipelineStepType<JoinStepSettings>
         ArgumentNullException.ThrowIfNull(context);
 
         var settings = GetSettings(context.Step);
-        var limit = DataPipelineFormulas.GetOptions(context.Services).MaxRowsInMemory;
-        var left = context.GetInput(Left);
-        var right = context.GetInput(Right);
-        var output = context.GetOutput();
 
-        // Read the right input first: it builds the lookup the left rows are matched against.
-        var rightFields = right.Fields;
-        var rightRows = new List<object[]>();
+        await using var right = await DataPipelineRowReader.OpenAsync(context.GetInput(Right), context.CancellationToken);
+        await using var left = await DataPipelineRowReader.OpenAsync(context.GetInput(Left), context.CancellationToken);
 
-        await foreach (var batch in right.ReadBatchesAsync(context.CancellationToken))
+        var plan = BuildPlan(left.Fields, right.Fields, settings, out var errors);
+
+        if (errors.Count > 0)
         {
-            rightFields = batch.Fields;
-            rightRows.AddRange(batch.Rows);
-
-            if (rightRows.Count > limit)
-            {
-                throw new InvalidOperationException(S["The right input of a join can hold {0} rows at most. Connect the smaller data set to the right.", limit]);
-            }
+            throw new InvalidOperationException(errors[0]);
         }
 
-        Plan plan = null;
-        IReadOnlyList<DataField> plannedFor = null;
-        Dictionary<string, List<int>> lookup = null;
-        var matched = new bool[rightRows.Count];
-        var keepUnmatchedLeft = settings.JoinType is DataJoinType.Left or DataJoinType.Full;
+        var joined = DataJoin.JoinAsync(
+            left.ReadRowsAsync(),
+            right.ReadRowsAsync(),
+            plan.LeftCount,
+            plan.Fields.Length - plan.LeftCount,
+            plan.LeftKeys,
+            plan.RightKeys,
+            settings.JoinType,
+            settings.IgnoreCase,
+            DataPipelineRowReader.CreateSpillOptions(context),
+            context.CancellationToken);
 
-        await foreach (var batch in left.ReadBatchesAsync(context.CancellationToken))
-        {
-            if (!ReferenceEquals(plannedFor, batch.Fields))
-            {
-                plan = BuildPlan(batch.Fields, rightFields, settings, out var errors);
-
-                if (errors.Count > 0)
-                {
-                    throw new InvalidOperationException(errors[0]);
-                }
-
-                plannedFor = batch.Fields;
-                lookup ??= BuildLookup(rightRows, plan.RightKeys, settings.IgnoreCase);
-            }
-
-            var rows = new List<object[]>();
-
-            foreach (var row in batch.Rows)
-            {
-                var found = false;
-
-                if (!DataPipelineKeys.HasEmptyKey(row, plan.LeftKeys) &&
-                    lookup.TryGetValue(DataPipelineKeys.Build(row, plan.LeftKeys, settings.IgnoreCase), out var indexes))
-                {
-                    foreach (var index in indexes)
-                    {
-                        matched[index] = true;
-                        rows.Add(Combine(row, rightRows[index], plan));
-                        found = true;
-                    }
-                }
-
-                if (!found && keepUnmatchedLeft)
-                {
-                    rows.Add(Combine(row, null, plan));
-                }
-            }
-
-            if (rows.Count > 0)
-            {
-                await output.WriteAsync(new DataBatch(plan.Fields, rows), context.CancellationToken);
-            }
-        }
-
-        if (settings.JoinType is not (DataJoinType.Right or DataJoinType.Full))
-        {
-            return;
-        }
-
-        plan ??= BuildPlan(left.Fields, rightFields, settings, out _);
-
-        var unmatched = new List<object[]>();
-
-        for (var index = 0; index < rightRows.Count; index++)
-        {
-            if (!matched[index])
-            {
-                unmatched.Add(Combine(null, rightRows[index], plan));
-            }
-        }
-
-        foreach (var chunk in unmatched.Chunk(DataSourceQuery.DefaultBatchSize))
-        {
-            await output.WriteAsync(new DataBatch(plan.Fields, chunk), context.CancellationToken);
-        }
-    }
-
-    private static Dictionary<string, List<int>> BuildLookup(List<object[]> rows, int[] keys, bool ignoreCase)
-    {
-        var lookup = new Dictionary<string, List<int>>(StringComparer.Ordinal);
-
-        for (var index = 0; index < rows.Count; index++)
-        {
-            if (DataPipelineKeys.HasEmptyKey(rows[index], keys))
-            {
-                continue;
-            }
-
-            var key = DataPipelineKeys.Build(rows[index], keys, ignoreCase);
-
-            if (!lookup.TryGetValue(key, out var list))
-            {
-                list = [];
-                lookup[key] = list;
-            }
-
-            list.Add(index);
-        }
-
-        return lookup;
-    }
-
-    private static object[] Combine(object[] left, object[] right, Plan plan)
-    {
-        var row = new object[plan.Fields.Length];
-
-        if (left is not null)
-        {
-            Array.Copy(left, row, Math.Min(left.Length, plan.LeftCount));
-        }
-
-        if (right is not null)
-        {
-            Array.Copy(right, 0, row, plan.LeftCount, Math.Min(right.Length, plan.Fields.Length - plan.LeftCount));
-        }
-
-        return row;
+        await DataPipelineRowReader.WriteRowsAsync(context.GetOutput(), plan.Fields, joined, context.CancellationToken);
     }
 
     private Plan BuildPlan(IReadOnlyList<DataField> left, IReadOnlyList<DataField> right, JoinStepSettings settings, out List<string> errors)

@@ -4,7 +4,7 @@
 
 <div class="ocat-wrapper">
     <label class="ocat-label">@T["Calculated fields"]</label>
-    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Fields")">
+    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Fields")" data-dp-formula-scope>
         <template data-dp-template>
             <partial name="DataPipelineCalculatedFieldRow" model="@((new CalculatedField(), "__index__"))" />
         </template>
@@ -15,16 +15,8 @@
             }
         </div>
         <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a field"]</button>
-        <span class="hint">@T["Each formula can use the fields of the input and the fields calculated before it. A field with the name of an input field replaces its value."]</span>
-        <div class="mt-2">
-            <span class="hint">@T["Fields of the input:"]</span>
-            <div class="d-flex flex-wrap gap-1">
-                @foreach (var field in Model.AvailableFields)
-                {
-                    <code title="@field.Type">[@field.Name]</code>
-                }
-            </div>
-        </div>
-        <partial name="DataPipelineFormulaHelp" />
+        <span class="hint">@T["Each formula can use the fields of the input and the fields calculated before it. A field with the name of an input field replaces its value. Click a field or a function to insert it into the formula you last edited."]</span>
+        <partial name="DataPipelineFieldInsert" model="@((Model.AvailableFields, string.Empty))" />
+        <partial name="DataPipelineFormulaHelp" model="@string.Empty" />
     </div>
 </div>

@@ -80,9 +80,10 @@ else
 @if (hasSheet)
 {
     <div class="ocat-wrapper">
-        <label asp-for="SheetName" class="ocat-label">@T["Worksheet name"]</label>
+        <label asp-for="SheetName" class="ocat-label">@T["Worksheet names"]</label>
         <div class="ocat-end">
-            <input asp-for="SheetName" class="form-control" placeholder="Sheet1" />
+            <textarea asp-for="SheetName" class="form-control" rows="2" placeholder="Sheet1"></textarea>
+            <span class="hint">@T["Connect several steps to the input to write each one to its own worksheet of the workbook. Name the worksheets one per line, in the order of the connections; a worksheet without a name is named after the step it comes from."]</span>
         </div>
     </div>
 }

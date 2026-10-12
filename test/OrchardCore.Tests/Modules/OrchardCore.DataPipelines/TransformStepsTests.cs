@@ -1,5 +1,7 @@
+using OrchardCore.DataPipelines;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataSources;
+using OrchardCore.DataSources.Expressions;
 using OrchardCore.Tests.Modules.OrchardCore.DataSources;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.DataPipelines;
@@ -28,7 +30,7 @@ public sealed class TransformStepsTests
     public async Task Filter_Condition_SplitsMatchedAndUnmatchedRows()
     {
         // Arrange
-        using var host = new StepTestHost(new FilterStep(Localizer<FilterStep>()), new FilterStepSettings { Condition = "[Amount] >= 10" })
+        using var host = new StepTestHost(new FilterStep(ExpressionFunctionCatalog.BuiltIn, Localizer<FilterStep>()), new FilterStepSettings { Condition = "[Amount] >= 10" })
             .WithRows(_orders, _orderRows);
 
         // Act
@@ -47,7 +49,7 @@ public sealed class TransformStepsTests
     public async Task Filter_InvalidCondition_ReportsError(string condition, string expected)
     {
         // Arrange
-        using var host = new StepTestHost(new FilterStep(Localizer<FilterStep>()), new FilterStepSettings { Condition = condition })
+        using var host = new StepTestHost(new FilterStep(ExpressionFunctionCatalog.BuiltIn, Localizer<FilterStep>()), new FilterStepSettings { Condition = condition })
             .WithRows(_orders);
 
         // Act
@@ -72,7 +74,7 @@ public sealed class TransformStepsTests
                 new CalculatedField { Name = "Customer", Formula = "PROPER([Customer])" },
             ],
         };
-        using var host = new StepTestHost(new CalculatedFieldsStep(Localizer<CalculatedFieldsStep>()), settings).WithRows(_orders, _orderRows);
+        using var host = new StepTestHost(new CalculatedFieldsStep(ExpressionFunctionCatalog.BuiltIn, Localizer<CalculatedFieldsStep>()), settings).WithRows(_orders, _orderRows);
 
         // Act
         var description = await host.DescribeAsync();
@@ -96,7 +98,7 @@ public sealed class TransformStepsTests
     {
         // Arrange
         var settings = new CalculatedFieldsStepSettings { Fields = [new CalculatedField { Name = " ", Formula = "1" }] };
-        using var host = new StepTestHost(new CalculatedFieldsStep(Localizer<CalculatedFieldsStep>()), settings).WithRows(_orders);
+        using var host = new StepTestHost(new CalculatedFieldsStep(ExpressionFunctionCatalog.BuiltIn, Localizer<CalculatedFieldsStep>()), settings).WithRows(_orders);
 
         // Act
         var context = await host.DescribeAsync();
@@ -158,6 +160,30 @@ public sealed class TransformStepsTests
 
         // Assert: text sorts ignore case, and rows with equal keys keep their order.
         Assert.Equal([1L, 3L, 2L, 5L, 4L], host.Output().Rows.Select(row => row[0]));
+    }
+
+    [Fact]
+    public async Task Sort_MoreRowsThanTheMemoryLimit_SortsThemInTemporaryFiles()
+    {
+        // Arrange: about 6 MB of rows, with a limit of 1 MB.
+        DataField[] fields = [new("Id", "Id", DataFieldType.Integer), new("Text", "Text", DataFieldType.Text)];
+        var random = new Random(7);
+        var rows = Enumerable.Range(0, 20_000).Select(index => new object[] { (long)index, random.Next(1_000_000).ToString("D7", System.Globalization.CultureInfo.InvariantCulture) + new string('x', 120) }).ToArray();
+        var services = new ServiceCollection().Configure<DataPipelineOptions>(options => options.StepMemoryLimitMegabytes = 1).BuildServiceProvider();
+        var settings = new SortStepSettings { Keys = [new SortField { Field = "Text" }] };
+        using var host = new StepTestHost(new SortStep(Localizer<SortStep>()), settings, services).WithRows(fields, rows);
+        var written = new List<string>();
+        using var watcher = new FileSystemWatcher(host.TemporaryDirectory) { IncludeSubdirectories = true, EnableRaisingEvents = true };
+        watcher.Created += (_, args) => written.Add(args.FullPath);
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var expected = rows.OrderBy(row => (string)row[1], StringComparer.OrdinalIgnoreCase).Select(row => row[0]);
+        Assert.Equal(expected, host.Output().Rows.Select(row => row[0]));
+        Assert.NotEmpty(written);
+        Assert.Empty(Directory.GetFiles(host.TemporaryDirectory, "*", SearchOption.AllDirectories));
     }
 
     [Fact]

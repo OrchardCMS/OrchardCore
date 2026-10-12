@@ -59,6 +59,12 @@ internal sealed class StepTestHost : IDisposable
         => WithInput(DataPipelinePort.Input, fields, rows);
 
     public StepTestHost WithInput(string port, IReadOnlyList<DataField> fields, params object[][] rows)
+        => WithConnection(port, null, fields, rows);
+
+    /// <summary>
+    /// Adds a connection to an input, coming from a step with the given title.
+    /// </summary>
+    public StepTestHost WithConnection(string port, string label, IReadOnlyList<DataField> fields, params object[][] rows)
     {
         if (!_inputs.TryGetValue(port, out var input))
         {
@@ -66,7 +72,7 @@ internal sealed class StepTestHost : IDisposable
             _inputs[port] = input;
         }
 
-        input.Add(fields, rows);
+        input.Add(fields, rows, label);
 
         return this;
     }
@@ -148,7 +154,8 @@ internal sealed class StepTestHost : IDisposable
     internal sealed class FakeInput : DataPipelineInput
     {
         private readonly DataPipelineStepMetrics _metrics;
-        private readonly List<DataBatch> _batches = [];
+        private readonly List<List<DataBatch>> _connections = [];
+        private readonly List<string> _labels = [];
 
         public FakeInput(DataPipelinePort port, DataPipelineStepMetrics metrics)
         {
@@ -168,20 +175,31 @@ internal sealed class StepTestHost : IDisposable
 
         public List<DataPipelineFile> Files { get; } = [];
 
-        public void Add(IReadOnlyList<DataField> fields, object[][] rows)
+        public override IReadOnlyList<string> ConnectionLabels => _labels;
+
+        public void Add(IReadOnlyList<DataField> fields, object[][] rows, string label = null)
         {
             _fieldSets.Add(fields);
+            _labels.Add(label ?? $"Step {_labels.Count + 1}");
 
             // Two rows per batch, to exercise steps across batches.
-            foreach (var chunk in rows.Chunk(2))
-            {
-                _batches.Add(new DataBatch(fields, chunk));
-            }
+            _connections.Add(rows.Chunk(2).Select(chunk => new DataBatch(fields, chunk)).ToList());
         }
 
         public override async IAsyncEnumerable<DataBatch> ReadBatchesAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            foreach (var batch in _batches)
+            for (var connection = 0; connection < _connections.Count; connection++)
+            {
+                await foreach (var batch in ReadConnectionBatchesAsync(connection, cancellationToken))
+                {
+                    yield return batch;
+                }
+            }
+        }
+
+        public override async IAsyncEnumerable<DataBatch> ReadConnectionBatchesAsync(int connection, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            foreach (var batch in _connections[connection])
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Task.Yield();

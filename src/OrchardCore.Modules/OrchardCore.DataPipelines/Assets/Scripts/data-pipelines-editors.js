@@ -5,9 +5,14 @@
 //   <div data-dp-rows> container of <div data-dp-row> elements. Inputs are named like "Fields[0].Name"; the template
 //   uses "__index__" for the index. [data-dp-add] adds a row, [data-dp-remove] removes its row, [data-dp-up] and
 //   [data-dp-down] move it. Rows are renumbered after each change, and a bubbling change event lets the designer save.
-// - Inserting a field reference: [data-dp-insert="Field name"] inserts "[Field name]" into the element whose id is in
-//   data-dp-target, at the caret.
+// - Inserting a field reference: [data-dp-insert="Field name"] inserts "[Field name]" at the caret of the formula whose
+//   id is in data-dp-target. Without a target, it goes to the [data-dp-formula] element of the closest
+//   [data-dp-formula-scope] that last had the focus, or to its first one.
+// - Inserting a function: [data-dp-insert-function="NAME"] inserts "NAME()" the same way, with the caret between the
+//   parentheses. A [data-dp-function-search] input filters the [data-dp-search-text] items of its [data-dp-functions].
 (function () {
+    const lastFormulas = new WeakMap();
+
     const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     const renumber = (list) => {
@@ -36,6 +41,76 @@
         const target = element.closest("form") ?? element;
         target.dispatchEvent(new Event("change", { bubbles: true }));
     };
+
+    const findFormula = (button) => {
+        if (button.dataset.dpTarget) {
+            return document.getElementById(button.dataset.dpTarget);
+        }
+
+        const scope = button.closest("[data-dp-formula-scope]");
+
+        if (!scope) {
+            return null;
+        }
+
+        const last = lastFormulas.get(scope);
+
+        return last && scope.contains(last) ? last : scope.querySelector("[data-dp-formula]");
+    };
+
+    // Inserts text at the caret, replacing the selection, and leaves the caret after "before" and before "after".
+    const insertText = (target, before, after) => {
+        const start = target.selectionStart ?? target.value.length;
+        const end = target.selectionEnd ?? target.value.length;
+
+        target.value = target.value.slice(0, start) + before + after + target.value.slice(end);
+        target.focus();
+        target.setSelectionRange(start + before.length, start + before.length);
+        target.dispatchEvent(new Event("input", { bubbles: true }));
+        notifyChange(target);
+    };
+
+    document.addEventListener("focusin", (event) => {
+        const formula = event.target.closest?.("[data-dp-formula]");
+        const scope = formula?.closest("[data-dp-formula-scope]");
+
+        if (scope) {
+            lastFormulas.set(scope, formula);
+        }
+    });
+
+    document.addEventListener("input", (event) => {
+        const search = event.target.closest?.("[data-dp-function-search]");
+
+        if (!search) {
+            return;
+        }
+
+        const container = search.closest("[data-dp-functions]");
+        const terms = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        let matches = 0;
+
+        container.querySelectorAll("[data-dp-function-category]").forEach((category) => {
+            let visible = 0;
+
+            category.querySelectorAll("[data-dp-search-text]").forEach((item) => {
+                const text = item.dataset.dpSearchText;
+                const match = terms.every((term) => text.includes(term));
+
+                item.hidden = !match;
+                visible += match ? 1 : 0;
+            });
+
+            category.hidden = visible === 0;
+            matches += visible;
+        });
+
+        const empty = container.querySelector("[data-dp-function-empty]");
+
+        if (empty) {
+            empty.hidden = matches > 0;
+        }
+    });
 
     document.addEventListener("click", (event) => {
         const add = event.target.closest("[data-dp-add]");
@@ -80,26 +155,22 @@
             return;
         }
 
-        const insert = event.target.closest("[data-dp-insert]");
+        const insert = event.target.closest("[data-dp-insert], [data-dp-insert-function]");
 
         if (insert) {
             event.preventDefault();
 
-            const target = document.getElementById(insert.dataset.dpTarget);
+            const target = findFormula(insert);
 
             if (!target) {
                 return;
             }
 
-            const text = "[" + insert.dataset.dpInsert + "]";
-            const start = target.selectionStart ?? target.value.length;
-            const end = target.selectionEnd ?? target.value.length;
-
-            target.value = target.value.slice(0, start) + text + target.value.slice(end);
-            target.focus();
-            target.setSelectionRange(start + text.length, start + text.length);
-            target.dispatchEvent(new Event("input", { bubbles: true }));
-            notifyChange(target);
+            if (insert.hasAttribute("data-dp-insert-function")) {
+                insertText(target, insert.dataset.dpInsertFunction + "(", ")");
+            } else {
+                insertText(target, "[" + insert.dataset.dpInsert + "]", "");
+            }
         }
     });
 })();

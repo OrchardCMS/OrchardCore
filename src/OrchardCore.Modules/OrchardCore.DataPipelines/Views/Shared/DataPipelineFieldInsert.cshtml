@@ -1,6 +1,6 @@
 @model (IReadOnlyList<DataField> Fields, string TargetId)
 
-@* The fields a formula can use; clicking one inserts it into the formula. *@
+@* The fields a formula can use; clicking one inserts it into the formula whose id is the target, or, without a target, into the formula of the editor that last had the focus. *@
 @if (Model.Fields.Count > 0)
 {
     <div class="d-flex flex-wrap gap-1 mt-1">

@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
+using OrchardCore.DataSources.Operations;
 
 namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
-/// Sorts the rows by one or more fields. The step holds every row in memory before writing the first one, up to
-/// <see cref="DataPipelineOptions.MaxRowsInMemory"/>. Text is compared ignoring case, and empty values come first.
+/// Sorts the rows by one or more fields, with <see cref="DataSorter"/>: the step reads every row before writing the
+/// first one, and writes the rows that don't fit in <see cref="DataPipelineOptions.StepMemoryLimitMegabytes"/> to
+/// temporary files. Text is compared ignoring case, empty values come first, and rows with equal keys keep their order.
 /// </summary>
 public sealed class SortStep : DataPipelineStepType<SortStepSettings>
 {
@@ -58,50 +60,16 @@ public sealed class SortStep : DataPipelineStepType<SortStepSettings>
         ArgumentNullException.ThrowIfNull(context);
 
         var settings = GetSettings(context.Step);
-        var limit = DataPipelineFormulas.GetOptions(context.Services).MaxRowsInMemory;
-        var rows = new List<object[]>();
-        IReadOnlyList<DataField> fields = context.GetInput().Fields;
 
-        await foreach (var batch in context.GetInput().ReadBatchesAsync(context.CancellationToken))
-        {
-            fields = batch.Fields;
-            rows.AddRange(batch.Rows);
-
-            if (rows.Count > limit)
-            {
-                throw new InvalidOperationException(S["The step can sort {0} rows at most.", limit]);
-            }
-        }
+        await using var reader = await DataPipelineRowReader.OpenAsync(context.GetInput(), context.CancellationToken);
 
         var keys = settings.Keys
-            .Select(key => (Index: fields.IndexOf(key.Field), key.Descending))
+            .Select(key => (Index: reader.Fields.IndexOf(key.Field), key.Descending))
             .Where(key => key.Index >= 0)
             .ToArray();
 
-        // A stable sort keeps the order of rows with equal keys.
-        var sorted = rows
-            .Select((row, position) => (Row: row, Position: position))
-            .Order(Comparer<(object[] Row, int Position)>.Create((left, right) =>
-            {
-                foreach (var (index, descending) in keys)
-                {
-                    var result = DataValues.Compare(left.Row[index], right.Row[index]);
+        var sorted = DataSorter.SortAsync(reader.ReadRowsAsync(), DataSorter.CreateComparer(keys), DataPipelineRowReader.CreateSpillOptions(context), context.CancellationToken);
 
-                    if (result != 0)
-                    {
-                        return descending ? -result : result;
-                    }
-                }
-
-                return left.Position.CompareTo(right.Position);
-            }))
-            .Select(item => item.Row);
-
-        var output = context.GetOutput();
-
-        foreach (var chunk in sorted.Chunk(DataSourceQuery.DefaultBatchSize))
-        {
-            await output.WriteAsync(new DataBatch(fields, chunk), context.CancellationToken);
-        }
+        await DataPipelineRowReader.WriteRowsAsync(context.GetOutput(), reader.Fields, sorted, context.CancellationToken);
     }
 }

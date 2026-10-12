@@ -203,6 +203,79 @@ public sealed class SourceAndFileStepsTests
     }
 
     [Fact]
+    public async Task CreateFile_XlsxWithSeveralConnections_WritesAWorksheetPerConnection()
+    {
+        // Arrange
+        DataField[] totals = [new("Country", "Country", DataFieldType.Text), new("Orders", "Orders", DataFieldType.Integer)];
+        var settings = new CreateFileStepSettings { Format = "xlsx", FileName = "report" };
+        using var host = new StepTestHost(new CreateFileStep(new PassThroughStringLocalizer<CreateFileStep>()), settings, Services())
+            .WithConnection(DataPipelinePort.Input, "People", _people, _peopleRows)
+            .WithConnection(DataPipelinePort.Input, "Orders by country", totals, ["CA", 3L], ["FR", 1L]);
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var file = Assert.Single(host.Output().Files);
+        Assert.Equal(5, file.RowCount);
+
+        var people = await ReadSheetAsync(file, "People");
+        Assert.Equal(["Id", "Name", "Joined"], people.Fields.Select(field => field.Name));
+        Assert.Equal(3, people.Rows.Count);
+
+        var orders = await ReadSheetAsync(file, "Orders by country");
+        Assert.Equal(["Country", "Orders"], orders.Fields.Select(field => field.Name));
+        Assert.Equal(["CA", "FR"], orders.Rows.Select(row => row[0]));
+    }
+
+    [Fact]
+    public async Task CreateFile_XlsxWithSheetNames_NamesTheWorksheetsInTheOrderOfTheConnections()
+    {
+        // Arrange
+        var settings = new CreateFileStepSettings { Format = "xlsx", FileName = "report", SheetName = "Everyone\n  \nAgain" };
+        using var host = new StepTestHost(new CreateFileStep(new PassThroughStringLocalizer<CreateFileStep>()), settings, Services())
+            .WithConnection(DataPipelinePort.Input, "People", _people, _peopleRows)
+            .WithConnection(DataPipelinePort.Input, "More people", _people, _peopleRows[0])
+            .WithConnection(DataPipelinePort.Input, "Even more people", _people, _peopleRows[1]);
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert: an empty line keeps the title of its step.
+        var file = Assert.Single(host.Output().Files);
+        Assert.Equal(3, (await ReadSheetAsync(file, "Everyone")).Rows.Count);
+        Assert.Single((await ReadSheetAsync(file, "More people")).Rows);
+        Assert.Single((await ReadSheetAsync(file, "Again")).Rows);
+    }
+
+    [Fact]
+    public async Task CreateFile_CsvWithSeveralConnections_WritesTheRowsOfEveryConnectionByFieldName()
+    {
+        // Arrange: the second connection has the same fields in another order, and one more.
+        DataField[] reordered = [new("Name", "Name", DataFieldType.Text), new("Extra", "Extra", DataFieldType.Text), new("Id", "Id", DataFieldType.Integer)];
+        var settings = new CreateFileStepSettings { Format = "csv", FileName = "people" };
+        using var host = new StepTestHost(new CreateFileStep(new PassThroughStringLocalizer<CreateFileStep>()), settings, Services())
+            .WithConnection(DataPipelinePort.Input, "People", _people, _peopleRows[0])
+            .WithConnection(DataPipelinePort.Input, "Others", reordered, ["Zed", "x", 9L]);
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var file = Assert.Single(host.Output().Files);
+        var lines = File.ReadAllText(file.Path).TrimStart('﻿').Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+        Assert.Equal(["Id,Name,Joined", "1,Ada,2026-01-10T00:00:00Z", "9,Zed,"], lines);
+    }
+
+    private static async Task<(IReadOnlyList<DataField> Fields, List<object[]> Rows)> ReadSheetAsync(DataPipelineFile file, string sheetName)
+    {
+        await using var stream = file.OpenRead();
+        var batches = await DataTestHelpers.ToListAsync(new ExcelDataFileFormat(new PassThroughStringLocalizer<ExcelDataFileFormat>()).ReadAsync(stream, new DataFileOptions { SheetName = sheetName }, TestContext.Current.CancellationToken));
+
+        return (batches[0].Fields, batches.SelectMany(batch => batch.Rows).ToList());
+    }
+
+    [Fact]
     public async Task CreateFile_UnknownFormat_ReportsError()
     {
         // Arrange

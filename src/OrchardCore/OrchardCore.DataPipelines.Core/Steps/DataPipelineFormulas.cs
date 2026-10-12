@@ -18,11 +18,13 @@ public static class DataPipelineFormulas
     /// </summary>
     /// <param name="formula">The formula.</param>
     /// <param name="fields">The fields the formula can refer to.</param>
+    /// <param name="functions">The functions the formula can call.</param>
     /// <param name="localizer">Localizes the errors.</param>
     /// <param name="error">The reason the formula is invalid, if it is.</param>
     /// <returns>The compiled formula, or <see langword="null"/> when it is invalid.</returns>
-    public static CompiledExpression TryCompile(string formula, IReadOnlyList<DataField> fields, IStringLocalizer localizer, out string error)
+    public static CompiledExpression TryCompile(string formula, IReadOnlyList<DataField> fields, IExpressionFunctionCatalog functions, IStringLocalizer localizer, out string error)
     {
+        ArgumentNullException.ThrowIfNull(functions);
         ArgumentNullException.ThrowIfNull(localizer);
 
         error = null;
@@ -36,7 +38,7 @@ public static class DataPipelineFormulas
 
         try
         {
-            var compiled = ExpressionCompiler.Compile(formula, new FieldListExpressionScope(fields ?? []), localizer);
+            var compiled = ExpressionCompiler.Compile(formula, new FieldListExpressionScope(fields ?? []), functions, localizer);
 
             if (compiled.IsAggregate)
             {

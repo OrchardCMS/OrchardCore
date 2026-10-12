@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
+using OrchardCore.DataSources.Operations;
 
 namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Removes the rows whose key fields hold the same values as a row before them. Without key fields, a row is a
-/// duplicate when every field is equal. Values compare exactly; the step keeps one key per distinct row in memory.
+/// duplicate when every field is equal. Values compare exactly, and the rows keep their order. The step keeps the keys
+/// it saw in memory, up to <see cref="DataPipelineOptions.StepMemoryLimitMegabytes"/>, with <see cref="DataDistinct"/>.
 /// </summary>
 public sealed class DistinctStep : DataPipelineStepType<DistinctStepSettings>
 {
@@ -52,35 +54,15 @@ public sealed class DistinctStep : DataPipelineStepType<DistinctStepSettings>
         ArgumentNullException.ThrowIfNull(context);
 
         var settings = GetSettings(context.Step);
-        var limit = DataPipelineFormulas.GetOptions(context.Services).MaxRowsInMemory;
-        var output = context.GetOutput();
-        var seen = new HashSet<string>(StringComparer.Ordinal);
 
-        await foreach (var batch in context.GetInput().ReadBatchesAsync(context.CancellationToken))
-        {
-            var keys = settings.Fields.Count == 0
-                ? Enumerable.Range(0, batch.Fields.Count).ToArray()
-                : settings.Fields.Select(batch.IndexOf).Where(index => index >= 0).ToArray();
+        await using var reader = await DataPipelineRowReader.OpenAsync(context.GetInput(), context.CancellationToken);
 
-            var rows = new List<object[]>();
+        var keys = settings.Fields.Count == 0
+            ? Enumerable.Range(0, reader.Fields.Count).ToArray()
+            : settings.Fields.Select(reader.Fields.IndexOf).Where(index => index >= 0).ToArray();
 
-            foreach (var row in batch.Rows)
-            {
-                if (seen.Add(DataPipelineKeys.Build(row, keys, ignoreCase: false)))
-                {
-                    if (seen.Count > limit)
-                    {
-                        throw new InvalidOperationException(S["The step can keep {0} distinct rows at most.", limit]);
-                    }
+        var distinct = DataDistinct.DistinctAsync(reader.ReadRowsAsync(), keys, ignoreCase: false, DataPipelineRowReader.CreateSpillOptions(context), context.CancellationToken);
 
-                    rows.Add(row);
-                }
-            }
-
-            if (rows.Count > 0)
-            {
-                await output.WriteAsync(new DataBatch(batch.Fields, rows), context.CancellationToken);
-            }
-        }
+        await DataPipelineRowReader.WriteRowsAsync(context.GetOutput(), reader.Fields, distinct, context.CancellationToken);
     }
 }

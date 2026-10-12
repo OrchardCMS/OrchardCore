@@ -10,12 +10,14 @@ namespace OrchardCore.DataSources.Expressions;
 public sealed class ExpressionCompiler
 {
     private readonly IExpressionScope _scope;
+    private readonly IExpressionFunctionCatalog _functions;
     private readonly IStringLocalizer S;
     private readonly HashSet<string> _references = new(StringComparer.Ordinal);
 
-    private ExpressionCompiler(IExpressionScope scope, IStringLocalizer localizer)
+    private ExpressionCompiler(IExpressionScope scope, IExpressionFunctionCatalog functions, IStringLocalizer localizer)
     {
         _scope = scope;
+        _functions = functions;
         S = localizer;
     }
 
@@ -27,7 +29,7 @@ public sealed class ExpressionCompiler
     }
 
     /// <summary>
-    /// Parses and compiles a formula.
+    /// Parses and compiles a formula that calls the built-in functions.
     /// </summary>
     /// <param name="formula">The formula.</param>
     /// <param name="scope">The fields the formula may refer to.</param>
@@ -35,12 +37,25 @@ public sealed class ExpressionCompiler
     /// <returns>The compiled formula.</returns>
     /// <exception cref="ExpressionException">The formula is malformed or does not make sense in the scope.</exception>
     public static CompiledExpression Compile(string formula, IExpressionScope scope, IStringLocalizer localizer)
+        => Compile(formula, scope, ExpressionFunctionCatalog.BuiltIn, localizer);
+
+    /// <summary>
+    /// Parses and compiles a formula that calls the functions of a catalog.
+    /// </summary>
+    /// <param name="formula">The formula.</param>
+    /// <param name="scope">The fields the formula may refer to.</param>
+    /// <param name="functions">The functions the formula may call.</param>
+    /// <param name="localizer">The localizer used for error messages.</param>
+    /// <returns>The compiled formula.</returns>
+    /// <exception cref="ExpressionException">The formula is malformed or does not make sense in the scope.</exception>
+    public static CompiledExpression Compile(string formula, IExpressionScope scope, IExpressionFunctionCatalog functions, IStringLocalizer localizer)
     {
         ArgumentNullException.ThrowIfNull(scope);
+        ArgumentNullException.ThrowIfNull(functions);
         ArgumentNullException.ThrowIfNull(localizer);
 
         var root = ExpressionParser.Parse(formula, localizer);
-        var compiler = new ExpressionCompiler(scope, localizer);
+        var compiler = new ExpressionCompiler(scope, functions, localizer);
         var compiled = compiler.CompileNode(root, insideAggregate: false);
 
         return new CompiledExpression(
@@ -199,7 +214,7 @@ public sealed class ExpressionCompiler
 
     private Node CompileFunction(FunctionNode call, bool insideAggregate)
     {
-        var function = ExpressionFunctions.Find(call.Name) ??
+        var function = _functions.Find(call.Name) ??
             throw new ExpressionException(S["The function {0} does not exist.", call.Name], call.Position);
 
         if (call.Arguments.Count < function.MinArguments || call.Arguments.Count > function.MaxArguments)
