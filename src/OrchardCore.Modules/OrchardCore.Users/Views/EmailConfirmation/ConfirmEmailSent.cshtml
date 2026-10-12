@@ -4,17 +4,30 @@
     ViewLayout = "Layout__Login";
 }
 
-<h2>@T["Email confirmation sent"]</h2>
+@if (Model.CanResendEmailConfirmation)
+{
+    <h2>@T["Confirm your email"]</h2>
+}
+else
+{
+    <h2>@T["Email confirmation sent"]</h2>
+}
 <div>
-    <p>
-        @T["An email has been sent to you. Please click on the link it contains in order to have access on this site."]
-    </p>
     @if (Model.CanResendEmailConfirmation)
     {
-        <form id="resend-email-confirmation-form" asp-controller="EmailConfirmation" asp-action="ResendEmailConfirmation" asp-area="@UserConstants.Features.Users"
+        <p>
+            @T["You must confirm your email. A confirmation email was sent when the account was created."]
+        </p>
+        <form asp-controller="EmailConfirmation" asp-action="ResendEmailConfirmation" asp-area="@UserConstants.Features.Users"
               asp-route-returnurl="@Model.ReturnUrl" method="post" class="mb-3 no-multisubmit">
-            <a href="#" onclick="event.preventDefault(); document.getElementById('resend-email-confirmation-form').requestSubmit();">@T["Send confirmation email"]</a>
+            <button type="submit" class="btn btn-link p-0 align-baseline">@T["Send confirmation email"]</button>
         </form>
+    }
+    else
+    {
+        <p>
+            @T["An email has been sent to you. Please click on the link it contains in order to have access on this site."]
+        </p>
     }
 
     <p>

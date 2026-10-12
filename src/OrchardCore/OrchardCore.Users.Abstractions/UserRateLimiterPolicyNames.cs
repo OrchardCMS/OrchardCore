@@ -8,6 +8,8 @@ public static class UserRateLimiterPolicyNames
 
     public const string UserRegistration = "user-registration";
 
+    public const string EmailConfirmation = "email-confirmation";
+
     public const string TwoFactorAuthentication = "two-factor-authentication";
 
     public const string TwoFactorRecovery = "two-factor-recovery";

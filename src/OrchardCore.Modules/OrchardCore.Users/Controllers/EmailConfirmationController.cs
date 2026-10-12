@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.RateLimits;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -18,11 +20,16 @@ namespace OrchardCore.Users.Controllers;
 
 public sealed class EmailConfirmationController : Controller
 {
+    private const string ResendCooldownCacheKeyPrefix = "EmailConfirmationResend:";
+
+    private static readonly TimeSpan s_resendCooldown = TimeSpan.FromMinutes(1);
+
     private readonly UserManager<IUser> _userManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
     private readonly UserEmailService _userEmailService;
+    private readonly IDistributedCache _distributedCache;
     private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
@@ -34,6 +41,7 @@ public sealed class EmailConfirmationController : Controller
         INotifier notifier,
         IEnumerable<IUserEventHandler> userEventHandlers,
         UserEmailService userEmailService,
+        IDistributedCache distributedCache,
         ILogger<EmailConfirmationController> logger,
         IHtmlLocalizer<EmailConfirmationController> htmlLocalizer,
         IStringLocalizer<EmailConfirmationController> stringLocalizer)
@@ -43,6 +51,7 @@ public sealed class EmailConfirmationController : Controller
         _notifier = notifier;
         _userEventHandlers = userEventHandlers;
         _userEmailService = userEmailService;
+        _distributedCache = distributedCache;
         _logger = logger;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -92,6 +101,7 @@ public sealed class EmailConfirmationController : Controller
 
     [AllowAnonymous]
     [HttpPost]
+    [RateLimitGroup(UserRateLimiterPolicyNames.EmailConfirmation)]
     public async Task<IActionResult> ResendEmailConfirmation(string returnUrl = null)
     {
         var user = await GetEmailConfirmationUserAsync();
@@ -105,8 +115,28 @@ public sealed class EmailConfirmationController : Controller
         {
             await HttpContext.SignOutAsync(UserConstants.EmailConfirmationAuthenticationScheme);
             await _notifier.WarningAsync(H["Your email is already confirmed."]);
+
+            return RedirectToAction(nameof(ConfirmEmailSent), new { returnUrl });
         }
-        else if (await _userEmailService.SendEmailConfirmationAsync(user))
+
+        // The per-IP rate limit only applies when the Rate Limits feature is enabled,
+        // so this cooldown always limits how often a user can request a new email.
+        var cooldownKey = ResendCooldownCacheKeyPrefix + await _userManager.GetUserIdAsync(user);
+
+        if (await _distributedCache.GetAsync(cooldownKey, HttpContext.RequestAborted) != null)
+        {
+            await _notifier.WarningAsync(H["A confirmation email was sent recently. Please wait a minute before requesting another one."]);
+
+            return RedirectToAction(nameof(ConfirmEmailSent), new { returnUrl });
+        }
+
+        // Start the cooldown before sending, so that it also applies while the email is being sent or when sending fails.
+        await _distributedCache.SetAsync(cooldownKey, [1], new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = s_resendCooldown,
+        }, HttpContext.RequestAborted);
+
+        if (await _userEmailService.SendEmailConfirmationAsync(user))
         {
             await _notifier.SuccessAsync(H["Verification email sent."]);
         }

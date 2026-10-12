@@ -15,6 +15,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -151,10 +152,10 @@ public sealed class AccountController : AccountBaseController
 
                         if (loginResult != null)
                         {
-                            if (loginResult is RedirectToActionResult redirectToActionResult &&
-                                IsConfirmEmailSentResult(redirectToActionResult))
+                            if (loginResult is EmailConfirmationRequiredResult)
                             {
-                                await StoreEmailConfirmationAuthenticationAsync(user);
+                                // The password has been verified, so the user can request a new confirmation email.
+                                await SignInEmailConfirmationUserAsync(user);
                             }
 
                             return loginResult;
@@ -279,7 +280,7 @@ public sealed class AccountController : AccountBaseController
     public IActionResult ChangePasswordConfirmation()
         => View();
 
-    private async Task StoreEmailConfirmationAuthenticationAsync(IUser user)
+    private async Task SignInEmailConfirmationUserAsync(IUser user)
     {
         var identity = new ClaimsIdentity(UserConstants.EmailConfirmationAuthenticationScheme);
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, await _userManager.GetUserIdAsync(user)));
@@ -288,8 +289,4 @@ public sealed class AccountController : AccountBaseController
             UserConstants.EmailConfirmationAuthenticationScheme,
             new ClaimsPrincipal(identity));
     }
-
-    private static bool IsConfirmEmailSentResult(RedirectToActionResult result)
-        => string.Equals(result.ActionName, nameof(EmailConfirmationController.ConfirmEmailSent), StringComparison.Ordinal) &&
-            string.Equals(result.ControllerName, typeof(EmailConfirmationController).ControllerName(), StringComparison.Ordinal);
 }
