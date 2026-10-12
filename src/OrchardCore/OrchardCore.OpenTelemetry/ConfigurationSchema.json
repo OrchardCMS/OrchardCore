@@ -1,0 +1,106 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "OpenTelemetry": {
+          "type": "object",
+          "description": "Configures the OpenTelemetry traces, metrics and logs of the application. Read when calling 'AddOpenTelemetry()' on the Orchard Core builder, e.g. 'services.AddOrchardCms().AddOpenTelemetry()'. The standard 'OTEL_*' configuration values are also supported. See https://docs.orchardcore.net/en/latest/reference/modules/OpenTelemetry/.",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether OpenTelemetry is configured."
+            },
+            "ServiceName": {
+              "type": "string",
+              "description": "The 'service.name' resource attribute. Defaults to the application name. The 'OTEL_SERVICE_NAME' configuration value takes precedence."
+            },
+            "ServiceInstanceId": {
+              "type": "string",
+              "description": "The 'service.instance.id' resource attribute identifying this instance of the application, e.g. in a web farm. Defaults to the machine name followed by the process id."
+            },
+            "Tracing": {
+              "type": "object",
+              "description": "Configures the collection of traces.",
+              "properties": {
+                "Enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether traces are collected."
+                },
+                "SamplingRatio": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "The ratio, from 0 to 1, of the traces that are sampled. A trace started by a sampled parent is always sampled. When not set, all traces are sampled."
+                },
+                "Sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The names of additional activity sources to collect traces from."
+                }
+              }
+            },
+            "Metrics": {
+              "type": "object",
+              "description": "Configures the collection of metrics.",
+              "properties": {
+                "Enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether metrics are collected."
+                },
+                "IncludeTenantName": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Disable it to limit the number of metric series with many tenants."
+                },
+                "Meters": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The names of additional meters to collect metrics from."
+                }
+              }
+            },
+            "Logging": {
+              "type": "object",
+              "description": "Configures the collection of logs.",
+              "properties": {
+                "Enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether logs are collected."
+                }
+              }
+            },
+            "Otlp": {
+              "type": "object",
+              "description": "Configures the OTLP exporter. When neither 'Endpoint' nor the 'OTEL_EXPORTER_OTLP_ENDPOINT' configuration value is set, the telemetry is not exported over OTLP.",
+              "properties": {
+                "Endpoint": {
+                  "type": "string",
+                  "description": "The endpoint of the OTLP receiver, e.g. 'http://localhost:4317' for gRPC or 'http://localhost:4318' for HTTP."
+                },
+                "Protocol": {
+                  "type": "string",
+                  "enum": [
+                    "Grpc",
+                    "HttpProtobuf"
+                  ],
+                  "default": "Grpc",
+                  "description": "The protocol used to export to the endpoint."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

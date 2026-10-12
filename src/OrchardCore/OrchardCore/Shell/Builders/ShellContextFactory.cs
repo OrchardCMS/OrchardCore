@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Environment.Shell.Builders;
 
@@ -25,7 +27,10 @@ public class ShellContextFactory : IShellContextFactory
         _logger = logger;
     }
 
-    async Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
+    Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
+        => MeasureAsync(settings, CreateShellContextInternalAsync);
+
+    private async Task<ShellContext> CreateShellContextInternalAsync(ShellSettings settings)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -52,16 +57,17 @@ public class ShellContextFactory : IShellContextFactory
     }
 
     Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
-    {
-        if (_logger.IsEnabled(LogLevel.Debug))
+        => MeasureAsync(settings, settings =>
         {
-            _logger.LogDebug("No shell settings available. Creating shell context for setup");
-        }
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("No shell settings available. Creating shell context for setup");
+            }
 
-        var descriptor = MinimumShellDescriptor();
+            var descriptor = MinimumShellDescriptor();
 
-        return CreateDescribedContextAsync(settings, descriptor);
-    }
+            return CreateDescribedContextAsync(settings, descriptor);
+        });
 
     public async Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor)
     {
@@ -112,6 +118,32 @@ public class ShellContextFactory : IShellContextFactory
         finally
         {
             Interlocked.Decrement(ref settings._shellCreating);
+        }
+    }
+
+    /// <summary>
+    /// Traces and measures the build of the service container of a tenant.
+    /// </summary>
+    private static async Task<ShellContext> MeasureAsync(ShellSettings settings, Func<ShellSettings, Task<ShellContext>> createAsync)
+    {
+        using var activity = OrchardCoreTelemetry.StartTenantActivity("Build tenant container", settings.Name);
+        var startTimestamp = Stopwatch.GetTimestamp();
+        Exception exception = null;
+
+        try
+        {
+            return await createAsync(settings);
+        }
+        catch (Exception ex)
+        {
+            exception = ex;
+            OrchardCoreTelemetry.RecordException(activity, ex);
+
+            throw;
+        }
+        finally
+        {
+            OrchardCoreTelemetry.RecordDuration(OrchardCoreTelemetry.TenantContainerDuration, startTimestamp, settings.Name, exception);
         }
     }
 
