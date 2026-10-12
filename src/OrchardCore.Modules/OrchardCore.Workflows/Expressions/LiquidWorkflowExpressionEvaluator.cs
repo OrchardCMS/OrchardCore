@@ -4,8 +4,11 @@ using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -45,22 +48,32 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         }
 
         var templateContext = new LiquidTemplateContext(_serviceProvider, _templateOptions);
-        var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
+        var viewContextAccessor = _serviceProvider.GetRequiredService<ViewContextAccessor>();
+        var viewContext = viewContextAccessor.ViewContext;
 
-        await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
-
-        templateContext.SetValue("Workflow", new ObjectValue(workflowContext));
-        var template = GetTemplate(expression.Expression);
-
-        if (typeof(T) != typeof(string) && TryGetSingleOutputStatement(template, out var outputStatement))
+        if (viewContext == null && _serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext != null)
         {
-            var fluidValue = await EvaluateOutputValueAsync(outputStatement, templateContext);
-            return ConvertValue<T>(fluidValue.ToObjectValue(), fluidValue.ToStringValue());
+            viewContext = viewContextAccessor.ViewContext = await LiquidViewTemplateExtensions.GetViewContextAsync(templateContext);
         }
 
-        var result = await RenderTemplateAsync(template, templateContext, encoder ?? NullEncoder.Default);
+        return await templateContext.InvokeInScopeAsync(viewContext, model: null, async () =>
+        {
+            var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
+            await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
-        return ConvertValue<T>(result, result);
+            templateContext.SetValue("Workflow", new ObjectValue(workflowContext));
+            var template = GetTemplate(expression.Expression);
+
+            if (typeof(T) != typeof(string) && TryGetSingleOutputStatement(template, out var outputStatement))
+            {
+                var fluidValue = await EvaluateOutputValueAsync(outputStatement, templateContext);
+                return ConvertValue<T>(fluidValue.ToObjectValue(), fluidValue.ToStringValue());
+            }
+
+            var result = await RenderTemplateAsync(template, templateContext, encoder ?? NullEncoder.Default);
+
+            return ConvertValue<T>(result, result);
+        });
     }
 
     private IFluidTemplate GetTemplate(string expression)

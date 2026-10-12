@@ -104,7 +104,7 @@
             toggle.Attributes["data-bs-target"] = "#" + targetId;
             toggle.Attributes["aria-controls"] = targetId;
             toggle.Attributes["aria-expanded"] = "false";
-            toggle.Attributes["aria-label"] = T["Toggle {0}", Model.Text.ToString()].Value;
+            toggle.Attributes["aria-label"] = T.GetString("Toggle {0}", Model.Text.ToString());
             toggle.AddCssClass("nav-toggle");
             toggle.InnerHtml.AppendHtml(Html.Raw("<i class=\"fa-solid fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " chevron\" aria-hidden=\"true\"></i>"));
 

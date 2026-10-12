@@ -1,4 +1,6 @@
 using Jint;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Rules.Models;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
@@ -31,6 +33,10 @@ public class JavascriptConditionEvaluator : ConditionEvaluator<JavascriptConditi
     {
         _engine ??= _scriptingManager.GetScriptingEngine("js");
 
+        // Conditions are evaluated while a request is being served, so a client that has gone away is the
+        // natural point to stop a script that is still running.
+        var cancellationToken = _serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext?.RequestAborted ?? CancellationToken.None;
+
         if (_scope is null)
         {
             var scope = CreateScope();
@@ -39,7 +45,7 @@ public class JavascriptConditionEvaluator : ConditionEvaluator<JavascriptConditi
             {
                 // The globals of this scope cannot be put back after a condition, so sharing it would let the
                 // conditions clash. Each condition gets a scope of its own instead.
-                return Convert.ToBoolean(await _engine.EvaluateAsync(scope, condition.Script));
+                return Convert.ToBoolean(await _engine.EvaluateAsync(scope, condition.Script, cancellationToken));
             }
 
             _scope = scope;
@@ -47,7 +53,7 @@ public class JavascriptConditionEvaluator : ConditionEvaluator<JavascriptConditi
 
         try
         {
-            return Convert.ToBoolean(await _engine.EvaluateAsync(_scope, condition.Script));
+            return Convert.ToBoolean(await _engine.EvaluateAsync(_scope, condition.Script, cancellationToken));
         }
         finally
         {
