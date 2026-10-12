@@ -22,6 +22,7 @@
       ref="pickerModalRef"
       :field-id="inputName"
       :allowed-extensions="config.allowedExtensions"
+      :max-file-size="config.maxFileSize"
       :allow-multiple="multiple"
       :media-app-translations="config.mediaAppTranslations || ''"
       :base-path="config.basePath || ''"
