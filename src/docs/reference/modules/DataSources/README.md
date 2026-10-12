@@ -137,13 +137,28 @@ The module provides file formats that rows can be written to and read from. They
 | Name | Format | Extension | Notes |
 |------|--------|-----------|-------|
 | `csv` | CSV (comma separated values) | `.csv` | Values that hold the delimiter, a quote or a line break are quoted, and quotes are doubled (RFC 4180). Files are written in UTF-8 with a byte order mark, so spreadsheet applications detect the encoding. The delimiter is a comma by default; `tab` or `\t` stands for a tab. Every column read from a CSV file is text. |
-| `xlsx` | Excel workbook | `.xlsx` | Rows are written and read one at a time, so a large workbook never needs to fit in memory. Numbers, booleans, dates and date-times keep their types. When reading, the type of each column is inferred from the values of the first batch. A worksheet is named `Sheet1` unless another name is given, and when reading, the first worksheet is read unless another one is named. |
+| `xlsx` | Excel workbook | `.xlsx` | Rows are written and read one at a time, so a large workbook never needs to fit in memory: each worksheet is streamed into the file as its rows arrive. A workbook can hold several data sets, each in its own worksheet. Numbers, booleans, dates and date-times keep their types. When reading, the type of each column is inferred from the values of the first batch. A worksheet is named `Sheet1` unless another name is given, and when reading, the first worksheet is read unless another one is named. |
 | `json` | JSON | `.json` | An array with one object per row. When reading, the fields and their types are inferred from the objects of the first batch; properties that first appear later are ignored, and nested objects and arrays are read as JSON text. |
 | `jsonl` | JSON Lines | `.jsonl` | One JSON object per line, which suits large exports. Fields are inferred as for JSON. |
 
 When written to a text file, dates are formatted as `yyyy-MM-dd`, date-times in ISO 8601 UTC, numbers without grouping, and booleans as `true` or `false`.
 
 The `DataFileOptions` class holds the options of a format: the `Delimiter` of a CSV file, whether the first row holds the column names (`HasHeaderRow`), the `SheetName` of a workbook, whether JSON is `Indented`, whether columns are named with the labels of the fields (`UseDisplayNames`), and the `BatchSize` of reading.
+
+A format whose files hold several data sets, such as the Excel workbook, also implements `IDataWorkbookFormat`. Its `WriteSheetsAsync` method writes a list of `DataSheet` objects, each with a name, fields and batches of rows, to the worksheets of one workbook, and returns the number of rows written to each one. The worksheets are written in order, and the batches of a sheet are read completely before those of the next sheet are started, so the batches of a later sheet must be able to wait. Worksheet names are made valid for Excel: the characters `: \ / ? * [ ]` are replaced with `_`, names are cut to 31 characters, an empty name becomes `SheetN`, where N is the position of the sheet, and a repeated name, ignoring case, gets a number such as ` (2)` appended.
+
+```csharp
+if (dataFileFormatManager.GetFormat("xlsx") is IDataWorkbookFormat workbookFormat)
+{
+    IReadOnlyList<long> rowCounts = await workbookFormat.WriteSheetsAsync(
+        stream,
+        [
+            new DataSheet("Orders", orderFields, orderBatches),
+            new DataSheet("Customers", customerFields, customerBatches),
+        ],
+        new DataFileOptions { UseDisplayNames = true });
+}
+```
 
 ## Formulas
 

@@ -31,7 +31,7 @@ public interface IDataFileFormat
     /// <summary>
     /// Writes rows to a stream.
     /// </summary>
-    /// <param name="stream">The stream to write to. Formats that need to seek, such as Excel, require a seekable stream.</param>
+    /// <param name="stream">The stream to write to.</param>
     /// <param name="fields">The fields of the rows, which become the columns of the file.</param>
     /// <param name="batches">The batches of rows to write. Every batch must have the same fields as <paramref name="fields"/>.</param>
     /// <param name="options">The format options.</param>
