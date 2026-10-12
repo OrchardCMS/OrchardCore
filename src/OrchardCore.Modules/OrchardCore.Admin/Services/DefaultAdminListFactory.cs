@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Admin.Services;
@@ -8,17 +10,20 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
     private readonly IAdminListLayoutResolver _layoutResolver;
     private readonly IAdminListColumnsBuilder _columnsBuilder;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IOptionsMonitor<AdminListOptions> _options;
     private readonly ILogger _logger;
 
     public DefaultAdminListFactory(
         IAdminListLayoutResolver layoutResolver,
         IAdminListColumnsBuilder columnsBuilder,
         IShapeFactory shapeFactory,
+        IOptionsMonitor<AdminListOptions> options,
         ILogger<DefaultAdminListFactory> logger)
     {
         _layoutResolver = layoutResolver;
         _columnsBuilder = columnsBuilder;
         _shapeFactory = shapeFactory;
+        _options = options;
         _logger = logger;
     }
 
@@ -26,23 +31,49 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var columns = await _columnsBuilder.BuildAsync(context.Name, context.Data, cancellationToken);
-        var hasColumns = columns.Count > 0;
-
-        if (!hasColumns)
-        {
-            _logger.LogWarning("No provider declared the columns of the '{ListName}' admin list, so it can only be rendered with the '{Layout}' layout.", context.Name, AdminListConstants.List);
-        }
-
+        var allowUserSelection = _options.CurrentValue.AllowUserSelection;
         var layout = context.Layout;
+        var resolvesLayout = string.IsNullOrWhiteSpace(layout);
+        IList<AdminListColumn> columns = null;
 
-        if (string.IsNullOrWhiteSpace(layout))
+        if (resolvesLayout)
         {
-            // Without columns, the List layout is the only one that can render the rows.
-            layout = hasColumns
-                ? await _layoutResolver.GetLayoutAsync(context.Name, cancellationToken)
-                : AdminListConstants.List;
+            if (allowUserSelection)
+            {
+                // The resolver remembers the layout a user asks for, so it is only asked for a list that has
+                // columns: without them, the List layout is the only one that can render the rows.
+                columns = await BuildColumnsAsync(context, cancellationToken);
+                layout = columns.Count > 0
+                    ? await _layoutResolver.GetLayoutAsync(context.Name, cancellationToken)
+                    : AdminListConstants.List;
+            }
+            else
+            {
+                layout = await _layoutResolver.GetLayoutAsync(context.Name, cancellationToken);
+            }
         }
+
+        if (columns is null)
+        {
+            // The List layout renders the rows whole, so its columns are only built when the list offers the
+            // other layouts, which only a list with columns has.
+            if (string.Equals(layout.Trim(), AdminListConstants.List, StringComparison.OrdinalIgnoreCase) &&
+                !(allowUserSelection && context.ShowLayoutSelector))
+            {
+                columns = Array.Empty<AdminListColumn>();
+            }
+            else
+            {
+                columns = await BuildColumnsAsync(context, cancellationToken);
+
+                if (resolvesLayout && columns.Count == 0)
+                {
+                    layout = AdminListConstants.List;
+                }
+            }
+        }
+
+        var hasColumns = columns.Count > 0;
 
         var rows = context.Rows ?? [];
         var toolbar = context.Toolbar;
@@ -86,6 +117,18 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
         SetIfNotNull(properties, "EmptyMessage", context.EmptyMessage);
 
         return shape;
+    }
+
+    private async Task<IList<AdminListColumn>> BuildColumnsAsync(AdminListContext context, CancellationToken cancellationToken)
+    {
+        var columns = await _columnsBuilder.BuildAsync(context.Name, context.Data, cancellationToken);
+
+        if (columns.Count == 0)
+        {
+            _logger.LogWarning("No provider declared the columns of the '{ListName}' admin list, so it can only be rendered with the '{Layout}' layout.", context.Name, AdminListConstants.List);
+        }
+
+        return columns;
     }
 
     // The item count of the page, and where it sits in the whole list: the pager knows the total and the page,

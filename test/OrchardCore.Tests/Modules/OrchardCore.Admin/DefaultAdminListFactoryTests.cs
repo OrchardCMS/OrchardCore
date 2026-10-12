@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.Services;
@@ -71,14 +72,69 @@ public class DefaultAdminListFactoryTests
     [Fact]
     public async Task CreateAsync_ListWithoutColumns_IsRenderedAsAListWithoutSelector()
     {
-        var (factory, layoutResolver, _) = CreateFactory([], AdminListConstants.Grid);
+        var (factory, layoutResolver, _) = CreateFactory([], AdminListConstants.Grid, allowUserSelection: true);
 
         var shape = await factory.CreateAsync(new AdminListContext("Unknown"), TestContext.Current.CancellationToken);
 
-        // Without columns the rows can only be rendered whole, so there is no other layout to offer.
+        // Without columns the rows can only be rendered whole, so there is no other layout to offer, and the
+        // resolver is not asked: it would remember a layout a user asked for in the query string.
         Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
         Assert.Equal(false, shape.Properties["ShowLayoutSelector"]);
         layoutResolver.Verify(r => r.GetLayoutAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateAsync_DefaultLayoutOfAListWithoutColumns_IsRenderedAsAList()
+    {
+        var (factory, _, _) = CreateFactory([], AdminListConstants.Grid);
+
+        var shape = await factory.CreateAsync(new AdminListContext("Unknown"), TestContext.Current.CancellationToken);
+
+        Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
+        Assert.Equal(false, shape.Properties["ShowLayoutSelector"]);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ListLayoutWithoutUserSelection_DoesNotBuildTheColumns()
+    {
+        var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.List);
+
+        var shape = await factory.CreateAsync(new AdminListContext("Contents"), TestContext.Current.CancellationToken);
+
+        // The List layout renders the rows whole, and there is no other layout to offer.
+        Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
+        Assert.Empty((IEnumerable<AdminListColumn>)shape.Properties["Columns"]);
+        Assert.Equal(false, shape.Properties["ShowLayoutSelector"]);
+        columnsBuilder.Verify(b => b.BuildAsync(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ListLayoutSetByThePageWithoutSelector_DoesNotBuildTheColumns()
+    {
+        var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.Grid, allowUserSelection: true);
+
+        var shape = await factory.CreateAsync(new AdminListContext("ListPartContents")
+        {
+            Layout = AdminListConstants.List,
+            ShowLayoutSelector = false,
+        }, TestContext.Current.CancellationToken);
+
+        Assert.Empty((IEnumerable<AdminListColumn>)shape.Properties["Columns"]);
+        columnsBuilder.Verify(b => b.BuildAsync(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ListLayoutOfferingTheOtherLayouts_BuildsTheColumns()
+    {
+        var (factory, layoutResolver, _) = CreateFactory(_columns, AdminListConstants.List, allowUserSelection: true);
+
+        var shape = await factory.CreateAsync(new AdminListContext("Contents"), TestContext.Current.CancellationToken);
+
+        // The selector only offers the layouts with columns to a list that has some.
+        Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
+        Assert.Equal(["Title", "Actions"], ((IEnumerable<AdminListColumn>)shape.Properties["Columns"]).Select(column => column.Name));
+        Assert.Equal(true, shape.Properties["ShowLayoutSelector"]);
+        layoutResolver.Verify(r => r.GetLayoutAsync("Contents", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -97,7 +153,7 @@ public class DefaultAdminListFactoryTests
     [Fact]
     public async Task CreateAsync_DataOfThePage_ReachesTheColumnsBuilder()
     {
-        var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.List);
+        var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.Grid);
         var context = new AdminListContext("Contents");
         context.Data["ContentTypes"] = new[] { "BlogPost" };
 
@@ -208,7 +264,8 @@ public class DefaultAdminListFactoryTests
 
     private static (DefaultAdminListFactory Factory, Mock<IAdminListLayoutResolver> LayoutResolver, Mock<IAdminListColumnsBuilder> ColumnsBuilder) CreateFactory(
         IList<AdminListColumn> columns,
-        string layout)
+        string layout,
+        bool allowUserSelection = false)
     {
         var layoutResolver = new Mock<IAdminListLayoutResolver>();
         layoutResolver
@@ -224,6 +281,7 @@ public class DefaultAdminListFactoryTests
             layoutResolver.Object,
             columnsBuilder.Object,
             new TestShapeFactory(),
+            Mock.Of<IOptionsMonitor<AdminListOptions>>(m => m.CurrentValue == new AdminListOptions { AllowUserSelection = allowUserSelection }),
             NullLogger<DefaultAdminListFactory>.Instance);
 
         return (factory, layoutResolver, columnsBuilder);

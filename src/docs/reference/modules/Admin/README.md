@@ -345,7 +345,7 @@ A list no provider declares columns for is rendered with the `List` layout, the 
 | -------------- | ---------------------------------------------------------------------------------------------- |
 | `Name`         | The name of the list, e.g. `Contents`.                                                         |
 | `Layout`       | The layout name: `AdminListContext.Layout` when the page sets it, otherwise resolved with `IAdminListLayoutResolver.GetLayoutAsync()`. |
-| `Columns`      | The `AdminListColumn` collection the providers of the list declared, built with `IAdminListColumnsBuilder`. |
+| `Columns`      | The `AdminListColumn` collection the providers of the list declared, built with `IAdminListColumnsBuilder`. Empty when the list is rendered with the `List` layout and offers no other layout: that layout renders the rows whole, so the columns are not built. |
 | `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or its grid row, e.g. `data-filter-value` for the client-side search of the page's script. |
 | `Header`       | The options editor shape whose `Summary` and `Actions` zones are rendered above the items.     |
 | `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. Unless the page sets one, or turns it off with `ShowToolbar = false`, the factory builds the `AdminListToolbar` shape, which renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex`, `ShowSelectAll`, `BulkActions` and `Actions` properties. |
