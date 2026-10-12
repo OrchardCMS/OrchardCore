@@ -411,6 +411,15 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
+`MaxFileSize` is the maximum size of an individual upload, in bytes. The admin media library,
+media-picker galleries (including attached media), and standalone gallery load the tenant's value
+from the authenticated `GET /api/media/GetUploadOptions` endpoint before accepting files.
+Files larger than a positive limit are rejected locally with a validation notification, without
+starting an upload; files exactly at the limit pass this client-side size check. File selection
+and drag-and-drop uploads remain unavailable if the upload options cannot be loaded.
+This check applies to both regular and resumable gallery uploads. Existing file-extension
+restrictions still apply, and server-side validation remains authoritative.
+
 ### Media storage location
 
 `AssetsPath` is relative to the current tenant's data directory, which defaults to `App_Data/Sites/{tenant}`.

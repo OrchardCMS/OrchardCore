@@ -22,6 +22,17 @@ public class PermittedStorageDto
     public string Text { get; set; }
 }
 
+/// <summary>
+/// The tenant's upload limits for client-side validation.
+/// </summary>
+public sealed class MediaUploadOptionsDto
+{
+    /// <summary>
+    /// Gets or sets the maximum file size in bytes.
+    /// </summary>
+    public long MaxFileSize { get; set; }
+}
+
 public class PaginatedFoldersDto
 {
     public List<FileStoreEntryDto> Items { get; set; }

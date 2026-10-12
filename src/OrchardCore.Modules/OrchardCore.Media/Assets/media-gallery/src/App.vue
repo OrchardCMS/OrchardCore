@@ -91,7 +91,7 @@
             <div class="tw:mr-auto">
               <div v-show="canManage" class="tw:flex tw:items-stretch tw:flex-wrap">
                   <label :title="t.UploadFiles" for="fileupload" class="ma-btn ma-btn-primary tw:mr-2 fileinput-button upload-button">
-                    <input id="fileupload" type="file" name="files" multiple />
+                    <input id="fileupload" type="file" name="files" multiple :disabled="!uploadReady" />
                     <fa-icon icon="fa-solid fa-cloud-arrow-up"></fa-icon>
                     {{ t.UploadFiles }}
                   </label>
@@ -472,7 +472,7 @@ setUploadFilesUrl(props.uploadFilesUrl);
 
 const { showConfirmModal } = useConfirmModal();
 
-useFileUpload({
+const { uploadReady } = useFileUpload({
   maxUploadChunkSize: props.maxUploadChunkSize,
   maxFileSize: props.maxFileSize,
   allowedExtensions: props.allowedExtensions,

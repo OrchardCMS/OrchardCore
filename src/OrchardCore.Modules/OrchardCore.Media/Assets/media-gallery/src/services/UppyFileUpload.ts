@@ -1,4 +1,4 @@
-import { onMounted } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useGlobals } from "./Globals";
 import Uppy, { debugLogger, Meta, UppyOptions, MinimalRequiredUppyFile, Restrictions } from "@uppy/core";
 import DropTarget from "@uppy/drop-target";
@@ -37,6 +37,7 @@ function uploadHeaders(): Record<string, string> {
 import { OptionalPluralizeLocale } from "@uppy/utils";
 import { useEventBus } from "./UseEventBus";
 import { invalidateFileCache } from "./FileLibraryManager";
+import { getSharedAxios } from "./apiClient";
 
 const { on, emit } = useEventBus();
 const { selectedDirectory, fileItems, uploadFilesUrl, assetsStore, setAssetsStore, setFileItems } = useGlobals();
@@ -55,6 +56,7 @@ if (culture == "fr") {
 }
 
 const uppy = new Uppy({ locale: uppyLocale });
+let uploadOptionsGeneration = 0;
 
 // Remembers the destination folder each file was actually targeted at, at the moment it
 // was added — keyed by uppy file id. The upload endpoint/metadata is pinned per-file at
@@ -129,21 +131,32 @@ const setUppyUrl = (): string => {
  * When TUS is enabled, uses the @uppy/tus plugin for resumable uploads.
  * Otherwise, falls back to @uppy/xhr-upload (default behavior).
  */
-export const useFileUpload = (model: IFileUploadModel): void => {
+export const useFileUpload = (model: IFileUploadModel) => {
+  const uploadReady = ref(false);
+  const generation = ++uploadOptionsGeneration;
+  const { basePath } = useGlobals();
+  const apiBaseUrl = basePath.value.replace(/\/?$/, "/");
+
   if (model.debugEnabled || import.meta.env.DEV) {
     uppy.setOptions({ logger: debugLogger });
   }
 
-  const restrictions: Record<string, unknown> = {};
-  if (model.maxFileSize > 0) {
-    restrictions.maxFileSize = model.maxFileSize;
-  }
-  if (model.allowedExtensions) {
-    restrictions.allowedFileTypes = model.allowedExtensions.split(",");
-  }
-  if (Object.keys(restrictions).length > 0) {
-    uppy.setOptions({ restrictions });
-  }
+  // All mounts (including pickers and standalone clients) load the tenant's limit.
+  // Block both the file input and DropTarget until it is known, not just upload().
+  uppy.setOptions({
+    onBeforeFileAdded: () => uploadReady.value && generation === uploadOptionsGeneration,
+    restrictions: {
+      maxFileSize: model.maxFileSize > 0 ? model.maxFileSize : null,
+      allowedFileTypes: model.allowedExtensions ? model.allowedExtensions.split(",") : null,
+    },
+  });
+
+  onUnmounted(() => {
+    uploadReady.value = false;
+    if (generation === uploadOptionsGeneration) {
+      uploadOptionsGeneration++;
+    }
+  });
 
   const isTus = model.tusEnabled && !!model.tusEndpointUrl;
 
@@ -180,6 +193,26 @@ export const useFileUpload = (model: IFileUploadModel): void => {
   }
 
   onMounted(() => {
+    void getSharedAxios().get<{ maxFileSize: number }>(`${apiBaseUrl}api/media/GetUploadOptions`)
+      .then(({ data }) => {
+        if (generation !== uploadOptionsGeneration) return;
+        if (!Number.isFinite(data.maxFileSize)) {
+          throw new Error("Invalid media upload limit.");
+        }
+        uppy.setOptions({
+          restrictions: {
+            maxFileSize: data.maxFileSize > 0 ? data.maxFileSize : null,
+            allowedFileTypes: model.allowedExtensions ? model.allowedExtensions.split(",") : null,
+          },
+        });
+        uploadReady.value = true;
+      })
+      .catch((error: unknown) => {
+        if (generation === uploadOptionsGeneration) {
+          notify(error);
+        }
+      });
+
     const fileInput = <HTMLInputElement>document.querySelector("#fileupload");
 
     // The uploader is a module-level singleton reused across picker mounts.
@@ -303,6 +336,9 @@ export const useFileUpload = (model: IFileUploadModel): void => {
     }
 
     uppy.on("files-added", async (files) => {
+      // Uppy also emits this event when every selected file was rejected.
+      if (files.length === 0) return;
+
       const destinationPath = selectedDirectory.value.directoryPath;
 
       // Remember which folder each file is actually headed to, so the completion
@@ -619,4 +655,5 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       });
     }
   });
+  return { uploadReady };
 };
