@@ -15,7 +15,7 @@ public class ApplicationControllerTests
     {
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
-            Mock.Of<IOptions<PagerOptions>>(),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(),
             Mock.Of<IStringLocalizer<ApplicationController>>(),
             Mock.Of<IAuthorizationService>(),
             Mock.Of<IOpenIdApplicationManager>(),
@@ -38,7 +38,7 @@ public class ApplicationControllerTests
 #pragma warning restore xUnit1051 // Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
-            Mock.Of<IOptions<PagerOptions>>(),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(),
             Mock.Of<IStringLocalizer<ApplicationController>>(),
             MockAuthorizationServiceMock().Object,
             Mock.Of<IOpenIdApplicationManager>(),
@@ -63,7 +63,7 @@ public class ApplicationControllerTests
     {
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
-            Mock.Of<IOptions<PagerOptions>>(),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(),
             MockStringLocalizer().Object,
             MockAuthorizationServiceMock().Object,
             Mock.Of<IOpenIdApplicationManager>(),
@@ -104,7 +104,7 @@ public class ApplicationControllerTests
         // Arrange
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
-            Mock.Of<IOptions<PagerOptions>>(),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(),
             MockStringLocalizer().Object,
             MockAuthorizationServiceMock().Object,
             Mock.Of<IOpenIdApplicationManager>(),

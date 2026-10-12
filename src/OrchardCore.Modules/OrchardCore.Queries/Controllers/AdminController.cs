@@ -37,7 +37,7 @@ public sealed class AdminController : Controller
     public AdminController(
         IDisplayManager<Query> displayManager,
         IAuthorizationService authorizationService,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -48,7 +48,7 @@ public sealed class AdminController : Controller
     {
         _displayManager = displayManager;
         _authorizationService = authorizationService;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _queryManager = queryManager;
         _serviceProvider = serviceProvider;
         _updateModelAccessor = updateModelAccessor;

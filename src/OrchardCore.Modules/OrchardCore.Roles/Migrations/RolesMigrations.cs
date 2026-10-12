@@ -155,7 +155,7 @@ public sealed class RolesMigrations : DataMigration
 
             if (adminSystemRoleName != OrchardCoreConstants.Roles.Administrator)
             {
-                // At this point, we'll update the shell settings and release the shell.
+                // At this point, we'll update the shell settings, which also reloads the shell.
                 var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
                 var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
 
@@ -167,7 +167,6 @@ public sealed class RolesMigrations : DataMigration
                 shellSettings["AdminRoleName"] = adminSystemRoleName;
 
                 await shellHost.UpdateShellSettingsAsync(shellSettings);
-                await shellHost.ReleaseShellContextAsync(shellSettings);
             }
         });
     }

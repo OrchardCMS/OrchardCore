@@ -82,10 +82,6 @@ public sealed class Startup : StartupBase
         var shellSettings = app.ApplicationServices.GetRequiredService<ShellSettings>();
         var prefix = shellSettings?.RequestUrlPrefix;
 
-        // Read settings to determine schema-access configuration.
-        var siteService = app.ApplicationServices.GetRequiredService<ISiteService>();
-        var settings = siteService.GetSettingsAsync<OpenApiSettings>().GetAwaiter().GetResult();
-
         // Add the server URL to the Swagger document so Scalar knows where to send requests.
         var swaggerGenOptions = app.ApplicationServices.GetRequiredService<
             IOptions<SwaggerGenOptions>
@@ -112,6 +108,11 @@ public sealed class Startup : StartupBase
 
                     if (isSwaggerJson || isOpenApiJson)
                     {
+                        // Read the settings on each request, so that a change applies without restarting the tenant.
+                        var settings = await context.RequestServices
+                            .GetRequiredService<ISiteService>()
+                            .GetSettingsAsync<OpenApiSettings>();
+
                         // JSON spec endpoints — skip auth when anonymous access is allowed.
                         if (!settings.AllowAnonymousSchemaAccess)
                         {

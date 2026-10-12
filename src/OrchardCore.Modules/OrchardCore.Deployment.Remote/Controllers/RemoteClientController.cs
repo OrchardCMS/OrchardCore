@@ -36,7 +36,7 @@ public sealed class RemoteClientController : Controller
         IDataProtectionProvider dataProtectionProvider,
         RemoteClientService remoteClientService,
         IAuthorizationService authorizationService,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IStringLocalizer<RemoteClientController> stringLocalizer,
         IHtmlLocalizer<RemoteClientController> htmlLocalizer,
@@ -44,7 +44,7 @@ public sealed class RemoteClientController : Controller
         )
     {
         _authorizationService = authorizationService;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;

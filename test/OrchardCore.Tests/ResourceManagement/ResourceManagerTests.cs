@@ -1,3 +1,4 @@
+using OrchardCore.Tests.Stubs;
 using System.Net.Mime;
 using AngleSharp;
 using AngleSharp.Dom;
@@ -31,7 +32,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -64,7 +65,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -80,7 +81,7 @@ public class ResourceManagerTests : IDisposable
     public void RegisterResourceUrl_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -97,7 +98,7 @@ public class ResourceManagerTests : IDisposable
     public void RegisteredResouceUrlIsRequired_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -123,7 +124,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -166,7 +167,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -215,7 +216,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -241,7 +242,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -266,7 +267,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -300,7 +301,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -337,7 +338,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -361,7 +362,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -394,7 +395,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -417,7 +418,7 @@ public class ResourceManagerTests : IDisposable
     public void RegisterHeadScript_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -433,7 +434,7 @@ public class ResourceManagerTests : IDisposable
     public void RegisterFootScript_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -449,7 +450,7 @@ public class ResourceManagerTests : IDisposable
     public void RegisterStyle_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -465,7 +466,7 @@ public class ResourceManagerTests : IDisposable
     public void RegisterLink_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -486,7 +487,7 @@ public class ResourceManagerTests : IDisposable
     public void RegisterMeta_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -503,7 +504,7 @@ public class ResourceManagerTests : IDisposable
     public async Task AppendMeta_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -531,7 +532,7 @@ public class ResourceManagerTests : IDisposable
     public async Task RenderMeta_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -558,7 +559,7 @@ public class ResourceManagerTests : IDisposable
     public async Task RenderHeadLink_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+            new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions()),
             StubFileVersionProvider.Instance
         );
 
@@ -594,7 +595,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -651,7 +652,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -703,7 +704,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -765,7 +766,7 @@ public class ResourceManagerTests : IDisposable
 
         var resourceManager = new ResourceManager
         (
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -823,7 +824,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 
@@ -863,7 +864,7 @@ public class ResourceManagerTests : IDisposable
         options.ResourceManifests.Add(manifest);
 
         var resourceManager = new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
 

@@ -34,7 +34,7 @@ public class AdminControllerTests
             .ThrowsAsync(new QueryReachedException());
 
         await Assert.ThrowsAsync<QueryReachedException>(() => controller.List(
-            Options.Create(new PagerOptions()),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(options => options.CurrentValue == new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
             filterResult,
@@ -59,7 +59,7 @@ public class AdminControllerTests
             .ThrowsAsync(new QueryReachedException());
 
         await Assert.ThrowsAsync<QueryReachedException>(() => controller.List(
-            Options.Create(new PagerOptions()),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(options => options.CurrentValue == new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
             filterResult,
@@ -84,7 +84,7 @@ public class AdminControllerTests
             .ThrowsAsync(new QueryReachedException());
 
         await Assert.ThrowsAsync<QueryReachedException>(() => controller.List(
-            Options.Create(new PagerOptions()),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(options => options.CurrentValue == new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
             filterResult,

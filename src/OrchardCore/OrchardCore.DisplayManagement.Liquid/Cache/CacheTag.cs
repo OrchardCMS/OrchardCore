@@ -22,7 +22,7 @@ public class CacheTag
         var cacheScopeManager = services.GetService<ICacheScopeManager>();
         var loggerFactory = services.GetService<ILoggerFactory>();
         var logger = loggerFactory.CreateLogger<CacheTag>();
-        var cacheOptions = services.GetRequiredService<IOptions<CacheOptions>>().Value;
+        var cacheOptions = services.GetRequiredService<IOptionsMonitor<CacheOptions>>().CurrentValue;
 
         if (dynamicCache == null || cacheScopeManager == null)
         {

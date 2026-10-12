@@ -1,3 +1,4 @@
+using OrchardCore.Tests.Stubs;
 using System.Security.Cryptography;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources;
@@ -10,7 +11,7 @@ public class SubResourceIntegrityTests
     public static async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
     {
         // Arrange
-        var resourceOptions = Options.Create(new ResourceOptions());
+        var resourceOptions = new StaticOptionsMonitor<ResourceOptions>(new ResourceOptions());
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         httpContextAccessorMock
             .Setup(a => a.HttpContext)

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.OpenApi.Settings;
 using OrchardCore.OpenApi.ViewModels;
 using OrchardCore.Settings;
@@ -15,18 +14,15 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     public const string GroupId = "openapi";
 
     private readonly IEnumerable<IOpenApiUIFeature> _uiFeatures;
-    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public OpenApiSettingsDisplayDriver(
         IEnumerable<IOpenApiUIFeature> uiFeatures,
-        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
         _uiFeatures = uiFeatures;
-        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
@@ -42,8 +38,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         return Initialize<OpenApiSettingsViewModel>("OpenApiSettings_Edit", model =>
         {
@@ -69,8 +63,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         settings.AllowAnonymousSchemaAccess = model.AllowAnonymousSchemaAccess;
-
-        _shellReleaseManager.RequestRelease();
 
         return await EditAsync(site, settings, context);
     }

@@ -57,7 +57,7 @@ public sealed class AdminController : Controller
         IRoleService roleService,
         IUsersAdminListQueryService usersAdminListQueryService,
         INotifier notifier,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         ILogger<AdminController> logger,
         IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -71,7 +71,7 @@ public sealed class AdminController : Controller
         _session = session;
         _userManager = userManager;
         _notifier = notifier;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _userService = userService;
         _roleService = roleService;
         _usersAdminListQueryService = usersAdminListQueryService;

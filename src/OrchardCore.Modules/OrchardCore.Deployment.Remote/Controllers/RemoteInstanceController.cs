@@ -32,7 +32,7 @@ public sealed class RemoteInstanceController : Controller
     public RemoteInstanceController(
         RemoteInstanceService service,
         IAuthorizationService authorizationService,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IStringLocalizer<RemoteInstanceController> stringLocalizer,
         IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
@@ -40,7 +40,7 @@ public sealed class RemoteInstanceController : Controller
         )
     {
         _authorizationService = authorizationService;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;

@@ -1,3 +1,4 @@
+using OrchardCore.Tests.Stubs;
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
@@ -65,7 +66,7 @@ public class ImageShortcodeTests
         defaultHttpContext.Request.PathBase = new PathString("/tenant");
         var httpContextAccessor = Mock.Of<IHttpContextAccessor>(hca => hca.HttpContext == defaultHttpContext);
 
-        var options = Options.Create(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
+        var options = new StaticOptionsMonitor<ResourceManagementOptions>(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
 
         var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options, fileVersionProvider);
 

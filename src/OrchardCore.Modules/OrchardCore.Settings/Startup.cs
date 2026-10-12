@@ -57,6 +57,8 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
         services.AddSignalOptionsChangeTokenSource<ShapeRenderingOptions>();
+        services.AddSignalOptionsChangeTokenSource<ResourceOptions>();
+        services.AddSignalOptionsChangeTokenSource<PagerOptions>();
 
         services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
         services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();

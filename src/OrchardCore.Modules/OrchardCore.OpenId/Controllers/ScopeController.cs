@@ -28,14 +28,14 @@ public sealed class ScopeController : Controller
     public ScopeController(
         IOpenIdScopeManager scopeManager,
         IShapeFactory shapeFactory,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IStringLocalizer<ScopeController> stringLocalizer,
         IAuthorizationService authorizationService,
         ShellSettings shellSettings)
     {
         _scopeManager = scopeManager;
         _shapeFactory = shapeFactory;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         S = stringLocalizer;
         _authorizationService = authorizationService;
         _shellSettings = shellSettings;

@@ -43,7 +43,7 @@ public sealed class AdminController : Controller
         IEnumerable<ISitemapSourceFactory> sourceFactories,
         ISitemapManager sitemapManager,
         ISitemapIdGenerator sitemapIdGenerator,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IShapeFactory shapeFactory,
@@ -56,7 +56,7 @@ public sealed class AdminController : Controller
         _authorizationService = authorizationService;
         _sitemapManager = sitemapManager;
         _sitemapIdGenerator = sitemapIdGenerator;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _updateModelAccessor = updateModelAccessor;
         _notifier = notifier;
         _shapeFactory = shapeFactory;

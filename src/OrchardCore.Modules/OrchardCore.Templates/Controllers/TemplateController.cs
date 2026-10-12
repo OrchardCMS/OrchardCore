@@ -36,7 +36,7 @@ public sealed class TemplateController : Controller
         TemplatesManager templatesManager,
         AdminTemplatesManager adminTemplatesManager,
         IShapeFactory shapeFactory,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IStringLocalizer<TemplateController> stringLocalizer,
         IHtmlLocalizer<TemplateController> htmlLocalizer,
         INotifier notifier)
@@ -45,7 +45,7 @@ public sealed class TemplateController : Controller
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
         _shapeFactory = shapeFactory;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;

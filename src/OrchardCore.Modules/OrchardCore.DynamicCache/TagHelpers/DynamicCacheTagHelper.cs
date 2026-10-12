@@ -83,13 +83,13 @@ public class DynamicCacheTagHelper : TagHelper
         ICacheScopeManager cacheScopeManager,
         HtmlEncoder htmlEncoder,
         DynamicCacheTagHelperService dynamicCacheTagHelperService,
-        IOptions<CacheOptions> cacheOptions)
+        IOptionsMonitor<CacheOptions> cacheOptions)
     {
         _dynamicCacheService = dynamicCacheService;
         _cacheScopeManager = cacheScopeManager;
         HtmlEncoder = htmlEncoder;
         _dynamicCacheTagHelperService = dynamicCacheTagHelperService;
-        _cacheOptions = cacheOptions.Value;
+        _cacheOptions = cacheOptions.CurrentValue;
     }
 
     /// <inheritdoc />

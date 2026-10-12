@@ -62,7 +62,7 @@ public sealed class AdminController : Controller
         INotifier notifier,
         ITenantValidator tenantValidator,
         IEnumerable<DatabaseProvider> databaseProviders,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IOptions<TenantsOptions> tenantsOptions,
         TenantDatabasePatternResolver tenantDatabasePatternResolver,
         ILogger<AdminController> logger,
@@ -81,7 +81,7 @@ public sealed class AdminController : Controller
         _clock = clock;
         _notifier = notifier;
         _tenantValidator = tenantValidator;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _tenantsOptions = tenantsOptions.Value;
         _tenantDatabasePatternResolver = tenantDatabasePatternResolver;
         _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);

@@ -41,7 +41,7 @@ public sealed class AdminController : Controller
         IAuthorizationService authorizationService,
         ShortcodeTemplatesManager shortcodeTemplatesManager,
         ILiquidTemplateManager liquidTemplateManager,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         INotifier notifier,
         IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
@@ -52,7 +52,7 @@ public sealed class AdminController : Controller
         _authorizationService = authorizationService;
         _shortcodeTemplatesManager = shortcodeTemplatesManager;
         _liquidTemplateManager = liquidTemplateManager;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;

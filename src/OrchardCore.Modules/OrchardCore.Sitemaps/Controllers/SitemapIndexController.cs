@@ -39,7 +39,7 @@ public sealed class SitemapIndexController : Controller
         IAuthorizationService authorizationService,
         ISitemapIdGenerator sitemapIdGenerator,
         ISitemapManager sitemapManager,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IUpdateModelAccessor updateModelAccessor,
         IShapeFactory shapeFactory,
         IStringLocalizer<SitemapIndexController> stringLocalizer,
@@ -50,7 +50,7 @@ public sealed class SitemapIndexController : Controller
         _authorizationService = authorizationService;
         _sitemapIdGenerator = sitemapIdGenerator;
         _sitemapManager = sitemapManager;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _updateModelAccessor = updateModelAccessor;
         _notifier = notifier;
         _shapeFactory = shapeFactory;

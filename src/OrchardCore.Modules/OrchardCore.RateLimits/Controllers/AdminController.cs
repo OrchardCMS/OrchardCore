@@ -83,7 +83,7 @@ public sealed class AdminController : Controller
     public async Task<IActionResult> Index(
         string searchText = null,
         PagerParameters pagerParameters = null,
-        [FromServices] IOptions<PagerOptions> pagerOptions = null,
+        [FromServices] IOptionsMonitor<PagerOptions> pagerOptions = null,
         [FromServices] IShapeFactory shapeFactory = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
@@ -98,7 +98,7 @@ public sealed class AdminController : Controller
             policies = policies.Where(x => SearchMatches(x, searchText));
         }
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value);
+        var pager = new Pager(pagerParameters, pagerOptions.CurrentValue);
         var orderedPolicies = policies
             .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
             .ToArray();

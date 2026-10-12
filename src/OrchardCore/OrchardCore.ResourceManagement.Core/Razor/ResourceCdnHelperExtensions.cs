@@ -13,7 +13,7 @@ public static class ResourceCdnHelperExtensions
     /// </summary>
     public static string ResourceUrl(this IOrchardHelper orchardHelper, string resourcePath, bool? appendVersion = null)
     {
-        var options = orchardHelper.HttpContext.RequestServices.GetRequiredService<IOptions<ResourceManagementOptions>>().Value;
+        var options = orchardHelper.HttpContext.RequestServices.GetRequiredService<IOptionsMonitor<ResourceManagementOptions>>().CurrentValue;
         var fileVersionProvider = orchardHelper.HttpContext.RequestServices.GetRequiredService<IFileVersionProvider>();
 
         if (resourcePath.StartsWith("~/", StringComparison.Ordinal))

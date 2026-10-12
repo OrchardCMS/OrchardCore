@@ -23,10 +23,10 @@ public class ResourceManager : IResourceManager
     private readonly ResourceManagementOptions _options;
 
     public ResourceManager(
-        IOptions<ResourceManagementOptions> options,
+        IOptionsMonitor<ResourceManagementOptions> options,
         IFileVersionProvider fileVersionProvider)
     {
-        _options = options.Value;
+        _options = options.CurrentValue;
         _fileVersionProvider = fileVersionProvider;
 
         _builtResources = new Dictionary<string, ResourceRequiredContext[]>(StringComparer.OrdinalIgnoreCase);

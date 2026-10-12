@@ -28,13 +28,13 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         IContainerService containerService,
         IUpdateModelAccessor updateModelAccessor,
         IShapeFactory shapeFactory,
-        IOptions<PagerOptions> pagerOptions)
+        IOptionsMonitor<PagerOptions> pagerOptions)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _containerService = containerService;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)

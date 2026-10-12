@@ -41,7 +41,7 @@ public sealed class AdminController : Controller
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer,
         INotifier notifier,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory)
     {
         _logger = logger;
@@ -49,7 +49,7 @@ public sealed class AdminController : Controller
         _placementsManager = placementsManager;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
 
         H = htmlLocalizer;
         S = stringLocalizer;

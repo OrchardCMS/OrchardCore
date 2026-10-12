@@ -66,7 +66,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
     [Admin("Contents/ContentItems/{contentTypeId?}", "ListContentItems")]
     public async Task<IActionResult> List(
-        [FromServices] IOptions<PagerOptions> pagerOptions,
+        [FromServices] IOptionsMonitor<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IContentsAdminListQueryService contentsAdminListQueryService,
         [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
@@ -229,10 +229,10 @@ public sealed class AdminController : Controller, IUpdateModel
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value);
+        var pager = new Pager(pagerParameters, pagerOptions.CurrentValue);
 
-        var itemsPerPage = pagerOptions.Value.MaxPagedCount > 0
-            ? pagerOptions.Value.MaxPagedCount
+        var itemsPerPage = pagerOptions.CurrentValue.MaxPagedCount > 0
+            ? pagerOptions.CurrentValue.MaxPagedCount
             : await query.CountAsync();
 
         var pagerShape = await shapeFactory.PagerAsync(pager, itemsPerPage, options.RouteValues);

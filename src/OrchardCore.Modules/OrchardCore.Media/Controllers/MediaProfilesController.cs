@@ -36,7 +36,7 @@ public sealed class MediaProfilesController : Controller
         IAuthorizationService authorizationService,
         MediaProfilesManager mediaProfilesManager,
         IOptions<MediaOptions> mediaOptions,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         INotifier notifier,
         IShapeFactory shapeFactory,
         IStringLocalizer<MediaProfilesController> stringLocalizer,
@@ -46,7 +46,7 @@ public sealed class MediaProfilesController : Controller
         _authorizationService = authorizationService;
         _mediaProfilesManager = mediaProfilesManager;
         _mediaOptions = mediaOptions.Value;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;
