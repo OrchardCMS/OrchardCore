@@ -1,4 +1,4 @@
-﻿#pragma warning disable CA1707 // Remove the underscores from member name
+#pragma warning disable CA1707 // Remove the underscores from member name
 
 using System.Globalization;
 using Microsoft.AspNetCore.Html;
