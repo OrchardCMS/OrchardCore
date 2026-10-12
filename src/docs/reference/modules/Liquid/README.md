@@ -797,7 +797,7 @@ Input
 
 ### `layout`
 
-Sets the layout of a view.
+Sets the layout of a view, or of the page from a shape template.
 
 Input
 

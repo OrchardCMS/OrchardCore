@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Encodings.Web;
 using Fluid;
@@ -27,22 +28,39 @@ internal static class LiquidViewTemplate
     public const string ViewExtension = ".liquid";
     private static readonly MemoryCache s_cache = new(new MemoryCacheOptions());
 
+    // Maps the paths of the Razor pages to the paths of their Liquid templates, to not allocate them on each rendering.
+    private static readonly ConcurrentDictionary<string, string> s_templatePaths = new(StringComparer.Ordinal);
+
     internal static Task RenderAsync(RazorPage<dynamic> page)
     {
         var services = page.Context.RequestServices;
-        var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
+        var path = s_templatePaths.GetOrAdd(page.ViewContext.ExecutingFilePath, static path => Path.ChangeExtension(path, ViewExtension));
 
-        var templateTask = ParseAsync(path, services, s_cache);
+        var templateTask = GetTemplateAsync(path, services);
 
         return !templateTask.IsCompletedSuccessfully
             ? Awaited(templateTask, page, services)
             : RenderAsyncCore(page, services, templateTask.Result);
 
-        static async Task Awaited(Task<IFluidTemplate> templateTask, RazorPage<dynamic> page, IServiceProvider services)
+        static async Task Awaited(ValueTask<IFluidTemplate> templateTask, RazorPage<dynamic> page, IServiceProvider services)
         {
             var template = await templateTask;
             await RenderAsyncCore(page, services, template);
         }
+    }
+
+    /// <summary>
+    /// Gets the parsed Liquid template of a given file path.
+    /// </summary>
+    internal static ValueTask<IFluidTemplate> GetTemplateAsync(string path, IServiceProvider services)
+    {
+        // Fast path when the template is already parsed, to not allocate the closure and the task of 'GetOrCreateAsync()'.
+        if (s_cache.TryGetValue(path, out IFluidTemplate cachedTemplate))
+        {
+            return ValueTask.FromResult(cachedTemplate);
+        }
+
+        return new ValueTask<IFluidTemplate>(ParseAsync(path, services, s_cache));
     }
 
     private static async Task RenderAsyncCore(RazorPage<dynamic> page, IServiceProvider services, IFluidTemplate template)
@@ -251,14 +269,8 @@ public static class LiquidTemplateContextExtensions
 
         context.EnterChildScope();
 
-        var viewLocalizer = context.Services.GetRequiredService<IViewLocalizer>();
-
-        if (viewLocalizer is IViewContextAware contextable)
-        {
-            contextable.Contextualize(viewContext);
-        }
-
-        context.SetValue("ViewLocalizer", new ObjectValue(viewLocalizer));
+        // The view localizer is only resolved and contextualized if the template localizes something.
+        context.SetValue("ViewLocalizer", new ObjectValue(new LazyViewLocalizer(context.Services, viewContext)));
 
         if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
         {
