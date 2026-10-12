@@ -1,4 +1,3 @@
-@using System.Globalization
 @using OrchardCore.DisplayManagement.Views
 @using OrchardCore.RateLimits.Models
 
@@ -7,19 +6,20 @@
 @{
     var policy = Model.Value;
 
+    // Rendered as they are: a localized text is already HTML, and the localizer encodes its arguments.
     var target = policy.Scope switch
     {
-        RateLimitPolicyScope.Global => T["Applies to every tenant request."].Value,
-        RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, T["Matches requests starting with '{0}'."].Value, policy.Path),
-        RateLimitPolicyScope.Group => string.Format(CultureInfo.CurrentCulture, T["Matches endpoints in the '{0}' group."].Value, policy.GroupName),
-        _ => string.Empty,
+        RateLimitPolicyScope.Global => T["Applies to every tenant request."],
+        RateLimitPolicyScope.Endpoint => T["Matches requests starting with '{0}'.", policy.Path],
+        RateLimitPolicyScope.Group => T["Matches endpoints in the '{0}' group.", policy.GroupName],
+        _ => null,
     };
 }
 
-@if (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(policy.Description))
+@if (target != null || !string.IsNullOrWhiteSpace(policy.Description))
 {
     <div class="admin-list-secondary">
-        @if (!string.IsNullOrWhiteSpace(target))
+        @if (target != null)
         {
             <div>@target</div>
         }

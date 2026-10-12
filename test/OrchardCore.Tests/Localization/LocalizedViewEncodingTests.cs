@@ -13,11 +13,13 @@ using Microsoft.Extensions.Compliance.Redaction;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Features.Models;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.RateLimits.Models;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
@@ -106,6 +108,24 @@ public class LocalizedViewEncodingTests
         var label = Assert.Single(toolbarDocument.QuerySelectorAll(".list-group-select-all-label"));
         Assert.Equal($"Select all __COUNT__ features grouped under {category} category", label.GetAttribute("data-select-all-text"));
         Assert.Equal($"Select all 0 features grouped under {category} category", label.TextContent.Trim());
+    }
+
+    [Fact]
+    public async Task RateLimitPolicyDescription_LocalizedTarget_EncodesOnce()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        var model = new ShapeViewModel<RateLimitPolicy>(new RateLimitPolicy
+        {
+            Scope = RateLimitPolicyScope.Endpoint,
+            Path = "/api?a=1&b=<2>",
+        });
+
+        var html = await RenderAsync(context, "OrchardCore.RateLimits", "RateLimitPolicy.Description.SummaryAdmin", model, "Matches requests starting with '{0}'.", "Matches requests &amp; paths starting with &quot;{0}&quot;.");
+        using var document = new HtmlParser().ParseDocument(html);
+
+        Assert.Equal("Matches requests & paths starting with \"/api?a=1&b=<2>\".", Assert.Single(document.QuerySelectorAll(".admin-list-secondary div")).TextContent);
     }
 
     [Theory]
