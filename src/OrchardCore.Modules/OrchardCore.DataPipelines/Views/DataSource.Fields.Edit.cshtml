@@ -68,6 +68,21 @@
         </div>
     </div>
 
+    <div class="ocat-wrapper" asp-validation-class-for="IncrementalField">
+        <label asp-for="IncrementalField" class="ocat-label">@T["Read only new rows"]</label>
+        <div class="ocat-end">
+            <select asp-for="IncrementalField" class="form-select">
+                <option value="">@T["No, read every row"]</option>
+                @foreach (var field in Model.AvailableFields.Where(field => DataValues.IsNumeric(field.Type) || DataValues.IsTemporal(field.Type)))
+                {
+                    <option value="@field.Name" selected="@(field.Name == Model.IncrementalField)">@T["By {0}", field.DisplayName]</option>
+                }
+            </select>
+            <span asp-validation-for="IncrementalField"></span>
+            <span class="hint">@T["Each successful run keeps the largest value of the field it read, and the next run reads only the rows with a larger value, such as the items modified since the last run. Use a field that grows whenever a row is added or changed. A preview reads every row."]</span>
+        </div>
+    </div>
+
     <div class="ocat-wrapper">
         <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
         <div class="ocat-end">

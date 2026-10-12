@@ -10,6 +10,7 @@ namespace OrchardCore.DataPipelines.Steps;
 public sealed class DataPipelineRunContext
 {
     private readonly ConcurrentQueue<DataPipelineDelivery> _deliveries = new();
+    private readonly List<Func<IServiceProvider, CancellationToken, Task>> _succeededActions = [];
     private int _fileCount;
 
     /// <summary>
@@ -86,6 +87,49 @@ public sealed class DataPipelineRunContext
     /// <see cref="Services"/>.
     /// </summary>
     public Func<Models.DataPipelineStep, Func<IServiceProvider, Task>, Task> StepScope { get; set; }
+
+    /// <summary>
+    /// Gets or sets the values the pipeline keeps from one run to the next. The run starts with the values the last
+    /// successful run saved, and saves its changes when it succeeds. Steps usually use
+    /// <see cref="DataPipelineStepContext.GetState{T}(string)"/> and
+    /// <see cref="DataPipelineStepContext.SetState{T}(string, T)"/>, which keep the values of each step apart.
+    /// </summary>
+    public DataPipelineState State { get; set; } = new();
+
+    /// <summary>
+    /// Gets the actions that run once the run succeeded, in the order they were added.
+    /// </summary>
+    public IReadOnlyList<Func<IServiceProvider, CancellationToken, Task>> SucceededActions
+    {
+        get
+        {
+            lock (_succeededActions)
+            {
+                return [.. _succeededActions];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Adds an action that runs once every step succeeded and before the state is saved, such as to remove the changes
+    /// a source read from a queue. A failed or cancelled run doesn't run it, so what it confirms is read again by the
+    /// next run. A preview never runs it. When an action fails, the run fails and the state isn't saved.
+    /// </summary>
+    /// <param name="action">The action, which receives the services of the run.</param>
+    public void OnSucceeded(Func<IServiceProvider, CancellationToken, Task> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        if (IsPreview)
+        {
+            return;
+        }
+
+        lock (_succeededActions)
+        {
+            _succeededActions.Add(action);
+        }
+    }
 
     /// <summary>
     /// Gets what the run delivered so far, such as the files it saved or sent.

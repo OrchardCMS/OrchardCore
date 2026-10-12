@@ -33,6 +33,14 @@ public sealed class DataSourceStepSettings
     public int MaxRows { get; set; }
 
     /// <summary>
+    /// Gets or sets the field that makes the step read only the rows that are new or changed since the last successful
+    /// run, such as the date a record was last modified, or an identifier that only grows. Each successful run keeps
+    /// the largest value it read, and the next run reads the rows whose value is larger. When empty, every run reads
+    /// every row.
+    /// </summary>
+    public string IncrementalField { get; set; }
+
+    /// <summary>
     /// Gets or sets the values of the parameters of a data set that takes them, such as a saved query.
     /// </summary>
     public Dictionary<string, string> Parameters { get; set; } = [];

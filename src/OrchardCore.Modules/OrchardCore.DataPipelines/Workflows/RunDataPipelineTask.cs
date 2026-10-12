@@ -9,7 +9,9 @@ namespace OrchardCore.DataPipelines.Workflows;
 
 /// <summary>
 /// Queues a run of the published version of a data pipeline. When it waits for the run, the workflow halts and resumes
-/// once the run ends, with the run in the <c>DataPipelineRun</c> output and as the last result.
+/// once the run ends, with the run in the <c>DataPipelineRun</c> output and as the last result. With
+/// <see cref="SkipWhenActive"/>, it doesn't queue a run while one of the pipeline is queued or running, such as when a
+/// timer starts the workflow more often than a run lasts.
 /// </summary>
 public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
 {
@@ -58,6 +60,16 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the task doesn't queue a run while one of the pipeline is queued or
+    /// running, and continues with the Skipped outcome instead.
+    /// </summary>
+    public bool SkipWhenActive
+    {
+        get => GetProperty(() => false);
+        set => SetProperty(value);
+    }
+
+    /// <summary>
     /// Gets or sets the parameters of the run, one <c>name=value</c> per line, as a Liquid template. Steps read them
     /// with the <c>{Parameter:name}</c> placeholder.
     /// </summary>
@@ -68,9 +80,13 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => WaitForCompletion
+    {
+        var outcomes = WaitForCompletion
             ? Outcome(S["Succeeded"], S["Failed"])
             : Outcome(S["Queued"], S["Failed"]);
+
+        return SkipWhenActive ? outcomes.Append(new Outcome(S["Skipped"])) : outcomes;
+    }
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -83,6 +99,13 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
                 : S["The data pipeline '{0}' isn't published, or is disabled.", pipeline.Name].Value;
 
             return Outcome("Failed");
+        }
+
+        if (SkipWhenActive && await _runManager.HasActiveRunAsync(pipeline.PipelineId))
+        {
+            workflowContext.LastResult = S["A run of the data pipeline '{0}' is already queued or running.", pipeline.Name].Value;
+
+            return Outcome("Skipped");
         }
 
         var activityId = activityContext.ActivityRecord.ActivityId;

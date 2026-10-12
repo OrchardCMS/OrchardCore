@@ -93,6 +93,20 @@ public sealed class DataPipelineRunManager
     }
 
     /// <summary>
+    /// Tells whether a run of a pipeline is queued or running.
+    /// </summary>
+    /// <param name="pipelineId">The identifier of the pipeline.</param>
+    /// <returns><see langword="true"/> when a run is queued or running.</returns>
+    public async Task<bool> HasActiveRunAsync(string pipelineId)
+    {
+        var queued = nameof(DataPipelineRunStatus.Queued);
+        var running = nameof(DataPipelineRunStatus.Running);
+
+        return await _session.QueryIndex<DataPipelineRunIndex>(index => index.PipelineId == pipelineId && (index.Status == queued || index.Status == running))
+            .FirstOrDefaultAsync() is not null;
+    }
+
+    /// <summary>
     /// Finds a run.
     /// </summary>
     /// <param name="runId">The run.</param>

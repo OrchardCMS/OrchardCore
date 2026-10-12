@@ -18,6 +18,7 @@ public sealed class RunDataPipelineTaskDisplayDriver : ActivityDisplayDriver<Run
     {
         model.PipelineId = activity.PipelineId;
         model.WaitForCompletion = activity.WaitForCompletion;
+        model.SkipWhenActive = activity.SkipWhenActive;
         model.Parameters = activity.Parameters.Expression;
         model.Pipelines = (await _pipelineManager.ListAsync()).Select(pipeline => (pipeline.PipelineId, pipeline.Name)).ToList();
     }
@@ -26,6 +27,7 @@ public sealed class RunDataPipelineTaskDisplayDriver : ActivityDisplayDriver<Run
     {
         activity.PipelineId = model.PipelineId;
         activity.WaitForCompletion = model.WaitForCompletion;
+        activity.SkipWhenActive = model.SkipWhenActive;
         activity.Parameters = new WorkflowExpression<string>(model.Parameters?.Trim());
     }
 }
@@ -35,6 +37,8 @@ public class RunDataPipelineTaskViewModel
     public string PipelineId { get; set; }
 
     public bool WaitForCompletion { get; set; }
+
+    public bool SkipWhenActive { get; set; }
 
     public string Parameters { get; set; }
 

@@ -48,6 +48,7 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
             })
             .ToList();
         model.MaxRows = settings.MaxRows;
+        model.IncrementalField = settings.IncrementalField;
         model.Parameters = string.Join(System.Environment.NewLine, settings.Parameters.Select(pair => $"{pair.Key}={pair.Value}"));
 
         var context = new DataSourceContext { User = _httpContextAccessor.HttpContext?.User };
@@ -87,6 +88,7 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
             settings.DataSet = dataSet;
             settings.Fields = [];
             settings.Filters = [];
+            settings.IncrementalField = null;
             _editorContext.ReloadEditor = true;
         }
         else
@@ -112,6 +114,16 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
 
         settings.MaxRows = Math.Max(0, model.MaxRows);
         settings.Parameters = ParseParameters(model.Parameters);
+
+        if (source == settings.Source && dataSet == settings.DataSet)
+        {
+            settings.IncrementalField = string.IsNullOrWhiteSpace(model.IncrementalField) ? null : model.IncrementalField;
+
+            if (settings.IncrementalField is not null && settings.MaxRows > 0)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IncrementalField), S["A step that reads only the new rows reads all of them: set the most rows to 0."]);
+            }
+        }
 
         return ValueTask.CompletedTask;
     }
@@ -143,6 +155,8 @@ public class DataSourceStepViewModel
     public List<DataSourceFilterRow> Filters { get; set; } = [];
 
     public int MaxRows { get; set; }
+
+    public string IncrementalField { get; set; }
 
     public string Parameters { get; set; }
 

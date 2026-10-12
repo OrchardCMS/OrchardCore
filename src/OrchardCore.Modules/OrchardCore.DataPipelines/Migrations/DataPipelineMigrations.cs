@@ -73,6 +73,24 @@ public sealed class DataPipelineMigrations : DataMigration
             .CreateIndex("IDX_DataPipelineSharedFileRecipientIndex_DocumentId", "DocumentId", "UserId", "ExpiresUtc")
         );
 
-        return 1;
+        await CreateStateIndexAsync();
+
+        return 2;
+    }
+
+    public async Task<int> UpdateFrom1Async()
+    {
+        await CreateStateIndexAsync();
+
+        return 2;
+    }
+
+    private async Task CreateStateIndexAsync()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<DataPipelineStateIndex>(table => table
+            .Column<string>("PipelineId", column => column.WithLength(DataPipelineIndex.MaxIdLength)));
+
+        await SchemaBuilder.AlterIndexTableAsync<DataPipelineStateIndex>(table => table
+            .CreateIndex("IDX_DataPipelineStateIndex_DocumentId", "DocumentId", "PipelineId"));
     }
 }

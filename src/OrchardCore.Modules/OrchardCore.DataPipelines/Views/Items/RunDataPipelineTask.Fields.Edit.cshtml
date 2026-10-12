@@ -32,3 +32,13 @@
         </div>
     </div>
 </div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="SkipWhenActive" />
+            <label class="form-check-label" asp-for="SkipWhenActive">@T["Skip when a run is already queued or running"]</label>
+            <span class="hint dashed">@T["The workflow then continues with the Skipped outcome instead of queuing another run, such as when a timer starts it more often than a run lasts."]</span>
+        </div>
+    </div>
+</div>

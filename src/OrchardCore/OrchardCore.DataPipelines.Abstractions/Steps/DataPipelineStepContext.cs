@@ -127,4 +127,36 @@ public sealed class DataPipelineStepContext
 
         LogInformation(description);
     }
+
+    /// <summary>
+    /// Gets a value the step kept from the last successful run, such as the last value it read.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="key">The key of the value, unique within the step.</param>
+    /// <returns>The value, or the default value of <typeparamref name="T"/> when there is none.</returns>
+    public T GetState<T>(string key)
+        => Run.State.Get<T>(GetStateKey(Step.StepId, key));
+
+    /// <summary>
+    /// Sets a value the step keeps for the next runs. It is saved when the run succeeds, and never by a preview.
+    /// </summary>
+    /// <typeparam name="T">The type of the value, serialized as JSON.</typeparam>
+    /// <param name="key">The key of the value, unique within the step.</param>
+    /// <param name="value">The value; <see langword="null"/> removes it.</param>
+    public void SetState<T>(string key, T value)
+        => Run.State.Set(GetStateKey(Step.StepId, key), value);
+
+    /// <summary>
+    /// Gets the key of a value of a step in <see cref="DataPipelineRunContext.State"/>.
+    /// </summary>
+    /// <param name="stepId">The identifier of the step.</param>
+    /// <param name="key">The key of the value within the step.</param>
+    /// <returns>The key.</returns>
+    public static string GetStateKey(string stepId, string key)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(stepId);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        return $"{stepId}/{key}";
+    }
 }

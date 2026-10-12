@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DataPipelines.Indexes;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.Entities;
@@ -17,12 +18,24 @@ public sealed class DataPipelineManager
     private readonly ISession _session;
     private readonly IIdGenerator _idGenerator;
     private readonly IClock _clock;
+    private readonly DataPipelineStateManager _stateManager;
+    private readonly IEnumerable<IDataPipelineHandler> _handlers;
+    private readonly ILogger _logger;
 
-    public DataPipelineManager(ISession session, IIdGenerator idGenerator, IClock clock)
+    public DataPipelineManager(
+        ISession session,
+        IIdGenerator idGenerator,
+        IClock clock,
+        DataPipelineStateManager stateManager,
+        IEnumerable<IDataPipelineHandler> handlers,
+        ILogger<DataPipelineManager> logger)
     {
         _session = session;
         _idGenerator = idGenerator;
         _clock = clock;
+        _stateManager = stateManager;
+        _handlers = handlers;
+        _logger = logger;
     }
 
     /// <summary>
@@ -211,6 +224,7 @@ public sealed class DataPipelineManager
         pipeline.ModifiedUtc = now;
 
         await _session.SaveAsync(pipeline);
+        await _handlers.InvokeAsync((handler, pipeline, version) => handler.PublishedAsync(pipeline, version), pipeline, version, _logger);
 
         return version;
     }
@@ -286,7 +300,7 @@ public sealed class DataPipelineManager
     }
 
     /// <summary>
-    /// Deletes a pipeline, its versions and its runs.
+    /// Deletes a pipeline, its versions, its runs and its state.
     /// </summary>
     /// <param name="pipeline">The pipeline.</param>
     /// <returns>A task that completes when everything is deleted.</returns>
@@ -306,7 +320,11 @@ public sealed class DataPipelineManager
             _session.Delete(run);
         }
 
+        await _stateManager.ClearAsync(pipelineId);
+
         _session.Delete(pipeline);
+
+        await _handlers.InvokeAsync((handler, pipeline) => handler.DeletedAsync(pipeline), pipeline, _logger);
     }
 
     /// <summary>

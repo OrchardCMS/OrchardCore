@@ -103,7 +103,7 @@ The **Data** tab runs the pipeline up to the selected step, with the draft's set
 
 | Step | Ports | Settings |
 |------|-------|----------|
-| **Read a data source** (`DataSource`) | Out: rows | The **data set** to read, from any [data source](../DataSources/README.md), such as a content type, the users, or a saved query. The **fields** to read, in order (none reads every field). **Filters** that the rows must all match, with the [operators](../DataSources/README.md#filter-operators) of data sources; dates are written `yyyy-MM-dd` and compared in UTC. The **most rows** to read (0 reads every row). The **parameters** of a data set that takes them, such as a saved query, one `name=value` per line. Parameter and filter values can use [placeholders](#file-names-and-texts), such as `{Parameter:Since}`. |
+| **Read a data source** (`DataSource`) | Out: rows | The **data set** to read, from any [data source](../DataSources/README.md), such as a content type, the users, or a saved query. The **fields** to read, in order (none reads every field). **Filters** that the rows must all match, with the [operators](../DataSources/README.md#filter-operators) of data sources; dates are written `yyyy-MM-dd` and compared in UTC. The **most rows** to read (0 reads every row). The **parameters** of a data set that takes them, such as a saved query, one `name=value` per line. Parameter and filter values can use [placeholders](#file-names-and-texts), such as `{Parameter:Since}`. **Read only new rows**, by a number or date field: see [Incremental runs](#incremental-runs). |
 | **Read a media file** (`ReadMediaFile`) | Out: rows | The path of a CSV, Excel, JSON or JSON Lines **file** of the media library, and its **format** (inferred from the extension by default). Whether the first row holds the names of the columns (CSV, Excel), the CSV **delimiter**, and the **worksheet** of a workbook (the first one by default). Available when the Media feature is enabled. |
 
 The **Read a data source** step reads the data with the access of the user the run is for: a data set this user may not read is reported as missing. **Read a media file** requires this user to be allowed to manage the media of the file's folder.
@@ -212,6 +212,26 @@ Runs execute in the background, so a long run neither delays a response nor hold
 - A step that fails stops the run.
 - The files a run creates, and the rows its steps write to temporary files, are kept in a temporary folder of the tenant (`App_Data/Sites/{TenantName}/DataPipelines/Runs/{RunId}`), deleted when the run ends.
 
+### Incremental runs
+
+A pipeline can deliver only what changed since its last successful run, such as to keep a copy of the data up to date in another system without sending every row again.
+
+- **Read only new rows**, in the **Read a data source** step, takes a number or date field whose value grows whenever a row is added or changed, such as **Modified** (`ModifiedUtc`) for content items. Each successful run keeps the largest value of the field it read, and the next run reads only the rows with a larger value. The first run reads every row.
+- What a run keeps is saved only when the run succeeds: a failed or cancelled run doesn't move it, so the next run reads the same rows again. A destination that may receive the same rows twice, such as after a failure, should update them by a key rather than add them again.
+- A step that reads only new rows reads all of them, so it can't also limit the rows it reads. When it changes the data source, the data set or the field it reads by, it starts over.
+- A preview reads every row, and never changes what the runs keep.
+- **Start over**, in the **Actions** menu of a pipeline, forgets what its runs kept, so its next run reads every row again, such as after a destination was emptied. It isn't available while a run of the pipeline is queued or running.
+
+The field must reflect every change: a row changed without changing the field isn't read again, and a row that gets a value smaller than the largest value already read, such as one saved by a long transaction that started before the last run, isn't read. When every change must be delivered, read them from a queue of changes instead, with a data source of your own: see [Building an incremental export](#building-an-incremental-export).
+
+Steps of other modules keep their own values the same way: see [Keeping values between runs](#keeping-values-between-runs).
+
+### Scheduling runs
+
+Pipelines run on a schedule with a workflow: a **Timer Event** starts the workflow on a cron schedule, and the [Run Data Pipeline Task](#run-data-pipeline-task) runs the pipeline. The workflow can do more, such as notify someone when the run fails, or pass the run parameters.
+
+When the timer fires more often than a run lasts, enable **Skip when a run is already queued or running** on the task, so that runs don't pile up in the queue: the workflow continues with the **Skipped** outcome instead.
+
 ### Run history
 
 **Tools** > **Data Pipelines** > **Run History** lists the runs of every pipeline, the most recent first, with their status (queued, running, succeeded, failed or cancelled), their version, when they were queued, how long they took, and what started them and who. The runs can be searched by the name of their pipeline and filtered by status; **Run history**, in the **Actions** menu of a pipeline, lists the runs of that pipeline. The page of a run shows:
@@ -237,6 +257,7 @@ Queues a run of the published version of a pipeline. The run executes in the bac
 |---------|-------------|
 | Data pipeline | The pipeline to run. |
 | Parameters | Values passed to the run, one `name=value` per line, as a Liquid template, such as `Since={{ Workflow.Input.Since }}`. Steps read them with the `{Parameter:name}` [placeholder](#file-names-and-texts). |
+| Skip when a run is already queued or running | Disabled by default. When a run of the pipeline is queued or running, the task doesn't queue another one, and continues with the **Skipped** outcome, such as when a timer starts the workflow more often than a run lasts. |
 | Wait for the run to end | Enabled by default. The workflow halts until the run ends, then continues with the **Succeeded** outcome, or with **Failed** when the run failed or was cancelled. The run is the last result, and the `DataPipelineRun` output. Otherwise the workflow continues at once with the **Queued** outcome, and the identifier of the run as the last result. |
 
 The task takes the **Failed** outcome at once when the pipeline doesn't exist, was never published, or is disabled.
@@ -657,6 +678,71 @@ public sealed class Startup : StartupBase
 
 `AddDataPipelineStepType<TStepType>()`, from the `OrchardCore.DataPipelines.Core` package, registers a step type without an editor.
 
+### Keeping values between runs
+
+A step keeps values from one run to the next with `GetState` and `SetState` on its `DataPipelineStepContext`, such as how far it read, or the identifier a remote system gave to what the step created there. A run starts with the values the last successful run saved; the values a run sets are saved only when it succeeds, and never by a preview. The values of each step are kept apart, and serialized as JSON.
+
+```csharp
+public override async Task ExecuteAsync(DataPipelineStepContext context)
+{
+    // The identifier the remote system gave to the data set this step created on the first run.
+    var dataSetId = context.GetState<string>("remoteDataSetId");
+
+    if (dataSetId is null)
+    {
+        dataSetId = await _client.CreateDataSetAsync(context.CancellationToken);
+
+        // Saved when the run succeeds.
+        context.SetState("remoteDataSetId", dataSetId);
+    }
+
+    // ...
+}
+```
+
+`context.Run.State` holds the values of every step. **Start over**, in the **Actions** menu of a pipeline, clears them, and so does `DataPipelineStateManager.ClearAsync(pipelineId)`.
+
+### Confirming work when a run succeeds
+
+`context.Run.OnSucceeded(...)` adds an action that runs once every step of the run succeeded, before the values of the run are saved, such as to remove the entries a source read from a queue of changes. A failed or cancelled run doesn't run it, so the next run reads the same entries again; a preview never runs it. When an action fails, the run fails and its values aren't saved.
+
+```csharp
+var ids = new List<long>();
+
+// ... read the entries, and remember their identifiers.
+
+context.Run.OnSucceeded(async (services, cancellationToken) =>
+{
+    // The services of a scope of the tenant, committed when the action ends.
+    await services.GetRequiredService<ChangeQueue>().RemoveAsync(ids, cancellationToken);
+});
+```
+
+A [data source](../DataSources/README.md#confirming-what-was-read) asks for the same with `query.Context.OnSucceeded(...)`: the **Read a data source** step passes the action to the run once it read every row, and `query.Context.ConsumerId` tells the data source which step of which pipeline reads, so it can keep the changes each one still has to read.
+
+### Reacting to changes of pipelines
+
+Implement `IDataPipelineHandler` to react when a pipeline is published or deleted, such as to prepare what a published pipeline reads, or to remove what a deleted one left behind. Both methods have a default implementation, so a handler implements only what it needs. Handlers are called in the scope of the change, before it is committed.
+
+```csharp
+public sealed class ChangeQueuePipelineHandler : IDataPipelineHandler
+{
+    private readonly ChangeQueue _queue;
+
+    public ChangeQueuePipelineHandler(ChangeQueue queue)
+    {
+        _queue = queue;
+    }
+
+    public Task DeletedAsync(DataPipeline pipeline)
+        => _queue.RemoveAllAsync(pipeline.PipelineId);
+}
+```
+
+```csharp
+services.AddScoped<IDataPipelineHandler, ChangeQueuePipelineHandler>();
+```
+
 ### Reacting to the end of runs
 
 Implement `IDataPipelineRunHandler` to react when a run ends, whether it succeeded, failed or was cancelled. Handlers are called in their own scope, after the run is saved; this is how the workflow activities resume the workflows that wait for a run.
@@ -689,3 +775,14 @@ public sealed class FailedRunHandler : IDataPipelineRunHandler
 ```csharp
 services.AddScoped<IDataPipelineRunHandler, FailedRunHandler>();
 ```
+
+### Building an incremental export
+
+A module can export data incrementally to a system of its own, such as an analytics service, and leave the data, its fields and its filters to the people who design the pipelines. It provides the parts a pipeline doesn't have, and the designer does the rest:
+
+1. **The data**: a [data source](../DataSources/README.md#define-your-own-data-source) that describes every field that can be exported, including the fields it computes or discovers at run time, so that the designer lists them, and users choose them in the **Read a data source** step and filter on them.
+2. **The changes**: either [Read only new rows](#incremental-runs) on a field that grows with every change, or, when every change must be delivered, a data set that reads the changes from a queue the module fills, such as from a content handler, with one entry per record and per consumer (`query.Context.ConsumerId`). It returns the current values of each changed record, with a field that tells whether the record was changed or deleted, and asks to remove the entries it read when the run succeeds, with [`query.Context.OnSucceeded`](../DataSources/README.md#confirming-what-was-read), so a failed run reads them again. An [`IDataPipelineHandler`](#reacting-to-changes-of-pipelines) removes the entries of a deleted pipeline.
+3. **The delivery**: a [destination step](#adding-a-step-type) that sends the rows to the system, updating and deleting them by a key, so that a repeated run doesn't duplicate them. It [keeps](#keeping-values-between-runs) what the system returns, such as the identifier of the data set it created, and the fields it created it with, so it can tell when to send everything again.
+4. **The schedule**: a [workflow](#scheduling-runs) with a timer, and the Run Data Pipeline Task with **Skip when a run is already queued or running**.
+
+Users then choose the fields to export and rename them with **Select fields**, filter the rows with the filters of the source or with **Filter rows**, add [calculated fields](#writing-formulas), and follow each run, its rows and its errors in the [run history](#run-history). One run of a pipeline executes at a time, with the access of the user who published the pipeline, and the secrets of the destination are [encrypted](#secrets).

@@ -40,9 +40,11 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<DataPipelineVersionIndexProvider>();
         services.AddIndexProvider<DataPipelineRunIndexProvider>();
         services.AddIndexProvider<DataPipelineSharedFileIndexProvider>();
+        services.AddIndexProvider<DataPipelineStateIndexProvider>();
 
         services.AddScoped<DataPipelineManager>();
         services.AddScoped<DataPipelineRunManager>();
+        services.AddScoped<DataPipelineStateManager>();
         services.AddScoped<DataPipelineRunExecutor>();
         services.AddScoped<DataPipelineUserResolver>();
         services.AddScoped<DataPipelineEditorContext>();

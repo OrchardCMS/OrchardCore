@@ -156,6 +156,7 @@ public sealed class DataPipelineRunExecutor
 
                 // Steps run at the same time, so each one gets its own scope, and its own database session.
                 StepScope = (step, work) => ShellScope.UsingChildScopeAsync(scope => work(scope.ServiceProvider)),
+                State = await LoadStateAsync(queued.PipelineId),
             };
 
             var execution = _executor.ExecuteAsync(queued.Definition, context, observer);
@@ -177,6 +178,11 @@ public sealed class DataPipelineRunExecutor
             }
 
             result = await execution;
+
+            if (result.Status == DataPipelineRunStatus.Succeeded)
+            {
+                await CommitAsync(queued.PipelineId, context, result, cancellation.Token);
+            }
         }
         catch (Exception ex)
         {
@@ -235,6 +241,43 @@ public sealed class DataPipelineRunExecutor
                 await NotifyAsync(completed);
             }
         }
+    }
+
+    // Runs the actions the steps asked for once the run succeeded, then saves the state of the pipeline. When one
+    // fails, the run fails and the state isn't saved, so the next run reads again what this one couldn't confirm.
+    private async Task CommitAsync(string pipelineId, DataPipelineRunContext context, DataPipelineExecutionResult result, CancellationToken cancellationToken)
+    {
+        try
+        {
+            foreach (var action in context.SucceededActions)
+            {
+                await ShellScope.UsingChildScopeAsync(scope => action(scope.ServiceProvider, cancellationToken));
+            }
+
+            if (context.State.IsChanged)
+            {
+                await ShellScope.UsingChildScopeAsync(scope => scope.ServiceProvider.GetRequiredService<DataPipelineStateManager>().SaveAsync(pipelineId, context.State, context.RunId));
+            }
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "The data pipeline run '{RunId}' delivered its data, but couldn't confirm it.", context.RunId);
+
+            result.Status = DataPipelineRunStatus.Failed;
+            result.Error = $"The run delivered its data, but couldn't confirm it, so the next run starts from the same point: {ex.Message}";
+        }
+    }
+
+    private static async Task<DataPipelineState> LoadStateAsync(string pipelineId)
+    {
+        DataPipelineState state = null;
+
+        await ShellScope.UsingChildScopeAsync(async scope =>
+        {
+            state = await scope.ServiceProvider.GetRequiredService<DataPipelineStateManager>().GetAsync(pipelineId);
+        });
+
+        return state;
     }
 
     private static Task NotifyAsync(DataPipelineRun run)

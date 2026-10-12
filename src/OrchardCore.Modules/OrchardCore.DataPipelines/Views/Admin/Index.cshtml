@@ -94,6 +94,7 @@
                                 <a asp-action="Runs" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item btn-sm">@T["Run history"]</a>
                                 @if (Model.CanManage)
                                 {
+                                    <a asp-action="StartOver" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item btn-sm" data-url-af="UnsafeUrl" data-title="@T["Start over"]" data-message="@T["Forget what the runs of the pipeline '{0}' kept, such as how far its sources read new rows? Its next run starts over, and may deliver data again.", pipeline.Name]" data-ok-text="@T["Start over"]" data-cancel-text="@T["Cancel"]">@T["Start over"]</a>
                                     <div class="dropdown-divider"></div>
                                     <a asp-action="Delete" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete the pipeline '{0}', its versions and its run history?", pipeline.Name]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
                                 }

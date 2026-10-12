@@ -102,6 +102,23 @@ public sealed class DataPipelineSharedFileRecipientIndex : MapIndex
     public DateTime ExpiresUtc { get; set; }
 }
 
+/// <summary>
+/// Indexes the state documents of the pipelines.
+/// </summary>
+public sealed class DataPipelineStateIndex : MapIndex
+{
+    public long DocumentId { get; set; }
+
+    public string PipelineId { get; set; }
+}
+
+public sealed class DataPipelineStateIndexProvider : IndexProvider<DataPipelineStateDocument>
+{
+    public override void Describe(DescribeContext<DataPipelineStateDocument> context)
+        => context.For<DataPipelineStateIndex>()
+            .Map(state => new DataPipelineStateIndex { PipelineId = state.PipelineId });
+}
+
 public sealed class DataPipelineIndexProvider : IndexProvider<DataPipeline>
 {
     public override void Describe(DescribeContext<DataPipeline> context)

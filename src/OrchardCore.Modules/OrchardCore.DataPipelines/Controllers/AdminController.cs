@@ -25,6 +25,7 @@ public sealed class AdminController : Controller
 
     private readonly DataPipelineManager _pipelineManager;
     private readonly DataPipelineRunManager _runManager;
+    private readonly DataPipelineStateManager _stateManager;
     private readonly DataPipelineSharedFileManager _sharedFileManager;
     private readonly IDataPipelineStepTypeManager _stepTypeManager;
     private readonly OrchardCore.Modules.IClock _clock;
@@ -38,6 +39,7 @@ public sealed class AdminController : Controller
     public AdminController(
         DataPipelineManager pipelineManager,
         DataPipelineRunManager runManager,
+        DataPipelineStateManager stateManager,
         DataPipelineSharedFileManager sharedFileManager,
         IDataPipelineStepTypeManager stepTypeManager,
         OrchardCore.Modules.IClock clock,
@@ -50,6 +52,7 @@ public sealed class AdminController : Controller
     {
         _pipelineManager = pipelineManager;
         _runManager = runManager;
+        _stateManager = stateManager;
         _sharedFileManager = sharedFileManager;
         _stepTypeManager = stepTypeManager;
         _clock = clock;
@@ -189,6 +192,36 @@ public sealed class AdminController : Controller
 
         await _pipelineManager.DeleteAsync(pipeline);
         await _notifier.SuccessAsync(H["The pipeline '{0}' was deleted.", pipeline.Name]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [Admin("DataPipelines/{pipelineId}/StartOver", "DataPipelinesStartOver")]
+    public async Task<IActionResult> StartOver(string pipelineId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines))
+        {
+            return Forbid();
+        }
+
+        var pipeline = await _pipelineManager.GetAsync(pipelineId);
+
+        if (pipeline is null)
+        {
+            return NotFound();
+        }
+
+        // A run that ends would save its state again.
+        if (await _runManager.HasActiveRunAsync(pipelineId))
+        {
+            await _notifier.ErrorAsync(H["The pipeline '{0}' is running: start it over once its run ended.", pipeline.Name]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        await _stateManager.ClearAsync(pipelineId);
+        await _notifier.SuccessAsync(H["The next run of the pipeline '{0}' starts over, such as reading every row again.", pipeline.Name]);
 
         return RedirectToAction(nameof(Index));
     }

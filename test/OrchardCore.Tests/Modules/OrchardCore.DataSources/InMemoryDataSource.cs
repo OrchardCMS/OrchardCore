@@ -26,6 +26,11 @@ internal sealed class InMemoryDataSource : IDataSource
 
     public Func<DataSourceContext, bool> CanRead { get; set; } = _ => true;
 
+    /// <summary>
+    /// Gets or sets an action run when a query is read, such as to ask the consumer to confirm what it read.
+    /// </summary>
+    public Action<DataSourceQuery> OnRead { get; set; }
+
     public InMemoryDataSource Add(string dataSet, DataField[] fields, params object[][] rows)
     {
         _dataSets[dataSet] = (fields, rows.ToList());
@@ -59,6 +64,7 @@ internal sealed class InMemoryDataSource : IDataSource
     public async IAsyncEnumerable<DataBatch> ReadAsync(DataSourceQuery query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         Queries.Add(query);
+        OnRead?.Invoke(query);
 
         if (!CanRead(query.Context) || !_dataSets.TryGetValue(query.DataSet, out var data))
         {

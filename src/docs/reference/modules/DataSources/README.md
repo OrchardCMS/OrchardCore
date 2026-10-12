@@ -504,6 +504,30 @@ The Data Pipelines Core feature is enabled only as a dependency of other feature
 
 `DataField.WithName(name, displayName)` copies a field under another name, such as when a consumer prefixes the fields of a joined data set, keeping its type, group, description, whether it is an identifier, and the data sets it references.
 
+### Confirming what was read
+
+A data source that reads changes from a queue removes them only once they were delivered. `DataSourceQuery.Context` tells it who reads, and lets it ask to confirm:
+
+- `ConsumerId` is a stable identifier of what reads, such as `{pipelineId}/{stepId}` for a step of a data pipeline, so the data source can keep the changes each consumer still has to read. It is `null` for a preview.
+- `OnSucceeded(action)` adds an action to run once the consumer delivered what the data source read. A run of a data pipeline runs it only when the run succeeds, and only when its step read every row, so the changes of a failed run are read again; a preview never runs it.
+
+```csharp
+protected override async IAsyncEnumerable<ChangedOrder> LoadAsync(DataSourceQuery query, [EnumeratorCancellation] CancellationToken cancellationToken)
+{
+    var changes = await _queue.ListAsync(query.Context.ConsumerId, cancellationToken);
+
+    foreach (var change in changes)
+    {
+        yield return await LoadOrderAsync(change, cancellationToken);
+    }
+
+    var ids = changes.Select(change => change.Id).ToArray();
+
+    // Removed once the run delivered them.
+    query.Context.OnSucceeded((services, token) => services.GetRequiredService<OrderChangeQueue>().RemoveAsync(ids, token));
+}
+```
+
 ### Adding a data source
 
 A data source that doesn't read records one by one, such as one that lists its data sets dynamically or builds its batches itself, implements `IDataSource` directly, and is registered the same way, with `AddDataSource<T>()`. Its data sets are then available to every consumer, such as the **Read a data source** step of data pipelines.
