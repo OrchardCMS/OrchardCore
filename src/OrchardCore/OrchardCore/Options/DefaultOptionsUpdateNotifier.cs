@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Documents;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Options;
@@ -8,10 +9,15 @@ namespace OrchardCore.Environment.Options;
 /// <summary>
 /// Defers distributed options invalidation until the current shell scope has committed successfully.
 /// </summary>
+/// <remarks>
+/// The options are invalidated in the order they were first requested, so an options type that
+/// is built from another one should be requested after it.
+/// </remarks>
 public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
 {
     private readonly IDocumentStore _documentStore;
-    private readonly HashSet<OptionsUpdateRequest> _pendingUpdates = [];
+    private readonly List<OptionsUpdateRequest> _pendingUpdates = [];
+    private readonly HashSet<OptionsUpdateRequest> _requestedUpdates = [];
 
     private bool _commitRegistered;
     private bool _commitSucceeded;
@@ -29,7 +35,12 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
             throw new InvalidOperationException($"'{nameof(IOptionsUpdateNotifier)}' can only be used from an active shell scope.");
         }
 
-        _pendingUpdates.Add(new(typeof(TOptions), name ?? Microsoft.Extensions.Options.Options.DefaultName));
+        var request = new OptionsUpdateRequest(typeof(TOptions), name ?? Microsoft.Extensions.Options.Options.DefaultName);
+
+        if (_requestedUpdates.Add(request))
+        {
+            _pendingUpdates.Add(request);
+        }
 
         if (!_commitRegistered)
         {
@@ -64,10 +75,18 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
                 {
                     await signal.SignalTokenAsync(OptionsUpdateSignal.GetKey(update.OptionsType, update.Name));
                 }
+
+                // Let the other instances of this tenant know that its options have been updated.
+                var shellOptionsEvents = scope.ServiceProvider.GetService<ShellOptionsEvents>();
+                if (shellOptionsEvents is not null)
+                {
+                    await shellOptionsEvents.InvokeUpdatedAsync(scope.ShellContext.Settings.Name);
+                }
             }
             finally
             {
                 _pendingUpdates.Clear();
+                _requestedUpdates.Clear();
                 _commitRegistered = false;
                 _commitSucceeded = false;
                 _deferredTaskAdded = false;

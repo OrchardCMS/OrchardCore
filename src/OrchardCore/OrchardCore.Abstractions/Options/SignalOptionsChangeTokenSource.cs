@@ -8,11 +8,16 @@ namespace OrchardCore.Environment.Options;
 /// Provides an Orchard Core distributed signal-backed <see cref="IOptionsChangeTokenSource{TOptions}"/>
 /// so the default <see cref="IOptionsMonitor{TOptions}"/> can refresh options after an update notification.
 /// </summary>
+/// <remarks>
+/// The change token is triggered either by the key of this options type and name, or by
+/// <see cref="OptionsUpdateSignal.AllKey"/> that invalidates every signal-backed options instance.
+/// </remarks>
 /// <typeparam name="TOptions">The options type to observe.</typeparam>
 public sealed class SignalOptionsChangeTokenSource<TOptions> : IOptionsChangeTokenSource<TOptions>
     where TOptions : class
 {
     private readonly ISignal _signal;
+    private readonly string _key;
 
     /// <summary>
     /// Creates a change-token source for the default options name.
@@ -32,6 +37,7 @@ public sealed class SignalOptionsChangeTokenSource<TOptions> : IOptionsChangeTok
     {
         _signal = signal;
         Name = name ?? Microsoft.Extensions.Options.Options.DefaultName;
+        _key = OptionsUpdateSignal.GetKey(typeof(TOptions), Name);
     }
 
     /// <summary>
@@ -41,5 +47,9 @@ public sealed class SignalOptionsChangeTokenSource<TOptions> : IOptionsChangeTok
 
     /// <inheritdoc />
     public IChangeToken GetChangeToken()
-        => _signal.GetToken(OptionsUpdateSignal.GetKey(typeof(TOptions), Name));
+        => new CompositeChangeToken(
+        [
+            _signal.GetToken(_key),
+            _signal.GetToken(OptionsUpdateSignal.AllKey),
+        ]);
 }

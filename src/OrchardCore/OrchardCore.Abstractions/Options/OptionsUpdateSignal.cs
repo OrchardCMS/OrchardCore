@@ -8,6 +8,12 @@ public static class OptionsUpdateSignal
     private const string Prefix = "OrchardCore.Environment.Options.Update:";
 
     /// <summary>
+    /// The distributed signal key that invalidates every options instance observed through a
+    /// <see cref="SignalOptionsChangeTokenSource{TOptions}"/>, whatever its type and name.
+    /// </summary>
+    public const string AllKey = Prefix + "*";
+
+    /// <summary>
     /// Gets the distributed signal key for the specified options type and name.
     /// </summary>
     /// <param name="optionsType">The options type to invalidate.</param>
