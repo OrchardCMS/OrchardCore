@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Tests.Navigation;
@@ -42,6 +44,32 @@ public class PagerShapesTests
 
         Assert.Empty(ToHtmlString(shapes.Pager_PageSizeSelector(null)));
         Assert.Empty(ToHtmlString(shapes.Pager_PageSizeSelector([])));
+    }
+
+    [Fact]
+    public void ActionLink_Disabled_RendersWithoutHrefAndRel()
+    {
+        var shape = new Shape();
+        shape.Attributes["rel"] = "prev";
+
+        var html = ToHtmlString(PagerShapes.ActionLink(shape, Mock.Of<IUrlHelper>(), "Previous", Disabled: true));
+
+        Assert.Equal("<a>Previous</a>", html);
+    }
+
+    [Fact]
+    public void ActionLink_Enabled_KeepsRel()
+    {
+        var shape = new Shape();
+        shape.Attributes["rel"] = "next";
+
+        var url = new Mock<IUrlHelper>();
+        url.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns("/blog?pagenum=2");
+
+        var html = ToHtmlString(PagerShapes.ActionLink(shape, url.Object, "Next"));
+
+        Assert.Contains("href=\"/blog?pagenum=2\"", html);
+        Assert.Contains("rel=\"next\"", html);
     }
 
     private static PagerShapes CreatePagerShapes()
