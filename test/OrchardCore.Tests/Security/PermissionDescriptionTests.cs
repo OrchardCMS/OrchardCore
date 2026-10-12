@@ -138,7 +138,7 @@ public class PermissionDescriptionTests
 
         return new PortableObjectStringLocalizerFactory(
             localizationManager.Object,
-            Options.Create(new RequestLocalizationOptions()),
+            Mock.Of<IOptionsMonitor<RequestLocalizationOptions>>(monitor => monitor.CurrentValue == new RequestLocalizationOptions()),
             NullLogger<PortableObjectStringLocalizerFactory>.Instance);
     }
 

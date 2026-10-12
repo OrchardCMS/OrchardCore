@@ -46,7 +46,7 @@ public class LocalizationService : ILocalizationService
     {
         await InitializeLocalizationSettingsAsync();
 
-        return _localizationSettings.DefaultCulture ?? s_defaultCulture;
+        return GetDefaultCulture(_localizationSettings);
     }
 
     /// <inheritdocs />
@@ -54,11 +54,16 @@ public class LocalizationService : ILocalizationService
     {
         await InitializeLocalizationSettingsAsync();
 
-        return _localizationSettings.SupportedCultures == null || _localizationSettings.SupportedCultures.Length == 0
-            ? s_supportedCultures
-            : _localizationSettings.SupportedCultures
-            ;
+        return GetSupportedCultures(_localizationSettings);
     }
+
+    internal static string GetDefaultCulture(LocalizationSettings settings)
+        => settings.DefaultCulture ?? s_defaultCulture;
+
+    internal static string[] GetSupportedCultures(LocalizationSettings settings)
+        => settings.SupportedCultures == null || settings.SupportedCultures.Length == 0
+            ? s_supportedCultures
+            : settings.SupportedCultures;
 
     /// <inheritdocs />
     public IEnumerable<CultureInfo> GetAllCulturesAndAliases()

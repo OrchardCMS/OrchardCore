@@ -65,6 +65,12 @@ Cultures can be added during recipes using the settings step. Here is a sample s
 - `/Localization/fr-CA.po`
 - `/Localization/es-MX.po`
 
+## Culture settings
+
+The default culture, the supported cultures and the fallback to parent cultures are configured in **Settings > Localization > Cultures**. Saving these settings applies them to the following requests without reloading the tenant.
+
+These settings are applied to the tenant's `RequestLocalizationOptions` after any other configuration of these options. Custom code that reads the site cultures from these options must inject `IOptionsMonitor<RequestLocalizationOptions>` and read `CurrentValue`, as the value of `IOptions<RequestLocalizationOptions>` isn't updated when the settings change.
+
 ## File format
 
 This article explains how PO files are organized, including plural forms.
