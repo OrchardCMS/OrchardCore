@@ -4,7 +4,7 @@ The Data Pipelines module lets administrators design pipelines that read data, t
 
 Pipelines read their data from the [data sources](../DataSources/README.md) of the site, and their formulas use the [formula language](../DataSources/README.md#formulas) of the Data Pipelines Core feature.
 
-This video shows why data pipelines exist, and how to design, preview, publish, run, automate and extend them:
+This video shows why data pipelines exist, and how to design, preview, publish and run them, deliver only what changed, schedule them with workflows, and extend them:
 
 <video controls preload="metadata" width="100%" poster="videos/data-pipelines.jpg">
     <source src="videos/data-pipelines.mp4" type="video/mp4">
