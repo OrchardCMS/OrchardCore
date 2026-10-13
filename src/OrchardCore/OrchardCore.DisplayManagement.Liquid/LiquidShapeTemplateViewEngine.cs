@@ -72,13 +72,10 @@ public class LiquidShapeTemplateViewEngine : IShapeTemplateViewEngine
 
     private async Task<IHtmlContent> RenderAsyncCore(IFluidTemplate template, LiquidShapeTemplateView view, ViewContext viewContext, DisplayContext displayContext)
     {
-        var viewData = viewContext.ViewData;
-
-        if (!string.Equals(viewData.TemplateInfo.HtmlFieldPrefix, displayContext.HtmlFieldPrefix ?? string.Empty, StringComparison.Ordinal))
-        {
-            viewData = new ViewDataDictionary(viewData);
-            viewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix;
-        }
+        // As when it is rendered by its Razor page as a partial view, the template gets its own view data whose model
+        // is the shape, e.g. for the model expressions of the tag helpers, and whose prefix is the one of the shape.
+        var viewData = new ViewDataDictionary<object>(viewContext.ViewData, displayContext.Value);
+        viewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix;
 
         // Defer the buffer disposing so that a template can be rendered twice.
         var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
