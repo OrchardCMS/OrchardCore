@@ -1,4 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
+using OrchardCore.BackgroundTasks;
+using OrchardCore.Modules;
 using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
@@ -15,7 +18,16 @@ public abstract class CmsRecipeFixture : IAsyncLifetime
 
     protected CmsRecipeFixture()
     {
-        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}");
+        _testFixture = new OrchardTestFixture(
+            instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}",
+            configureOrchardCore: ConfigureOrchardCore);
+    }
+
+    /// <summary>
+    /// Customizes the services of the host started by this fixture, for instance to register test-only services.
+    /// </summary>
+    protected virtual void ConfigureOrchardCore(OrchardCoreBuilder builder)
+    {
     }
 
     public async ValueTask InitializeAsync()
@@ -164,5 +176,26 @@ public sealed class UrlRewritingRulesTestsFixture : CmsRecipeFixture
 public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
 {
     protected override string RecipeName => "PredefinedListEditorTests";
+}
+
+public sealed class BackgroundTasksTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "BackgroundTasksTests";
+
+    protected override void ConfigureOrchardCore(OrchardCoreBuilder builder)
+    {
+        // Load the tasks of the tenant soon after it is set up, and pick up the requested runs quickly.
+        builder.ApplicationServices.PostConfigure<BackgroundServiceOptions>(options =>
+        {
+            options.PollingTime = TimeSpan.FromSeconds(5);
+            options.MinimumIdleTime = TimeSpan.FromSeconds(1);
+        });
+
+        builder.ConfigureServices(services =>
+        {
+            services.AddSingleton<IBackgroundTask, SucceedingTestBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, FailingTestBackgroundTask>();
+        });
+    }
 }
 

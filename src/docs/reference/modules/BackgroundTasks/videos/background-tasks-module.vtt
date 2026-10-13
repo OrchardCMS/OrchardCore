@@ -1,0 +1,221 @@
+WEBVTT
+
+00:00:01.000 --> 00:00:05.376
+Orchard Core runs background tasks to do work on a schedule, such as
+
+00:00:05.376 --> 00:00:10.403
+publishing content at a set time, cleaning caches, or starting timed workflows.
+
+00:00:10.403 --> 00:00:15.547
+The Background Tasks module shows how these tasks run, and lets you control them.
+
+00:00:15.547 --> 00:00:19.273
+In this video, we'll see the list of tasks, run a task on
+
+00:00:19.273 --> 00:00:24.950
+demand, investigate a failure, configure a task, and see how tasks run on several servers.
+
+00:00:29.550 --> 00:00:31.780
+Background tasks run out of sight.
+
+00:00:31.780 --> 00:00:35.514
+Without a place to look, you can't tell when a task last ran,
+
+00:00:35.514 --> 00:00:38.190
+whether it succeeded, or how long it took.
+
+00:00:38.940 --> 00:00:41.216
+You can't tell when it runs next either.
+
+00:00:41.216 --> 00:00:44.680
+And to check a fix, you have to wait for its next scheduled run.
+
+00:00:45.430 --> 00:00:50.511
+The Background Tasks module lists every task of the site with its execution state:
+
+00:00:50.511 --> 00:00:55.246
+the outcome, the duration, and the error of its runs, and when it runs next.
+
+00:00:55.246 --> 00:00:59.230
+And it runs a task on demand, without waiting for its schedule.
+
+00:01:03.406 --> 00:01:06.132
+The Background Tasks page is under Tools.
+
+00:01:06.132 --> 00:01:10.656
+It lists the background tasks of the enabled features, ordered by title.
+
+00:01:11.107 --> 00:01:15.227
+Next to its title, each task shows when its last run started, with
+
+00:01:15.227 --> 00:01:17.230
+its outcome and its duration.
+
+00:01:17.230 --> 00:01:19.747
+A green badge means the run succeeded.
+
+00:01:20.200 --> 00:01:23.786
+The next run comes from the schedule of the task, in the time
+
+00:01:23.786 --> 00:01:25.017
+zone of the site.
+
+00:01:25.017 --> 00:01:28.602
+A task that runs every minute shows its next run in less than
+
+00:01:28.602 --> 00:01:31.170
+a minute, and a weekly task in a few days.
+
+00:01:31.624 --> 00:01:36.268
+The Status filter lists the enabled or disabled tasks, the tasks that are
+
+00:01:36.268 --> 00:01:39.854
+running or queued, and the tasks whose last run failed.
+
+00:01:44.035 --> 00:01:48.141
+To run a task without waiting for its schedule, open its Actions menu,
+
+00:01:48.141 --> 00:01:49.492
+and select Run now.
+
+00:01:49.492 --> 00:01:51.545
+Let's run the Newsletter Sender.
+
+00:01:51.995 --> 00:01:56.759
+The task is queued, and the background service starts it within a second or two.
+
+00:01:56.759 --> 00:01:58.975
+Its badge shows that it's running.
+
+00:01:59.430 --> 00:02:03.830
+While a task is queued or running, Run now is disabled, so the
+
+00:02:03.830 --> 00:02:07.130
+same task doesn't run twice at the same time.
+
+00:02:07.581 --> 00:02:12.052
+The page checks the status of the tasks in the background, and updates
+
+00:02:12.052 --> 00:02:16.170
+a task as soon as its run completes, without reloading the page.
+
+00:02:16.170 --> 00:02:18.641
+Scheduled runs show up the same way.
+
+00:02:22.842 --> 00:02:26.834
+When a run fails, its badge turns red, the number of failed runs
+
+00:02:26.834 --> 00:02:30.712
+appears, and the error message is shown under the description.
+
+00:02:31.166 --> 00:02:35.896
+The Last run failed filter lists only the tasks whose last run failed.
+
+00:02:36.346 --> 00:02:40.206
+Clicking the title of a task opens its details page.
+
+00:02:40.658 --> 00:02:44.823
+The Execution card shows the status of the task, its last run, how
+
+00:02:44.823 --> 00:02:48.757
+long it took, what triggered it, and when its next run is due.
+
+00:02:48.757 --> 00:02:51.938
+It also counts the completed and the failed runs.
+
+00:02:52.391 --> 00:02:55.898
+The Last error card shows the message of the exception.
+
+00:02:55.898 --> 00:03:00.671
+Its details show the full exception, with the stack trace, to find the cause.
+
+00:03:01.124 --> 00:03:05.087
+And the Recent runs list the last runs of the task, with their
+
+00:03:05.087 --> 00:03:07.943
+start time, duration, trigger, and outcome.
+
+00:03:07.943 --> 00:03:11.614
+They show whether a failure is new, or keeps coming back.
+
+00:03:15.792 --> 00:03:18.672
+The Edit button opens the settings of the task.
+
+00:03:19.123 --> 00:03:21.360
+Its schedule is a cron expression.
+
+00:03:21.360 --> 00:03:24.883
+Reset Schedule restores the default schedule of the task.
+
+00:03:25.368 --> 00:03:29.535
+In the Advanced tab, a lock timeout and a lock expiration make the
+
+00:03:29.535 --> 00:03:33.528
+task atomic, so that two servers don't run it at the same time.
+
+00:03:33.980 --> 00:03:38.725
+Back on the list, the Actions menu of a task also enables or disables it.
+
+00:03:38.725 --> 00:03:42.749
+And to act on several tasks at once, select them, and use the
+
+00:03:42.749 --> 00:03:44.610
+Actions menu of the list.
+
+00:03:48.810 --> 00:03:54.235
+When a site runs on several servers, each server runs its own background service.
+
+00:03:54.235 --> 00:03:59.035
+A scheduled task runs on every server, each one following the schedule:
+
+00:03:59.035 --> 00:04:02.900
+with three servers, a daily task runs three times a day.
+
+00:04:03.650 --> 00:04:07.448
+To keep two servers from running a task at the same time, make
+
+00:04:07.448 --> 00:04:11.524
+the task atomic, and enable a distributed lock, such as Redis Lock.
+
+00:04:11.524 --> 00:04:14.260
+The task then runs on one server at a time.
+
+00:04:15.010 --> 00:04:18.898
+Run now only runs the task on the server that handled the request.
+
+00:04:18.898 --> 00:04:22.893
+And each server keeps the execution state of its own runs in memory,
+
+00:04:22.893 --> 00:04:26.510
+so the pages show the runs of the server you're connected to.
+
+00:04:30.710 --> 00:04:34.935
+A background task is a class that implements I Background Task.
+
+00:04:34.935 --> 00:04:39.710
+Its Do Work Async method does the work, with the services of the tenant.
+
+00:04:40.460 --> 00:04:47.086
+The Background Task attribute sets its title, its default schedule, its description, and its lock settings.
+
+00:04:47.086 --> 00:04:50.780
+Register it as a singleton in the startup of your module.
+
+00:04:51.530 --> 00:04:57.175
+The background service is configured in the Background Service section of the application settings.
+
+00:04:57.175 --> 00:05:01.637
+And the I Background Task Monitor service gives your code the execution state
+
+00:05:01.637 --> 00:05:04.110
+of the tasks, and runs a task on demand.
+
+00:05:06.110 --> 00:05:10.098
+The Background Tasks module shows how the background tasks of your site run,
+
+00:05:10.098 --> 00:05:11.946
+and lets you run them on demand.
+
+00:05:11.946 --> 00:05:13.210
+Thanks for watching.
+

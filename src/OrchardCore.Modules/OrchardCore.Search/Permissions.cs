@@ -11,12 +11,6 @@ public sealed class Permissions : IPermissionProvider
         IndexingPermissions.QuerySearchIndex,
     ];
 
-    [Obsolete("This will be removed in a future release. Instead use 'IndexingPermissions.QuerySearchIndex'.")]
-    public static readonly Permission QuerySearchIndex = IndexingPermissions.QuerySearchIndex;
-
-    [Obsolete("This will be removed in a future release. Instead use 'SearchPermissions.ManageSearchSettings'.")]
-    public static readonly Permission ManageSearchSettings = SearchPermissions.ManageSearchSettings;
-
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 

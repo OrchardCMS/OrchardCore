@@ -53,7 +53,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
         _logCollector = logCollector;
     }
 
-    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null)
+    public static async Task<OrchardTestServer> StartCmsAsync(
+        string contentRoot,
+        string appDataPath,
+        string instanceId = null,
+        Action<OrchardCoreBuilder> configureOrchardCore = null)
     {
         var loggerProvider = new FakeLoggerProvider();
 
@@ -65,9 +69,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Host.UseNLogHost();
 
-        builder.Services
+        var orchardCoreBuilder = builder.Services
             .AddOrchardCms()
             .AddSetupFeatures("OrchardCore.AutoSetup");
+
+        configureOrchardCore?.Invoke(orchardCoreBuilder);
 
         // Serve test recipes from embedded resources instead of copying files.
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
@@ -154,7 +160,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // product regression (OpenIdClientConfiguration's background settings-validity
         // check runs independently of page navigation timing).
         || (record.Category == "OrchardCore.OpenId.Configuration.OpenIdClientConfiguration"
-            && record.Message.Contains("The OpenID client settings are invalid"));
+            && record.Message.Contains("The OpenID client settings are invalid"))
+        // The background tasks tests run a task that fails on purpose to check how its error is shown.
+        || (record.Category == "OrchardCore.Modules.ModularBackgroundService"
+            && record.Message.Contains(Tests.Cms.FailingTestBackgroundTask.TaskName));
 
     public async ValueTask DisposeAsync()
     {
