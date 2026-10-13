@@ -69,7 +69,7 @@ X (Twitter) settings can be configured using the `Settings` recipe step:
 
 ## X (Twitter) Settings Configuration
 
-The `OrchardCore.Twitter` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureTwitterSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+The `OrchardCore.Twitter` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureTwitterSettings()` extension method on `OrchardCoreBuilder` when initializing the app. The overridden settings apply to both the X API client and the X sign-in.
 
 The following configuration values can be customized:
 
