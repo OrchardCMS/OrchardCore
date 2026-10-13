@@ -60,6 +60,37 @@ docker run --rm -d -p 18888:18888 -p 4317:18889 -e DOTNET_DASHBOARD_UNSECURED_AL
 
 Then run the application with `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317`, and browse `http://localhost:18888`.
 
+### Sending it to Grafana
+
+Grafana receives the three signals over OTLP, and stores the traces in Tempo, the metrics in Prometheus or Mimir, and the logs in Loki.
+
+To try it locally, the `grafana/otel-lgtm` image runs an OpenTelemetry Collector with Grafana, Tempo, Prometheus and Loki:
+
+```bash
+docker run --rm -d -p 3000:3000 -p 4317:4317 -p 4318:4318 --name lgtm grafana/otel-lgtm
+```
+
+Then run the application with `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317`, open Grafana at `http://localhost:3000`, and use its Explore page.
+
+With Grafana Cloud, the telemetry is sent over HTTP to the OTLP endpoint of the stack, shown in its OpenTelemetry configuration in the Grafana Cloud portal, with the instance ID of the stack and an access token encoded in Base64 as `{instance ID}:{token}`:
+
+```bash
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-{region}.grafana.net/otlp
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic%20{Base64 credentials}
+```
+
+Prometheus and Mimir store the metrics with their names and attributes converted: dots become underscores, and the unit is added as a suffix, so `orchardcore.shape.render.duration` becomes `orchardcore_shape_render_duration_seconds`, with an `orchardcore_shape_type` label, and the `service.name` and `service.instance.id` resource attributes become the `job` and `instance` labels. For instance:
+
+| Question | Query |
+| --- | --- |
+| Which shapes are the slowest? | `topk(10, histogram_quantile(0.95, sum by (le, orchardcore_shape_type) (rate(orchardcore_shape_render_duration_seconds_bucket[5m]))))` |
+| Which routes run the most database operations? | `topk(10, histogram_quantile(0.95, sum by (le, http_route) (rate(orchardcore_request_db_operations_bucket[5m]))))` |
+| How fast does each tenant respond? | `histogram_quantile(0.95, sum by (le, orchardcore_tenant_name) (rate(http_server_request_duration_seconds_bucket[5m])))` |
+| How much memory does each instance use? | `sum by (instance) (dotnet_process_memory_working_set_bytes)` |
+
+In Tempo, a TraceQL query such as `{ span.orchardcore.tenant.name = "Default" && duration > 500ms }` finds the slow requests of a tenant, and `{ name =~ "Render shape.*" }` the slow shapes.
+
 ## Configuration
 
 The options are read from the `OrchardCore:OpenTelemetry` section of the application configuration:
