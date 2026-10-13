@@ -37,7 +37,7 @@ public sealed class ApplicationController : Controller
 
     public ApplicationController(
         IShapeFactory shapeFactory,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IStringLocalizer<ApplicationController> stringLocalizer,
         IAuthorizationService authorizationService,
         IOpenIdApplicationManager applicationManager,
@@ -47,7 +47,7 @@ public sealed class ApplicationController : Controller
         ShellDescriptor shellDescriptor)
     {
         _shapeFactory = shapeFactory;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         S = stringLocalizer;
         H = htmlLocalizer;
         _authorizationService = authorizationService;

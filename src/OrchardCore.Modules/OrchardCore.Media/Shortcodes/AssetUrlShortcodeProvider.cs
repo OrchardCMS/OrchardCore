@@ -11,16 +11,16 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ResourceManagementOptions _options;
+    private readonly IOptionsMonitor<ResourceManagementOptions> _options;
 
     public AssetUrlShortcodeProvider(
         IMediaFileStore mediaFileStore,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<ResourceManagementOptions> options)
+        IOptionsMonitor<ResourceManagementOptions> options)
     {
         _mediaFileStore = mediaFileStore;
         _httpContextAccessor = httpContextAccessor;
-        _options = options.Value;
+        _options = options;
     }
 
     public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
@@ -46,9 +46,10 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
             if (content.StartsWith("~/", StringComparison.Ordinal))
             {
                 content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content[1..]).Value;
-                if (!string.IsNullOrEmpty(_options.CdnBaseUrl))
+                var cdnBaseUrl = _options.CurrentValue.CdnBaseUrl;
+                if (!string.IsNullOrEmpty(cdnBaseUrl))
                 {
-                    content = _options.CdnBaseUrl + content;
+                    content = cdnBaseUrl + content;
                 }
             }
             else

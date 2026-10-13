@@ -56,7 +56,7 @@ public sealed class WorkflowTypeController : Controller
 
     public WorkflowTypeController
     (
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         ISession session,
         IActivityLibrary activityLibrary,
         IWorkflowManager workflowManager,
@@ -72,7 +72,7 @@ public sealed class WorkflowTypeController : Controller
         ITempDirectoryProvider tempDirectoryProvider,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _session = session;
         _activityLibrary = activityLibrary;
         _workflowManager = workflowManager;

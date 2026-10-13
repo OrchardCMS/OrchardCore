@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddResourceManagement(this IServiceCollection services)
     {
         services.TryAddScoped<IResourceManager, ResourceManager>();
+        services.AddSignalOptionsChangeTokenSource<ResourceManagementOptions>();
 
         return services;
     }

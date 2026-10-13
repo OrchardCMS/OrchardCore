@@ -38,7 +38,7 @@ public sealed class FeatureProfilesController : Controller
         IAuthorizationService authorizationService,
         FeatureProfilesManager featureProfilesManager,
         INotifier notifier,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IStringLocalizer<FeatureProfilesController> stringLocalizer,
         IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
@@ -47,7 +47,7 @@ public sealed class FeatureProfilesController : Controller
         _authorizationService = authorizationService;
         _featureProfilesManager = featureProfilesManager;
         _notifier = notifier;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;

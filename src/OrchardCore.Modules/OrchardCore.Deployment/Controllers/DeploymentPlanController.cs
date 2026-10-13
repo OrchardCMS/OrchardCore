@@ -42,7 +42,7 @@ public sealed class DeploymentPlanController : Controller
         IDisplayManager<DeploymentStep> displayManager,
         IEnumerable<IDeploymentStepFactory> factories,
         ISession session,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<DeploymentPlanController> stringLocalizer,
@@ -54,7 +54,7 @@ public sealed class DeploymentPlanController : Controller
         _factories = factories;
         _authorizationService = authorizationService;
         _session = session;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;

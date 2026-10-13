@@ -25,12 +25,12 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
         IDynamicCacheService dynamicCacheService,
         ICacheScopeManager cacheScopeManager,
         HtmlEncoder htmlEncoder,
-        IOptions<CacheOptions> options)
+        IOptionsMonitor<CacheOptions> options)
     {
         _dynamicCacheService = dynamicCacheService;
         _cacheScopeManager = cacheScopeManager;
         _htmlEncoder = htmlEncoder;
-        _cacheOptions = options.Value;
+        _cacheOptions = options.CurrentValue;
     }
 
     public async Task DisplayingAsync(ShapeDisplayContext context)

@@ -29,7 +29,7 @@ public sealed class AdminController : Controller
     internal readonly IStringLocalizer S;
 
     public AdminController(
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IAuditTrailManager auditTrailManager,
         IUpdateModelAccessor updateModelAccessor,
@@ -39,7 +39,7 @@ public sealed class AdminController : Controller
         IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
         IStringLocalizer<AdminController> stringLocalizer)
     {
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _shapeFactory = shapeFactory;
         _auditTrailManager = auditTrailManager;
         _updateModelAccessor = updateModelAccessor;

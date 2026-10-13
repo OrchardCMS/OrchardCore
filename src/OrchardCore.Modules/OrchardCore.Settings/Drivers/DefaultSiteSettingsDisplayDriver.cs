@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Navigation;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers;
@@ -15,18 +18,18 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     internal readonly IStringLocalizer S;
 
     public DefaultSiteSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         S = stringLocalizer;
     }
 
@@ -43,8 +46,6 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         var result = Combine(
             Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
@@ -78,6 +79,20 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         var model = new SiteSettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var resourceSettingsChanged =
+            site.UseCdn != model.UseCdn ||
+            site.CdnBaseUrl != model.CdnBaseUrl ||
+            site.ResourceDebugMode != model.ResourceDebugMode ||
+            site.AppendVersion != model.AppendVersion;
+
+        var pagerSettingsChanged =
+            site.PageSize != model.PageSize ||
+            site.AllowPageSizeSelection != model.AllowPageSizeSelection;
+
+        var cacheSettingsChanged = site.CacheMode != model.CacheMode;
+
+        var previousPageSizeOptions = site.PageSizeOptions;
 
         site.SiteName = model.SiteName;
         site.PageTitleFormat = model.PageTitleFormat;
@@ -125,7 +140,28 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
         }
 
-        _shellReleaseManager.RequestRelease();
+        if (!context.Updater.ModelState.IsValid)
+        {
+            return await EditAsync(site, context);
+        }
+
+        // Refresh the options built from these settings, so that they apply without restarting the tenant.
+        if (resourceSettingsChanged)
+        {
+            _optionsUpdateNotifier
+                .RequestUpdate<ResourceOptions>()
+                .RequestUpdate<ResourceManagementOptions>();
+        }
+
+        if (pagerSettingsChanged || !(previousPageSizeOptions ?? []).SequenceEqual(site.PageSizeOptions ?? []))
+        {
+            _optionsUpdateNotifier.RequestUpdate<PagerOptions>();
+        }
+
+        if (cacheSettingsChanged)
+        {
+            _optionsUpdateNotifier.RequestUpdate<CacheOptions>();
+        }
 
         return await EditAsync(site, context);
     }

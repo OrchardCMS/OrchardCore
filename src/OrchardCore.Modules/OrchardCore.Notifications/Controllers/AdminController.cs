@@ -45,7 +45,7 @@ public sealed class AdminController : Controller, IUpdateModel
         IAuthorizationService authorizationService,
         ISession session,
         ITagCache tagCache,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
         IDisplayManager<ListNotificationOptions> notificationOptionsDisplayManager,
@@ -63,7 +63,7 @@ public sealed class AdminController : Controller, IUpdateModel
         _notificationOptionsDisplayManager = notificationOptionsDisplayManager;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _clock = clock;
 
         S = stringLocalizer;

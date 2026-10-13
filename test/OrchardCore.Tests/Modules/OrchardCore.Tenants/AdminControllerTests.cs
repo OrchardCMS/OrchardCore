@@ -81,7 +81,7 @@ public class AdminControllerTests
             Mock.Of<INotifier>(),
             Mock.Of<ITenantValidator>(),
             [],
-            Options.Create(new PagerOptions { PageSize = 2 }),
+            Mock.Of<IOptionsMonitor<PagerOptions>>(options => options.CurrentValue == new PagerOptions { PageSize = 2 }),
             Options.Create(new TenantsOptions()),
             null,
             NullLogger<AdminController>.Instance,

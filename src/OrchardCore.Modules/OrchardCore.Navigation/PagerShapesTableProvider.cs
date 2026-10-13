@@ -641,7 +641,7 @@ public class PagerShapes : IShapeAttributeProvider
     private static List<SelectListItem> BuildPageSizeOptions(DisplayContext displayContext, int currentPageSize)
     {
         var serviceProvider = displayContext.ServiceProvider;
-        var pagerOptions = serviceProvider.GetService<IOptions<PagerOptions>>()?.Value;
+        var pagerOptions = serviceProvider.GetService<IOptionsMonitor<PagerOptions>>()?.CurrentValue;
 
         if (pagerOptions is null || !pagerOptions.AllowPageSizeSelection || pagerOptions.PageSizeOptions is not { Length: > 0 })
         {

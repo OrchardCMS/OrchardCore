@@ -24,7 +24,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
     private readonly IContentManager _contentManager;
 
     public TermPartContentDriver(
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IHttpContextAccessor httpContextAccessor,
         IOptions<AutorouteOptions> autorouteOptions,
         IContentsTaxonomyListQueryService contentsTaxonomyListQueryService,
@@ -33,7 +33,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
         _contentsTaxonomyListQueryService = contentsTaxonomyListQueryService;
         _httpContextAccessor = httpContextAccessor;
         _autorouteOptions = autorouteOptions.Value;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _contentManager = contentManager;
     }
 

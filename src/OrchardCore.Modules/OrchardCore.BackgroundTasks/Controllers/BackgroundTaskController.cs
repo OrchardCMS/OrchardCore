@@ -36,7 +36,7 @@ public sealed class BackgroundTaskController : Controller
         IAuthorizationService authorizationService,
         IEnumerable<IBackgroundTask> backgroundTasks,
         BackgroundTaskManager backgroundTaskManager,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
         IStringLocalizer<BackgroundTaskController> stringLocalizer,
@@ -45,7 +45,7 @@ public sealed class BackgroundTaskController : Controller
         _authorizationService = authorizationService;
         _backgroundTasks = backgroundTasks;
         _backgroundTaskManager = backgroundTaskManager;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;

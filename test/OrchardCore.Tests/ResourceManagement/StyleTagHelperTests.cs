@@ -1,3 +1,4 @@
+using OrchardCore.Tests.Stubs;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -278,7 +279,7 @@ public class StyleTagHelperTests : IDisposable
         options ??= new ResourceManagementOptions();
 
         return new ResourceManager(
-            new OptionsWrapper<ResourceManagementOptions>(options),
+            new StaticOptionsMonitor<ResourceManagementOptions>(options),
             StubFileVersionProvider.Instance
         );
     }

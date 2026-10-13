@@ -13,16 +13,17 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters;
 public class ResourceUrlFilter : ILiquidFilter
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ResourceManagementOptions _options;
+    private readonly IOptionsMonitor<ResourceManagementOptions> _options;
 
-    public ResourceUrlFilter(IHttpContextAccessor httpContextAccessor, IOptions<ResourceManagementOptions> options)
+    public ResourceUrlFilter(IHttpContextAccessor httpContextAccessor, IOptionsMonitor<ResourceManagementOptions> options)
     {
         _httpContextAccessor = httpContextAccessor;
-        _options = options.Value;
+        _options = options;
     }
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
+        var options = _options.CurrentValue;
         var resourcePath = input.ToStringValue();
 
         if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
@@ -31,14 +32,14 @@ public class ResourceUrlFilter : ILiquidFilter
         }
 
         // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-        if (!_options.DebugMode && !string.IsNullOrEmpty(_options.CdnBaseUrl) &&
+        if (!options.DebugMode && !string.IsNullOrEmpty(options.CdnBaseUrl) &&
             // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
             !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
             !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
             !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
             !resourcePath.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
         {
-            resourcePath = _options.CdnBaseUrl + resourcePath;
+            resourcePath = options.CdnBaseUrl + resourcePath;
         }
 
         return ValueTask.FromResult<FluidValue>(new StringValue(resourcePath));

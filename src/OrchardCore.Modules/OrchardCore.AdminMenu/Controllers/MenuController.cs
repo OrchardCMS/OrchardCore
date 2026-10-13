@@ -34,7 +34,7 @@ public sealed class MenuController : Controller
     public MenuController(
         IAuthorizationService authorizationService,
         IAdminMenuService adminMenuService,
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         INotifier notifier,
         IStringLocalizer<MenuController> stringLocalizer,
@@ -43,7 +43,7 @@ public sealed class MenuController : Controller
     {
         _authorizationService = authorizationService;
         _adminMenuService = adminMenuService;
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _shapeFactory = shapeFactory;
         _notifier = notifier;
         S = stringLocalizer;

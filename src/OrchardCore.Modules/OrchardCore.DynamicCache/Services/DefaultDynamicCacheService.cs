@@ -33,7 +33,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
         IMemoryCache memoryCache,
         IServiceProvider serviceProvider,
         IOptions<DynamicCacheOptions> dynamicCacheOptions,
-        IOptions<CacheOptions> options,
+        IOptionsMonitor<CacheOptions> options,
         ILogger<DefaultDynamicCacheService> logger)
     {
         _cacheContextManager = cacheContextManager;
@@ -42,7 +42,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
         _serviceProvider = serviceProvider;
         _dynamicCacheOptions = dynamicCacheOptions.Value;
         _dynamicCacheOptions.FailoverRetryLatency ??= DefaultFailoverRetryLatency;
-        _cacheOptions = options.Value;
+        _cacheOptions = options.CurrentValue;
         _logger = logger;
     }
 

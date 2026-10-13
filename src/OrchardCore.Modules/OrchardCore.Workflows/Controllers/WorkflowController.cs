@@ -44,7 +44,7 @@ public sealed class WorkflowController : Controller
     internal readonly IStringLocalizer S;
 
     public WorkflowController(
-        IOptions<PagerOptions> pagerOptions,
+        IOptionsMonitor<PagerOptions> pagerOptions,
         ISession session,
         IWorkflowManager workflowManager,
         IWorkflowTypeStore workflowTypeStore,
@@ -58,7 +58,7 @@ public sealed class WorkflowController : Controller
         IStringLocalizer<WorkflowController> stringLocalizer,
         IUpdateModelAccessor updateModelAccessor)
     {
-        _pagerOptions = pagerOptions.Value;
+        _pagerOptions = pagerOptions.CurrentValue;
         _session = session;
         _workflowManager = workflowManager;
         _workflowTypeStore = workflowTypeStore;

@@ -9,9 +9,11 @@ namespace OrchardCore.Resources;
 public sealed class ResourceManagementOptionsConfiguration
     : IConfigureOptions<ResourceManagementOptions>
 {
-    private readonly ResourceOptions _resourceOptions;
+    private readonly IOptionsMonitor<ResourceOptions> _resourceOptions;
     private readonly IHostEnvironment _env;
-    private readonly PathString _pathBase;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    private PathString _pathBase;
 
     // Versions
     private const string CodeMirrorVersion = "5.65.7";
@@ -22,14 +24,14 @@ public sealed class ResourceManagementOptionsConfiguration
     private const string CodeMirrorUrl = CloudflareUrl + "codemirror/" + CodeMirrorVersion + "/";
 
     public ResourceManagementOptionsConfiguration(
-        IOptions<ResourceOptions> resourceOptions,
+        IOptionsMonitor<ResourceOptions> resourceOptions,
         IHostEnvironment env,
         IHttpContextAccessor httpContextAccessor
     )
     {
-        _resourceOptions = resourceOptions.Value;
+        _resourceOptions = resourceOptions;
         _env = env;
-        _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     private static ResourceManifest BuildManifest()
@@ -1248,9 +1250,19 @@ public sealed class ResourceManagementOptionsConfiguration
 
     public void Configure(ResourceManagementOptions options)
     {
+        // The options may be rebuilt outside of a request when the site settings are updated,
+        // in that case keep using the path base of the request they were first built from.
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext is not null)
+        {
+            _pathBase = httpContext.Request.PathBase;
+        }
+
+        var resourceOptions = _resourceOptions.CurrentValue;
+
         options.ResourceManifests.Add(BuildManifest());
 
-        switch (_resourceOptions.ResourceDebugMode)
+        switch (resourceOptions.ResourceDebugMode)
         {
             case ResourceDebugMode.Enabled:
                 options.DebugMode = true;
@@ -1265,9 +1277,9 @@ public sealed class ResourceManagementOptionsConfiguration
                 break;
         }
 
-        options.UseCdn = _resourceOptions.UseCdn;
-        options.CdnBaseUrl = _resourceOptions.CdnBaseUrl;
-        options.AppendVersion = _resourceOptions.AppendVersion;
+        options.UseCdn = resourceOptions.UseCdn;
+        options.CdnBaseUrl = resourceOptions.CdnBaseUrl;
+        options.AppendVersion = resourceOptions.AppendVersion;
         options.ContentBasePath = _pathBase.Value;
     }
 }

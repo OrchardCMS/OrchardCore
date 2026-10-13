@@ -60,7 +60,7 @@ public sealed class AdminController : Controller
     public async Task<IActionResult> Index(
         IndexingEntityOptions options,
         PagerParameters pagerParameters,
-        [FromServices] IOptions<PagerOptions> pagerOptions,
+        [FromServices] IOptionsMonitor<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
@@ -68,7 +68,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value);
+        var pager = new Pager(pagerParameters, pagerOptions.CurrentValue);
 
         var result = await _indexProfileManager.PageAsync(pager.Page, pager.PageSize, new QueryContext
         {
