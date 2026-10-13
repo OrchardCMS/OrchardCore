@@ -81,11 +81,6 @@ public sealed class DataPipelineRunViewModel
     public bool CanCancel { get; set; }
 }
 
-public sealed class DataPipelineSharedWithMeViewModel
-{
-    public IReadOnlyList<DataPipelineSharedFile> Files { get; set; } = [];
-}
-
 public sealed class DataPipelineSharedFilesViewModel
 {
     public List<DataPipelineSharedFile> Files { get; set; } = [];

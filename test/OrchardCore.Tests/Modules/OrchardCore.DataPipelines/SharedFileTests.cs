@@ -49,6 +49,21 @@ public sealed class SharedFileTests
     }
 
     [Fact]
+    public void CheckAccess_RecipientWithoutToken_IsDenied()
+    {
+        // Arrange
+        var (file, _) = Share("alice-id");
+
+        // Act
+        var missing = DataPipelineSharedFileAccess.Check(file, null, User("alice-id"), _now);
+        var empty = DataPipelineSharedFileAccess.Check(file, string.Empty, User("alice-id"), _now);
+
+        // Assert
+        Assert.Equal(DataPipelineSharedFileAccessResult.InvalidToken, missing);
+        Assert.Equal(DataPipelineSharedFileAccessResult.InvalidToken, empty);
+    }
+
+    [Fact]
     public void CheckAccess_ExpiredOrRevokedLink_IsDenied()
     {
         // Arrange
@@ -97,6 +112,25 @@ public sealed class SharedFileTests
         Assert.All(manager.Shared, shared => Assert.Equal(TimeSpan.FromDays(3), shared.Lifetime));
         Assert.Equal(2, host.Run.Deliveries.Count);
         Assert.All(host.Run.Deliveries, delivery => Assert.DoesNotContain("token", delivery.Description + delivery.Url, StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(host.Log, entry => entry.Level == LogLevel.Warning);
+    }
+
+    [Fact]
+    public async Task ShareDownloadLink_RecipientNotEmailed_WarnsWithTheirName()
+    {
+        // Arrange
+        var manager = new FakeSharedFileManager { NotEmailed = ["bob"] };
+        var settings = new ShareDownloadLinkStepSettings { Recipients = ["alice", "bob"] };
+        using var host = new StepTestHost(new ShareDownloadLinkStep(new PassThroughStringLocalizer<ShareDownloadLinkStep>()), settings, Services(manager));
+        host.WithFiles(host.CreateFile("report.csv", "x"));
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var warning = Assert.Single(host.Log, entry => entry.Level == LogLevel.Warning);
+        Assert.Contains("bob", warning.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("alice", warning.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -145,6 +179,9 @@ public sealed class SharedFileTests
     {
         public List<(string FileName, IReadOnlyList<string> Recipients, TimeSpan Lifetime)> Shared { get; } = [];
 
+        // The recipients the link could not be emailed to.
+        public List<string> NotEmailed { get; init; } = [];
+
         public Task<DataPipelineSharedFileResult> ShareAsync(DataPipelineFile file, DataPipelineSharedFileRequest request, CancellationToken cancellationToken = default)
         {
             Shared.Add((file.FileName, request.Recipients, request.Lifetime));
@@ -153,6 +190,7 @@ public sealed class SharedFileTests
             {
                 SharedFile = new DataPipelineSharedFile { FileId = Guid.NewGuid().ToString("n"), FileName = file.FileName, RecipientNames = [.. request.Recipients], ExpiresUtc = _now.Add(request.Lifetime) },
                 Url = "https://example.com/DataPipelines/Files/x?token=secret",
+                Notified = request.Recipients.Except(NotEmailed).ToList(),
             });
         }
     }

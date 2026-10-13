@@ -6,9 +6,9 @@ using OrchardCore.DataPipelines.Services;
 namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
-/// Shares the files it reads with users through download links. A link works only for the recipients, once signed
-/// in, until it expires or is revoked; only the hash of its token is stored. When the Email feature is enabled, the
-/// recipients can receive the link by email.
+/// Shares the files it reads with users through download links, sent to them by email. A link works only for the
+/// recipients, once signed in, until it expires or is revoked; only the hash of its token is stored. Available when the
+/// Email feature is enabled.
 /// </summary>
 public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLinkStepSettings>
 {
@@ -79,7 +79,6 @@ public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLi
                 Recipients = recipients,
                 Lifetime = TimeSpan.FromDays(Math.Clamp(settings.ExpiresAfterDays, 1, MaxDays)),
                 Run = context.Run,
-                NotifyByEmail = settings.NotifyByEmail,
                 Subject = settings.Subject,
                 Message = settings.Message,
             }, context.CancellationToken);
@@ -87,9 +86,11 @@ public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLi
             // The link holds the token, so it is sent to the recipients only, never recorded.
             context.AddDelivery(S["Shared '{0}' with {1} until {2}.", file.FileName, string.Join(", ", result.SharedFile.RecipientNames), result.SharedFile.ExpiresUtc.ToString("u", CultureInfo.InvariantCulture)]);
 
-            if (settings.NotifyByEmail && result.Notified.Count < recipients.Length)
+            var missed = result.SharedFile.RecipientNames.Except(result.Notified, StringComparer.Ordinal).ToList();
+
+            if (missed.Count > 0)
             {
-                context.LogWarning(S["Some recipients were not notified by email: the Email feature may be disabled, or they have no email address. Signed in, they find the file at /DataPipelines/Files."]);
+                context.LogWarning(S["The link to '{0}' could not be emailed to {1}: they have no email address, or the email failed.", file.FileName, string.Join(", ", missed)]);
             }
         }
     }

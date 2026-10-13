@@ -9,7 +9,8 @@ namespace OrchardCore.DataPipelines.Services;
 public interface IDataPipelineSharedFileManager
 {
     /// <summary>
-    /// Keeps a copy of a file, and creates a download link for it that works for the recipients only.
+    /// Keeps a copy of a file, creates a download link for it that works for the recipients only, and emails the link to
+    /// them.
     /// </summary>
     /// <param name="file">The file.</param>
     /// <param name="request">Who to share it with, and for how long.</param>
@@ -39,11 +40,6 @@ public sealed class DataPipelineSharedFileRequest
     public DataPipelineRunContext Run { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the recipients receive the link by email.
-    /// </summary>
-    public bool NotifyByEmail { get; set; }
-
-    /// <summary>
     /// Gets or sets the subject of the email.
     /// </summary>
     public string Subject { get; set; }
@@ -70,7 +66,8 @@ public sealed class DataPipelineSharedFileResult
     public string Url { get; set; }
 
     /// <summary>
-    /// Gets or sets the recipients who were notified by email.
+    /// Gets or sets the user names of the recipients who were sent the link. The others have no email address, or the
+    /// email could not be sent.
     /// </summary>
     public IReadOnlyList<string> Notified { get; set; } = [];
 }

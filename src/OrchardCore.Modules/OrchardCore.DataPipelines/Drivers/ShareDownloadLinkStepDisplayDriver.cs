@@ -23,7 +23,6 @@ public sealed class ShareDownloadLinkStepDisplayDriver : DataPipelineStepDisplay
     {
         model.Recipients = string.Join(", ", settings.Recipients);
         model.ExpiresAfterDays = settings.ExpiresAfterDays;
-        model.NotifyByEmail = settings.NotifyByEmail;
         model.Subject = settings.Subject;
         model.Message = settings.Message;
 
@@ -43,7 +42,6 @@ public sealed class ShareDownloadLinkStepDisplayDriver : DataPipelineStepDisplay
         }
 
         settings.ExpiresAfterDays = model.ExpiresAfterDays;
-        settings.NotifyByEmail = model.NotifyByEmail;
         settings.Subject = model.Subject?.Trim();
         settings.Message = model.Message?.Trim();
 
@@ -56,8 +54,6 @@ public class ShareDownloadLinkStepViewModel
     public string Recipients { get; set; }
 
     public int ExpiresAfterDays { get; set; }
-
-    public bool NotifyByEmail { get; set; }
 
     public string Subject { get; set; }
 

@@ -19,7 +19,7 @@ public sealed class RemoteDestinationsStartup : StartupBase
 }
 
 /// <summary>
-/// Registers the step that sends files by email.
+/// Registers the steps that send files, or links to them, by email.
 /// </summary>
 [RequireFeatures("OrchardCore.Email")]
 public sealed class EmailDestinationStartup : StartupBase
@@ -27,5 +27,6 @@ public sealed class EmailDestinationStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataPipelineStep<SendByEmailStep, SendByEmailStepDisplayDriver>();
+        services.AddDataPipelineStep<ShareDownloadLinkStep, ShareDownloadLinkStepDisplayDriver>();
     }
 }

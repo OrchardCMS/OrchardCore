@@ -26,7 +26,7 @@ The steps, activities and data sources that work with other features are availab
 | Feature | Adds |
 |---------|------|
 | Media (`OrchardCore.Media`) | The **Read a media file** and **Save to the media library** steps. |
-| Email (`OrchardCore.Email`) | The **Send by email** step. |
+| Email (`OrchardCore.Email`) | The **Send by email** and **Share a download link** steps. |
 | Contents (`OrchardCore.Contents`) | The **Save content items** step, which creates and updates content items from rows, and the [content items](../DataSources/README.md#content-items) data source. |
 | Workflows (`OrchardCore.Workflows`) | The **Run Data Pipeline Task** activity and the **Data Pipeline Run Completed Event**, see [Workflows](#workflows). |
 | Users (`OrchardCore.Users`) | The [users](../DataSources/README.md#users) data source. |
@@ -144,7 +144,7 @@ Writing a workbook uses about 16 MB of memory, whatever the number of rows. A wo
 | Step | Ports | Settings |
 |------|-------|----------|
 | **Save to the media library** (`SaveToMedia`) | In: files. | The **folder** of the media library, empty for the root, and whether a file with the same name is **replaced**, or saved under a name with a number appended. The user the run is for must be allowed to manage the media of the folder, and the media library must accept the extension of each file, see [Saving files to the media library](#saving-files-to-the-media-library). Available when the Media feature is enabled. |
-| **Share a download link** (`ShareDownloadLink`) | In: files. | The **recipients**, user names or emails of users of the site, separated by commas. The number of **days the link works**, from 1 to 365 (7 by default). Whether the link is **sent to the recipients by email**, with a **subject** and an optional **message**. See [Download links](#download-links). |
+| **Share a download link** (`ShareDownloadLink`) | In: files. | The **recipients**, user names or emails of users of the site, separated by commas. The number of **days the link works**, from 1 to 365 (7 by default). The **subject** of the email that sends the link to the recipients, and an optional **message**. Available when the Email feature is enabled. See [Download links](#download-links). |
 | **Upload to an FTP server** (`UploadToFtp`) | In: files. | The **host** and **port** (21 by default), the **encryption** (explicit TLS, the default, implicit TLS, or none), whether the server's **certificate is validated** (by default), the **user name** and **password**, the **remote folder** (created when it doesn't exist, the user's starting folder when empty), whether existing files are **replaced** (otherwise the step fails when a file exists), and the **timeout** in seconds (30 by default). Requires the `OrchardCore.DataPipelines.Ftp` module. |
 | **Upload to an SFTP server** (`UploadToSftp`) | In: files. | The **host** and **port** (22 by default), the **user name**, a **password**, a **private key** (PEM or OpenSSH format) with its optional **passphrase**, or both, the **host key fingerprint**, the **remote folder** (created when it doesn't exist, the user's home folder when empty), whether existing files are **replaced**, and the **timeout** in seconds (30 by default). See [SFTP host keys](#sftp-host-keys). Requires the `OrchardCore.DataPipelines.Sftp` module. |
 | **Send to a web API** (`SendToWebApi`) | In: files. | The absolute http or https **URL**, the **method** (`POST` or `PUT`), and the **body**: a `multipart/form-data` form with the file in a field (`file` by default), or the raw content of the file with its media type. Additional **headers**, which aren't secret. The **authentication**: none, basic (user name and password), a bearer token, or an API key in a header (`X-API-Key` by default). The **timeout** of each request in seconds (100 by default). Each file is sent in its own request, and a response with a status code other than 2xx fails the step. |
@@ -293,12 +293,11 @@ A secret encrypted on another site, or with other keys, such as after copying a 
 
 ### Download links
 
-The **Share a download link** step shares files with users of the site:
+The **Share a download link** step shares files with users of the site, by email:
 
 - a copy of each file is kept in the `App_Data` folder of the tenant, out of the media library;
-- the link holds a random token, of which only a hash is stored. The link is sent to the recipients by email, when the Email feature is enabled and they have an email address, and is never recorded in the run;
-- a link works only for its recipients, once signed in, until it expires or is revoked;
-- signed in, recipients also find the files shared with them, while their link works, on the **Files shared with you** page, at `/DataPipelines/Files`. The notification email links to this page, which is how recipients without an email address, or sites without the Email feature, get the files.
+- each file gets a link holding a random token, of which only a hash is stored. The link is sent to the recipients by email, and is never recorded in the run nor shown in the admin, so the email is the only way to get it. The run reports a warning naming the recipients the email couldn't be sent to, such as those without an email address;
+- a link works only for its recipients, once signed in, with its token, until it expires or is revoked. Without the token of the link, a recipient can't download the file: the site doesn't list the files shared with a user.
 
 **Tools** > **Data Pipelines** > **Shared Files** lists the shared files, which can be searched by file or pipeline name, with their recipients, when their link expires and how many times they were downloaded. A link can be revoked, and a file deleted. The content of a file is deleted a day after its link expires.
 

@@ -75,7 +75,6 @@ public sealed class Startup : StartupBase
         services.AddDataPipelineStep<LimitStep, LimitStepDisplayDriver>();
         services.AddDataPipelineStep<CreateFileStep, CreateFileStepDisplayDriver>();
         services.AddDataPipelineStep<ZipFilesStep, ZipFilesStepDisplayDriver>();
-        services.AddDataPipelineStep<ShareDownloadLinkStep, ShareDownloadLinkStepDisplayDriver>();
 
         services.AddRecipeExecutionStep<DataPipelinesRecipeStep>();
     }

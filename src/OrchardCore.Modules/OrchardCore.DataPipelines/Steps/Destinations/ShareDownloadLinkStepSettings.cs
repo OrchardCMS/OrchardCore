@@ -16,11 +16,6 @@ public sealed class ShareDownloadLinkStepSettings
     public int ExpiresAfterDays { get; set; } = 7;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the recipients receive the link by email.
-    /// </summary>
-    public bool NotifyByEmail { get; set; } = true;
-
-    /// <summary>
     /// Gets or sets the subject of the email. It can use the placeholders of <see cref="DataPipelineTemplate"/>.
     /// </summary>
     public string Subject { get; set; } = "{PipelineName}: a file is ready";

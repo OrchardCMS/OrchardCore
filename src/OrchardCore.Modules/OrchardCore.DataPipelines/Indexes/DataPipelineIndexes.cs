@@ -87,22 +87,6 @@ public sealed class DataPipelineSharedFileIndex : MapIndex
 }
 
 /// <summary>
-/// Indexes the recipients of the files shared through download links, one row per recipient.
-/// </summary>
-public sealed class DataPipelineSharedFileRecipientIndex : MapIndex
-{
-    public long DocumentId { get; set; }
-
-    public string FileId { get; set; }
-
-    public string UserId { get; set; }
-
-    public DateTime CreatedUtc { get; set; }
-
-    public DateTime ExpiresUtc { get; set; }
-}
-
-/// <summary>
 /// Indexes the state documents of the pipelines.
 /// </summary>
 public sealed class DataPipelineStateIndex : MapIndex
@@ -184,14 +168,5 @@ public sealed class DataPipelineSharedFileIndexProvider : IndexProvider<DataPipe
                 CreatedUtc = file.CreatedUtc,
                 ExpiresUtc = file.RevokedUtc ?? file.ExpiresUtc,
             });
-
-        context.For<DataPipelineSharedFileRecipientIndex>()
-            .Map(file => file.RecipientUserIds.Distinct(StringComparer.Ordinal).Select(userId => new DataPipelineSharedFileRecipientIndex
-            {
-                FileId = file.FileId,
-                UserId = userId,
-                CreatedUtc = file.CreatedUtc,
-                ExpiresUtc = file.RevokedUtc ?? file.ExpiresUtc,
-            }));
     }
 }

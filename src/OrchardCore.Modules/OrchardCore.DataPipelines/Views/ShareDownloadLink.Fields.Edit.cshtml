@@ -5,7 +5,7 @@
     <div class="ocat-end">
         <textarea asp-for="Recipients" class="form-control" rows="2" placeholder="alice, bob@example.com"></textarea>
         <span asp-validation-for="Recipients"></span>
-        <span class="hint">@T["The user names or emails of the users of this site the files are shared with, separated by commas. A link works only for them, once signed in."]</span>
+        <span class="hint">@T["The user names or emails of the users of this site the files are shared with, separated by commas. They receive the link by email, and it works only for them, once signed in."]</span>
     </div>
 </div>
 
@@ -15,16 +15,6 @@
         <input asp-for="ExpiresAfterDays" type="number" min="1" max="@ShareDownloadLinkStep.MaxDays" class="form-control" />
         <span asp-validation-for="ExpiresAfterDays"></span>
         <span class="hint">@T["A link can also be revoked from the list of shared files."]</span>
-    </div>
-</div>
-
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="NotifyByEmail" />
-            <label class="form-check-label" asp-for="NotifyByEmail">@T["Send the link to the recipients by email"]</label>
-            <span class="hint dashed">@T["Requires the Email feature."]</span>
-        </div>
     </div>
 </div>
 
