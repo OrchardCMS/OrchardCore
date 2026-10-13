@@ -136,6 +136,36 @@ public class SignalOptionsChangeTokenSourceTests
         Assert.Equal(version, monitor.CurrentValue.Version);
     }
 
+    [Fact]
+    public async Task SignalTokenAsync_FromAnotherAsyncFlow_RebuildsOptionsInTheSignalingFlow()
+    {
+        var asyncFlow = new AsyncLocal<string>();
+        string rebuiltInFlow = null;
+
+        using var provider = CreateServiceProvider(services => services
+            .AddSignalOptionsChangeTokenSource<TestOptions>()
+            .Configure<TestOptions>(_ => rebuiltInFlow = asyncFlow.Value));
+
+        var signal = provider.GetRequiredService<ISignal>();
+
+        // The options monitor registers its change callbacks when it is first resolved, e.g. in a shell scope
+        // that is cleared afterwards, but the options are eagerly rebuilt in the flow that sends the signal,
+        // e.g. a deferred task with its own shell scope, so that they can use the services of this flow.
+        await Task.Run(() =>
+        {
+            asyncFlow.Value = "Building";
+            _ = provider.GetRequiredService<IOptionsMonitor<TestOptions>>().CurrentValue;
+        }, TestContext.Current.CancellationToken);
+
+        await Task.Run(async () =>
+        {
+            asyncFlow.Value = "Signaling";
+            await signal.SignalTokenAsync(OptionsUpdateSignal.GetKey(typeof(TestOptions), string.Empty));
+        }, TestContext.Current.CancellationToken);
+
+        Assert.Equal("Signaling", rebuiltInFlow);
+    }
+
     private static ServiceProvider CreateServiceProvider(Action<IServiceCollection> configure)
     {
         var services = new ServiceCollection();
