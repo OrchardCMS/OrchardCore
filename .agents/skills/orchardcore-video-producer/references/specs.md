@@ -69,9 +69,7 @@ Every Orchard Core video follows these values. They are applied by `scripts/bran
 
 ## Voice
 
-- `en-US-AndrewMultilingualNeural` at `+2%` rate, through `edge-tts`: a neutral, clear voice. With
-  `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` set, `narrate.py` synthesizes the same voice, rate and mp3 format
-  through the Azure Speech REST API instead.
+- `en-US-AndrewMultilingualNeural` at `+2%` rate, through `edge-tts`: a neutral, clear voice.
 - Pronunciation fixes in `SPOKEN` (`scripts/narrate.py`), such as "ASP.NET" spoken as "A.S.P. .NET". The
   captions keep the written form.
 - Letters said one by one are written as an abbreviation with periods ("A.S.P."), which the voice spells at an even
