@@ -9,7 +9,7 @@ public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolve
     private readonly ContentDisplayOptions _contentDisplayOptions;
 
     // The drivers are scoped services, they are resolved once per scope as they are requested for each displayed content item.
-    private readonly Dictionary<(string Name, string DisplayMode), IContentPartDisplayDriver[]> _displayModeDrivers = [];
+    private readonly Dictionary<(string Name, string DisplayMode), List<IContentPartDisplayDriver>> _displayModeDrivers = [];
 
     public ContentPartDisplayDriverResolver(
         IServiceProvider serviceProvider,
@@ -40,7 +40,7 @@ public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolve
             }
         }
 
-        drivers = services.Count > 0 ? services.ToArray() : [];
+        drivers = services;
         _displayModeDrivers[(partName, displayMode)] = drivers;
 
         return drivers;

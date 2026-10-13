@@ -98,6 +98,30 @@ public class InvokeExtensionsTests
     }
 
     [Fact]
+    public async Task InvokeAsync_ListWithAsyncHandler_InvokesAllHandlersSequentially()
+    {
+        // Arrange
+        var completionSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var invoked = new List<int>();
+
+        // Act
+        var task = new List<int> { 1, 2, 3 }.InvokeAsync(sink =>
+        {
+            invoked.Add(sink);
+            return sink == 2 ? completionSource.Task : Task.CompletedTask;
+        }, NullLogger.Instance);
+
+        // Assert
+        Assert.Equal([1, 2], invoked);
+        Assert.False(task.IsCompleted);
+
+        completionSource.SetResult();
+        await task;
+
+        Assert.Equal([1, 2, 3], invoked);
+    }
+
+    [Fact]
     public void Invoke_ArrayWithFailingHandler_InvokesAllHandlers()
     {
         // Arrange

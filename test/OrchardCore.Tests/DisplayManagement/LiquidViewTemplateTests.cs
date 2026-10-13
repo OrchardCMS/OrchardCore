@@ -93,6 +93,30 @@ public class LiquidViewTemplateTests
     }
 
     [Fact]
+    public async Task InvokeInScopeAsync_CallbackWithState_RunsInScopeAndRestoresParentScope()
+    {
+        using var services = CreateServiceProvider();
+        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var viewContext = services.GetRequiredService<ViewContextAccessor>().ViewContext;
+        context.SetValue("Model", "Root");
+
+        string modelInScope = null;
+        string stateInScope = null;
+
+        await context.InvokeInScopeAsync(viewContext, "Inner", state =>
+        {
+            modelInScope = state.Context.GetValue("Model").ToStringValue();
+            stateInScope = state.Value;
+            return ValueTask.CompletedTask;
+        }, (Context: context, Value: "State"));
+
+        Assert.Equal("Inner", modelInScope);
+        Assert.Equal("State", stateInScope);
+        Assert.Equal("Root", context.GetValue("Model").ToStringValue());
+        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
+    }
+
+    [Fact]
     public async Task InvokeInScopeAsync_NoViewContext_InitializesWithoutViewScope()
     {
         using var services = CreateServiceProvider();

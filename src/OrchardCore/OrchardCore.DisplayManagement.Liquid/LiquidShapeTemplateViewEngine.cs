@@ -94,7 +94,11 @@ public class LiquidShapeTemplateViewEngine : IShapeTemplateViewEngine
         {
             var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
 
-            await context.InvokeInScopeAsync(templateViewContext, displayContext.Value, () => template.RenderAsync(content, _htmlEncoder, context).AsTask());
+            await context.InvokeInScopeAsync(
+                templateViewContext,
+                displayContext.Value,
+                static state => state.Template.RenderAsync(state.Content, state.HtmlEncoder, state.Context),
+                (Template: template, Content: content, HtmlEncoder: _htmlEncoder, Context: context));
         }
         finally
         {

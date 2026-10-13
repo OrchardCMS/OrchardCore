@@ -9,7 +9,7 @@ public class ContentFieldHandlerResolver : IContentFieldHandlerResolver
     private readonly ContentOptions _contentOptions;
 
     // The handlers are scoped services, they are resolved once per scope as they are requested for each content item.
-    private readonly Dictionary<string, IContentFieldHandler[]> _handlers = [];
+    private readonly Dictionary<string, List<IContentFieldHandler>> _handlers = [];
 
     public ContentFieldHandlerResolver(
         IServiceProvider serviceProvider,
@@ -27,18 +27,14 @@ public class ContentFieldHandlerResolver : IContentFieldHandlerResolver
             return handlers;
         }
 
+        handlers = [];
+
         if (_contentOptions.ContentFieldOptionsLookup.TryGetValue(fieldName, out var contentFieldOption) && contentFieldOption.Handlers.Count > 0)
         {
-            handlers = new IContentFieldHandler[contentFieldOption.Handlers.Count];
-
-            for (var i = 0; i < handlers.Length; i++)
+            for (var i = 0; i < contentFieldOption.Handlers.Count; i++)
             {
-                handlers[i] = (IContentFieldHandler)_serviceProvider.GetRequiredService(contentFieldOption.Handlers[i]);
+                handlers.Add((IContentFieldHandler)_serviceProvider.GetRequiredService(contentFieldOption.Handlers[i]));
             }
-        }
-        else
-        {
-            handlers = [];
         }
 
         _handlers[fieldName] = handlers;
