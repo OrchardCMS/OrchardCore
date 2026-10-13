@@ -113,12 +113,13 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
             }
         }
 
+        // The events are stored as arrays, which are iterated without allocating enumerators for each shape.
         _wrappers = wrappers;
-        _creatingAsync = creatingAsync;
-        _createdAsync = createdAsync;
-        _displayingAsync = displayingAsync;
-        _processingAsync = processingAsync;
-        _displayedAsync = displayedAsync;
+        _creatingAsync = creatingAsync?.ToArray();
+        _createdAsync = createdAsync?.ToArray();
+        _displayingAsync = displayingAsync?.ToArray();
+        _processingAsync = processingAsync?.ToArray();
+        _displayedAsync = displayedAsync?.ToArray();
 
         // Ensure none of these are null. This is done separately to make sure the []
         // operator is converted to Array.Empty<T>() at compile time.
