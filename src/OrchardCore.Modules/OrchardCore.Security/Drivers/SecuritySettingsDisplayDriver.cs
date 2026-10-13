@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
 using OrchardCore.Security.ViewModels;
@@ -18,7 +18,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
 {
     internal const string GroupId = "SecurityHeaders";
 
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly SecuritySettings _securitySettings;
@@ -30,14 +30,14 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         => GroupId;
 
     public SecuritySettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptionsSnapshot<SecuritySettings> securitySettings,
         INotifier notifier,
         IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _securitySettings = securitySettings.Value;
@@ -53,8 +53,6 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         // Set the settings from configuration when AdminSettings are overridden via ConfigureSecuritySettings()
         var currentSettings = settings;
@@ -112,7 +110,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         settings.PermissionsPolicy = model.PermissionsPolicy;
         settings.ReferrerPolicy = model.ReferrerPolicy;
 
-        _shellReleaseManager.RequestRelease();
+        _optionsUpdateNotifier.RequestUpdate<SecuritySettings>();
 
         return await EditAsync(site, settings, context);
     }

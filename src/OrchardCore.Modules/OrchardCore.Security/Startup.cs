@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Options;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Drivers;
@@ -25,21 +26,14 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<ISecurityService, SecurityService>();
 
+        services.AddSignalOptionsChangeTokenSource<SecuritySettings>();
         services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
-
-        builder.UseSecurityHeaders(options =>
-        {
-            options
-                .AddContentSecurityPolicy(securityOptions.ContentSecurityPolicy)
-                .AddContentTypeOptions()
-                .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
-                .AddReferrerPolicy(securityOptions.ReferrerPolicy);
-        });
+        // The headers follow the security settings, which are updated without releasing the tenant.
+        builder.UseMiddleware<SecuritySettingsHeadersMiddleware>();
     }
 }
 
