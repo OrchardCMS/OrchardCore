@@ -22,7 +22,7 @@ public class ShapeHtmlRendererTests
             .Setup(helper => helper.ShapeExecuteAsync(It.Is<IShape>(shape => ReferenceEquals(shape, zone))))
             .ReturnsAsync(new HtmlString("<p>Fields &amp; values</p>"));
 
-        var html = await CreateRenderer(displayHelper.Object).RenderZoneAsync(holder, "Content");
+        var html = await CreateRenderer(displayHelper.Object).RenderZoneAsync(holder, "Content", TestContext.Current.CancellationToken);
 
         Assert.Equal("<p>Fields &amp; values</p>", html);
         displayHelper.Verify(helper => helper.ShapeExecuteAsync(It.Is<IShape>(shape => ReferenceEquals(shape, holder))), Times.Never());
@@ -34,8 +34,8 @@ public class ShapeHtmlRendererTests
         var displayHelper = new Mock<IDisplayHelper>(MockBehavior.Strict);
         var renderer = CreateRenderer(displayHelper.Object);
 
-        Assert.Empty(await renderer.RenderZoneAsync(new ZoneHolding(() => ValueTask.FromResult<IShape>(new Shape())), "Content"));
-        Assert.Empty(await renderer.RenderZoneAsync(new Shape(), "Content"));
+        Assert.Empty(await renderer.RenderZoneAsync(new ZoneHolding(() => ValueTask.FromResult<IShape>(new Shape())), "Content", TestContext.Current.CancellationToken));
+        Assert.Empty(await renderer.RenderZoneAsync(new Shape(), "Content", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -46,10 +46,23 @@ public class ShapeHtmlRendererTests
         var displayHelper = new Mock<IDisplayHelper>();
         displayHelper.Setup(helper => helper.ShapeExecuteAsync(shape)).ReturnsAsync(new HtmlString("<b>Shape</b>"));
 
-        var html = await CreateRenderer(displayHelper.Object, viewContextAccessor).RenderAsync(shape);
+        var html = await CreateRenderer(displayHelper.Object, viewContextAccessor).RenderAsync(shape, TestContext.Current.CancellationToken);
 
         Assert.Equal("<b>Shape</b>", html);
         Assert.Null(viewContextAccessor.ViewContext);
+    }
+
+    [Fact]
+    public async Task RenderAsync_CanceledToken_DoesNotRender()
+    {
+        var shape = new Shape();
+        var holder = new ZoneHolding(() => ValueTask.FromResult<IShape>(new Shape()));
+        holder.Zones["Content"] = shape;
+        var displayHelper = new Mock<IDisplayHelper>(MockBehavior.Strict);
+        var renderer = CreateRenderer(displayHelper.Object);
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => renderer.RenderAsync(shape, new CancellationToken(canceled: true)));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => renderer.RenderZoneAsync(holder, "Content", new CancellationToken(canceled: true)));
     }
 
     private static ShapeHtmlRenderer CreateRenderer(IDisplayHelper displayHelper, ViewContextAccessor viewContextAccessor = null)
