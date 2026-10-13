@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
 using OrchardCore.Settings;
@@ -16,7 +17,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 {
     public const string GroupId = "Https";
 
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -24,13 +25,13 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
     internal readonly IHtmlLocalizer H;
 
     public HttpsSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         INotifier notifier,
         IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _notifier = notifier;
@@ -46,8 +47,6 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", async model =>
         {
@@ -92,7 +91,9 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
         settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
         settings.SslPort = model.SslPort;
 
-        _shellReleaseManager.RequestRelease();
+        _optionsUpdateNotifier
+            .RequestUpdate<HttpsSettings>()
+            .RequestUpdate<HttpsRedirectionOptions>();
 
         return await EditAsync(site, settings, context);
     }
