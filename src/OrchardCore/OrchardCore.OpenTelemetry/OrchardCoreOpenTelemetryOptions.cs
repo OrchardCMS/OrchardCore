@@ -70,6 +70,12 @@ public sealed class OpenTelemetryTracingOptions
     /// Gets or sets the names of additional <see cref="System.Diagnostics.ActivitySource"/> to collect traces from.
     /// </summary>
     public string[] Sources { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets whether the traces of the client libraries used by Orchard Core modules are collected: the
+    /// Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to <see langword="true"/>.
+    /// </summary>
+    public bool IncludeClientLibraries { get; set; } = true;
 }
 
 /// <summary>

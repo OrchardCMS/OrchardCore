@@ -1,10 +1,10 @@
 # OpenTelemetry (`OrchardCore.OpenTelemetry`)
 
-`OrchardCore.OpenTelemetry` collects the traces, metrics and logs of an Orchard Core application with [OpenTelemetry](https://opentelemetry.io/), and exports them over OTLP to any compatible backend: the .NET Aspire dashboard, Jaeger, Prometheus, Grafana, Azure Monitor, Datadog, Honeycomb, Elastic, and many more.
+`OrchardCore.OpenTelemetry` collects the traces, metrics and logs of an Orchard Core application with [OpenTelemetry](https://opentelemetry.io/), and exports them over OTLP to any compatible backend: the Aspire dashboard, Jaeger, Prometheus, Grafana, Azure Monitor, Datadog, Honeycomb, Elastic, and many more.
 
 The telemetry is multi-tenant aware: spans, log records and HTTP server metrics are tagged with the name of their tenant, and resource attributes identify each instance of the application, so that the behavior of every tenant and every instance of a web farm can be told apart.
 
-This video shows how to enable it, the traces, metrics and logs of two instances serving two tenants in the .NET Aspire dashboard, and how to configure it.
+This video shows how to enable it, the traces, metrics and logs of two instances serving two tenants in the Aspire dashboard, and how to configure it.
 
 <video controls preload="metadata" width="100%" poster="videos/opentelemetry.jpg">
     <source src="videos/opentelemetry.mp4" type="video/mp4">
@@ -52,7 +52,7 @@ Instead, the telemetry of every tenant is tagged with its name, so that it can b
 
 ### Trying it locally
 
-The `OrchardCore.AspireHost` project of the repository runs `OrchardCore.Cms.Web` with the [.NET Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/overview), which shows its traces, metrics and structured logs. Set it as the startup project and run it, or run `dotnet run --project src/OrchardCore.AspireHost`, then open the dashboard from the link the host prints. The host configures the OTLP endpoint of the application, so nothing else is needed. It also starts a ClamAV container for the antivirus feature, which requires Docker or another container runtime.
+The `OrchardCore.AspireHost` project of the repository runs `OrchardCore.Cms.Web` with the [Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/overview), which shows its traces, metrics and structured logs. Set it as the startup project and run it, or run `dotnet run --project src/OrchardCore.AspireHost`, then open the dashboard from the link the host prints. The host configures the OTLP endpoint of the application, so nothing else is needed. It also starts a ClamAV container for the antivirus feature, which requires Docker or another container runtime.
 
 ## Configuration
 
@@ -95,6 +95,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Tracing:Enabled` | Whether traces are collected. Defaults to `true`. |
 | `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
+| `Tracing:IncludeClientLibraries` | Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to `true`. See [Client libraries](#client-libraries). |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
 | `Metrics:Meters` | The names of additional `Meter` to collect metrics from. |
@@ -110,32 +111,63 @@ The standard `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_PROTOCOL` and `O
 
 Each signal carries resource attributes identifying the application and its instance: `service.name`, `service.version`, `service.instance.id`, `host.name`, `process.pid`, `process.runtime.name`, `process.runtime.version`, `deployment.environment.name` (the hosting environment) and `orchardcore.version`.
 
-### Traces
+### Spans
 
-| Source | Spans |
-| --- | --- |
-| Orchard Core | Building the service container (`Build tenant container`) and the request pipeline (`Build tenant pipeline`) of a tenant, activating a tenant (`Activate tenant`), running a background task (`Run background task {name}`), executing a recipe (`Execute recipe {name}`) and each of its steps (`Execute recipe step {name}`). |
-| ASP.NET Core | One span for each HTTP request, tagged with the tenant that served it. |
-| HttpClient | One span for each outgoing HTTP request. |
-| Npgsql, MySqlConnector | The database commands sent to PostgreSQL and MySQL. For SQL Server, add the `OpenTelemetry.Instrumentation.SqlClient` instrumentation with the configuration callback. |
+The spans of Orchard Core come from the `OrchardCore` activity source:
 
-Every span started in the scope of a tenant, including the spans of other libraries, is tagged with `orchardcore.tenant.name`. A background task run is the root of its own trace.
+| Span | Kind | Attributes |
+| --- | --- | --- |
+| `Build tenant container` | Internal | `orchardcore.tenant.name` |
+| `Build tenant pipeline` | Internal | `orchardcore.tenant.name` |
+| `Activate tenant` | Internal | `orchardcore.tenant.name` |
+| `Run background task {task}` | Internal | `orchardcore.tenant.name`, `orchardcore.background_task.name` |
+| `Execute recipe {recipe}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name` |
+| `Execute recipe step {step}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name`, `orchardcore.recipe.step.name` |
+
+A failed operation has the `Error` status, the `error.type` attribute and an `exception` event. A background task run is the root of its own trace.
+
+The spans of ASP.NET Core (one for each HTTP request, also tagged with the `orchardcore.tenant.name` of the tenant that served it) and of HttpClient (one for each outgoing HTTP request) are collected too, as well as the ones of the client libraries listed below.
+
+Every span started in the scope of a tenant, including the spans of other libraries, is tagged with `orchardcore.tenant.name`.
 
 ### Metrics
 
-| Metric | Description |
+The metrics of Orchard Core come from the `OrchardCore` meter:
+
+| Instrument | Type | Unit | Attributes | Description |
+| --- | --- | --- | --- | --- |
+| `orchardcore.tenants` | Gauge | `{tenant}` | `orchardcore.tenant.state` | Number of tenants by state. A gauge, since every instance reports the same tenants. |
+| `orchardcore.tenants.loaded` | UpDownCounter | `{tenant}` | | Number of tenants whose service container is built and loaded in memory, which adds up across instances. |
+| `orchardcore.tenant.container.duration` | Histogram | `s` | `orchardcore.tenant.name`, `error.type` | Duration of building the service container of a tenant. |
+| `orchardcore.tenant.pipeline.duration` | Histogram | `s` | `orchardcore.tenant.name`, `error.type` | Duration of building the request pipeline of a tenant. |
+| `orchardcore.tenant.activation.duration` | Histogram | `s` | `orchardcore.tenant.name`, `error.type` | Duration of activating a tenant. |
+| `orchardcore.tenant.releases` | Counter | `{release}` | `orchardcore.tenant.name`, `orchardcore.tenant.release.reason` | Number of times a tenant was released: `reload`, `release` or `remove`. |
+| `orchardcore.background_task.duration` | Histogram | `s` | `orchardcore.tenant.name`, `orchardcore.background_task.name`, `error.type` | Duration of running a background task. |
+
+`error.type` is only set when the operation failed.
+
+The metrics built in .NET are collected too, from these meters:
+
+| Meter | Metrics |
 | --- | --- |
-| `orchardcore.tenants` | Number of tenants, by `orchardcore.tenant.state`. A gauge, since every instance reports the same tenants. |
-| `orchardcore.tenants.loaded` | Number of tenants whose service container is built and loaded in memory, which adds up across instances. |
-| `orchardcore.tenant.container.duration` | Duration of building the service container of a tenant. |
-| `orchardcore.tenant.pipeline.duration` | Duration of building the request pipeline of a tenant. |
-| `orchardcore.tenant.activation.duration` | Duration of activating a tenant. |
-| `orchardcore.tenant.releases` | Number of times a tenant was released, by `orchardcore.tenant.release.reason` (`reload`, `release` or `remove`). |
-| `orchardcore.background_task.duration` | Duration of running a background task, by `orchardcore.background_task.name`. |
+| `Microsoft.AspNetCore.Hosting` | `http.server.request.duration`, also tagged with `orchardcore.tenant.name` (see `Metrics:IncludeTenantName`), and `http.server.active_requests`. |
+| `Microsoft.AspNetCore.Server.Kestrel`, `Microsoft.AspNetCore.MemoryPool`, `Microsoft.AspNetCore.Routing`, `Microsoft.AspNetCore.Diagnostics`, `Microsoft.AspNetCore.RateLimiting`, `Microsoft.AspNetCore.Http.Connections` | Connections and memory pools, route matching, handled exceptions, rate limiting, and SignalR connections. |
+| `Microsoft.AspNetCore.Authentication`, `Microsoft.AspNetCore.Authorization`, `Microsoft.AspNetCore.Identity` | Authentications, authorization attempts, sign-ins and user operations. |
+| `System.Net.Http`, `System.Net.NameResolution` | `http.client.request.duration`, connections and DNS lookups. |
+| `System.Runtime` | The health of each instance: `dotnet.gc.*`, `dotnet.process.cpu.time`, `dotnet.process.memory.working_set`, `dotnet.thread_pool.*`, `dotnet.exceptions`... |
 
-The Orchard Core metrics are tagged with `orchardcore.tenant.name`, and with `error.type` when the operation failed.
+### Client libraries
 
-The metrics built in .NET are also collected: HTTP server and client (`http.server.request.duration`, `http.client.request.duration`, ...), Kestrel, routing, authentication, authorization and identity, and the .NET runtime (`dotnet.gc.*`, `dotnet.process.cpu.time`, `dotnet.process.memory.working_set`, `dotnet.thread_pool.*`, `dotnet.exceptions`, ...), giving the health of each instance.
+OpenTelemetry only collects the activity sources and meters it's told about: the telemetry a library emits itself is collected once its source or meter is added. These ones, used by Orchard Core modules, are collected by default:
+
+| Library | Used by | Telemetry |
+| --- | --- | --- |
+| Elasticsearch client | Elasticsearch | `Elastic.Transport` spans. |
+| MailKit | SMTP email | `MailKit.Net.SmtpClient` spans. |
+| Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` spans. Their activity sources are experimental, so Orchard Core enables them with the `Azure.Experimental.EnableActivitySource` switch, unless the application already sets it or the `AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE` variable. |
+| Npgsql, MySqlConnector | PostgreSQL and MySQL databases | Spans of the database commands, and connection pool metrics. |
+
+`Tracing:IncludeClientLibraries` turns the Elasticsearch, MailKit and Azure SDK spans off. Other libraries are added with the `Tracing:Sources` and `Metrics:Meters` settings, and the libraries that don't emit telemetry themselves need an instrumentation package. For instance, StackExchange.Redis, used by the Redis features, is traced by the `OpenTelemetry.Instrumentation.StackExchangeRedis` package, and the SQL Server client by `OpenTelemetry.Instrumentation.SqlClient`, both added with the callback of `AddOpenTelemetry()`.
 
 ### Logs
 
@@ -160,7 +192,7 @@ The rendering of shapes is traced too: the `OrchardCore.DisplayManagement` activ
 }
 ```
 
-This video shows how to find what a page spends its time on with these traces and metrics in the .NET Aspire dashboard: reading the shape spans of a request, comparing the time of a shape with the time of its children, and filtering the rendering durations by shape type.
+This video shows how to find what a page spends its time on with these traces and metrics in the Aspire dashboard: reading the shape spans of a request, comparing the time of a shape with the time of its children, and filtering the rendering durations by shape type.
 
 <video controls preload="metadata" width="100%" poster="videos/finding-slow-shapes.jpg">
     <source src="videos/finding-slow-shapes.mp4" type="video/mp4">
@@ -178,7 +210,7 @@ See the [Display Management](../DisplayManagement/README.md) module for the shap
 
 ## Using an existing OpenTelemetry configuration
 
-When the application already configures OpenTelemetry, e.g. with the `ServiceDefaults` project of a .NET Aspire solution, add the Orchard Core instrumentation to it instead of calling `AddOpenTelemetry()` on the Orchard Core builder:
+When the application already configures OpenTelemetry, e.g. with the `ServiceDefaults` project of an Aspire solution, add the Orchard Core instrumentation to it instead of calling `AddOpenTelemetry()` on the Orchard Core builder:
 
 ```csharp
 builder.Services.AddOpenTelemetry()

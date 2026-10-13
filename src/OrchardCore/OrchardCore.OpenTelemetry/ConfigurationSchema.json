@@ -42,6 +42,11 @@
                     "type": "string"
                   },
                   "description": "The names of additional activity sources to collect traces from."
+                },
+                "IncludeClientLibraries": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients."
                 }
               }
             },
