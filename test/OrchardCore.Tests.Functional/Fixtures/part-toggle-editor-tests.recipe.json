@@ -1,7 +1,7 @@
 {
   "name": "PartToggleEditorTests",
   "displayName": "PartToggleEditorTests",
-  "description": "Testing the AutoroutePart and SitemapPart editors' show/hide toggles, both on a content item and on the items added to its BagPart.",
+  "description": "Testing the AutoroutePart and SitemapPart editors' show/hide toggles and the Leaflet GeoPointField editor, both on a content item and on the items added to its BagPart.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -27,6 +27,7 @@
         "OrchardCore.ContentTypes",
         "OrchardCore.Flows",
         "OrchardCore.Sitemaps",
+        "OrchardCore.Spatial",
         "OrchardCore.Title",
         "TheAdmin",
         "SafeMode"
@@ -56,6 +57,15 @@
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "ToggleContainer",
+              "Name": "ToggleContainer",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -119,6 +129,15 @@
               }
             },
             {
+              "PartName": "ToggleItem",
+              "Name": "ToggleItem",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
@@ -137,6 +156,40 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "ToggleContainer",
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "GeoPointField",
+              "Name": "Location",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Location",
+                  "Editor": "Leaflet",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ToggleItem",
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "GeoPointField",
+              "Name": "Location",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Location",
+                  "Editor": "Leaflet",
+                  "Position": "0"
                 }
               }
             }
