@@ -1,18 +1,18 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="TIssue extends DesignIssue">
 import { computed } from "vue";
 import type { DesignIssue } from "../core/types";
 import { t } from "../core/i18n";
 
 // The issues of a definition. An issue that targets a node can be selected, to show that node.
 const props = defineProps<{
-    issues: DesignIssue[];
+    issues: TIssue[];
     // The id of the node an issue targets, such as its `activityId` or `stepId`.
-    targetOf: (issue: DesignIssue) => string | null | undefined;
+    targetOf: (issue: TIssue) => string | null | undefined;
     // The title of the node an issue targets, shown before its message.
-    titleOf: (issue: DesignIssue) => string | null | undefined;
+    titleOf: (issue: TIssue) => string | null | undefined;
 }>();
 
-const emit = defineEmits<{ (event: "select", issue: DesignIssue): void }>();
+const emit = defineEmits<{ (event: "select", issue: TIssue): void }>();
 
 // Errors first, then warnings, in the server's order.
 const sorted = computed(() => [...props.issues].sort((a, b) => (a.severity === b.severity ? 0 : a.severity === "Error" ? -1 : 1)));

@@ -1,14 +1,13 @@
 export type IssueSeverity = "Error" | "Warning";
 
 /**
- * A problem of a definition the server found, such as a node without its required connection. It may target a node,
- * through the property the designer names, such as `activityId` or `stepId`.
+ * A problem of a definition the server found, such as a node without its required connection. A designer's issues
+ * may also target a node, through a property of their own, such as `activityId` or `stepId`.
  */
 export interface DesignIssue {
     severity: IssueSeverity;
     message: string;
     code?: string | null;
-    [target: string]: unknown;
 }
 
 /**
