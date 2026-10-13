@@ -70,7 +70,9 @@ var content = await _shapeHtmlRenderer.RenderZoneAsync(shape, "Content");
 ```
 
 `RenderZoneAsync` returns an empty string when the shape has no zones, or when
-the zone is empty.
+the zone is empty. Both methods take an optional `CancellationToken`, such as
+`HttpContext.RequestAborted`; it is checked before rendering starts, since a
+shape can't be stopped once it renders.
 
 The [Display Management](../../reference/modules/DisplayManagement/README.md)
 reference also describes the `<shape>` tag helper and the equivalent Liquid

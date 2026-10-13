@@ -12,8 +12,9 @@ public interface IShapeHtmlRenderer
     /// Renders a shape.
     /// </summary>
     /// <param name="shape">The shape to render.</param>
+    /// <param name="cancellationToken">A token to stop the rendering before it starts, such as when the request is aborted.</param>
     /// <returns>The HTML of the shape.</returns>
-    Task<string> RenderAsync(IShape shape);
+    Task<string> RenderAsync(IShape shape, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Renders a zone of a shape, such as the <c>Content</c> zone where the drivers place their shapes, without the
@@ -21,6 +22,7 @@ public interface IShapeHtmlRenderer
     /// </summary>
     /// <param name="shape">The shape that holds the zone.</param>
     /// <param name="zoneName">The name of the zone.</param>
+    /// <param name="cancellationToken">A token to stop the rendering before it starts, such as when the request is aborted.</param>
     /// <returns>The HTML of the zone, or an empty string when the shape has no such zone or it is empty.</returns>
-    Task<string> RenderZoneAsync(IShape shape, string zoneName);
+    Task<string> RenderZoneAsync(IShape shape, string zoneName, CancellationToken cancellationToken = default);
 }

@@ -33,29 +33,37 @@ public sealed class ShapeHtmlRenderer : IShapeHtmlRenderer
     }
 
     /// <inheritdoc />
-    public Task<string> RenderAsync(IShape shape)
+    public Task<string> RenderAsync(IShape shape, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(shape);
 
-        return RenderOutsideViewAsync(shape);
+        return RenderOutsideViewAsync(shape, cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task<string> RenderZoneAsync(IShape shape, string zoneName)
+    public Task<string> RenderZoneAsync(IShape shape, string zoneName, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(shape);
         ArgumentException.ThrowIfNullOrEmpty(zoneName);
+
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<string>(cancellationToken);
+        }
 
         if (shape is not IZoneHolding zoneHolding || !zoneHolding.Zones.IsNotEmpty(zoneName))
         {
             return Task.FromResult(string.Empty);
         }
 
-        return RenderOutsideViewAsync(zoneHolding.Zones[zoneName]);
+        return RenderOutsideViewAsync(zoneHolding.Zones[zoneName], cancellationToken);
     }
 
-    private async Task<string> RenderOutsideViewAsync(IShape shape)
+    // The display pipeline can't be stopped once it runs, so the token is checked before rendering starts.
+    private async Task<string> RenderOutsideViewAsync(IShape shape, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var previousViewContext = _viewContextAccessor.ViewContext;
 
         if (previousViewContext?.View is null && _httpContextAccessor.HttpContext is { } httpContext)
