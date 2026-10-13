@@ -20,7 +20,7 @@ const LIFT_LIMIT = 10;
 
 const props = withDefaults(
     defineProps<{
-        // The nodes and edges to show, the edges with their two nodes.
+        // The nodes, and the edges to show with their two nodes.
         nodes: TNode[];
         edges: CanvasEdge<TNode, TEdge>[];
         selectedIds: string[];
@@ -39,12 +39,15 @@ const props = withDefaults(
         keyboardIgnore?: string;
         label: string;
         readOnly?: boolean;
+        // The nodes not shown, such as those of a collapsed branch.
+        hiddenIds?: ReadonlySet<string> | null;
     }>(),
     {
         resolveTarget: (_sourceId: string, _port: string, _target: unknown, targetPort: string | null) => ({ port: targetPort ?? "", valid: true }),
         dragType: null,
         keyboardIgnore: "",
         readOnly: false,
+        hiddenIds: null,
     },
 );
 
@@ -103,6 +106,7 @@ let zoomTimer: ReturnType<typeof setTimeout> | undefined;
 let pointerFocus = false;
 
 const nodeById = computed(() => new Map(props.nodes.map((node) => [node.id, node])));
+const visibleNodes = computed(() => (props.hiddenIds?.size ? props.nodes.filter((node) => !props.hiddenIds!.has(node.id)) : props.nodes));
 const selected = computed(() => new Set(props.selectedIds));
 
 const isLiftedEdge = (edge: CanvasEdge<TNode, TEdge>) => liftedIds.value.has(edge.source.id) || liftedIds.value.has(edge.target.id);
@@ -175,7 +179,7 @@ const markZooming = () => {
 };
 
 const fit = () => {
-    setViewport(fitToContent(boundsOf(props.nodes.map(rectOf)), hostSize));
+    setViewport(fitToContent(boundsOf(visibleNodes.value.map(rectOf)), hostSize));
     markZooming();
 };
 
@@ -292,7 +296,7 @@ const startMarquee = (event: PointerEvent) => {
             const rect = rectFromPoints(origin, toCanvas(moveEvent));
             marquee.value = rect;
 
-            const inside = props.nodes.filter((node) => rectsIntersect(rect, rectOf(node))).map((node) => node.id);
+            const inside = visibleNodes.value.filter((node) => rectsIntersect(rect, rectOf(node))).map((node) => node.id);
             emit("select-nodes", [...new Set([...initialSelection, ...inside])]);
         },
         onEnd: () => {
@@ -650,7 +654,7 @@ defineExpose({
                 </template>
             </svg>
 
-            <template v-for="node in nodes" :key="node.id">
+            <template v-for="node in visibleNodes" :key="node.id">
                 <slot
                     name="node"
                     :node="node"
