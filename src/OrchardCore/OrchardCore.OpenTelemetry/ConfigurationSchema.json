@@ -47,6 +47,11 @@
                   "type": "boolean",
                   "default": true,
                   "description": "Whether the spans of the database operations include their SQL text, in 'db.query.text'. The commands run by YesSql are parameterized, so their text holds no values."
+                },
+                "IncludeClientLibraries": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients."
                 }
               }
             },
