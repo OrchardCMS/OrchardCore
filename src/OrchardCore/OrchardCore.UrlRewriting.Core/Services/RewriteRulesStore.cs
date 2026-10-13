@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Documents;
+using OrchardCore.Environment.Options;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Services;
@@ -69,6 +73,10 @@ public sealed class RewriteRulesStore : IRewriteRulesStore
         document.Rules = rules.ToDictionary(x => x.Id);
 
         await _documentManager.UpdateAsync(document);
+
+        // Every change of the rules goes through this method, so this is where the rewrite options are refreshed.
+        // The store is a singleton, so the scoped notifier is resolved from the current shell scope.
+        ShellScope.Services?.GetService<IOptionsUpdateNotifier>()?.RequestUpdate<RewriteOptions>();
 
         return document.Rules.Values;
     }

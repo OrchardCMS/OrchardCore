@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Options;
 using OrchardCore.UrlRewriting.Handlers;
 using OrchardCore.UrlRewriting.Services;
 
@@ -10,6 +11,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddUrlRewritingServices(this IServiceCollection services)
     {
+        services.AddSignalOptionsChangeTokenSource<RewriteOptions>();
         services.AddTransient<IConfigureOptions<RewriteOptions>, RewriteOptionsConfiguration>();
         services.AddSingleton<IRewriteRulesStore, RewriteRulesStore>();
         services.AddScoped<IRewriteRulesManager, RewriteRulesManager>();
