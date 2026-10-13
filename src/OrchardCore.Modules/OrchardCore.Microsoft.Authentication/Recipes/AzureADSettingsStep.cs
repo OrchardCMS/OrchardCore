@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Environment.Options;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
@@ -12,11 +13,13 @@ namespace OrchardCore.Microsoft.Authentication.Recipes;
 public sealed class AzureADSettingsStep : NamedRecipeStepHandler
 {
     private readonly IAzureADService _azureADService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
-    public AzureADSettingsStep(IAzureADService azureADService)
+    public AzureADSettingsStep(IAzureADService azureADService, IOptionsUpdateNotifier optionsUpdateNotifier)
         : base(nameof(AzureADSettings))
     {
         _azureADService = azureADService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -30,6 +33,8 @@ public sealed class AzureADSettingsStep : NamedRecipeStepHandler
         settings.CallbackPath = model.CallbackPath;
 
         await _azureADService.UpdateSettingsAsync(settings);
+
+        _optionsUpdateNotifier.RequestAzureADUpdate();
     }
 }
 

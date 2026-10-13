@@ -34,6 +34,10 @@ public sealed class MicrosoftAccountStartup : StartupBase
         services.AddTransient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>();
         services.AddTransient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions, MicrosoftAccountHandler>>();
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<MicrosoftAccountSettings>();
+        services.AddSignalOptionsChangeTokenSource<MicrosoftAccountOptions>(MicrosoftAccountDefaults.AuthenticationScheme);
     }
 }
 

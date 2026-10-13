@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Environment.Options;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
@@ -12,11 +13,13 @@ namespace OrchardCore.Microsoft.Authentication.Recipes;
 public sealed class MicrosoftAccountSettingsStep : NamedRecipeStepHandler
 {
     private readonly IMicrosoftAccountService _microsoftAccountService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
-    public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService)
+    public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService, IOptionsUpdateNotifier optionsUpdateNotifier)
         : base(nameof(MicrosoftAccountSettings))
     {
         _microsoftAccountService = microsoftAccountService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -29,6 +32,8 @@ public sealed class MicrosoftAccountSettingsStep : NamedRecipeStepHandler
         settings.CallbackPath = model.CallbackPath;
 
         await _microsoftAccountService.UpdateSettingsAsync(settings);
+
+        _optionsUpdateNotifier.RequestMicrosoftAccountUpdate();
     }
 }
 

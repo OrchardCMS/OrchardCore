@@ -17,18 +17,19 @@ public class AzureADOptionsConfiguration :
 {
     public const string AzureAdOpenIdConnectScheme = MicrosoftIdentityDefaults.AzureAd + OpenIdConnectDefaults.AuthenticationScheme;
 
-    private readonly AzureADSettings _azureADSettings;
+    private readonly IOptionsMonitor<AzureADSettings> _azureADSettings;
     private readonly ILogger _logger;
 
-    public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings, ILogger<AzureADOptionsConfiguration> logger)
+    public AzureADOptionsConfiguration(IOptionsMonitor<AzureADSettings> azureADSettings, ILogger<AzureADOptionsConfiguration> logger)
     {
-        _azureADSettings = azureADSettings.Value;
+        _azureADSettings = azureADSettings;
         _logger = logger;
     }
 
     public void Configure(AuthenticationOptions options)
     {
-        var settings = _azureADSettings;
+        // Read the current settings, as the options can be rebuilt when the settings are updated.
+        var settings = _azureADSettings.CurrentValue;
         if (settings == null)
         {
             return;
@@ -61,7 +62,7 @@ public class AzureADOptionsConfiguration :
             return;
         }
 
-        var loginSettings = _azureADSettings;
+        var loginSettings = _azureADSettings.CurrentValue;
         if (loginSettings == null)
         {
             return;

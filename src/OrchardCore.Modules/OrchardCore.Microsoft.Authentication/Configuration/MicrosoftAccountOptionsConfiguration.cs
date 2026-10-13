@@ -12,29 +12,32 @@ public class MicrosoftAccountOptionsConfiguration :
     IConfigureOptions<AuthenticationOptions>,
     IConfigureNamedOptions<MicrosoftAccountOptions>
 {
-    private readonly MicrosoftAccountSettings _microsoftAccountSettings;
+    private readonly IOptionsMonitor<MicrosoftAccountSettings> _microsoftAccountSettings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public MicrosoftAccountOptionsConfiguration(
-        IOptions<MicrosoftAccountSettings> microsoftAccountSettings,
+        IOptionsMonitor<MicrosoftAccountSettings> microsoftAccountSettings,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<MicrosoftAccountOptionsConfiguration> logger)
     {
-        _microsoftAccountSettings = microsoftAccountSettings.Value;
+        _microsoftAccountSettings = microsoftAccountSettings;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
 
     public void Configure(AuthenticationOptions options)
     {
-        if (_microsoftAccountSettings == null)
+        // Read the current settings, as the options can be rebuilt when the settings are updated.
+        var settings = _microsoftAccountSettings.CurrentValue;
+
+        if (settings == null)
         {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) ||
-            string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+        if (string.IsNullOrWhiteSpace(settings.AppId) ||
+            string.IsNullOrWhiteSpace(settings.AppSecret))
         {
             _logger.LogWarning("The Microsoft login provider is enabled but not configured.");
 
@@ -57,28 +60,31 @@ public class MicrosoftAccountOptionsConfiguration :
             return;
         }
 
-        if (_microsoftAccountSettings == null)
+        // Read the current settings, as the options can be rebuilt when the settings are updated.
+        var settings = _microsoftAccountSettings.CurrentValue;
+
+        if (settings == null)
         {
             return;
         }
 
-        options.ClientId = _microsoftAccountSettings.AppId;
+        options.ClientId = settings.AppId;
 
         try
         {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(_microsoftAccountSettings.AppSecret);
+            options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(settings.AppSecret);
         }
         catch
         {
             _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
         }
 
-        if (_microsoftAccountSettings.CallbackPath.HasValue)
+        if (settings.CallbackPath.HasValue)
         {
-            options.CallbackPath = _microsoftAccountSettings.CallbackPath;
+            options.CallbackPath = settings.CallbackPath;
         }
 
-        options.SaveTokens = _microsoftAccountSettings.SaveTokens;
+        options.SaveTokens = settings.SaveTokens;
     }
 
     public void Configure(MicrosoftAccountOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
