@@ -112,7 +112,7 @@ public class StringLocalizerFactoryPluralExtensionsTests
 
         var factory = new PortableObjectStringLocalizerFactory(
             localizationManager.Object,
-            Options.Create(new RequestLocalizationOptions()),
+            Mock.Of<IOptionsMonitor<RequestLocalizationOptions>>(monitor => monitor.CurrentValue == new RequestLocalizationOptions()),
             NullLogger<PortableObjectStringLocalizerFactory>.Instance);
 
         using var cultureScope = CultureScope.Create("ru");
@@ -135,7 +135,7 @@ public class StringLocalizerFactoryPluralExtensionsTests
 
         var factory = new PortableObjectStringLocalizerFactory(
             localizationManager.Object,
-            Options.Create(new RequestLocalizationOptions()),
+            Mock.Of<IOptionsMonitor<RequestLocalizationOptions>>(monitor => monitor.CurrentValue == new RequestLocalizationOptions()),
             NullLogger<PortableObjectStringLocalizerFactory>.Instance);
 
         using var cultureScope = CultureScope.Create("ru");

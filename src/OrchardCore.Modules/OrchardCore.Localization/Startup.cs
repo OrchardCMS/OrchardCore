@@ -39,27 +39,15 @@ public sealed class Startup : StartupBase
         services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
 
         services.AddLiquidFilter<TransliterateFilter>("transliterate");
+
+        services.AddTransient<IPostConfigureOptions<RequestLocalizationOptions>, LocalizationSettingsOptionsConfiguration>();
+        services.AddSignalOptionsChangeTokenSource<RequestLocalizationOptions>();
     }
 
     /// <inheritdocs />
-    public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var localizationService = serviceProvider.GetService<ILocalizationService>();
-
-        var defaultCulture = await localizationService.GetDefaultCultureAsync();
-        var supportedCultures = await localizationService.GetSupportedCulturesAsync();
-
-        var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
-        var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-
-        localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
-        localizationOptions.FallBackToParentUICultures = localizationOptions.FallBackToParentCultures = localizationService.FallBackToParentCultures;
-        localizationOptions
-            .SetDefaultCulture(defaultCulture)
-            .AddSupportedCultures(supportedCultures)
-            .AddSupportedUICultures(supportedCultures);
-
-        app.UseRequestLocalization(localizationOptions);
+        app.UseMiddleware<RequestLocalizationOptionsMonitorMiddleware>();
     }
 }
 

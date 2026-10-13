@@ -1,14 +1,12 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
 using OrchardCore.Settings;
@@ -23,13 +21,10 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     public const string GroupId = "localization";
 
     private readonly ILocalizationService _localizationService;
-    private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly INotifier _notifier;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly CultureOptions _cultureOptions;
 
-    internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
@@ -37,22 +32,16 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
 
     public LocalizationSettingsDisplayDriver(
         ILocalizationService localizationService,
-        IShellReleaseManager shellReleaseManager,
-        INotifier notifier,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<CultureOptions> cultureOptions,
-        IHtmlLocalizer<LocalizationSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
     )
     {
         _localizationService = localizationService;
-        _shellReleaseManager = shellReleaseManager;
-        _notifier = notifier;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _cultureOptions = cultureOptions.Value;
-        H = htmlLocalizer;
         S = stringLocalizer;
     }
 
@@ -65,8 +54,6 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
         {
@@ -123,14 +110,8 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
                 settings.DefaultCulture = settings.SupportedCultures[0];
             }
 
-            // We always release the tenant for the default culture and also supported cultures to take effect.
-            _shellReleaseManager.RequestRelease();
-
-            // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
-            using (CultureScope.Create(settings.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
-            {
-                await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
-            }
+            // The request localization options are rebuilt from the new settings once they are committed.
+            _optionsUpdateNotifier.RequestUpdate<RequestLocalizationOptions>();
         }
 
         return await EditAsync(site, settings, context);
