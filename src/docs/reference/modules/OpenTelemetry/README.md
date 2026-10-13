@@ -4,6 +4,14 @@
 
 The telemetry is multi-tenant aware: spans, log records and HTTP server metrics are tagged with the name of their tenant, and resource attributes identify each instance of the application, so that the behavior of every tenant and every instance of a web farm can be told apart.
 
+This video shows how to enable it, the traces, metrics and logs of two instances serving two tenants in the .NET Aspire dashboard, and how to configure it.
+
+<video controls preload="metadata" width="100%" poster="videos/opentelemetry.jpg">
+    <source src="videos/opentelemetry.mp4" type="video/mp4">
+    <track kind="captions" src="videos/opentelemetry.vtt" srclang="en" label="English">
+    Your browser does not support embedded videos. <a href="videos/opentelemetry.mp4">Download the video</a>.
+</video>
+
 ## Enabling OpenTelemetry
 
 Reference the `OrchardCore.OpenTelemetry` package and call `AddOpenTelemetry()` on the Orchard Core builder:
@@ -123,8 +131,8 @@ Every span started in the scope of a tenant, including the spans of other librar
 
 | Metric | Description |
 | --- | --- |
-| `orchardcore.tenants` | Number of tenants, by `orchardcore.tenant.state`. |
-| `orchardcore.tenants.loaded` | Number of tenants whose service container is built and loaded in memory. |
+| `orchardcore.tenants` | Number of tenants, by `orchardcore.tenant.state`. A gauge, since every instance reports the same tenants. |
+| `orchardcore.tenants.loaded` | Number of tenants whose service container is built and loaded in memory, which adds up across instances. |
 | `orchardcore.tenant.container.duration` | Duration of building the service container of a tenant. |
 | `orchardcore.tenant.pipeline.duration` | Duration of building the request pipeline of a tenant. |
 | `orchardcore.tenant.activation.duration` | Duration of activating a tenant. |

@@ -1,0 +1,170 @@
+WEBVTT
+
+00:00:01.000 --> 00:00:07.513
+Orchard Core exports its traces, metrics and logs with OpenTelemetry, to any backend that receives OTLP.
+
+00:00:07.513 --> 00:00:11.894
+Each of them tells which tenant it comes from, and which instance of
+
+00:00:11.894 --> 00:00:13.907
+the application produced it.
+
+00:00:13.907 --> 00:00:18.111
+In this video, we'll enable it, look at what it collects, and see
+
+00:00:18.111 --> 00:00:19.650
+how to configure it.
+
+00:00:24.250 --> 00:00:30.758
+An Orchard Core application often serves many tenants, from several instances behind a load balancer.
+
+00:00:30.758 --> 00:00:35.198
+When a page is slow, or an error shows up, the first questions are:
+
+00:00:35.198 --> 00:00:37.570
+which tenant, and which instance?
+
+00:00:38.320 --> 00:00:45.383
+OpenTelemetry is the open standard for traces, metrics and logs, and OTLP is its protocol.
+
+00:00:45.383 --> 00:00:52.960
+Grafana, Jaeger, Azure Monitor, Datadog, Honeycomb, and the .NET Aspire dashboard all receive it.
+
+00:00:53.710 --> 00:00:59.042
+Orchard Core tags every span, log entry and request metric with its tenant,
+
+00:00:59.042 --> 00:01:02.925
+and describes each instance with resource attributes.
+
+00:01:02.925 --> 00:01:05.163
+It also traces its own work:
+
+00:01:05.163 --> 00:01:10.890
+building and activating tenants, running background tasks, and executing recipes.
+
+00:01:15.090 --> 00:01:19.564
+To enable it, call Add Open Telemetry on the Orchard Core builder, in
+
+00:01:19.564 --> 00:01:22.069
+the Program file of the application.
+
+00:01:22.069 --> 00:01:25.410
+The Orchard Core CMS web application already does.
+
+00:01:26.160 --> 00:01:31.046
+Then, set the address of an OTLP receiver, with the standard OTLP endpoint
+
+00:01:31.046 --> 00:01:35.994
+environment variable, or in the Open Telemetry section of the app settings.
+
+00:01:35.994 --> 00:01:39.170
+Until an endpoint is set, nothing is exported.
+
+00:01:39.920 --> 00:01:44.363
+To try it locally, the .NET Aspire dashboard is a free OTLP receiver
+
+00:01:44.363 --> 00:01:45.924
+that runs in Docker.
+
+00:01:45.924 --> 00:01:50.848
+Here, two instances of the application, each serving a Default and an Agency
+
+00:01:50.848 --> 00:01:53.430
+tenant, export their telemetry to it.
+
+00:01:57.599 --> 00:02:03.075
+In the Traces page, each request is a trace, from both instances of the application.
+
+00:02:03.075 --> 00:02:08.491
+Filtered on the Blog recipe, only the traces that set up the Default tenant remain.
+
+00:02:08.491 --> 00:02:09.769
+Let's open one.
+
+00:02:10.220 --> 00:02:12.647
+Its spans show what Orchard Core did:
+
+00:02:12.647 --> 00:02:18.121
+building the service container of the tenant, activating it, building its request pipeline,
+
+00:02:18.121 --> 00:02:21.790
+and executing the Blog recipe, with one span for each step.
+
+00:02:22.243 --> 00:02:26.917
+Each span carries the name of its tenant, and here, of its recipe.
+
+00:02:26.917 --> 00:02:30.163
+The slowest step of a setup is easy to find.
+
+00:02:30.616 --> 00:02:34.638
+The resource attributes identify the instance that produced it:
+
+00:02:34.638 --> 00:02:39.184
+the service instance ID, the host name, the process, and the versions of
+
+00:02:39.184 --> 00:02:40.816
+.NET and Orchard Core.
+
+00:02:45.006 --> 00:02:49.320
+In the Metrics page, the request duration of ASP.NET Core has a dimension
+
+00:02:49.320 --> 00:02:54.126
+for the Orchard Core tenant, so the response times of each tenant can be compared.
+
+00:02:54.578 --> 00:02:59.640
+The Orchard Core meter counts the tenants by state, and the tenants loaded in memory.
+
+00:02:59.640 --> 00:03:03.867
+It also measures how long each tenant takes to build, to activate, and
+
+00:03:03.867 --> 00:03:05.758
+to run its background tasks.
+
+00:03:06.209 --> 00:03:11.411
+With the .NET runtime metrics, such as memory, garbage collections and the thread
+
+00:03:11.411 --> 00:03:14.460
+pool, the health of each instance is visible.
+
+00:03:14.460 --> 00:03:17.269
+Each instance can be selected on its own.
+
+00:03:21.457 --> 00:03:23.968
+Structured logs carry their tenant too.
+
+00:03:23.968 --> 00:03:27.987
+Filtered on the Agency tenant, only what happened in it is listed.
+
+00:03:28.441 --> 00:03:33.439
+Each entry keeps its message, its parameters, the trace it belongs to, and
+
+00:03:33.439 --> 00:03:35.501
+the instance that wrote it.
+
+00:03:39.701 --> 00:03:44.724
+The Open Telemetry section turns each signal on or off, samples traces, adds
+
+00:03:44.724 --> 00:03:50.911
+sources and meters, and can remove the tenant from request metrics when there are many tenants.
+
+00:03:51.661 --> 00:03:57.222
+An application that already configures OpenTelemetry, such as a .NET Aspire solution with
+
+00:03:57.222 --> 00:04:03.661
+its service defaults, adds the Orchard Core instrumentation to its tracing, metrics and logging instead.
+
+00:04:04.411 --> 00:04:09.435
+Modules can trace their own work with the Orchard Core activity source and meter.
+
+00:04:09.435 --> 00:04:14.921
+They only depend on System dot Diagnostics, so the .NET counters tool can watch them too.
+
+00:04:16.921 --> 00:04:22.424
+OpenTelemetry shows what every tenant and every instance of Orchard Core is doing,
+
+00:04:22.424 --> 00:04:24.675
+in the backend of your choice.
+
+00:04:24.675 --> 00:04:26.301
+Thanks for watching.
+
