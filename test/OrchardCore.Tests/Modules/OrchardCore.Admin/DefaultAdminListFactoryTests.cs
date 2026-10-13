@@ -6,6 +6,7 @@ using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
@@ -26,9 +27,9 @@ public class DefaultAdminListFactoryTests
         var pager = new Shape();
         var emptyMessage = new HtmlString("Nothing here!");
 
-        var shape = await factory.CreateAsync(new AdminListContext("Contents")
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Contents")
         {
-            Rows = [row],
+            Rows = [new(new object(), row)],
             Header = header,
             Pager = pager,
             ItemCssClass = "list-group-item",
@@ -46,6 +47,10 @@ public class DefaultAdminListFactoryTests
         Assert.Same(emptyMessage, shape.Properties["EmptyMessage"]);
         Assert.Equal(true, shape.Properties["ShowLayoutSelector"]);
 
+        // The Grid layout renders the headers and the cells the column drivers built, one per row.
+        Assert.IsAssignableFrom<IZoneHolding>(shape.Properties["Headers"]);
+        Assert.Single((IList<IZoneHolding>)shape.Properties["Cells"]);
+
         // The parts the page left out are not set: a shape reads a property it does not have as null.
         Assert.False(shape.Properties.ContainsKey("Toolbar"));
         Assert.False(shape.Properties.ContainsKey("Search"));
@@ -60,7 +65,7 @@ public class DefaultAdminListFactoryTests
         var (factory, layoutResolver, _) = CreateFactory(_columns, AdminListConstants.Grid);
 
         // e.g. the items of a list part ordered by dragging them, which the page renders with the List layout.
-        var shape = await factory.CreateAsync(new AdminListContext("ListPartContents")
+        var shape = await factory.CreateAsync(new AdminListContext<object>("ListPartContents")
         {
             Layout = AdminListConstants.List,
         }, TestContext.Current.CancellationToken);
@@ -74,7 +79,7 @@ public class DefaultAdminListFactoryTests
     {
         var (factory, layoutResolver, _) = CreateFactory([], AdminListConstants.Grid, allowUserSelection: true);
 
-        var shape = await factory.CreateAsync(new AdminListContext("Unknown"), TestContext.Current.CancellationToken);
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Unknown"), TestContext.Current.CancellationToken);
 
         // Without columns the rows can only be rendered whole, so there is no other layout to offer, and the
         // resolver is not asked: it would remember a layout a user asked for in the query string.
@@ -88,7 +93,7 @@ public class DefaultAdminListFactoryTests
     {
         var (factory, _, _) = CreateFactory([], AdminListConstants.Grid);
 
-        var shape = await factory.CreateAsync(new AdminListContext("Unknown"), TestContext.Current.CancellationToken);
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Unknown"), TestContext.Current.CancellationToken);
 
         Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
         Assert.Equal(false, shape.Properties["ShowLayoutSelector"]);
@@ -99,13 +104,13 @@ public class DefaultAdminListFactoryTests
     {
         var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.List);
 
-        var shape = await factory.CreateAsync(new AdminListContext("Contents"), TestContext.Current.CancellationToken);
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Contents"), TestContext.Current.CancellationToken);
 
         // The List layout renders the rows whole, and there is no other layout to offer.
         Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
         Assert.Empty((IEnumerable<AdminListColumn>)shape.Properties["Columns"]);
         Assert.Equal(false, shape.Properties["ShowLayoutSelector"]);
-        columnsBuilder.Verify(b => b.BuildAsync(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Never);
+        columnsBuilder.Verify(b => b.BuildColumnsAsync<object>(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -113,14 +118,14 @@ public class DefaultAdminListFactoryTests
     {
         var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.Grid, allowUserSelection: true);
 
-        var shape = await factory.CreateAsync(new AdminListContext("ListPartContents")
+        var shape = await factory.CreateAsync(new AdminListContext<object>("ListPartContents")
         {
             Layout = AdminListConstants.List,
             ShowLayoutSelector = false,
         }, TestContext.Current.CancellationToken);
 
         Assert.Empty((IEnumerable<AdminListColumn>)shape.Properties["Columns"]);
-        columnsBuilder.Verify(b => b.BuildAsync(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Never);
+        columnsBuilder.Verify(b => b.BuildColumnsAsync<object>(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -128,7 +133,7 @@ public class DefaultAdminListFactoryTests
     {
         var (factory, layoutResolver, _) = CreateFactory(_columns, AdminListConstants.List, allowUserSelection: true);
 
-        var shape = await factory.CreateAsync(new AdminListContext("Contents"), TestContext.Current.CancellationToken);
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Contents"), TestContext.Current.CancellationToken);
 
         // The selector only offers the layouts with columns to a list that has some.
         Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
@@ -138,11 +143,47 @@ public class DefaultAdminListFactoryTests
     }
 
     [Fact]
+    public async Task CreateAsync_ListLayout_DoesNotBuildTheCells()
+    {
+        var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.List, allowUserSelection: true);
+
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Contents")
+        {
+            Rows = [new(new object(), new Shape())],
+        }, TestContext.Current.CancellationToken);
+
+        // The List layout renders the rows whole, so the cells the column drivers would build are not rendered.
+        Assert.False(shape.Properties.ContainsKey("Headers"));
+        Assert.False(shape.Properties.ContainsKey("Cells"));
+        columnsBuilder.Verify(b => b.BuildCellsAsync(It.IsAny<AdminListColumnsContext>(), It.IsAny<IEnumerable<AdminListRow<object>>>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateAsync_GridLayout_BuildsTheCellsOfTheRowsInOrder()
+    {
+        var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.Grid);
+        var first = new AdminListRow<object>("First", new Shape());
+        var second = new AdminListRow<object>("Second", new Shape());
+
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Contents")
+        {
+            Rows = [first, second],
+        }, TestContext.Current.CancellationToken);
+
+        Assert.Equal([first.Shape, second.Shape], (IEnumerable<IShape>)shape.Properties["Rows"]);
+        Assert.Equal(2, ((IList<IZoneHolding>)shape.Properties["Cells"]).Count);
+        columnsBuilder.Verify(b => b.BuildCellsAsync(
+            It.IsAny<AdminListColumnsContext>(),
+            It.Is<IEnumerable<AdminListRow<object>>>(rows => rows.SequenceEqual(new[] { first, second })),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task CreateAsync_PageTurnsTheSelectorOff_TheShapeSaysSo()
     {
         var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
 
-        var shape = await factory.CreateAsync(new AdminListContext("Features")
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Features")
         {
             ShowLayoutSelector = false,
         }, TestContext.Current.CancellationToken);
@@ -154,12 +195,12 @@ public class DefaultAdminListFactoryTests
     public async Task CreateAsync_DataOfThePage_ReachesTheColumnsBuilder()
     {
         var (factory, _, columnsBuilder) = CreateFactory(_columns, AdminListConstants.Grid);
-        var context = new AdminListContext("Contents");
+        var context = new AdminListContext<object>("Contents");
         context.Data["ContentTypes"] = new[] { "BlogPost" };
 
         await factory.CreateAsync(context, TestContext.Current.CancellationToken);
 
-        columnsBuilder.Verify(b => b.BuildAsync(
+        columnsBuilder.Verify(b => b.BuildColumnsAsync<object>(
             "Contents",
             It.Is<IReadOnlyDictionary<string, object>>(data => ((string[])data["ContentTypes"]).Single() == "BlogPost"),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -178,9 +219,9 @@ public class DefaultAdminListFactoryTests
         pager.Properties["PageSize"] = 10;
         pager.Properties["TotalItemCount"] = 25;
 
-        var shape = await factory.CreateAsync(new AdminListContext("Queries")
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Queries")
         {
-            Rows = [new Shape(), new Shape(), new Shape(), new Shape(), new Shape()],
+            Rows = [.. Enumerable.Range(0, 5).Select(_ => new AdminListRow<object>(new object(), new Shape()))],
             Pager = pager,
             BulkActions = bulkActions,
             ToolbarActions = filters,
@@ -205,9 +246,9 @@ public class DefaultAdminListFactoryTests
     {
         var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
 
-        var shape = await factory.CreateAsync(new AdminListContext("Roles")
+        var shape = await factory.CreateAsync(new AdminListContext<object>("Roles")
         {
-            Rows = Enumerable.Range(0, rowCount).Select(_ => (IShape)new Shape()).ToList(),
+            Rows = Enumerable.Range(0, rowCount).Select(_ => new AdminListRow<object>(new object(), new Shape())).ToList(),
             ShowSelectAll = false,
         }, TestContext.Current.CancellationToken);
 
@@ -230,36 +271,13 @@ public class DefaultAdminListFactoryTests
         var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
         var ownToolbar = new Shape();
 
-        var withHeader = await factory.CreateAsync(new AdminListContext("Contents") { Header = new Shape() }, TestContext.Current.CancellationToken);
-        var withOwnToolbar = await factory.CreateAsync(new AdminListContext("RateLimits") { Toolbar = ownToolbar }, TestContext.Current.CancellationToken);
-        var withoutToolbar = await factory.CreateAsync(new AdminListContext("Recipes") { ShowToolbar = false }, TestContext.Current.CancellationToken);
+        var withHeader = await factory.CreateAsync(new AdminListContext<object>("Contents") { Header = new Shape() }, TestContext.Current.CancellationToken);
+        var withOwnToolbar = await factory.CreateAsync(new AdminListContext<object>("RateLimits") { Toolbar = ownToolbar }, TestContext.Current.CancellationToken);
+        var withoutToolbar = await factory.CreateAsync(new AdminListContext<object>("Recipes") { ShowToolbar = false }, TestContext.Current.CancellationToken);
 
         Assert.False(withHeader.Properties.ContainsKey("Toolbar"));
         Assert.Same(ownToolbar, withOwnToolbar.Properties["Toolbar"]);
         Assert.False(withoutToolbar.Properties.ContainsKey("Toolbar"));
-    }
-
-    [Fact]
-    public async Task CreateAsync_RowsEnumerableOnce_AreCountedAndRenderedFromOneEnumeration()
-    {
-        var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
-        var enumerations = 0;
-
-        IEnumerable<IShape> Rows()
-        {
-            enumerations++;
-
-            yield return new Shape();
-            yield return new Shape();
-        }
-
-        var shape = await factory.CreateAsync(new AdminListContext("Queries") { Rows = Rows() }, TestContext.Current.CancellationToken);
-
-        var toolbar = Assert.IsAssignableFrom<IShape>(shape.Properties["Toolbar"]);
-
-        Assert.Equal(2, toolbar.Properties["ItemsCount"]);
-        Assert.Equal(2, ((IEnumerable<IShape>)shape.Properties["Rows"]).Count());
-        Assert.Equal(1, enumerations);
     }
 
     private static (DefaultAdminListFactory Factory, Mock<IAdminListLayoutResolver> LayoutResolver, Mock<IAdminListColumnsBuilder> ColumnsBuilder) CreateFactory(
@@ -274,8 +292,22 @@ public class DefaultAdminListFactoryTests
 
         var columnsBuilder = new Mock<IAdminListColumnsBuilder>();
         columnsBuilder
-            .Setup(b => b.BuildAsync(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => columns.ToList());
+            .Setup(b => b.BuildColumnsAsync<object>(It.IsAny<string>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string listName, IReadOnlyDictionary<string, object> data, CancellationToken _) =>
+            {
+                var context = new AdminListColumnsContext(listName, data, CreateZoneHolding(), new TestShapeFactory(), null, null);
+
+                foreach (var column in columns)
+                {
+                    context.Columns.Add(column);
+                }
+
+                return context;
+            });
+        columnsBuilder
+            .Setup(b => b.BuildCellsAsync(It.IsAny<AdminListColumnsContext>(), It.IsAny<IEnumerable<AdminListRow<object>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((AdminListColumnsContext _, IEnumerable<AdminListRow<object>> rows, CancellationToken _) =>
+                rows.Select(_ => (IZoneHolding)CreateZoneHolding()).ToList());
 
         var factory = new DefaultAdminListFactory(
             layoutResolver.Object,
@@ -286,6 +318,9 @@ public class DefaultAdminListFactoryTests
 
         return (factory, layoutResolver, columnsBuilder);
     }
+
+    private static ZoneHolding CreateZoneHolding()
+        => new(() => ValueTask.FromResult<IShape>(new Shape()));
 
     private sealed class TestShapeFactory : IShapeFactory
     {

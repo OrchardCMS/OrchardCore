@@ -90,13 +90,13 @@ public sealed class AdminController : Controller
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
         var pagerShape = await _shapeFactory.PagerAsync(pager, result.TotalCount, options.RouteValues);
-        var items = new List<IShape>();
+        var items = new List<AdminListRow<AuditTrailEvent>>();
 
         foreach (var auditTrailEvent in result.Events)
         {
-            items.Add(
-                await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
-            );
+            items.Add(new(
+                auditTrailEvent,
+                await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")));
         }
 
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
@@ -108,7 +108,7 @@ public sealed class AdminController : Controller
         var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the events with the configured layout (List, Grid, ...).
-        var list = await adminListFactory.CreateAsync(new AdminListContext(AuditTrailAdminList.Name)
+        var list = await adminListFactory.CreateAsync(new AdminListContext<AuditTrailEvent>(AuditTrailAdminList.Name)
         {
             Rows = items,
             Header = header,
@@ -118,7 +118,7 @@ public sealed class AdminController : Controller
 
         var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>("AuditTrailAdminList", viewModel =>
         {
-            viewModel.Events = items;
+            viewModel.Events = items.Select(item => item.Shape).ToList();
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;

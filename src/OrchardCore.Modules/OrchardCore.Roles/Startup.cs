@@ -64,7 +64,7 @@ public sealed class Startup : StartupBase
             }
         });
 
-        services.AddAdminListColumnProvider<RolesAdminListColumnProvider>(RolesAdminList.Name);
+        services.AddAdminListColumnDriver<RoleEntry, RolesAdminListColumnDriver>();
     }
 }
 

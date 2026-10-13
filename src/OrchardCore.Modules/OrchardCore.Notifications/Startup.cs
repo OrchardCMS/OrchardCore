@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation.Core;
+using OrchardCore.Notifications;
 using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Drivers;
 using OrchardCore.Notifications.Endpoints.Management;
@@ -71,7 +72,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
 
-        services.AddAdminListColumnProvider<NotificationsAdminListColumnProvider>(NotificationsAdminList.Name);
+        services.AddAdminListColumnDriver<Notification, NotificationsAdminListColumnDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

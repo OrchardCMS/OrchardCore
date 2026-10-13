@@ -113,15 +113,15 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.ShortcodeTemplates.Count);
+        var rows = new List<AdminListRow<ShortcodeTemplateEntry>>(model.ShortcodeTemplates.Count);
 
         foreach (var entry in model.ShortcodeTemplates)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(ShortcodesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<ShortcodeTemplateEntry>(ShortcodesAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

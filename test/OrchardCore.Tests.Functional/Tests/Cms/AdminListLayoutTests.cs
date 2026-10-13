@@ -3,8 +3,8 @@ using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-// Covers the admin lists end to end: the columns each module declares with its IAdminListColumnProvider,
-// the layout of the site, and the layout a user picks with the selector of a list. A list whose provider is
+// Covers the admin lists end to end: the columns each module declares with its column driver,
+// the layout of the site, and the layout a user picks with the selector of a list. A list whose driver is
 // not registered has no columns, so it falls back to the List layout and logs a warning, which the fixture
 // reports once the tests ran.
 public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixture>, IClassFixture<AdminListLayoutTestsFixture>
@@ -35,7 +35,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
     public AdminListLayoutTests(AdminListLayoutTestsFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task LayoutSelector_UserPicksGrid_ListRendersTheColumnsOfItsProviderAndKeepsTheChoice()
+    public async Task LayoutSelector_UserPicksGrid_ListRendersTheColumnsOfItsDriverAndKeepsTheChoice()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
@@ -58,7 +58,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
 
         Assert.Contains("layout=Grid", page.Url);
 
-        // The headers are the ones UsersAdminListColumnProvider declares, and the cells render the zones of the rows.
+        // The headers are the ones UsersAdminListColumnDriver declares, and the cells render the zones of the rows.
         Assert.Equal(["", "User", "Roles", "Actions"], await HeadersAsync(page));
         await Assertions.Expect(page.Locator(".admin-list-grid .admin-list-grid-row .admin-list-column-user", new() { HasText = "admin" }).First).ToBeVisibleAsync();
 
@@ -76,7 +76,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
     }
 
     [Fact]
-    public async Task SiteLayout_Grid_RendersEveryListWithTheColumnsOfItsProvider()
+    public async Task SiteLayout_Grid_RendersEveryListWithTheColumnsOfItsDriver()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
@@ -91,7 +91,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
         {
             await page.GotoAndAssertOkAsync(url);
 
-            // A list only renders as a grid when a provider declared its columns. The headers are read rather
+            // A list only renders as a grid when a driver declared its columns. The headers are read rather
             // than seen: a list in a narrow column, e.g. the layers beside their zones, stacks its rows and hides them.
             var headers = await HeadersAsync(page);
 

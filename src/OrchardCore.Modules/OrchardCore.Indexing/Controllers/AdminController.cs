@@ -132,7 +132,7 @@ public sealed class AdminController : Controller
         ];
 
         // The rows carry the attributes used by the client-side search of the list-management script.
-        var rows = new List<IShape>(viewModel.Models.Count);
+        var rows = new List<AdminListRow<IndexProfile>>(viewModel.Models.Count);
 
         foreach (var entry in viewModel.Models)
         {
@@ -142,11 +142,11 @@ public sealed class AdminController : Controller
                 rowShape.Attributes["data-filter-value"] = entry.Model.Name?.ToLowerInvariant() ?? string.Empty;
             }
 
-            rows.Add(entry.Shape);
+            rows.Add(new(entry.Model, entry.Shape));
         }
 
         // The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
-        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(IndexingAdminList.Name)
+        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext<IndexProfile>(IndexingAdminList.Name)
         {
             Rows = rows,
             BulkActions = viewModel.Options.BulkActions,

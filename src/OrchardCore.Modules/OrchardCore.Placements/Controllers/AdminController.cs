@@ -113,15 +113,15 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(shapeList.Count);
+        var rows = new List<AdminListRow<ShapePlacement>>(shapeList.Count);
 
         foreach (var placement in shapeList)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(placement, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(placement, await displayManager.BuildDisplayAsync(placement, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the placements with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(PlacementsAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<ShapePlacement>(PlacementsAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

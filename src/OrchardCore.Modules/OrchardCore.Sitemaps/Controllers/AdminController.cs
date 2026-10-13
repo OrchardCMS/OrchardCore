@@ -114,15 +114,15 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.Sitemaps.Count);
+        var rows = new List<AdminListRow<SitemapListEntry>>(model.Sitemaps.Count);
 
         foreach (var entry in model.Sitemaps)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapsAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<SitemapListEntry>(SitemapsAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

@@ -115,15 +115,15 @@ public sealed class MenuController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.AdminMenu.Count);
+        var rows = new List<AdminListRow<AdminMenuEntry>>(model.AdminMenu.Count);
 
         foreach (var entry in model.AdminMenu)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the menus with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(AdminMenusAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<AdminMenuEntry>(AdminMenusAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

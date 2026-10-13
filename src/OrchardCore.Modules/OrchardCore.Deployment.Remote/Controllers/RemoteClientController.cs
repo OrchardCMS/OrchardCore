@@ -104,15 +104,15 @@ public sealed class RemoteClientController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.RemoteClients.Count);
+        var rows = new List<AdminListRow<RemoteClient>>(model.RemoteClients.Count);
 
         foreach (var entry in model.RemoteClients)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(RemoteClientsAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<RemoteClient>(RemoteClientsAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

@@ -47,7 +47,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
 
-        services.AddAdminListColumnProvider<RateLimitsAdminListColumnProvider>(RateLimitsAdminList.Name);
+        services.AddAdminListColumnDriver<RateLimitPolicy, RateLimitsAdminListColumnDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

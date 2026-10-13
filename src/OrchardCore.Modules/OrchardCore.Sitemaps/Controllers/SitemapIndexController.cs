@@ -110,15 +110,15 @@ public sealed class SitemapIndexController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.SitemapIndexes.Count);
+        var rows = new List<AdminListRow<SitemapIndexListEntry>>(model.SitemapIndexes.Count);
 
         foreach (var entry in model.SitemapIndexes)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapIndexesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<SitemapIndexListEntry>(SitemapIndexesAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

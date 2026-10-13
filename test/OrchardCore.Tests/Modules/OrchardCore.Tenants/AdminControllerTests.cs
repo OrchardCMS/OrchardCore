@@ -116,7 +116,7 @@ public class AdminControllerTests
     {
         var adminListFactory = new Mock<IAdminListFactory>();
         adminListFactory
-            .Setup(x => x.CreateAsync(It.IsAny<AdminListContext>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.CreateAsync(It.IsAny<AdminListContext<ShellSettingsEntry>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new Shape());
 
         return adminListFactory.Object;

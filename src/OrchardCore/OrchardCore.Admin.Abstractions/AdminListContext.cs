@@ -6,16 +6,17 @@ namespace OrchardCore.Admin;
 
 /// <summary>
 /// Describes an admin list for <see cref="IAdminListFactory"/> to render. Only the name is required: the
-/// columns are built by the <see cref="IAdminListColumnProvider"/> of the list, and the layout is resolved for
-/// the list unless the page sets one.
+/// columns are built by the <see cref="IAdminListColumnDriver{TModel}"/> implementations of the items of the list,
+/// and the layout is resolved for the list unless the page sets one. A page creates an
+/// <see cref="AdminListContext{TModel}"/>, which carries the rows.
 /// </summary>
-public sealed class AdminListContext
+public abstract class AdminListContext
 {
     /// <summary>
     /// Creates the description of the list with the given name.
     /// </summary>
     /// <param name="name">The name of the list, e.g. <c>Contents</c>.</param>
-    public AdminListContext(string name)
+    protected AdminListContext(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -23,8 +24,8 @@ public sealed class AdminListContext
     }
 
     /// <summary>
-    /// The name of the list, e.g. <c>Contents</c>. It selects the columns the providers declare for the list,
-    /// the layout a user picked for it, and the <c>AdminList__{Name}</c> alternates.
+    /// The name of the list, e.g. <c>Contents</c>. It tells the column drivers which list they render, and selects
+    /// the layout a user picked for it and the <c>AdminList__{Name}</c> alternates.
     /// </summary>
     public string Name { get; }
 
@@ -36,14 +37,8 @@ public sealed class AdminListContext
     public string Layout { get; set; }
 
     /// <summary>
-    /// The row shapes, usually built with the <c>SummaryAdmin</c> display type. The classes and attributes of a
-    /// row shape, e.g. <c>data-filter-value</c> for a client-side search, are rendered on its row.
-    /// </summary>
-    public IEnumerable<IShape> Rows { get; set; } = [];
-
-    /// <summary>
-    /// What the page knows about this rendering and a column provider may need to decide on a column, e.g. the
-    /// content types the items are filtered by. It reaches the providers as <see cref="AdminListColumnsContext.Data"/>.
+    /// What the page knows about this rendering and a column driver may need to decide on a column, e.g. the
+    /// content types the items are filtered by. It reaches the drivers as <see cref="AdminListColumnsContext.Data"/>.
     /// A list documents the keys it fills, e.g. <c>ContentsAdminList.ContentTypesKey</c>.
     /// </summary>
     public Dictionary<string, object> Data { get; } = new(StringComparer.OrdinalIgnoreCase);
@@ -62,7 +57,7 @@ public sealed class AdminListContext
 
     /// <summary>
     /// Whether the factory builds the <c>AdminListToolbar</c> shape when the page sets neither <see cref="Header"/>
-    /// nor <see cref="Toolbar"/>: the item count, taken from <see cref="Rows"/> and <see cref="Pager"/>, the
+    /// nor <see cref="Toolbar"/>: the item count, taken from the rows and <see cref="Pager"/>, the
     /// select-all checkbox and the <see cref="BulkActions"/>. Defaults to <see langword="true"/>. A list without a
     /// toolbar, e.g. the recipes, turns it off.
     /// </summary>
@@ -126,4 +121,29 @@ public sealed class AdminListContext
     /// The message displayed when there are no rows, defaults to "No results found.".
     /// </summary>
     public IHtmlContent EmptyMessage { get; set; }
+}
+
+/// <summary>
+/// Describes an admin list of <typeparamref name="TModel"/> items for <see cref="IAdminListFactory"/> to render.
+/// </summary>
+/// <typeparam name="TModel">
+/// The items of the list, e.g. <c>User</c>. The <see cref="IAdminListColumnDriver{TModel}"/> implementations of
+/// this type declare the columns of the list and build their cells.
+/// </typeparam>
+public sealed class AdminListContext<TModel> : AdminListContext
+{
+    /// <summary>
+    /// Creates the description of the list with the given name.
+    /// </summary>
+    /// <param name="name">The name of the list, e.g. <c>Users</c>.</param>
+    public AdminListContext(string name)
+        : base(name)
+    {
+    }
+
+    /// <summary>
+    /// The rows of the list: each item, with the row shape the page built for it, usually with the
+    /// <c>SummaryAdmin</c> display type, e.g. <c>rows.Add(new(user, await displayManager.BuildDisplayAsync(user, updater, "SummaryAdmin")))</c>.
+    /// </summary>
+    public IList<AdminListRow<TModel>> Rows { get; set; } = [];
 }

@@ -53,11 +53,12 @@ public sealed class SitemapCacheController : Controller
             CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray(),
         };
 
-        var rows = new List<IShape>(model.CachedFileNames.Length);
+        var rows = new List<AdminListRow<SitemapCacheEntry>>(model.CachedFileNames.Length);
 
         foreach (var fileName in model.CachedFileNames)
         {
-            var shape = await displayManager.BuildDisplayAsync(new SitemapCacheEntry { FileName = fileName }, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
+            var entry = new SitemapCacheEntry { FileName = fileName };
+            var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
 
             // The rows carry the attributes used by the client-side search of the list-management script.
             if (shape is Shape rowShape)
@@ -66,11 +67,11 @@ public sealed class SitemapCacheController : Controller
                 rowShape.Attributes["data-filter-value"] = fileName.ToLowerInvariant();
             }
 
-            rows.Add(shape);
+            rows.Add(new(entry, shape));
         }
 
         // The AdminList shape renders the cached files with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapCacheAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<SitemapCacheEntry>(SitemapCacheAdminList.Name)
         {
             Rows = rows,
             ShowSelectAll = false,

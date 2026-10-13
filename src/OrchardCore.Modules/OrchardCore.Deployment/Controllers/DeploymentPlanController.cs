@@ -120,15 +120,15 @@ public sealed class DeploymentPlanController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),
         ];
 
-        var rows = new List<IShape>(model.DeploymentPlans.Count);
+        var rows = new List<AdminListRow<DeploymentPlanEntry>>(model.DeploymentPlans.Count);
 
         foreach (var entry in model.DeploymentPlans)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the plans with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(DeploymentPlansAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<DeploymentPlanEntry>(DeploymentPlansAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.DeploymentPlansBulkAction,

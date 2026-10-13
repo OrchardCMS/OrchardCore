@@ -117,15 +117,15 @@ public sealed class ApplicationController : Controller
             .ToArray(),
         };
 
-        var rows = new List<IShape>(model.Applications.Count);
+        var rows = new List<AdminListRow<OpenIdApplicationEntry>>(model.Applications.Count);
 
         foreach (var application in model.Applications)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(application, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(application, await displayManager.BuildDisplayAsync(application, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the applications with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(OpenIdApplicationsAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<OpenIdApplicationEntry>(OpenIdApplicationsAdminList.Name)
         {
             Rows = rows,
             ShowSelectAll = false,

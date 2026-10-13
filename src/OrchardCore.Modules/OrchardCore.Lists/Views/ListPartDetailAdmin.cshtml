@@ -1,4 +1,5 @@
 @using OrchardCore.Admin
+@using OrchardCore.ContentManagement
 @using OrchardCore.Lists
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.Shapes
@@ -29,7 +30,7 @@ else
 {
     @if (Model.ContentItems.Any())
     {
-        var rows = new List<IShape>();
+        var rows = new List<AdminListRow<ContentItem>>();
 
         foreach (var contentItem in Model.ContentItems)
         {
@@ -41,12 +42,12 @@ else
                 await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
             }
 
-            rows.Add(contentItemSummary);
+            rows.Add(new(contentItem, contentItemSummary));
         }
 
         @* Ordering is drag and drop over the rows, which only the List layout can express, so it wins over
            the configured layout while ordering is enabled, and the list offers no other layout meanwhile. *@
-        var list = await AdminListFactory.CreateAsync(new AdminListContext(ListPartContentsAdminList.Name)
+        var list = await AdminListFactory.CreateAsync(new AdminListContext<ContentItem>(ListPartContentsAdminList.Name)
         {
             Layout = enableOrdering ? AdminListConstants.List : null,
             Rows = rows,

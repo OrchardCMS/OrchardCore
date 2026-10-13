@@ -108,15 +108,15 @@ public sealed class ScopeController : Controller
             model.Scopes.Add(entry);
         }
 
-        var rows = new List<IShape>(model.Scopes.Count);
+        var rows = new List<AdminListRow<OpenIdScopeEntry>>(model.Scopes.Count);
 
         foreach (var entry in model.Scopes)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the scopes with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(OpenIdScopesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<OpenIdScopeEntry>(OpenIdScopesAdminList.Name)
         {
             Rows = rows,
             ShowSelectAll = false,

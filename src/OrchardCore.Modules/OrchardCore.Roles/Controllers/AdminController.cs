@@ -106,7 +106,7 @@ public sealed class AdminController : Controller
             model.RoleEntries.Add(entry);
         }
 
-        var rows = new List<IShape>(model.RoleEntries.Count);
+        var rows = new List<AdminListRow<RoleEntry>>(model.RoleEntries.Count);
 
         foreach (var entry in model.RoleEntries)
         {
@@ -119,11 +119,11 @@ public sealed class AdminController : Controller
                 rowShape.Attributes["data-filter-value"] = entry.Name?.ToLowerInvariant() ?? string.Empty;
             }
 
-            rows.Add(shape);
+            rows.Add(new(entry, shape));
         }
 
         // The AdminList shape renders the roles with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(RolesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<RoleEntry>(RolesAdminList.Name)
         {
             Rows = rows,
             ShowSelectAll = false,

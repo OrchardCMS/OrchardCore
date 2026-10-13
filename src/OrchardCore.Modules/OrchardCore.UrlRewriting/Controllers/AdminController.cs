@@ -101,9 +101,9 @@ public sealed class AdminController : Controller
         ];
 
         // The AdminList shape renders the rules with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(UrlRewritingAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<RewriteRule>(UrlRewritingAdminList.Name)
         {
-            Rows = model.Rules.Select(entry => entry.Shape).ToList(),
+            Rows = model.Rules.Select(entry => new AdminListRow<RewriteRule>(entry.Rule, entry.Shape)).ToList(),
             // The rules are evaluated in order, so the element holding the rows is the one the script of the page
             // selects, reorders and saves, whichever layout renders it. See url-rewriting-admin-index.ts.
             RowsAttributes = new Dictionary<string, string>

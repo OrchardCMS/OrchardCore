@@ -107,15 +107,15 @@ public sealed class MediaProfilesController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.MediaProfiles.Count);
+        var rows = new List<AdminListRow<MediaProfileEntry>>(model.MediaProfiles.Count);
 
         foreach (var entry in model.MediaProfiles)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(MediaProfilesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<MediaProfileEntry>(MediaProfilesAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

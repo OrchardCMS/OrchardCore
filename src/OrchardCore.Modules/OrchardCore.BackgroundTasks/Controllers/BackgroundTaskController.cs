@@ -144,11 +144,11 @@ public sealed class BackgroundTaskController : Controller
             Options = options,
         };
 
-        var rows = new List<IShape>(model.Tasks.Count);
+        var rows = new List<AdminListRow<BackgroundTaskEntry>>(model.Tasks.Count);
 
         foreach (var entry in model.Tasks)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The status filter renders at the end of the toolbar, next to the bulk actions.
@@ -158,7 +158,7 @@ public sealed class BackgroundTaskController : Controller
         }));
 
         // The AdminList shape renders the tasks with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(BackgroundTasksAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<BackgroundTaskEntry>(BackgroundTasksAdminList.Name)
         {
             Rows = rows,
             BulkActions = options.BulkActions,

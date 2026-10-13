@@ -1,10 +1,13 @@
 using OrchardCore.Admin;
-using OrchardCore.Admin.Models;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
 /// <summary>
-/// Checks the admin lists every module declares, e.g. <c>QueriesAdminList</c>, and the providers declaring their
+/// Checks the admin lists every module declares, e.g. <c>QueriesAdminList</c>, and the drivers declaring their
 /// columns, rather than one of them: they are found by reflection, so a list added later is checked without
 /// touching this file.
 /// </summary>
@@ -19,7 +22,7 @@ public class AdminListDefinitionsTests
 
         Assert.NotEmpty(names);
 
-        // Two lists sharing a name would share the columns a provider declares for it, and the
+        // Two lists sharing a name would share the columns a driver declares for it, and the
         // AdminList__{Name} alternate of one would render the rows of the other.
         var duplicates = names
             .GroupBy(list => list.Name)
@@ -31,7 +34,7 @@ public class AdminListDefinitionsTests
     }
 
     [Fact]
-    public async Task EveryList_HasAProviderDeclaringColumnsThatRenderSomething()
+    public async Task EveryList_HasADriverDeclaringColumnsThatRenderSomething()
     {
         var lists = GetAdminLists();
 
@@ -41,22 +44,28 @@ public class AdminListDefinitionsTests
         {
             var name = GetName(list);
 
-            // The provider of a list is named after it, e.g. QueriesAdminListColumnProvider, and registered for it.
-            var provider = CreateOwnerProvider(list);
+            // The driver of a list is named after it, e.g. QueriesAdminListColumnDriver, and registered for its items.
+            var (driver, model) = CreateOwnerDriver(list);
 
-            Assert.True(provider != null, $"The {name} list has no {list.Name}ColumnProvider.");
+            Assert.True(driver != null, $"The {name} list has no {list.Name}ColumnDriver.");
 
-            // A provider adding a column without a name, or one the list already has, throws here.
-            var context = new AdminListColumnsContext(name);
-            await provider.BuildAsync(context, TestContext.Current.CancellationToken);
+            // A driver adding a column without a name, or one the list already has, throws here.
+            var context = new AdminListColumnsContext(name, null, new ZoneHolding(() => ValueTask.FromResult<IShape>(new Shape())), null, null, null);
+            var buildColumns = typeof(IAdminListColumnDriver<>).MakeGenericType(model).GetMethod(nameof(IAdminListColumnDriver<object>.BuildColumnsAsync));
+            await (Task<IDisplayResult>)buildColumns.Invoke(driver, [context]);
 
             // A list without columns can only be rendered with the List layout.
-            Assert.True(context.Columns.Count > 0, $"{list.Name}ColumnProvider declares no column.");
+            Assert.True(context.Columns.Count > 0, $"{list.Name}ColumnDriver declares no column.");
 
-            foreach (var column in context.Columns)
+            // A column renders the zones it names, then the cells the drivers build, so a column of a driver that
+            // builds no cell renders an empty cell unless it names a zone.
+            if (driver.GetType().GetMethod("Cells")?.DeclaringType.IsGenericType != false &&
+                driver.GetType().GetMethod("CellsAsync")?.DeclaringType.IsGenericType != false)
             {
-                // A column renders the zones it names, so one without any renders an empty cell.
-                Assert.True(column.Zones is { Length: > 0 }, $"The {column.Name} column of the {name} list renders no zone.");
+                foreach (var column in context.Columns)
+                {
+                    Assert.True(column.Zones is { Length: > 0 }, $"The {column.Name} column of the {name} list renders no zone.");
+                }
             }
         }
     }
@@ -71,20 +80,24 @@ public class AdminListDefinitionsTests
             .Where(type => type.GetField("Name", BindingFlags.Public | BindingFlags.Static) is { IsLiteral: true } field && field.FieldType == typeof(string))
             .ToList();
 
-    // The provider of the module owning a list only needs a localizer for the headers of its columns.
-    private static IAdminListColumnProvider CreateOwnerProvider(Type list)
+    // The driver of the module owning a list only needs a localizer for the headers of its columns.
+    private static (object Driver, Type Model) CreateOwnerDriver(Type list)
     {
-        var type = list.Assembly.GetType($"{list.Namespace}.{list.Name}ColumnProvider");
+        var type = list.Assembly.GetType($"{list.Namespace}.{list.Name}ColumnDriver");
 
-        if (type is null || !typeof(IAdminListColumnProvider).IsAssignableFrom(type))
+        var model = type?.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAdminListColumnDriver<>))
+            ?.GetGenericArguments()[0];
+
+        if (model is null)
         {
-            return null;
+            return (null, null);
         }
 
         var constructor = type.GetConstructor([typeof(IStringLocalizer<>).MakeGenericType(type)]);
         var localizer = Activator.CreateInstance(typeof(NullStringLocalizer<>).MakeGenericType(type));
 
-        return (IAdminListColumnProvider)constructor?.Invoke([localizer]);
+        return (constructor?.Invoke([localizer]), model);
     }
 
     private static IEnumerable<Type> GetExportedTypes()

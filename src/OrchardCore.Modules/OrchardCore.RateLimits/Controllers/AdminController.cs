@@ -146,9 +146,9 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the policies with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(RateLimitsAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<RateLimitPolicy>(RateLimitsAdminList.Name)
         {
-            Rows = model.Policies.Select(entry => entry.Shape).ToList(),
+            Rows = model.Policies.Select(entry => new AdminListRow<RateLimitPolicy>(entry.Policy, entry.Shape)).ToList(),
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",

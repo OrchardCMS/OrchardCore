@@ -107,9 +107,9 @@ public sealed class AdminController : Controller
         ];
 
         // The AdminList shape renders the queries with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(QueriesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<Query>(QueriesAdminList.Name)
         {
-            Rows = model.Queries.Select(entry => entry.Shape).ToList(),
+            Rows = model.Queries.Select(entry => new AdminListRow<Query>(entry.Query, entry.Shape)).ToList(),
             BulkActions = model.Options.ContentsBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",

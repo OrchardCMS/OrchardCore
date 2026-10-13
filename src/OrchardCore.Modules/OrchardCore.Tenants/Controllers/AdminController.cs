@@ -224,11 +224,11 @@ public sealed class AdminController : Controller
             new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
         ];
 
-        var rows = new List<IShape>(model.ShellSettingsEntries.Count);
+        var rows = new List<AdminListRow<ShellSettingsEntry>>(model.ShellSettingsEntries.Count);
 
         foreach (var entry in model.ShellSettingsEntries)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The category, state and sort filters render at the end of the toolbar, next to the bulk actions.
@@ -238,7 +238,7 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the tenants with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(TenantsAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<ShellSettingsEntry>(TenantsAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.TenantsBulkAction,

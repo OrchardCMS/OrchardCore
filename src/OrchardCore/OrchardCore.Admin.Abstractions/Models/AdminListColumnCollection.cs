@@ -5,7 +5,7 @@ namespace OrchardCore.Admin.Models;
 
 /// <summary>
 /// The columns of an admin list, keyed by <see cref="AdminListColumn.Name"/> ignoring case, in the order they
-/// were added. A provider finds a column by its name, so every column has one, and no other column of the list
+/// were added. A driver finds a column by its name, so every column has one, and no other column of the list
 /// has it: adding a column without a name, or a second column with the same name, throws.
 /// </summary>
 /// <remarks>

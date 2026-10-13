@@ -116,6 +116,7 @@ public sealed class AdminController : Controller, IUpdateModel
         var pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
 
         var notificationShapes = new List<IShape>();
+        var rows = new List<AdminListRow<Notification>>();
 
         foreach (var notification in queryResult.Notifications)
         {
@@ -131,6 +132,7 @@ public sealed class AdminController : Controller, IUpdateModel
             }
 
             notificationShapes.Add(shape);
+            rows.Add(new(notification, shape));
         }
 
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
@@ -142,9 +144,9 @@ public sealed class AdminController : Controller, IUpdateModel
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the notifications with the configured layout (List, Grid, ...).
-        var list = await adminListFactory.CreateAsync(new AdminListContext(NotificationsAdminList.Name)
+        var list = await adminListFactory.CreateAsync(new AdminListContext<Notification>(NotificationsAdminList.Name)
         {
-            Rows = notificationShapes,
+            Rows = rows,
             Header = header,
             Pager = pagerShape,
             ItemCssClass = "list-group-item notification-container-item",

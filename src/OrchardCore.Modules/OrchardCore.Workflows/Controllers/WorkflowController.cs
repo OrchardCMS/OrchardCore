@@ -160,11 +160,11 @@ public sealed class WorkflowController : Controller
             new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
         ];
 
-        var rows = new List<IShape>(viewModel.Workflows.Count);
+        var rows = new List<AdminListRow<WorkflowEntry>>(viewModel.Workflows.Count);
 
         foreach (var entry in viewModel.Workflows)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The status and sort filters render at the end of the toolbar, next to the bulk actions.
@@ -174,7 +174,7 @@ public sealed class WorkflowController : Controller
         }));
 
         // The AdminList shape renders the instances with the configured layout (List, Grid, ...).
-        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowInstancesAdminList.Name)
+        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext<WorkflowEntry>(WorkflowInstancesAdminList.Name)
         {
             Rows = rows,
             BulkActions = viewModel.Options.WorkflowsBulkAction,

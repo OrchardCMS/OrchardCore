@@ -124,11 +124,11 @@ public sealed class TemplateController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.Templates.Count);
+        var rows = new List<AdminListRow<TemplateEntry>>(model.Templates.Count);
 
         foreach (var entry in model.Templates)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         var search = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
@@ -157,7 +157,7 @@ public sealed class TemplateController : Controller
             }));
 
         // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(TemplatesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<TemplateEntry>(TemplatesAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

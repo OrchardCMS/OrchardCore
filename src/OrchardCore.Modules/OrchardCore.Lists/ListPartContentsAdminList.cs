@@ -11,7 +11,7 @@ namespace OrchardCore.Lists;
 public static class ListPartContentsAdminList
 {
     /// <summary>
-    /// The name of the list, used by <see cref="Admin.IAdminListColumnProvider"/> and the
+    /// The name of the list, passed to its column drivers and used by the
     /// <c>AdminList__ListPartContents</c> and <c>AdminListCell__ListPartContents__{Column}</c> alternates.
     /// </summary>
     public const string Name = "ListPartContents";

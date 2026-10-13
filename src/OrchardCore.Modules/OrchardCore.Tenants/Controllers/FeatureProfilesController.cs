@@ -115,15 +115,15 @@ public sealed class FeatureProfilesController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<IShape>(model.FeatureProfiles.Count);
+        var rows = new List<AdminListRow<FeatureProfileEntry>>(model.FeatureProfiles.Count);
 
         foreach (var entry in model.FeatureProfiles)
         {
-            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(FeatureProfilesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<FeatureProfileEntry>(FeatureProfilesAdminList.Name)
         {
             Rows = rows,
             BulkActions = model.Options.ContentsBulkAction,

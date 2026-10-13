@@ -245,9 +245,14 @@ public sealed class AdminController : Controller, IUpdateModel
 
         // We prepare the content items SummaryAdmin shape.
         var contentItemSummaries = new List<dynamic>();
+        var rows = new List<AdminListRow<ContentItem>>();
+
         foreach (var contentItem in pageOfContentItems)
         {
-            contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
+            var summary = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin");
+
+            contentItemSummaries.Add(summary);
+            rows.Add(new(contentItem, summary));
         }
 
         // Populate options pager summary values.
@@ -260,15 +265,15 @@ public sealed class AdminController : Controller, IUpdateModel
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the items with the configured layout (List, Grid, ...).
-        var list = new AdminListContext(ContentsAdminList.Name)
+        var list = new AdminListContext<ContentItem>(ContentsAdminList.Name)
         {
             // ListContentsViewModel.ContentItems keeps the summaries as dynamic for the templates that read it.
-            Rows = contentItemSummaries.Cast<IShape>(),
+            Rows = rows,
             Header = header,
             Pager = pagerShape,
         };
 
-        // What this listing is filtered by, so a column provider can decide on a column from it, e.g. add one
+        // What this listing is filtered by, so a column driver can decide on a column from it, e.g. add one
         // that only makes sense for a content type or a stereotype.
         if (contentTypeIds is { Length: > 0 })
         {

@@ -1,109 +1,139 @@
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.Services;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
 public class DefaultAdminListColumnsBuilderTests
 {
     [Fact]
-    public async Task BuildAsync_NoProvider_ReturnsNoColumns()
+    public async Task BuildColumnsAsync_NoDriver_ReturnsNoColumns()
     {
-        var builder = CreateBuilder();
+        var builder = CreateBuilder(services => { });
 
-        Assert.Empty(await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken));
+        var context = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal("Items", context.ListName);
+        Assert.Empty(context.Columns);
     }
 
     [Fact]
-    public async Task BuildAsync_ProvidersOfAList_OnlyAlterThatList()
+    public async Task BuildColumnsAsync_DriversOfOtherItems_AreNotCreated()
     {
-        var builder = CreateBuilder(new OwnerColumnProvider("Contents"), new CultureColumnProvider());
+        CountingColumnDriver.Created = 0;
 
-        var contents = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
-        var users = await builder.BuildAsync("Users", cancellationToken: TestContext.Current.CancellationToken);
+        var builder = CreateBuilder(services => services.AddAdminListColumnDriver<Item, CountingColumnDriver>());
 
-        Assert.Equal(["Select", "Title", "Culture", "Actions"], contents.Select(c => c.Name));
-        Assert.Empty(users);
+        // A list of other items does not create the drivers of these.
+        var others = await builder.BuildColumnsAsync<OtherItem>("Others", cancellationToken: TestContext.Current.CancellationToken);
+        var createdForOthers = CountingColumnDriver.Created;
+        var items = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Empty(others.Columns);
+        Assert.Equal(0, createdForOthers);
+        Assert.Equal(["Counted"], items.Columns.Select(c => c.Name));
     }
 
     [Fact]
-    public async Task BuildAsync_PositionedColumns_AreSortedWhateverTheProviderOrder()
+    public async Task BuildColumnsAsync_DriverOfAnotherList_DoesNotAlterTheList()
+    {
+        // Both lists render the same items, e.g. the content items of the Contents list and of a list part.
+        var builder = CreateBuilder(services => services
+            .AddAdminListColumnDriver<Item, OwnerColumnDriver>()
+            .AddAdminListColumnDriver<Item, CultureColumnDriver>());
+
+        var items = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
+        var archive = await builder.BuildColumnsAsync<Item>("Archive", cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal(["Select", "Title", "Culture", "Actions"], items.Columns.Select(c => c.Name));
+        Assert.Equal(["Culture"], archive.Columns.Select(c => c.Name));
+    }
+
+    [Fact]
+    public async Task BuildColumnsAsync_PositionedColumns_AreSortedWhateverTheDriverOrder()
     {
         // Two features insert columns between the ones of the owner; the result does not depend on the order
         // they run in.
         var forward = await CreateBuilder(
-                new OwnerColumnProvider("Contents"),
-                new PositionedColumnProvider("Owner", "15"),
-                new PositionedColumnProvider("Culture", "25"),
-                new PositionedColumnProvider("Unpositioned", null))
-            .BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+                new OwnerColumnDriver(),
+                new PositionedColumnDriver("Owner", "15"),
+                new PositionedColumnDriver("Culture", "25"),
+                new PositionedColumnDriver("Unpositioned", null))
+            .BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
 
         var backward = await CreateBuilder(
-                new PositionedColumnProvider("Unpositioned", null),
-                new PositionedColumnProvider("Culture", "25"),
-                new PositionedColumnProvider("Owner", "15"),
-                new OwnerColumnProvider("Contents"))
-            .BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+                new PositionedColumnDriver("Unpositioned", null),
+                new PositionedColumnDriver("Culture", "25"),
+                new PositionedColumnDriver("Owner", "15"),
+                new OwnerColumnDriver())
+            .BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
 
-        Assert.Equal(["Select", "Owner", "Title", "Culture", "Unpositioned", "Actions"], forward.Select(c => c.Name));
-        Assert.Equal(forward.Select(c => c.Name), backward.Select(c => c.Name));
+        Assert.Equal(["Select", "Owner", "Title", "Culture", "Unpositioned", "Actions"], forward.Columns.Select(c => c.Name));
+        Assert.Equal(forward.Columns.Select(c => c.Name), backward.Columns.Select(c => c.Name));
     }
 
     [Fact]
-    public async Task BuildAsync_ProviderRunningAfterTheOwner_CanFindAndRemoveItsColumns()
+    public async Task BuildColumnsAsync_DriverRunningAfterTheOwner_CanFindAndRemoveItsColumns()
     {
-        var builder = CreateBuilder(new OwnerColumnProvider("Contents"), new RemovingColumnProvider("Title"));
+        var builder = CreateBuilder(new OwnerColumnDriver(), new RemovingColumnDriver("Title"));
 
-        var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+        var context = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
 
-        Assert.Equal(["Select", "Actions"], columns.Select(c => c.Name));
+        Assert.Equal(["Select", "Actions"], context.Columns.Select(c => c.Name));
     }
 
     [Fact]
-    public async Task BuildAsync_DataOfThePage_ReachesTheProviders()
+    public async Task BuildColumnsAsync_DataOfThePage_ReachesTheDrivers()
     {
-        var provider = new DataColumnProvider();
-        var builder = CreateBuilder(provider);
+        var driver = new DataColumnDriver();
+        var builder = CreateBuilder(driver);
         var data = new Dictionary<string, object>
         {
             ["ContentTypes"] = new[] { "BlogPost" },
             ["Count"] = 3,
         };
 
-        var columns = await builder.BuildAsync("Contents", data, TestContext.Current.CancellationToken);
+        var context = await builder.BuildColumnsAsync<Item>("Items", data, TestContext.Current.CancellationToken);
 
-        // The provider added a column for the content type the page is filtered by.
-        Assert.Equal(["BlogPost"], columns.Select(column => column.Name));
+        // The driver added a column for the content type the page is filtered by.
+        Assert.Equal(["BlogPost"], context.Columns.Select(column => column.Name));
 
         // A key that is not there, or that holds another type, falls back instead of throwing.
-        Assert.Equal(3, provider.Count);
-        Assert.Null(provider.MissingKey);
-        Assert.Null(provider.WrongType);
+        Assert.Equal(3, driver.Count);
+        Assert.Null(driver.MissingKey);
+        Assert.Null(driver.WrongType);
     }
 
     [Fact]
-    public async Task BuildAsync_NoDataFromThePage_GivesProvidersEmptyData()
+    public async Task BuildColumnsAsync_NoDataFromThePage_GivesDriversEmptyData()
     {
-        var provider = new DataColumnProvider();
-        var builder = CreateBuilder(provider);
+        var driver = new DataColumnDriver();
+        var builder = CreateBuilder(driver);
 
-        var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+        var context = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
 
-        Assert.Empty(columns);
-        Assert.Empty(provider.Data);
+        Assert.Empty(context.Columns);
+        Assert.Empty(driver.Data);
     }
 
     [Fact]
-    public async Task BuildAsync_ProviderAddingAColumnTheListHas_IsLoggedAndTheOtherColumnsAreKept()
+    public async Task BuildColumnsAsync_DriverAddingAColumnTheListHas_IsLoggedAndTheOtherColumnsAreKept()
     {
         var logger = new ListLogger<DefaultAdminListColumnsBuilder>();
-        var builder = CreateBuilder(logger, new OwnerColumnProvider("Contents"), new PositionedColumnProvider("title", "30"), new PositionedColumnProvider("Culture", "25"));
+        var builder = CreateBuilder(logger, new OwnerColumnDriver(), new PositionedColumnDriver("title", "30"), new PositionedColumnDriver("Culture", "25"));
 
-        var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+        var context = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
 
         // The names are compared ignoring case, so "title" is the Title column of the owner, which stays as it was.
-        Assert.Equal(["Select", "Title", "Culture", "Actions"], columns.Select(c => c.Name));
-        Assert.Equal("20", columns.Single(c => c.Name == "Title").Position);
+        Assert.Equal(["Select", "Title", "Culture", "Actions"], context.Columns.Select(c => c.Name));
+        Assert.Equal("20", context.Columns.Single(c => c.Name == "Title").Position);
 
         var error = Assert.Single(logger.Entries, entry => entry.Level == LogLevel.Error);
         Assert.IsType<ArgumentException>(error.Exception);
@@ -111,152 +141,236 @@ public class DefaultAdminListColumnsBuilderTests
     }
 
     [Fact]
-    public async Task BuildAsync_ColumnRenderingNoZone_IsLogged()
+    public async Task BuildColumnsAsync_DriverRenderingAHeader_PlacesItInTheZoneOfItsColumn()
+    {
+        var builder = CreateBuilder(new OwnerColumnDriver(), new ScheduledColumnDriver());
+
+        var context = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal(["Select", "Title", "Scheduled", "Actions"], context.Columns.Select(c => c.Name));
+
+        // The other columns show their title.
+        Assert.True(context.Headers.Zones.IsNotEmpty("Scheduled"));
+        Assert.False(context.Headers.Zones.IsNotEmpty("Title"));
+
+        var header = Assert.IsAssignableFrom<IShape>(Assert.Single(((Shape)context.Headers.Zones["Scheduled"]).Items));
+        Assert.Equal("ScheduledHeader", header.Metadata.Type);
+        Assert.Equal(AdminListConstants.HeaderDisplayType, header.Metadata.DisplayType);
+    }
+
+    [Fact]
+    public async Task BuildCellsAsync_DriversBuildingCells_FillEachRowInOrder()
+    {
+        var builder = CreateBuilder(new OwnerColumnDriver(), new ScheduledColumnDriver(), new CultureColumnDriver());
+        var columns = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
+        var first = new Shape();
+        var second = new Shape();
+
+        var cells = await builder.BuildCellsAsync(
+            columns,
+            [new AdminListRow<Item>(new Item("Draft", Scheduled: true), first), new AdminListRow<Item>(new Item("Published", Scheduled: false), second)],
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(2, cells.Count);
+
+        // The driver got the item and the row shape of each row, and only placed a shape for the scheduled one.
+        var scheduled = Assert.IsAssignableFrom<IShape>(Assert.Single(((Shape)cells[0].Zones["Scheduled"]).Items));
+        Assert.Equal("Draft", scheduled.Properties["Name"]);
+        Assert.Same(first, scheduled.Properties["Row"]);
+        Assert.Equal(AdminListConstants.CellDisplayType, scheduled.Metadata.DisplayType);
+        Assert.False(cells[1].Zones.IsNotEmpty("Scheduled"));
+
+        // The columns filled by the zones of the rows have no cells of their own.
+        Assert.False(cells[0].Zones.IsNotEmpty("Title"));
+        Assert.False(cells[0].Zones.IsNotEmpty("Culture"));
+    }
+
+    [Fact]
+    public async Task BuildCellsAsync_DriverOfAnotherList_BuildsNoCell()
+    {
+        var builder = CreateBuilder(new ScheduledColumnDriver());
+        var columns = await builder.BuildColumnsAsync<Item>("Archive", cancellationToken: TestContext.Current.CancellationToken);
+
+        var cells = await builder.BuildCellsAsync(columns, [new AdminListRow<Item>(new Item("Draft", Scheduled: true), new Shape())], TestContext.Current.CancellationToken);
+
+        Assert.Empty(columns.Columns);
+        Assert.False(Assert.Single(cells).Zones.IsNotEmpty("Scheduled"));
+    }
+
+    [Fact]
+    public async Task BuildCellsAsync_DriverFailing_IsLoggedAndTheOtherCellsAreKept()
     {
         var logger = new ListLogger<DefaultAdminListColumnsBuilder>();
-        var builder = CreateBuilder(logger, new PositionedColumnProvider("Empty", "40", zones: []));
+        var builder = CreateBuilder(logger, new FailingCellsDriver(), new ScheduledColumnDriver());
+        var columns = await builder.BuildColumnsAsync<Item>("Items", cancellationToken: TestContext.Current.CancellationToken);
 
-        var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+        var cells = await builder.BuildCellsAsync(columns, [new AdminListRow<Item>(new Item("Draft", Scheduled: true), new Shape())], TestContext.Current.CancellationToken);
 
-        Assert.Equal(["Empty"], columns.Select(c => c.Name));
-        Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Warning && entry.Message.Contains("'Empty' column") && entry.Message.Contains("renders no zone"));
+        Assert.True(Assert.Single(cells).Zones.IsNotEmpty("Scheduled"));
+        Assert.IsType<InvalidOperationException>(Assert.Single(logger.Entries, entry => entry.Level == LogLevel.Error).Exception);
     }
 
     [Fact]
-    public async Task BuildAsync_ProviderRegisteredForAList_IsOnlyCreatedAndRunForThatList()
+    public void AddAdminListColumnDriver_SameDriverTwice_IsRegisteredOnce()
     {
         var services = new ServiceCollection()
-            .AddAdminListColumnProvider<CountingColumnProvider>("Contents")
-            .AddLogging()
-            .AddScoped<DefaultAdminListColumnsBuilder>()
-            .BuildServiceProvider();
+            .AddAdminListColumnDriver<Item, CultureColumnDriver>()
+            .AddAdminListColumnDriver<Item, CultureColumnDriver>()
+            .AddAdminListColumnDriver<Item, OwnerColumnDriver>();
 
-        using var scope = services.CreateScope();
-        var builder = scope.ServiceProvider.GetRequiredService<DefaultAdminListColumnsBuilder>();
-
-        var users = await builder.BuildAsync("Users", cancellationToken: TestContext.Current.CancellationToken);
-        var createdForUsers = CountingColumnProvider.Created;
-        var contents = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
-
-        Assert.Empty(users);
-        Assert.Equal(0, createdForUsers);
-        Assert.Equal(["Counted"], contents.Select(c => c.Name));
+        Assert.Single(services, descriptor => descriptor.ImplementationType == typeof(CultureColumnDriver));
+        Assert.All(services, descriptor => Assert.Equal(typeof(IAdminListColumnDriver<Item>), descriptor.ServiceType));
     }
 
-    [Fact]
-    public async Task BuildAsync_ProvidersOfTheList_RunBeforeTheProvidersOfEveryList()
+    private static DefaultAdminListColumnsBuilder CreateBuilder(params IAdminListColumnDriver<Item>[] drivers)
+        => CreateBuilder(NullLogger<DefaultAdminListColumnsBuilder>.Instance, drivers);
+
+    // The drivers given here run in the order they are given, like the drivers of features depending on each other.
+    private static DefaultAdminListColumnsBuilder CreateBuilder(ILogger<DefaultAdminListColumnsBuilder> logger, params IAdminListColumnDriver<Item>[] drivers)
     {
-        var services = new ServiceCollection()
-            .AddKeyedSingleton<IAdminListColumnProvider>("Contents", new OwnerColumnProvider("Contents"))
-            .AddSingleton<IAdminListColumnProvider>(new RemovingColumnProvider("Title"))
-            .AddLogging()
-            .AddScoped<DefaultAdminListColumnsBuilder>()
-            .BuildServiceProvider();
-
-        using var scope = services.CreateScope();
-        var builder = scope.ServiceProvider.GetRequiredService<DefaultAdminListColumnsBuilder>();
-
-        var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
-
-        // The provider of every list removes a column the owner of the list added before it ran.
-        Assert.Equal(["Select", "Actions"], columns.Select(c => c.Name));
+        return CreateBuilder(
+            services =>
+            {
+                foreach (var driver in drivers)
+                {
+                    services.AddSingleton(driver);
+                }
+            },
+            logger);
     }
 
-    [Fact]
-    public void AddAdminListColumnProvider_SameProviderForAListTwice_IsRegisteredOnce()
+    private static DefaultAdminListColumnsBuilder CreateBuilder(Action<IServiceCollection> configure, ILogger<DefaultAdminListColumnsBuilder> logger = null)
     {
-        var services = new ServiceCollection()
-            .AddAdminListColumnProvider<CultureColumnProvider>("Contents", "Users")
-            .AddAdminListColumnProvider<CultureColumnProvider>("Contents")
-            .AddAdminListColumnProvider<CultureColumnProvider>();
+        var services = new ServiceCollection();
+        configure(services);
 
-        Assert.Single(services, descriptor => Equals(descriptor.ServiceKey, "Contents"));
-        Assert.Single(services, descriptor => Equals(descriptor.ServiceKey, "Users"));
-        Assert.Single(services, descriptor => !descriptor.IsKeyedService);
+        return new DefaultAdminListColumnsBuilder(
+            services.BuildServiceProvider(),
+            new TestShapeFactory(),
+            Mock.Of<ILayoutAccessor>(),
+            Mock.Of<IUpdateModelAccessor>(),
+            logger ?? NullLogger<DefaultAdminListColumnsBuilder>.Instance);
     }
 
-    private static DefaultAdminListColumnsBuilder CreateBuilder(params IAdminListColumnProvider[] providers)
-        => CreateBuilder(NullLogger<DefaultAdminListColumnsBuilder>.Instance, providers);
+    public sealed record Item(string Name, bool Scheduled = false);
 
-    // The providers given here run for every list, and filter the lists themselves.
-    private static DefaultAdminListColumnsBuilder CreateBuilder(ILogger<DefaultAdminListColumnsBuilder> logger, params IAdminListColumnProvider[] providers)
-        => new(new ServiceCollection().BuildServiceProvider(), providers, logger);
+    public sealed record OtherItem(string Name);
 
-    private sealed class CountingColumnProvider : IAdminListColumnProvider
+    private sealed class CountingColumnDriver : AdminListColumnDriver<Item>
     {
-        public static int Created { get; private set; }
+        public static int Created { get; set; }
 
-        public CountingColumnProvider()
+        public CountingColumnDriver()
         {
             Created++;
         }
 
-        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+        public override IDisplayResult Columns(AdminListColumnsContext context)
         {
             context.Columns.Add(new AdminListColumn { Name = "Counted", Zones = ["Counted"] });
 
-            return Task.CompletedTask;
+            return null;
         }
     }
 
     // Declares the columns of its list, like the module owning it does.
-    private sealed class OwnerColumnProvider(string listName) : IAdminListColumnProvider
+    private sealed class OwnerColumnDriver : AdminListColumnDriver<Item>
     {
-        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+        public override bool CanHandleList(string listName)
+            => listName == "Items";
+
+        public override IDisplayResult Columns(AdminListColumnsContext context)
         {
-            if (context.ListName == listName)
+            context.Columns.Add(AdminListColumns.Select());
+            context.Columns.Add(new AdminListColumn { Name = "Title", Position = "20", Zones = ["Title"] });
+            context.Columns.Add(AdminListColumns.Actions(new LocalizedString("Actions", "Actions")));
+
+            return null;
+        }
+    }
+
+    // A column of every list of items, filled by a zone of the rows.
+    private sealed class CultureColumnDriver : AdminListColumnDriver<Item>
+    {
+        public override IDisplayResult Columns(AdminListColumnsContext context)
+        {
+            context.Columns.Add(new AdminListColumn
             {
-                context.Columns.Add(AdminListColumns.Select());
-                context.Columns.Add(new AdminListColumn { Name = "Title", Position = "20", Zones = ["Title"] });
-                context.Columns.Add(AdminListColumns.Actions(new LocalizedString("Actions", "Actions")));
+                Name = "Culture",
+                Position = "25",
+                Title = new LocalizedString("Culture", "Culture"),
+                Zones = ["Culture"],
+            });
+
+            return null;
+        }
+    }
+
+    // A column filled by a shape of its own, with a header of its own.
+    private sealed class ScheduledColumnDriver : AdminListColumnDriver<Item>
+    {
+        public override bool CanHandleList(string listName)
+            => listName == "Items";
+
+        public override IDisplayResult Columns(AdminListColumnsContext context)
+        {
+            context.Columns.Add(new AdminListColumn
+            {
+                Name = "Scheduled",
+                Position = "30",
+                Title = new LocalizedString("Scheduled", "Scheduled"),
+            });
+
+            return Factory("ScheduledHeader", static () => new Shape()).Location("Scheduled");
+        }
+
+        public override IDisplayResult Cells(Item model, AdminListCellsContext context)
+        {
+            if (!model.Scheduled)
+            {
+                return null;
             }
 
-            return Task.CompletedTask;
-        }
-    }
-
-    private sealed class CultureColumnProvider : IAdminListColumnProvider
-    {
-        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
-        {
-            if (context.ListName == "Contents")
+            return Factory("ScheduledCell", static (_, state) =>
             {
-                context.Columns.Add(new AdminListColumn
-                {
-                    Name = "Culture",
-                    Position = "25",
-                    Title = new LocalizedString("Culture", "Culture"),
-                    Zones = ["Culture"],
-                });
-            }
+                var shape = new Shape();
+                shape.Properties["Name"] = state.Model.Name;
+                shape.Properties["Row"] = state.Context.Row;
 
-            return Task.CompletedTask;
+                return shape;
+            }, (Model: model, Context: context)).Location("Scheduled:5");
         }
     }
 
-    private sealed class PositionedColumnProvider(string name, string position, string[] zones = null) : IAdminListColumnProvider
+    private sealed class FailingCellsDriver : AdminListColumnDriver<Item>
     {
-        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+        public override IDisplayResult Cells(Item model, AdminListCellsContext context)
+            => throw new InvalidOperationException("The cell could not be built.");
+    }
+
+    private sealed class PositionedColumnDriver(string name, string position) : AdminListColumnDriver<Item>
+    {
+        public override IDisplayResult Columns(AdminListColumnsContext context)
         {
-            context.Columns.Add(new AdminListColumn { Name = name, Position = position, Zones = zones ?? [name] });
+            context.Columns.Add(new AdminListColumn { Name = name, Position = position, Zones = [name] });
 
-            return Task.CompletedTask;
+            return null;
         }
     }
 
-    private sealed class RemovingColumnProvider(string name) : IAdminListColumnProvider
+    private sealed class RemovingColumnDriver(string name) : AdminListColumnDriver<Item>
     {
-        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+        public override IDisplayResult Columns(AdminListColumnsContext context)
         {
             Assert.NotNull(context.Find(name));
             Assert.True(context.Remove(name));
             Assert.Null(context.Find(name));
 
-            return Task.CompletedTask;
+            return null;
         }
     }
 
-    private sealed class DataColumnProvider : IAdminListColumnProvider
+    private sealed class DataColumnDriver : AdminListColumnDriver<Item>
     {
         public IReadOnlyDictionary<string, object> Data { get; private set; }
 
@@ -266,7 +380,7 @@ public class DefaultAdminListColumnsBuilderTests
 
         public string WrongType { get; private set; }
 
-        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+        public override IDisplayResult Columns(AdminListColumnsContext context)
         {
             Data = context.Data;
             Count = context.GetData<int>("Count");
@@ -281,7 +395,24 @@ public class DefaultAdminListColumnsBuilderTests
                 }
             }
 
-            return Task.CompletedTask;
+            return null;
+        }
+    }
+
+    private sealed class TestShapeFactory : IShapeFactory
+    {
+        public dynamic New => this;
+
+        public async ValueTask<IShape> CreateAsync(
+            string shapeType,
+            Func<ValueTask<IShape>> shapeFactory,
+            Action<ShapeCreatingContext> creating,
+            Action<ShapeCreatedContext> created)
+        {
+            var shape = await shapeFactory();
+            shape.Metadata.Type = shapeType;
+
+            return shape;
         }
     }
 

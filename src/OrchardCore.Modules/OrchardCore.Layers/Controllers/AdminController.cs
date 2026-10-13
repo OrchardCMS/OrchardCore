@@ -123,15 +123,15 @@ public sealed class AdminController : Controller
             }
         }
 
-        var rows = new List<IShape>();
+        var rows = new List<AdminListRow<Layer>>();
 
         foreach (var layer in model.Layers)
         {
-            rows.Add(await layerDisplayManager.BuildDisplayAsync(layer, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+            rows.Add(new(layer, await layerDisplayManager.BuildDisplayAsync(layer, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
         }
 
         // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(LayersAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<Layer>(LayersAdminList.Name)
         {
             Rows = rows,
             ShowSelectAll = false,

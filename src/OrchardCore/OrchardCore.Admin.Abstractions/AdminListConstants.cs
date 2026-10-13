@@ -33,6 +33,18 @@ public static class AdminListConstants
     public const string CellShapeType = "AdminListCell";
 
     /// <summary>
+    /// The display type of the shapes the column drivers build for the headers of the columns, see
+    /// <see cref="IAdminListColumnDriver{TModel}.BuildColumnsAsync"/>.
+    /// </summary>
+    public const string HeaderDisplayType = "AdminListHeader";
+
+    /// <summary>
+    /// The display type of the shapes the column drivers build for the cells of a row, see
+    /// <see cref="IAdminListColumnDriver{TModel}.BuildCellsAsync"/>.
+    /// </summary>
+    public const string CellDisplayType = "AdminListCell";
+
+    /// <summary>
     /// The shape type rendering the toolbar of an admin list, above its rows.
     /// </summary>
     public const string ToolbarShapeType = "AdminListToolbar";

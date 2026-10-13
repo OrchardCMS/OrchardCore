@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Queries;
 using OrchardCore.Queries.Core.Services;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
@@ -29,7 +30,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Query, QueryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
 
-        services.AddAdminListColumnProvider<QueriesAdminListColumnProvider>(QueriesAdminList.Name);
+        services.AddAdminListColumnDriver<Query, QueriesAdminListColumnDriver>();
     }
 }
 

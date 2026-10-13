@@ -33,7 +33,7 @@ public static class AdminListColumns
 
     /// <summary>
     /// The last column of a list: the <c>Actions</c> and <c>ActionsMenu</c> zones of the row, aligned to the end
-    /// and as narrow as the buttons. Its position is <c>end</c>, so it stays last even when a provider adds a
+    /// and as narrow as the buttons. Its position is <c>end</c>, so it stays last even when a driver adds a
     /// column without a position.
     /// </summary>
     /// <param name="title">The localized header of the column, e.g. <c>S["Actions"]</c>.</param>

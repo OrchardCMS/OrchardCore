@@ -109,7 +109,7 @@ public sealed class AdminController : Controller
         // The page keeps one list per feature, and every list follows the configured layout.
         foreach (var group in entries.GroupBy(entry => entry.Feature).OrderBy(group => group.Key))
         {
-            var rows = new List<IShape>();
+            var rows = new List<AdminListRow<RecipeEntry>>();
 
             foreach (var entry in group.OrderBy(entry => entry.DisplayName))
             {
@@ -121,14 +121,14 @@ public sealed class AdminController : Controller
                     rowShape.Attributes["data-filter-value"] = group.Key + " " + entry.DisplayName;
                 }
 
-                rows.Add(shape);
+                rows.Add(new(entry, shape));
             }
 
             model.Groups.Add(new RecipeGroupViewModel
             {
                 Feature = group.Key,
                 FilterValue = group.Key + " " + string.Join(' ', group.Select(entry => entry.DisplayName)),
-                List = await adminListFactory.CreateAsync(new AdminListContext(RecipesAdminList.Name)
+                List = await adminListFactory.CreateAsync(new AdminListContext<RecipeEntry>(RecipesAdminList.Name)
                 {
                     Layout = layout,
                     Rows = rows,

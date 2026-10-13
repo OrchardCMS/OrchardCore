@@ -7,9 +7,12 @@
     Properties:
         Name          The name of the list, e.g. "Contents". Used for the AdminList__{Name} and AdminListCell__{Name}__{Column} alternates.
         Layout        The layout name, "Grid" here.
-        Columns       The AdminListColumn collection the column providers of the list declared, see IAdminListColumnsBuilder.
+        Columns       The AdminListColumn collection the column drivers of the list declared, see IAdminListColumnsBuilder.
         Rows          The row shapes, usually built with the "SummaryAdmin" display type. (Not "Items": that name is the shape's own child collection.)
                       The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its row element.
+        Headers       Optional shape holding the headers the column drivers built, one zone per column, named after it. A column without one shows its Title.
+        Cells         Optional cells the column drivers built for each row, in the order of Rows: a shape with one zone per column, named after it,
+                      rendered in the cell after the zones of the row the column names.
         RowsAttributes Optional attributes rendered on the rows container, e.g. the id a sortable list needs. A class joins the ones the layout gives it,
                        e.g. a hook a script of the page selects the list by.
         Header        The options editor shape whose Summary and Actions zones are rendered above the rows.
@@ -33,6 +36,7 @@
     // Enumerated once, as they are: an empty list is only known once the loop over the rows ran.
     var rows = (IEnumerable<IShape>)Model.Rows ?? [];
     var hasRows = false;
+    var rowIndex = 0;
 
     // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs. A class is merged
     // with the ones the layout gives the element: rendering it as an attribute of its own would leave the element
@@ -61,6 +65,8 @@
     }
 
     var columns = (IList<AdminListColumn>)Model.Columns ?? [];
+    var headers = Model.Headers as IZoneHolding;
+    var cells = Model.Cells as IList<IZoneHolding>;
     var header = Model.Header;
     var toolbar = Model.Toolbar;
     string name = Model.Name;
@@ -84,7 +90,7 @@
     // How the cells of each column are rendered: an AdminListCell shape only when a template overrides it.
     var cellRenderings = Model.CellRenderings as AdminListCellRendering[];
 
-    async Task RenderCellAsync(IShape row, IZoneHolding zoneHolding, int i)
+    async Task RenderCellAsync(IShape row, IZoneHolding zoneHolding, IZoneHolding rowCells, int i)
     {
         switch (cellRenderings?[i] ?? AdminListCellRendering.Shape)
         {
@@ -99,10 +105,13 @@
                         }
                     }
                 }
+
+                await RenderDriverCellAsync(rowCells, i);
                 break;
 
             case AdminListCellRendering.Actions:
                 @await DisplayAsync(await Factory.CreateAdminListActionsAsync(row, name))
+                await RenderDriverCellAsync(rowCells, i);
                 break;
 
             default:
@@ -110,8 +119,23 @@
                 cell.Properties[AdminListConstants.ListNameProperty] = name;
                 cell.Properties["Row"] = row;
                 cell.Properties["Column"] = columns[i];
+
+                if (rowCells != null)
+                {
+                    cell.Properties["Cells"] = rowCells;
+                }
+
                 @await DisplayAsync(cell)
                 break;
+        }
+    }
+
+    // The shapes the column drivers built for the cell, after the zones of the row the column names.
+    async Task RenderDriverCellAsync(IZoneHolding rowCells, int i)
+    {
+        if (rowCells != null && rowCells.Zones.IsNotEmpty(columns[i].Name))
+        {
+            @await DisplayAsync(rowCells.Zones[columns[i].Name])
         }
     }
 
@@ -217,12 +241,23 @@
         <div class="admin-list-grid-header" role="row">
             @for (var i = 0; i < columns.Count; i++)
             {
-                <div class="@columnCssClasses[i]" role="columnheader">@columnTitles[i]</div>
+                @* A driver can render the header of its column, e.g. with a tooltip; the title still labels the
+                   cells when the headers are hidden. *@
+                if (headers != null && headers.Zones.IsNotEmpty(columns[i].Name))
+                {
+                    <div class="@columnCssClasses[i]" role="columnheader">@await DisplayAsync(headers.Zones[columns[i].Name])</div>
+                }
+                else
+                {
+                    <div class="@columnCssClasses[i]" role="columnheader">@columnTitles[i]</div>
+                }
             }
         </div>
         <div class="admin-list-grid-body @rowsCssClass" role="rowgroup" @rowsAttributesHtml>
             @foreach (var row in rows)
             {
+                var rowCells = cells != null && rowIndex < cells.Count ? cells[rowIndex] : null;
+                rowIndex++;
                 hasRows = true;
 
                 var rowTag = new TagBuilder("div");
@@ -246,7 +281,7 @@
                 @rowTag.RenderStartTag()
                 for (var i = 0; i < columns.Count; i++)
                 {
-                    <div class="@columnCssClasses[i]" role="cell" @columnTitleAttributes[i]>@if (columnTitles[i] != null) {<span class="admin-list-grid-label">@columnTitles[i]</span>}@{ await RenderCellAsync(row, zoneHolding, i); }</div>
+                    <div class="@columnCssClasses[i]" role="cell" @columnTitleAttributes[i]>@if (columnTitles[i] != null) {<span class="admin-list-grid-label">@columnTitles[i]</span>}@{ await RenderCellAsync(row, zoneHolding, rowCells, i); }</div>
                 }
                 @rowTag.RenderEndTag()
             }

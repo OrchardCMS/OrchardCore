@@ -89,7 +89,7 @@ public sealed class AdminController : Controller
             Types = await GetTypesAsync(),
         };
 
-        var rows = new List<IShape>();
+        var rows = new List<AdminListRow<ContentTypeEntry>>();
 
         foreach (var type in model.Types)
         {
@@ -109,11 +109,11 @@ public sealed class AdminController : Controller
                 rowShape.Attributes["data-type-name"] = entry.Name;
             }
 
-            rows.Add(shape);
+            rows.Add(new(entry, shape));
         }
 
         // The AdminList shape renders the types with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentTypesAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<ContentTypeEntry>(ContentTypesAdminList.Name)
         {
             Rows = rows,
             ShowSelectAll = false,
@@ -544,7 +544,7 @@ public sealed class AdminController : Controller
             Parts = await GetPartsAsync(metadataPartsOnly: true),
         };
 
-        var rows = new List<IShape>();
+        var rows = new List<AdminListRow<ContentPartEntry>>();
 
         foreach (var part in model.Parts)
         {
@@ -565,11 +565,11 @@ public sealed class AdminController : Controller
                 rowShape.Attributes["data-type-name"] = entry.Name;
             }
 
-            rows.Add(shape);
+            rows.Add(new(entry, shape));
         }
 
         // The AdminList shape renders the parts with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentPartsAdminList.Name)
+        model.List = await adminListFactory.CreateAsync(new AdminListContext<ContentPartEntry>(ContentPartsAdminList.Name)
         {
             Rows = rows,
             ShowSelectAll = false,

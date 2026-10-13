@@ -2,12 +2,12 @@ namespace OrchardCore.Notifications;
 
 /// <summary>
 /// The admin list of notifications rendered by the <c>AdminList</c> shape.
-/// Its columns are declared by <see cref="NotificationsAdminListColumnProvider"/>.
+/// Its columns are declared by <see cref="NotificationsAdminListColumnDriver"/>.
 /// </summary>
 public static class NotificationsAdminList
 {
     /// <summary>
-    /// The name of the list, used by <see cref="Admin.IAdminListColumnProvider"/> and the
+    /// The name of the list, passed to its column drivers and used by the
     /// <c>AdminList__Notifications</c> and <c>AdminListCell__Notifications__{Column}</c> alternates.
     /// </summary>
     public const string Name = "Notifications";

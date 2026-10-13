@@ -106,7 +106,7 @@ public sealed class AdminController : Controller
         foreach (var group in viewModel.Features.GroupBy(feature => feature.Descriptor.Category).OrderBy(group => group.Key))
         {
             var category = group.Key ?? S["Uncategorized"].Value;
-            var rows = new List<IShape>();
+            var rows = new List<AdminListRow<FeatureEntry>>();
             var hasSelectableFeature = false;
 
             foreach (var feature in group.OrderBy(feature => feature.Descriptor.Name))
@@ -126,7 +126,7 @@ public sealed class AdminController : Controller
                     rowShape.Attributes["data-is-enabled"] = feature.IsEnabled.ToString().ToLowerInvariant();
                 }
 
-                rows.Add(shape);
+                rows.Add(new(entry, shape));
             }
 
             // A category with nothing to select has no select-all checkbox, so it gets no toolbar at all, not even
@@ -142,7 +142,7 @@ public sealed class AdminController : Controller
             viewModel.Groups.Add(new FeatureGroupViewModel
             {
                 Category = category,
-                List = await adminListFactory.CreateAsync(new AdminListContext(FeaturesAdminList.Name)
+                List = await adminListFactory.CreateAsync(new AdminListContext<FeatureEntry>(FeaturesAdminList.Name)
                 {
                     Layout = layout,
                     Rows = rows,

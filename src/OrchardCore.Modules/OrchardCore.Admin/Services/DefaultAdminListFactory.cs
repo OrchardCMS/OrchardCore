@@ -27,14 +27,14 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
         _logger = logger;
     }
 
-    public async Task<IShape> CreateAsync(AdminListContext context, CancellationToken cancellationToken = default)
+    public async Task<IShape> CreateAsync<TModel>(AdminListContext<TModel> context, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);
 
         var allowUserSelection = _options.CurrentValue.AllowUserSelection;
         var layout = context.Layout;
         var resolvesLayout = string.IsNullOrWhiteSpace(layout);
-        IList<AdminListColumn> columns = null;
+        AdminListColumnsContext columns = null;
 
         if (resolvesLayout)
         {
@@ -43,7 +43,7 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
                 // The resolver remembers the layout a user asks for, so it is only asked for a list that has
                 // columns: without them, the List layout is the only one that can render the rows.
                 columns = await BuildColumnsAsync(context, cancellationToken);
-                layout = columns.Count > 0
+                layout = columns.Columns.Count > 0
                     ? await _layoutResolver.GetLayoutAsync(context.Name, cancellationToken)
                     : AdminListConstants.List;
             }
@@ -53,53 +53,52 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
             }
         }
 
-        if (columns is null)
-        {
-            // The List layout renders the rows whole, so its columns are only built when the list offers the
-            // other layouts, which only a list with columns has.
-            if (string.Equals(layout.Trim(), AdminListConstants.List, StringComparison.OrdinalIgnoreCase) &&
-                !(allowUserSelection && context.ShowLayoutSelector))
-            {
-                columns = Array.Empty<AdminListColumn>();
-            }
-            else
-            {
-                columns = await BuildColumnsAsync(context, cancellationToken);
+        layout = layout.Trim();
 
-                if (resolvesLayout && columns.Count == 0)
-                {
-                    layout = AdminListConstants.List;
-                }
+        // The List layout renders the rows whole, so its columns are only built when the list offers the other
+        // layouts, which only a list with columns has.
+        if (columns is null && !(IsList(layout) && !(allowUserSelection && context.ShowLayoutSelector)))
+        {
+            columns = await BuildColumnsAsync(context, cancellationToken);
+
+            if (resolvesLayout && columns.Columns.Count == 0)
+            {
+                layout = AdminListConstants.List;
             }
         }
 
-        var hasColumns = columns.Count > 0;
+        var hasColumns = columns?.Columns.Count > 0;
 
         var rows = context.Rows ?? [];
+        var rowShapes = new IShape[rows.Count];
+
+        for (var i = 0; i < rows.Count; i++)
+        {
+            rowShapes[i] = rows[i].Shape;
+        }
+
         var toolbar = context.Toolbar;
 
         // A list without an options editor or a toolbar of its own gets the generic one.
         if (toolbar is null && context.Header is null && context.ShowToolbar)
         {
-            // The toolbar counts the rows, which the layout then enumerates again, so rows that can only be
-            // enumerated once are kept.
-            if (!rows.TryGetNonEnumeratedCount(out var itemsCount))
-            {
-                var materialized = rows.ToList();
-                rows = materialized;
-                itemsCount = materialized.Count;
-            }
-
-            toolbar = await CreateToolbarAsync(context, itemsCount);
+            toolbar = await CreateToolbarAsync(context, rows.Count);
         }
 
         var shape = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType);
         var properties = shape.Properties;
 
         properties["Name"] = context.Name;
-        properties["Layout"] = layout.Trim();
-        properties["Columns"] = columns;
-        properties["Rows"] = rows;
+        properties["Layout"] = layout;
+        properties["Columns"] = hasColumns ? columns.Columns : Array.Empty<AdminListColumn>();
+        properties["Rows"] = rowShapes;
+
+        // The headers and the cells the column drivers build are only rendered by the layouts with columns.
+        if (hasColumns && !IsList(layout))
+        {
+            properties["Headers"] = columns.Headers;
+            properties["Cells"] = await _columnsBuilder.BuildCellsAsync(columns, rows, cancellationToken);
+        }
 
         // There is nothing to switch to when the list can only be rendered as a list.
         properties["ShowLayoutSelector"] = context.ShowLayoutSelector && hasColumns;
@@ -119,17 +118,20 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
         return shape;
     }
 
-    private async Task<IList<AdminListColumn>> BuildColumnsAsync(AdminListContext context, CancellationToken cancellationToken)
+    private async Task<AdminListColumnsContext> BuildColumnsAsync<TModel>(AdminListContext<TModel> context, CancellationToken cancellationToken)
     {
-        var columns = await _columnsBuilder.BuildAsync(context.Name, context.Data, cancellationToken);
+        var columns = await _columnsBuilder.BuildColumnsAsync<TModel>(context.Name, context.Data, cancellationToken);
 
-        if (columns.Count == 0)
+        if (columns.Columns.Count == 0)
         {
-            _logger.LogWarning("No provider declared the columns of the '{ListName}' admin list, so it can only be rendered with the '{Layout}' layout.", context.Name, AdminListConstants.List);
+            _logger.LogWarning("No driver declared the columns of the '{ListName}' admin list, so it can only be rendered with the '{Layout}' layout.", context.Name, AdminListConstants.List);
         }
 
         return columns;
     }
+
+    private static bool IsList(string layout)
+        => string.Equals(layout, AdminListConstants.List, StringComparison.OrdinalIgnoreCase);
 
     // The item count of the page, and where it sits in the whole list: the pager knows the total and the page,
     // and a list without one shows all of its items.

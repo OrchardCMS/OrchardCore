@@ -56,6 +56,6 @@ public sealed class Startup : StartupBase
 
         services.AddDeployment<JsonRecipeDeploymentSource, JsonRecipeDeploymentStep, JsonRecipeDeploymentStepDriver>();
 
-        services.AddAdminListColumnProvider<DeploymentPlansAdminListColumnProvider>(DeploymentPlansAdminList.Name);
+        services.AddAdminListColumnDriver<DeploymentPlanEntry, DeploymentPlansAdminListColumnDriver>();
     }
 }

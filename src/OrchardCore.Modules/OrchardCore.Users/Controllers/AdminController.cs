@@ -122,14 +122,19 @@ public sealed class AdminController : Controller
         var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
         var userEntries = new List<UserEntry>();
+        var rows = new List<AdminListRow<User>>();
 
         foreach (var user in results)
         {
+            var shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin");
+
             userEntries.Add(new UserEntry
             {
                 UserId = user.UserId,
-                Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin"),
+                Shape = shape,
             });
+
+            rows.Add(new(user, shape));
         }
 
         options.UserFilters =
@@ -191,9 +196,9 @@ public sealed class AdminController : Controller
         var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the users with the configured layout (List, Grid, ...).
-        var listShape = await adminListFactory.CreateAsync(new AdminListContext(UsersAdminList.Name)
+        var listShape = await adminListFactory.CreateAsync(new AdminListContext<User>(UsersAdminList.Name)
         {
-            Rows = userEntries.Select(entry => entry.Shape).ToList(),
+            Rows = rows,
             Header = header,
             Pager = pagerShape,
             ItemCssClass = "list-group-item",
