@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.RateLimits.Controllers;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
@@ -14,7 +13,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 public class AdminControllerTests
 {
     [Fact]
-    public async Task EditPost_Default_SavessEnabledPolicyMetadataWithoutReloadingShell()
+    public async Task EditPost_Default_SavesEnabledPolicyMetadataOnly()
     {
         const string policyId = "policy-id";
         var enabledUtc = DateTime.UtcNow;
@@ -50,8 +49,7 @@ public class AdminControllerTests
             .Callback<RateLimitPolicy>(policy => savedPolicy = policy)
             .Returns(ValueTask.CompletedTask);
 
-        var shellReleaseManager = new Mock<IShellReleaseManager>();
-        var controller = CreateController(policyStore.Object, shellReleaseManager.Object);
+        var controller = CreateController(policyStore.Object);
 
         var model = new RateLimitPolicyEditViewModel
         {
@@ -77,11 +75,10 @@ public class AdminControllerTests
         Assert.Equal(enabledUtc, savedPolicy.EnabledUtc);
         Assert.Single(savedPolicy.Limiters);
         Assert.Equal("limiter-id", savedPolicy.Limiters[0].Id);
-        shellReleaseManager.Verify(x => x.RequestRelease(), Times.Never);
     }
 
     [Fact]
-    public async Task Enable_EnablingDisabledPolicy_ReloadShell()
+    public async Task Enable_DisabledPolicy_EnablesPolicy()
     {
         const string policyId = "policy-id";
         var existingPolicy = new RateLimitPolicy
@@ -100,14 +97,15 @@ public class AdminControllerTests
             .Setup(x => x.SetStatusAsync(policyId, true))
             .Returns(() => ValueTask.FromResult(true));
 
-        var shellReleaseManager = new Mock<IShellReleaseManager>();
-        var controller = CreateController(policyStore.Object, shellReleaseManager.Object);
+        var controller = CreateController(policyStore.Object);
 
         var result = await controller.Enable(policyId);
 
         var redirectResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal(nameof(AdminController.Index), redirectResult.ActionName);
-        shellReleaseManager.Verify(x => x.RequestRelease(), Times.Once);
+
+        // The policy store refreshes the limiters of the enabled policies.
+        policyStore.Verify(x => x.SetStatusAsync(policyId, true), Times.Once);
     }
 
     [Fact]
@@ -159,8 +157,7 @@ public class AdminControllerTests
             .Callback<RateLimitPolicy>(policy => savedPolicy = policy)
             .Returns(ValueTask.CompletedTask);
 
-        var shellReleaseManager = new Mock<IShellReleaseManager>();
-        var controller = CreateController(policyStore.Object, shellReleaseManager.Object);
+        var controller = CreateController(policyStore.Object);
 
         var result = await controller.Clone(policyId);
 
@@ -184,12 +181,9 @@ public class AdminControllerTests
         Assert.Equal(sourcePolicy.Limiters[0].Properties["PermitLimit"]?.ToString(), savedPolicy.Limiters[0].Properties["PermitLimit"]?.ToString());
         Assert.NotSame(sourcePolicy.Limiters[0].Properties, savedPolicy.Limiters[0].Properties);
         Assert.Equal(savedPolicy.PolicyId, redirectResult.RouteValues["policyId"]);
-        shellReleaseManager.Verify(x => x.RequestRelease(), Times.Never);
     }
 
-    private static AdminController CreateController(
-        IRateLimitPolicyStore policyStore,
-        IShellReleaseManager shellReleaseManager)
+    private static AdminController CreateController(IRateLimitPolicyStore policyStore)
     {
         return new AdminController(
             CreateAuthorizationService().Object,
@@ -197,7 +191,6 @@ public class AdminControllerTests
             Mock.Of<INotifier>(),
             policyStore,
             new ServiceCollection().BuildServiceProvider(),
-            shellReleaseManager,
             new EmptyEndpointDataSource(),
             Options.Create(new RateLimitsOptions()),
             Mock.Of<IDisplayManager<RateLimitPolicy>>(),

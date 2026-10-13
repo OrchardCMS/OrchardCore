@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Navigation;
 using OrchardCore.RateLimits.Core;
@@ -44,7 +43,6 @@ public sealed class AdminController : Controller
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
     private readonly IRateLimitPolicyStore _policyStore;
-    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
@@ -59,7 +57,6 @@ public sealed class AdminController : Controller
         INotifier notifier,
         IRateLimitPolicyStore policyStore,
         IServiceProvider serviceProvider,
-        IShellReleaseManager shellReleaseManager,
         EndpointDataSource endpointDataSource,
         IOptions<RateLimitsOptions> rateLimitsOptions,
         IDisplayManager<RateLimitPolicy> policyDisplayManager,
@@ -71,7 +68,6 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _policyStore = policyStore;
         _serviceProvider = serviceProvider;
-        _shellReleaseManager = shellReleaseManager;
         _endpointDataSource = endpointDataSource;
         _rateLimitsOptions = rateLimitsOptions.Value;
         _policyDisplayManager = policyDisplayManager;
@@ -178,11 +174,6 @@ public sealed class AdminController : Controller
 
         await _policyStore.CreateAsync(policy);
 
-        if (ShouldReloadPolicy(wasEnabled: false, isEnabled: policy.IsEnabled))
-        {
-            _shellReleaseManager.RequestRelease();
-        }
-
         await _notifier.SuccessAsync(H["Policy created successfully."]);
 
         return RedirectToAction(nameof(Edit), new { policyId = policy.PolicyId });
@@ -228,11 +219,6 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!policy.IsEnabled)
-        {
-            _shellReleaseManager.RequestRelease();
-        }
-
         await _notifier.SuccessAsync(H["Policy enabled successfully."]);
 
         return RedirectToAction(nameof(Index));
@@ -257,11 +243,6 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (policy.IsEnabled)
-        {
-            _shellReleaseManager.RequestRelease();
-        }
-
         await _notifier.SuccessAsync(H["Policy disabled successfully."]);
 
         return RedirectToAction(nameof(Index));
@@ -282,11 +263,6 @@ public sealed class AdminController : Controller
         }
 
         await _policyStore.DeleteAsync(policy);
-
-        if (policy.IsEnabled)
-        {
-            _shellReleaseManager.RequestRelease();
-        }
 
         await _notifier.SuccessAsync(H["Policy deleted successfully."]);
 
@@ -355,7 +331,6 @@ public sealed class AdminController : Controller
                         break;
                     }
 
-                    _shellReleaseManager.RequestRelease();
                     await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was enabled successfully.", "{1} policies were enabled successfully.", totalChanged));
 
                     break;
@@ -379,7 +354,6 @@ public sealed class AdminController : Controller
                         break;
                     }
 
-                    _shellReleaseManager.RequestRelease();
                     await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was disabled successfully.", "{1} policies were disabled successfully.", totalChanged));
 
                     break;
@@ -388,14 +362,12 @@ public sealed class AdminController : Controller
             case RateLimitPolicyBulkAction.Remove:
                 {
                     var totalDeleted = 0;
-                    var shouldReload = false;
 
                     foreach (var policy in policies)
                     {
                         if (await _policyStore.DeleteAsync(policy))
                         {
                             totalDeleted++;
-                            shouldReload |= policy.IsEnabled;
                         }
                     }
 
@@ -403,11 +375,6 @@ public sealed class AdminController : Controller
                     {
                         await _notifier.WarningAsync(H["No policies were deleted."]);
                         break;
-                    }
-
-                    if (shouldReload)
-                    {
-                        _shellReleaseManager.RequestRelease();
                     }
 
                     await _notifier.SuccessAsync(H.Plural(totalDeleted, "{1} policy was deleted successfully.", "{1} policies were deleted successfully.", totalDeleted));
@@ -508,11 +475,6 @@ public sealed class AdminController : Controller
         updated.Limiters.AddRange(existingPolicy.Limiters);
 
         await _policyStore.UpdateAsync(updated);
-
-        if (ShouldReloadPolicy(existingPolicy.IsEnabled, updated.IsEnabled))
-        {
-            _shellReleaseManager.RequestRelease();
-        }
 
         await _notifier.SuccessAsync(H["Policy saved successfully."]);
 
@@ -774,9 +736,6 @@ public sealed class AdminController : Controller
         return !string.IsNullOrWhiteSpace(value) &&
             value.Contains(searchText, StringComparison.OrdinalIgnoreCase);
     }
-
-    private static bool ShouldReloadPolicy(bool wasEnabled, bool isEnabled)
-        => wasEnabled != isEnabled;
 
     private static string GenerateUniqueCloneName(string sourceName, IReadOnlyCollection<RateLimitPolicy> policies)
     {

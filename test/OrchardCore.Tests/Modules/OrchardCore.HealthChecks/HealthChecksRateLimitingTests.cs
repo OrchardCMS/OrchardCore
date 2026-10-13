@@ -63,6 +63,7 @@ public class HealthChecksRateLimitingTests
                     services.AddRouting();
                     services.AddRateLimiter();
                     services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
+                    services.AddTransient<IConfigureOptions<RateLimitPoliciesOptions>, RateLimitPoliciesOptionsConfiguration>();
                     services.AddSingleton(CreatePolicyStore(enabledPolicies ?? []));
                     services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
                     services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
