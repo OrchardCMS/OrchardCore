@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.ViewModels;
@@ -15,20 +15,20 @@ namespace OrchardCore.Twitter.Drivers;
 
 public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
     public TwitterSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         ILogger<TwitterSettingsDisplayDriver> logger)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
@@ -111,9 +111,10 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
 
             settings.ConsumerSecret = protector.Protect(model.APISecretKey);
             settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-        }
 
-        _shellReleaseManager.RequestRelease();
+            // Refresh the options built from these settings, so that they apply without restarting the tenant.
+            _optionsUpdateNotifier.RequestTwitterUpdate();
+        }
 
         return await EditAsync(site, settings, context);
     }

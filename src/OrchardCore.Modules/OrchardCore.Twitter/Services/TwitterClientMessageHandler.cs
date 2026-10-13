@@ -10,16 +10,16 @@ namespace OrchardCore.Twitter.Services;
 
 public class TwitterClientMessageHandler : DelegatingHandler
 {
-    private readonly TwitterSettings _twitterSettings;
+    private readonly IOptionsMonitor<TwitterSettings> _twitterSettings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IClock _clock;
 
     public TwitterClientMessageHandler(
         IClock clock,
-        IOptions<TwitterSettings> twitterSettings,
+        IOptionsMonitor<TwitterSettings> twitterSettings,
         IDataProtectionProvider dataProtectionProvider)
     {
-        _twitterSettings = twitterSettings.Value;
+        _twitterSettings = twitterSettings;
         _dataProtectionProvider = dataProtectionProvider;
         _clock = clock;
     }
@@ -37,27 +37,30 @@ public class TwitterClientMessageHandler : DelegatingHandler
 
     public async Task ConfigureOAuthAsync(HttpRequestMessage request)
     {
+        // Read the current settings, as they can be updated without restarting the tenant.
+        var twitterSettings = _twitterSettings.CurrentValue;
+
         var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
 
         // Unprotect the secrets in local variables, as the settings instance is shared by all the requests.
-        var consumerSecret = !string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret)
-            ? protector.Unprotect(_twitterSettings.ConsumerSecret)
-            : _twitterSettings.ConsumerSecret;
+        var consumerSecret = !string.IsNullOrWhiteSpace(twitterSettings.ConsumerSecret)
+            ? protector.Unprotect(twitterSettings.ConsumerSecret)
+            : twitterSettings.ConsumerSecret;
 
-        var accessTokenSecret = !string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret)
-            ? protector.Unprotect(_twitterSettings.AccessTokenSecret)
-            : _twitterSettings.AccessTokenSecret;
+        var accessTokenSecret = !string.IsNullOrWhiteSpace(twitterSettings.AccessTokenSecret)
+            ? protector.Unprotect(twitterSettings.AccessTokenSecret)
+            : twitterSettings.AccessTokenSecret;
 
         var nonce = GetNonce();
         var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
 
         var sortedParameters = new SortedDictionary<string, string>
         {
-            { Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(_twitterSettings.ConsumerKey) },
+            { Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(twitterSettings.ConsumerKey) },
             { Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce) },
             { Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1") },
             { Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp) },
-            { Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(_twitterSettings.AccessToken) },
+            { Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(twitterSettings.AccessToken) },
             { Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0") },
         };
 
@@ -97,12 +100,12 @@ public class TwitterClientMessageHandler : DelegatingHandler
 #pragma warning restore CA5350
 
         var sb = new StringBuilder();
-        sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(_twitterSettings.ConsumerKey)).Append("\", ");
+        sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(twitterSettings.ConsumerKey)).Append("\", ");
         sb.Append("oauth_nonce=\"").Append(Uri.EscapeDataString(nonce)).Append("\", ");
         sb.Append("oauth_signature=\"").Append(Uri.EscapeDataString(signature)).Append("\", ");
         sb.Append($"oauth_signature_method=\"HMAC-SHA1\", ");
         sb.Append("oauth_timestamp=\"").Append(Uri.EscapeDataString(timeStamp)).Append("\", ");
-        sb.Append("oauth_token=\"").Append(Uri.EscapeDataString(_twitterSettings.AccessToken)).Append("\", ");
+        sb.Append("oauth_token=\"").Append(Uri.EscapeDataString(twitterSettings.AccessToken)).Append("\", ");
         sb.Append("oauth_version=\"").Append(Uri.EscapeDataString("1.0")).Append('"');
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", sb.ToString());

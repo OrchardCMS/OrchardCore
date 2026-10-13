@@ -41,6 +41,9 @@ public sealed class TwitterStartup : StartupBase
         services.AddTransient<TwitterClientMessageHandler>();
         services.AddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
 
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<TwitterSettings>();
+
         services.AddHttpClient<TwitterClient>()
             .AddHttpMessageHandler<TwitterClientMessageHandler>()
             .AddResilienceHandler("oc-handler", builder => builder
@@ -74,5 +77,8 @@ public sealed class TwitterSigninStartup : StartupBase
         services.AddTransient<IConfigureOptions<TwitterOptions>, TwitterOptionsConfiguration>();
         // Built-in initializers:
         services.AddTransient<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>();
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<TwitterOptions>(TwitterDefaults.AuthenticationScheme);
     }
 }
