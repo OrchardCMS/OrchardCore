@@ -1,4 +1,8 @@
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Documents;
+using OrchardCore.Environment.Options;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 
@@ -7,6 +11,10 @@ namespace OrchardCore.RateLimits.Services;
 /// <summary>
 /// Stores rate-limit policies in the tenant document store.
 /// </summary>
+/// <remarks>
+/// Any change of the enabled policies requests an update of the <see cref="RateLimitPoliciesOptions"/>,
+/// so that the tenant limiter applies them once the changes are committed.
+/// </remarks>
 public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
 {
     private readonly IDocumentManager<RateLimitPolicyDocument> _documentManager;
@@ -59,6 +67,11 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
         Upsert(document.Policies, CloneForStorage(policy));
 
         await _documentManager.UpdateAsync(document);
+
+        if (policy.IsEnabled)
+        {
+            RequestPoliciesUpdate();
+        }
     }
 
     /// <inheritdoc />
@@ -68,9 +81,21 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
         ArgumentException.ThrowIfNullOrEmpty(policy.PolicyId);
 
         var document = await _documentManager.GetOrCreateMutableAsync();
+        var enabledPolicy = FindEnabled(document, policy.PolicyId);
+
         Upsert(document.Policies, CloneForStorage(policy));
 
         await _documentManager.UpdateAsync(document);
+
+        // Keep the current limiters, and then their counters, when only the description of an enabled policy changes.
+        var limitsChanged = enabledPolicy is null
+            ? policy.IsEnabled
+            : !policy.IsEnabled || !HasSameLimits(enabledPolicy, policy);
+
+        if (limitsChanged)
+        {
+            RequestPoliciesUpdate();
+        }
     }
 
     /// <inheritdoc />
@@ -83,9 +108,15 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
         ArgumentException.ThrowIfNullOrEmpty(policyId);
 
         var document = await _documentManager.GetOrCreateMutableAsync();
+        var wasEnabled = FindEnabled(document, policyId) is not null;
         var removed = document.Policies.RemoveAll(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal)) > 0;
 
         await _documentManager.UpdateAsync(document);
+
+        if (wasEnabled)
+        {
+            RequestPoliciesUpdate();
+        }
 
         return removed;
     }
@@ -102,10 +133,17 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
             return false;
         }
 
+        var wasEnabled = policy.IsEnabled;
+
         policy.IsEnabled = isEnabled;
         policy.EnabledUtc = isEnabled ? DateTime.UtcNow : null;
         Upsert(document.Policies, CloneForStorage(policy));
         await _documentManager.UpdateAsync(document);
+
+        if (wasEnabled != isEnabled)
+        {
+            RequestPoliciesUpdate();
+        }
 
         return true;
     }
@@ -192,6 +230,22 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
             Status = policy.Status,
             Limiters = [.. policy.Limiters.Select(Clone)],
         };
+    }
+
+    private static bool HasSameLimits(RateLimitPolicy policy, RateLimitPolicy other)
+        => string.Equals(policy.Name, other.Name, StringComparison.Ordinal) &&
+            policy.Scope == other.Scope &&
+            string.Equals(policy.Path, other.Path, StringComparison.Ordinal) &&
+            string.Equals(policy.GroupName, other.GroupName, StringComparison.Ordinal) &&
+            policy.Limiters.Count == other.Limiters.Count &&
+            policy.Limiters.Zip(other.Limiters).All(limiters =>
+                string.Equals(limiters.First.Source, limiters.Second.Source, StringComparison.Ordinal) &&
+                JsonNode.DeepEquals(limiters.First.Properties, limiters.Second.Properties));
+
+    private static void RequestPoliciesUpdate()
+    {
+        // The store is a singleton, so the scoped notifier is resolved from the current shell scope.
+        ShellScope.Services?.GetService<IOptionsUpdateNotifier>()?.RequestUpdate<RateLimitPoliciesOptions>();
     }
 
     private static Dictionary<string, RateLimitPolicy> GetCurrentPolicies(RateLimitPolicyDocument document)

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
+using OrchardCore.RateLimits.Services;
 
 namespace OrchardCore.RateLimits;
 
@@ -15,28 +16,32 @@ namespace OrchardCore.RateLimits;
 public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLimiterOptions>
 {
     private readonly RateLimitsOptions _rateLimitsOptions;
-    private readonly IRateLimitPolicyStore _policyStore;
+    private readonly IOptionsMonitor<RateLimitPoliciesOptions> _policiesOptions;
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RateLimiterOptionsConfigurations"/> class.
     /// </summary>
     /// <param name="rateLimitsOptions">The built-in route rate-limit options.</param>
-    /// <param name="policyStore">The policy store that provides enabled policies.</param>
+    /// <param name="policiesOptions">The options that provide the current enabled policies.</param>
     /// <param name="serviceProvider">The service provider used to resolve limiter sources.</param>
     public RateLimiterOptionsConfigurations(
         IOptions<RateLimitsOptions> rateLimitsOptions,
-        IRateLimitPolicyStore policyStore,
+        IOptionsMonitor<RateLimitPoliciesOptions> policiesOptions,
         IServiceProvider serviceProvider)
     {
         _rateLimitsOptions = rateLimitsOptions.Value;
-        _policyStore = policyStore;
+        _policiesOptions = policiesOptions;
         _serviceProvider = serviceProvider;
     }
 
     /// <summary>
     /// Configures the chained tenant limiter used for the current shell.
     /// </summary>
+    /// <remarks>
+    /// The limiters of the enabled policies are replaced whenever the <see cref="RateLimitPoliciesOptions"/> change,
+    /// while the global limiter and the limiters of the built-in route and group limits are kept.
+    /// </remarks>
     /// <param name="options">The rate-limiter options to configure.</param>
     public void Configure(RateLimiterOptions options)
     {
@@ -69,7 +74,14 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
             }));
         }
 
-        var policies = _policyStore.GetAllAsync(PolicyVersion.Enabled).AsTask().GetAwaiter().GetResult();
+        limiters.Add(new PolicyRateLimiter(_policiesOptions, CreatePolicyLimiters));
+
+        options.GlobalLimiter = PartitionedRateLimiter.CreateChained([.. limiters]);
+    }
+
+    private List<PartitionedRateLimiter<HttpContext>> CreatePolicyLimiters(IReadOnlyCollection<RateLimitPolicy> policies)
+    {
+        var limiters = new List<PartitionedRateLimiter<HttpContext>>();
 
         foreach (var policy in policies)
         {
@@ -93,12 +105,7 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
             }
         }
 
-        options.GlobalLimiter = limiters.Count switch
-        {
-            0 => PartitionedRateLimiter.Create<HttpContext, string>(_ => RateLimitPartition.GetNoLimiter("default")),
-            1 => limiters[0],
-            _ => PartitionedRateLimiter.CreateChained([.. limiters]),
-        };
+        return limiters;
     }
 
     private RouteRateLimit FindRouteRateLimit(HttpContext context)

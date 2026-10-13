@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -7,7 +8,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
 using OrchardCore.Settings;
@@ -18,7 +19,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 {
     public const string GroupId = "ReverseProxy";
 
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
@@ -28,14 +29,14 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
     internal readonly IHtmlLocalizer H;
 
     public ReverseProxySettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptionsSnapshot<ReverseProxySettings> reverseProxySettings,
         INotifier notifier,
         IHtmlLocalizer<ReverseProxySettingsDisplayDriver> htmlLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _reverseProxySettings = reverseProxySettings.Value;
@@ -54,8 +55,6 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         // Set the settings from configuration when AdminSettings are overridden via ConfigureReverseProxySettings()
         var currentSettings = settings;
@@ -105,7 +104,10 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
             settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
         }
 
-        _shellReleaseManager.RequestRelease();
+        // The forwarded headers options are built from the reverse proxy settings, so they are updated after them.
+        _optionsUpdateNotifier
+            .RequestUpdate<ReverseProxySettings>()
+            .RequestUpdate<ForwardedHeadersOptions>();
 
         return await EditAsync(site, settings, context);
     }

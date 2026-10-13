@@ -7,26 +7,29 @@ namespace OrchardCore.ReverseProxy.Configuration;
 
 internal sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
 {
-    private readonly ReverseProxySettings _reverseProxySettings;
+    private readonly IOptionsMonitor<ReverseProxySettings> _reverseProxySettings;
 
-    public ForwardedHeadersOptionsConfiguration(IOptions<ReverseProxySettings> reverseProxySettingsOptions)
+    public ForwardedHeadersOptionsConfiguration(IOptionsMonitor<ReverseProxySettings> reverseProxySettings)
     {
-        _reverseProxySettings = reverseProxySettingsOptions.Value;
+        _reverseProxySettings = reverseProxySettings;
     }
 
     public void Configure(ForwardedHeadersOptions options)
     {
-        options.ForwardedHeaders = _reverseProxySettings.ForwardedHeaders;
+        // Read the current settings, as this instance is kept by the options monitor.
+        var reverseProxySettings = _reverseProxySettings.CurrentValue;
+
+        options.ForwardedHeaders = reverseProxySettings.ForwardedHeaders;
 
         options.KnownIPNetworks.Clear();
         options.KnownProxies.Clear();
 
-        foreach (var network in _reverseProxySettings.KnownNetworks)
+        foreach (var network in reverseProxySettings.KnownNetworks)
         {
             options.KnownIPNetworks.Add(IPNetwork.Parse(network));
         }
 
-        foreach (var proxy in _reverseProxySettings.KnownProxies)
+        foreach (var proxy in reverseProxySettings.KnownProxies)
         {
             options.KnownProxies.Add(IPAddress.Parse(proxy));
         }

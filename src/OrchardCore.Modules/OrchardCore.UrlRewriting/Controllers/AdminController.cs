@@ -8,7 +8,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Routing;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
@@ -23,7 +22,6 @@ public sealed class AdminController : Controller
     private readonly IDisplayManager<RewriteRule> _rewriteRuleDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IEnumerable<IUrlRewriteRuleSource> _urlRewritingRuleSources;
     private readonly IRewriteRulesManager _rewriteRulesManager;
 
@@ -34,7 +32,6 @@ public sealed class AdminController : Controller
         IDisplayManager<RewriteRule> rewriteRuleDisplayManager,
         IAuthorizationService authorizationService,
         INotifier notifier,
-        IShellReleaseManager shellReleaseManager,
         IEnumerable<IUrlRewriteRuleSource> urlRewritingRuleSources,
         IRewriteRulesManager rewriteRulesManager,
         IUpdateModelAccessor updateModelAccessor,
@@ -46,7 +43,6 @@ public sealed class AdminController : Controller
         _rewriteRuleDisplayManager = rewriteRuleDisplayManager;
         _authorizationService = authorizationService;
         _notifier = notifier;
-        _shellReleaseManager = shellReleaseManager;
         _urlRewritingRuleSources = urlRewritingRuleSources;
         _rewriteRulesManager = rewriteRulesManager;
         _updateModelAccessor = updateModelAccessor;
@@ -164,8 +160,6 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        _shellReleaseManager.SuspendReleaseRequest();
-
         return View(model);
     }
 
@@ -226,8 +220,6 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        _shellReleaseManager.SuspendReleaseRequest();
-
         return View(model);
     }
 
@@ -247,8 +239,6 @@ public sealed class AdminController : Controller
         }
 
         await _rewriteRulesManager.DeleteAsync(rule);
-
-        _shellReleaseManager.RequestRelease();
 
         await _notifier.SuccessAsync(H["Rule deleted successfully."]);
 

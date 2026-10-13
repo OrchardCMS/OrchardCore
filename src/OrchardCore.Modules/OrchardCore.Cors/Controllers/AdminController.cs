@@ -7,7 +7,6 @@ using OrchardCore.Cors.Services;
 using OrchardCore.Cors.Settings;
 using OrchardCore.Cors.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using CorsConstants = Microsoft.AspNetCore.Cors.Infrastructure.CorsConstants;
 
 namespace OrchardCore.Cors.Controllers;
@@ -15,8 +14,6 @@ namespace OrchardCore.Cors.Controllers;
 [Admin]
 public sealed class AdminController : Controller
 {
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IAuthorizationService _authorizationService;
     private readonly CorsService _corsService;
     private readonly INotifier _notifier;
@@ -24,16 +21,12 @@ public sealed class AdminController : Controller
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IAuthorizationService authorizationService,
         CorsService corsService,
         INotifier notifier,
         IHtmlLocalizer<AdminController> htmlLocalizer
         )
     {
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _authorizationService = authorizationService;
         _corsService = corsService;
         _notifier = notifier;
@@ -138,8 +131,6 @@ public sealed class AdminController : Controller
         };
 
         await _corsService.UpdateSettingsAsync(corsSettings);
-
-        await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
         await _notifier.SuccessAsync(H["The CORS settings have updated successfully."]);
 

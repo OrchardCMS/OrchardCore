@@ -56,10 +56,10 @@
                                            data-action="@item.Value"
                                            data-title="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Enable) ? T["Enable Policies"] : item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Disable) ? T["Disable Policies"] : T["Delete Policies"])"
                                            data-message="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Enable)
-                                               ? T["Are you sure you want to enable the selected policies? This website will restart after the policy status changes."]
+                                               ? T["Are you sure you want to enable the selected policies?"]
                                                : item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Disable)
-                                                   ? T["Are you sure you want to disable the selected policies? This website will restart after the policy status changes."]
-                                                   : T["Are you sure you want to delete the selected policies? If any selected policy is enabled, this website will restart after deletion."])">@item.Text</a></li>
+                                                   ? T["Are you sure you want to disable the selected policies?"]
+                                                   : T["Are you sure you want to delete the selected policies?"])">@item.Text</a></li>
                                 }
                             </ul>
                         </div>

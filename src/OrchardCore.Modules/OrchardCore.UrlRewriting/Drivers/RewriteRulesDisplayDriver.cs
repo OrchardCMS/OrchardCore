@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
@@ -10,15 +9,11 @@ namespace OrchardCore.UrlRewriting.Drivers;
 
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
-
     internal readonly IStringLocalizer S;
 
     public RewriteRulesDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
         IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
 
@@ -34,8 +29,6 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 
     public override IDisplayResult Edit(RewriteRule rule, BuildEditorContext context)
     {
-        context.AddTenantReloadWarningWrapper();
-
         return Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
         {
             model.Name = rule.Name;
@@ -55,8 +48,6 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         }
 
         rule.Name = model.Name;
-
-        _shellReleaseManager.RequestRelease();
 
         return Edit(rule, context);
     }

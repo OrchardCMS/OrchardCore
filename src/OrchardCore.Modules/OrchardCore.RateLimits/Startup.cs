@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.Environment.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -27,6 +28,8 @@ public sealed class Startup : StartupBase
         services.AddRateLimiter();
         services.AddDataMigration<GlobalRateLimitsMigrations>();
         services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
+        services.AddSignalOptionsChangeTokenSource<RateLimitPoliciesOptions>();
+        services.AddTransient<IConfigureOptions<RateLimitPoliciesOptions>, RateLimitPoliciesOptionsConfiguration>();
         services.AddSingleton<IRateLimitPolicyStore, RateLimitPolicyStore>();
         services.AddDisplayDriver<RateLimitLimiter, RateLimitLimiterDisplayDriver>();
         services.AddDisplayDriver<RateLimitPolicy, RateLimitPolicyDisplayDriver>();

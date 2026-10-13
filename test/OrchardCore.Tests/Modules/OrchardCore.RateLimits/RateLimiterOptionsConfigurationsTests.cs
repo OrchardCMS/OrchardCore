@@ -248,28 +248,71 @@ public class RateLimiterOptionsConfigurationsTests
         Assert.False(secondLease.IsAcquired);
     }
 
+    [Fact]
+    public async Task Apply_EnabledPoliciesChanged_AppliesNewPoliciesAndKeepsBuiltInLimits()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var rateLimitsOptions = new RateLimitsOptions();
+        rateLimitsOptions.AddRouteRateLimit("Login", HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy("login", 2, TimeSpan.FromMinutes(1)));
+
+        var policiesOptions = new TestOptionsMonitor<RateLimitPoliciesOptions>(CreatePoliciesOptions([]));
+        var options = Configure(rateLimitsOptions, policiesOptions);
+        var globalLimiter = options.GlobalLimiter;
+
+        using var firstLoginLease = await globalLimiter.AcquireAsync(CreateHttpContext("Login", HttpMethods.Post), 1, cancellationToken);
+        using var firstLease = await globalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
+        using var secondLease = await globalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
+
+        Assert.True(firstLoginLease.IsAcquired);
+        Assert.True(firstLease.IsAcquired);
+        Assert.True(secondLease.IsAcquired);
+
+        policiesOptions.CurrentValue = CreatePoliciesOptions([CreateGlobalFixedWindowPolicy("Global", 1, 60)]);
+
+        using var thirdLease = await globalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
+        using var fourthLease = await globalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
+
+        Assert.True(thirdLease.IsAcquired);
+        Assert.False(fourthLease.IsAcquired);
+
+        policiesOptions.CurrentValue = CreatePoliciesOptions([]);
+
+        // The built-in route limit keeps its count while the policies change.
+        using var secondLoginLease = await globalLimiter.AcquireAsync(CreateHttpContext("Login", HttpMethods.Post), 1, cancellationToken);
+        using var thirdLoginLease = await globalLimiter.AcquireAsync(CreateHttpContext("Login", HttpMethods.Post), 1, cancellationToken);
+        using var fifthLease = await globalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
+
+        Assert.True(secondLoginLease.IsAcquired);
+        Assert.False(thirdLoginLease.IsAcquired);
+        Assert.True(fifthLease.IsAcquired);
+        Assert.Same(globalLimiter, options.GlobalLimiter);
+    }
+
     private static RateLimiterOptions Configure(
         RateLimitsOptions rateLimitsOptions,
         IEnumerable<RateLimitPolicy> enabledPolicies = null)
+        => Configure(rateLimitsOptions, new TestOptionsMonitor<RateLimitPoliciesOptions>(CreatePoliciesOptions(enabledPolicies ?? [])));
+
+    private static RateLimiterOptions Configure(
+        RateLimitsOptions rateLimitsOptions,
+        IOptionsMonitor<RateLimitPoliciesOptions> policiesOptions)
     {
         var options = new RateLimiterOptions();
-        using var serviceProvider = CreateServiceProvider();
+
+        // The service provider is kept, as the limiters of the policies are built when they are first used.
         new RateLimiterOptionsConfigurations(
             Options.Create(rateLimitsOptions),
-            CreatePolicyStore(enabledPolicies ?? []),
-            serviceProvider).Configure(options);
+            policiesOptions,
+            CreateServiceProvider()).Configure(options);
 
         return options;
     }
 
-    private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> enabledPolicies)
-    {
-        var store = new Mock<IRateLimitPolicyStore>();
-        store.Setup(x => x.GetAllAsync(PolicyVersion.Enabled)).Returns(() =>
-            ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([.. enabledPolicies.Where(static policy => policy.IsEnabled)]));
-
-        return store.Object;
-    }
+    private static RateLimitPoliciesOptions CreatePoliciesOptions(IEnumerable<RateLimitPolicy> enabledPolicies)
+        => new()
+        {
+            EnabledPolicies = [.. enabledPolicies.Where(static policy => policy.IsEnabled)],
+        };
 
     private static ServiceProvider CreateServiceProvider()
     {
@@ -413,5 +456,21 @@ public class RateLimiterOptionsConfigurationsTests
             endpointName));
 
         return context;
+    }
+
+    private sealed class TestOptionsMonitor<TOptions> : IOptionsMonitor<TOptions>
+    {
+        public TestOptionsMonitor(TOptions currentValue)
+        {
+            CurrentValue = currentValue;
+        }
+
+        public TOptions CurrentValue { get; set; }
+
+        public TOptions Get(string name)
+            => CurrentValue;
+
+        public IDisposable OnChange(Action<TOptions, string> listener)
+            => null;
     }
 }

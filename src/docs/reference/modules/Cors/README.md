@@ -14,7 +14,7 @@ CORS settings are stored in the current tenant's site settings. Policies are iso
 
 ## Create and apply a policy
 
-Select **Add a policy**, configure the policy, and select **Save**. Saving the settings reloads the current tenant shell so that the updated policies are registered.
+Select **Add a policy**, configure the policy, and select **Save**. The updated policies apply to the next requests, without reloading the tenant.
 
 The module adds every configured policy to ASP.NET Core CORS by name. It applies one policy as the tenant's default:
 
@@ -103,7 +103,7 @@ The policies can be provisioned with the `settings` recipe step because `CorsSet
 
 When the **Deployment** feature is enabled, add the **Cors settings** step to a deployment plan to export these settings. The generated recipe uses the same `Settings` step and `CorsSettings` structure.
 
-Recipe and deployment imports write site settings directly and do not use the admin form's validation. Validate imported policies, define no more than one default, and reload an already-running tenant shell after changing settings outside the admin UI.
+Recipe and deployment imports write site settings directly and do not use the admin form's validation. Validate imported policies, define no more than one default, and reload an already-running tenant shell after importing these settings, as only the admin UI refreshes the policies of a running tenant.
 
 ## Troubleshooting
 

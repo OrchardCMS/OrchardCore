@@ -5,8 +5,7 @@ The Rate Limits module centralizes ASP.NET Core request rate limiting for Orchar
 When the feature is enabled, it can:
 
 - apply tenant-specific enabled rate-limit policies;
-- let administrators edit disabled policies without reloading the tenant;
-- enable or disable one or many policies with a single tenant reload;
+- let administrators edit, enable, disable, and delete policies without reloading the tenant;
 - keep feature-contributed named-route and endpoint-group limits active as read-only built-in limits.
 
 Static assets are intentionally excluded because Orchard registers static-file middleware before `UseRateLimiter()`. Scripts, stylesheets, and images therefore do not consume request budgets.
@@ -24,7 +23,7 @@ Each policy has:
 - owner and author metadata;
 - one or more limiters.
 
-Saving a disabled policy updates it without reloading the tenant. Enabled policies remain editable only for the policy name and description, and saving those metadata changes does not reload the tenant. Enabling a disabled policy, disabling an enabled policy, or deleting an enabled policy reloads the tenant shell once so the active rate-limit configuration is refreshed.
+Saving a disabled policy updates it without affecting the requests. Enabled policies remain editable only for the policy name and description. Enabling a disabled policy, disabling an enabled policy, deleting an enabled policy, renaming it, or importing policies with a recipe refreshes the active rate-limit configuration once the changes are saved, without reloading the tenant. The request counts of the tenant policies then start over, while the built-in limits keep their counts.
 
 The admin UI includes:
 
