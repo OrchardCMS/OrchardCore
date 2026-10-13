@@ -75,6 +75,16 @@ describe("GraphCanvas", () => {
         expect(wrapper.get("[data-cy='edge-a->b']").attributes("data-lifted")).toBe("false");
     });
 
+    it("render_HiddenNodes_LeavesThemOutButCentersOnThem", () => {
+        const { wrapper, viewport } = mountCanvas({ hiddenIds: new Set(["b"]) });
+
+        expect(wrapper.findAll("[data-node-id]").map((node) => node.attributes("data-node-id"))).toEqual(["a"]);
+
+        // A node being shown is found before it is rendered.
+        (wrapper.vm as unknown as { centerOn: (id: string) => void }).centerOn("b");
+        expect(viewport.panX).toBe(-400);
+    });
+
     it("keydown_Keys_AskTheDesignerToChangeTheGraph", async () => {
         const { wrapper } = mountCanvas({ selectedIds: ["a"] });
         const surface = wrapper.get("[data-cy='canvas-surface']");
