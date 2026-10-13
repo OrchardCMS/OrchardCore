@@ -42,17 +42,17 @@ public class DatabaseTelemetryTests
 
         var context = new DatabaseTelemetryContext("TelemetryTenant", "sqlite", IncludeQueryText: true);
         await using var connection = new TelemetryDbConnection(new SqliteConnection("Data Source=:memory:"), context);
-        await connection.OpenAsync();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
 
         var scope = DatabaseTelemetryScope.Begin();
 
         await connection.ExecuteAsync("CREATE TABLE [Document] ([Id] INTEGER, [Content] TEXT)");
 
         // A transaction of the provider is required by SQLite: the wrapped transaction must reach the provider's command.
-        await using (var transaction = await connection.BeginTransactionAsync())
+        await using (var transaction = await connection.BeginTransactionAsync(TestContext.Current.CancellationToken))
         {
             await connection.ExecuteAsync("INSERT INTO [Document] ([Id], [Content]) VALUES (@Id, @Content)", new { Id = 1, Content = "a" }, transaction);
-            await transaction.CommitAsync();
+            await transaction.CommitAsync(TestContext.Current.CancellationToken);
         }
 
         var count = await connection.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM [Document]");
@@ -82,7 +82,7 @@ public class DatabaseTelemetryTests
 
         var context = new DatabaseTelemetryContext("FailingTenant", "sqlite", IncludeQueryText: false);
         await using var connection = new TelemetryDbConnection(new SqliteConnection("Data Source=:memory:"), context);
-        await connection.OpenAsync();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
 
         await Assert.ThrowsAsync<SqliteException>(() => connection.ExecuteAsync("SELECT * FROM [Missing]"));
 
