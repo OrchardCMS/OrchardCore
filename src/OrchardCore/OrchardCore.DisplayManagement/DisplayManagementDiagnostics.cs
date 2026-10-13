@@ -37,8 +37,17 @@ public static class DisplayManagementDiagnostics
     /// <summary>
     /// Records the duration of shape renderings, including the rendering of their child shapes.
     /// </summary>
-    internal static readonly Histogram<double> ShapeRenderDuration = Meter.CreateHistogram<double>(
+    /// <remarks>
+    /// Most shapes render in microseconds, so the buckets start at 10 microseconds, while the default buckets
+    /// of OpenTelemetry, meant for milliseconds, would put all of them in the first bucket.
+    /// </remarks>
+    internal static readonly Histogram<double> ShapeRenderDuration = Meter.CreateHistogram(
         "orchardcore.display.shape.duration",
         unit: "s",
-        description: "Duration of shape renderings, including their child shapes.");
+        description: "Duration of shape renderings, including their child shapes.",
+        tags: null,
+        advice: new InstrumentAdvice<double>
+        {
+            HistogramBucketBoundaries = [0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5],
+        });
 }
