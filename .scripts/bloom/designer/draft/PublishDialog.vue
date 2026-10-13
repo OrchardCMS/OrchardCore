@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="TIssue extends DesignIssue">
 import ModalDialog from "../ui/ModalDialog.vue";
 import IssuesList from "../panel/IssuesList.vue";
 import type { DesignIssue } from "../core/types";
@@ -8,15 +8,15 @@ import { t } from "../core/i18n";
 // The dialog of a Publish that needs the user: the errors that block it, or the warnings to acknowledge. The
 // designer can add to the confirmation through the "notes" slot.
 defineProps<{
-    decision: Exclude<PublishDecision, { kind: "publish" }>;
-    targetOf: (issue: DesignIssue) => string | null | undefined;
-    titleOf: (issue: DesignIssue) => string | null | undefined;
+    decision: Exclude<PublishDecision<TIssue>, { kind: "publish" }>;
+    targetOf: (issue: TIssue) => string | null | undefined;
+    titleOf: (issue: TIssue) => string | null | undefined;
 }>();
 
 const emit = defineEmits<{
     (event: "publish"): void;
     (event: "close"): void;
-    (event: "select-issue", issue: DesignIssue): void;
+    (event: "select-issue", issue: TIssue): void;
 }>();
 </script>
 

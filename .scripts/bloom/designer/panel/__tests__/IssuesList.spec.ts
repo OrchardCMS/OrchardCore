@@ -3,14 +3,18 @@ import { mount } from "@vue/test-utils";
 import IssuesList from "../IssuesList.vue";
 import type { DesignIssue } from "../../core/types";
 
+interface StepIssue extends DesignIssue {
+    stepId?: string;
+}
+
 const titles: Record<string, string> = { a: "Send email" };
 
-const mountList = (issues: DesignIssue[]) =>
+const mountList = (issues: StepIssue[]) =>
     mount(IssuesList, {
         props: {
             issues,
-            targetOf: (issue: DesignIssue) => issue.stepId as string | undefined,
-            titleOf: (issue: DesignIssue) => titles[issue.stepId as string],
+            targetOf: (issue: StepIssue) => issue.stepId,
+            titleOf: (issue: StepIssue) => (issue.stepId ? titles[issue.stepId] : undefined),
         },
     });
 
@@ -35,7 +39,7 @@ describe("IssuesList", () => {
     });
 
     it("click_IssueOfANode_SelectsIt", async () => {
-        const issue: DesignIssue = { severity: "Error", message: "No input.", stepId: "a" };
+        const issue: StepIssue = { severity: "Error", message: "No input.", stepId: "a" };
         const wrapper = mountList([issue]);
 
         await wrapper.get("button").trigger("click");
