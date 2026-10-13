@@ -5,15 +5,16 @@ import { DesignerApiError } from "../api/designerApi";
 import type { DesignIssue, SettingsApplied } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { showActivity } from "../canvas/useConnect";
-import ServerFormHost from "./ServerFormHost.vue";
-import IssuesList from "./IssuesList.vue";
+import ServerFormHost from "@bloom/designer/panel/ServerFormHost.vue";
+import IssuesList from "@bloom/designer/panel/IssuesList.vue";
+import { issueTarget, issueTitle } from "./issues";
 import VariablesTab from "./VariablesTab.vue";
 import JournalTab from "./JournalTab.vue";
-import type { FormApplyResult } from "./types";
-import type { RevisionTask } from "../services/revisionQueue";
-import { showToast } from "../ui/toasts";
-import { confirmAction } from "../ui/confirm";
-import { usePeek } from "../ui/usePeek";
+import type { FormApplyResult } from "@bloom/designer/panel/formApply";
+import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
+import { showToast } from "@bloom/designer/ui/toasts";
+import { confirmAction } from "@bloom/designer/ui/confirm";
+import { usePeek } from "@bloom/designer/ui/usePeek";
 import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
@@ -234,6 +235,8 @@ const onJournalSelected = (activityId: string, sequence: number) => {
     }
 };
 
+const issueTitleOf = (issue: DesignIssue) => issueTitle(props.store.state.nodes, issue);
+
 const onIssueSelected = (issue: DesignIssue) => {
     if (issue.activityId) {
         showActivity(props.store, issue.activityId);
@@ -409,6 +412,7 @@ defineExpose({ settle, selectTab, expand, discardChanges, refresh, hasPendingCha
                         :load="loadSettings"
                         :submit="submitSettings"
                         :label="t('WorkflowTab')"
+                        reload-attribute="data-wfd-reload"
                         data-cy="panel-settings-form"
                         @applied="onSettingsApplied"
                         @error="onError"
@@ -417,7 +421,7 @@ defineExpose({ settle, selectTab, expand, discardChanges, refresh, hasPendingCha
 
                 <template v-else>
                     <p class="wfd-panel-intro">{{ t("IssuesTabHint") }}</p>
-                    <IssuesList :issues="state.issues" :nodes="state.nodes" @select="onIssueSelected" />
+                    <IssuesList :issues="state.issues" :target-of="issueTarget" :title-of="issueTitleOf" @select="onIssueSelected" />
                 </template>
             </div>
         </div>

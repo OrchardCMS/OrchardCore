@@ -3,7 +3,7 @@ import { computed, useId } from "vue";
 import type { DesignerApi } from "../api/designerApi";
 import type { ActivityOutput, DesignerNode } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
-import type { RevisionTask } from "../services/revisionQueue";
+import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
 import { findVariable, isAssignable, typeDisplayName } from "../variables/variableValues";
 import { t } from "../i18n";
 

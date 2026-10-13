@@ -2,9 +2,9 @@
 import { computed, nextTick, ref, toRaw, useId, watch } from "vue";
 import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";
-import type { VariableDefinition, VariableType } from "../api/types";
+import type { ProblemDetails, VariableDefinition, VariableType } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
-import type { RevisionTask } from "../services/revisionQueue";
+import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
 import { editorOf, formatDefault, formatValue, parseDefault, typeDisplayName } from "../variables/variableValues";
 import { t } from "../i18n";
 
@@ -156,7 +156,7 @@ const save = async () => {
             });
         }
     } catch (error) {
-        const errors = error instanceof DesignerApiError && error.status === 400 ? error.problem.variableErrors : undefined;
+        const errors = error instanceof DesignerApiError && error.status === 400 ? (error.problem as ProblemDetails).variableErrors : undefined;
 
         if (errors?.length) {
             for (const variableError of errors) {

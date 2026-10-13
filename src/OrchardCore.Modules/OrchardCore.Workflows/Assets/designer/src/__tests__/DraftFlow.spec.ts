@@ -6,7 +6,7 @@ import { moveNodesCommand } from "../state/commands";
 import { DesignerApiError, type DesignerApi } from "../api/designerApi";
 import type { DesignerDefinition } from "../api/types";
 import type { DesignerConfig } from "../config";
-import { clearToasts, useToasts } from "../ui/toasts";
+import { clearToasts, useToasts } from "@bloom/designer/ui/toasts";
 import { createDefinition } from "../canvas/__tests__/fixtures";
 
 const config: DesignerConfig = {
@@ -65,9 +65,9 @@ describe("draft flow", () => {
 
         expect(api.publish).not.toHaveBeenCalled();
         const dialog = wrapper.get("[data-cy=publish-confirm-dialog]");
-        expect(dialog.findAll(".wfd-issue")).toHaveLength(1);
+        expect(dialog.findAll(".ocd-issue")).toHaveLength(1);
         expect(dialog.get("[data-cy=publish-running-instances]").text()).toBe("RunningInstancesContinue");
-        expect(dialog.get("[data-cy=publish-dialog-confirm]").text()).toBe("PublishAnyway");
+        expect(dialog.get("[data-cy=publish-dialog-confirm]").text()).toBe("Publish anyway");
 
         await dialog.get("[data-cy=publish-dialog-confirm]").trigger("click");
         await flushPromises();
@@ -201,7 +201,7 @@ describe("draft flow", () => {
         const { wrapper } = await setup({ draftModifiedBy: "Bob", draftModifiedByUserId: "bob", draftModifiedUtc: "2026-10-01T08:30:00Z" });
 
         const banner = wrapper.get("[data-cy=draft-banner]");
-        expect(banner.text()).toContain("DraftLastEditedBy");
+        expect(banner.text()).toContain("Bob last edited this draft");
 
         await banner.get("[data-cy=draft-banner-dismiss]").trigger("click");
         expect(wrapper.find("[data-cy=draft-banner]").exists()).toBe(false);

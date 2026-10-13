@@ -14,14 +14,13 @@ import type {
     WorkflowSettings,
 } from "../api/types";
 import type { Presence, WorkflowTypeChangedMessage } from "../realtime/realtime";
-import { History, type Command } from "./history";
-import type { Graph } from "./commands";
+import type { Command } from "@bloom/designer/core/history";
+import { createGraphHistory, createServerNodeIds } from "@bloom/designer/graph/graphHistory";
+import { danglingEdges } from "@bloom/designer/graph/rules";
+import { createWorkflowModel, type Graph } from "./commands";
 
-/**
- * The autosave status: `offline` is retrying after a network or server error, `failed` was rejected by
- * the server and waits for a retry, and `conflict` waits for the user to reload or overwrite.
- */
-export type SaveStatus = "saved" | "saving" | "unsaved" | "offline" | "failed" | "conflict";
+export type { SaveStatus } from "@bloom/designer/core/types";
+import type { SaveStatus } from "@bloom/designer/core/types";
 
 export interface Viewport {
     panX: number;
@@ -132,11 +131,11 @@ const createInitialState = (): DesignerState => ({
  */
 export const createDesignerStore = () => {
     const state = reactive(createInitialState());
-    const history = new History();
+    const { history, markChanged, execute, record, undo, redo } = createGraphHistory(state);
 
     // The activities the draft (or live type) on the server has, so a save can tell which activities were
     // removed and which removed ones were brought back (for example by undo).
-    let serverActivityIds = new Set<string>();
+    const serverActivityIds = createServerNodeIds();
 
     const graph: Graph = {
         get nodes() {
@@ -145,15 +144,10 @@ export const createDesignerStore = () => {
         get transitions() {
             return state.transitions;
         },
-    };
-
-    history.subscribe(() => {
-        state.canUndo = history.canUndo;
-        state.canRedo = history.canRedo;
-    });
-
-    const markChanged = () => {
-        state.changeVersion++;
+        get edges() {
+            return state.transitions;
+        },
+        model: createWorkflowModel(() => state.settings?.branchingMode === "All"),
     };
 
     // The server changed the draft on behalf of the signed-in user, who is now its last editor.
@@ -196,7 +190,7 @@ export const createDesignerStore = () => {
                 remoteChange: null,
             });
 
-            serverActivityIds = new Set(definition.nodes.map((node) => node.id));
+            serverActivityIds.reset(definition.nodes.map((node) => node.id));
             history.clear();
         },
 
@@ -207,30 +201,15 @@ export const createDesignerStore = () => {
         /**
          * Applies a command and records it in the history.
          */
-        execute(command: Command) {
-            history.execute(command);
-            markChanged();
-        },
+        execute: (command: Command) => execute(command),
 
         /**
          * Records a command whose effect is already applied, for example a drag.
          */
-        record(command: Command) {
-            history.record(command);
-            markChanged();
-        },
+        record: (command: Command) => record(command),
 
-        undo() {
-            if (history.undo()) {
-                markChanged();
-            }
-        },
-
-        redo() {
-            if (history.redo()) {
-                markChanged();
-            }
-        },
+        undo,
+        redo,
 
         /**
          * Records an activity that the server just created (AddActivity).
@@ -255,16 +234,10 @@ export const createDesignerStore = () => {
                 state.nodes.splice(index, 1, { ...node, x: state.nodes[index].x, y: state.nodes[index].y, isStart: state.nodes[index].isStart });
             }
 
-            const outcomes = new Set(node.outcomes.map((outcome) => outcome.name));
-            const removed: DesignerTransition[] = [];
+            const removed = danglingEdges(graph, node);
 
-            for (let i = state.transitions.length - 1; i >= 0; i--) {
-                const transition = state.transitions[i];
-
-                if (transition.sourceActivityId === node.id && !outcomes.has(transition.sourceOutcomeName)) {
-                    removed.unshift(transition);
-                    state.transitions.splice(i, 1);
-                }
+            for (const transition of removed) {
+                state.transitions.splice(state.transitions.indexOf(transition), 1);
             }
 
             if (removed.length > 0) {
@@ -299,8 +272,8 @@ export const createDesignerStore = () => {
                     sourceOutcomeName: transition.sourceOutcomeName,
                     destinationActivityId: transition.destinationActivityId,
                 })),
-                removedActivityIds: [...serverActivityIds].filter((id) => !currentIds.has(id)),
-                restoredActivityIds: [...currentIds].filter((id) => !serverActivityIds.has(id)),
+                removedActivityIds: serverActivityIds.removed(currentIds),
+                restoredActivityIds: serverActivityIds.restored(currentIds),
             };
         },
 
@@ -308,7 +281,7 @@ export const createDesignerStore = () => {
          * Records a successful save of `payload`.
          */
         markSaved(payload: SavePayload, result: SaveResult) {
-            serverActivityIds = new Set(payload.nodes.map((node) => node.id));
+            serverActivityIds.reset(payload.nodes.map((node) => node.id));
             state.revision = result.revision;
             state.issues = result.issues;
             touchDraft();
@@ -334,7 +307,7 @@ export const createDesignerStore = () => {
 
         reset() {
             Object.assign(state, createInitialState());
-            serverActivityIds = new Set();
+            serverActivityIds.reset([]);
             history.clear();
         },
     };

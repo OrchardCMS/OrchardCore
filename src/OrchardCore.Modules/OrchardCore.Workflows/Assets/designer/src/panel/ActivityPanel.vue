@@ -5,16 +5,16 @@ import { DesignerApiError } from "../api/designerApi";
 import type { EditorApplied, RetryResult } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { clearSelection, showActivity } from "../canvas/useConnect";
-import ServerFormHost from "./ServerFormHost.vue";
+import ServerFormHost from "@bloom/designer/panel/ServerFormHost.vue";
 import OutputBindings from "./OutputBindings.vue";
 import AvailableData from "../available/AvailableData.vue";
 import RunsTab from "./RunsTab.vue";
-import { formatDateTime } from "../draft/formatDateTime";
+import { formatDateTime } from "@bloom/designer/core/formatDateTime";
 import { canInsertAt, insertAtCursor } from "../available/insertion";
-import type { FormApplyResult } from "./types";
-import type { RevisionTask } from "../services/revisionQueue";
-import { showToast } from "../ui/toasts";
-import { confirmAction } from "../ui/confirm";
+import type { FormApplyResult } from "@bloom/designer/panel/formApply";
+import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
+import { showToast } from "@bloom/designer/ui/toasts";
+import { confirmAction } from "@bloom/designer/ui/confirm";
 import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
@@ -126,7 +126,7 @@ let focusOnLoad = false;
 let lastField: Element | null = null;
 
 const onFormFocus = (event: FocusEvent) => {
-    if (event.target instanceof Element && event.target.closest(".wfd-form-content")) {
+    if (event.target instanceof Element && event.target.closest(".ocd-form-content")) {
         lastField = event.target;
     }
 };
@@ -274,7 +274,7 @@ const open = async (activityId: string, options: { focus?: boolean } = {}) => {
 
 const isVisible = (element: HTMLElement) => (typeof element.checkVisibility === "function" ? element.checkVisibility() : true);
 
-const FIELDS = ".wfd-form-content input:not([type=hidden]), .wfd-form-content select, .wfd-form-content textarea, .wfd-form-content button";
+const FIELDS = ".ocd-form-content input:not([type=hidden]), .ocd-form-content select, .ocd-form-content textarea, .ocd-form-content button";
 
 /**
  * Moves the focus to the first field of the activity's editor, or to the panel's title.
@@ -654,6 +654,7 @@ defineExpose({ open, settle, close, discardChanges, refresh, hasPendingChanges, 
                         :load="loadActivity"
                         :submit="submitActivity"
                         :label="t('ActivitySettings')"
+                        reload-attribute="data-wfd-reload"
                         data-cy="panel-activity-form"
                         @loaded="onActivityLoaded"
                         @applied="onActivityApplied"

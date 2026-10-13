@@ -1,30 +1,17 @@
+import { decidePublish as decide, type PublishDecision as DraftPublishDecision } from "@bloom/designer/draft/publishDecision";
 import type { DesignIssue } from "../api/types";
 
 /**
- * What clicking Publish does, given the draft's issues and running instances:
- * - `blocked`: the draft has errors, which must be fixed first;
- * - `confirm`: the draft has warnings, so ask before publishing (the dialog also mentions the running
- *   instances, which keep running on their version);
- * - `publish`: publish right away.
+ * What clicking Publish does, given the draft's issues and running instances (see the shared decision). When the
+ * draft has warnings, the confirmation also mentions the running instances, which keep running on their version.
  */
 export type PublishDecision =
-    | { kind: "blocked"; errors: DesignIssue[] }
-    | { kind: "confirm"; warnings: DesignIssue[]; runningInstanceCount: number }
-    | { kind: "publish" };
+    | Exclude<DraftPublishDecision<DesignIssue>, { kind: "confirm" }>
+    | { kind: "confirm"; warnings: DesignIssue[]; runningInstanceCount: number };
 
 export const decidePublish = (issues: DesignIssue[], runningInstanceCount: number): PublishDecision => {
-    const errors = issues.filter((issue) => issue.severity === "Error");
-
-    if (errors.length > 0) {
-        return { kind: "blocked", errors };
-    }
-
-    const warnings = issues.filter((issue) => issue.severity === "Warning");
+    const decision = decide(issues);
 
     // Running instances keep running on the version they started on, so they alone don't need confirming.
-    if (warnings.length > 0) {
-        return { kind: "confirm", warnings, runningInstanceCount };
-    }
-
-    return { kind: "publish" };
+    return decision.kind === "confirm" ? { ...decision, runningInstanceCount } : decision;
 };

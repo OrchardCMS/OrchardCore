@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId } from "vue";
-import ModalDialog from "../ui/ModalDialog.vue";
+import ModalDialog from "@bloom/designer/ui/ModalDialog.vue";
 import NameValueRows, { type NameValueRow } from "./NameValueRows.vue";
 import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";

@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import type { DesignerConfig } from "./config";
 import { DesignerApiError, withQuery, type DesignerApi } from "./api/designerApi";
-import type { DesignIssue, DesignerVersion, Library, RetryResult } from "./api/types";
+import type { DesignIssue, DesignerVersion, Library, ProblemDetails, RetryResult } from "./api/types";
 import { designerStore, type DesignerStore } from "./state/designerStore";
 import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
@@ -13,23 +13,23 @@ import QuickAddMenu from "./canvas/QuickAddMenu.vue";
 import StartPicker from "./canvas/StartPicker.vue";
 import { startVariableCompletions } from "./variables/variableCompletions";
 import { upstreamValues } from "./available/availableData";
-import ToastHost from "./ui/ToastHost.vue";
-import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
-import ConflictDialog from "./draft/ConflictDialog.vue";
+import ToastHost from "@bloom/designer/ui/ToastHost.vue";
+import SaveStatusIndicator from "@bloom/designer/draft/SaveStatusIndicator.vue";
+import ConflictDialog from "@bloom/designer/draft/ConflictDialog.vue";
 import PublishDialog from "./draft/PublishDialog.vue";
 import RunDialog from "./draft/RunDialog.vue";
-import DraftBanner from "./draft/DraftBanner.vue";
+import DraftBanner from "@bloom/designer/draft/DraftBanner.vue";
 import PresenceList from "./realtime/PresenceList.vue";
 import RemoteChangeNotice from "./realtime/RemoteChangeNotice.vue";
 import { startRealtime, type RealtimeSession, type WorkflowTypeChangedMessage } from "./realtime/realtime";
 import VersionsDialog from "./draft/VersionsDialog.vue";
-import { formatDateTime } from "./draft/formatDateTime";
+import { formatDateTime } from "@bloom/designer/core/formatDateTime";
 import { decidePublish, type PublishDecision } from "./draft/publishDecision";
-import { createRevisionQueue } from "./services/revisionQueue";
-import { createAutosave } from "./services/autosave";
-import { showToast } from "./ui/toasts";
-import { confirmAction } from "./ui/confirm";
-import { usePeek } from "./ui/usePeek";
+import { createRevisionQueue } from "@bloom/designer/core/revisionQueue";
+import { createAutosave } from "@bloom/designer/core/autosave";
+import { showToast } from "@bloom/designer/ui/toasts";
+import { confirmAction } from "@bloom/designer/ui/confirm";
+import { usePeek } from "@bloom/designer/ui/usePeek";
 import { readPreference, writePreference } from "./ui/preferences";
 import { connectOutcome, selectNode, showActivity } from "./canvas/useConnect";
 import { scriptErrorsByActivity } from "./canvas/scriptErrors";
@@ -358,10 +358,12 @@ const doPublish = async () => {
         showToast({ message: state.publishedVersion ? t("PublishedVersion", state.publishedVersion.version) : t("Published"), variant: "success" });
         await keepFocus();
     } catch (error) {
-        if (error instanceof DesignerApiError && error.status === 400 && error.problem.issues) {
+        const issues = error instanceof DesignerApiError && error.status === 400 ? (error.problem as ProblemDetails).issues : undefined;
+
+        if (issues) {
             // The draft has errors the designer didn't know about yet.
-            state.issues = error.problem.issues;
-            publishDialog.value = { kind: "blocked", errors: error.problem.issues.filter((issue) => issue.severity === "Error") };
+            state.issues = issues;
+            publishDialog.value = { kind: "blocked", errors: issues.filter((issue) => issue.severity === "Error") };
         } else {
             onRequestError(error, t("PublishFailed"));
         }
@@ -805,7 +807,7 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
             </aside>
 
             <!-- The canvas, with the selected activity's panel over it, or below it when pinned. -->
-            <div ref="main" class="wfd-main" :style="{ '--wfd-covered-height': `${activityPanel?.coveredHeight ?? 0}px` }">
+            <div ref="main" class="wfd-main" :style="{ '--ocd-covered-height': `${activityPanel?.coveredHeight ?? 0}px` }">
                 <section class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
                     <div v-if="loading" class="wfd-message">
                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>

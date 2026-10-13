@@ -3,7 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 import WorkflowPanel from "../WorkflowPanel.vue";
 import { createDesignerStore } from "../../state/designerStore";
-import { clearToasts } from "../../ui/toasts";
+import { clearToasts } from "@bloom/designer/ui/toasts";
 import type { DesignerApi } from "../../api/designerApi";
 import { createDefinition } from "../../canvas/__tests__/fixtures";
 
@@ -66,7 +66,7 @@ describe("WorkflowPanel", () => {
 
         expect(wrapper.get("[data-cy=issues-count]").text()).toBe("2");
         // Errors are listed first.
-        expect(wrapper.findAll(".wfd-issue").map((issue) => issue.attributes("data-cy"))).toEqual(["issue-InvalidTransition", "issue-UnreachableActivity"]);
+        expect(wrapper.findAll(".ocd-issue").map((issue) => issue.attributes("data-cy"))).toEqual(["issue-InvalidTransition", "issue-UnreachableActivity"]);
 
         await wrapper.get("[data-cy=issue-UnreachableActivity]").trigger("click");
 

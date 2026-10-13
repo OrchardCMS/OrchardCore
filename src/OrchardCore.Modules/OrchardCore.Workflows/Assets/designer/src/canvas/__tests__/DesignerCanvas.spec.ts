@@ -3,7 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import DesignerCanvas from "../DesignerCanvas.vue";
 import { createDesignerStore } from "../../state/designerStore";
 import { transitionKey } from "../../state/commands";
-import { clearToasts, useToasts } from "../../ui/toasts";
+import { clearToasts, useToasts } from "@bloom/designer/ui/toasts";
 import { createDefinition } from "./fixtures";
 
 const setup = (readOnly = false) => {

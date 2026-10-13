@@ -4,7 +4,7 @@ import ActivityPanel from "../ActivityPanel.vue";
 import { createDesignerStore } from "../../state/designerStore";
 import { transitionKey } from "../../state/commands";
 import { clearSelection, selectNode, showActivity } from "../../canvas/useConnect";
-import { clearToasts, useToasts } from "../../ui/toasts";
+import { clearToasts, useToasts } from "@bloom/designer/ui/toasts";
 import type { DesignerApi } from "../../api/designerApi";
 import { createDefinition, createNode } from "../../canvas/__tests__/fixtures";
 

@@ -1,4 +1,5 @@
 import { createApiService, type ApiService } from "@bloom/services/api-service";
+import { DesignerApiError, call, multipart, withQuery } from "@bloom/designer/core/api";
 import { PRESET_KEY_PREFIX } from "./presets";
 import type { DesignerUrls } from "../config";
 import type {
@@ -12,7 +13,6 @@ import type {
     JournalData,
     Library,
     OutputBindingsResult,
-    ProblemDetails,
     PublishResult,
     RestoreResult,
     RetryResult,
@@ -24,70 +24,13 @@ import type {
     VariablesResult,
 } from "./types";
 
-/**
- * An HTTP failure of a designer endpoint, with the ProblemDetails body when the server sent one.
- * `status` is 0 when the request never reached the server (offline, network error).
- */
-export class DesignerApiError extends Error {
-    readonly status: number;
-    readonly problem: ProblemDetails;
-
-    constructor(status: number, problem: ProblemDetails | undefined, message?: string) {
-        super(problem?.title ?? message ?? `Request failed with status ${status}`);
-        this.name = "DesignerApiError";
-        this.status = status;
-        this.problem = problem ?? {};
-    }
-
-    get isConflict() {
-        return this.status === 409;
-    }
-
-    get isNetworkError() {
-        return this.status === 0;
-    }
-}
-
-interface AxiosLikeError {
-    message?: string;
-    response?: { status: number; data?: unknown };
-}
-
-const toDesignerApiError = (error: unknown): DesignerApiError => {
-    const axiosError = error as AxiosLikeError;
-
-    if (axiosError?.response) {
-        const data = axiosError.response.data;
-
-        return new DesignerApiError(axiosError.response.status, typeof data === "object" && data !== null ? (data as ProblemDetails) : undefined);
-    }
-
-    return new DesignerApiError(0, undefined, axiosError?.message);
-};
-
-export const withQuery = (url: string, query: Record<string, string | number>) => {
-    const separator = url.includes("?") ? "&" : "?";
-
-    return url + separator + new URLSearchParams(Object.entries(query).map(([key, value]) => [key, String(value)])).toString();
-};
+export { DesignerApiError, withQuery };
 
 /**
  * The typed client of WorkflowDesignerController. The endpoint URLs are generated on the server, so they
  * include the tenant prefix.
  */
 export const createDesignerApi = (urls: DesignerUrls, service: ApiService = createApiService({ authType: "cookie" })) => {
-    const call = async <T>(request: () => Promise<{ data: T }>): Promise<T> => {
-        try {
-            return (await request()).data;
-        } catch (error) {
-            throw toDesignerApiError(error);
-        }
-    };
-
-    // Forms are posted as multipart; the explicit header stops axios from converting the FormData to JSON
-    // (the service defaults to application/json) and lets the browser add the boundary.
-    const multipart = { headers: { "Content-Type": "multipart/form-data" } };
-
     return {
         getDefinition: () => call(() => service.get<DesignerDefinition>(urls.definition)),
         getLibrary: () => call(() => service.get<Library>(urls.library)),

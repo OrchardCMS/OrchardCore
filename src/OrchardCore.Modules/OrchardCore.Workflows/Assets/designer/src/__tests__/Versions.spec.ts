@@ -6,7 +6,7 @@ import type { DesignerApi } from "../api/designerApi";
 import type { DesignerDefinition, DesignerVersion, DesignerVersions } from "../api/types";
 import type { DesignerConfig } from "../config";
 import { loadTranslations } from "../i18n";
-import { clearToasts, useToasts } from "../ui/toasts";
+import { clearToasts, useToasts } from "@bloom/designer/ui/toasts";
 import { createDefinition } from "../canvas/__tests__/fixtures";
 
 const version = (number: number, overrides: Partial<DesignerVersion> = {}): DesignerVersion => ({

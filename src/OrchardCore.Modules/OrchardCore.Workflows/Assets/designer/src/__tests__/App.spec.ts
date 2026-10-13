@@ -8,7 +8,7 @@ import type { DesignerApi } from "../api/designerApi";
 import type { DesignerConfig } from "../config";
 import { createDefinition } from "../canvas/__tests__/fixtures";
 import { selectNode } from "../canvas/useConnect";
-import { useToasts } from "../ui/toasts";
+import { useToasts } from "@bloom/designer/ui/toasts";
 
 const config: DesignerConfig = {
     workflowTypeId: 7,

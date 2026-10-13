@@ -4,6 +4,7 @@ import CompareApp from "./compare/CompareApp.vue";
 import { readConfig } from "./config";
 import { loadTranslations } from "./i18n";
 import { createDesignerApi } from "./api/designerApi";
+import "@bloom/designer/styles/designer-base.css";
 import "./styles/designer.css";
 
 // Mounts the designer on #workflow-designer (Views/WorkflowType/Edit.cshtml, Version.cshtml and CompareVersions.cshtml,

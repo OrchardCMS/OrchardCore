@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import type { JournalRecord } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
-import { formatDateTime } from "../draft/formatDateTime";
+import { formatDateTime } from "@bloom/designer/core/formatDateTime";
 import { isScriptError, journalStatusClass as statusClass, journalStatusLabel as statusLabel } from "./journalStatus";
 import { t } from "../i18n";
 

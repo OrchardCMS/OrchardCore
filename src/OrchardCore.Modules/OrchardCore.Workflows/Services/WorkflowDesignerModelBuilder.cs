@@ -1,15 +1,8 @@
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -30,10 +23,7 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly IActivityLibrary _activityLibrary;
     private readonly IActivityDisplayManager _activityDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IDisplayHelper _displayHelper;
-    private readonly ViewContextAccessor _viewContextAccessor;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ITempDataProvider _tempDataProvider;
+    private readonly IShapeHtmlRenderer _shapeHtmlRenderer;
     private readonly HtmlEncoder _htmlEncoder;
     private readonly WorkflowOptions _workflowOptions;
     private readonly IEnumerable<IActivityPresetProvider> _presetProviders;
@@ -46,10 +36,7 @@ public sealed class WorkflowDesignerModelBuilder
         IActivityLibrary activityLibrary,
         IActivityDisplayManager activityDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
-        IDisplayHelper displayHelper,
-        ViewContextAccessor viewContextAccessor,
-        IHttpContextAccessor httpContextAccessor,
-        ITempDataProvider tempDataProvider,
+        IShapeHtmlRenderer shapeHtmlRenderer,
         HtmlEncoder htmlEncoder,
         IOptions<WorkflowOptions> workflowOptions,
         IEnumerable<IActivityPresetProvider> presetProviders,
@@ -60,10 +47,7 @@ public sealed class WorkflowDesignerModelBuilder
         _activityLibrary = activityLibrary;
         _activityDisplayManager = activityDisplayManager;
         _updateModelAccessor = updateModelAccessor;
-        _displayHelper = displayHelper;
-        _viewContextAccessor = viewContextAccessor;
-        _httpContextAccessor = httpContextAccessor;
-        _tempDataProvider = tempDataProvider;
+        _shapeHtmlRenderer = shapeHtmlRenderer;
         _htmlEncoder = htmlEncoder;
         _workflowOptions = workflowOptions.Value;
         _presetProviders = presetProviders;
@@ -164,7 +148,7 @@ public sealed class WorkflowDesignerModelBuilder
                     Category = activity.Category.Value,
                     IsEvent = activity.IsEvent(),
                     HasEditor = activity.HasEditor,
-                    ThumbnailHtml = await RenderContentZoneAsync(shape),
+                    ThumbnailHtml = await _shapeHtmlRenderer.RenderZoneAsync(shape, "Content"),
                     Icon = WorkflowDesignerIcons.Resolve(activity, _workflowOptions),
                 });
             }
@@ -268,7 +252,7 @@ public sealed class WorkflowDesignerModelBuilder
             Title = title,
             DisplayText = displayText,
             Category = activity.Category.Value,
-            DesignHtml = await RenderContentZoneAsync(shape),
+            DesignHtml = await _shapeHtmlRenderer.RenderZoneAsync(shape, "Content"),
             Icon = WorkflowDesignerIcons.Resolve(activity, _workflowOptions),
             Outcomes = outcomes
                 .Select(outcome => new WorkflowDesignerOutcome
@@ -324,58 +308,5 @@ public sealed class WorkflowDesignerModelBuilder
         }
 
         return activity.DisplayText.Value;
-    }
-
-    // The 'Activity_Design' and 'Activity_Thumbnail' templates wrap the activity's own shape with the markup of
-    // the legacy canvas and picker. The designer draws its own node and card, so it only renders the 'Content'
-    // zone, where the drivers place the '{Name}_Fields_Design' and '{Name}_Fields_Thumbnail' shapes.
-    private async Task<string> RenderContentZoneAsync(IShape shape)
-    {
-        if (shape is not IZoneHolding zoneHolding || !zoneHolding.Zones.IsNotEmpty("Content"))
-        {
-            return string.Empty;
-        }
-
-        // Shape templates are rendered as partial views of the current view. The designer endpoints return JSON,
-        // so there is no view, and the first template of the request would be rendered as a main page instead,
-        // wrapped in the theme layout. Render them in a view context without output, as Liquid templates do.
-        var previousViewContext = _viewContextAccessor.ViewContext;
-
-        if (previousViewContext?.View is null && _httpContextAccessor.HttpContext is { } httpContext)
-        {
-            var actionContext = await httpContext.GetActionContextAsync();
-
-            _viewContextAccessor.ViewContext = new ViewContext(
-                actionContext,
-                NullView.Instance,
-                new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()),
-                new TempDataDictionary(httpContext, _tempDataProvider),
-                TextWriter.Null,
-                new HtmlHelperOptions());
-        }
-
-        try
-        {
-            var content = await _displayHelper.ShapeExecuteAsync(zoneHolding.Zones["Content"]);
-
-            using var writer = new StringWriter();
-            content.WriteTo(writer, _htmlEncoder);
-
-            return writer.ToString();
-        }
-        finally
-        {
-            _viewContextAccessor.ViewContext = previousViewContext;
-        }
-    }
-
-    private sealed class NullView : IView
-    {
-        public static readonly NullView Instance = new();
-
-        public string Path => string.Empty;
-
-        public Task RenderAsync(ViewContext context)
-            => Task.CompletedTask;
     }
 }

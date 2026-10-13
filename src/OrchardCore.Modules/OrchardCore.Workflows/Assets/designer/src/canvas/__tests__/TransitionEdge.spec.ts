@@ -30,7 +30,7 @@ describe("TransitionEdge", () => {
         expect(wrapper.get("[data-cy='edge-s:Done:t']").exists()).toBe(true);
         // The target faces the port, so the route is a straight line into its left side.
         expect(wrapper.get(".wfd-edge-line").attributes("d")).toBe("M220,80 L400,80");
-        expect(wrapper.get(".wfd-edge-line").attributes("marker-end")).toBe("url(#wfd-arrow)");
+        expect(wrapper.get(".wfd-edge-line").attributes("marker-end")).toBe("url(#ocd-arrow)");
         expect(wrapper.get(".wfd-edge-label").text()).toBe("Done label");
         expect(wrapper.find("[data-cy=edge-delete]").exists()).toBe(false);
     });
@@ -47,7 +47,7 @@ describe("TransitionEdge", () => {
     it("selected_DeleteAffordance_EmitsDelete", async () => {
         const wrapper = mountEdge({ selected: true });
 
-        expect(wrapper.get(".wfd-edge-line").attributes("marker-end")).toBe("url(#wfd-arrow-selected)");
+        expect(wrapper.get(".wfd-edge-line").attributes("marker-end")).toBe("url(#ocd-arrow-selected)");
         await wrapper.get("[data-cy=edge-delete]").trigger("click");
         await wrapper.get("[data-cy=edge-delete]").trigger("keydown", { key: "Enter" });
 

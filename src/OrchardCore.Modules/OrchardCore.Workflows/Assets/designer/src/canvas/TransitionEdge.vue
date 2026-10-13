@@ -64,7 +64,7 @@ const onPointerDown = (event: PointerEvent) => {
         @contextmenu.prevent.stop="emit('open-menu', $event)"
     >
         <path class="wfd-edge-hit" :d="geometry.path" />
-        <path class="wfd-edge-line" :d="geometry.path" :marker-end="selected ? 'url(#wfd-arrow-selected)' : 'url(#wfd-arrow)'" />
+        <path class="wfd-edge-line" :d="geometry.path" :marker-end="selected ? 'url(#ocd-arrow-selected)' : 'url(#ocd-arrow)'" />
         <text class="wfd-edge-label" :x="geometry.mid.x" :y="geometry.mid.y - 6" text-anchor="middle">{{ label }}</text>
         <g
             v-if="selected && !readOnly"

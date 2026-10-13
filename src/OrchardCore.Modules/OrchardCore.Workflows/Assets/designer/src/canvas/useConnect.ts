@@ -32,7 +32,7 @@ export const connectOutcome = (store: DesignerStore, transition: DesignerTransit
         return { status: "unchanged" };
     }
 
-    const command = connectCommand(store.graph, transition, store.state.settings?.branchingMode === "All");
+    const command = connectCommand(store.graph, transition);
     store.execute(command);
 
     const replaced = command.replaced();

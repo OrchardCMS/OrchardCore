@@ -1,6 +1,8 @@
 // The JSON contract of WorkflowDesignerController (camelCase). Keep in sync with
 // OrchardCore.Workflows/ViewModels/WorkflowDesigner*.cs and Models/WorkflowDesignIssue.cs.
 
+import type { ProblemDetails as DraftProblemDetails } from "@bloom/designer/core/api";
+
 export type IssueSeverity = "Error" | "Warning";
 
 export interface DesignIssue {
@@ -367,12 +369,8 @@ export interface AddActivityResult {
 }
 
 // A server-rendered form (activity editor or workflow settings).
-export interface FormFragment {
-    valid: boolean;
-    content: string;
-    scripts: string;
-    styles: string;
-}
+export type { FormFragment } from "@bloom/designer/core/types";
+import type { FormFragment } from "@bloom/designer/core/types";
 
 export interface EditorApplied {
     valid: true;
@@ -401,14 +399,8 @@ export interface PublishResult {
     version?: DesignerVersion | null;
 }
 
-// RFC 9457 ProblemDetails with the designer extensions.
-export interface ProblemDetails {
-    status?: number;
-    title?: string;
-    detail?: string;
-    currentRevision?: number;
-    modifiedBy?: string | null;
-    modifiedUtc?: string | null;
+// RFC 9457 ProblemDetails with the workflow designer extensions.
+export interface ProblemDetails extends DraftProblemDetails {
     issues?: DesignIssue[];
     // Invalid variable declarations (the Variables endpoint).
     variableErrors?: VariableError[];
