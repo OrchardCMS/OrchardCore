@@ -25,18 +25,6 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     private readonly IMemoryCache _cache;
 
 
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewMedia'.")]
-    public static readonly Permission ViewMedia = MediaPermissions.ViewMedia;
-
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewRootMedia'.")]
-    public static readonly Permission ViewRootMedia = MediaPermissions.ViewRootMedia;
-
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewOthersMedia'.")]
-    public static readonly Permission ViewOthersMedia = MediaPermissions.ViewOthersMedia;
-
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewOwnMedia'.")]
-    public static readonly Permission ViewOwnMedia = MediaPermissions.ViewOwnMedia;
-
     public SecureMediaPermissions(
         IOptions<MediaOptions> options,
         IMediaFileStore fileStore,

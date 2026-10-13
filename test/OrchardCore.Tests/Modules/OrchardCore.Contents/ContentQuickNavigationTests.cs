@@ -17,6 +17,7 @@ using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Security;
 using OrchardCore.Settings;
+using OrchardCore.Tests.Utilities;
 using YesSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -82,7 +83,8 @@ public class ContentQuickNavigationTests : IAsyncLifetime
     public ValueTask DisposeAsync()
     {
         _store?.Dispose();
-        File.Delete(_databasePath);
+        TestFileHelper.TryDelete(_databasePath);
+
         return ValueTask.CompletedTask;
     }
 
