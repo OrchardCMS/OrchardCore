@@ -16,7 +16,7 @@ public class ResourceManagerBenchmark
         new FakeWebHostEnvironment(),
         new MemoryCache(Options.Create(new MemoryCacheOptions())));
 
-    private static readonly OptionsWrapper<ResourceManagementOptions> s_options;
+    private static readonly FakeOptionsMonitor<ResourceManagementOptions> s_options;
 
     static ResourceManagerBenchmark()
     {
@@ -38,7 +38,7 @@ public class ResourceManagerBenchmark
         dependency2.DefineStyle("dependency2").SetUrl("file://dependency2.txt").SetVersion("1.0.0");
         options.ResourceManifests.Add(dependency2);
 
-        s_options = new OptionsWrapper<ResourceManagementOptions>(options);
+        s_options = new FakeOptionsMonitor<ResourceManagementOptions>(options);
     }
 
     [Benchmark]
