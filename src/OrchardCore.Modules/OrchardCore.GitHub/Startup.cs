@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
 using OrchardCore.GitHub.Recipes;
+using OrchardCore.GitHub.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -36,6 +37,12 @@ public sealed class GitHubLoginStartup : StartupBase
 
         // Built-in initializers:
         services.AddTransient<IPostConfigureOptions<GitHubAuthenticationOptions>, OAuthPostConfigureOptions<GitHubAuthenticationOptions, GitHubAuthenticationHandler>>();
+
+        services.AddTransient<IConfigureOptions<GitHubAuthenticationSettings>, GitHubAuthenticationSettingsConfiguration>();
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<GitHubAuthenticationSettings>();
+        services.AddSignalOptionsChangeTokenSource<GitHubAuthenticationOptions>(GitHubAuthenticationDefaults.AuthenticationScheme);
     }
 }
 

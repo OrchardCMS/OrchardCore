@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.GitHub.ViewModels;
 using OrchardCore.Settings;
@@ -15,20 +15,20 @@ namespace OrchardCore.GitHub.Drivers;
 
 public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GitHubAuthenticationSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
@@ -96,7 +96,8 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             settings.CallbackPath = model.CallbackUrl;
             settings.SaveTokens = model.SaveTokens;
 
-            _shellReleaseManager.RequestRelease();
+            // Refresh the options built from these settings, so that they apply without restarting the tenant.
+            _optionsUpdateNotifier.RequestGitHubAuthenticationUpdate();
         }
 
         return await EditAsync(site, settings, context);

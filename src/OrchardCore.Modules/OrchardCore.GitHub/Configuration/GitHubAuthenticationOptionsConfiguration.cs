@@ -7,22 +7,21 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.GitHub.Settings;
-using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
 internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamedOptions<GitHubAuthenticationOptions>
 {
-    private readonly ISiteService _siteService;
+    private readonly IOptionsMonitor<GitHubAuthenticationSettings> _settings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationOptionsConfiguration(
-        ISiteService siteService,
+        IOptionsMonitor<GitHubAuthenticationSettings> settings,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<GitHubAuthenticationOptionsConfiguration> logger)
     {
-        _siteService = siteService;
+        _settings = settings;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
@@ -35,7 +34,8 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
             return;
         }
 
-        var settings = _siteService.GetSettings<GitHubAuthenticationSettings>();
+        // Read the current settings, as the options can be rebuilt when the settings are updated.
+        var settings = _settings.CurrentValue;
 
         if (settings == null)
         {
