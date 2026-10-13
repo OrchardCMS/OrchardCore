@@ -120,6 +120,23 @@ public class SignalOptionsChangeTokenSourceTests
     }
 
     [Fact]
+    public void AddSignalOptionsChangeTokenSource_NoSignalService_BuildsOptions()
+    {
+        // An application that doesn't register the caching services, e.g. a plain MVC application, has no signal.
+        using var provider = new ServiceCollection()
+            .AddOptions()
+            .Configure<TestOptions>(options => options.Version = 1)
+            .AddSignalOptionsChangeTokenSource<TestOptions>()
+            .AddSignalOptionsChangeTokenSource<TestOptions>("First")
+            .BuildServiceProvider();
+
+        var monitor = provider.GetRequiredService<IOptionsMonitor<TestOptions>>();
+
+        Assert.Equal(1, monitor.CurrentValue.Version);
+        Assert.Equal(0, monitor.Get("First").Version);
+    }
+
+    [Fact]
     public async Task SignalTokenAsync_OtherOptionsKey_DoesNotRefresh()
     {
         using var provider = CreateServiceProvider(services => services

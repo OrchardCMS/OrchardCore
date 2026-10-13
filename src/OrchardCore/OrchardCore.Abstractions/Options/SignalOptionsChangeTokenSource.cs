@@ -1,3 +1,4 @@
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
@@ -22,7 +23,7 @@ public sealed class SignalOptionsChangeTokenSource<TOptions> : IOptionsChangeTok
     /// <summary>
     /// Creates a change-token source for the default options name.
     /// </summary>
-    /// <param name="signal">The Orchard Core signal service.</param>
+    /// <param name="signal">The Orchard Core signal service, or <see langword="null"/> if there is none, in that case the options never change.</param>
     public SignalOptionsChangeTokenSource(ISignal signal)
         : this(signal, Microsoft.Extensions.Options.Options.DefaultName)
     {
@@ -31,7 +32,7 @@ public sealed class SignalOptionsChangeTokenSource<TOptions> : IOptionsChangeTok
     /// <summary>
     /// Creates a change-token source for the specified named options instance.
     /// </summary>
-    /// <param name="signal">The Orchard Core signal service.</param>
+    /// <param name="signal">The Orchard Core signal service, or <see langword="null"/> if there is none, in that case the options never change.</param>
     /// <param name="name">The named options instance to observe.</param>
     public SignalOptionsChangeTokenSource(ISignal signal, string name)
     {
@@ -47,7 +48,15 @@ public sealed class SignalOptionsChangeTokenSource<TOptions> : IOptionsChangeTok
 
     /// <inheritdoc />
     public IChangeToken GetChangeToken()
-        => new SignalChangeToken(_signal.GetToken(_key), _signal.GetToken(OptionsUpdateSignal.AllKey));
+    {
+        // Without signal, e.g. in an application that doesn't register the caching services, nothing can update the options.
+        if (_signal is null)
+        {
+            return NullChangeToken.Singleton;
+        }
+
+        return new SignalChangeToken(_signal.GetToken(_key), _signal.GetToken(OptionsUpdateSignal.AllKey));
+    }
 
     /// <summary>
     /// A change token triggered by either of two signal tokens.

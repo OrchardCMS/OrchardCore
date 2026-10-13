@@ -16,7 +16,9 @@ public static class OptionsServiceCollectionExtensions
     public static IServiceCollection AddSignalOptionsChangeTokenSource<TOptions>(this IServiceCollection services)
         where TOptions : class
     {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<TOptions>, SignalOptionsChangeTokenSource<TOptions>>());
+        // The signal is optional, as an application may not register the caching services.
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<TOptions>, SignalOptionsChangeTokenSource<TOptions>>(
+            serviceProvider => new SignalOptionsChangeTokenSource<TOptions>(serviceProvider.GetService<ISignal>())));
 
         return services;
     }
@@ -51,7 +53,7 @@ public static class OptionsServiceCollectionExtensions
 
         services.AddSingleton(new SignalOptionsChangeTokenSourceName<TOptions>(name));
         services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(serviceProvider =>
-            new SignalOptionsChangeTokenSource<TOptions>(serviceProvider.GetRequiredService<ISignal>(), name));
+            new SignalOptionsChangeTokenSource<TOptions>(serviceProvider.GetService<ISignal>(), name));
 
         return services;
     }
