@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Login.ViewModels;
 using OrchardCore.Settings;
@@ -12,16 +12,16 @@ namespace OrchardCore.Facebook.Login.Drivers;
 
 public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<FacebookLoginSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public FacebookLoginSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -59,7 +59,8 @@ public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<Faceb
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
 
-        _shellReleaseManager.RequestRelease();
+        // Refresh the options built from these settings, so that they apply without restarting the tenant.
+        _optionsUpdateNotifier.RequestFacebookLoginUpdate();
 
         return await EditAsync(site, settings, context);
     }

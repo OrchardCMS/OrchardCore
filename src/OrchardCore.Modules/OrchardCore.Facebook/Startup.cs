@@ -36,6 +36,9 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<FacebookSettings>, FacebookSettingsConfiguration>();
 
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<FacebookSettings>();
+
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<FBInitFilter>();
