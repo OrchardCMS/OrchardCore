@@ -91,6 +91,16 @@ export const routeMidpoint = (points: Point[]): Point => {
 };
 
 /**
+ * A provisional edge from an output port, which faces right, to the pointer while a connection is being drawn. The
+ * handles of the curve grow with the distance, within limits.
+ */
+export const previewPath = (start: Point, pointer: Point) => {
+    const handle = Math.min(160, Math.max(40, length(start, pointer) / 2));
+
+    return `M${round(start.x)},${round(start.y)} C${round(start.x + handle)},${round(start.y)} ${round(pointer.x - handle)},${round(pointer.y)} ${round(pointer.x)},${round(pointer.y)}`;
+};
+
+/**
  * The first place for a node of `size` at `start` or below it, at least `margin` away from every rect: where a node
  * added after another one goes.
  */
