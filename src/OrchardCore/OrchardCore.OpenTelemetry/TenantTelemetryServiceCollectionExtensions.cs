@@ -25,6 +25,7 @@ internal static class TenantTelemetryServiceCollectionExtensions
             .Configure<IOptions<OrchardCoreOpenTelemetryOptions>>((options, openTelemetryOptions) =>
             {
                 options.IncludeDatabaseQueryText = openTelemetryOptions.Value.Tracing.IncludeDatabaseQueryText;
+                options.SlowShapeThreshold = openTelemetryOptions.Value.Tracing.SlowShapeThreshold;
             });
 
         return services;

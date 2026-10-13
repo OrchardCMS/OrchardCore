@@ -47,6 +47,11 @@
                   "type": "boolean",
                   "default": true,
                   "description": "Whether the spans of the database operations include their SQL text, in 'db.query.text'. The commands run by YesSql are parameterized, so their text holds no values."
+                },
+                "SlowShapeThreshold": {
+                  "type": "string",
+                  "default": "00:00:00.050",
+                  "description": "The duration from which the rendering of a shape is traced with its own span, e.g. '00:00:00.050' for 50 milliseconds. '00:00:00' traces every shape."
                 }
               }
             },

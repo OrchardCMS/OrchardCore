@@ -75,7 +75,8 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
         "Enabled": true,
         "SamplingRatio": 0.25,
         "Sources": [ "MyCompany.MyModule" ],
-        "IncludeDatabaseQueryText": true
+        "IncludeDatabaseQueryText": true,
+        "SlowShapeThreshold": "00:00:00.050"
       },
       "Metrics": {
         "Enabled": true,
@@ -102,6 +103,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Tracing:Enabled` | Whether traces are collected. Defaults to `true`. |
 | `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
+| `Tracing:SlowShapeThreshold` | The duration from which the rendering of a shape is traced with its own span. Defaults to `00:00:00.050` (50 milliseconds), `00:00:00` traces every shape. |
 | `Tracing:IncludeDatabaseQueryText` | Whether the spans of the database operations include their SQL text, in `db.query.text`. Defaults to `true`. The commands run by YesSql are parameterized, so their text holds no values. |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
@@ -124,6 +126,7 @@ Each signal carries resource attributes identifying the application and its inst
 | --- | --- |
 | Orchard Core | Building the service container (`Build tenant container`) and the request pipeline (`Build tenant pipeline`) of a tenant, activating a tenant (`Activate tenant`), running a background task (`Run background task {name}`), executing a recipe (`Execute recipe {name}`) and each of its steps (`Execute recipe step {name}`). |
 | Orchard Core database | One client span for each database command run through YesSql, whatever the database provider (SQLite, SQL Server, PostgreSQL, MySQL), named after its operation and table, e.g. `SELECT ContentItemIndex`, with `db.system.name`, `db.namespace`, `db.operation.name`, `db.collection.name` and `db.query.text`. Its duration is the one of the execution, until the first results are available. |
+| Orchard Core shapes | One span for each shape whose rendering took longer than `Tracing:SlowShapeThreshold`, named `Render shape {type}`, with `orchardcore.shape.type`, the binding that rendered it (`orchardcore.shape.binding`, the alternate that was used) and its source (`orchardcore.shape.binding.source`, e.g. the path of its template). These spans are created once the rendering is known to be slow, so they are children of the request rather than of the shapes that render them. |
 | ASP.NET Core | One span for each HTTP request, tagged with the tenant that served it, the number of database operations it ran (`orchardcore.db.operations`) and their total duration in seconds (`orchardcore.db.duration`). |
 | HttpClient | One span for each outgoing HTTP request. |
 
@@ -140,6 +143,8 @@ Every span started in the scope of a tenant, including the spans of other librar
 | `orchardcore.tenant.activation.duration` | Duration of activating a tenant. |
 | `orchardcore.tenant.releases` | Number of times a tenant was released, by `orchardcore.tenant.release.reason` (`reload`, `release` or `remove`). |
 | `orchardcore.background_task.duration` | Duration of running a background task, by `orchardcore.background_task.name`. |
+| `orchardcore.shape.render.duration` | Duration of rendering a shape, including the shapes it renders, by `orchardcore.shape.type`. |
+| `orchardcore.shape.cache.lookups` | Number of lookups of the content of a cached shape, by `orchardcore.shape.type` and `orchardcore.shape.cache.result` (`hit` or `miss`), when the Dynamic Cache feature is enabled. |
 | `db.client.operation.duration` | Duration of each database command, by `db.system.name` and `db.operation.name`, as defined by the OpenTelemetry semantic conventions. |
 | `orchardcore.request.db.operations` | Number of database operations run by an HTTP request, by `http.route`. A route running many of them reveals an N+1 query pattern. |
 | `orchardcore.request.db.duration` | Total duration of the database operations run by an HTTP request, by `http.route`. |
