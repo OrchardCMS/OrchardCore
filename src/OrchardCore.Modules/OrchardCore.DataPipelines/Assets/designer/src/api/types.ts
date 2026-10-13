@@ -1,6 +1,8 @@
 // The JSON contract of DataPipelineDesignerController (camelCase). Keep in sync with
 // OrchardCore.DataPipelines/ViewModels/Designer/*.cs.
 
+import type { ProblemDetails as DraftProblemDetails } from "@bloom/designer/core/api";
+
 export type IssueSeverity = "Error" | "Warning";
 
 // A problem of the pipeline (DataPipelineIssue): stepId is null for the whole pipeline.
@@ -217,12 +219,8 @@ export interface AddStepResult {
 }
 
 // A server-rendered form (step editor or pipeline settings).
-export interface FormFragment {
-    valid: boolean;
-    content: string;
-    scripts: string;
-    styles: string;
-}
+export type { FormFragment } from "@bloom/designer/core/types";
+import type { FormFragment } from "@bloom/designer/core/types";
 
 export interface EditorApplied {
     valid: true;
@@ -308,12 +306,6 @@ export interface RunsResult {
 }
 
 // RFC 9457 ProblemDetails with the designer extensions.
-export interface ProblemDetails {
-    status?: number;
-    title?: string;
-    detail?: string;
-    currentRevision?: number;
-    modifiedBy?: string | null;
-    modifiedUtc?: string | null;
+export interface ProblemDetails extends DraftProblemDetails {
     issues?: DesignIssue[];
 }

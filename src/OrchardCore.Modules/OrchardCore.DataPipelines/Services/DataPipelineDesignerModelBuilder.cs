@@ -1,18 +1,10 @@
 using System.Globalization;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataPipelines.ViewModels.Designer;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DataPipelines.Services;
 
@@ -33,32 +25,20 @@ public sealed class DataPipelineDesignerModelBuilder
     private readonly IDataPipelineStepTypeManager _stepTypeManager;
     private readonly IDisplayManager<DataPipelineStep> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IDisplayHelper _displayHelper;
-    private readonly ViewContextAccessor _viewContextAccessor;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ITempDataProvider _tempDataProvider;
-    private readonly HtmlEncoder _htmlEncoder;
+    private readonly IShapeHtmlRenderer _shapeHtmlRenderer;
     private readonly IStringLocalizer S;
 
     public DataPipelineDesignerModelBuilder(
         IDataPipelineStepTypeManager stepTypeManager,
         IDisplayManager<DataPipelineStep> displayManager,
         IUpdateModelAccessor updateModelAccessor,
-        IDisplayHelper displayHelper,
-        ViewContextAccessor viewContextAccessor,
-        IHttpContextAccessor httpContextAccessor,
-        ITempDataProvider tempDataProvider,
-        HtmlEncoder htmlEncoder,
+        IShapeHtmlRenderer shapeHtmlRenderer,
         IStringLocalizer<DataPipelineDesignerModelBuilder> localizer)
     {
         _stepTypeManager = stepTypeManager;
         _displayManager = displayManager;
         _updateModelAccessor = updateModelAccessor;
-        _displayHelper = displayHelper;
-        _viewContextAccessor = viewContextAccessor;
-        _httpContextAccessor = httpContextAccessor;
-        _tempDataProvider = tempDataProvider;
-        _htmlEncoder = htmlEncoder;
+        _shapeHtmlRenderer = shapeHtmlRenderer;
         S = localizer;
     }
 
@@ -148,7 +128,7 @@ public sealed class DataPipelineDesignerModelBuilder
             Y = step.Y,
             Inputs = stepType.GetInputs(step).Select(DesignerPort.From).ToList(),
             Outputs = stepType.GetOutputs(step).Select(DesignerPort.From).ToList(),
-            DesignHtml = await RenderContentZoneAsync(shape),
+            DesignHtml = await _shapeHtmlRenderer.RenderZoneAsync(shape, "Content"),
         };
     }
 
@@ -285,54 +265,5 @@ public sealed class DataPipelineDesignerModelBuilder
             DataPipelineStepCategory.File => S["Files"],
             _ => S["Destinations"],
         };
-    }
-
-    private async Task<string> RenderContentZoneAsync(IShape shape)
-    {
-        if (shape is not IZoneHolding zoneHolding || !zoneHolding.Zones.IsNotEmpty("Content"))
-        {
-            return string.Empty;
-        }
-
-        // Shape templates are rendered as partial views of the current view. The designer endpoints return JSON, so
-        // there is no view, and the first template would be rendered as a main page, wrapped in the theme layout.
-        // Render them in a view context without output instead.
-        var previousViewContext = _viewContextAccessor.ViewContext;
-
-        if (previousViewContext?.View is null && _httpContextAccessor.HttpContext is { } httpContext)
-        {
-            var actionContext = await httpContext.GetActionContextAsync();
-
-            _viewContextAccessor.ViewContext = new ViewContext(
-                actionContext,
-                NullView.Instance,
-                new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()),
-                new TempDataDictionary(httpContext, _tempDataProvider),
-                TextWriter.Null,
-                new HtmlHelperOptions());
-        }
-
-        try
-        {
-            var content = await _displayHelper.ShapeExecuteAsync(zoneHolding.Zones["Content"]);
-
-            using var writer = new StringWriter();
-            content.WriteTo(writer, _htmlEncoder);
-
-            return writer.ToString();
-        }
-        finally
-        {
-            _viewContextAccessor.ViewContext = previousViewContext;
-        }
-    }
-
-    private sealed class NullView : IView
-    {
-        public static readonly NullView Instance = new();
-
-        public string Path => string.Empty;
-
-        public Task RenderAsync(ViewContext context) => Task.CompletedTask;
     }
 }

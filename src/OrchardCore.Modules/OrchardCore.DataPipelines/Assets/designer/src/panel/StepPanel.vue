@@ -6,13 +6,13 @@ import type { EditorApplied } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { clearSelection, showStep } from "../canvas/useConnect";
 import { stepIcon } from "../toolbox/filter";
-import ServerFormHost from "./ServerFormHost.vue";
+import ServerFormHost from "@bloom/designer/panel/ServerFormHost.vue";
 import PreviewTab from "./PreviewTab.vue";
 import FieldsTab from "./FieldsTab.vue";
-import type { FormApplyResult } from "./types";
-import type { RevisionTask } from "../services/revisionQueue";
-import { showToast } from "../ui/toasts";
-import { confirmAction } from "../ui/confirm";
+import type { FormApplyResult } from "@bloom/designer/panel/formApply";
+import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
+import { showToast } from "@bloom/designer/ui/toasts";
+import { confirmAction } from "@bloom/designer/ui/confirm";
 import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
@@ -195,7 +195,7 @@ const deleteStep = () => {
 
 const isVisible = (element: HTMLElement) => (typeof element.checkVisibility === "function" ? element.checkVisibility() : true);
 
-const FIELDS = ".dpd-form-content input:not([type=hidden]), .dpd-form-content select, .dpd-form-content textarea, .dpd-form-content button";
+const FIELDS = ".ocd-form-content input:not([type=hidden]), .ocd-form-content select, .ocd-form-content textarea, .ocd-form-content button";
 
 /**
  * Moves the focus to the first field of the step's editor, or to the panel's title.
@@ -509,6 +509,7 @@ defineExpose({ open, preview, settle, close, discardChanges, refresh, hasPending
                         :load="loadStep"
                         :submit="submitStep"
                         :label="t('StepSettings', 'Settings')"
+                        reload-attribute="data-dpd-reload"
                         data-cy="panel-step-form"
                         @loaded="onStepLoaded"
                         @applied="onStepApplied"

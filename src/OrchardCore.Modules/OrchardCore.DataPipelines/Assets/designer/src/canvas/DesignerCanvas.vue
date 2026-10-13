@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowReactive } from "vue";
-import type { DesignIssue, DesignerConnection, DesignerNode, PortKind } from "../api/types";
+import { computed, ref } from "vue";
+import GraphCanvas from "@bloom/designer/canvas/GraphCanvas.vue";
+import type { CanvasEdge, ConnectTarget, Connecting, GraphCanvasApi } from "@bloom/designer/canvas/canvasTypes";
+import type { MenuItem } from "@bloom/designer/canvas/menu";
+import { showToast } from "@bloom/designer/ui/toasts";
+import type { DesignIssue, DesignerConnection, DesignerNode } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
-import { moveNodesCommand } from "../state/commands";
+import { moveNodesCommand, type NodeMove } from "../state/commands";
 import { connectionKey, findOutput, firstCompatibleInput, rejectConnection, type ConnectRejection } from "../state/ports";
 import StepNode from "./StepNode.vue";
 import ConnectionEdge from "./ConnectionEdge.vue";
-import ContextMenu from "./ContextMenu.vue";
 import ConnectDialog from "./ConnectDialog.vue";
-import type { MenuItem } from "./menu";
-import { GRID_SIZE, NODE_WIDTH, boundsOf, nodeRect, portAnchor, previewPath, rectFromPoints, rectsIntersect, snap, type NodeLayout, type Point, type Rect } from "./geometry";
-import { ZOOM_STEP, canvasToScreen, fitToContent, screenToCanvas, visibleCenter, zoomAt, zoomBy, type Size, type ViewportState } from "./viewport";
-import { startPointerDrag } from "./useDrag";
+import { nodeRect, portAnchor, previewPath, type NodeLayout, type Point } from "./geometry";
 import { clearSelection, connectPorts, deleteSelection, nudgeSelection, selectAll, selectConnection, selectNode, showStep } from "./useConnect";
 import { runOverlay } from "../runs/runOverlay";
-import { showToast } from "../ui/toasts";
 import { STEP_DRAG_TYPE } from "../toolbox/filter";
 import { t } from "../i18n";
 
-// Dragged steps and their connections get their own compositing layers while they move, so the rest of the canvas
-// isn't re-rasterized every frame. Beyond this many steps the extra layers cost more than they save.
-const LIFT_LIMIT = 10;
+// The pipeline canvas: the steps and their connections on the shared canvas surface (GraphCanvas), with the rules of
+// the ports, the run being shown, and the actions of a pipeline.
 const NO_ISSUES: DesignIssue[] = [];
 const NO_PORTS: string[] = [];
 
@@ -34,37 +32,11 @@ const emit = defineEmits<{
     (event: "add-after", stepId: string, port: string, clientX: number, clientY: number): void;
 }>();
 
-interface Connecting {
-    sourceId: string;
-    port: string;
-    kind: PortKind;
-    pointer: Point;
-    // The step and input under the pointer, and whether the connection can go there.
-    targetId: string | null;
-    targetPort: string | null;
-    valid: boolean;
-}
-
 const state = props.store.state;
-const viewport = state.viewport;
-const host = ref<HTMLElement | null>(null);
-const hostSize = reactive<Size>({ width: 0, height: 0 });
-const layouts = shallowReactive(new Map<string, NodeLayout>());
-const liftedIds = ref(new Set<string>());
-const panning = ref(false);
-const zooming = ref(false);
-const spaceHeld = ref(false);
-const marquee = ref<Rect | null>(null);
-const connecting = ref<Connecting | null>(null);
-const menu = ref<{ x: number; y: number; items: MenuItem[]; label: string } | null>(null);
+const canvas = ref<GraphCanvasApi<NodeLayout> | null>(null);
 const connectDialog = ref<{ sourceId: string; port?: string } | null>(null);
 
-let dragCounter = 0;
-let zoomTimer: ReturnType<typeof setTimeout> | undefined;
-let pointerFocus = false;
-
 const nodeById = computed(() => new Map(state.nodes.map((node) => [node.id, node])));
-const selectedIds = computed(() => new Set(state.selectedNodeIds));
 const overlays = computed(() => runOverlay(state.overlayRun, state.nodes));
 
 const issuesByStep = computed(() => {
@@ -91,174 +63,54 @@ const connectedPorts = computed(() => {
     return { inputs, outputs };
 });
 
-// While a connection is dragged, which inputs of each step can receive it.
-const compatibility = computed(() => {
-    const connection = connecting.value;
-
-    if (!connection) {
+// While a connection is drawn, which inputs of a step can receive it.
+const compatibility = (node: DesignerNode, connecting: Connecting | null) => {
+    if (!connecting || node.id === connecting.sourceId) {
         return null;
     }
 
-    const map = new Map<string, Record<string, boolean>>();
-
-    for (const node of state.nodes) {
-        if (node.id === connection.sourceId) {
-            continue;
-        }
-
-        map.set(
-            node.id,
-            Object.fromEntries(
-                node.inputs.map((input) => [
-                    input.name,
-                    rejectConnection(state.nodes, state.connections, { sourceStepId: connection.sourceId, sourcePort: connection.port, targetStepId: node.id, targetPort: input.name }) === null,
-                ]),
-            ),
-        );
-    }
-
-    return map;
-});
+    return Object.fromEntries(
+        node.inputs.map((input) => [
+            input.name,
+            rejectConnection(state.nodes, state.connections, { sourceStepId: connecting.sourceId, sourcePort: connecting.port, targetStepId: node.id, targetPort: input.name }) ===
+                null,
+        ]),
+    );
+};
 
 const edges = computed(() =>
     state.connections
         .map((connection) => ({
             key: connectionKey(connection),
-            connection,
+            edge: connection,
             source: nodeById.value.get(connection.sourceStepId),
             target: nodeById.value.get(connection.targetStepId),
         }))
-        .filter((edge): edge is { key: string; connection: DesignerConnection; source: DesignerNode; target: DesignerNode } => !!edge.source && !!edge.target),
+        .filter((edge): edge is CanvasEdge<DesignerNode, DesignerConnection> => !!edge.source && !!edge.target),
 );
 
-const isLiftedEdge = (edge: { source: DesignerNode; target: DesignerNode }) => liftedIds.value.has(edge.source.id) || liftedIds.value.has(edge.target.id);
-const staticEdges = computed(() => (liftedIds.value.size === 0 ? edges.value : edges.value.filter((edge) => !isLiftedEdge(edge))));
-const liftedEdges = computed(() => (liftedIds.value.size === 0 ? [] : edges.value.filter(isLiftedEdge)));
+const anchorOf = (node: DesignerNode, layout: NodeLayout | undefined, port: string) => {
+    const index = node.outputs.findIndex((item) => item.name === port);
 
-const layerStyle = computed(() => ({
-    transform: `translate(${viewport.panX}px, ${viewport.panY}px) scale(${viewport.zoom})`,
-    // Promoting the layer makes panning and zooming compositor-only, but keeping it promoted while editing makes
-    // every change re-rasterize the whole (scaled) layer.
-    willChange: panning.value || zooming.value ? "transform" : "auto",
-}));
+    return portAnchor(node, layout, "output", port, index, node.outputs.length);
+};
 
-// The dot grid is its own layer, translated by the pan modulo one cell, so panning never repaints it.
-const gridStyle = computed(() => {
-    const cell = GRID_SIZE * 2 * viewport.zoom;
-    const offset = (value: number) => ((value % cell) + cell) % cell;
+/**
+ * The input a connection drawn from an output reaches on a step: the input port under the pointer, or the first input
+ * of the right kind of the step.
+ */
+const resolveTarget = (sourceId: string, port: string, target: DesignerNode, targetPort: string | null): ConnectTarget => {
+    const kind = findOutput(nodeById.value.get(sourceId), port)?.kind;
+    const portName = targetPort ?? (kind ? firstCompatibleInput(target, kind, state.connections)?.name : undefined) ?? null;
+    const valid =
+        !!portName && rejectConnection(state.nodes, state.connections, { sourceStepId: sourceId, sourcePort: port, targetStepId: target.id, targetPort: portName }) === null;
 
-    return {
-        width: `${hostSize.width + cell * 2}px`,
-        height: `${hostSize.height + cell * 2}px`,
-        backgroundSize: `${cell}px ${cell}px`,
-        transform: `translate(${offset(viewport.panX) - cell}px, ${offset(viewport.panY) - cell}px)`,
-    };
-});
-
-const zoomPercent = computed(() => `${Math.round(viewport.zoom * 100)}%`);
-
-const connectPreview = computed(() => {
-    const connection = connecting.value;
-    const source = connection ? nodeById.value.get(connection.sourceId) : undefined;
-
-    if (!connection || !source) {
-        return null;
-    }
-
-    const index = source.outputs.findIndex((port) => port.name === connection.port);
-
-    return previewPath(portAnchor(source, layouts.get(source.id), "output", connection.port, index, source.outputs.length), connection.pointer);
-});
-
-const marqueeStyle = computed(() =>
-    marquee.value ? { transform: `translate(${marquee.value.x}px, ${marquee.value.y}px)`, width: `${marquee.value.width}px`, height: `${marquee.value.height}px` } : {},
-);
+    return { port: portName, valid };
+};
 
 const connectDialogSource = computed(() => (connectDialog.value ? nodeById.value.get(connectDialog.value.sourceId) : undefined));
 
-const setViewport = (next: ViewportState) => Object.assign(viewport, next);
-
-const hostPoint = (event: { clientX: number; clientY: number }): Point => {
-    const rect = host.value?.getBoundingClientRect();
-
-    return { x: event.clientX - (rect?.left ?? 0), y: event.clientY - (rect?.top ?? 0) };
-};
-
-const toCanvas = (event: { clientX: number; clientY: number }) => screenToCanvas(viewport, hostPoint(event));
-
-const markZooming = () => {
-    zooming.value = true;
-    clearTimeout(zoomTimer);
-    zoomTimer = setTimeout(() => (zooming.value = false), 200);
-};
-
-const contentBounds = () => boundsOf(state.nodes.map((node) => nodeRect(node, layouts.get(node.id))));
-
-const fit = () => {
-    setViewport(fitToContent(contentBounds(), hostSize));
-    markZooming();
-};
-
-const zoomTo = (zoom: number) => {
-    setViewport(zoomAt(viewport, zoom, { x: hostSize.width / 2, y: hostSize.height / 2 }));
-    markZooming();
-};
-
-const centerOn = (stepId: string) => {
-    const node = nodeById.value.get(stepId);
-
-    if (!node) {
-        return;
-    }
-
-    const rect = nodeRect(node, layouts.get(node.id));
-    setViewport({
-        zoom: viewport.zoom,
-        panX: hostSize.width / 2 - (rect.x + rect.width / 2) * viewport.zoom,
-        panY: hostSize.height / 2 - (rect.y + rect.height / 2) * viewport.zoom,
-    });
-};
-
-// How far to pan along one axis so [start, end] is within [min, max]: its end first, but never past its start.
-const panOffset = (start: number, end: number, min: number, max: number) => (end > max ? Math.min(end - max, start - min) : start < min ? start - min : 0);
-
-/**
- * Pans, only as far as needed, so a step is in view above the bottom `inset` pixels of the canvas, which the step
- * panel covers when it opens over it.
- */
-const keepVisible = (stepId: string, inset = 0) => {
-    const node = nodeById.value.get(stepId);
-
-    if (!node || hostSize.height === 0) {
-        return;
-    }
-
-    const margin = 24;
-    const rect = nodeRect(node, layouts.get(node.id));
-    const offsetX = panOffset(rect.x * viewport.zoom + viewport.panX, (rect.x + rect.width) * viewport.zoom + viewport.panX, margin, hostSize.width - margin);
-    const offsetY = panOffset(rect.y * viewport.zoom + viewport.panY, (rect.y + rect.height) * viewport.zoom + viewport.panY, margin, hostSize.height - inset - margin);
-
-    if (offsetX !== 0 || offsetY !== 0) {
-        setViewport({ zoom: viewport.zoom, panX: viewport.panX - offsetX, panY: viewport.panY - offsetY });
-    }
-};
-
-const cssEscape = (value: string) => (typeof CSS !== "undefined" && CSS.escape ? CSS.escape(value) : value.replace(/["\\]/g, "\\$&"));
-
-const nodeElement = (stepId: string) => host.value?.querySelector<HTMLElement>(`[data-node-id="${cssEscape(stepId)}"]`);
-
-// A step that was just added is rendered on the next tick.
-const focusNode = async (stepId: string) => {
-    if (!nodeElement(stepId)) {
-        await nextTick();
-    }
-
-    nodeElement(stepId)?.focus();
-};
-
-const closeMenu = () => {
-    menu.value = null;
-};
+const focusNode = (stepId: string) => canvas.value?.focusNode(stepId);
 
 const notifyDeleted = (result: { nodes: number; connections: number }) => {
     if (result.nodes === 0 && result.connections === 0) {
@@ -279,7 +131,7 @@ const notifyDeleted = (result: { nodes: number; connections: number }) => {
 const deleteSelected = () => {
     if (!props.readOnly) {
         notifyDeleted(deleteSelection(props.store));
-        host.value?.focus();
+        canvas.value?.focus();
     }
 };
 
@@ -318,204 +170,42 @@ const connect = (connection: DesignerConnection) => {
     return result;
 };
 
-const startPan = (event: PointerEvent, clearOnClick: boolean) => {
-    const start = { panX: viewport.panX, panY: viewport.panY };
-
-    startPointerDrag(event, {
-        threshold: 2,
-        onStart: () => (panning.value = true),
-        onMove: (dx, dy) => {
-            viewport.panX = start.panX + dx;
-            viewport.panY = start.panY + dy;
-        },
-        onEnd: (moved) => {
-            panning.value = false;
-
-            if (!moved && clearOnClick) {
-                clearSelection(props.store);
-            }
-        },
-    });
-};
-
-const startMarquee = (event: PointerEvent) => {
-    const origin = toCanvas(event);
-    const initialSelection = [...state.selectedNodeIds];
-
-    startPointerDrag(event, {
-        onMove: (_dx, _dy, moveEvent) => {
-            const rect = rectFromPoints(origin, toCanvas(moveEvent));
-            marquee.value = rect;
-
-            const inside = state.nodes.filter((node) => rectsIntersect(rect, nodeRect(node, layouts.get(node.id)))).map((node) => node.id);
-            state.selectedNodeIds = [...new Set([...initialSelection, ...inside])];
-            state.selectedConnectionKey = null;
-        },
-        onEnd: () => {
-            marquee.value = null;
-        },
-    });
-};
-
-const onBackgroundPointerDown = (event: PointerEvent) => {
-    closeMenu();
-    host.value?.focus({ preventScroll: true });
-
-    if (event.button === 1 || (event.button === 0 && (spaceHeld.value || !event.shiftKey || props.readOnly))) {
-        event.preventDefault();
-        startPan(event, event.button === 0 && !spaceHeld.value);
-    } else if (event.button === 0 && event.shiftKey) {
-        event.preventDefault();
-        startMarquee(event);
+const onConnect = (sourceId: string, port: string, targetId: string, targetPort: string | null) => {
+    if (targetPort) {
+        connect({ sourceStepId: sourceId, sourcePort: port, targetStepId: targetId, targetPort });
+    } else {
+        showToast({ message: t("NoCompatibleInput", "This step has no input for this output."), variant: "warning" });
     }
 };
 
-const onNodePointerDown = (node: DesignerNode, event: PointerEvent) => {
-    closeMenu();
-
-    if (event.button === 1 || spaceHeld.value) {
-        event.preventDefault();
-        event.stopPropagation();
-        startPan(event, false);
-
-        return;
-    }
-
-    if (event.button !== 0) {
-        return;
-    }
-
-    event.stopPropagation();
-    // The browser focuses the node after this handler returns; remember that the focus comes from a click.
-    pointerFocus = true;
-    setTimeout(() => (pointerFocus = false), 0);
-
-    if (event.shiftKey) {
-        selectNode(props.store, node.id, true);
-
-        return;
-    }
-
-    const wasSelected = selectedIds.value.has(node.id);
-
-    // The read-only view has nothing to move: a click shows the step's panel.
-    if (props.readOnly) {
-        showStep(props.store, node.id);
-
-        return;
-    }
+const onSelectNode = (id: string, additive: boolean, pointer: boolean) => {
+    selectNode(props.store, id, additive);
 
     // A click only selects a step, to move it around: its panel opens on a double-click or its Edit button.
-    if (!wasSelected) {
-        selectNode(props.store, node.id);
+    if (pointer && !additive) {
         state.stepPanelRequested = false;
     }
-
-    const ids = [...state.selectedNodeIds];
-    const origins = new Map(ids.map((id) => [id, { x: nodeById.value.get(id)!.x, y: nodeById.value.get(id)!.y }]));
-    const key = `drag-${++dragCounter}`;
-
-    startPointerDrag(event, {
-        onStart: () => {
-            liftedIds.value = ids.length <= LIFT_LIMIT ? new Set(ids) : new Set();
-
-            // Moving steps around closes their panel (unless it's pinned), so it doesn't cover them.
-            state.stepPanelRequested = false;
-        },
-        onMove: (dx, dy) => {
-            const moves = ids.map((id) => {
-                const origin = origins.get(id)!;
-
-                return { id, fromX: origin.x, fromY: origin.y, toX: snap(origin.x + dx / viewport.zoom), toY: snap(origin.y + dy / viewport.zoom) };
-            });
-
-            if (moves.some((move) => nodeById.value.get(move.id)?.x !== move.toX || nodeById.value.get(move.id)?.y !== move.toY)) {
-                props.store.execute(moveNodesCommand(props.store.graph, moves, key));
-            }
-        },
-        onEnd: (moved) => {
-            liftedIds.value = new Set();
-
-            if (!moved && wasSelected && state.selectedNodeIds.length > 1) {
-                selectNode(props.store, node.id);
-            }
-        },
-    });
 };
 
-const onNodeFocus = (node: DesignerNode) => {
-    // Tabbing to a step selects it, so keyboard users can delete or nudge it; a click already did.
-    if (!pointerFocus && !selectedIds.value.has(node.id)) {
-        selectNode(props.store, node.id);
-    }
+const onSelectNodes = (ids: string[]) => {
+    state.selectedNodeIds = ids;
+    state.selectedConnectionKey = null;
 };
 
-/**
- * The input a connection dragged from `connection.sourceId` would reach at a point of the window: the input port under
- * it, or the first input of the right kind of the step under it.
- */
-const targetAt = (clientX: number, clientY: number, connection: Pick<Connecting, "sourceId" | "port" | "kind">) => {
-    const element = document.elementFromPoint?.(clientX, clientY);
-    const nodeId = element?.closest("[data-node-id]")?.getAttribute("data-node-id");
-    const node = nodeId && nodeId !== connection.sourceId ? nodeById.value.get(nodeId) : undefined;
-
-    if (!node) {
-        return { targetId: null, targetPort: null, valid: false };
-    }
-
-    const portName = element?.closest("[data-port-side=input]")?.getAttribute("data-port") ?? firstCompatibleInput(node, connection.kind, state.connections)?.name ?? null;
-    const valid =
-        !!portName &&
-        rejectConnection(state.nodes, state.connections, { sourceStepId: connection.sourceId, sourcePort: connection.port, targetStepId: node.id, targetPort: portName }) === null;
-
-    return { targetId: node.id, targetPort: portName, valid };
+const onMoveNodes = (moves: NodeMove[], key: string) => {
+    props.store.execute(moveNodesCommand(props.store.graph, moves, key));
 };
 
-const onPortPointerDown = (node: DesignerNode, port: string, event: PointerEvent) => {
-    const output = findOutput(node, port);
+// Moving steps around closes their panel (unless it's pinned), so it doesn't cover them.
+const onDragStart = () => {
+    state.stepPanelRequested = false;
+};
 
-    if (!output) {
-        return;
+// A click on an output that leads nowhere yet adds the next step after it.
+const onPortClick = (stepId: string, port: string, clientX: number, clientY: number) => {
+    if (!state.connections.some((item) => item.sourceStepId === stepId && item.sourcePort === port)) {
+        emit("add-after", stepId, port, clientX, clientY);
     }
-
-    closeMenu();
-    connecting.value = { sourceId: node.id, port, kind: output.kind, pointer: toCanvas(event), targetId: null, targetPort: null, valid: false };
-
-    startPointerDrag(event, {
-        threshold: 3,
-        onMove: (_dx, _dy, moveEvent) => {
-            if (connecting.value) {
-                Object.assign(connecting.value, { pointer: toCanvas(moveEvent) }, targetAt(moveEvent.clientX, moveEvent.clientY, connecting.value));
-            }
-        },
-        onEnd: (moved, endEvent) => {
-            const connection = connecting.value;
-            connecting.value = null;
-
-            if (!connection || !endEvent) {
-                return;
-            }
-
-            // A click on an output that leads nowhere yet adds the next step after it.
-            if (!moved) {
-                if (!state.connections.some((item) => item.sourceStepId === node.id && item.sourcePort === port)) {
-                    emit("add-after", node.id, port, endEvent.clientX, endEvent.clientY);
-                }
-
-                return;
-            }
-
-            const target = targetAt(endEvent.clientX, endEvent.clientY, connection);
-            const targetId = target.targetId ?? connection.targetId;
-            const targetPort = target.targetId ? target.targetPort : connection.targetPort;
-
-            if (targetId && targetPort) {
-                connect({ sourceStepId: node.id, sourcePort: port, targetStepId: targetId, targetPort });
-            } else if (targetId) {
-                showToast({ message: t("NoCompatibleInput", "This step has no input for this output."), variant: "warning" });
-            }
-        },
-    });
 };
 
 const openConnectDialog = (node: DesignerNode, port?: string) => {
@@ -541,21 +231,17 @@ const onConnectDialogCancel = () => {
 
 // Where the quick-add list opens for an output chosen from the keyboard or the context menu: beside its port.
 const addAfter = (node: DesignerNode, port: string) => {
-    const index = node.outputs.findIndex((item) => item.name === port);
-    const anchor = canvasToScreen(viewport, portAnchor(node, layouts.get(node.id), "output", port, index, node.outputs.length));
-    const rect = host.value?.getBoundingClientRect();
+    const anchor = canvas.value?.canvasToClient(anchorOf(node, canvas.value?.layoutOf(node.id), port)) ?? { x: 0, y: 0 };
 
-    emit("add-after", node.id, port, (rect?.left ?? 0) + anchor.x, (rect?.top ?? 0) + anchor.y);
+    emit("add-after", node.id, port, anchor.x, anchor.y);
 };
 
 const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
-    if (!selectedIds.value.has(node.id)) {
+    if (!state.selectedNodeIds.includes(node.id)) {
         selectNode(props.store, node.id);
     }
 
-    const position = event ? hostPoint(event) : canvasToScreen(viewport, { x: node.x + (layouts.get(node.id)?.width ?? NODE_WIDTH) - 24, y: node.y + 24 });
     const items: MenuItem[] = [];
-    const label = t("StepActions", "Actions of {0}", node.displayText);
 
     items.push({
         label: props.readOnly ? t("ShowStep", "Show the step") : t("EditStep", "Edit"),
@@ -606,7 +292,7 @@ const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
         });
     }
 
-    menu.value = { ...position, items, label };
+    canvas.value?.openMenu(items, t("StepActions", "Actions of {0}", node.displayText), event ?? { nodeId: node.id });
 };
 
 const openEdgeMenu = (key: string, event: MouseEvent) => {
@@ -615,269 +301,115 @@ const openEdgeMenu = (key: string, event: MouseEvent) => {
     }
 
     selectConnection(props.store, key);
-    menu.value = {
-        ...hostPoint(event),
-        label: t("ConnectionActions", "Actions of the connection"),
-        items: [{ label: t("DeleteConnection", "Delete the connection"), icon: "fa-solid fa-trash", danger: true, dataCy: "menu-delete-edge", run: deleteSelected }],
-    };
+    canvas.value?.openMenu(
+        [{ label: t("DeleteConnection", "Delete the connection"), icon: "fa-solid fa-trash", danger: true, dataCy: "menu-delete-edge", run: deleteSelected }],
+        t("ConnectionActions", "Actions of the connection"),
+        event,
+    );
 };
-
-const isEditable = (target: EventTarget | null) =>
-    target instanceof HTMLElement &&
-    (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName) || !!target.closest(".dpd-connect-dialog, .dpd-context-menu"));
-
-const onKeyDown = (event: KeyboardEvent) => {
-    if (isEditable(event.target)) {
-        return;
-    }
-
-    const modifier = event.ctrlKey || event.metaKey;
-
-    switch (event.key) {
-        case " ":
-            spaceHeld.value = true;
-            event.preventDefault();
-            break;
-        case "Delete":
-        case "Backspace":
-            event.preventDefault();
-            deleteSelected();
-            break;
-        case "a":
-        case "A":
-            if (modifier) {
-                event.preventDefault();
-                selectAll(props.store);
-            }
-            break;
-        case "Escape":
-            if (connecting.value || marquee.value) {
-                connecting.value = null;
-                marquee.value = null;
-            } else {
-                clearSelection(props.store);
-            }
-            break;
-        case "ArrowUp":
-        case "ArrowDown":
-        case "ArrowLeft":
-        case "ArrowRight": {
-            if (props.readOnly || state.selectedNodeIds.length === 0) {
-                break;
-            }
-
-            event.preventDefault();
-            const step = event.shiftKey ? 1 : GRID_SIZE;
-            const dx = event.key === "ArrowLeft" ? -step : event.key === "ArrowRight" ? step : 0;
-            const dy = event.key === "ArrowUp" ? -step : event.key === "ArrowDown" ? step : 0;
-            nudgeSelection(props.store, dx, dy);
-            break;
-        }
-        case "+":
-        case "=":
-            if (!modifier) {
-                zoomTo(viewport.zoom * ZOOM_STEP);
-            }
-            break;
-        case "-":
-            if (!modifier) {
-                zoomTo(viewport.zoom / ZOOM_STEP);
-            }
-            break;
-    }
-};
-
-const onKeyUp = (event: KeyboardEvent) => {
-    if (event.key === " ") {
-        spaceHeld.value = false;
-    }
-};
-
-const onWheel = (event: WheelEvent) => {
-    event.preventDefault();
-
-    if (event.ctrlKey || event.metaKey) {
-        setViewport(zoomBy(viewport, Math.exp(-event.deltaY * 0.0015), hostPoint(event)));
-    } else {
-        const horizontal = event.shiftKey && event.deltaX === 0;
-        viewport.panX -= horizontal ? event.deltaY : event.deltaX;
-        viewport.panY -= horizontal ? 0 : event.deltaY;
-    }
-
-    markZooming();
-};
-
-// Toolbox cards are dropped with HTML drag and drop; the drop point is converted to canvas coordinates.
-const onDragOver = (event: DragEvent) => {
-    if (!props.readOnly && event.dataTransfer?.types.includes(STEP_DRAG_TYPE)) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
-    }
-};
-
-const onDrop = (event: DragEvent) => {
-    const type = event.dataTransfer?.getData(STEP_DRAG_TYPE);
-
-    if (props.readOnly || !type) {
-        return;
-    }
-
-    event.preventDefault();
-    emit("drop-step", type, toCanvas(event));
-};
-
-let resizeObserver: ResizeObserver | null = null;
-
-onMounted(() => {
-    const element = host.value!;
-    const updateSize = () => {
-        hostSize.width = element.clientWidth;
-        hostSize.height = element.clientHeight;
-    };
-
-    updateSize();
-
-    if (typeof ResizeObserver !== "undefined") {
-        resizeObserver = new ResizeObserver(updateSize);
-        resizeObserver.observe(element);
-    }
-
-    // Wheel listeners must not be passive, so the page doesn't scroll while zooming.
-    element.addEventListener("wheel", onWheel, { passive: false });
-});
-
-onBeforeUnmount(() => {
-    resizeObserver?.disconnect();
-    host.value?.removeEventListener("wheel", onWheel);
-    clearTimeout(zoomTimer);
-});
 
 defineExpose({
-    fit,
-    centerOn,
+    fit: () => canvas.value?.fit(),
+    centerOn: (stepId: string) => canvas.value?.centerOn(stepId),
     focusNode,
-    keepVisible,
+    keepVisible: (stepId: string, inset = 0) => canvas.value?.keepVisible(stepId, inset),
     deleteStep,
-    focus: () => host.value?.focus({ preventScroll: true }),
-    zoomIn: () => zoomTo(viewport.zoom * ZOOM_STEP),
-    zoomOut: () => zoomTo(viewport.zoom / ZOOM_STEP),
-    resetZoom: () => zoomTo(1),
-    visibleCenter: () => visibleCenter(viewport, hostSize),
-    clientToCanvas: (clientX: number, clientY: number) => toCanvas({ clientX, clientY }),
-    layoutOf: (stepId: string) => layouts.get(stepId),
+    focus: () => canvas.value?.focus(),
+    zoomIn: () => canvas.value?.zoomIn(),
+    zoomOut: () => canvas.value?.zoomOut(),
+    resetZoom: () => canvas.value?.resetZoom(),
+    visibleCenter: () => canvas.value!.visibleCenter(),
+    clientToCanvas: (clientX: number, clientY: number) => canvas.value!.clientToCanvas(clientX, clientY),
+    layoutOf: (stepId: string) => canvas.value?.layoutOf(stepId),
 });
 </script>
 
 <template>
-    <div
-        ref="host"
-        class="dpd-canvas"
-        :class="{ 'is-panning': panning, 'is-connecting': !!connecting, 'is-readonly': readOnly, 'is-space-held': spaceHeld }"
-        tabindex="0"
-        :aria-label="
+    <GraphCanvas
+        ref="canvas"
+        :nodes="state.nodes"
+        :edges="edges"
+        :selected-ids="state.selectedNodeIds"
+        :viewport="state.viewport"
+        :node-rect="nodeRect"
+        :port-anchor="anchorOf"
+        :preview-path="previewPath"
+        :resolve-target="resolveTarget"
+        :drag-type="STEP_DRAG_TYPE"
+        keyboard-ignore=".dpd-connect-dialog"
+        :label="
             t(
                 'CanvasInstructions',
                 'Pipeline canvas. Tab to a step; Enter opens it, the arrow keys move it, Delete removes it, Shift+F10 shows its actions. Ctrl+Z undoes.',
             )
         "
-        data-cy="canvas-surface"
-        @pointerdown="onBackgroundPointerDown"
-        @keydown="onKeyDown"
-        @keyup="onKeyUp"
-        @dragover="onDragOver"
-        @drop="onDrop"
-        @contextmenu.prevent
+        :read-only="readOnly"
+        @select-node="onSelectNode"
+        @select-nodes="onSelectNodes"
+        @select-all="selectAll(store)"
+        @clear-selection="clearSelection(store)"
+        @show-node="showStep(store, $event)"
+        @drag-start="onDragStart"
+        @move-nodes="onMoveNodes"
+        @nudge="(dx, dy) => nudgeSelection(store, dx, dy)"
+        @delete-selection="deleteSelected"
+        @connect="onConnect"
+        @port-click="onPortClick"
+        @drop="(type, point) => emit('drop-step', type, point)"
     >
-        <div class="dpd-grid" :style="gridStyle" aria-hidden="true"></div>
+        <template #edge="{ edge, lifted, sourceLayout, targetLayout }">
+            <ConnectionEdge
+                v-if="lifted"
+                :edge-key="edge.key"
+                :connection="edge.edge"
+                :source="edge.source"
+                :target="edge.target"
+                :source-layout="sourceLayout"
+                :target-layout="targetLayout"
+                :read-only="readOnly"
+            />
+            <ConnectionEdge
+                v-else
+                :edge-key="edge.key"
+                :connection="edge.edge"
+                :source="edge.source"
+                :target="edge.target"
+                :source-layout="sourceLayout"
+                :target-layout="targetLayout"
+                :selected="state.selectedConnectionKey === edge.key"
+                :read-only="readOnly"
+                @select="selectConnection(store, edge.key)"
+                @delete="deleteSelected"
+                @open-menu="openEdgeMenu(edge.key, $event)"
+            />
+        </template>
 
-        <div class="dpd-layer" :style="layerStyle">
-            <svg class="dpd-edges" width="1" height="1">
-                <defs>
-                    <marker id="dpd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                        <path class="dpd-arrow" d="M0,0 L10,5 L0,10 z" />
-                    </marker>
-                    <marker id="dpd-arrow-selected" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                        <path class="dpd-arrow is-selected" d="M0,0 L10,5 L0,10 z" />
-                    </marker>
-                </defs>
-                <ConnectionEdge
-                    v-for="edge in staticEdges"
-                    :key="edge.key"
-                    :edge-key="edge.key"
-                    :connection="edge.connection"
-                    :source="edge.source"
-                    :target="edge.target"
-                    :source-layout="layouts.get(edge.source.id)"
-                    :target-layout="layouts.get(edge.target.id)"
-                    :selected="state.selectedConnectionKey === edge.key"
-                    :read-only="readOnly"
-                    @select="selectConnection(store, edge.key)"
-                    @delete="deleteSelected"
-                    @open-menu="openEdgeMenu(edge.key, $event)"
-                />
-                <path v-if="connectPreview" class="dpd-edge-preview" :class="{ 'is-invalid': connecting?.targetId && !connecting.valid }" :d="connectPreview" data-cy="connect-preview" />
-            </svg>
-
-            <svg v-if="liftedEdges.length > 0" class="dpd-edges is-lifted" width="1" height="1">
-                <ConnectionEdge
-                    v-for="edge in liftedEdges"
-                    :key="edge.key"
-                    :edge-key="edge.key"
-                    :connection="edge.connection"
-                    :source="edge.source"
-                    :target="edge.target"
-                    :source-layout="layouts.get(edge.source.id)"
-                    :target-layout="layouts.get(edge.target.id)"
-                    :read-only="readOnly"
-                />
-            </svg>
-
+        <template #node="{ node, selected, lifted, dropTarget, connecting, onNodePointerdown, onPortPointerdown, onMeasure, onFocus }">
             <StepNode
-                v-for="node in state.nodes"
-                :key="node.id"
                 :node="node"
-                :selected="selectedIds.has(node.id)"
-                :lifted="liftedIds.has(node.id)"
-                :drop-target="connecting?.targetId === node.id && connecting.valid"
+                :selected="selected"
+                :lifted="lifted"
+                :drop-target="dropTarget"
                 :read-only="readOnly"
                 :issues="issuesByStep.get(node.id) ?? NO_ISSUES"
                 :connected-inputs="connectedPorts.inputs.get(node.id) ?? NO_PORTS"
                 :connected-outputs="connectedPorts.outputs.get(node.id) ?? NO_PORTS"
-                :compatibility="compatibility?.get(node.id) ?? null"
+                :compatibility="compatibility(node, connecting)"
                 :hovered-input="connecting?.targetId === node.id ? connecting.targetPort : null"
                 :overlay="overlays[node.id] ?? null"
-                @node-pointerdown="onNodePointerDown(node, $event)"
-                @port-pointerdown="(port, event) => onPortPointerDown(node, port, event)"
+                @node-pointerdown="onNodePointerdown"
+                @port-pointerdown="(port, event) => findOutput(node, port) && onPortPointerdown(port, event)"
                 @port-activate="(port) => openConnectDialog(node, port)"
-                @measure="(layout) => layouts.set(node.id, layout)"
+                @measure="onMeasure"
                 @open-menu="(event) => openNodeMenu(node, event)"
                 @edit="emit('edit', node.id)"
-                @focus="onNodeFocus(node)"
+                @focus="onFocus"
             />
+        </template>
 
-            <div v-if="marquee" class="dpd-marquee" :style="marqueeStyle" data-cy="marquee"></div>
-        </div>
-
-        <div v-if="state.loaded && state.nodes.length === 0" class="dpd-empty" data-cy="canvas-empty">
+        <div v-if="state.loaded && state.nodes.length === 0" class="ocd-empty" data-cy="canvas-empty">
             {{ readOnly ? t("EmptyPipelineReadOnly", "This pipeline has no steps.") : t("EmptyPipeline", "Drag a source from the toolbox to start the pipeline.") }}
         </div>
-
-        <div class="dpd-zoom-controls btn-group btn-group-sm shadow-sm" role="group" :aria-label="t('Zoom', 'Zoom')" @pointerdown.stop>
-            <button type="button" class="btn btn-light" :title="t('ZoomOut', 'Zoom out')" :aria-label="t('ZoomOut', 'Zoom out')" data-cy="zoom-out" @click="zoomTo(viewport.zoom / ZOOM_STEP)">
-                <i class="fa-solid fa-minus" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="btn btn-light dpd-zoom-level" :title="t('ResetZoom', 'Reset the zoom')" data-cy="zoom-reset" aria-live="polite" @click="zoomTo(1)">
-                {{ zoomPercent }}
-            </button>
-            <button type="button" class="btn btn-light" :title="t('ZoomIn', 'Zoom in')" :aria-label="t('ZoomIn', 'Zoom in')" data-cy="zoom-in" @click="zoomTo(viewport.zoom * ZOOM_STEP)">
-                <i class="fa-solid fa-plus" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="btn btn-light" :title="t('FitToContent', 'Fit to the steps')" :aria-label="t('FitToContent', 'Fit to the steps')" data-cy="zoom-fit" @click="fit">
-                <i class="fa-solid fa-expand" aria-hidden="true"></i>
-            </button>
-        </div>
-
-        <ContextMenu v-if="menu" :x="menu.x" :y="menu.y" :items="menu.items" :label="menu.label" @close="closeMenu" />
 
         <ConnectDialog
             v-if="connectDialogSource"
@@ -888,5 +420,5 @@ defineExpose({
             @connect="onConnectDialogConfirm"
             @cancel="onConnectDialogCancel"
         />
-    </div>
+    </GraphCanvas>
 </template>

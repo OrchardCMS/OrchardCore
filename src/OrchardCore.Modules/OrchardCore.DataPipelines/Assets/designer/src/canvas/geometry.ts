@@ -1,18 +1,24 @@
-// Canvas geometry. Every coordinate is in canvas pixels at 100% zoom, the same unit as the step positions.
+// Canvas geometry. Every coordinate is in canvas pixels at 100% zoom, the same unit as the step positions. The geometry
+// of every graph comes from @bloom/designer; this adds the steps, their ports and the routes of the connections.
+import { EDGE_GAP, roundedPath, routeMidpoint, type Point, type Rect } from "@bloom/designer/canvas/geometry";
 
-export interface Point {
-    x: number;
-    y: number;
-}
+export {
+    EDGE_GAP,
+    EDGE_RADIUS,
+    GRID_SIZE,
+    boundsOf,
+    findFreeSpot,
+    previewPath,
+    rectFromPoints,
+    rectsIntersect,
+    roundedPath,
+    routeMidpoint,
+    simplify,
+    snap,
+    type Point,
+    type Rect,
+} from "@bloom/designer/canvas/geometry";
 
-export interface Rect {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
-
-export const GRID_SIZE = 10;
 export const NODE_WIDTH = 240;
 export const DEFAULT_NODE_HEIGHT = 88;
 
@@ -30,8 +36,6 @@ export interface NodeLayout {
     inputs: Record<string, Point>;
     outputs: Record<string, Point>;
 }
-
-export const snap = (value: number, grid = GRID_SIZE) => Math.round(value / grid) * grid;
 
 export const nodeRect = (node: Point, layout?: NodeLayout): Rect => ({
     x: node.x,
@@ -54,14 +58,6 @@ export const portAnchor = (node: Point, layout: NodeLayout | undefined, side: Po
 
     return { x: side === "input" ? rect.x : rect.x + rect.width, y: rect.y + (rect.height * (index + 1)) / (count + 1) };
 };
-
-const round = (value: number) => Math.round(value * 10) / 10;
-
-// How far a connection runs straight out of its port, and around the steps it avoids.
-export const EDGE_GAP = 24;
-
-// The radius of the rounded corners of a connection.
-export const EDGE_RADIUS = 8;
 
 /**
  * The corners of a connection from an output port (on the right of `source`, facing right) to an input port (on the
@@ -94,69 +90,6 @@ export const routeConnection = (start: Point, end: Point, source: Rect, target: 
     return [start, { x: exitX, y: start.y }, { x: exitX, y: passY }, { x: entryX, y: passY }, { x: entryX, y: end.y }, end];
 };
 
-// Drops the corners that don't turn: repeated points, and points in the middle of a straight segment.
-export const simplify = (points: Point[]) => {
-    const distinct = points.filter((point, index) => index === 0 || point.x !== points[index - 1].x || point.y !== points[index - 1].y);
-
-    return distinct.filter((point, index) => {
-        if (index === 0 || index === distinct.length - 1) {
-            return true;
-        }
-
-        const previous = distinct[index - 1];
-        const next = distinct[index + 1];
-
-        return !((previous.x === point.x && point.x === next.x) || (previous.y === point.y && point.y === next.y));
-    });
-};
-
-const length = (a: Point, b: Point) => Math.hypot(b.x - a.x, b.y - a.y);
-
-/**
- * The SVG path of a route, its corners rounded.
- */
-export const roundedPath = (points: Point[], radius = EDGE_RADIUS) => {
-    const route = simplify(points);
-    let path = `M${round(route[0].x)},${round(route[0].y)}`;
-
-    for (let i = 1; i < route.length - 1; i++) {
-        const previous = route[i - 1];
-        const corner = route[i];
-        const next = route[i + 1];
-        const r = Math.min(radius, length(previous, corner) / 2, length(corner, next) / 2);
-        const before = { x: corner.x - Math.sign(corner.x - previous.x) * r, y: corner.y - Math.sign(corner.y - previous.y) * r };
-        const after = { x: corner.x + Math.sign(next.x - corner.x) * r, y: corner.y + Math.sign(next.y - corner.y) * r };
-
-        path += ` L${round(before.x)},${round(before.y)} Q${round(corner.x)},${round(corner.y)} ${round(after.x)},${round(after.y)}`;
-    }
-
-    const last = route[route.length - 1];
-
-    return `${path} L${round(last.x)},${round(last.y)}`;
-};
-
-/**
- * The point halfway along a route.
- */
-export const routeMidpoint = (points: Point[]): Point => {
-    const total = points.slice(1).reduce((sum, point, index) => sum + length(points[index], point), 0);
-    let remaining = total / 2;
-
-    for (let i = 1; i < points.length; i++) {
-        const segment = length(points[i - 1], points[i]);
-
-        if (segment >= remaining && segment > 0) {
-            const ratio = remaining / segment;
-
-            return { x: points[i - 1].x + (points[i].x - points[i - 1].x) * ratio, y: points[i - 1].y + (points[i].y - points[i - 1].y) * ratio };
-        }
-
-        remaining -= segment;
-    }
-
-    return points[points.length - 1];
-};
-
 export interface EdgeGeometry {
     points: Point[];
     path: string;
@@ -170,61 +103,4 @@ export const edgeGeometry = (start: Point, end: Point, source: Rect, target: Rec
     const points = routeConnection(start, end, source, target);
 
     return { points, path: roundedPath(points), mid: routeMidpoint(points) };
-};
-
-/**
- * A provisional connection from an output port to the pointer while it is being dragged.
- */
-export const previewPath = (start: Point, pointer: Point) => {
-    const handle = Math.min(160, Math.max(40, Math.hypot(pointer.x - start.x, pointer.y - start.y) / 2));
-
-    return `M${round(start.x)},${round(start.y)} C${round(start.x + handle)},${round(start.y)} ${round(pointer.x - handle)},${round(pointer.y)} ${round(pointer.x)},${round(pointer.y)}`;
-};
-
-export const rectsIntersect = (a: Rect, b: Rect) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
-
-/**
- * The first place for a card of `size` at `start` or below it, at least `margin` away from every rect: where a step
- * added after another one goes.
- */
-export const findFreeSpot = (start: Point, size: { width: number; height: number }, rects: Rect[], margin = 24): Point => {
-    const spot = { x: snap(start.x), y: snap(start.y) };
-
-    for (let i = 0; i < 50; i++) {
-        const blocking = rects.find((rect) =>
-            rectsIntersect({ x: rect.x - margin, y: rect.y - margin, width: rect.width + 2 * margin, height: rect.height + 2 * margin }, { ...spot, ...size }),
-        );
-
-        if (!blocking) {
-            break;
-        }
-
-        // Rounded up to the grid, so the spot doesn't fall back within the margin of the card it moves past.
-        spot.y = Math.ceil((blocking.y + blocking.height + margin) / GRID_SIZE) * GRID_SIZE;
-    }
-
-    return spot;
-};
-
-/**
- * The rectangle between two corners, in any order (marquee selection).
- */
-export const rectFromPoints = (a: Point, b: Point): Rect => ({
-    x: Math.min(a.x, b.x),
-    y: Math.min(a.y, b.y),
-    width: Math.abs(a.x - b.x),
-    height: Math.abs(a.y - b.y),
-});
-
-export const boundsOf = (rects: Rect[]): Rect | null => {
-    if (rects.length === 0) {
-        return null;
-    }
-
-    const left = Math.min(...rects.map((rect) => rect.x));
-    const top = Math.min(...rects.map((rect) => rect.y));
-    const right = Math.max(...rects.map((rect) => rect.x + rect.width));
-    const bottom = Math.max(...rects.map((rect) => rect.y + rect.height));
-
-    return { x: left, y: top, width: right - left, height: bottom - top };
 };

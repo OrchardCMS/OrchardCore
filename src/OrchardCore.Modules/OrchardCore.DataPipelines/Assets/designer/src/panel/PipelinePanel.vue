@@ -6,14 +6,15 @@ import type { DesignIssue, SettingsApplied } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import type { RunTracker } from "../runs/runTracker";
 import { showStep } from "../canvas/useConnect";
-import ServerFormHost from "./ServerFormHost.vue";
-import IssuesList from "./IssuesList.vue";
+import ServerFormHost from "@bloom/designer/panel/ServerFormHost.vue";
+import IssuesList from "@bloom/designer/panel/IssuesList.vue";
+import { issueTarget, issueTitle } from "./issues";
 import RunsTab from "./RunsTab.vue";
-import type { FormApplyResult } from "./types";
-import type { RevisionTask } from "../services/revisionQueue";
-import { showToast } from "../ui/toasts";
-import { confirmAction } from "../ui/confirm";
-import { usePeek } from "../ui/usePeek";
+import type { FormApplyResult } from "@bloom/designer/panel/formApply";
+import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
+import { showToast } from "@bloom/designer/ui/toasts";
+import { confirmAction } from "@bloom/designer/ui/confirm";
+import { usePeek } from "@bloom/designer/ui/usePeek";
 import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
@@ -396,6 +397,7 @@ defineExpose({ settle, selectTab, expand, discardChanges, refresh, hasPendingCha
                             :load="loadSettings"
                             :submit="submitSettings"
                             :label="t('PipelineTab', 'Pipeline')"
+                            reload-attribute="data-dpd-reload"
                             data-cy="panel-settings-form"
                             @applied="onSettingsApplied"
                             @error="onError"
@@ -413,7 +415,7 @@ defineExpose({ settle, selectTab, expand, discardChanges, refresh, hasPendingCha
 
                 <template v-else-if="tab === 'issues'">
                     <p class="dpd-panel-intro">{{ tabHint("issues") }}</p>
-                    <IssuesList :issues="state.issues" :nodes="state.nodes" @select="onIssueSelected" />
+                    <IssuesList :issues="state.issues" :target-of="issueTarget" :title-of="(issue) => issueTitle(state.nodes, issue)" @select="onIssueSelected" />
                 </template>
 
                 <RunsTab

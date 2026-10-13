@@ -12,20 +12,21 @@ import PipelinePanel from "./panel/PipelinePanel.vue";
 import StepPanel from "./panel/StepPanel.vue";
 import QuickAddMenu from "./canvas/QuickAddMenu.vue";
 import StartPicker from "./canvas/StartPicker.vue";
-import ToastHost from "./ui/ToastHost.vue";
-import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
-import ConflictDialog from "./draft/ConflictDialog.vue";
-import PublishDialog from "./draft/PublishDialog.vue";
-import DraftBanner from "./draft/DraftBanner.vue";
+import ToastHost from "@bloom/designer/ui/ToastHost.vue";
+import SaveStatusIndicator from "@bloom/designer/draft/SaveStatusIndicator.vue";
+import ConflictDialog from "@bloom/designer/draft/ConflictDialog.vue";
+import PublishDialog from "@bloom/designer/draft/PublishDialog.vue";
+import DraftBanner from "@bloom/designer/draft/DraftBanner.vue";
 import VersionsDialog from "./draft/VersionsDialog.vue";
-import { formatDateTime } from "./draft/formatDateTime";
-import { decidePublish, hasErrors, type PublishDecision } from "./draft/publishDecision";
-import { createRevisionQueue } from "./services/revisionQueue";
-import { createAutosave } from "./services/autosave";
+import { formatDateTime } from "@bloom/designer/core/formatDateTime";
+import { decidePublish, hasErrors, type PublishDecision } from "@bloom/designer/draft/publishDecision";
+import { issueTarget, issueTitle } from "./panel/issues";
+import { createRevisionQueue } from "@bloom/designer/core/revisionQueue";
+import { createAutosave } from "@bloom/designer/core/autosave";
 import { createRunTracker } from "./runs/runTracker";
-import { showToast } from "./ui/toasts";
-import { confirmAction } from "./ui/confirm";
-import { usePeek } from "./ui/usePeek";
+import { showToast } from "@bloom/designer/ui/toasts";
+import { confirmAction } from "@bloom/designer/ui/confirm";
+import { usePeek } from "@bloom/designer/ui/usePeek";
 import { readPreference, writePreference } from "./ui/preferences";
 import { selectNode, showStep } from "./canvas/useConnect";
 import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, findFreeSpot, nodeRect, snap, type Point } from "./canvas/geometry";
@@ -46,7 +47,8 @@ const canvas = ref<InstanceType<typeof DesignerCanvas> | null>(null);
 const panel = ref<InstanceType<typeof PipelinePanel> | null>(null);
 const stepPanel = ref<InstanceType<typeof StepPanel> | null>(null);
 const conflictOpen = ref(false);
-const publishDialog = ref<Exclude<PublishDecision, { kind: "publish" }> | null>(null);
+const publishDialog = ref<Exclude<PublishDecision<DesignIssue>, { kind: "publish" }> | null>(null);
+const issueTitleOf = (issue: DesignIssue) => issueTitle(state.nodes, issue);
 const busy = ref(false);
 const bannerDismissed = ref(false);
 const versionsOpen = ref(false);
@@ -742,7 +744,7 @@ defineExpose({ canvas, panel, stepPanel, addStep, autosave, publish, discard, st
             </aside>
 
             <!-- The canvas, with the selected step's panel over it, or below it when pinned. -->
-            <div ref="main" class="dpd-main" :style="{ '--dpd-covered-height': `${stepPanel?.coveredHeight ?? 0}px` }">
+            <div ref="main" class="dpd-main" :style="{ '--ocd-covered-height': `${stepPanel?.coveredHeight ?? 0}px` }">
                 <section class="dpd-canvas-host" :aria-label="t('Canvas', 'Canvas')" :aria-busy="loading" data-cy="designer-canvas">
                     <div v-if="loading" class="dpd-message">
                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
@@ -818,7 +820,15 @@ defineExpose({ canvas, panel, stepPanel, addStep, autosave, publish, discard, st
             @close="versionsOpen = false"
             @restore="restoreVersion"
         />
-        <PublishDialog v-if="publishDialog" :decision="publishDialog" :nodes="state.nodes" @publish="doPublish" @close="publishDialog = null" @select-issue="onPublishIssueSelected" />
+        <PublishDialog
+            v-if="publishDialog"
+            :decision="publishDialog"
+            :target-of="issueTarget"
+            :title-of="issueTitleOf"
+            @publish="doPublish"
+            @close="publishDialog = null"
+            @select-issue="onPublishIssueSelected"
+        />
 
         <ToastHost />
     </div>

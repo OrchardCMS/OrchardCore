@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from "vue";
 import type { DesignerApi } from "../api/designerApi";
 import type { DesignerField, StepFields } from "../api/types";
 import { fieldReference, fieldTypeLabel } from "../preview/previewTable";
-import { showToast } from "../ui/toasts";
+import { showToast } from "@bloom/designer/ui/toasts";
 import { t } from "../i18n";
 
 // The Fields tab: the fields flowing into and out of the step, with their types. A field's reference can be copied,

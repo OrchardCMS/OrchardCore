@@ -1,15 +1,23 @@
-// The UI strings are rendered by the server into config.translations (a key/value dictionary). Every call names its
-// English text, used when the dictionary has no value for the key, so the designer works without translations.
-let translations: Record<string, string> = {};
+import { loadTranslations as loadSharedTranslations, setDefaultTexts, t } from "@bloom/designer/core/i18n";
 
-export const loadTranslations = (values: Record<string, string> | null | undefined) => {
-    translations = values ?? {};
+// The UI strings are rendered by the server into config.translations (a key/value dictionary). Every call names its
+// English text, used when the dictionary has no value for the key, so the designer works without translations. The
+// shared components (@bloom/designer) speak of a draft; the designer names its pipeline instead.
+const PIPELINE_TEXTS: Record<string, string> = {
+    ConflictTitle: "The pipeline was changed elsewhere",
+    PublishBlockedTitle: "The pipeline cannot be published",
+    PublishTitle: "Publish the pipeline?",
+    PublishWarningsMessage: "The pipeline has {0} warnings. Runs will use this version once it is published.",
+    NoIssues: "No issues: the pipeline can be published.",
+    VersionsIntro: "Each publish creates a version. Runs use the published version; restoring a version copies it into the draft.",
+    NoVersions: "The pipeline was never published.",
+    FitToContent: "Fit to the steps",
+    LoadingForm: "Loading…",
 };
 
-const format = (template: string, args: (string | number)[]) =>
-    args.length === 0 ? template : template.replace(/\{(\d+)\}/g, (match, index) => (index < args.length ? String(args[index]) : match));
+export const loadTranslations = (values: Record<string, string> | null | undefined) => {
+    setDefaultTexts(PIPELINE_TEXTS);
+    loadSharedTranslations(values);
+};
 
-/**
- * Returns the localized string for `key`, or the English `fallback`, replacing {0}, {1}... with `args`.
- */
-export const t = (key: string, fallback: string, ...args: (string | number)[]) => format(translations[key] || fallback, args);
+export { t };

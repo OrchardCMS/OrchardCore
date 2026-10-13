@@ -5,7 +5,7 @@ import { createDesignerStore } from "../state/designerStore";
 import type { DesignerApi } from "../api/designerApi";
 import type { DesignerConfig } from "../config";
 import { createDefinition, createNode, createRun, library, records } from "./fixtures";
-import { clearToasts } from "../ui/toasts";
+import { clearToasts } from "@bloom/designer/ui/toasts";
 
 const urls = {
     definition: "/d",

@@ -50,27 +50,6 @@
     transform: scaleX(-1);
 }
 
-.dpd-save-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    white-space: nowrap;
-}
-
-.dpd-save-status[data-status="unsaved"] .fa-circle {
-    font-size: 0.5em;
-}
-
-.dpd-draft-banner {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    border-width: 0 0 var(--bs-border-width);
-}
-
-.dpd-draft-banner .btn-close {
-    padding: 0.75rem 1rem;
-}
-
 .dpd-body {
     display: flex;
     flex: 1 1 auto;
@@ -413,47 +392,6 @@
     padding: 0.75rem;
 }
 
-/* The server-rendered forms use the admin's two-column 'ocat-*' rows; the panel is narrow, so they stack. */
-.dpd-form {
-    padding: 0.75rem;
-}
-
-.dpd-form .ocat-wrapper,
-.dpd-form .ocat-limited-wrapper {
-    display: block;
-    margin-bottom: 0.75rem;
-}
-
-.dpd-form .ocat-label,
-.dpd-form .ocat-end,
-.dpd-form .ocat-end-offset,
-.dpd-form .ocat-limited {
-    width: auto;
-    max-width: none;
-    margin-inline-start: 0;
-    padding-inline: 0;
-    text-align: start;
-}
-
-.dpd-form-actions {
-    position: sticky;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin: 0 -0.75rem -0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-top: var(--bs-border-width) solid var(--bs-border-color);
-    background-color: var(--bs-body-bg);
-}
-
-.dpd-form-status {
-    flex: 1 1 auto;
-    color: var(--bs-secondary-color);
-    font-size: 0.8125rem;
-}
-
 .dpd-section-title {
     margin-bottom: 0.25rem;
     font-size: 0.875rem;
@@ -480,29 +418,6 @@
 
 .dpd-summary-list dd {
     margin: 0;
-}
-
-.dpd-issue {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    color: var(--bs-body-color);
-    text-decoration: none;
-    font-size: 0.8125rem;
-}
-
-.dpd-issue:hover:not(:disabled) {
-    background-color: var(--bs-tertiary-bg);
-}
-
-.dpd-issue:disabled {
-    opacity: 1;
-}
-
-.dpd-issue-step {
-    display: block;
-    font-weight: 600;
 }
 
 .dpd-message {
@@ -591,54 +506,6 @@
 
 /* rtl:begin:ignore */
 
-.dpd-canvas {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    direction: ltr;
-    outline: none;
-    touch-action: none;
-    user-select: none;
-    background-color: var(--bs-body-bg);
-}
-
-.dpd-canvas:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--bs-primary);
-}
-
-.dpd-canvas.is-space-held,
-.dpd-canvas.is-panning {
-    cursor: grabbing;
-}
-
-.dpd-grid {
-    position: absolute;
-    left: 0;
-    top: 0;
-    pointer-events: none;
-    background-image: radial-gradient(var(--bs-border-color) 1px, transparent 1px);
-    will-change: transform;
-}
-
-.dpd-layer {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform-origin: 0 0;
-}
-
-.dpd-edges {
-    position: absolute;
-    left: 0;
-    top: 0;
-    overflow: visible;
-}
-
-.dpd-edges.is-lifted {
-    pointer-events: none;
-    will-change: transform;
-}
-
 .dpd-edge-hit {
     fill: none;
     stroke: transparent;
@@ -662,14 +529,6 @@
 .dpd-edge.is-selected .dpd-edge-line {
     stroke: var(--bs-primary);
     stroke-width: 2.5;
-}
-
-.dpd-arrow {
-    fill: var(--bs-secondary-color);
-}
-
-.dpd-arrow.is-selected {
-    fill: var(--bs-primary);
 }
 
 .dpd-edge-label {
@@ -697,35 +556,6 @@
 .dpd-edge-delete:focus-visible circle {
     stroke: var(--bs-body-color);
     stroke-width: 2;
-}
-
-.dpd-edge-preview {
-    fill: none;
-    stroke: var(--bs-primary);
-    stroke-width: 2;
-    stroke-dasharray: 6 4;
-    pointer-events: none;
-}
-
-.dpd-marquee {
-    position: absolute;
-    left: 0;
-    top: 0;
-    border: 1px dashed var(--bs-primary);
-    background-color: rgba(var(--bs-primary-rgb), 0.08);
-    pointer-events: none;
-}
-
-.dpd-empty {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: var(--bs-secondary-color);
-    text-align: center;
-    pointer-events: none;
 }
 
 /* The activities to add after an outcome, opened by a click on its port. */
@@ -794,7 +624,7 @@
     pointer-events: none;
 }
 
-.dpd-canvas-host:has(.dpd-start-picker) .dpd-empty {
+.dpd-canvas-host:has(.dpd-start-picker) .ocd-empty {
     display: none;
 }
 
@@ -808,21 +638,6 @@
     margin: 0 0 1rem;
     color: var(--bs-secondary-color);
     font-size: 0.875rem;
-}
-
-.dpd-zoom-controls {
-    position: absolute;
-    right: 0.75rem;
-    bottom: calc(0.75rem + var(--dpd-covered-height, 0px));
-}
-
-.dpd-zoom-level {
-    min-width: 3.5rem;
-}
-
-.dpd-context-menu {
-    position: absolute;
-    z-index: 10;
 }
 
 .dpd-connect-dialog {
@@ -867,7 +682,7 @@
     border-left-color: var(--bs-success);
 }
 
-.dpd-canvas.is-readonly .dpd-node {
+.ocd-canvas.is-readonly .dpd-node {
     cursor: pointer;
 }
 
@@ -1208,10 +1023,6 @@
     stroke-dasharray: 5 3;
 }
 
-.dpd-edge-preview.is-invalid {
-    stroke: var(--bs-danger);
-}
-
 .dpd-quick-add-category {
     color: var(--bs-secondary-color);
     font-size: 0.6875rem;
@@ -1248,13 +1059,6 @@
 }
 
 /* rtl:end:ignore */
-
-.dpd-toasts {
-    position: absolute;
-    left: 0.75rem;
-    bottom: 0.75rem;
-    z-index: 20;
-}
 
 /* Toolbox cards: the step's name, its description and its ports. */
 .dpd-toolbox-card.is-source {

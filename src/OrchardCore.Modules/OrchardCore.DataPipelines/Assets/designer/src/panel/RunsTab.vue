@@ -3,8 +3,8 @@ import { computed, onMounted } from "vue";
 import type { DesignerNode, DesignerRun, RunStatus } from "../api/types";
 import type { RunTracker } from "../runs/runTracker";
 import { fileCount, isActiveRun, rowCount, runStatusLabel, stepStatusLabel } from "../runs/runOverlay";
-import { formatDateTime } from "../draft/formatDateTime";
-import { showToast } from "../ui/toasts";
+import { formatDateTime } from "@bloom/designer/core/formatDateTime";
+import { showToast } from "@bloom/designer/ui/toasts";
 import { t } from "../i18n";
 
 // The most recent runs of the pipeline. Selecting one shows the status and the counts of its steps on the canvas, and

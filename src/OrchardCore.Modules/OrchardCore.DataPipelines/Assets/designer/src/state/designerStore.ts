@@ -10,15 +10,13 @@ import type {
     SavePayload,
     SaveResult,
 } from "../api/types";
-import { History, type Command } from "./history";
+import type { Command } from "@bloom/designer/core/history";
+import type { SaveStatus } from "@bloom/designer/core/types";
+import { createGraphHistory, createServerNodeIds } from "@bloom/designer/graph/graphHistory";
 import type { Graph } from "./commands";
-import { connectionKey, danglingConnections } from "./ports";
+import { connectionKey, danglingConnections, pipelineModel } from "./ports";
 
-/**
- * The autosave status: `offline` is retrying after a network or server error, `failed` was rejected by
- * the server and waits for a retry, and `conflict` waits for the user to reload or overwrite.
- */
-export type SaveStatus = "saved" | "saving" | "unsaved" | "offline" | "failed" | "conflict";
+export type { SaveStatus };
 
 export interface Viewport {
     panX: number;
@@ -104,11 +102,11 @@ const createInitialState = (): DesignerState => ({
  */
 export const createDesignerStore = () => {
     const state = reactive(createInitialState());
-    const history = new History();
+    const { history, markChanged, execute, record, undo, redo } = createGraphHistory(state);
 
     // The steps the draft on the server has, so a save can tell which steps were removed, and which removed ones
     // were brought back (by undo).
-    let serverStepIds = new Set<string>();
+    const serverStepIds = createServerNodeIds();
 
     const graph: Graph = {
         get nodes() {
@@ -117,15 +115,10 @@ export const createDesignerStore = () => {
         get connections() {
             return state.connections;
         },
-    };
-
-    history.subscribe(() => {
-        state.canUndo = history.canUndo;
-        state.canRedo = history.canRedo;
-    });
-
-    const markChanged = () => {
-        state.changeVersion++;
+        get edges() {
+            return state.connections;
+        },
+        model: pipelineModel,
     };
 
     // The server changed the draft on behalf of the signed-in user, who is now its last editor.
@@ -163,7 +156,7 @@ export const createDesignerStore = () => {
                 saveStatus: "saved" satisfies SaveStatus,
             });
 
-            serverStepIds = new Set(definition.nodes.map((node) => node.id));
+            serverStepIds.reset(definition.nodes.map((node) => node.id));
             history.clear();
         },
 
@@ -174,30 +167,15 @@ export const createDesignerStore = () => {
         /**
          * Applies a command and records it in the history.
          */
-        execute(command: Command) {
-            history.execute(command);
-            markChanged();
-        },
+        execute: (command: Command) => execute(command),
 
         /**
          * Records a command whose effect is already applied.
          */
-        record(command: Command) {
-            history.record(command);
-            markChanged();
-        },
+        record: (command: Command) => record(command),
 
-        undo() {
-            if (history.undo()) {
-                markChanged();
-            }
-        },
-
-        redo() {
-            if (history.redo()) {
-                markChanged();
-            }
-        },
+        undo,
+        redo,
 
         /**
          * Records a step that the server just created (AddStep), with the connection it made to it.
@@ -263,8 +241,8 @@ export const createDesignerStore = () => {
                     targetStepId: connection.targetStepId,
                     targetPort: connection.targetPort,
                 })),
-                removedStepIds: [...serverStepIds].filter((id) => !currentIds.has(id)),
-                restoredStepIds: [...currentIds].filter((id) => !serverStepIds.has(id)),
+                removedStepIds: serverStepIds.removed(currentIds),
+                restoredStepIds: serverStepIds.restored(currentIds),
             };
         },
 
@@ -272,7 +250,7 @@ export const createDesignerStore = () => {
          * Records a successful save of `payload`.
          */
         markSaved(payload: SavePayload, result: SaveResult) {
-            serverStepIds = new Set(payload.nodes.map((node) => node.id));
+            serverStepIds.reset(payload.nodes.map((node) => node.id));
             state.revision = result.revision;
             state.issues = result.issues;
             touchDraft();
@@ -298,7 +276,7 @@ export const createDesignerStore = () => {
 
         reset() {
             Object.assign(state, createInitialState());
-            serverStepIds = new Set();
+            serverStepIds.reset([]);
             history.clear();
         },
     };

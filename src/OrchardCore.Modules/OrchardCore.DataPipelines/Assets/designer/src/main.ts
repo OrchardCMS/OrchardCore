@@ -3,6 +3,7 @@ import App from "./App.vue";
 import { readConfig } from "./config";
 import { loadTranslations } from "./i18n";
 import { createDesignerApi } from "./api/designerApi";
+import "@bloom/designer/styles/designer-base.css";
 import "./styles/designer.css";
 
 // Mounts the designer on #data-pipeline-designer (Views/DataPipeline/Designer.cshtml). The requests carry the
