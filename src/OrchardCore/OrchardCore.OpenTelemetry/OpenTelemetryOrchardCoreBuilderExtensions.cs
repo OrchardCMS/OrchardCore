@@ -21,14 +21,15 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
     // duplicate the ones of the database operations that Orchard Core traces for every database provider.
     private static readonly string[] s_databaseMeters = ["Npgsql", "MySqlConnector"];
 
-    // Meters built in .NET that the ASP.NET Core and HttpClient instrumentations don't already collect.
-    private static readonly string[] s_runtimeMeters =
-    [
-        "System.Runtime",
-        "Microsoft.AspNetCore.Authentication",
-        "Microsoft.AspNetCore.Authorization",
-        "Microsoft.AspNetCore.Identity",
-    ];
+    // Client libraries used by Orchard Core modules that trace their own operations: the Elasticsearch client, MailKit
+    // for SMTP, and the Azure SDK clients (Blob Storage, Key Vault, Communication Services, AI Search).
+    private static readonly string[] s_clientLibrarySources = ["Elastic.Transport", "MailKit.Net.SmtpClient", "Azure.*"];
+
+    // The switch enabling the activity sources of the Azure SDK clients, which are experimental and off by default.
+    private const string AzureActivitySourceSwitch = "Azure.Experimental.EnableActivitySource";
+
+    // The meter built in .NET that the ASP.NET Core and HttpClient instrumentations don't already collect.
+    private static readonly string[] s_runtimeMeters = ["System.Runtime"];
 
     /// <summary>
     /// Configures OpenTelemetry to collect the traces, metrics and logs of the application, from Orchard Core, ASP.NET Core,
@@ -70,7 +71,16 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
             .SetSampler(serviceProvider => CreateSampler(GetOptions(serviceProvider))));
 
         services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracing) =>
-            tracing.AddSource(GetOptions(serviceProvider).Tracing.Sources));
+        {
+            var options = GetOptions(serviceProvider);
+            tracing.AddSource(options.Tracing.Sources);
+
+            if (options.Tracing.IncludeClientLibraries)
+            {
+                tracing.AddSource(s_clientLibrarySources);
+                EnableAzureActivitySources();
+            }
+        });
 
         openTelemetry.WithMetrics(metrics => metrics
             .AddOrchardCoreInstrumentation()
@@ -151,6 +161,19 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
     private static OrchardCoreOpenTelemetryOptions GetOptions(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredService<IOptions<OrchardCoreOpenTelemetryOptions>>().Value;
+    }
+
+    // Enables the activity sources of the Azure SDK clients, unless the application already decided with the
+    // 'Azure.Experimental.EnableActivitySource' switch or the 'AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE' variable.
+    private static void EnableAzureActivitySources()
+    {
+        if (AppContext.TryGetSwitch(AzureActivitySourceSwitch, out _) ||
+            System.Environment.GetEnvironmentVariable("AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE") is not null)
+        {
+            return;
+        }
+
+        AppContext.SetSwitch(AzureActivitySourceSwitch, true);
     }
 
     private static Sampler CreateSampler(OrchardCoreOpenTelemetryOptions options)

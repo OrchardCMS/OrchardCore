@@ -1,0 +1,170 @@
+WEBVTT
+
+00:00:01.000 --> 00:00:03.458
+Why does a page take the time it takes?
+
+00:00:03.458 --> 00:00:07.445
+In this video, we'll see how the traces and metrics of Orchard Core
+
+00:00:07.445 --> 00:00:11.705
+shapes, read in the Aspire dashboard, show where a page spends its time,
+
+00:00:11.705 --> 00:00:13.890
+and how they point at what to fix.
+
+00:00:18.490 --> 00:00:22.386
+The same hundred items can be rendered by a single Razor view, by
+
+00:00:22.386 --> 00:00:25.788
+one MVC partial view per item, or by one shape per item.
+
+00:00:25.788 --> 00:00:30.946
+Under load, the single view serves about thirty-five thousand requests per second, Razor
+
+00:00:30.946 --> 00:00:35.940
+shape templates about twelve thousand, and Liquid shape templates under six thousand.
+
+00:00:36.690 --> 00:00:39.263
+The server isn't short of processor time:
+
+00:00:39.263 --> 00:00:41.945
+it uses about six of its twenty-four cores.
+
+00:00:41.945 --> 00:00:45.831
+But each request of the blog home page allocates more than half a
+
+00:00:45.831 --> 00:00:51.140
+megabyte, so the garbage collector pauses the whole server up to forty percent of the time.
+
+00:00:51.890 --> 00:00:55.901
+So which shapes cost that time and that memory, and what inside them?
+
+00:00:55.901 --> 00:00:59.430
+That's what the traces and the metrics of the shapes answer.
+
+00:01:03.630 --> 00:01:07.886
+Each rendered shape can emit a trace span and two metrics, under the
+
+00:01:07.886 --> 00:01:11.452
+OrchardCore.DisplayManagement activity source and meter.
+
+00:01:11.452 --> 00:01:14.960
+They are off by default, as a page renders many shapes.
+
+00:01:15.710 --> 00:01:20.703
+With the OpenTelemetry integration, add the source and the meter to the configuration,
+
+00:01:20.703 --> 00:01:23.580
+and point the exporter to the Aspire dashboard.
+
+00:01:24.330 --> 00:01:28.806
+Without a dashboard, dotnet-counters shows the same metrics from a running site:
+
+00:01:28.806 --> 00:01:33.230
+the shapes rendered per second, and the rendering durations of each shape type.
+
+00:01:37.432 --> 00:01:41.816
+In the Aspire dashboard, the Traces page lists the requests of the site.
+
+00:01:41.816 --> 00:01:44.682
+Let's open one request of the blog home page.
+
+00:01:45.134 --> 00:01:50.127
+Each rendered shape is a Render shape span, nested like the shapes themselves:
+
+00:01:50.127 --> 00:01:54.466
+the blog content item, its zones, its list of posts, the summary of
+
+00:01:54.466 --> 00:01:57.854
+each post, the zones of the layout, and the layout.
+
+00:01:58.307 --> 00:02:00.510
+The bars show where the time goes.
+
+00:02:00.510 --> 00:02:04.036
+The summary of the blog post takes most of the time of the
+
+00:02:04.036 --> 00:02:06.790
+content item, the largest shape of the page.
+
+00:02:06.790 --> 00:02:10.647
+The rest of the request builds the shapes and loads the content.
+
+00:02:11.099 --> 00:02:14.027
+Selecting the span shows its attributes:
+
+00:02:14.027 --> 00:02:20.839
+the shape type, and the binding, the template that rendered it, here Content-BlogPost.Summary.liquid.
+
+00:02:21.292 --> 00:02:25.019
+Its only child shape, DateTime, takes a few microseconds.
+
+00:02:25.019 --> 00:02:29.279
+So the time is spent in the template itself, in its taxonomy terms
+
+00:02:29.279 --> 00:02:34.012
+lookups, which load the categories and tags of the post from the database.
+
+00:02:38.198 --> 00:02:41.872
+A trace shows one request, the metrics show all of them.
+
+00:02:41.872 --> 00:02:47.028
+On the Metrics page, the OrchardCore.DisplayManagement meter has two instruments.
+
+00:02:47.484 --> 00:02:51.643
+The shapes rendered counter counts the shapes of every request.
+
+00:02:51.643 --> 00:02:55.864
+The more shapes a page renders, the more their own cost matters.
+
+00:02:56.317 --> 00:03:03.277
+The shape duration histogram gives the percentiles of the rendering durations, including the child shapes.
+
+00:03:03.730 --> 00:03:07.442
+Selecting a shape type filters the durations to that type.
+
+00:03:07.442 --> 00:03:13.590
+Here, the post summary takes about a millisecond at the median, while most shapes take microseconds.
+
+00:03:17.790 --> 00:03:21.446
+The traces and the metrics show where the time goes.
+
+00:03:21.446 --> 00:03:26.993
+Allocation and processor profiles, with dotnet-trace, then show what it's made of:
+
+00:03:26.993 --> 00:03:30.650
+work repeated for every shape, or for every request.
+
+00:03:31.400 --> 00:03:36.699
+So Liquid templates are rendered by Fluid directly, sanitized HTML is cached, the
+
+00:03:36.699 --> 00:03:43.400
+Markdown pipeline is built once, and content handlers and display drivers are resolved once per request.
+
+00:03:44.150 --> 00:03:48.829
+On the blog home page, a request allocates forty-two percent less memory and
+
+00:03:48.829 --> 00:03:55.620
+uses twenty-eight percent less processor time, and the site serves thirty-eight percent more requests per second.
+
+00:03:56.370 --> 00:03:58.705
+To find the slow parts of your own site:
+
+00:03:58.705 --> 00:04:02.310
+add the source and the meter, find the slowest shape types in the
+
+00:04:02.310 --> 00:04:06.016
+metrics, open a slow request in the traces, and compare the time of
+
+00:04:06.016 --> 00:04:08.250
+a shape with the time of its children.
+
+00:04:10.250 --> 00:04:14.189
+Shape traces and metrics show which shapes cost time, and why.
+
+00:04:14.189 --> 00:04:18.823
+Read them in the Aspire dashboard, then fix what repeats on every request.
+
+00:04:18.823 --> 00:04:20.330
+Thanks for watching.
+

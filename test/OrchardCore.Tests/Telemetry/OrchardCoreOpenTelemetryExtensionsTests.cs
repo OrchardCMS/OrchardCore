@@ -14,6 +14,26 @@ namespace OrchardCore.Tests.Telemetry;
 public class OrchardCoreOpenTelemetryExtensionsTests
 {
     [Theory]
+    [InlineData("Elastic.Transport")]
+    [InlineData("MailKit.Net.SmtpClient")]
+    [InlineData("Azure.Storage.Blobs.BlobContainerClient")]
+    public void AddOpenTelemetry_Default_SamplesClientLibraryTraces(string sourceName)
+    {
+        var builder = CreateBuilder([]);
+
+        new OrchardCoreBuilder(builder.Services).AddOpenTelemetry();
+
+        using var host = builder.Build();
+        host.Services.GetRequiredService<TracerProvider>();
+
+        using var source = new ActivitySource(sourceName);
+        using var activity = source.StartActivity("Operation");
+
+        Assert.True(activity?.Recorded);
+        Assert.True(AppContext.TryGetSwitch("Azure.Experimental.EnableActivitySource", out var enabled) && enabled);
+    }
+
+    [Theory]
     [InlineData("true", true)]
     [InlineData("false", false)]
     public void AddOpenTelemetry_EnabledSetting_SamplesTraces(string enabled, bool sampled)
