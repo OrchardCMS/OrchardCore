@@ -48,6 +48,7 @@
              data-allow-media-text="@(settings.AllowMediaText ? "true" : "false")"
              data-allow-anchors="@(settings.AllowAnchors ? "true" : "false")"
              data-allowed-extensions="@allowedExtensionsAttribute"
+             data-max-file-size="@MediaOptions.Value.MaxFileSize"
              data-media-item-url="@Url.Content("~/api/media/GetMediaItem")"
              data-media-items-url="@Url.Content("~/api/media/GetMediaFieldItems")"
              data-media-gallery-translations="@mediaAppTranslationsJson"

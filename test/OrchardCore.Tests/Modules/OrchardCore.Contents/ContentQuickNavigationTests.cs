@@ -17,6 +17,7 @@ using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Security;
 using OrchardCore.Settings;
+using OrchardCore.Tests.Utilities;
 using YesSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -82,16 +83,7 @@ public class ContentQuickNavigationTests : IAsyncLifetime
     public ValueTask DisposeAsync()
     {
         _store?.Dispose();
-
-        // On Windows another process, such as an antivirus scanner, can still hold the file that was just
-        // written. Removing it is only housekeeping, so the test must not fail when it is briefly locked.
-        try
-        {
-            File.Delete(_databasePath);
-        }
-        catch (IOException)
-        {
-        }
+        TestFileHelper.TryDelete(_databasePath);
 
         return ValueTask.CompletedTask;
     }

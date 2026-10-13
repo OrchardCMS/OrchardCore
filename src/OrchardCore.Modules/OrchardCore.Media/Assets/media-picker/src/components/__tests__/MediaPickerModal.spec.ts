@@ -72,6 +72,18 @@ async function getModalProps(wrapper: VueWrapper) {
 }
 
 describe("MediaPickerModal", () => {
+  it("passes the configured upload size to the gallery mount", async () => {
+    const wrapper = createWrapper({ maxFileSize: 1234567 });
+    setContainerRef(wrapper);
+    wrapper.findComponent({ name: "VueFinalModal" }).vm.$emit("opened");
+    await flushPromises();
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      expect.objectContaining({ maxFileSize: 1234567 }),
+    );
+    wrapper.unmount();
+  });
+
   beforeEach(() => {
     setupTranslations();
     vi.clearAllMocks();

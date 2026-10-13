@@ -47,6 +47,7 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
     allowMediaText: dataset.allowMediaText === "true",
     allowAnchors: dataset.allowAnchors === "true",
     allowedExtensions: dataset.allowedExtensions || "",
+    maxFileSize: dataset.maxFileSize ? Number(dataset.maxFileSize) : undefined,
     mediaItemUrl: dataset.mediaItemUrl || "",
     mediaItemsUrl: dataset.mediaItemsUrl || "",
     mediaAppTranslations: dataset.mediaGalleryTranslations || dataset.mediaAppTranslations || "",
@@ -112,9 +113,6 @@ function readAttachedConfig(el: HTMLElement): IAttachedFieldConfig {
     tempUploadFolder: dataset.tempUploadFolder || "",
     maxUploadChunkSize: dataset.maxUploadChunkSize
       ? parseInt(dataset.maxUploadChunkSize, 10)
-      : undefined,
-    maxFileSize: dataset.maxFileSize
-      ? parseInt(dataset.maxFileSize, 10)
       : undefined,
     debugEnabled: dataset.debugEnabled === "true" || import.meta.env.DEV,
     tusEnabled: dataset.tusEnabled === "true",
@@ -206,6 +204,7 @@ export function openMediaPicker(
   uploadFilesUrl: string,
   allowedExtensions = "",
   allowMultiple = true,
+  maxFileSize = Number(document.querySelector<HTMLElement>("[data-media-picker-config]")?.dataset.maxFileSize ?? 0),
 ): Promise<IMediaFieldItem[]> {
   return new Promise((resolve) => {
     const host = document.createElement("div");
@@ -218,6 +217,7 @@ export function openMediaPicker(
       basePath,
       uploadFilesUrl,
       allowedExtensions,
+      maxFileSize,
       allowMultiple,
       autoOpen: true,
       onResolve: (items: IMediaFieldItem[]) => {
