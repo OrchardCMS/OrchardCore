@@ -174,7 +174,7 @@ OpenTelemetry only collects the activity sources and meters it's told about: the
 | Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` spans. Their activity sources are experimental, so Orchard Core enables them with the `Azure.Experimental.EnableActivitySource` switch, unless the application already sets it or the `AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE` variable. |
 | Npgsql, MySqlConnector | PostgreSQL and MySQL databases | Connection pool metrics. Their own spans aren't collected, as they would duplicate the database spans of Orchard Core. |
 
-`Tracing:IncludeClientLibraries` turns the Elasticsearch, MailKit and Azure SDK spans off. Other libraries are added with the `Tracing:Sources` and `Metrics:Meters` settings, and the libraries that don't emit telemetry themselves need an instrumentation package. For instance, StackExchange.Redis, used by the Redis features, is traced by the `OpenTelemetry.Instrumentation.StackExchangeRedis` package, added with the callback of `AddOpenTelemetry()`.
+`Tracing:IncludeClientLibraries` turns the Elasticsearch, MailKit and Azure SDK spans off. Other libraries are added with the `Tracing:Sources` and `Metrics:Meters` settings, and the libraries that don't emit telemetry themselves need an instrumentation package. For instance, StackExchange.Redis, used by the Redis features, emits no telemetry itself, and its `OpenTelemetry.Instrumentation.StackExchangeRedis` package only traces the connections registered with it, which the ones opened by the Redis features aren't.
 
 ### Logs
 
