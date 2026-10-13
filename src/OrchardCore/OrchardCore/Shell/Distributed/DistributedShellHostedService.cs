@@ -733,11 +733,15 @@ internal sealed class DistributedShellHostedService : BackgroundService
             // Only invalidate the local options, the other instances keep in sync on their own.
             if (signal is Signal localSignal)
             {
-                localSignal.SignalToken(OptionsUpdateSignal.AllKey);
+                for (var i = 0; i < OptionsUpdateSignal.AllKeySignalCount; i++)
+                {
+                    localSignal.SignalToken(OptionsUpdateSignal.AllKey);
+                }
+
                 return Task.CompletedTask;
             }
 
-            return signal.SignalTokenAsync(OptionsUpdateSignal.AllKey);
+            return OptionsUpdateSignal.SignalAllAsync(signal);
         });
     }
 

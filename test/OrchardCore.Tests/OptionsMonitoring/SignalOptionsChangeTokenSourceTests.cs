@@ -91,6 +91,35 @@ public class SignalOptionsChangeTokenSourceTests
     }
 
     [Fact]
+    public async Task SignalAllAsync_OptionsBuiltFromOtherOptions_RebuildsFromUpdatedOptions()
+    {
+        var store = new SourceStore { Value = 1 };
+
+        var services = new ServiceCollection()
+            .AddSingleton<ISignal, Signal>()
+            .AddSingleton(store)
+            .AddOptions()
+            .AddSignalOptionsChangeTokenSource<SourceOptions>()
+            .AddSignalOptionsChangeTokenSource<DerivedOptions>()
+            .AddSignalOptionsChangeTokenSource<TopOptions>();
+
+        services.AddTransient<IConfigureOptions<SourceOptions>, ConfigureSourceOptions>();
+        services.AddTransient<IConfigureOptions<DerivedOptions>, ConfigureDerivedOptions>();
+        services.AddTransient<IConfigureOptions<TopOptions>, ConfigureTopOptions>();
+
+        using var provider = services.BuildServiceProvider();
+
+        var monitor = provider.GetRequiredService<IOptionsMonitor<TopOptions>>();
+        Assert.Equal(1, monitor.CurrentValue.Value);
+
+        store.Value = 2;
+
+        await OptionsUpdateSignal.SignalAllAsync(provider.GetRequiredService<ISignal>());
+
+        Assert.Equal(2, monitor.CurrentValue.Value);
+    }
+
+    [Fact]
     public async Task SignalTokenAsync_OtherOptionsKey_DoesNotRefresh()
     {
         using var provider = CreateServiceProvider(services => services
@@ -130,5 +159,52 @@ public class SignalOptionsChangeTokenSourceTests
     private sealed class OtherOptions
     {
         public int Version { get; set; }
+    }
+
+    private sealed class SourceStore
+    {
+        public int Value { get; set; }
+    }
+
+    private sealed class SourceOptions
+    {
+        public int Value { get; set; }
+    }
+
+    private sealed class DerivedOptions
+    {
+        public int Value { get; set; }
+    }
+
+    private sealed class TopOptions
+    {
+        public int Value { get; set; }
+    }
+
+    private sealed class ConfigureSourceOptions : IConfigureOptions<SourceOptions>
+    {
+        private readonly SourceStore _store;
+
+        public ConfigureSourceOptions(SourceStore store) => _store = store;
+
+        public void Configure(SourceOptions options) => options.Value = _store.Value;
+    }
+
+    private sealed class ConfigureDerivedOptions : IConfigureOptions<DerivedOptions>
+    {
+        private readonly IOptionsMonitor<SourceOptions> _sourceOptions;
+
+        public ConfigureDerivedOptions(IOptionsMonitor<SourceOptions> sourceOptions) => _sourceOptions = sourceOptions;
+
+        public void Configure(DerivedOptions options) => options.Value = _sourceOptions.CurrentValue.Value;
+    }
+
+    private sealed class ConfigureTopOptions : IConfigureOptions<TopOptions>
+    {
+        private readonly IOptionsMonitor<DerivedOptions> _derivedOptions;
+
+        public ConfigureTopOptions(IOptionsMonitor<DerivedOptions> derivedOptions) => _derivedOptions = derivedOptions;
+
+        public void Configure(TopOptions options) => options.Value = _derivedOptions.CurrentValue.Value;
     }
 }

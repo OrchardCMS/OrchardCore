@@ -320,7 +320,7 @@ services.AddSignalOptionsChangeTokenSource<GoogleOptions>(GoogleDefaults.Authent
 _optionsUpdateNotifier.RequestUpdate<GoogleOptions>(GoogleDefaults.AuthenticationScheme);
 ```
 
-Signaling `OptionsUpdateSignal.AllKey` invalidates every signal-backed options instance of the tenant, whatever its type and name.
+`OptionsUpdateSignal.SignalAllAsync(signal)` invalidates every signal-backed options instance of the tenant, whatever its type and name, including the options built from other signal-backed options.
 
 In multi-node environments, the other nodes refresh the options of the tenant as follows:
 
