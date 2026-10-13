@@ -79,6 +79,37 @@ public class DefaultOptionsUpdateNotifierTests
         Assert.Equal([ShellSettings.DefaultShellName], harness.UpdatedTenants);
     }
 
+    [Fact]
+    public async Task RequestUpdateAll_CommitSucceeded_SignalsRequestedOptionsThenAllOptions()
+    {
+        var harness = new NotifierHarness();
+
+        await harness.RunAsync(notifier =>
+        {
+            notifier
+                .RequestUpdateAll()
+                .RequestUpdate<FirstOptions>();
+        });
+
+        Assert.Equal(
+        [
+            OptionsUpdateSignal.GetKey(typeof(FirstOptions), string.Empty),
+            .. Enumerable.Repeat(OptionsUpdateSignal.AllKey, OptionsUpdateSignal.AllKeySignalCount),
+        ], harness.SignaledKeys);
+
+        Assert.Equal([ShellSettings.DefaultShellName], harness.UpdatedTenants);
+    }
+
+    [Fact]
+    public async Task RequestUpdateAll_CommitNotSucceeded_DoesNotSignal()
+    {
+        var harness = new NotifierHarness { CommitSucceeds = false };
+
+        await harness.RunAsync(notifier => notifier.RequestUpdateAll());
+
+        Assert.Empty(harness.SignaledKeys);
+    }
+
     private sealed class NotifierHarness
     {
         public bool CommitSucceeds { get; set; } = true;

@@ -17,4 +17,10 @@ public interface IOptionsUpdateNotifier
     /// <typeparam name="TOptions">The options type to invalidate.</typeparam>
     /// <param name="name">The named options instance to invalidate.</param>
     IOptionsUpdateNotifier RequestUpdate<TOptions>(string name = "") where TOptions : class;
+
+    /// <summary>
+    /// Queues an update notification for every signal-backed options instance of the tenant, whatever its type
+    /// and name, e.g. after a recipe has updated settings that may be used by any options.
+    /// </summary>
+    IOptionsUpdateNotifier RequestUpdateAll();
 }

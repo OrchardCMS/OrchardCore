@@ -16,4 +16,13 @@ public sealed class RecordingOptionsUpdateNotifier : IOptionsUpdateNotifier
 
         return this;
     }
+
+    public bool UpdateAllRequested { get; private set; }
+
+    public IOptionsUpdateNotifier RequestUpdateAll()
+    {
+        UpdateAllRequested = true;
+
+        return this;
+    }
 }

@@ -21,6 +21,7 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
     private readonly List<OptionsUpdateRequest> _pendingUpdates = [];
     private readonly HashSet<OptionsUpdateRequest> _requestedUpdates = [];
 
+    private bool _updateAll;
     private bool _commitRegistered;
     private bool _commitSucceeded;
     private bool _deferredTaskAdded;
@@ -44,6 +45,23 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
             _pendingUpdates.Add(request);
         }
 
+        return QueueUpdates();
+    }
+
+    public IOptionsUpdateNotifier RequestUpdateAll()
+    {
+        if (ShellScope.Current is null)
+        {
+            throw new InvalidOperationException($"'{nameof(IOptionsUpdateNotifier)}' can only be used from an active shell scope.");
+        }
+
+        _updateAll = true;
+
+        return QueueUpdates();
+    }
+
+    private DefaultOptionsUpdateNotifier QueueUpdates()
+    {
         if (!_commitRegistered)
         {
             _commitRegistered = true;
@@ -66,7 +84,7 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
         {
             try
             {
-                if (!_commitSucceeded || _pendingUpdates.Count == 0)
+                if (!_commitSucceeded || (_pendingUpdates.Count == 0 && !_updateAll))
                 {
                     return;
                 }
@@ -76,6 +94,11 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
                 foreach (var update in _pendingUpdates)
                 {
                     await signal.SignalTokenAsync(OptionsUpdateSignal.GetKey(update.OptionsType, update.Name));
+                }
+
+                if (_updateAll)
+                {
+                    await OptionsUpdateSignal.SignalAllAsync(signal);
                 }
 
                 // Let the other instances of this tenant know that its options have been updated.
@@ -108,6 +131,7 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
             {
                 _pendingUpdates.Clear();
                 _requestedUpdates.Clear();
+                _updateAll = false;
                 _commitRegistered = false;
                 _commitSucceeded = false;
                 _deferredTaskAdded = false;
