@@ -26,7 +26,7 @@ public class OpenApiSettingsTests
 
         await context.WaitForDeferredTasksAsync(CancellationToken.None);
 
-        var response = await context.Client.GetAsync("openapi/v1.json");
+        var response = await context.Client.GetAsync("openapi/v1.json", TestContext.Current.CancellationToken);
         Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
 
         var shellContextTicks = await GetShellContextTicksAsync(context);
@@ -43,7 +43,7 @@ public class OpenApiSettingsTests
 
         await context.WaitForDeferredTasksAsync(CancellationToken.None);
 
-        response = await context.Client.GetAsync("openapi/v1.json");
+        response = await context.Client.GetAsync("openapi/v1.json", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         Assert.Equal(shellContextTicks, await GetShellContextTicksAsync(context));
