@@ -9,7 +9,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services;
 
-[BackgroundTask(Schedule = "30 0 * * *", Description = "Remote media cache cleanup.")]
+[BackgroundTask(Title = "Remote Media Cache Cleaner", Schedule = "30 0 * * *", Description = "Remote media cache cleanup.")]
 public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions s_enumerationOptions = new() { RecurseSubdirectories = true };

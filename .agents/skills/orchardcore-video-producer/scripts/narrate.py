@@ -4,13 +4,19 @@ durations.json, which the recorder and the assembly read.
 Usage: python narrate.py <workspace> [--force]
 
 Only the steps whose text changed are generated again.
+
+The voice is synthesized through edge-tts, or through Azure Speech when the AZURE_SPEECH_KEY and
+AZURE_SPEECH_REGION environment variables are set: both give the same neural voice.
 """
 import asyncio
 import json
+import os
 import re
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 import imageio_ffmpeg
 
@@ -37,11 +43,34 @@ def duration(path):
     return int(h) * 3600 + int(m) * 60 + float(s)
 
 
+def synthesize_with_azure(text, path, key, region):
+    # The same voice, rate and mp3 format as edge-tts, through the Azure Speech REST API.
+    ssml = (f"<speak version='1.0' xml:lang='en-US'><voice name='{VOICE}'>"
+            f"<prosody rate='{RATE}'>{escape(text)}</prosody></voice></speak>")
+    request = urllib.request.Request(
+        f"https://{region}.tts.speech.microsoft.com/cognitiveservices/v1",
+        data=ssml.encode("utf-8"),
+        headers={
+            "Ocp-Apim-Subscription-Key": key,
+            "Content-Type": "application/ssml+xml",
+            "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3",
+            "User-Agent": "orchardcore-video-producer",
+        },
+        method="POST")
+    with urllib.request.urlopen(request, timeout=60) as response:
+        Path(path).write_bytes(response.read())
+
+
 async def synthesize(text, path):
-    import edge_tts
+    key = os.environ.get("AZURE_SPEECH_KEY")
+    region = os.environ.get("AZURE_SPEECH_REGION")
     for attempt in range(4):
         try:
-            await edge_tts.Communicate(text, VOICE, rate=RATE).save(str(path))
+            if key and region:
+                await asyncio.to_thread(synthesize_with_azure, text, path, key, region)
+            else:
+                import edge_tts
+                await edge_tts.Communicate(text, VOICE, rate=RATE).save(str(path))
             return
         except Exception:
             if attempt == 3:
