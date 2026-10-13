@@ -73,25 +73,27 @@ public static class IndexingAdminList
 }
 ```
 
-`IndexingAdminListColumnProvider.cs` declares its columns, each a set of zones of the row shape:
+`IndexingAdminListColumnDriver.cs` declares its columns, each a set of zones of the row shape:
 
 ```csharp
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Indexing.Models;
 
 namespace OrchardCore.Indexing;
 
-public sealed class IndexingAdminListColumnProvider : IAdminListColumnProvider
+public sealed class IndexingAdminListColumnDriver : AdminListColumnDriver<IndexProfile>
 {
     private readonly IStringLocalizer S;
 
-    public IndexingAdminListColumnProvider(IStringLocalizer<IndexingAdminListColumnProvider> stringLocalizer)
+    public IndexingAdminListColumnDriver(IStringLocalizer<IndexingAdminListColumnDriver> stringLocalizer)
     {
         S = stringLocalizer;
     }
 
-    public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+    public override IDisplayResult Columns(AdminListColumnsContext context)
     {
         context.Columns.Add(AdminListColumns.Select());
 
@@ -124,20 +126,22 @@ public sealed class IndexingAdminListColumnProvider : IAdminListColumnProvider
 
         context.Columns.Add(AdminListColumns.Actions(S["Actions"]));
 
-        return Task.CompletedTask;
+        return null;
     }
 }
 ```
 
-`Startup.cs` registers it for the list, so it is only created when the list is rendered:
+`Startup.cs` registers it for the items of the list, so it is only created when a list of index profiles is
+rendered:
 
 ```csharp
-services.AddAdminListColumnProvider<IndexingAdminListColumnProvider>(IndexingAdminList.Name);
+services.AddAdminListColumnDriver<IndexProfile, IndexingAdminListColumnDriver>();
 ```
 
 ## 3. The controller
 
-The page describes the list with an `AdminListContext` and hands it to `IAdminListFactory`. It has no options
+The page describes the list with an `AdminListContext<IndexProfile>` and hands it to `IAdminListFactory`. Each
+row pairs an index profile with its row shape. It has no options
 editor shape, so the factory builds the generic `AdminListToolbar`: the item count from the rows and the pager,
 the select-all checkbox and the bulk actions the page passes. The rows carry the attributes the client-side
 search script reads.
@@ -146,7 +150,7 @@ search script reads.
 
 ```csharp
 // The rows carry the attributes used by the client-side search of the list-management script.
-var rows = new List<IShape>(viewModel.Models.Count);
+var rows = new List<AdminListRow<IndexProfile>>(viewModel.Models.Count);
 
 foreach (var entry in viewModel.Models)
 {
@@ -156,11 +160,11 @@ foreach (var entry in viewModel.Models)
         rowShape.Attributes["data-filter-value"] = entry.Model.Name?.ToLowerInvariant() ?? string.Empty;
     }
 
-    rows.Add(entry.Shape);
+    rows.Add(new(entry.Model, entry.Shape));
 }
 
 // The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
-viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(IndexingAdminList.Name)
+viewModel.List = await adminListFactory.CreateAsync(new AdminListContext<IndexProfile>(IndexingAdminList.Name)
 {
     Rows = rows,
     BulkActions = viewModel.Options.BulkActions,

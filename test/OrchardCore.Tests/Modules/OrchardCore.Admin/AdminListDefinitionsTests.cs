@@ -59,8 +59,7 @@ public class AdminListDefinitionsTests
 
             // A column renders the zones it names, then the cells the drivers build, so a column of a driver that
             // builds no cell renders an empty cell unless it names a zone.
-            if (driver.GetType().GetMethod("Cells")?.DeclaringType.IsGenericType != false &&
-                driver.GetType().GetMethod("CellsAsync")?.DeclaringType.IsGenericType != false)
+            if (!BuildsCells(driver))
             {
                 foreach (var column in context.Columns)
                 {
@@ -72,6 +71,14 @@ public class AdminListDefinitionsTests
 
     private static string GetName(Type list)
         => (string)list.GetField("Name").GetRawConstantValue();
+
+    // Whether the driver overrides one of the methods of AdminListColumnDriver<TModel> building the cells of a row.
+    private static bool BuildsCells(object driver)
+    {
+        return driver.GetType().GetMethods()
+            .Where(method => method.Name is nameof(AdminListColumnDriver<object>.Cells) or nameof(AdminListColumnDriver<object>.CellsAsync))
+            .Any(method => !method.DeclaringType.IsGenericType);
+    }
 
     private static List<Type> GetAdminLists()
         => GetExportedTypes()

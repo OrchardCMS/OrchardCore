@@ -43,8 +43,8 @@ A screen is **converted** only when every box below is ticked.
 |---|-------------|---------------|
 | 1 | Rows come from a display driver as a `SummaryAdmin` shape — no hard-coded `<li>` row markup | `@await DisplayAsync(Model.List)` is the only row rendering in the view |
 | 2 | Every visible piece of a row (checkbox, title, badges, meta, buttons, menu items) lives in its own shape placed in a **zone** | Row template has no literal markup other than zone rendering |
-| 3 | A `{Module}AdminList` static class declares `Name`, and a `{List}AdminListColumnProvider` declares the columns, registered with `AddAdminListColumnProvider<T>({List}AdminList.Name)` | Files exist next to the module root; `AdminListDefinitionsTests` passes |
-| 4 | Controller injects `IAdminListFactory` via `[FromServices]` and creates the list from an `AdminListContext` with `Rows`, `BulkActions` (or a `Header`), `Pager`, `EmptyMessage` | Controller `Index`/`List` action |
+| 3 | A `{Module}AdminList` static class declares `Name`, and a `{List}AdminListColumnDriver` declares the columns, registered for the items with `AddAdminListColumnDriver<TModel, T>()` | Files exist next to the module root; `AdminListDefinitionsTests` passes |
+| 4 | Controller injects `IAdminListFactory` via `[FromServices]` and creates the list from an `AdminListContext<TModel>` with `Rows` (`AdminListRow<TModel>`: each item with its row shape), `BulkActions` (or a `Header`), `Pager`, `EmptyMessage` | Controller `Index`/`List` action |
 | 5 | Rows carry `Classes.Add("item")` and `Attributes["data-filter-value"]` when the page uses client-side search | Controller loop over row shapes |
 | 6 | Action bar uses `row gx-2` (**not** `gx-3`) | `grep gx-3` returns nothing for the view |
 | 7 | Search box is an `input-group` ending with a search button showing a magnifying glass (`name="submit.Filter"`), with no icon inside the input | View markup |
@@ -52,7 +52,7 @@ A screen is **converted** only when every box below is ticked.
 | 9 | Bulk actions still work: `#select-all` + inputs named `itemIds` | Manual click-through |
 | 10 | Row actions render through `AdminListActions`, so the Buttons/Menu setting applies | Row `Actions` zone template |
 | 11 | Renders correctly in the **List** and **Grid** layouts, and in **Buttons** and **Menu** action modes | Playwright validation, section 5 |
-| 12 | Column provider extension point documented if the module exposes one | README |
+| 12 | Column driver extension point documented if the module exposes one | README |
 
 ### Row template conventions
 
@@ -117,10 +117,10 @@ takes a line under them, the way the `summary` of the List layout stacks below `
    > `InvalidOperationException: The shape type '...' is not found for the theme 'TheAdmin'`.
 2. **Row template** — `{Entity}.SummaryAdmin.cshtml` renders zones only. The actions zone uses
    `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`.
-3. **Columns** — add `{Module}AdminList.cs` with `Name`, and a `{List}AdminListColumnProvider` registered for
-   the list with `services.AddAdminListColumnProvider<T>({List}AdminList.Name)`.
+3. **Columns** — add `{Module}AdminList.cs` with `Name`, and a `{List}AdminListColumnDriver` registered for
+   the items of the list with `services.AddAdminListColumnDriver<TModel, T>()`.
 4. **Controller** — build the row shapes, then create the list with
-   `adminListFactory.CreateAsync(new AdminListContext({List}AdminList.Name) { Rows, BulkActions, Pager, ... }, HttpContext.RequestAborted)`.
+   `adminListFactory.CreateAsync(new AdminListContext<TModel>({List}AdminList.Name) { Rows, BulkActions, Pager, ... }, HttpContext.RequestAborted)`.
    The factory builds the columns, the layout and the toolbar.
 5. **View** — keep only the `<zone Name="Title">`, the form, the action bar (`gx-2` + search button),
    `@await DisplayAsync(Model.List)`, the no-results alert, any modals, and the
@@ -409,7 +409,7 @@ Resolve each before the batch that needs it, and record the answer here.
       gained a viewport-based `d-md-none`. The stacking rules are per cell, not per column set, so
       the new columns (handle, dependencies, status) stack with the rest.
 - [x] `src/docs/reference/modules/Admin/README.md` — document every converted list name and its
-      default columns, so module authors know the names to target with `IAdminListColumnProvider`.
+      default columns, so module authors know the names to target with a column driver.
       Also document the Part B exclusion list so nobody re-opens it.
 - [x] `src/docs/releases/4.0.0.md` — list the converted screens and note the breaking change for
       anyone overriding the old row templates.
@@ -429,5 +429,5 @@ Resolve each before the batch that needs it, and record the answer here.
 | Client-side search stops matching | Set `data-filter-value` on the **row shape**, not in the layout template |
 | A theme or site overrode a row template that no longer renders | Call it out in the release notes; the old template still works under the `List` layout |
 | Sortable lists (List Part, Layers) break under Grid | Open decision 3 |
-| A module adds columns twice because its provider is registered twice | `AddAdminListColumnProvider<T>` already uses `TryAddEnumerable` — do not register manually |
+| A module adds columns twice because its driver is registered twice | `AddAdminListColumnDriver<TModel, T>` already uses `TryAddEnumerable` — do not register manually |
 | A batched commit makes one screen's regression hard to isolate | One screen per commit, pushed before the next starts — section 0 |

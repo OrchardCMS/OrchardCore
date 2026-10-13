@@ -57,7 +57,9 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
 
         // The List layout renders the rows whole, so its columns are only built when the list offers the other
         // layouts, which only a list with columns has.
-        if (columns is null && !(IsList(layout) && !(allowUserSelection && context.ShowLayoutSelector)))
+        var needsColumns = !IsList(layout) || (allowUserSelection && context.ShowLayoutSelector);
+
+        if (columns is null && needsColumns)
         {
             columns = await BuildColumnsAsync(context, cancellationToken);
 
