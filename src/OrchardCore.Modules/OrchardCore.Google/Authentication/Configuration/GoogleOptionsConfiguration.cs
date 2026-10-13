@@ -12,29 +12,32 @@ public class GoogleOptionsConfiguration :
     IConfigureOptions<AuthenticationOptions>,
     IConfigureNamedOptions<GoogleOptions>
 {
-    private readonly GoogleAuthenticationSettings _googleAuthenticationSettings;
+    private readonly IOptionsMonitor<GoogleAuthenticationSettings> _googleAuthenticationSettings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public GoogleOptionsConfiguration(
-        IOptions<GoogleAuthenticationSettings> googleAuthenticationSettings,
+        IOptionsMonitor<GoogleAuthenticationSettings> googleAuthenticationSettings,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<GoogleOptionsConfiguration> logger)
     {
-        _googleAuthenticationSettings = googleAuthenticationSettings.Value;
+        _googleAuthenticationSettings = googleAuthenticationSettings;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
 
     public void Configure(AuthenticationOptions options)
     {
-        if (_googleAuthenticationSettings == null)
+        // Read the current settings, as the options can be rebuilt when the settings are updated.
+        var settings = _googleAuthenticationSettings.CurrentValue;
+
+        if (settings == null)
         {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientID) ||
-            string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret))
+        if (string.IsNullOrWhiteSpace(settings.ClientID) ||
+            string.IsNullOrWhiteSpace(settings.ClientSecret))
         {
             _logger.LogWarning("The Google login provider is enabled but not configured.");
 
@@ -55,27 +58,29 @@ public class GoogleOptionsConfiguration :
             return;
         }
 
-        if (_googleAuthenticationSettings == null)
+        var settings = _googleAuthenticationSettings.CurrentValue;
+
+        if (settings == null)
         {
             return;
         }
 
-        options.ClientId = _googleAuthenticationSettings.ClientID;
+        options.ClientId = settings.ClientID;
         try
         {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(_googleAuthenticationSettings.ClientSecret);
+            options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(settings.ClientSecret);
         }
         catch
         {
             _logger.LogError("The Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
         }
 
-        if (_googleAuthenticationSettings.CallbackPath.HasValue)
+        if (settings.CallbackPath.HasValue)
         {
-            options.CallbackPath = _googleAuthenticationSettings.CallbackPath;
+            options.CallbackPath = settings.CallbackPath;
         }
 
-        options.SaveTokens = _googleAuthenticationSettings.SaveTokens;
+        options.SaveTokens = settings.SaveTokens;
     }
 
     public void Configure(GoogleOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
