@@ -65,21 +65,21 @@ internal sealed class PolicyRateLimiter : PartitionedRateLimiter<HttpContext>
 
     protected override void Dispose(bool disposing)
     {
-        if (!disposing)
+        if (disposing)
         {
-            return;
+            PolicyLimiters current;
+
+            lock (_lock)
+            {
+                _disposed = true;
+                current = _current;
+                _current = null;
+            }
+
+            current?.Dispose();
         }
 
-        PolicyLimiters current;
-
-        lock (_lock)
-        {
-            _disposed = true;
-            current = _current;
-            _current = null;
-        }
-
-        current?.Dispose();
+        base.Dispose(disposing);
     }
 
     private PolicyLimiters GetLimiters()
