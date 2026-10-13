@@ -68,6 +68,8 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
         // this using block won't be disposed until the service scope itself is released.
         CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
         {
+            await AddDependentShellAsync(scope);
+
             var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
             if (service == null)
             {
@@ -131,6 +133,8 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
         // this using block won't be disposed until the service scope itself is released.
         CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
         {
+            await AddDependentShellAsync(scope);
+
             var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
             if (service == null)
             {
@@ -245,6 +249,17 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
         }
 
         return _shellHost.GetScopeAsync(tenant).GetAwaiter().GetResult();
+    }
+
+    private async Task AddDependentShellAsync(ShellScope serverScope)
+    {
+        // If the server tenant is another tenant, the current tenant is declared as dependent on it, as its options are built
+        // from the server settings, so that it is released along with the server tenant, and that its options are refreshed
+        // when the options of the server tenant are updated.
+        if (!string.Equals(serverScope.ShellContext.Settings.Name, _shellSettings.Name, StringComparison.Ordinal))
+        {
+            await serverScope.ShellContext.AddDependentShellAsync(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
+        }
     }
 
     private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)

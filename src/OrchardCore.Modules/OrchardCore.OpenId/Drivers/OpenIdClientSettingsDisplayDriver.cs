@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -21,7 +21,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 {
     private static readonly char[] s_separator = [' ', ','];
 
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -33,14 +33,14 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         => "OrchardCore.OpenId.Client";
 
     public OpenIdClientSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IOpenIdClientService clientService,
         IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _clientService = clientService;
@@ -55,8 +55,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
         {
@@ -190,7 +188,11 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             }
         }
 
-        _shellReleaseManager.RequestRelease();
+        if (context.Updater.ModelState.IsValid)
+        {
+            // Refresh the options built from these settings, so that they apply without restarting the tenant.
+            _optionsUpdateNotifier.RequestOpenIdClientUpdate();
+        }
 
         return await EditAsync(site, settings, context);
     }

@@ -6,7 +6,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -20,8 +19,6 @@ public sealed class ValidationConfigurationController : Controller
     private readonly INotifier _notifier;
     private readonly IOpenIdValidationService _validationService;
     private readonly IDisplayManager<OpenIdValidationSettings> _validationSettingsDisplayManager;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
@@ -32,8 +29,6 @@ public sealed class ValidationConfigurationController : Controller
         INotifier notifier,
         IOpenIdValidationService validationService,
         IDisplayManager<OpenIdValidationSettings> validationSettingsDisplayManager,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IUpdateModelAccessor updateModelAccessor)
     {
         _authorizationService = authorizationService;
@@ -41,8 +36,6 @@ public sealed class ValidationConfigurationController : Controller
         _notifier = notifier;
         _validationService = validationService;
         _validationSettingsDisplayManager = validationSettingsDisplayManager;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _updateModelAccessor = updateModelAccessor;
     }
 
@@ -94,8 +87,6 @@ public sealed class ValidationConfigurationController : Controller
         await _validationService.UpdateSettingsAsync(settings);
 
         await _notifier.SuccessAsync(H["OpenID validation configuration successfully updated."]);
-
-        await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
         return RedirectToAction(nameof(Index));
     }

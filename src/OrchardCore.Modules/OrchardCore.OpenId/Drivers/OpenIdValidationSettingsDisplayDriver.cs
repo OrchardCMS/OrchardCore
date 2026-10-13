@@ -29,8 +29,6 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
             return null;
         }
 
-        context.AddTenantReloadWarningWrapper();
-
         return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", model =>
         {
             model.Authority = settings.Authority?.AbsoluteUri;
