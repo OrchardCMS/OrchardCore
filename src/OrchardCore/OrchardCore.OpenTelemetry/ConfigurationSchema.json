@@ -42,6 +42,11 @@
                     "type": "string"
                   },
                   "description": "The names of additional activity sources to collect traces from."
+                },
+                "IncludeDatabaseQueryText": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether the spans of the database operations include their SQL text, in 'db.query.text'. The commands run by YesSql are parameterized, so their text holds no values."
                 }
               }
             },

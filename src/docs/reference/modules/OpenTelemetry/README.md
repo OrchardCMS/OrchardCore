@@ -36,7 +36,7 @@ Other exporters or instrumentations can be added with the optional callback, whi
 builder.Services
     .AddOrchardCms()
     .AddOpenTelemetry(openTelemetry => openTelemetry
-        .WithTracing(tracing => tracing.AddSqlClientInstrumentation()));
+        .WithTracing(tracing => tracing.AddConsoleExporter()));
 ```
 
 ### Why it isn't a tenant feature
@@ -74,7 +74,8 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
       "Tracing": {
         "Enabled": true,
         "SamplingRatio": 0.25,
-        "Sources": [ "MyCompany.MyModule" ]
+        "Sources": [ "MyCompany.MyModule" ],
+        "IncludeDatabaseQueryText": true
       },
       "Metrics": {
         "Enabled": true,
@@ -101,6 +102,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Tracing:Enabled` | Whether traces are collected. Defaults to `true`. |
 | `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
+| `Tracing:IncludeDatabaseQueryText` | Whether the spans of the database operations include their SQL text, in `db.query.text`. Defaults to `true`. The commands run by YesSql are parameterized, so their text holds no values. |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
 | `Metrics:Meters` | The names of additional `Meter` to collect metrics from. |
@@ -121,9 +123,9 @@ Each signal carries resource attributes identifying the application and its inst
 | Source | Spans |
 | --- | --- |
 | Orchard Core | Building the service container (`Build tenant container`) and the request pipeline (`Build tenant pipeline`) of a tenant, activating a tenant (`Activate tenant`), running a background task (`Run background task {name}`), executing a recipe (`Execute recipe {name}`) and each of its steps (`Execute recipe step {name}`). |
-| ASP.NET Core | One span for each HTTP request, tagged with the tenant that served it. |
+| Orchard Core database | One client span for each database command run through YesSql, whatever the database provider (SQLite, SQL Server, PostgreSQL, MySQL), named after its operation and table, e.g. `SELECT ContentItemIndex`, with `db.system.name`, `db.namespace`, `db.operation.name`, `db.collection.name` and `db.query.text`. Its duration is the one of the execution, until the first results are available. |
+| ASP.NET Core | One span for each HTTP request, tagged with the tenant that served it, the number of database operations it ran (`orchardcore.db.operations`) and their total duration in seconds (`orchardcore.db.duration`). |
 | HttpClient | One span for each outgoing HTTP request. |
-| Npgsql, MySqlConnector | The database commands sent to PostgreSQL and MySQL. For SQL Server, add the `OpenTelemetry.Instrumentation.SqlClient` instrumentation with the configuration callback. |
 
 Every span started in the scope of a tenant, including the spans of other libraries, is tagged with `orchardcore.tenant.name`. A background task run is the root of its own trace.
 
@@ -138,10 +140,13 @@ Every span started in the scope of a tenant, including the spans of other librar
 | `orchardcore.tenant.activation.duration` | Duration of activating a tenant. |
 | `orchardcore.tenant.releases` | Number of times a tenant was released, by `orchardcore.tenant.release.reason` (`reload`, `release` or `remove`). |
 | `orchardcore.background_task.duration` | Duration of running a background task, by `orchardcore.background_task.name`. |
+| `db.client.operation.duration` | Duration of each database command, by `db.system.name` and `db.operation.name`, as defined by the OpenTelemetry semantic conventions. |
+| `orchardcore.request.db.operations` | Number of database operations run by an HTTP request, by `http.route`. A route running many of them reveals an N+1 query pattern. |
+| `orchardcore.request.db.duration` | Total duration of the database operations run by an HTTP request, by `http.route`. |
 
 The Orchard Core metrics are tagged with `orchardcore.tenant.name`, and with `error.type` when the operation failed.
 
-The metrics built in .NET are also collected: HTTP server and client (`http.server.request.duration`, `http.client.request.duration`, ...), Kestrel, routing, authentication, authorization and identity, and the .NET runtime (`dotnet.gc.*`, `dotnet.process.cpu.time`, `dotnet.process.memory.working_set`, `dotnet.thread_pool.*`, `dotnet.exceptions`, ...), giving the health of each instance.
+The metrics built in .NET are also collected: HTTP server and client (`http.server.request.duration`, `http.client.request.duration`, ...), Kestrel, routing, authentication, authorization and identity, and the .NET runtime (`dotnet.gc.*`, `dotnet.process.cpu.time`, `dotnet.process.memory.working_set`, `dotnet.thread_pool.*`, `dotnet.exceptions`, ...), giving the health of each instance. The connection pool metrics of the PostgreSQL and MySQL clients are collected too.
 
 ### Logs
 

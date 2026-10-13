@@ -17,8 +17,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class OpenTelemetryOrchardCoreBuilderExtensions
 {
-    // Database clients emitting their own traces and metrics, used depending on the database of each tenant.
-    private static readonly string[] s_databaseSources = ["Npgsql", "MySqlConnector"];
+    // Database clients emitting their own metrics, such as the use of their connection pools. Their own traces would
+    // duplicate the ones of the database operations that Orchard Core traces for every database provider.
+    private static readonly string[] s_databaseMeters = ["Npgsql", "MySqlConnector"];
 
     // Meters built in .NET that the ASP.NET Core and HttpClient instrumentations don't already collect.
     private static readonly string[] s_runtimeMeters =
@@ -66,7 +67,6 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
             .AddOrchardCoreInstrumentation()
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
-            .AddSource(s_databaseSources)
             .SetSampler(serviceProvider => CreateSampler(GetOptions(serviceProvider))));
 
         services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracing) =>
@@ -77,7 +77,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
             .AddMeter(s_runtimeMeters)
-            .AddMeter(s_databaseSources));
+            .AddMeter(s_databaseMeters));
 
         services.ConfigureOpenTelemetryMeterProvider((serviceProvider, metrics) =>
         {

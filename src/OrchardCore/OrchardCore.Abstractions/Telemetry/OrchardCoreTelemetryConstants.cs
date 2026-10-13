@@ -54,6 +54,46 @@ public static class OrchardCoreTelemetryConstants
         /// The type of the error that ended the operation, as defined by the OpenTelemetry semantic conventions.
         /// </summary>
         public const string ErrorType = "error.type";
+
+        /// <summary>
+        /// The database management system, e.g. 'sqlite' or 'postgresql', as defined by the OpenTelemetry semantic conventions.
+        /// </summary>
+        public const string DbSystemName = "db.system.name";
+
+        /// <summary>
+        /// The name of the database, as defined by the OpenTelemetry semantic conventions.
+        /// </summary>
+        public const string DbNamespace = "db.namespace";
+
+        /// <summary>
+        /// The database operation, e.g. 'SELECT', as defined by the OpenTelemetry semantic conventions.
+        /// </summary>
+        public const string DbOperationName = "db.operation.name";
+
+        /// <summary>
+        /// The table the database operation targets, as defined by the OpenTelemetry semantic conventions.
+        /// </summary>
+        public const string DbCollectionName = "db.collection.name";
+
+        /// <summary>
+        /// The SQL text of the database operation, as defined by the OpenTelemetry semantic conventions.
+        /// </summary>
+        public const string DbQueryText = "db.query.text";
+
+        /// <summary>
+        /// The number of database operations run by an HTTP request.
+        /// </summary>
+        public const string DbOperations = "orchardcore.db.operations";
+
+        /// <summary>
+        /// The total duration, in seconds, of the database operations run by an HTTP request.
+        /// </summary>
+        public const string DbDuration = "orchardcore.db.duration";
+
+        /// <summary>
+        /// The route of an HTTP request, as defined by the OpenTelemetry semantic conventions.
+        /// </summary>
+        public const string HttpRoute = "http.route";
     }
 
     /// <summary>
@@ -85,6 +125,21 @@ public static class OrchardCoreTelemetryConstants
         /// The duration, in seconds, of running a background task.
         /// </summary>
         public const string BackgroundTaskDuration = "orchardcore.background_task.duration";
+
+        /// <summary>
+        /// The duration, in seconds, of a database operation, as defined by the OpenTelemetry semantic conventions.
+        /// </summary>
+        public const string DbClientOperationDuration = "db.client.operation.duration";
+
+        /// <summary>
+        /// The number of database operations run by an HTTP request.
+        /// </summary>
+        public const string RequestDbOperations = "orchardcore.request.db.operations";
+
+        /// <summary>
+        /// The total duration, in seconds, of the database operations run by an HTTP request.
+        /// </summary>
+        public const string RequestDbDuration = "orchardcore.request.db.duration";
 
         /// <summary>
         /// The number of tenants by state.

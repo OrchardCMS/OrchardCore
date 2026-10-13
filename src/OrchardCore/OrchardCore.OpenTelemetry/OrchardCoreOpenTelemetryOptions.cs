@@ -70,6 +70,12 @@ public sealed class OpenTelemetryTracingOptions
     /// Gets or sets the names of additional <see cref="System.Diagnostics.ActivitySource"/> to collect traces from.
     /// </summary>
     public string[] Sources { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets whether the spans of the database operations include their SQL text, in 'db.query.text'.
+    /// The commands run by YesSql are parameterized, so their text holds no values. Defaults to <see langword="true"/>.
+    /// </summary>
+    public bool IncludeDatabaseQueryText { get; set; } = true;
 }
 
 /// <summary>

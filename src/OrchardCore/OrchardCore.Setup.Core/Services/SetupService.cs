@@ -293,7 +293,8 @@ public class SetupService : ISetupService
             await using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
             await using var connection = store.Configuration.ConnectionFactory.CreateConnection();
-            if (connection is SqliteConnection sqliteConnection)
+            // The connection may be wrapped, e.g. to trace its commands.
+            if (connection.Unwrap() is SqliteConnection sqliteConnection)
             {
                 SqliteConnection.ClearPool(sqliteConnection);
             }
