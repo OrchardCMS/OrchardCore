@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Cors.Services;
 using OrchardCore.Cors.Settings;
+using OrchardCore.Environment.Options;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -31,7 +33,12 @@ public sealed class Startup : StartupBase
         services.AddSingleton<CorsService>();
         services.AddScoped<IJSLocalizer, CorsJSLocalizer>();
 
+        services.AddSignalOptionsChangeTokenSource<CorsOptions>();
         services.AddTransient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>();
+
+        // The policies follow the CORS settings, which are updated without releasing the tenant.
+        services.RemoveAll<ICorsPolicyProvider>();
+        services.AddTransient<ICorsPolicyProvider, CorsPolicyProvider>();
     }
 }
 
