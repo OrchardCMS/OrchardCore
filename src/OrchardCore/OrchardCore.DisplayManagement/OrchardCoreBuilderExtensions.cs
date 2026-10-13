@@ -89,6 +89,7 @@ public static class OrchardCoreBuilderExtensions
 
                 services.AddScoped<IShapeFactory, DefaultShapeFactory>();
                 services.AddScoped<IDisplayHelper, DisplayHelper>();
+                services.AddScoped<IShapeHtmlRenderer, ShapeHtmlRenderer>();
 
                 services.AddScoped<INotifier, Notifier>();
 

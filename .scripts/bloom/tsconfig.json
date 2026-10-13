@@ -1,5 +1,12 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": ["components/**/*.ts", "helpers/**/*.ts", "ambient.d.ts"],
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@bloom/*": ["./*"]
+    }
+  },
+  "include": ["components/**/*.ts", "helpers/**/*.ts", "designer/**/*.ts", "designer/**/*.vue", "ambient.d.ts"],
   "exclude": ["**/__tests__/**"]
 }
