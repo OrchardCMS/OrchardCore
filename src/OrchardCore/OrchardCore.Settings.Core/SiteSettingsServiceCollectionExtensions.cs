@@ -4,7 +4,7 @@ using OrchardCore.Settings;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Provides extensions for registering site settings permissions.
+/// Provides extensions for registering site settings services.
 /// </summary>
 public static class SiteSettingsServiceCollectionExtensions
 {
@@ -39,4 +39,14 @@ public static class SiteSettingsServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers site settings that are only read when the tenant is built, so that the tenant is released
+    /// when a recipe updates them.
+    /// </summary>
+    /// <typeparam name="TSettings">The site settings type, stored in the site properties under its type name.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection.</returns>
+    public static IServiceCollection AddSiteSettingsRequiringRelease<TSettings>(this IServiceCollection services)
+        => services.Configure<SiteSettingsReleaseOptions>(options => options.Settings.Add(typeof(TSettings).Name));
 }

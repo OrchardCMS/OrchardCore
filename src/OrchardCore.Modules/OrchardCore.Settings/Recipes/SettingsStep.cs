@@ -1,5 +1,8 @@
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -8,14 +11,28 @@ namespace OrchardCore.Settings.Recipes;
 /// <summary>
 /// This recipe step updates the site settings.
 /// </summary>
+/// <remarks>
+/// The options built from the site settings are refreshed once the settings are saved. The tenant is only
+/// released when settings registered in <see cref="SiteSettingsReleaseOptions"/> are changed.
+/// </remarks>
 public sealed class SettingsStep : NamedRecipeStepHandler
 {
     private readonly ISiteService _siteService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
+    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly SiteSettingsReleaseOptions _siteSettingsReleaseOptions;
 
-    public SettingsStep(ISiteService siteService)
+    public SettingsStep(
+        ISiteService siteService,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
+        IShellReleaseManager shellReleaseManager,
+        IOptions<SiteSettingsReleaseOptions> siteSettingsReleaseOptions)
         : base("Settings")
     {
         _siteService = siteService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
+        _shellReleaseManager = shellReleaseManager;
+        _siteSettingsReleaseOptions = siteSettingsReleaseOptions.Value;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -28,6 +45,8 @@ public sealed class SettingsStep : NamedRecipeStepHandler
 
         var site = await _siteService.LoadSiteSettingsAsync();
         site ??= new SiteSettings();
+
+        var releaseShell = false;
 
         foreach (var property in model)
         {
@@ -117,11 +136,25 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     break;
 
                 default:
+                    if (_siteSettingsReleaseOptions.Settings.Contains(property.Key) &&
+                        !JsonNode.DeepEquals(site.Properties[property.Key], property.Value))
+                    {
+                        releaseShell = true;
+                    }
+
                     site.Properties[property.Key] = property.Value.Clone();
                     break;
             }
         }
 
         await _siteService.UpdateSiteSettingsAsync(site);
+
+        // Any options may be built from the updated settings.
+        _optionsUpdateNotifier.RequestUpdateAll();
+
+        if (releaseShell)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
     }
 }

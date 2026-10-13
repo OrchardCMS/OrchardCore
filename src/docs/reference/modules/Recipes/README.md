@@ -133,6 +133,20 @@ Configures core site settings (like homepage route, culture, time zone, etc).
 }
 ```
 
+The settings apply without restarting the tenant: once they are saved, the options built from site settings are refreshed. The tenant is only released when the step changes settings that are read when the tenant is built, such as the `IdentitySettings`. A module registers such settings with `services.AddSiteSettingsRequiringRelease<TSettings>()`.
+
+---
+
+### `ReloadTenant`
+
+Releases the tenant once the recipe has run, so that it is rebuilt on the next request. Use it after steps that update custom settings that are only read when the tenant is built.
+
+```json
+{
+  "name": "ReloadTenant"
+}
+```
+
 ---
 
 ### `ContentDefinition`

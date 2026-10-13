@@ -94,6 +94,9 @@ public sealed class Startup : StartupBase
             .AddOptions<EmailConfirmationTokenProviderOptions>();
 
         services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
+
+        // The identity options are read by services built for each request, but the options are only built once.
+        services.AddSiteSettingsRequiringRelease<IdentitySettings>();
         // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);

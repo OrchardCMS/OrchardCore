@@ -17,8 +17,6 @@ namespace OrchardCore.Recipes.Controllers;
 [Admin("Recipes/{action}", "Recipes{action}")]
 public sealed class AdminController : Controller
 {
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
@@ -31,8 +29,6 @@ public sealed class AdminController : Controller
     internal readonly IStringLocalizer S;
 
     public AdminController(
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IShellFeaturesManager shellFeaturesManager,
         IAuthorizationService authorizationService,
         IEnumerable<IRecipeHarvester> recipeHarvesters,
@@ -43,8 +39,6 @@ public sealed class AdminController : Controller
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _shellFeaturesManager = shellFeaturesManager;
         _authorizationService = authorizationService;
         _recipeHarvesters = recipeHarvesters;
@@ -109,8 +103,6 @@ public sealed class AdminController : Controller
             var executionId = Guid.NewGuid().ToString("n");
 
             await _recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
-
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             await _notifier.SuccessAsync(H["The recipe '{0}' has been run successfully.", recipe.DisplayName]);
         }

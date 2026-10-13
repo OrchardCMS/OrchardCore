@@ -103,7 +103,7 @@ The policies can be provisioned with the `settings` recipe step because `CorsSet
 
 When the **Deployment** feature is enabled, add the **Cors settings** step to a deployment plan to export these settings. The generated recipe uses the same `Settings` step and `CorsSettings` structure.
 
-Recipe and deployment imports write site settings directly and do not use the admin form's validation. Validate imported policies, define no more than one default, and reload an already-running tenant shell after importing these settings, as only the admin UI refreshes the policies of a running tenant.
+Recipe and deployment imports write site settings directly and do not use the admin form's validation. Validate imported policies and define no more than one default. The imported policies apply to the next requests, without reloading the tenant.
 
 ## Troubleshooting
 

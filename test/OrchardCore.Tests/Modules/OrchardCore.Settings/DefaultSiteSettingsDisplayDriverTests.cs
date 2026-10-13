@@ -112,6 +112,8 @@ public class DefaultSiteSettingsDisplayDriverTests
 
             return this;
         }
+
+        public IOptionsUpdateNotifier RequestUpdateAll() => throw new NotSupportedException();
     }
 
     private sealed class ModelUpdater : IUpdateModel
