@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Settings;
 
@@ -13,7 +12,6 @@ namespace OrchardCore.Media.Drivers;
 
 public sealed class MediaApiSettingsDisplayDriver : SiteDisplayDriver<MediaApiSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
@@ -23,12 +21,10 @@ public sealed class MediaApiSettingsDisplayDriver : SiteDisplayDriver<MediaApiSe
         => MediaApiSettings.GroupId;
 
     public MediaApiSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IStringLocalizer<MediaApiSettingsDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         S = stringLocalizer;
@@ -60,13 +56,8 @@ public sealed class MediaApiSettingsDisplayDriver : SiteDisplayDriver<MediaApiSe
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (settings.AuthenticationScheme != model.AuthenticationScheme)
-        {
-            settings.AuthenticationScheme = model.AuthenticationScheme;
-
-            // Rebuild the shell so the "MediaApi" authorization policy is reconfigured for the new scheme.
-            _shellReleaseManager.RequestRelease();
-        }
+        // The "MediaApi" authentication scheme forwards to the scheme selected in the current settings on each request.
+        settings.AuthenticationScheme = model.AuthenticationScheme;
 
         return Edit(site, settings, context);
     }

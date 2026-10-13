@@ -322,6 +322,12 @@ _optionsUpdateNotifier.RequestUpdate<GoogleOptions>(GoogleDefaults.Authenticatio
 
 `OptionsUpdateSignal.SignalAllAsync(signal)` invalidates every signal-backed options instance of the tenant, whatever its type and name, including the options built from other signal-backed options.
 
+The options are rebuilt in the shell scope that signals the update, so an `IConfigureOptions<TOptions>` can resolve tenant services from the current shell scope, but it should read the values that may change when it is invoked, not in its constructor, as its instance lives as long as the tenant.
+
+When the options of a tenant are updated, all the signal-backed options of its dependent tenants, as declared with `ShellContext.AddDependentShellAsync()`, are also invalidated. For instance, a tenant that validates the tokens issued by the OpenID server of another tenant is refreshed when the server settings of the other tenant are updated.
+
+The authentication schemes registered from the `AuthenticationOptions` are kept in sync with them, so a scheme that is only registered when its settings are valid is added, updated, or removed once its settings are updated, without restarting the tenant.
+
 In multi-node environments, the other nodes refresh the options of the tenant as follows:
 
 - With the Distributed Tenants feature (`OrchardCore.Tenants.Distributed`), the same feature that keeps the tenants in sync when they are released or reloaded, each node invalidates all the signal-backed options of the tenant once the document identifiers it may have cached have expired, i.e. after the `Documents:SynchronizationLatency` (1 second by default). This ensures that the options are rebuilt from the committed tenant state.

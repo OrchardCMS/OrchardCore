@@ -83,6 +83,9 @@ public sealed class ClientStartup : StartupBase
             // Built-in initializers:
             ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
         });
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme);
     }
 }
 
@@ -133,6 +136,10 @@ public sealed class ServerStartup : StartupBase
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>(),
         });
+
+        // Refresh the options when the settings are updated, see IOpenIdServerService.UpdateSettingsAsync().
+        services.AddSignalOptionsChangeTokenSource<OpenIddictServerOptions>();
+        services.AddSignalOptionsChangeTokenSource<OpenIddictServerDataProtectionOptions>();
     }
 
     public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -260,6 +267,10 @@ public sealed class ValidationStartup : StartupBase
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>(),
         });
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<OpenIddictValidationOptions>();
+        services.AddSignalOptionsChangeTokenSource<OpenIddictValidationDataProtectionOptions>();
     }
 }
 

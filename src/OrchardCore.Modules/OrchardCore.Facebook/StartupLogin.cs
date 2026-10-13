@@ -33,6 +33,9 @@ public sealed class StartupLogin : StartupBase
 
         // Built-in initializers:
         services.AddTransient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>();
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<FacebookOptions>(FacebookDefaults.AuthenticationScheme);
     }
 }
 

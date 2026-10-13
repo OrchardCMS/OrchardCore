@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -15,20 +17,20 @@ namespace OrchardCore.Google.Authentication.Drivers;
 
 public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GoogleAuthenticationSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
     public GoogleAuthenticationSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
@@ -96,9 +98,13 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
 
             settings.ClientSecret = protector.Protect(model.ClientSecret);
-        }
 
-        _shellReleaseManager.RequestRelease();
+            // Refresh the options built from these settings, so that they apply without restarting the tenant.
+            _optionsUpdateNotifier
+                .RequestUpdate<GoogleAuthenticationSettings>()
+                .RequestUpdate<GoogleOptions>(GoogleDefaults.AuthenticationScheme)
+                .RequestUpdate<AuthenticationOptions>();
+        }
 
         return await EditAsync(site, settings, context);
     }

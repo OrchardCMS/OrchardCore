@@ -7,11 +7,14 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 
@@ -88,8 +91,47 @@ public class OpenIdServerService : IOpenIdServerService
         ArgumentNullException.ThrowIfNull(settings);
 
         var container = await _siteService.LoadSiteSettingsAsync();
+        var previousEndpointRoutes = await GetEndpointRoutesAsync(GetSettingsFromContainer(container));
+
         container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, JOptions.Default);
         await _siteService.UpdateSiteSettingsAsync(container);
+
+        // A tenant being set up is built once its setup is completed.
+        if (!_shellSettings.IsRunning() || ShellScope.Current is null)
+        {
+            return;
+        }
+
+        // The routes of the endpoints handled by MVC actions are only mapped when the tenant pipeline is built.
+        var endpointRoutes = await GetEndpointRoutesAsync(settings);
+        if (!previousEndpointRoutes.SequenceEqual(endpointRoutes))
+        {
+            ShellScope.Services.GetRequiredService<IShellReleaseManager>().RequestRelease();
+
+            return;
+        }
+
+        // Otherwise, refresh the options built from these settings, so that they apply without restarting the tenant.
+        ShellScope.Services.GetRequiredService<IOptionsUpdateNotifier>().RequestOpenIdServerUpdate();
+    }
+
+    /// <summary>
+    /// Gets the paths of the endpoints whose routes are mapped by the server feature when the tenant pipeline is built.
+    /// </summary>
+    private async Task<string[]> GetEndpointRoutesAsync(OpenIdServerSettings settings)
+    {
+        if ((await ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+        {
+            return [];
+        }
+
+        return
+        [
+            settings.AuthorizationEndpointPath.Value,
+            settings.LogoutEndpointPath.Value,
+            settings.TokenEndpointPath.Value,
+            settings.UserinfoEndpointPath.Value,
+        ];
     }
 
     public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdServerSettings settings)

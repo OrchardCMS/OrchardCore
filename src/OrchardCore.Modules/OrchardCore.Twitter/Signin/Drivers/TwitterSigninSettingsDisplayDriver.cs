@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 using OrchardCore.Twitter.Signin.ViewModels;
@@ -12,16 +12,16 @@ namespace OrchardCore.Twitter.Signin.Drivers;
 
 public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<TwitterSigninSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public TwitterSigninSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -61,7 +61,8 @@ public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<Twitt
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
 
-        _shellReleaseManager.RequestRelease();
+        // Refresh the options built from these settings, so that they apply without restarting the tenant.
+        _optionsUpdateNotifier.RequestTwitterSigninUpdate();
 
         return await EditAsync(site, settings, context);
     }

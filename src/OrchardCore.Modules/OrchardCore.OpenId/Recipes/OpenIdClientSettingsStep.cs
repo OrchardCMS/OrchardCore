@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Environment.Options;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
@@ -12,11 +13,13 @@ namespace OrchardCore.OpenId.Recipes;
 public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
 {
     private readonly IOpenIdClientService _clientService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
-    public OpenIdClientSettingsStep(IOpenIdClientService clientService)
+    public OpenIdClientSettingsStep(IOpenIdClientService clientService, IOptionsUpdateNotifier optionsUpdateNotifier)
         : base("OpenIdClientSettings")
     {
         _clientService = clientService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -38,6 +41,8 @@ public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
         settings.Parameters = model.Parameters;
 
         await _clientService.UpdateSettingsAsync(settings);
+
+        _optionsUpdateNotifier.RequestOpenIdClientUpdate();
     }
 }
 

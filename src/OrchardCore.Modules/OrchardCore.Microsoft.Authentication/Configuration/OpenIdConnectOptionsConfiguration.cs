@@ -11,14 +11,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration;
 internal sealed class OpenIdConnectOptionsConfiguration : IConfigureNamedOptions<OpenIdConnectOptions>
 {
     private readonly IOptionsMonitor<MicrosoftIdentityOptions> _azureADOptions;
-    private readonly AzureADSettings _azureADSettings;
+    private readonly IOptionsMonitor<AzureADSettings> _azureADSettings;
 
     public OpenIdConnectOptionsConfiguration(
         IOptionsMonitor<MicrosoftIdentityOptions> azureADOptions,
-        IOptions<AzureADSettings> azureADSettings)
+        IOptionsMonitor<AzureADSettings> azureADSettings)
     {
         _azureADOptions = azureADOptions;
-        _azureADSettings = azureADSettings.Value;
+        _azureADSettings = azureADSettings;
     }
 
     public void Configure(string name, OpenIdConnectOptions options)
@@ -37,7 +37,7 @@ internal sealed class OpenIdConnectOptionsConfiguration : IConfigureNamedOptions
         options.SignedOutCallbackPath = azureADOptions.SignedOutCallbackPath.HasValue ? azureADOptions.SignedOutCallbackPath : options.SignedOutCallbackPath;
         options.SignInScheme = "Identity.External";
         options.UseTokenLifetime = true;
-        options.SaveTokens = _azureADSettings.SaveTokens;
+        options.SaveTokens = _azureADSettings.CurrentValue.SaveTokens;
         options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetAadIssuerValidator(options.Authority, options.Backchannel).Validate;
     }
 

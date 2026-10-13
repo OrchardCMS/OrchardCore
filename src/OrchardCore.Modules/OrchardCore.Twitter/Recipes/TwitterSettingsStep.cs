@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Environment.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Twitter.Services;
@@ -12,11 +13,13 @@ namespace OrchardCore.Twitter.Recipes;
 public sealed class TwitterSettingsStep : NamedRecipeStepHandler
 {
     private readonly ITwitterSettingsService _twitterService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
-    public TwitterSettingsStep(ITwitterSettingsService twitterService)
+    public TwitterSettingsStep(ITwitterSettingsService twitterService, IOptionsUpdateNotifier optionsUpdateNotifier)
         : base(nameof(TwitterSettings))
     {
         _twitterService = twitterService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -30,6 +33,8 @@ public sealed class TwitterSettingsStep : NamedRecipeStepHandler
         settings.AccessTokenSecret = model.AccessTokenSecret;
 
         await _twitterService.UpdateSettingsAsync(settings);
+
+        _optionsUpdateNotifier.RequestTwitterUpdate();
     }
 }
 

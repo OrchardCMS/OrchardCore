@@ -42,6 +42,10 @@ public sealed class GoogleAuthenticationStartup : StartupBase
         services.AddTransient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>();
 
         services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<GoogleAuthenticationSettings>();
+        services.AddSignalOptionsChangeTokenSource<GoogleOptions>(GoogleDefaults.AuthenticationScheme);
     }
 }
 

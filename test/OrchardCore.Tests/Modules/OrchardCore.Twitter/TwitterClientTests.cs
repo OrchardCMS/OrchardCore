@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using OrchardCore.Modules;
+using OrchardCore.Tests.Stubs;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Settings;
@@ -42,7 +43,7 @@ public class TwitterClientTests
         var ticks = 13186229580000000 + 621355968000000000;
         _mockHttpMessageHandler = new Mock<TwitterClientMessageHandler>(
             Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
-            Options.Create(settings),
+            new StaticOptionsMonitor<TwitterSettings>(settings),
             _mockDataProtectionProvider);
     }
 
@@ -114,7 +115,7 @@ public class TwitterClientTests
         var ticks = 13186229580000000 + 621355968000000000;
         var handler = new Mock<TwitterClientMessageHandler>(
             Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
-            Options.Create(settings),
+            new StaticOptionsMonitor<TwitterSettings>(settings),
             Mock.Of<IDataProtectionProvider>(dpp => dpp.CreateProtector(It.IsAny<string>()) == protector));
 
         handler.Setup(c => c.GetNonce()).Returns(() => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");
@@ -127,6 +128,42 @@ public class TwitterClientTests
         Assert.Equal(protectedAccessTokenSecret, settings.AccessTokenSecret);
         Assert.Equal(protectedConsumerSecret, settings.ConsumerSecret);
     }
+
+    [Fact]
+    public async Task ConfigureOAuthAsync_SettingsUpdated_UsesCurrentSettings()
+    {
+        var protector = new PrefixDataProtector();
+        var settingsMonitor = new StaticOptionsMonitor<TwitterSettings>(CreateSettings(protector, "first-key"));
+
+        var handler = new TwitterClientMessageHandler(
+            Mock.Of<IClock>(i => i.UtcNow == DateTime.UtcNow),
+            settingsMonitor,
+            Mock.Of<IDataProtectionProvider>(dpp => dpp.CreateProtector(It.IsAny<string>()) == protector));
+
+        using var message = new HttpRequestMessage(HttpMethod.Post, "https://api.twitter.com/1.1/statuses/update.json")
+        {
+            Content = new StringContent(string.Empty),
+        };
+
+        await handler.ConfigureOAuthAsync(message);
+
+        Assert.Contains("oauth_consumer_key=\"first-key\"", message.Headers.Authorization.ToString());
+
+        settingsMonitor.CurrentValue = CreateSettings(protector, "second-key");
+
+        await handler.ConfigureOAuthAsync(message);
+
+        Assert.Contains("oauth_consumer_key=\"second-key\"", message.Headers.Authorization.ToString());
+    }
+
+    private static TwitterSettings CreateSettings(IDataProtector protector, string consumerKey)
+        => new()
+        {
+            AccessToken = "token",
+            AccessTokenSecret = protector.Protect("token-secret"),
+            ConsumerKey = consumerKey,
+            ConsumerSecret = protector.Protect("consumer-secret"),
+        };
 }
 
 public class FakeHttpMessageHandler : HttpMessageHandler

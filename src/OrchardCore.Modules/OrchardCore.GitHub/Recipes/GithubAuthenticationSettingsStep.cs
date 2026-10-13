@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Options;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -13,11 +14,13 @@ namespace OrchardCore.GitHub.Recipes;
 public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
 {
     private readonly ISiteService _siteService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
-    public GitHubAuthenticationSettingsStep(ISiteService siteService)
+    public GitHubAuthenticationSettingsStep(ISiteService siteService, IOptionsUpdateNotifier optionsUpdateNotifier)
         : base(nameof(GitHubAuthenticationSettings))
     {
         _siteService = siteService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -33,6 +36,8 @@ public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
         });
 
         await _siteService.UpdateSiteSettingsAsync(site);
+
+        _optionsUpdateNotifier.RequestGitHubAuthenticationUpdate();
     }
 }
 

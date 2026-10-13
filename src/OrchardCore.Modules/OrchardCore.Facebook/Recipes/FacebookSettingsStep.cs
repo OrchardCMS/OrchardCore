@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Environment.Options;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -11,11 +12,13 @@ namespace OrchardCore.Facebook.Recipes;
 public sealed class FacebookSettingsStep : NamedRecipeStepHandler
 {
     private readonly IFacebookService _facebookService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
-    public FacebookSettingsStep(IFacebookService facebookService)
+    public FacebookSettingsStep(IFacebookService facebookService, IOptionsUpdateNotifier optionsUpdateNotifier)
         : base("FacebookCoreSettings")
     {
         _facebookService = facebookService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -36,6 +39,8 @@ public sealed class FacebookSettingsStep : NamedRecipeStepHandler
         settings.Version = model.Version ?? "3.2";
 
         await _facebookService.UpdateSettingsAsync(settings);
+
+        _optionsUpdateNotifier.RequestFacebookUpdate();
     }
 }
 

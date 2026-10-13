@@ -6,7 +6,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -20,8 +19,6 @@ public sealed class ServerConfigurationController : Controller
     private readonly INotifier _notifier;
     private readonly IOpenIdServerService _serverService;
     private readonly IDisplayManager<OpenIdServerSettings> _serverSettingsDisplayManager;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
@@ -32,8 +29,6 @@ public sealed class ServerConfigurationController : Controller
         INotifier notifier,
         IOpenIdServerService serverService,
         IDisplayManager<OpenIdServerSettings> serverSettingsDisplayManager,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IUpdateModelAccessor updateModelAccessor)
     {
         _authorizationService = authorizationService;
@@ -41,8 +36,6 @@ public sealed class ServerConfigurationController : Controller
         _notifier = notifier;
         _serverService = serverService;
         _serverSettingsDisplayManager = serverSettingsDisplayManager;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _updateModelAccessor = updateModelAccessor;
     }
 
@@ -94,8 +87,6 @@ public sealed class ServerConfigurationController : Controller
         await _serverService.UpdateSettingsAsync(settings);
 
         await _notifier.SuccessAsync(H["OpenID server configuration successfully updated."]);
-
-        await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
         return RedirectToAction(nameof(Index));
     }

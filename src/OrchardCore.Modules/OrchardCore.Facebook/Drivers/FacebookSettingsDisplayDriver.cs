@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Facebook.ViewModels;
 using OrchardCore.Settings;
@@ -15,21 +15,21 @@ namespace OrchardCore.Facebook.Drivers;
 
 public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
     public FacebookSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         ILogger<FacebookSettingsDisplayDriver> logger
         )
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
@@ -99,9 +99,10 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
         {
             var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
             settings.AppSecret = protector.Protect(model.AppSecret);
-        }
 
-        _shellReleaseManager.RequestRelease();
+            // Refresh the options built from these settings, so that they apply without restarting the tenant.
+            _optionsUpdateNotifier.RequestFacebookUpdate();
+        }
 
         return await EditAsync(site, settings, context);
     }

@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Environment.Options;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Recipes.Models;
@@ -12,11 +13,13 @@ namespace OrchardCore.Facebook.Login.Recipes;
 public sealed class FacebookLoginSettingsStep : NamedRecipeStepHandler
 {
     private readonly IFacebookLoginService _loginService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
-    public FacebookLoginSettingsStep(IFacebookLoginService loginService)
+    public FacebookLoginSettingsStep(IFacebookLoginService loginService, IOptionsUpdateNotifier optionsUpdateNotifier)
         : base(nameof(FacebookLoginSettings))
     {
         _loginService = loginService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -27,6 +30,8 @@ public sealed class FacebookLoginSettingsStep : NamedRecipeStepHandler
         settings.CallbackPath = model.CallbackPath;
 
         await _loginService.UpdateSettingsAsync(settings);
+
+        _optionsUpdateNotifier.RequestFacebookLoginUpdate();
     }
 }
 

@@ -240,6 +240,36 @@ public class ShellContext : IDisposable, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the dependent shell contexts that are still alive and not yet released.
+    /// </summary>
+    internal async Task<IReadOnlyList<ShellContext>> GetDependentShellsAsync()
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            if (_dependents is null)
+            {
+                return [];
+            }
+
+            var dependents = new List<ShellContext>();
+            foreach (var dependent in _dependents)
+            {
+                if (dependent.TryGetTarget(out var shellContext) && !shellContext.Released)
+                {
+                    dependents.Add(shellContext);
+                }
+            }
+
+            return dependents;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
     internal void AddRef()
     {
         // The service provider is null if we try to create

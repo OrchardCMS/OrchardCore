@@ -5,8 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -75,6 +77,15 @@ public class OpenIdValidationService : IOpenIdValidationService
         var container = await _siteService.LoadSiteSettingsAsync();
         container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings);
         await _siteService.UpdateSiteSettingsAsync(container);
+
+        // A tenant being set up is built once its setup is completed.
+        if (!_shellSettings.IsRunning() || ShellScope.Current is null)
+        {
+            return;
+        }
+
+        // Refresh the options built from these settings, so that they apply without restarting the tenant.
+        ShellScope.Services.GetRequiredService<IOptionsUpdateNotifier>().RequestOpenIdValidationUpdate();
     }
 
     public async Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdValidationSettings settings)

@@ -39,6 +39,11 @@ public sealed class AzureADStartup : StartupBase
         services.AddTransient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>();
 
         services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>();
+
+        // Refresh the options when the settings are updated.
+        services.AddSignalOptionsChangeTokenSource<AzureADSettings>();
+        services.AddSignalOptionsChangeTokenSource<MicrosoftIdentityOptions>(Constants.AzureAd);
+        services.AddSignalOptionsChangeTokenSource<OpenIdConnectOptions>(AzureADOptionsConfiguration.AzureAdOpenIdConnectScheme);
     }
 }
 

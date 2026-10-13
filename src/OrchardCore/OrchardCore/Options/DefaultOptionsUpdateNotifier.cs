@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Documents;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -11,7 +12,8 @@ namespace OrchardCore.Environment.Options;
 /// </summary>
 /// <remarks>
 /// The options are invalidated in the order they were first requested, so an options type that
-/// is built from another one should be requested after it.
+/// is built from another one should be requested after it. All the options of the dependent tenants,
+/// see <see cref="ShellContext.AddDependentShellAsync(ShellContext)"/>, are then invalidated.
 /// </remarks>
 public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
 {
@@ -81,6 +83,25 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
                 if (shellOptionsEvents is not null)
                 {
                     await shellOptionsEvents.InvokeUpdatedAsync(scope.ShellContext.Settings.Name);
+                }
+
+                // The tenants that depend on this tenant, e.g. that validate the tokens issued by it, may build their
+                // options from its state, so all their options are also invalidated, here and on the other instances.
+                foreach (var dependent in await scope.ShellContext.GetDependentShellsAsync())
+                {
+                    var dependentScope = await dependent.CreateScopeAsync();
+                    if (dependentScope is null)
+                    {
+                        continue;
+                    }
+
+                    await dependentScope.UsingAsync(dependentScope =>
+                        OptionsUpdateSignal.SignalAllAsync(dependentScope.ServiceProvider.GetRequiredService<ISignal>()));
+
+                    if (shellOptionsEvents is not null)
+                    {
+                        await shellOptionsEvents.InvokeUpdatedAsync(dependent.Settings.Name);
+                    }
                 }
             }
             finally

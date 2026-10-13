@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -12,16 +12,16 @@ namespace OrchardCore.Microsoft.Authentication.Drivers;
 
 public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public AzureADSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -69,7 +69,8 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
 
-        _shellReleaseManager.RequestRelease();
+        // Refresh the options built from these settings, so that they apply without restarting the tenant.
+        _optionsUpdateNotifier.RequestAzureADUpdate();
 
         return await EditAsync(site, settings, context);
     }

@@ -15,18 +15,18 @@ public class FacebookLoginConfiguration :
     IConfigureOptions<AuthenticationOptions>,
     IConfigureNamedOptions<FacebookOptions>
 {
-    private readonly FacebookSettings _facebookSettings;
+    private readonly IOptionsMonitor<FacebookSettings> _facebookSettings;
     private readonly IFacebookLoginService _loginService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public FacebookLoginConfiguration(
-        IOptions<FacebookSettings> facebookSettings,
+        IOptionsMonitor<FacebookSettings> facebookSettings,
         IFacebookLoginService loginService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<FacebookLoginConfiguration> logger)
     {
-        _facebookSettings = facebookSettings.Value;
+        _facebookSettings = facebookSettings;
         _loginService = loginService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
@@ -34,12 +34,15 @@ public class FacebookLoginConfiguration :
 
     public void Configure(AuthenticationOptions options)
     {
-        if (_facebookSettings == null)
+        // Read the current settings, as the options can be rebuilt when the settings are updated.
+        var facebookSettings = _facebookSettings.CurrentValue;
+
+        if (facebookSettings == null)
         {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
+        if (string.IsNullOrWhiteSpace(facebookSettings.AppId) || string.IsNullOrWhiteSpace(facebookSettings.AppSecret))
         {
             _logger.LogWarning("The Facebook login provider is enabled but not configured.");
 
@@ -68,7 +71,10 @@ public class FacebookLoginConfiguration :
             return;
         }
 
-        if (_facebookSettings == null)
+        // Read the current settings, as the options can be rebuilt when the settings are updated.
+        var facebookSettings = _facebookSettings.CurrentValue;
+
+        if (facebookSettings == null)
         {
             return;
         }
@@ -79,11 +85,11 @@ public class FacebookLoginConfiguration :
             return;
         }
 
-        options.AppId = _facebookSettings.AppId;
+        options.AppId = facebookSettings.AppId;
 
         try
         {
-            options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(_facebookSettings.AppSecret);
+            options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(facebookSettings.AppSecret);
         }
         catch
         {

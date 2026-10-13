@@ -18,6 +18,7 @@ public class TwitterOptionsConfiguration :
     IConfigureOptions<AuthenticationOptions>,
     IConfigureNamedOptions<TwitterOptions>
 {
+    private readonly IOptionsMonitor<TwitterSettings> _twitterSettings;
     private readonly ITwitterSettingsService _twitterService;
     private readonly ITwitterSigninService _twitterSigninService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -26,6 +27,7 @@ public class TwitterOptionsConfiguration :
     private readonly ILogger _logger;
 
     public TwitterOptionsConfiguration(
+        IOptionsMonitor<TwitterSettings> twitterSettings,
         ITwitterSettingsService twitterService,
         ITwitterSigninService twitterSigninService,
         IDataProtectionProvider dataProtectionProvider,
@@ -33,6 +35,7 @@ public class TwitterOptionsConfiguration :
         ShellSettings shellSettings,
         ILogger<TwitterOptionsConfiguration> logger)
     {
+        _twitterSettings = twitterSettings;
         _twitterService = twitterService;
         _twitterSigninService = twitterSigninService;
         _dataProtectionProvider = dataProtectionProvider;
@@ -109,7 +112,9 @@ public class TwitterOptionsConfiguration :
 
     private async Task<Tuple<TwitterSettings, TwitterSigninSettings>> GetSettingsAsync()
     {
-        var settings = await _twitterService.GetSettingsAsync();
+        // Read the current settings, that can be overridden by the tenant configuration, as the
+        // options can be rebuilt when the settings are updated.
+        var settings = _twitterSettings.CurrentValue;
         if ((_twitterService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {
             if (_shellSettings.IsRunning())
