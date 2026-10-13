@@ -7,6 +7,10 @@ public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolve
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ContentDisplayOptions _contentDisplayOptions;
+
+    // The drivers are scoped services, they are resolved once per scope as they are requested for each displayed content item.
+    private readonly Dictionary<(string Name, string DisplayMode), IContentPartDisplayDriver[]> _displayModeDrivers = [];
+
     public ContentPartDisplayDriverResolver(
         IServiceProvider serviceProvider,
         IOptions<ContentDisplayOptions> contentDisplayOptions
@@ -18,6 +22,11 @@ public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolve
 
     public IList<IContentPartDisplayDriver> GetDisplayModeDrivers(string partName, string displayMode)
     {
+        if (_displayModeDrivers.TryGetValue((partName, displayMode), out var drivers))
+        {
+            return drivers;
+        }
+
         var services = new List<IContentPartDisplayDriver>();
 
         if (_contentDisplayOptions.ContentPartOptions.TryGetValue(partName, out var contentPartDisplayOption))
@@ -31,7 +40,10 @@ public class ContentPartDisplayDriverResolver : IContentPartDisplayDriverResolve
             }
         }
 
-        return services;
+        drivers = services.Count > 0 ? services.ToArray() : [];
+        _displayModeDrivers[(partName, displayMode)] = drivers;
+
+        return drivers;
     }
 
     public IList<IContentPartDisplayDriver> GetEditorDrivers(string partName, string editor)
