@@ -52,6 +52,11 @@
                   "type": "boolean",
                   "default": true,
                   "description": "Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients."
+                },
+                "SlowShapeThreshold": {
+                  "type": "string",
+                  "default": "00:00:00.050",
+                  "description": "The duration from which the rendering of a shape is traced with its own span, e.g. '00:00:00.050' for 50 milliseconds. '00:00:00' traces every shape."
                 }
               }
             },
