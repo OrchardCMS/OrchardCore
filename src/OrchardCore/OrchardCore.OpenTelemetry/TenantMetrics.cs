@@ -19,12 +19,14 @@ internal sealed class TenantMetrics
 
         var meter = meterFactory.Create(OrchardCoreTelemetryConstants.MeterName);
 
-        meter.CreateObservableUpDownCounter(
+        // A gauge, as every instance of the application reports the same tenants: their counts don't add up.
+        meter.CreateObservableGauge(
             OrchardCoreTelemetryConstants.Instruments.Tenants,
             ObserveTenants,
             unit: "{tenant}",
             description: "Number of tenants by state.");
 
+        // An up-down counter, as the tenants loaded by the instances add up to the containers in memory.
         meter.CreateObservableUpDownCounter(
             OrchardCoreTelemetryConstants.Instruments.LoadedTenants,
             ObserveLoadedTenants,
