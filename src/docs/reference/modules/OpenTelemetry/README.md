@@ -52,13 +52,7 @@ Instead, the telemetry of every tenant is tagged with its name, so that it can b
 
 ### Trying it locally
 
-The [.NET Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone) is a free OTLP backend showing traces, metrics and structured logs. Start it with Docker:
-
-```bash
-docker run --rm -d -p 18888:18888 -p 4317:18889 -e DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true --name aspire-dashboard mcr.microsoft.com/dotnet/aspire-dashboard:latest
-```
-
-Then run the application with `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317`, and browse `http://localhost:18888`.
+The `OrchardCore.AspireHost` project of the repository runs `OrchardCore.Cms.Web` with the [.NET Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/overview), which shows its traces, metrics and structured logs. Set it as the startup project and run it, or run `dotnet run --project src/OrchardCore.AspireHost`, then open the dashboard from the link the host prints. The host configures the OTLP endpoint of the application, so nothing else is needed. It also starts a ClamAV container for the antivirus feature, which requires Docker or another container runtime.
 
 ## Configuration
 
