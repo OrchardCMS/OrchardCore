@@ -91,8 +91,9 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
         services.AddSingleton<IValidateOptions<MediaOptions>, MediaOptionsValidator>();
 
-        // Builds the "MediaApi" authorization policy from the current MediaApiSettings (cookie default / bearer).
-        MediaApiAuthorizationPolicyProvider.Decorate(services);
+        // Builds the "MediaApi" authorization policy, whose scheme forwards to the one selected in the MediaApiSettings (cookie default / bearer).
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, MediaApiAuthenticationOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<PolicySchemeOptions>, MediaApiAuthenticationOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<AuthorizationOptions>, MediaApiAuthorizationOptionsConfiguration>();
         services.AddSiteDisplayDriver<MediaApiSettingsDisplayDriver>();
         services.TryAddTransient<FileCreationService>();

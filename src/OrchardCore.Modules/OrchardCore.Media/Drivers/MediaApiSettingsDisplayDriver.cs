@@ -56,7 +56,7 @@ public sealed class MediaApiSettingsDisplayDriver : SiteDisplayDriver<MediaApiSe
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        // The "MediaApi" authorization policy is built from the current settings on each request.
+        // The "MediaApi" authentication scheme forwards to the scheme selected in the current settings on each request.
         settings.AuthenticationScheme = model.AuthenticationScheme;
 
         return Edit(site, settings, context);
