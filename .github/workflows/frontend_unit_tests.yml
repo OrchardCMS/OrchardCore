@@ -27,6 +27,9 @@ jobs:
         npm install -g corepack
         corepack enable
         yarn --no-check-resolutions
+    - name: Run vitest unit tests (bloom)
+      working-directory: .scripts/bloom
+      run: yarn vitest run
     - name: Run vitest unit tests (media-gallery)
       working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery
       run: yarn vitest run
@@ -39,6 +42,7 @@ jobs:
       with:
         name: vitest-results
         path: |
+          .scripts/bloom/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker/testing/vitest-results.xml
         retention-days: 30
