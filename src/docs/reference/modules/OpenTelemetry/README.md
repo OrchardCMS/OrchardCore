@@ -147,6 +147,41 @@ The metrics built in .NET are also collected: HTTP server and client (`http.serv
 
 The logs written through `ILogger` are exported with their structured attributes and scopes, and those written in the scope of a tenant carry `orchardcore.tenant.name`. The OpenTelemetry logger is added next to the other logging providers, such as NLog or Serilog.
 
+## Investigating performance
+
+The rendering of shapes is traced too: the `OrchardCore.DisplayManagement` activity source emits a `Render shape {type}` span for each rendered shape, nested like the shapes, with the `orchardcore.shape.type` attribute and the `orchardcore.shape.binding` attribute, the template or the shape method that rendered it. The meter of the same name records the `orchardcore.display.shapes_rendered` counter, and the `orchardcore.display.shape.duration` histogram of the rendering durations by shape type. As a page renders many shapes, they are only collected when they are added to the configuration:
+
+```json
+{
+  "OrchardCore": {
+    "OpenTelemetry": {
+      "Tracing": {
+        "Sources": [ "OrchardCore.DisplayManagement" ]
+      },
+      "Metrics": {
+        "Meters": [ "OrchardCore.DisplayManagement" ]
+      }
+    }
+  }
+}
+```
+
+This video shows how to find what a page spends its time on with these traces and metrics in the .NET Aspire dashboard: reading the shape spans of a request, comparing the time of a shape with the time of its children, and filtering the rendering durations by shape type.
+
+<video controls preload="metadata" width="100%" poster="videos/finding-slow-shapes.jpg">
+    <source src="videos/finding-slow-shapes.mp4" type="video/mp4">
+    <track kind="captions" src="videos/finding-slow-shapes.vtt" srclang="en" label="English">
+    Your browser does not support embedded videos. <a href="videos/finding-slow-shapes.mp4">Download the video</a>.
+</video>
+
+To find the slow parts of a site:
+
+1. Find the slowest shape types with the `orchardcore.display.shape.duration` histogram, filtered by shape type.
+2. Open a slow request in the traces, and its `Render shape` spans, with the templates that rendered them.
+3. Compare the time of a shape with the time of its child shapes: the time a shape spends itself is the work of its template, driver or shape method, such as loading content.
+
+See the [Display Management](../DisplayManagement/README.md) module for the shape rendering telemetry.
+
 ## Using an existing OpenTelemetry configuration
 
 When the application already configures OpenTelemetry, e.g. with the `ServiceDefaults` project of a .NET Aspire solution, add the Orchard Core instrumentation to it instead of calling `AddOpenTelemetry()` on the Orchard Core builder:
