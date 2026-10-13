@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Settings;
+using OrchardCore.Tests.Utilities;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Sql;
@@ -48,7 +49,7 @@ public class AutoroutePartHandlerUniquePathTests : IAsyncLifetime
     public ValueTask DisposeAsync()
     {
         _store?.Dispose();
-        File.Delete(_databasePath);
+        TestFileHelper.TryDelete(_databasePath);
 
         return ValueTask.CompletedTask;
     }

@@ -47,6 +47,23 @@ public class PagerShapesTests
     }
 
     [Fact]
+    public void Pager_PageSizeSelector_PageSizesArgument_IsWhatATemplateReadsFromModel()
+    {
+        // A theme template reads the page sizes through the dynamic Model. The argument must not be named "Items":
+        // Shape already has an Items property (its child shapes), and dynamic binding prefers it over the argument.
+        List<SelectListItem> pageSizes = [new SelectListItem { Text = "10", Value = "/admin?pageSize=10" }];
+
+        var shape = new Shape();
+        shape.Properties["PageSizes"] = pageSizes;
+        shape.Properties["Items"] = pageSizes;
+
+        dynamic model = shape;
+
+        Assert.Same(pageSizes, model.PageSizes as List<SelectListItem>);
+        Assert.Null(model.Items as List<SelectListItem>);
+    }
+
+    [Fact]
     public void ActionLink_Disabled_RendersWithoutHrefAndRel()
     {
         var shape = new Shape();
