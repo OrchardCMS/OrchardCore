@@ -65,28 +65,6 @@ public sealed class DataPipelineRunIndex : MapIndex
 }
 
 /// <summary>
-/// Indexes the files shared through download links.
-/// </summary>
-public sealed class DataPipelineSharedFileIndex : MapIndex
-{
-    public const int MaxFileNameLength = 255;
-
-    public long DocumentId { get; set; }
-
-    public string FileId { get; set; }
-
-    public string FileName { get; set; }
-
-    public string PipelineId { get; set; }
-
-    public string RunId { get; set; }
-
-    public DateTime CreatedUtc { get; set; }
-
-    public DateTime ExpiresUtc { get; set; }
-}
-
-/// <summary>
 /// Indexes the state documents of the pipelines.
 /// </summary>
 public sealed class DataPipelineStateIndex : MapIndex
@@ -150,23 +128,6 @@ public sealed class DataPipelineRunIndexProvider : IndexProvider<DataPipelineRun
                 QueuedUtc = run.QueuedUtc,
                 CompletedUtc = run.CompletedUtc,
                 HeartbeatUtc = run.HeartbeatUtc,
-            });
-    }
-}
-
-public sealed class DataPipelineSharedFileIndexProvider : IndexProvider<DataPipelineSharedFile>
-{
-    public override void Describe(DescribeContext<DataPipelineSharedFile> context)
-    {
-        context.For<DataPipelineSharedFileIndex>()
-            .Map(file => new DataPipelineSharedFileIndex
-            {
-                FileId = file.FileId,
-                FileName = file.FileName?.Length > DataPipelineSharedFileIndex.MaxFileNameLength ? file.FileName[..DataPipelineSharedFileIndex.MaxFileNameLength] : file.FileName,
-                PipelineId = file.PipelineId,
-                RunId = file.RunId,
-                CreatedUtc = file.CreatedUtc,
-                ExpiresUtc = file.RevokedUtc ?? file.ExpiresUtc,
             });
     }
 }

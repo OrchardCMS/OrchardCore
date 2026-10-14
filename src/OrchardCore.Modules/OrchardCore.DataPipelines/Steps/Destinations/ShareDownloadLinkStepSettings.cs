@@ -16,6 +16,11 @@ public sealed class ShareDownloadLinkStepSettings
     public int ExpiresAfterDays { get; set; } = 7;
 
     /// <summary>
+    /// Gets or sets how many times each link can be used, or <c>0</c> for no limit.
+    /// </summary>
+    public int MaxDownloads { get; set; }
+
+    /// <summary>
     /// Gets or sets the subject of the email. It can use the placeholders of <see cref="DataPipelineTemplate"/>.
     /// </summary>
     public string Subject { get; set; } = "{PipelineName}: a file is ready";

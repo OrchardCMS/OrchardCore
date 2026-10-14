@@ -27,11 +27,6 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .Permission(DataPipelinePermissions.ViewDataPipelines)
                         .LocalNav()
                     )
-                    .Add(S["Shared Files"], S["Shared Files"].PrefixPosition("3"), sharedFiles => sharedFiles
-                        .Action("SharedFiles", "Admin", "OrchardCore.DataPipelines")
-                        .Permission(DataPipelinePermissions.ManageDataPipelines)
-                        .LocalNav()
-                    )
                 )
             );
 

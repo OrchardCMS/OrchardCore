@@ -49,19 +49,6 @@ public sealed class DataPipelineMigrations : DataMigration
             .CreateIndex("IDX_DataPipelineRunIndex_RunId", "DocumentId", "RunId")
         );
 
-        await SchemaBuilder.CreateMapIndexTableAsync<DataPipelineSharedFileIndex>(table => table
-            .Column<string>("FileId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
-            .Column<string>("FileName", column => column.WithLength(DataPipelineSharedFileIndex.MaxFileNameLength))
-            .Column<string>("PipelineId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
-            .Column<string>("RunId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
-            .Column<DateTime>("CreatedUtc")
-            .Column<DateTime>("ExpiresUtc")
-        );
-
-        await SchemaBuilder.AlterIndexTableAsync<DataPipelineSharedFileIndex>(table => table
-            .CreateIndex("IDX_DataPipelineSharedFileIndex_DocumentId", "DocumentId", "FileId", "ExpiresUtc")
-        );
-
         await CreateStateIndexAsync();
 
         return 2;

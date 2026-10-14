@@ -26,9 +26,7 @@ public sealed class AdminController : Controller
     private readonly DataPipelineManager _pipelineManager;
     private readonly DataPipelineRunManager _runManager;
     private readonly DataPipelineStateManager _stateManager;
-    private readonly DataPipelineSharedFileManager _sharedFileManager;
     private readonly IDataPipelineStepTypeManager _stepTypeManager;
-    private readonly OrchardCore.Modules.IClock _clock;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShapeFactory _shapeFactory;
     private readonly ISiteService _siteService;
@@ -40,9 +38,7 @@ public sealed class AdminController : Controller
         DataPipelineManager pipelineManager,
         DataPipelineRunManager runManager,
         DataPipelineStateManager stateManager,
-        DataPipelineSharedFileManager sharedFileManager,
         IDataPipelineStepTypeManager stepTypeManager,
-        OrchardCore.Modules.IClock clock,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
         ISiteService siteService,
@@ -53,9 +49,7 @@ public sealed class AdminController : Controller
         _pipelineManager = pipelineManager;
         _runManager = runManager;
         _stateManager = stateManager;
-        _sharedFileManager = sharedFileManager;
         _stepTypeManager = stepTypeManager;
-        _clock = clock;
         _authorizationService = authorizationService;
         _shapeFactory = shapeFactory;
         _siteService = siteService;
@@ -349,72 +343,6 @@ public sealed class AdminController : Controller
         }
 
         return RedirectToAction(nameof(Run), new { runId });
-    }
-
-    [Admin("DataPipelines/SharedFiles", "DataPipelinesSharedFiles")]
-    public async Task<IActionResult> SharedFiles(string q, PagerParameters pagerParameters)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines))
-        {
-            return Forbid();
-        }
-
-        var pager = new Pager(pagerParameters, (await _siteService.GetSiteSettingsAsync()).PageSize);
-        var (files, count) = await _sharedFileManager.ListAsync(q, pager.GetStartIndex(), pager.PageSize);
-
-        return View(new DataPipelineSharedFilesViewModel
-        {
-            Search = q,
-            TotalCount = count,
-            Files = files.ToList(),
-            UtcNow = _clock.UtcNow,
-            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["q"] = q })),
-        });
-    }
-
-    [HttpPost]
-    [Admin("DataPipelines/SharedFiles/{fileId}/Revoke", "DataPipelinesRevokeSharedFile")]
-    public async Task<IActionResult> RevokeSharedFile(string fileId)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines))
-        {
-            return Forbid();
-        }
-
-        var file = await _sharedFileManager.GetAsync(fileId);
-
-        if (file is null)
-        {
-            return NotFound();
-        }
-
-        file.RevokedUtc ??= _clock.UtcNow;
-        await _sharedFileManager.SaveAsync(file);
-        await _notifier.SuccessAsync(H["The link to '{0}' no longer works.", file.FileName]);
-
-        return RedirectToAction(nameof(SharedFiles));
-    }
-
-    [HttpPost]
-    [Admin("DataPipelines/SharedFiles/{fileId}/Delete", "DataPipelinesDeleteSharedFile")]
-    public async Task<IActionResult> DeleteSharedFile(string fileId)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines))
-        {
-            return Forbid();
-        }
-
-        var file = await _sharedFileManager.GetAsync(fileId);
-
-        if (file is null)
-        {
-            return NotFound();
-        }
-
-        _sharedFileManager.Delete(file);
-        await _notifier.SuccessAsync(H["The shared file '{0}' was deleted.", file.FileName]);
-
-        return RedirectToAction(nameof(SharedFiles));
     }
 
     private string BuildConfig(string pipelineId, string mode, bool readOnly, string versionId, string stepId)

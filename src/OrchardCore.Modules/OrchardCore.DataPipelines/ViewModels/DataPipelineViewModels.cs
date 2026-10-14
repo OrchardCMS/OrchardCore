@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using OrchardCore.DataPipelines.Models;
+using OrchardCore.DataPipelines.SharedLinks;
 
 namespace OrchardCore.DataPipelines.ViewModels;
 
@@ -81,9 +82,15 @@ public sealed class DataPipelineRunViewModel
     public bool CanCancel { get; set; }
 }
 
-public sealed class DataPipelineSharedFilesViewModel
+public sealed class SharedLinksViewModel
 {
-    public List<DataPipelineSharedFile> Files { get; set; } = [];
+    public List<SharedLink> Links { get; set; } = [];
+
+    // The display names of the kinds of the listed links.
+    public IReadOnlyDictionary<string, string> KindNames { get; set; } = new Dictionary<string, string>();
+
+    // The admin pages about what shared the listed links, by link.
+    public IReadOnlyDictionary<string, string> SourceUrls { get; set; } = new Dictionary<string, string>();
 
     public string Search { get; set; }
 

@@ -14,7 +14,16 @@
     <div class="ocat-limited">
         <input asp-for="ExpiresAfterDays" type="number" min="1" max="@ShareDownloadLinkStep.MaxDays" class="form-control" />
         <span asp-validation-for="ExpiresAfterDays"></span>
-        <span class="hint">@T["A link can also be revoked from the list of shared files."]</span>
+        <span class="hint">@T["A link can also be revoked from the list of shared links."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="MaxDownloads">
+    <label asp-for="MaxDownloads" class="ocat-label">@T["Maximum downloads"]</label>
+    <div class="ocat-limited">
+        <input asp-for="MaxDownloads" type="number" min="0" class="form-control" />
+        <span asp-validation-for="MaxDownloads"></span>
+        <span class="hint">@T["How many times each link can be used, by all its recipients together. 0 for no limit."]</span>
     </div>
 </div>
 

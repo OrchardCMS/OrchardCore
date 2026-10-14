@@ -9,6 +9,7 @@ using OrchardCore.DataPipelines.Migrations;
 using OrchardCore.DataPipelines.Recipes;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
+using OrchardCore.DataPipelines.SharedLinks;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -39,7 +40,6 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<DataPipelineIndexProvider>();
         services.AddIndexProvider<DataPipelineVersionIndexProvider>();
         services.AddIndexProvider<DataPipelineRunIndexProvider>();
-        services.AddIndexProvider<DataPipelineSharedFileIndexProvider>();
         services.AddIndexProvider<DataPipelineStateIndexProvider>();
 
         services.AddScoped<DataPipelineManager>();
@@ -50,8 +50,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<DataPipelineEditorContext>();
         services.AddScoped<DataPipelineDesignerModelBuilder>();
         services.AddSingleton<DataPipelineSecrets>();
-        services.AddScoped<DataPipelineSharedFileManager>();
-        services.AddScoped<IDataPipelineSharedFileManager>(serviceProvider => serviceProvider.GetRequiredService<DataPipelineSharedFileManager>());
+        services.AddScoped<DataPipelineFileLinkHandler>();
+        services.AddSharedLinkHandler<DataPipelineFileLinkHandler>();
         services.AddSingleton<DataPipelineRunTracker>();
         services.AddSingleton<DataPipelineRunDispatcher>();
         services.AddSingleton<IBackgroundTask, DataPipelineRunsBackgroundTask>();

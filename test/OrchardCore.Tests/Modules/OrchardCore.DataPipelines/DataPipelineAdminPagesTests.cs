@@ -28,7 +28,7 @@ public sealed class DataPipelineAdminPagesTests
             "Admin/DataPipelines/Create",
             $"Admin/DataPipelines/Runs/{pipelineId}",
             $"Admin/DataPipelines/Run/{runId}",
-            "Admin/DataPipelines/SharedFiles",
+            "Admin/SharedLinks",
         ];
 
         foreach (var path in paths)

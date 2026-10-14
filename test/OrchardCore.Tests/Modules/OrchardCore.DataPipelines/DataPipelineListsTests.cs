@@ -78,39 +78,6 @@ public sealed class DataPipelineListsTests
     }
 
     [Fact]
-    public async Task ListSharedFiles_Search_MatchesTheFileOrThePipelineName()
-    {
-        // Arrange
-        using var context = await CreateContextAsync();
-        var now = DateTime.UtcNow;
-
-        await context.UsingTenantScopeAsync(async scope =>
-        {
-            var manager = scope.ServiceProvider.GetRequiredService<DataPipelineSharedFileManager>();
-            var orders = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().CreateAsync("Orders export", null, user: null);
-
-            await manager.SaveAsync(new DataPipelineSharedFile { FileId = "report", FileName = "report.xlsx", PipelineId = "other", CreatedUtc = now.AddMinutes(-2), ExpiresUtc = now.AddDays(1) });
-            await manager.SaveAsync(new DataPipelineSharedFile { FileId = "orders", FileName = "data.csv", PipelineId = orders.PipelineId, PipelineName = orders.Name, CreatedUtc = now.AddMinutes(-1), ExpiresUtc = now.AddDays(1) });
-        });
-
-        await context.UsingTenantScopeAsync(async scope =>
-        {
-            var manager = scope.ServiceProvider.GetRequiredService<DataPipelineSharedFileManager>();
-
-            // Act
-            var (byFileName, _) = await manager.ListAsync("REPORT", 0, 10);
-            var (byPipelineName, _) = await manager.ListAsync("orders", 0, 10);
-            var (all, count) = await manager.ListAsync(null, 0, 10);
-
-            // Assert
-            Assert.Equal(["report"], byFileName.Select(file => file.FileId));
-            Assert.Equal(["orders"], byPipelineName.Select(file => file.FileId));
-            Assert.Equal(["orders", "report"], all.Select(file => file.FileId));
-            Assert.Equal(2, count);
-        });
-    }
-
-    [Fact]
     public async Task PipelinesPage_Search_ListsTheMatchingPipelinesWithTheirActions()
     {
         // Arrange

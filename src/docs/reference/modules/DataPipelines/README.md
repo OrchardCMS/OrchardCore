@@ -18,7 +18,7 @@ The Data Pipelines module has two features:
 
 | Feature | Description |
 |---------|-------------|
-| Data Pipelines Core (`OrchardCore.DataPipelines.Core`) | The data layer that data pipelines and other features, such as reports, share: the [data sources](../DataSources/README.md), the file formats, the formula language and its functions, and the data operations. It is enabled only as a dependency of other features. |
+| Data Pipelines Core (`OrchardCore.DataPipelines.Core`) | The layer that data pipelines and other features, such as reports, share: the [data sources](../DataSources/README.md), the file formats, the formula language and its functions, the data operations, and the [shared links](#shared-links). It is enabled only as a dependency of other features. |
 | Data Pipelines (`OrchardCore.DataPipelines`) | The designer, the runs, and the steps that read data sources, transform rows, create and zip files, share download links, and send files to web APIs. Depends on the Data Pipelines Core and Users features. |
 
 The steps, activities and data sources that work with other features are available when these features are enabled too:
@@ -56,11 +56,10 @@ Each step describes the fields it produces from the fields it receives, so the d
 
 ## Designing pipelines
 
-The **Tools** > **Data Pipelines** menu has three pages:
+The **Tools** > **Data Pipelines** menu has two pages:
 
 - **Pipelines** lists the pipelines, which can be searched by name. Each one shows its published version, whether it has unpublished changes or is disabled, and the status of its last run. **Edit** opens the designer, and the **Actions** menu runs the pipeline now, opens its run history, or deletes it. **Add Pipeline** creates a pipeline from its name and description, then opens the designer.
 - **Run History** lists the runs, see [Run history](#run-history).
-- **Shared Files** lists the files shared through download links, see [Download links](#download-links).
 
 The designer has:
 
@@ -144,7 +143,7 @@ Writing a workbook uses about 16 MB of memory, whatever the number of rows. A wo
 | Step | Ports | Settings |
 |------|-------|----------|
 | **Save to the media library** (`SaveToMedia`) | In: files. | The **folder** of the media library, empty for the root, and whether a file with the same name is **replaced**, or saved under a name with a number appended. The user the run is for must be allowed to manage the media of the folder, and the media library must accept the extension of each file, see [Saving files to the media library](#saving-files-to-the-media-library). Available when the Media feature is enabled. |
-| **Share a download link** (`ShareDownloadLink`) | In: files. | The **recipients**, user names or emails of users of the site, separated by commas. The number of **days the link works**, from 1 to 365 (7 by default). The **subject** of the email that sends the link to the recipients, and an optional **message**. Available when the Email feature is enabled. See [Download links](#download-links). |
+| **Share a download link** (`ShareDownloadLink`) | In: files. | The **recipients**, user names or emails of users of the site, separated by commas. The number of **days the link works**, from 1 to 365 (7 by default). The **maximum downloads** of each link, by all its recipients together, 0 for no limit (the default). The **subject** of the email that sends the link to the recipients, and an optional **message**. Available when the Email feature is enabled. See [Shared links](#shared-links). |
 | **Upload to an FTP server** (`UploadToFtp`) | In: files. | The **host** and **port** (21 by default), the **encryption** (explicit TLS, the default, implicit TLS, or none), whether the server's **certificate is validated** (by default), the **user name** and **password**, the **remote folder** (created when it doesn't exist, the user's starting folder when empty), whether existing files are **replaced** (otherwise the step fails when a file exists), and the **timeout** in seconds (30 by default). Requires the `OrchardCore.DataPipelines.Ftp` module. |
 | **Upload to an SFTP server** (`UploadToSftp`) | In: files. | The **host** and **port** (22 by default), the **user name**, a **password**, a **private key** (PEM or OpenSSH format) with its optional **passphrase**, or both, the **host key fingerprint**, the **remote folder** (created when it doesn't exist, the user's home folder when empty), whether existing files are **replaced**, and the **timeout** in seconds (30 by default). See [SFTP host keys](#sftp-host-keys). Requires the `OrchardCore.DataPipelines.Sftp` module. |
 | **Send to a web API** (`SendToWebApi`) | In: files. | The absolute http or https **URL**, the **method** (`POST` or `PUT`), and the **body**: a `multipart/form-data` form with the file in a field (`file` by default), or the raw content of the file with its media type. Additional **headers**, which aren't secret. The **authentication**: none, basic (user name and password), a bearer token, or an API key in a header (`X-API-Key` by default). The **timeout** of each request in seconds (100 by default). Each file is sent in its own request, and a response with a status code other than 2xx fails the step. |
@@ -279,11 +278,11 @@ The run is the last result of both activities: an object with the `RunId`, `Pipe
 
 | Permission | Allows |
 |------------|--------|
-| `ManageDataPipelines` (Manage data pipelines) | Creating, designing, previewing, publishing and deleting pipelines, and managing the shared files. Security critical: a published pipeline runs with the access of the user who published it. Implies the two other permissions. |
+| `ManageDataPipelines` (Manage data pipelines) | Creating, designing, previewing, publishing and deleting pipelines. Security critical: a published pipeline runs with the access of the user who published it. Implies the two other permissions. |
 | `RunDataPipelines` (Run data pipelines) | Running published pipelines, and cancelling runs. Implies `ViewDataPipelines`. |
 | `ViewDataPipelines` (View data pipelines and their runs) | Listing the pipelines, viewing them and their versions in a read-only designer, and viewing their runs. |
 
-The Administrator role has all three permissions by default.
+The Administrator role has all three permissions by default. The `ManageSharedLinks` permission of the Data Pipelines Core feature manages the [shared links](#shared-links).
 
 ### Secrets
 
@@ -291,15 +290,18 @@ The passwords, private keys, passphrases, tokens and API keys of steps are encry
 
 A secret encrypted on another site, or with other keys, such as after copying a database, can't be read: the step reports an error until the secret is entered again.
 
-### Download links
+### Shared links
 
-The **Share a download link** step shares files with users of the site, by email:
+The Data Pipelines Core feature shares resources with users of the site through links: the files of the **Share a download link** step, and the resources of other modules, such as reports, see [Sharing a resource from a module](#sharing-a-resource-from-a-module). Every link is secured the same way:
 
-- a copy of each file is kept in the `App_Data` folder of the tenant, out of the media library;
-- each file gets a link holding a random token, of which only a hash is stored. The link is sent to the recipients by email, and is never recorded in the run nor shown in the admin, so the email is the only way to get it. The run reports a warning naming the recipients the email couldn't be sent to, such as those without an email address;
-- a link works only for its recipients, once signed in, with its token, until it expires or is revoked. Without the token of the link, a recipient can't download the file: the site doesn't list the files shared with a user.
+- a link holds a random token of 256 bits, of which only a SHA-256 hash is stored. The link is sent to its recipients by email, and is never recorded in a run nor shown in the admin, so the email is the only way to get it;
+- a link works only for its recipients, users of the site, once signed in, with its token. The site doesn't list what was shared with a user: without the token of a link, its recipients can't use it;
+- a link works until it expires, until it was used as many times as allowed, when a maximum is set, or until it is revoked;
+- a wrong token is answered as if the link didn't exist, so the links can't be discovered.
 
-**Tools** > **Data Pipelines** > **Shared Files** lists the shared files, which can be searched by file or pipeline name, with their recipients, when their link expires and how many times they were downloaded. A link can be revoked, and a file deleted. The content of a file is deleted a day after its link expires.
+**Tools** > **Shared Links** lists the links of every module, which can be searched by name or by what shared them, such as a pipeline, with their kind, their recipients, when they expire and how many times they were used. A link can be revoked, and deleted with its resource. A link is deleted with its resource a day after it stops working.
+
+For the **Share a download link** step, a copy of each file is kept in the `App_Data` folder of the tenant, out of the media library, and the run reports a warning naming the recipients the email couldn't be sent to, such as those without an email address. The step is available when the Email feature is enabled.
 
 ### SFTP host keys
 
@@ -774,6 +776,62 @@ public sealed class FailedRunHandler : IDataPipelineRunHandler
 ```csharp
 services.AddScoped<IDataPipelineRunHandler, FailedRunHandler>();
 ```
+
+### Sharing a resource from a module
+
+A module that depends on the Data Pipelines Core feature shares its own resources, such as reports, with the shared links, and gets their security, their expiry, their maximum number of uses, their emails, their revocation and their admin page. It registers a handler for its kind of resource, which opens the resource once the user may use the link:
+
+```csharp
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using OrchardCore.DataPipelines.SharedLinks;
+
+public sealed class ReportLinkHandler : ISharedLinkHandler
+{
+    private readonly IStringLocalizer S;
+
+    public ReportLinkHandler(IStringLocalizer<ReportLinkHandler> localizer)
+    {
+        S = localizer;
+    }
+
+    public string Kind => "Reports.Report";
+
+    public LocalizedString DisplayName => S["Report"];
+
+    // The link was checked: the user is signed in, is a recipient, and has the token.
+    public Task<IActionResult> OpenAsync(SharedLink link, HttpContext httpContext)
+    {
+        return Task.FromResult<IActionResult>(new ViewResult
+        {
+            ViewName = "SharedReport",
+            ViewData = { ["ReportId"] = link.ResourceId },
+        });
+    }
+}
+```
+
+```csharp
+services.AddSharedLinkHandler<ReportLinkHandler>();
+```
+
+Then it shares a resource with `ISharedLinkManager`:
+
+```csharp
+var result = await _sharedLinkManager.CreateAsync(new SharedLinkRequest
+{
+    Kind = "Reports.Report",
+    ResourceId = report.Id,
+    Title = report.Name,
+    SourceName = report.Name,
+    Recipients = ["alice", "bob@example.com"],
+    Lifetime = TimeSpan.FromDays(30),
+    MaxUses = 10,
+});
+```
+
+The recipients are user names or emails of users of the site, and require the Users feature. By default the link is emailed to them, which requires the Email feature; with `NotifyByEmail = false`, the caller delivers `result.Url` itself, which holds the token. A link opens at `/SharedLinks/{linkId}?token=...`, which calls the handler of its kind. A handler can also return the URL of an admin page about what shared a link, shown in the list of the shared links (`GetSourceUrl`), and release the resource when the link is deleted (`DeletedAsync`).
 
 ### Building an incremental export
 

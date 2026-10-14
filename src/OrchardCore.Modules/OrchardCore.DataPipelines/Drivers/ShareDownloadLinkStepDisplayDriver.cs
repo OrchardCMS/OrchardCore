@@ -23,6 +23,7 @@ public sealed class ShareDownloadLinkStepDisplayDriver : DataPipelineStepDisplay
     {
         model.Recipients = string.Join(", ", settings.Recipients);
         model.ExpiresAfterDays = settings.ExpiresAfterDays;
+        model.MaxDownloads = settings.MaxDownloads;
         model.Subject = settings.Subject;
         model.Message = settings.Message;
 
@@ -41,7 +42,13 @@ public sealed class ShareDownloadLinkStepDisplayDriver : DataPipelineStepDisplay
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.ExpiresAfterDays), S["A link works between 1 and {0} days.", ShareDownloadLinkStep.MaxDays]);
         }
 
+        if (model.MaxDownloads < 0)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.MaxDownloads), S["The number of downloads of a link can't be negative."]);
+        }
+
         settings.ExpiresAfterDays = model.ExpiresAfterDays;
+        settings.MaxDownloads = Math.Max(0, model.MaxDownloads);
         settings.Subject = model.Subject?.Trim();
         settings.Message = model.Message?.Trim();
 
@@ -54,6 +61,8 @@ public class ShareDownloadLinkStepViewModel
     public string Recipients { get; set; }
 
     public int ExpiresAfterDays { get; set; }
+
+    public int MaxDownloads { get; set; }
 
     public string Subject { get; set; }
 
