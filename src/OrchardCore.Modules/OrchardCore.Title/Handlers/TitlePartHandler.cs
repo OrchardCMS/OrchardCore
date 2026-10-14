@@ -45,6 +45,13 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
         return SetTitleAsync(part);
     }
 
+    public override Task PublishingAsync(PublishContentContext context, TitlePart part)
+    {
+        // Publishing an existing version (e.g., republishing after unpublishing) does not raise the
+        // created or updated events, so the title is generated here unless it was already in this scope.
+        return SetTitleAsync(part);
+    }
+
     protected override Task ValidatingAsync(ValidateContentPartContext context, TitlePart part)
     {
         var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
