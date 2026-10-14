@@ -143,6 +143,110 @@ public sealed class SharedLinkTests
     }
 
     [Fact]
+    public async Task UseLink_StaleCountInTheDocument_TheCounterStillStopsIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var (link, token) = Share("alice-id");
+        link.MaxUses = 1;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            await scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(link, cancellationToken: TestContext.Current.CancellationToken);
+            await scope.ServiceProvider.GetRequiredService<SharedLinkUseCounter>().AddAsync(link.LinkId);
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var (first, _) = await scope.ServiceProvider.GetRequiredService<ISharedLinkManager>().UseAsync(link.LinkId, token, User("alice-id"), TestContext.Current.CancellationToken);
+            Assert.Equal(SharedLinkAccessResult.Allowed, first);
+        });
+
+        // A request that read the link before the use saves it, with the count it read.
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            link.Uses = 0;
+            await scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(link, cancellationToken: TestContext.Current.CancellationToken);
+        });
+
+        // Act
+        var result = SharedLinkAccessResult.NotFound;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            (result, _) = await scope.ServiceProvider.GetRequiredService<ISharedLinkManager>().UseAsync(link.LinkId, token, User("alice-id"), TestContext.Current.CancellationToken);
+        });
+
+        // Assert
+        Assert.Equal(SharedLinkAccessResult.UsedUp, result);
+    }
+
+    [Fact]
+    public async Task UseLink_ConcurrentUsesOfTheLastUse_GrantsOnlyOne()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var (link, token) = Share("alice-id");
+        link.MaxUses = 1;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            await scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(link, cancellationToken: TestContext.Current.CancellationToken);
+            await scope.ServiceProvider.GetRequiredService<SharedLinkUseCounter>().AddAsync(link.LinkId);
+        });
+
+        // Act
+        var results = await Task.WhenAll(Enumerable.Range(0, 4).Select(attempt => Task.Run(async () =>
+        {
+            var result = SharedLinkAccessResult.NotFound;
+
+            await context.UsingTenantScopeAsync(async scope =>
+            {
+                (result, _) = await scope.ServiceProvider.GetRequiredService<ISharedLinkManager>().UseAsync(link.LinkId, token, User("alice-id"), TestContext.Current.CancellationToken);
+            });
+
+            return result;
+        }, TestContext.Current.CancellationToken)));
+
+        // Assert
+        Assert.Single(results, result => result == SharedLinkAccessResult.Allowed);
+        Assert.All(results.Where(result => result != SharedLinkAccessResult.Allowed), result => Assert.Equal(SharedLinkAccessResult.UsedUp, result));
+    }
+
+    [Fact]
+    public async Task DeleteLink_UsedLink_DeletesItsCounter()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var (link, token) = Share("alice-id");
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            await scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(link, cancellationToken: TestContext.Current.CancellationToken);
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            await scope.ServiceProvider.GetRequiredService<ISharedLinkManager>().UseAsync(link.LinkId, token, User("alice-id"), TestContext.Current.CancellationToken);
+        });
+
+        // Act
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<ISharedLinkManager>();
+            await manager.DeleteAsync(await manager.GetAsync(link.LinkId, TestContext.Current.CancellationToken), TestContext.Current.CancellationToken);
+        });
+
+        // Assert
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var uses = await scope.ServiceProvider.GetRequiredService<SharedLinkUseCounter>().GetUsesAsync([link.LinkId]);
+            Assert.Empty(uses);
+            Assert.Null(await scope.ServiceProvider.GetRequiredService<ISharedLinkManager>().GetAsync(link.LinkId, TestContext.Current.CancellationToken));
+        });
+    }
+
+    [Fact]
     public async Task ListLinks_Search_MatchesTheTitleOrTheSourceName()
     {
         // Arrange

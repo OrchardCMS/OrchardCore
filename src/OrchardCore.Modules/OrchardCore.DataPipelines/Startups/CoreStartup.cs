@@ -28,6 +28,7 @@ public sealed class CoreStartup : StartupBase
         // Shared links: any module shares a kind of resource by registering a handler (AddSharedLinkHandler).
         services.AddDataMigration<SharedLinkMigrations>();
         services.AddIndexProvider<SharedLinkIndexProvider>();
+        services.AddScoped<SharedLinkUseCounter>();
         services.AddScoped<SharedLinkManager>();
         services.AddScoped<ISharedLinkManager>(serviceProvider => serviceProvider.GetRequiredService<SharedLinkManager>());
         services.AddPermissionProvider<SharedLinkPermissionsProvider>();

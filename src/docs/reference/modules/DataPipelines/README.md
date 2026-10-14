@@ -296,7 +296,7 @@ The Data Pipelines Core feature shares resources with users of the site through 
 
 - a link holds a random token of 256 bits, of which only a SHA-256 hash is stored. The link is sent to its recipients by email, and is never recorded in a run nor shown in the admin, so the email is the only way to get it;
 - a link works only for its recipients, users of the site, once signed in, with its token. The site doesn't list what was shared with a user: without the token of a link, its recipients can't use it;
-- a link works until it expires, until it was used as many times as allowed, when a maximum is set, or until it is revoked;
+- a link works until it expires, until it was used as many times as allowed, when a maximum is set, or until it is revoked. The uses are counted by the database, with one atomic update per use, so simultaneous requests never use a link more times than allowed;
 - a wrong token is answered as if the link didn't exist, so the links can't be discovered.
 
 **Tools** > **Shared Links** lists the links of every module, which can be searched by name or by what shared them, such as a pipeline, with their kind, their recipients, when they expire and how many times they were used. A link can be revoked, and deleted with its resource. A link is deleted with its resource a day after it stops working.

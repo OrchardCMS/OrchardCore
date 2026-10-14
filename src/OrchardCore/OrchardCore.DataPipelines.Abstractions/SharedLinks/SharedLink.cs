@@ -79,7 +79,8 @@ public sealed class SharedLink
     public int MaxUses { get; set; }
 
     /// <summary>
-    /// Gets or sets how many times the link was used.
+    /// Gets or sets how many times the link was used. <see cref="ISharedLinkManager"/> loads it from a counter the
+    /// database updates atomically, so the maximum of uses is never exceeded.
     /// </summary>
     public int Uses { get; set; }
 

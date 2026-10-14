@@ -19,6 +19,7 @@ namespace OrchardCore.DataPipelines.SharedLinks;
 public sealed class SharedLinkManager : ISharedLinkManager
 {
     private readonly ISession _session;
+    private readonly SharedLinkUseCounter _useCounter;
     private readonly IClock _clock;
     private readonly IIdGenerator _idGenerator;
     private readonly LinkGenerator _linkGenerator;
@@ -29,6 +30,7 @@ public sealed class SharedLinkManager : ISharedLinkManager
 
     public SharedLinkManager(
         ISession session,
+        SharedLinkUseCounter useCounter,
         IClock clock,
         IIdGenerator idGenerator,
         LinkGenerator linkGenerator,
@@ -38,6 +40,7 @@ public sealed class SharedLinkManager : ISharedLinkManager
         IStringLocalizer<SharedLinkManager> localizer)
     {
         _session = session;
+        _useCounter = useCounter;
         _clock = clock;
         _idGenerator = idGenerator;
         _linkGenerator = linkGenerator;
@@ -89,6 +92,7 @@ public sealed class SharedLinkManager : ISharedLinkManager
         };
 
         await _session.SaveAsync(link, cancellationToken: cancellationToken);
+        await _useCounter.AddAsync(link.LinkId);
 
         var url = GetUrl(link.LinkId, token);
         var notified = emailService is null ? [] : await NotifyAsync(emailService, recipients, link, url, request, cancellationToken);
@@ -109,7 +113,14 @@ public sealed class SharedLinkManager : ISharedLinkManager
             return null;
         }
 
-        return await _session.Query<SharedLink, SharedLinkIndex>(index => index.LinkId == linkId).FirstOrDefaultAsync(cancellationToken);
+        var link = await _session.Query<SharedLink, SharedLinkIndex>(index => index.LinkId == linkId).FirstOrDefaultAsync(cancellationToken);
+
+        if (link is not null)
+        {
+            await LoadUsesAsync([link]);
+        }
+
+        return link;
     }
 
     /// <inheritdoc />
@@ -119,13 +130,25 @@ public sealed class SharedLinkManager : ISharedLinkManager
         var now = _clock.UtcNow;
         var result = SharedLinkAccess.Check(link, token, user, now);
 
-        if (result == SharedLinkAccessResult.Allowed)
+        if (result != SharedLinkAccessResult.Allowed)
         {
-            link.Uses++;
-            link.LastUsedUtc = now;
-
-            await _session.SaveAsync(link, cancellationToken: cancellationToken);
+            return (result, link);
         }
+
+        // The database grants the use: the count read with the link may already be stale.
+        var (granted, uses) = await _useCounter.TryUseAsync(link.LinkId, link.MaxUses);
+        link.Uses = uses;
+
+        if (!granted)
+        {
+            return (SharedLinkAccessResult.UsedUp, link);
+        }
+
+        link.LastUsedUtc = now;
+        await _session.SaveAsync(link, cancellationToken: cancellationToken);
+
+        // Committed right away, so the counter isn't locked while the resource is served.
+        await _session.SaveChangesAsync(cancellationToken);
 
         return (result, link);
     }
@@ -153,6 +176,7 @@ public sealed class SharedLinkManager : ISharedLinkManager
         }
 
         _session.Delete(link);
+        await _useCounter.DeleteAsync(link.LinkId);
     }
 
     /// <inheritdoc />
@@ -167,9 +191,11 @@ public sealed class SharedLinkManager : ISharedLinkManager
         }
 
         var count = await query.CountAsync(cancellationToken);
-        var links = await query.OrderByDescending(index => index.CreatedUtc).Skip(skip).Take(take).ListAsync(cancellationToken);
+        var links = (await query.OrderByDescending(index => index.CreatedUtc).Skip(skip).Take(take).ListAsync(cancellationToken)).ToList();
 
-        return (links.ToList(), count);
+        await LoadUsesAsync(links);
+
+        return (links, count);
     }
 
     /// <summary>
@@ -192,6 +218,20 @@ public sealed class SharedLinkManager : ISharedLinkManager
     public ISharedLinkHandler FindHandler(string kind)
     {
         return _services.GetServices<ISharedLinkHandler>().FirstOrDefault(handler => string.Equals(handler.Kind, kind, StringComparison.Ordinal));
+    }
+
+    // The counter of the uses is the reference, the copy in the document of a link may be stale.
+    private async Task LoadUsesAsync(IReadOnlyCollection<SharedLink> links)
+    {
+        var uses = await _useCounter.GetUsesAsync(links.Select(link => link.LinkId).ToList());
+
+        foreach (var link in links)
+        {
+            if (uses.TryGetValue(link.LinkId, out var count))
+            {
+                link.Uses = count;
+            }
+        }
     }
 
     private async Task<List<Recipient>> ResolveRecipientsAsync(IReadOnlyList<string> names)

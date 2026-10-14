@@ -20,6 +20,12 @@ public sealed class SharedLinkMigrations : DataMigration
             .CreateIndex("IDX_SharedLinkIndex_DocumentId", "DocumentId", "LinkId", "ExpiresUtc")
         );
 
+        // The counters of the uses, out of the index, which YesSql rewrites when a link is saved.
+        await SchemaBuilder.CreateTableAsync(SharedLinkUseCounter.TableName, table => table
+            .Column<string>("LinkId", column => column.PrimaryKey().WithLength(SharedLinkIndex.MaxIdLength))
+            .Column<int>("Uses", column => column.NotNull().WithDefault(0))
+        );
+
         return 1;
     }
 }
