@@ -58,7 +58,7 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `3.0.1`. The release notes can be found under [Releases](releases/3.0.1.md).
+The latest released version of Orchard Core is `3.0.2`. The release notes can be found under [Releases](releases/3.0.2.md).
 
 ## Getting Started
 
