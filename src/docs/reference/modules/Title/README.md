@@ -12,7 +12,9 @@ By default, attaching the TitlePart will allow content editors to manually edit 
 
 You can also generate the Title by specifying a pattern using a Liquid expression.
 
-The Pattern has access to the current ContentItem and is executed on ContentItem update. For example, fields can be used to generate the pattern. The following example uses a **Text field** named `Name`, on a `Product` content type.
+The Pattern has access to the current ContentItem and is executed when the ContentItem is created, updated, cloned, or published, including when an unpublished version is republished. The pattern is evaluated only once per content item in a request, so publishing does not evaluate it again if the title was already generated in that request. Editable titles do not evaluate the pattern.
+
+For example, fields can be used to generate the pattern. The following example uses a **Text field** named `Name`, on a `Product` content type.
 
 ```liquid
 {{ ContentItem.Content.Product.Name.Text }}
