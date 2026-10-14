@@ -152,7 +152,7 @@ public class BatchControllerTests
         var accessor = new Mock<IUpdateModelAccessor>();
         accessor.SetupGet(x => x.ModelUpdater).Returns(Mock.Of<IUpdateModel>());
 
-        var session = new Mock<ISession>();
+        var session = new Mock<YesSql.ISession>();
         var localizer = new Mock<IHtmlLocalizer<BatchController>>();
         var controller = new BatchController(
             content.Object,
@@ -180,7 +180,7 @@ public class BatchControllerTests
     private sealed record Harness(
         BatchController Controller,
         Mock<IContentManager> Content,
-        Mock<ISession> Session,
+        Mock<YesSql.ISession> Session,
         List<string> Prefixes,
         List<string> UpdatedPrefixes);
 }
