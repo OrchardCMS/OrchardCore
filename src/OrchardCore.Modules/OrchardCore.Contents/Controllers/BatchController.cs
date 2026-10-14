@@ -18,6 +18,7 @@ namespace OrchardCore.Contents.Controllers;
 /// Creates several content items of the same type in a single request.
 /// All writes use the current YesSql session so that a failed item cancels the batch.
 /// </summary>
+[Admin]
 public sealed class BatchController(
     IContentManager contentManager,
     IContentItemDisplayManager contentItemDisplayManager,
