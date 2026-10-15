@@ -54,12 +54,14 @@ The gallery opens in the **list view** by default: a table showing a file-type i
 
 ### Disabling thumbnails
 
-The grid (thumbnails) view can be disabled site-wide, e.g. for security or performance reasons, with the `DisableThumbnails` option in the [`OrchardCore_Media` configuration](README.md#configuration) section of `appsettings.json`:
+The grid (thumbnails) view can be disabled site-wide, e.g. for security or performance reasons, with the `DisableThumbnails` option in the [`OrchardCore:Media` configuration](README.md#configuration) section of `appsettings.json`:
 
 ```json
 {
-  "OrchardCore_Media": {
-    "DisableThumbnails": true
+  "OrchardCore": {
+    "Media": {
+      "DisableThumbnails": true
+    }
   }
 }
 ```
