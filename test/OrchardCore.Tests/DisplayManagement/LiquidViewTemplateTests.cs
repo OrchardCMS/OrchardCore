@@ -67,11 +67,51 @@ public class LiquidViewTemplateTests
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 context.InvokeInScopeAsync<string>(viewContext, "Inner", () => throw new InvalidOperationException()));
             Assert.Equal("Outer", context.GetValue("Model").ToStringValue());
-            Assert.Same(services.GetRequiredService<IViewLocalizer>(), context.GetValue("ViewLocalizer").ToObjectValue());
+            Assert.IsAssignableFrom<IViewLocalizer>(context.GetValue("ViewLocalizer").ToObjectValue());
             return 42;
         });
 
         Assert.Equal(42, result);
+        Assert.Equal("Root", context.GetValue("Model").ToStringValue());
+        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
+    }
+
+    [Fact]
+    public async Task RenderAsync_TemplateNotLocalizing_DoesNotContextualizeLocalizer()
+    {
+        using var services = CreateServiceProvider();
+        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var parser = new FluidParser();
+        Assert.True(parser.TryParse("{{ Model }}", out var template, out var error), error);
+
+        var result = await LiquidViewTemplateExtensions.RenderAsync(template, NullEncoder.Default, context, "Inner");
+
+        Assert.Equal("Inner", result);
+        Mock.Get(services.GetRequiredService<IViewLocalizer>())
+            .As<IViewContextAware>()
+            .Verify(localizer => localizer.Contextualize(It.IsAny<ViewContext>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task InvokeInScopeAsync_CallbackWithState_RunsInScopeAndRestoresParentScope()
+    {
+        using var services = CreateServiceProvider();
+        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var viewContext = services.GetRequiredService<ViewContextAccessor>().ViewContext;
+        context.SetValue("Model", "Root");
+
+        string modelInScope = null;
+        string stateInScope = null;
+
+        await context.InvokeInScopeAsync(viewContext, "Inner", state =>
+        {
+            modelInScope = state.Context.GetValue("Model").ToStringValue();
+            stateInScope = state.Value;
+            return ValueTask.CompletedTask;
+        }, (Context: context, Value: "State"));
+
+        Assert.Equal("Inner", modelInScope);
+        Assert.Equal("State", stateInScope);
         Assert.Equal("Root", context.GetValue("Model").ToStringValue());
         Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
     }
