@@ -2,7 +2,6 @@ using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
@@ -10,6 +9,7 @@ using OrchardCore.GitHub.Recipes;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.GitHub;
@@ -37,8 +37,6 @@ public sealed class GitHubLoginStartup : StartupBase
 
         // Built-in initializers:
         services.AddTransient<IPostConfigureOptions<GitHubAuthenticationOptions>, OAuthPostConfigureOptions<GitHubAuthenticationOptions, GitHubAuthenticationHandler>>();
-
-        services.AddScoped<IDataMigration, Migrations>();
     }
 }
 
@@ -49,5 +47,15 @@ public sealed class RecipesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddRecipeExecutionStep<GitHubAuthenticationSettingsStep>();
+    }
+}
+
+[Feature(GitHubConstants.Features.GitHubAuthentication)]
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, GitHubSecretMigrationDisplayDriver>();
     }
 }

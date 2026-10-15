@@ -19,20 +19,20 @@ public class FacebookLoginConfiguration :
     private readonly FacebookSettings _facebookSettings;
     private readonly IFacebookLoginService _loginService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly ISecretManager _secretManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public FacebookLoginConfiguration(
         IOptions<FacebookSettings> facebookSettings,
         IFacebookLoginService loginService,
         IDataProtectionProvider dataProtectionProvider,
-        ISecretManager secretManager,
+        IServiceProvider serviceProvider,
         ILogger<FacebookLoginConfiguration> logger)
     {
         _facebookSettings = facebookSettings.Value;
         _loginService = loginService;
         _dataProtectionProvider = dataProtectionProvider;
-        _secretManager = secretManager;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -43,10 +43,8 @@ public class FacebookLoginConfiguration :
             return;
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         var hasSecret = !string.IsNullOrWhiteSpace(_facebookSettings.AppSecretSecretName) ||
                         !string.IsNullOrWhiteSpace(_facebookSettings.AppSecret);
-#pragma warning restore CS0618 // Type or member is obsolete
 
         if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || !hasSecret)
         {
@@ -90,48 +88,13 @@ public class FacebookLoginConfiguration :
 
         options.AppId = _facebookSettings.AppId;
 
-        // First try to load from secrets
-        if (!string.IsNullOrWhiteSpace(_facebookSettings.AppSecretSecretName))
-        {
-            try
-            {
-                var secret = _secretManager.GetSecretAsync<TextSecret>(_facebookSettings.AppSecretSecretName)
-                    .GetAwaiter()
-                    .GetResult();
-
-                if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
-                {
-                    options.AppSecret = secret.Text;
-
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Facebook app secret loaded from secret '{SecretName}'.", _facebookSettings.AppSecretSecretName);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Facebook app secret secret '{SecretName}' was not found or is empty.", _facebookSettings.AppSecretSecretName);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to load Facebook app secret from secret '{SecretName}'.", _facebookSettings.AppSecretSecretName);
-            }
-        }
-        // Fall back to legacy encrypted app secret
-#pragma warning disable CS0618 // Type or member is obsolete
-        else if (!string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
-        {
-            try
-            {
-                options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(_facebookSettings.AppSecret);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "The Facebook secret key could not be decrypted. It may have been encrypted using a different key.");
-            }
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
+        options.AppSecret = _serviceProvider.GetSecretValueAsync(
+            _facebookSettings.AppSecretSecretName,
+            _facebookSettings.AppSecret,
+            _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (loginSettings.CallbackPath.HasValue)
         {

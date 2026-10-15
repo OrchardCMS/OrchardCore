@@ -29,14 +29,12 @@ public static class OrchardCoreBuilderExtensions
                         shellSettings.Name, "Facebook", "AppSecret");
 
                     // Secrets are consumed protected, as when they are saved from the admin settings, so protect the configured ones.
-#pragma warning disable CS0618 // Protect legacy credentials supplied through configuration.
                     var appSecret = configurationSection[nameof(FacebookSettings.AppSecret)];
 
                     if (!string.IsNullOrWhiteSpace(appSecret))
                     {
                         settings.AppSecret = dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Protect(appSecret);
                     }
-#pragma warning restore CS0618
                 });
         });
 

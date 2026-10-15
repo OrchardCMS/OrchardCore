@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Moq;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.Providers;
@@ -34,7 +36,8 @@ public class SecretAdminControllerTests
             [new SecretInfo { Name = "secret", Store = "AzureKeyVault", Type = nameof(TextSecret), Description = "description" }]);
         _manager.Setup(m => m.GetSecretAsync<ISecret>("secret", "AzureKeyVault")).ReturnsAsync(new TextSecret { Text = "old" });
         _controller = new AdminController(_manager.Object, [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>())],
-            authorization.Object, Mock.Of<INotifier>(), _localizer.Object, Mock.Of<IHtmlLocalizer<AdminController>>())
+            authorization.Object, Mock.Of<INotifier>(), Mock.Of<IShapeFactory>(), Options.Create(new PagerOptions()),
+            _localizer.Object, Mock.Of<IHtmlLocalizer<AdminController>>())
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

@@ -9,6 +9,7 @@ using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Modules;
 using OrchardCore.Secrets;
 
 namespace OrchardCore.Email.Smtp;
@@ -42,5 +43,14 @@ public sealed class Startup
 
             options.IsEnabled = options.ConfigurationExists();
         });
+    }
+}
+
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, SmtpSecretMigrationDisplayDriver>();
     }
 }

@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete
-
 using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;

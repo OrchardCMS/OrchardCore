@@ -83,9 +83,7 @@ public class AzureAISearchDefaultOptionsMonitorTests
             settings.UseCustomConfiguration = true;
             settings.AuthenticationType = AzureAIAuthenticationType.ApiKey;
             settings.Endpoint = endpoint;
-#pragma warning disable CS0618 // Verify support for legacy protected credentials.
             settings.ApiKey = protector.Protect(apiKey);
-#pragma warning restore CS0618
             settings.IdentityClientId = null;
             site.Put(settings);
 

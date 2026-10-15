@@ -1,72 +1,172 @@
 @model SecretIndexViewModel
+@inject IAuthorizationService AuthorizationService
+@{
+    var startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    var endIndex = startIndex + Model.Secrets.Count - 1;
+    var canManage = await AuthorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets);
+}
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Secrets"])</h1></zone>
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="bootstrap-select" at="Foot"></script>
 
-<form asp-action="Index" method="post" class="no-multisubmit">
+<zone Name="Title">
+    <breadcrumb name="Secrets" title="@T["Secrets"]" />
+</zone>
+
+@if (Model.ExpiredCount > 0 || Model.ExpiringCount > 0)
+{
+    @await DisplayAsync(await New.SecretsExpirationWarning(ExpiredCount: Model.ExpiredCount, ExpiringCount: Model.ExpiringCount, ShowReviewLink: false))
+}
+
+@* The form is necessary to generate an antiforgery token for the delete and bulk actions. *@
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-filter-submit="true" data-min-selected-items="1" data-selected-label="@T["selected"]">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
+
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
+                    <div class="has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
                 </div>
-                <div class="col-auto">
-                    <a asp-controller="Store" asp-action="Index" class="btn btn-secondary">@T["Manage Stores"]</a>
-                    <button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalSecretTypes">@T["Add Secret"]</button>
-                </div>
+                @if (canManage)
+                {
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalSecretTypes">@T["Add Secret"]</button>
+                    </div>
+                }
             </div>
         </div>
     </div>
 
-    <ul class="list-group">
-        @if (Model.Secrets.Any())
-        {
-            <li class="list-group-item text-bg-theme">
-                <div class="row">
-                    <div class="col-md-3"><strong>@T["Name"]</strong></div>
-                    <div class="col-md-2"><strong>@T["Type"]</strong></div>
-                    <div class="col-md-2"><strong>@T["Store"]</strong></div>
-                    <div class="col-md-2"><strong>@T["Expires"]</strong></div>
-                    <div class="col-md-3"><strong>@T["Actions"]</strong></div>
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item text-bg-theme">
+            <div class="row gx-3 align-items-center">
+                <div class="col">
+                    <div class="form-check my-1">
+                        @if (canManage && Model.Secrets.Count > 0)
+                        {
+                            <input type="checkbox" class="form-check-input" id="select-all">
+                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        }
+                        <label id="items" for="select-all">@T.Plural(Model.Secrets.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
                 </div>
-            </li>
+                <div class="col-auto d-flex align-items-center">
+                    <div class="btn-group filter">
+                        <select asp-for="Options.Status" asp-items="Model.Options.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by expiration"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Expiration"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.Type" asp-items="Model.Options.Types" class="selectpicker show-tick" data-header="@T["Filter by type"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Type"]" data-style="btn-sm"></select>
+                    </div>
+                    @if (canManage)
+                    {
+                        <div class="dropdown d-none" id="actions">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.BulkActions)
+                                {
+                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", item.Text.ToLower()]">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </li>
+        @if (Model.Secrets.Count > 0)
+        {
             @foreach (var secret in Model.Secrets)
             {
-                <li class="list-group-item @(secret.IsExpired ? "list-group-item-danger" : secret.IsExpiringSoon ? "list-group-item-warning" : "")">
+                <li class="list-group-item">
                     <div class="row">
-                        <div class="col-md-3">
-                            <a asp-action="Edit" asp-route-name="@secret.Name" asp-route-store="@secret.Store">@secret.Name</a>
-                            @if (secret.IsExpired)
+                        <div class="col-lg col-12 title d-flex align-items-center">
+                            @if (canManage)
                             {
-                                <span class="badge text-bg-danger ms-1" title="@T["This secret has expired"]">@T["Expired"]</span>
+                                <div class="form-check float-start flex-shrink-0">
+                                    <input type="checkbox" class="form-check-input" value="@secret.Id" name="itemIds" id="itemIds-@secret.Id">
+                                    <label class="form-check-label" for="itemIds-@secret.Id"></label>
+                                </div>
                             }
-                            else if (secret.IsExpiringSoon)
-                            {
-                                <span class="badge text-bg-warning ms-1" title="@T["This secret expires within 30 days"]">@T["Expiring"]</span>
-                            }
+                            <div class="summary d-flex flex-column flex-md-row flex-wrap">
+                                <div class="me-2">
+                                    @if (canManage)
+                                    {
+                                        <a asp-action="Edit" asp-route-name="@secret.Name" asp-route-store="@secret.Store">@secret.Name</a>
+                                    }
+                                    else
+                                    {
+                                        @secret.Name
+                                    }
+                                </div>
+                                <div class="me-1">
+                                    <span class="badge ta-badge fw-normal">
+                                        <i class="fa-solid fa-key text-secondary" aria-hidden="true"></i> <a asp-action="Index" asp-route-Options.Type="@secret.Type" data-bs-toggle="tooltip" title="@T["Show the secrets of this type"]">@secret.TypeDisplayName</a>
+                                    </span>
+                                </div>
+                                <div class="me-1">
+                                    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Store"]">
+                                        <i class="fa-solid fa-database text-secondary" aria-hidden="true"></i> @secret.Store
+                                    </span>
+                                </div>
+                                <div class="me-1">
+                                    @if (secret.IsExpired)
+                                    {
+                                        <span class="badge text-bg-danger fw-normal" data-bs-toggle="tooltip" title="@T["This secret has expired"]">
+                                            <i class="fa-solid fa-hourglass-end" aria-hidden="true"></i> @T["Expired {0}", secret.ExpiresUtc.Value.ToString("d")]
+                                        </span>
+                                    }
+                                    else if (secret.IsExpiringSoon)
+                                    {
+                                        <span class="badge text-bg-warning fw-normal" data-bs-toggle="tooltip" title="@T["This secret expires within 30 days"]">
+                                            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> @T["Expires {0}", secret.ExpiresUtc.Value.ToString("d")]
+                                        </span>
+                                    }
+                                    else if (secret.ExpiresUtc.HasValue)
+                                    {
+                                        <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Expiration date"]">
+                                            <i class="fa-solid fa-hourglass-start text-secondary" aria-hidden="true"></i> @T["Expires {0}", secret.ExpiresUtc.Value.ToString("d")]
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Expiration date"]">
+                                            <i class="fa-solid fa-infinity text-secondary" aria-hidden="true"></i> @T["Never expires"]
+                                        </span>
+                                    }
+                                </div>
+                                @if (secret.UpdatedUtc.HasValue)
+                                {
+                                    <div class="me-1">
+                                        <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: secret.UpdatedUtc, Format: "g"))">
+                                            <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> @await DisplayAsync(await New.Timespan(Utc: secret.UpdatedUtc))
+                                        </span>
+                                    </div>
+                                }
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            @(secret.Type?.Split('.').LastOrDefault() ?? "Unknown")
-                        </div>
-                        <div class="col-md-2">
-                            <span class="badge text-bg-info">@secret.Store</span>
-                        </div>
-                        <div class="col-md-2">
-                            @if (secret.ExpiresUtc.HasValue)
-                            {
-                                <span title="@secret.ExpiresUtc.Value.ToString("g")">
-                                    @secret.ExpiresUtc.Value.ToString("d")
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">@T["Never"]</span>
-                            }
-                        </div>
-                        <div class="col-md-3">
-                            <a asp-action="Edit" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-primary">@T["Edit"]</a>
-                            <a asp-controller="Store" asp-action="Index" asp-route-name="@secret.Name" asp-route-sourceStore="@secret.Store" class="btn btn-sm btn-secondary">@T["Move"]</a>
-                            <a asp-action="Delete" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete Secret"]" data-message="@T["Are you sure you want to delete this secret?"]">@T["Delete"]</a>
-                        </div>
+                        @if (canManage)
+                        {
+                            <div class="col-lg-auto col-12 d-flex justify-content-end align-items-center">
+                                <a asp-action="Edit" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-primary">@T["Edit"]</a>
+                                <a asp-controller="Store" asp-action="Index" asp-route-name="@secret.Name" asp-route-sourceStore="@secret.Store" class="btn btn-sm btn-secondary ms-1">@T["Move"]</a>
+                                <a asp-action="Delete" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-danger ms-1" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete Secret"]" data-message="@T["Are you sure you want to delete the secret '{0}'?", secret.Name]">@T["Delete"]</a>
+                            </div>
+                        }
                     </div>
+                    @if (!string.IsNullOrEmpty(secret.Description))
+                    {
+                        <div class="row">
+                            <div class="col">
+                                <small class="text-muted">@secret.Description</small>
+                            </div>
+                        </div>
+                    }
                 </li>
             }
         }
@@ -74,60 +174,56 @@
         {
             <li class="list-group-item">
                 <div class="alert alert-info mb-0" role="alert">
-                    @T["<strong>Nothing here!</strong> There are no secrets stored. Click 'Add Secret' to create one."]
+                    @if (!Model.Options.HasFilters)
+                    {
+                        @T["<strong>Nothing here!</strong> There are no secrets stored. Click 'Add Secret' to create one."]
+                    }
+                    else
+                    {
+                        @T["No results found."]
+                    }
                 </div>
             </li>
         }
     </ul>
 </form>
 
-<!-- Modal for selecting secret type -->
-<div class="modal fade" id="modalSecretTypes" tabindex="-1" role="dialog" aria-labelledby="available-secret-types-title" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="available-secret-types-title">@T["Select Secret Type"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <input class="form-control" id="secret-type-search" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+@await DisplayAsync(Model.Pager)
+
+@if (canManage)
+{
+    <!-- Modal for selecting secret type -->
+    <div class="modal fade" id="modalSecretTypes" tabindex="-1" role="dialog" aria-labelledby="available-secret-types-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="available-secret-types-title">@T["Select Secret Type"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
                 </div>
-                <div id="secret-type-cards" class="row row-cols-1 row-cols-md-2 g-2">
-                    @foreach (var secretType in Model.AvailableTypes)
-                    {
-                        <div class="col secret-type-item" data-name="@secretType.DisplayName.ToLowerInvariant()">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title">@secretType.DisplayName</h5>
-                                    <p class="card-text text-muted small">@secretType.Description</p>
-                                </div>
-                                <div class="card-footer bg-transparent text-end">
-                                    <a asp-action="Create" asp-route-type="@secretType.Name" class="btn btn-primary btn-sm">@T["Create"]</a>
+                <div class="modal-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-2">
+                        @foreach (var secretType in Model.AvailableTypes)
+                        {
+                            <div class="col">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@secretType.DisplayName</h5>
+                                        <p class="card-text text-muted small">@secretType.Description</p>
+                                    </div>
+                                    <div class="card-footer bg-transparent text-end">
+                                        <a asp-action="Create" asp-route-type="@secretType.Name" class="btn btn-primary btn-sm">@T["Create"]</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
 
-<script at="Foot">
-    document.getElementById('secret-type-search').addEventListener('input', function() {
-        var filter = this.value.toLowerCase();
-        var items = document.querySelectorAll('.secret-type-item');
-        items.forEach(function(item) {
-            var name = item.getAttribute('data-name');
-            if (name.indexOf(filter) > -1) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

@@ -1,3 +1,5 @@
+using OrchardCore.Secrets;
+
 namespace OrchardCore.Sms.ViewModels;
 
 public class TwilioSettingsViewModel : SmsSettingsBaseViewModel
@@ -8,7 +10,5 @@ public class TwilioSettingsViewModel : SmsSettingsBaseViewModel
 
     public string AccountSID { get; set; }
 
-    public string AuthTokenSecretName { get; set; }
-
-    public bool HasAuthToken { get; set; }
+    public SecretInputViewModel AuthToken { get; set; } = new();
 }

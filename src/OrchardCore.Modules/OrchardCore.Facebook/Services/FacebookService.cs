@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete
-
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;

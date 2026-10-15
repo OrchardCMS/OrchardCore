@@ -29,14 +29,12 @@ public static class OrchardCoreBuilderExtensions
                         shellSettings.Name, "Google", "ClientSecret");
 
                     // Secrets are consumed protected, as when they are saved from the admin settings, so protect the configured ones.
-#pragma warning disable CS0618 // Protect legacy credentials supplied through configuration.
                     var clientSecret = configurationSection[nameof(GoogleAuthenticationSettings.ClientSecret)];
 
                     if (!string.IsNullOrWhiteSpace(clientSecret))
                     {
                         settings.ClientSecret = dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Protect(clientSecret);
                     }
-#pragma warning restore CS0618
                 });
         });
 

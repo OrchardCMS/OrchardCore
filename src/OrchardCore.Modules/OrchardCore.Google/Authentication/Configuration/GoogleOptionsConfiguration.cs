@@ -15,18 +15,18 @@ public class GoogleOptionsConfiguration :
 {
     private readonly GoogleAuthenticationSettings _googleAuthenticationSettings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly ISecretManager _secretManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public GoogleOptionsConfiguration(
         IOptions<GoogleAuthenticationSettings> googleAuthenticationSettings,
         IDataProtectionProvider dataProtectionProvider,
-        ISecretManager secretManager,
+        IServiceProvider serviceProvider,
         ILogger<GoogleOptionsConfiguration> logger)
     {
         _googleAuthenticationSettings = googleAuthenticationSettings.Value;
         _dataProtectionProvider = dataProtectionProvider;
-        _secretManager = secretManager;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -37,10 +37,8 @@ public class GoogleOptionsConfiguration :
             return;
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         var hasSecret = !string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecretSecretName) ||
                         !string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret);
-#pragma warning restore CS0618 // Type or member is obsolete
 
         if (string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientID) || !hasSecret)
         {
@@ -70,48 +68,13 @@ public class GoogleOptionsConfiguration :
 
         options.ClientId = _googleAuthenticationSettings.ClientID;
 
-        // First try to load from secrets
-        if (!string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecretSecretName))
-        {
-            try
-            {
-                var secret = _secretManager.GetSecretAsync<TextSecret>(_googleAuthenticationSettings.ClientSecretSecretName)
-                    .GetAwaiter()
-                    .GetResult();
-
-                if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
-                {
-                    options.ClientSecret = secret.Text;
-
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Google client secret loaded from secret '{SecretName}'.", _googleAuthenticationSettings.ClientSecretSecretName);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Google client secret secret '{SecretName}' was not found or is empty.", _googleAuthenticationSettings.ClientSecretSecretName);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to load Google client secret from secret '{SecretName}'.", _googleAuthenticationSettings.ClientSecretSecretName);
-            }
-        }
-        // Fall back to legacy encrypted client secret
-#pragma warning disable CS0618 // Type or member is obsolete
-        else if (!string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret))
-        {
-            try
-            {
-                options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(_googleAuthenticationSettings.ClientSecret);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "The Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
-            }
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
+        options.ClientSecret = _serviceProvider.GetSecretValueAsync(
+            _googleAuthenticationSettings.ClientSecretSecretName,
+            _googleAuthenticationSettings.ClientSecret,
+            _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (_googleAuthenticationSettings.CallbackPath.HasValue)
         {

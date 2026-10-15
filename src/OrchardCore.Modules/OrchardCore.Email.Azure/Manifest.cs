@@ -9,7 +9,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Email",
-        "OrchardCore.Secrets",
     ],
     Category = "Communication"
 )]

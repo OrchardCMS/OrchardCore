@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.Email.Smtp.ViewModels;
 
@@ -22,6 +23,8 @@ public class SmtpSettingsViewModel
     public SmtpEncryptionMethod EncryptionMethod { get; set; }
 
     public string UserName { get; set; }
+
+    public SecretInputViewModel Password { get; set; } = new();
 
     public string ProxyHost { get; set; }
 

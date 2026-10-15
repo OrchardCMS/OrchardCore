@@ -10,8 +10,6 @@
     </div>
 </div>
 
-
-
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <h3>@T["Google Authentication Settings"]</h3>
@@ -27,22 +25,10 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" asp-validation-class-for="ClientSecretSecretName">
-    <label asp-for="ClientSecretSecretName" class="ocat-label">@T["API secret key"]</label>
-    <div class="ocat-limited">
-        @await Component.InvokeAsync("SelectSecret", new
-        {
-            secretTypes = new[] { "TextSecret" },
-            selectedSecret = Model.ClientSecretSecretName,
-            htmlId = Html.IdFor(m => m.ClientSecretSecretName).ToString(),
-            htmlName = Html.NameFor(m => m.ClientSecretSecretName).ToString(),
-            required = false
-        })
-        <span asp-validation-for="ClientSecretSecretName"></span>
-        @if (Model.HasClientSecret && string.IsNullOrWhiteSpace(Model.ClientSecretSecretName))
-        {
-            <p class="alert alert-warning mt-2">@T["A legacy client secret is configured. Please migrate to using a secret for improved security."]</p>
-        }
+<div class="ocat-wrapper" asp-validation-class-for="ClientSecret">
+    <label asp-for="ClientSecret" class="ocat-label">@T["API secret key"]</label>
+    <div class="ocat-end">
+        <secret-input asp-for="ClientSecret" secret-name="@GoogleConstants.SecretNames.ClientSecret" />
         <span class="hint">@T["The client secret defined in Google API console for the application."]</span>
     </div>
 </div>

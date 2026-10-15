@@ -60,9 +60,7 @@ public class AzureSmsOptionsMonitorTests
             {
                 IsEnabled = true,
                 PhoneNumber = "+15555555555",
-#pragma warning disable CS0618 // Verify support for legacy protected credentials.
                 ConnectionString = protector.Protect("endpoint=https://example.communication.azure.com/;accesskey=test-key"),
-#pragma warning restore CS0618
             });
 
             notifier

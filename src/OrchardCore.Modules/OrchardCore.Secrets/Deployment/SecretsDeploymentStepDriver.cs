@@ -17,8 +17,8 @@ public sealed class SecretsDeploymentStepDriver : DisplayDriver<DeploymentStep, 
     public override Task<IDisplayResult> DisplayAsync(SecretsDeploymentStep step, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("SecretsDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
-            View("SecretsDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            View("SecretsDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
+            View("SecretsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
     }
 
@@ -33,7 +33,7 @@ public sealed class SecretsDeploymentStepDriver : DisplayDriver<DeploymentStep, 
             .OrderBy(n => n)
             .ToList();
 
-        return Initialize<SecretsDeploymentStepViewModel>("SecretsDeploymentStep_Edit", model =>
+        return Initialize<SecretsDeploymentStepViewModel>("SecretsDeploymentStep_Fields_Edit", model =>
         {
             model.EncryptionKeyName = step.EncryptionKeyName;
             model.AvailableEncryptionKeys = encryptionKeys;

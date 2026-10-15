@@ -1,84 +1,151 @@
 @model SecretStoreViewModel
-
-<zone Name="Title"><h1>@RenderTitleSegments(T["Manage Secret Store"])</h1></zone>
-
-<div asp-validation-summary="All"></div>
-
-<div class="alert alert-warning">
-    @T["Move verifies the destination before deleting the source and keeps the logical secret name. Existing destination names are never overwritten. Secret values stay on the server."]
-    @T["Source deletion uses the provider's existing delete operation. Key Vault soft-delete retention, database backups, and transaction logs are not erased by a move."]
-</div>
-
-<form asp-action="Index" method="get" class="mb-3">
-    <label for="inspect-store" class="form-label">@T["Inspect a store"]</label>
-    <div class="input-group">
-        <select id="inspect-store" name="sourceStore" class="form-select">
-            @foreach (var store in Model.AvailableStores)
-            {
-                <option value="@store" selected="@(store == Model.SourceStore)">@store</option>
-            }
-        </select>
-        <button class="btn btn-secondary" type="submit">@T["Inspect"]</button>
-    </div>
-</form>
-
-@if (Model.ActiveCount.HasValue)
-{
-    <p>@T["Store: {0}. Active secrets: {1}.", Model.SourceStore, Model.ActiveCount.Value]</p>
-    @if (Model.ActiveCount == 0)
-    {
-        <div class="alert alert-info">
-            @T["This tenant has no active secrets visible through this store. Verify the destination integrations and every other tenant before disabling its feature."]
-            @T["This does not erase database backups, transaction logs, exported copies, audit history, or storage-provider retention. Rotate credentials if old copies must no longer be usable."]
-        </div>
-    }
+@{
+    var isSingleSecret = !string.IsNullOrEmpty(Model.Name);
+    var destinationStores = Model.AvailableStores
+        .Where(store => !store.Equals(Model.SourceStore, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+    var canMove = isSingleSecret || Model.ActiveCount > 0;
 }
 
-<form asp-action="Index" method="post" class="no-multisubmit">
-    <input asp-for="SourceStore" type="hidden" />
-    <input asp-for="Name" type="hidden" />
-    @if (!string.IsNullOrEmpty(Model.Name))
+<zone Name="Title">
+    @if (isSingleSecret)
     {
-        <p>@T["Move secret: {0}", Model.Name]</p>
+        <breadcrumb name="SecretsMove" title="@T["Move '{0}' secret", Model.Name]">
+            <breadcrumb-item id="Secrets" action="Index" controller="Admin" area="OrchardCore.Secrets" permission="@SecretsPermissions.ViewSecrets.Name">@T["Secrets"]</breadcrumb-item>
+        </breadcrumb>
     }
     else
     {
-        <p>@T["Move all active secrets from this source store."]</p>
+        <breadcrumb name="SecretStores" title="@T["Secret Stores"]" />
     }
-    <div class="mb-3">
-        <label asp-for="DestinationStore" class="form-label">@T["Destination store"]</label>
-        <select asp-for="DestinationStore" class="form-select">
-            <option value="">@T["Select a destination"]</option>
-            @foreach (var store in Model.AvailableStores.Where(store => !store.Equals(Model.SourceStore, StringComparison.OrdinalIgnoreCase)))
-            {
-                <option value="@store">@store</option>
-            }
-        </select>
-    </div>
-    <div class="mb-3 form-check">
-        <input asp-for="Confirm" class="form-check-input" />
-        <label asp-for="Confirm" class="form-check-label">@T["I confirm this move and deletion of the source after destination verification."]</label>
-    </div>
-    <button type="submit" class="btn btn-primary">@T["Execute"]</button>
-    <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">@T["Back to Secrets"]</a>
-</form>
+</zone>
+
+<div asp-validation-summary="ModelOnly"></div>
+
+@if (!isSingleSecret)
+{
+    <form asp-action="Index" method="get" id="source-store-form">
+        <div class="ocat-wrapper" asp-validation-class-for="SourceStore">
+            <label for="source-store" class="ocat-label">@T["Source store"]</label>
+            <div class="ocat-end">
+                <select id="source-store" name="sourceStore" class="form-select" data-submit-on-change>
+                    @foreach (var store in Model.AvailableStores)
+                    {
+                        <option value="@store" selected="@(store == Model.SourceStore)">@store</option>
+                    }
+                </select>
+                <span asp-validation-for="SourceStore"></span>
+                @if (Model.ActiveCount.HasValue)
+                {
+                    <span class="hint">@T["Total active secrets in the selected store: {0}", Model.ActiveCount.Value]</span>
+                }
+            </div>
+        </div>
+    </form>
+}
+
+@if (canMove)
+{
+    <form asp-action="Index" method="post" class="no-multisubmit">
+        <input asp-for="SourceStore" type="hidden" />
+        <input asp-for="Name" type="hidden" />
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <h5>@(isSingleSecret ? T["Move the secret from the '{0}' store to", Model.SourceStore] : T["Move all active secrets from this store to"])</h5>
+            </div>
+        </div>
+
+        @if (destinationStores.Count == 0)
+        {
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="alert alert-info mb-0" role="alert">
+                        @T["There is no other writable store to move secrets to. Enable another secret store, such as Azure Key Vault, first."]
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="ocat-wrapper" asp-validation-class-for="DestinationStore">
+                <label asp-for="DestinationStore" class="ocat-label ocat-label-required">@T["Destination store"]</label>
+                <div class="ocat-end">
+                    <select asp-for="DestinationStore" class="form-select">
+                        <option value="">@T["Select a destination"]</option>
+                        @foreach (var store in destinationStores)
+                        {
+                            <option value="@store">@store</option>
+                        }
+                    </select>
+                    <span asp-validation-for="DestinationStore"></span>
+                    <span class="hint">@T["A move verifies the destination before deleting the source, and keeps the name of each secret. Existing secrets in the destination are never overwritten, and secret values stay on the server."]</span>
+                </div>
+            </div>
+
+            <div class="ocat-wrapper" asp-validation-class-for="Confirm">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="Confirm" class="form-check-input" />
+                        <label asp-for="Confirm" class="form-check-label">@T["I confirm this move, and the deletion from the source store once the destination is verified."]</label>
+                    </div>
+                    <span asp-validation-for="Confirm"></span>
+                    <span class="hint">@T["The source is removed with the store's own delete operation. Key Vault soft-delete retention, database backups, and transaction logs are not erased by a move."]</span>
+                </div>
+            </div>
+
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <button type="submit" class="btn btn-primary">@T["Move"]</button>
+                    @if (isSingleSecret)
+                    {
+                        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+                    }
+                </div>
+            </div>
+        }
+    </form>
+}
 
 @if (Model.Results.Count > 0)
 {
-    <h2 class="mt-4">@T["Operation results"]</h2>
-    <table class="table">
-        <thead><tr><th>@T["Secret"]</th><th>@T["Result"]</th><th>@T["Destination verified and source removed"]</th></tr></thead>
-        <tbody>
-            @foreach (var result in Model.Results)
-            {
-                <tr>
-                    <td>@result.Name</td>
-                    <td>@(result.Succeeded ? T["Succeeded"] : T["Failed: {0}", result.Failure])</td>
-                    <td>
-                        @(result.Succeeded ? T["Yes"] : result.DestinationSaved ? T["No. A destination copy exists; inspect both stores before retrying."] : T["No. The source was not intentionally deleted."])
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <h5>@T["Results"]</h5>
+            <ul class="list-group">
+                @foreach (var result in Model.Results)
+                {
+                    <li class="list-group-item">
+                        <div class="d-flex flex-column flex-md-row">
+                            <div class="me-2">@result.Name</div>
+                            <div class="me-1">
+                                @if (result.Succeeded)
+                                {
+                                    <span class="badge text-bg-success fw-normal"><i class="fa-solid fa-check" aria-hidden="true"></i> @T["Moved"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-danger fw-normal"><i class="fa-solid fa-xmark" aria-hidden="true"></i> @T["Failed: {0}", result.Failure]</span>
+                                }
+                            </div>
+                        </div>
+                        @if (!result.Succeeded)
+                        {
+                            <small class="text-muted">
+                                @(result.DestinationSaved ? T["A copy exists in the destination. Inspect both stores before retrying."] : T["The source was not deleted."])
+                            </small>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
 }
+
+<script at="Foot">
+    document.querySelectorAll('[data-submit-on-change]').forEach(function (select) {
+        select.addEventListener('change', function () {
+            select.form.submit();
+        });
+    });
+</script>

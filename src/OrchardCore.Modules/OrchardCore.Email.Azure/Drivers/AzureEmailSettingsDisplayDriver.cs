@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
@@ -13,6 +14,7 @@ using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Azure.Email.Drivers;
@@ -23,6 +25,8 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -31,12 +35,16 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailValidator,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _emailValidator = emailValidator;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -50,16 +58,13 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
             return null;
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<AzureEmailSettingsViewModel>("AzureEmailSettings_Edit", model =>
         {
             model.IsEnabled = settings.IsEnabled;
             model.DefaultSender = settings.DefaultSender;
-            model.ConnectionStringSecretName = settings.ConnectionStringSecretName;
-            model.HasConnectionString = !string.IsNullOrWhiteSpace(settings.ConnectionString);
+            model.ConnectionString = SecretInputViewModel.Create(settings.ConnectionString, settings.ConnectionStringSecretName);
         }).Location("Content:5#Azure Communication Services")
         .OnGroup(SettingsGroupId);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, UpdateEditorContext context)
@@ -103,16 +108,31 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
 
             settings.DefaultSender = model.DefaultSender;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            // Validate that either a secret is selected or legacy connection string exists
-            if (string.IsNullOrWhiteSpace(model.ConnectionStringSecretName) && string.IsNullOrWhiteSpace(settings.ConnectionString))
+            var connectionString = await model.ConnectionString.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.ConnectionString)}")
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionStringSecretName), S["A connection string secret is required."]);
-            }
+                ProtectedValue = settings.ConnectionString,
+                SecretName = settings.ConnectionStringSecretName,
+            });
 
-            hasChanges |= model.ConnectionStringSecretName != settings.ConnectionStringSecretName;
-            settings.ConnectionStringSecretName = model.ConnectionStringSecretName;
-#pragma warning restore CS0618 // Type or member is obsolete
+            if (connectionString.Succeeded)
+            {
+                if (string.IsNullOrEmpty(connectionString.ProtectedValue) && string.IsNullOrEmpty(connectionString.SecretName))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
+                }
+                else
+                {
+                    hasChanges |= connectionString.ProtectedValue != settings.ConnectionString ||
+                        connectionString.SecretName != settings.ConnectionStringSecretName;
+
+                    settings.ConnectionString = connectionString.ProtectedValue;
+                    settings.ConnectionStringSecretName = connectionString.SecretName;
+                }
+            }
         }
 
         if (context.Updater.ModelState.IsValid)

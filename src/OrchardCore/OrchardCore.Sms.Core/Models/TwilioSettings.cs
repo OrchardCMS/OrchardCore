@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Sms.Models;
 
 public class TwilioSettings
@@ -11,14 +9,13 @@ public class TwilioSettings
     public string AccountSID { get; set; }
 
     /// <summary>
-    /// Gets or sets the auth token.
+    /// Gets or sets the auth token, protected with Data Protection.
     /// </summary>
-    [Obsolete("This property is deprecated and will be removed in a future version. Use the Secrets module to store sensitive data and reference it via AuthTokenSecretName.")]
     public string AuthToken { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the secret containing the Twilio auth token.
-    /// When set, this takes precedence over the AuthToken property.
+    /// Gets or sets the name of the secret of the Secrets module containing the auth token.
+    /// When set, this takes precedence over <see cref="AuthToken"/>.
     /// </summary>
     public string AuthTokenSecretName { get; set; }
 }

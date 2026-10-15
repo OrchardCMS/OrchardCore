@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Secrets;
 using OrchardCore.Settings;
@@ -10,16 +11,19 @@ public sealed class TwilioOptionsConfiguration : IConfigureOptions<TwilioOptions
 {
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly ISecretManager _secretManager;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger _logger;
 
     public TwilioOptionsConfiguration(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
-        ISecretManager secretManager)
+        IServiceProvider serviceProvider,
+        ILogger<TwilioOptionsConfiguration> logger)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
-        _secretManager = secretManager;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public void Configure(TwilioOptions options)
@@ -30,19 +34,12 @@ public sealed class TwilioOptionsConfiguration : IConfigureOptions<TwilioOptions
         options.PhoneNumber = settings.PhoneNumber;
         options.AccountSID = settings.AccountSID;
 
-        if (!string.IsNullOrWhiteSpace(settings.AuthTokenSecretName))
-        {
-            var secret = _secretManager.GetSecretAsync<TextSecret>(settings.AuthTokenSecretName).GetAwaiter().GetResult()
-                ?? throw new InvalidOperationException($"Twilio auth token secret '{settings.AuthTokenSecretName}' was not found.");
-            options.AuthToken = secret.Text;
-        }
-#pragma warning disable CS0618 // Type or member is obsolete
-        else if (!string.IsNullOrEmpty(settings.AuthToken))
-        {
-            var protector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
-
-            options.AuthToken = protector.Unprotect(settings.AuthToken);
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
+        options.AuthToken = _serviceProvider.GetSecretValueAsync(
+            settings.AuthTokenSecretName,
+            settings.AuthToken,
+            _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
     }
 }

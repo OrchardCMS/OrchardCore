@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
@@ -8,6 +9,10 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Secrets.Filters;
 
+/// <summary>
+/// Warns the users who can view secrets about expired and expiring secrets on the admin dashboard, whatever their
+/// roles. The Secrets list renders the same warning itself.
+/// </summary>
 public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
 {
     private readonly ISecretManager _secretManager;
@@ -34,8 +39,10 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
     {
         if (context.IsViewOrPageResult() &&
             AdminAttribute.IsApplied(context.HttpContext) &&
+            IsDashboard(context) &&
             context.HttpContext.User.Identity?.IsAuthenticated == true &&
-            await _authorizationService.AuthorizeAsync(context.HttpContext.User, SecretsPermissions.ManageSecrets))
+            // ManageSecrets implies ViewSecrets.
+            await _authorizationService.AuthorizeAsync(context.HttpContext.User, SecretsPermissions.ViewSecrets))
         {
             var now = _clock.UtcNow;
             var warningThreshold = now.AddDays(30);
@@ -66,6 +73,7 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
                     var shape = new Shape();
                     shape.Properties["ExpiredCount"] = expiredCount;
                     shape.Properties["ExpiringCount"] = expiringCount;
+                    shape.Properties["ShowReviewLink"] = true;
                     return ValueTask.FromResult<IShape>(shape);
                 });
                 var layout = await _layoutAccessor.GetLayoutAsync();
@@ -75,4 +83,18 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
 
         await next();
     }
+
+    // The admin root is served by the Admin module, or by the Admin Dashboard module when it is enabled.
+    private static bool IsDashboard(ResultExecutingContext context)
+    {
+        var values = context.RouteData.Values;
+
+        return IsRoute(values, "OrchardCore.Admin", "Admin", "Index") ||
+            IsRoute(values, "OrchardCore.AdminDashboard", "Dashboard", "Index");
+    }
+
+    private static bool IsRoute(RouteValueDictionary values, string area, string controller, string action)
+        => string.Equals(values["area"] as string, area, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(values["controller"] as string, controller, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(values["action"] as string, action, StringComparison.OrdinalIgnoreCase);
 }

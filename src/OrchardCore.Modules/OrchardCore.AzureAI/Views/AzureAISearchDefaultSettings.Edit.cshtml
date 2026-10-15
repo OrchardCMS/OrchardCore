@@ -3,7 +3,7 @@
 @model AzureAISearchDefaultSettingsViewModel
 
 @{
-    var apiKeyWrapperHtmlId = @Html.IdFor(x => x.ApiKeySecretName) + "_Wrapper";
+    var apiKeyWrapperHtmlId = @Html.IdFor(x => x.ApiKey) + "_Wrapper";
     var identityClientIdWrapperHtmlId = @Html.IdFor(x => x.IdentityClientId) + "_Wrapper";
 
     if (Model.ConfigurationsAreOptional)
@@ -45,18 +45,11 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper azure-ai-api-key-wrapper@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" asp-validation-class-for="ApiKeySecretName" id="@apiKeyWrapperHtmlId">
-        <label asp-for="ApiKeySecretName" class="ocat-label">@T["Api Key"]</label>
+    <div class="ocat-wrapper azure-ai-api-key-wrapper@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" asp-validation-class-for="ApiKey" id="@apiKeyWrapperHtmlId">
+        <label asp-for="ApiKey" class="ocat-label">@T["Api Key"]</label>
         <div class="ocat-end">
-        @await Component.InvokeAsync("SelectSecret", new
-        {
-            secretTypes = new[] { "TextSecret" },
-            selectedSecret = Model.ApiKeySecretName,
-            htmlId = Html.IdFor(m => m.ApiKeySecretName).ToString(),
-            htmlName = Html.NameFor(m => m.ApiKeySecretName).ToString(),
-            required = false
-        })
-        <span asp-validation-for="ApiKeySecretName"></span>
+        <secret-input asp-for="ApiKey" secret-name="@AzureAISearchConstants.SecretNames.ApiKey" placeholder="@T["Provide an authentication key"].Value" />
+        <span asp-validation-for="ApiKey"></span>
         </div>
     </div>
 

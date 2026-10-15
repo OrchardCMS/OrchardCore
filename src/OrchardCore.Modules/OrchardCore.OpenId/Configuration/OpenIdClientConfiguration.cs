@@ -17,20 +17,20 @@ public sealed class OpenIdClientConfiguration :
     IConfigureNamedOptions<OpenIdConnectOptions>
 {
     private readonly IOpenIdClientService _clientService;
-    private readonly ISecretManager _secretManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public OpenIdClientConfiguration(
         IOpenIdClientService clientService,
-        ISecretManager secretManager,
+        IServiceProvider serviceProvider,
         IDataProtectionProvider dataProtectionProvider,
         ShellSettings shellSettings,
         ILogger<OpenIdClientConfiguration> logger)
     {
         _clientService = clientService;
-        _secretManager = secretManager;
+        _serviceProvider = serviceProvider;
         _dataProtectionProvider = dataProtectionProvider;
         _shellSettings = shellSettings;
         _logger = logger;
@@ -82,40 +82,17 @@ public sealed class OpenIdClientConfiguration :
             }
         }
 
-        // Try to get the secret from the Secrets module first.
-        if (!string.IsNullOrWhiteSpace(settings.ClientSecretSecretName))
-        {
-            var secret = _secretManager.GetSecretAsync<TextSecret>(settings.ClientSecretSecretName)
-                .GetAwaiter()
-                .GetResult();
+        var clientSecret = _serviceProvider.GetSecretValueAsync(
+            settings.ClientSecretSecretName,
+            settings.ClientSecret,
+            _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration)),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
-            if (secret != null)
-            {
-                options.ClientSecret = secret.Text;
-            }
-            else
-            {
-                _logger.LogError("The OpenID client secret '{SecretName}' could not be found.", settings.ClientSecretSecretName);
-            }
-        }
-        else
+        if (!string.IsNullOrEmpty(clientSecret))
         {
-            // Fall back to legacy encrypted setting.
-#pragma warning disable CS0618 // Type or member is obsolete
-            if (!string.IsNullOrEmpty(settings.ClientSecret))
-            {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
-
-                try
-                {
-                    options.ClientSecret = protector.Unprotect(settings.ClientSecret);
-                }
-                catch
-                {
-                    _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
-                }
-            }
-#pragma warning restore CS0618 // Type or member is obsolete
+            options.ClientSecret = clientSecret;
         }
 
         if (settings.Parameters != null && settings.Parameters.Length > 0)

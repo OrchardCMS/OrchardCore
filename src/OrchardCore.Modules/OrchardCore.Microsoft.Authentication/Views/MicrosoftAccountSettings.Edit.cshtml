@@ -10,8 +10,6 @@
     </div>
 </div>
 
-
-
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <h3>@T["Microsoft Account Authentication Settings"]</h3>
@@ -27,22 +25,10 @@
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="AppSecretSecretName">
-    <label asp-for="AppSecretSecretName" class="ocat-label">@T["Secret Key"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="AppSecret">
+    <label asp-for="AppSecret" class="ocat-label">@T["Secret Key"]</label>
     <div class="ocat-end">
-        @await Component.InvokeAsync("SelectSecret", new
-        {
-            secretTypes = new[] { "TextSecret" },
-            selectedSecret = Model.AppSecretSecretName,
-            htmlId = Html.IdFor(m => m.AppSecretSecretName).ToString(),
-            htmlName = Html.NameFor(m => m.AppSecretSecretName).ToString(),
-            required = false
-        })
-        <span asp-validation-for="AppSecretSecretName"></span>
-        @if (Model.HasAppSecret && string.IsNullOrWhiteSpace(Model.AppSecretSecretName))
-        {
-            <p class="alert alert-info">@T["A legacy app secret is configured. Please create a new secret using the Secrets module and select it below, then save to complete the migration."]</p>
-        }
+        <secret-input asp-for="AppSecret" secret-name="@MicrosoftAuthenticationConstants.SecretNames.AppSecret" />
         <span class="hint">@T["The Application secret key found on the Microsoft developer portal parameters."]</span>
     </div>
 </div>
