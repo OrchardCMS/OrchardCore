@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
@@ -12,7 +13,7 @@ public class Module
 
     private readonly string _baseNamespace;
     private readonly DateTimeOffset _lastModified;
-    private readonly Dictionary<string, IFileInfo> _fileInfos = [];
+    private readonly ConcurrentDictionary<string, IFileInfo> _fileInfos = [];
 
     // TODO: MWP: trace back to usage, etc...
     // TODO: MWP: perhaps we filter up front so we are not discovering all this during ctor...
