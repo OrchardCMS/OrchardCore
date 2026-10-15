@@ -44,7 +44,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                        .AddClass("azure-ai-search")
                            .Id("azureaisearch")
                            .Action("Index", "Admin", s_routeValues)
-                           .Permission(AzureAISearchPermissions.ManageAzureAISearchISettings)
+                           .Permission(AzureAISearchPermissions.ManageAzureAISearchSettings)
                            .LocalNav()
                        )
                    )

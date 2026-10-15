@@ -112,10 +112,11 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
         options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), s_defaultTemporaryFileLifeTime);
+        options.DisableThumbnails = section.GetValue(nameof(options.DisableThumbnails), false);
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 
-        // Use the same cache control header as ImageSharp does for resized images.
+        // Use the same cache control header as the one used for resized images.
         var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(options.MaxBrowserCacheDays).TotalSeconds.ToString();
         // Secure files are not cached at all.
         var secureCacheControl = options.MaxSecureFilesBrowserCacheDays == 0

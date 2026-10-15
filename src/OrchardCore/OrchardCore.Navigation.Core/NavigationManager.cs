@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation;
 
@@ -55,8 +56,8 @@ public class NavigationManager : INavigationManager
         // Merge all menu hierarchies into a single one.
         Merge(menuItems);
 
-        // Remove unauthorized menu items.
-        menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User);
+        // Remove unauthorized menu items. Many items require the same permissions, each one is only checked once.
+        menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User, []);
 
         // Compute Url and RouteValues properties to Href.
         menuItems = ComputeHref(menuItems, actionContext);
@@ -204,7 +205,7 @@ public class NavigationManager : INavigationManager
     /// <summary>
     /// Updates the items by checking for permissions.
     /// </summary>
-    private async Task<List<MenuItem>> AuthorizeAsync(IEnumerable<MenuItem> items, ClaimsPrincipal user)
+    private async Task<List<MenuItem>> AuthorizeAsync(IEnumerable<MenuItem> items, ClaimsPrincipal user, Dictionary<(Permission Permission, object Resource), bool> authorizations)
     {
         var filtered = new List<MenuItem>();
         foreach (var item in items)
@@ -224,7 +225,13 @@ public class NavigationManager : INavigationManager
                 var isAuthorized = true;
                 foreach (var permission in item.Permissions)
                 {
-                    if (!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
+                    if (!authorizations.TryGetValue((permission, item.Resource), out var isPermissionAuthorized))
+                    {
+                        isPermissionAuthorized = await _authorizationService.AuthorizeAsync(user, permission, item.Resource);
+                        authorizations[(permission, item.Resource)] = isPermissionAuthorized;
+                    }
+
+                    if (!isPermissionAuthorized)
                     {
                         isAuthorized = false;
                         break;
@@ -235,10 +242,15 @@ public class NavigationManager : INavigationManager
                 {
                     filtered.Add(item);
                 }
+                else
+                {
+                    // The child items of an unauthorized item are removed with it.
+                    continue;
+                }
             }
 
             // Process child items.
-            item.Items = (await AuthorizeAsync(item.Items, user));
+            item.Items = await AuthorizeAsync(item.Items, user, authorizations);
         }
 
         return filtered;

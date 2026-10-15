@@ -14,8 +14,10 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
     private readonly IPermissionGrantingService _permissionGrantingService;
 
 
-    private IEnumerable<RoleClaim> _anonymousClaims;
-    private IEnumerable<RoleClaim> _authenticatedClaims;
+    // The claims of the anonymous role, and of the anonymous and authenticated roles, built once per scope
+    // instead of for each authorization check.
+    private Claim[] _anonymousClaims;
+    private Claim[] _authenticatedClaims;
 
     public RolesPermissionsHandler(
         RoleManager<IRole> roleManager,
@@ -33,18 +35,13 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
             return;
         }
 
-        var claims = new HashSet<Claim>();
-        foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous))
-        {
-            claims.Add(claim);
-        }
+        _anonymousClaims ??= ToClaims(await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous));
+
+        var claims = _anonymousClaims;
 
         if (context.User.Identity.IsAuthenticated)
         {
-            foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))
-            {
-                claims.Add(claim);
-            }
+            claims = _authenticatedClaims ??= [.. _anonymousClaims, .. ToClaims(await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))];
         }
 
         if (_permissionGrantingService.IsGranted(requirement, claims))
@@ -53,6 +50,9 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
             return;
         }
     }
+
+    private static Claim[] ToClaims(IEnumerable<RoleClaim> roleClaims)
+        => roleClaims.Select(roleClaim => (Claim)roleClaim).ToArray();
 
     private async Task<IEnumerable<RoleClaim>> GetRoleClaimsAsync(string roleName)
     {

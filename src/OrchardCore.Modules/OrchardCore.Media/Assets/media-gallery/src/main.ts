@@ -49,10 +49,15 @@ export interface IMediaPickerConfig {
   basePath: string;
   uploadFilesUrl: string;
   allowedExtensions?: string;
+  /** Maximum upload size in bytes; nonpositive or absent means no client-side size limit. */
+  maxFileSize?: number;
   allowMultiple?: boolean;
   maxUploadChunkSize?: number;
   /** Connect to the MediaHub for real-time media updates while the picker is open. */
   signalrEnabled?: boolean;
+  // Disables the thumbnails (grid) view in the picker's library browser.
+  // Driven by the OrchardCore_Media:DisableThumbnails appsettings option.
+  disableThumbnails?: boolean | string;
 }
 
 export function mountMediaAppAsPicker(
@@ -96,9 +101,11 @@ export function mountMediaAppAsPicker(
         basePath: config.basePath,
         uploadFilesUrl: config.uploadFilesUrl,
         allowedExtensions: config.allowedExtensions ?? "",
+        maxFileSize: config.maxFileSize ?? 0,
         allowMultipleSelection: pickerAllowsMultiple,
         maxUploadChunkSize: config.maxUploadChunkSize ?? 0,
         signalrEnabled: config.signalrEnabled ? "true" : "false",
+        disableThumbnails: parseBoolean(config.disableThumbnails, false) ? "true" : "false",
       }),
   });
 
@@ -141,5 +148,4 @@ export function mountMediaAppAsPicker(
     },
   };
 }
-
 
