@@ -137,14 +137,17 @@ public class Module
             return new NotFoundFileInfo(subpath);
         }
 
-        var resourcePath = _baseNamespace + subpath.Replace('/', '>');
-        var fileName = Path.GetFileName(subpath);
-
-        if (Assembly.GetManifestResourceInfo(resourcePath) == null)
+        return _fileInfos.GetOrAdd(subpath, static (path, module) =>
         {
-            return new NotFoundFileInfo(fileName);
-        }
+            var resourcePath = module._baseNamespace + path.Replace('/', '>');
+            var fileName = Path.GetFileName(path);
 
-        return _fileInfos.GetOrAdd(subpath, new EmbeddedResourceFileInfo(Assembly, resourcePath, fileName, _lastModified));
+            if (module.Assembly.GetManifestResourceInfo(resourcePath) == null)
+            {
+                return new NotFoundFileInfo(fileName);
+            }
+
+            return new EmbeddedResourceFileInfo(module.Assembly, resourcePath, fileName, module._lastModified);
+        }, this);
     }
 }
