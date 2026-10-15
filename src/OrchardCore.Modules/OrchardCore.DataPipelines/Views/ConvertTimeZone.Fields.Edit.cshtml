@@ -1,5 +1,8 @@
 @model ConvertTimeZoneStepViewModel
 
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
 <div class="ocat-wrapper">
     <label asp-for="Conversion" class="ocat-label">@T["Convert"]</label>
     <div class="ocat-end">
@@ -28,7 +31,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="TimeZoneId">
         <label asp-for="TimeZoneId" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end">
-            <select asp-for="TimeZoneId" class="form-select">
+            <select asp-for="TimeZoneId" data-dp-select data-live-search="true" data-width="100%">
                 <option value="">@T["Choose a time zone"]</option>
                 @foreach (var timeZoneId in Model.TimeZones)
                 {
@@ -49,7 +52,7 @@
         }
         else
         {
-            <select asp-for="Fields" class="form-select" multiple size="@Math.Min(8, Math.Max(3, Model.AvailableFields.Count))">
+            <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every date and time"]">
                 @foreach (var field in Model.AvailableFields)
                 {
                     <option value="@field.Name" selected="@Model.Fields.Contains(field.Name)">@field.Name</option>

@@ -10,8 +10,36 @@
 //   [data-dp-formula-scope] that last had the focus, or to its first one.
 // - Inserting a function: [data-dp-insert-function="NAME"] inserts "NAME()" the same way, with the caret between the
 //   parentheses. A [data-dp-function-search] input filters the [data-dp-search-text] items of its [data-dp-functions].
+// - Searchable lists: a <select data-dp-select> becomes a bootstrap-select, configured by its data-* attributes, such
+//   as data-live-search and data-show-selected-tags. It's created when the designer injects the editor, and destroyed
+//   when the designer removes it. It raises the select's "change" event, so the designer applies the selection.
 (function () {
     const lastFormulas = new WeakMap();
+    const selectSelector = "select[data-dp-select]";
+
+    const initSelects = (node) => {
+        if (!window.Selectpicker || !(node instanceof Element)) {
+            return;
+        }
+
+        const selects = node.matches(selectSelector) ? [node] : node.querySelectorAll(selectSelector);
+
+        selects.forEach((select) => window.Selectpicker.getOrCreateInstance(select));
+    };
+
+    new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => mutation.addedNodes.forEach(initSelects));
+    }).observe(document.body ?? document.documentElement, { childList: true, subtree: true });
+
+    initSelects(document.body ?? document.documentElement);
+
+    document.addEventListener("oc:editor-unmounting", (event) => {
+        if (!window.Selectpicker || !(event.target instanceof Element)) {
+            return;
+        }
+
+        event.target.querySelectorAll(selectSelector).forEach((select) => window.Selectpicker.getInstance(select)?.destroy());
+    });
 
     const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

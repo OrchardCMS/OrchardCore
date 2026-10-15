@@ -29,6 +29,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         _manifest
             .DefineScript("data-pipelines-editors")
+            .SetDependencies("bootstrap-select")
             .SetUrl(
                 "~/OrchardCore.DataPipelines/Scripts/data-pipelines-editors.min.js",
                 "~/OrchardCore.DataPipelines/Scripts/data-pipelines-editors.js")
