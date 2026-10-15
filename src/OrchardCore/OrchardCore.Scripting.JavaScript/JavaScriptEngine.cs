@@ -18,7 +18,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
 
     // The attributes Engine.SetValue(string, Delegate) gives a global, so that a lazily declared global is
     // indistinguishable from an eagerly set one once it is materialized.
-    private const PropertyFlag GlobalPropertyFlags = PropertyFlag.NonEnumerable;
+    internal const PropertyFlag GlobalPropertyFlags = PropertyFlag.NonEnumerable;
 
     private readonly IMemoryCache _memoryCache;
     private readonly JintOptions _jintOptions;
@@ -45,7 +45,8 @@ public sealed class JavaScriptEngine : IScriptingEngine
     /// engine as lazy properties, whether or not <paramref name="methods"/> contains them. A lazy property
     /// only builds its delegate when a script actually reads the name, so the ones a script does not use
     /// cost nothing. Methods that are not registered by a provider, such as the ones a caller adds for a
-    /// single evaluation, are installed eagerly and take precedence over a registered global of the same name.
+    /// single evaluation, are installed on the engine itself — also lazily, and after the registered ones,
+    /// so they still take precedence over a registered global of the same name.
     /// </remarks>
     public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
     {
@@ -171,7 +172,8 @@ public sealed class JavaScriptEngine : IScriptingEngine
             if (!candidates.TryAdd(method.Name, method))
             {
                 // Several providers contribute a global with the same name. Which one wins depends on the
-                // order they are set in, so leave them all to the eager path where that order is observable.
+                // order they are declared in, so leave them all to the scope, which declares the methods it
+                // is handed on its own engine in that order, the last one replacing the others.
                 ambiguous.Add(method.Name);
             }
         }
@@ -181,7 +183,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
         foreach (var (name, method) in candidates)
         {
             // A method named 'x' with an asynchronous variant and a method named 'xAsync' would both claim
-            // the 'xAsync' global; keep those on the eager path as well.
+            // the 'xAsync' global; leave those to the scope as well.
             if (ambiguous.Contains(name) || (method.AsyncMethod != null && candidates.ContainsKey(name + "Async")))
             {
                 continue;
@@ -214,11 +216,11 @@ public sealed class JavaScriptEngine : IScriptingEngine
 
     private static JsValue CreateGlobal(Engine engine, string name, Func<IServiceProvider, Delegate> factory)
     {
-        // The factory captures the services it is given, so the delegate has to be built with the services
-        // of the scope that owns this engine, and cannot be shared between engines. The scope records them
-        // in the engine's [[HostDefined]] slot, which Jint reserves for the host and which no part of the
-        // engine reads. A scope created without services records that instead, and its globals are built
-        // without services, as the methods of that scope that are set eagerly are.
+        // A global declared on the shared options cannot capture a service provider, because the options
+        // outlive any one evaluation. The scope records the ones it belongs to in the engine's
+        // [[HostDefined]] slot, which Jint reserves for the host and which no part of the engine reads. A
+        // scope created without services records that instead, and its globals are built without services,
+        // as the methods handed to that scope are.
         var hostDefined = engine.Advanced.HostDefined;
         var serviceProvider = hostDefined as IServiceProvider;
 
@@ -233,12 +235,21 @@ public sealed class JavaScriptEngine : IScriptingEngine
                 $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}, and must not have their {nameof(Engine)}.{nameof(Engine.Advanced)}.{nameof(Engine.AdvancedOperations.HostDefined)} slot used for anything else.");
         }
 
-        // This is only equivalent to what Engine.SetValue(string, Delegate) installs while no IObjectConverter
-        // is registered on the options: FromObject consults the registered converters before it falls back to
-        // wrapping the delegate, so a converter handling Delegate would give a materialized global a different
-        // shape than an eagerly set one, in the same engine.
-        return JsValue.FromObject(engine, factory(serviceProvider));
+        return CreateGlobal(engine, serviceProvider, factory);
     }
+
+    /// <summary>
+    /// Builds the value a global resolves to, from the services of the scope the global belongs to.
+    /// </summary>
+    /// <remarks>
+    /// This is only equivalent to what <c>Engine.SetValue(string, Delegate)</c> installs while no
+    /// <c>IObjectConverter</c> is registered on the options: <c>FromObject</c> consults the registered
+    /// converters before it falls back to wrapping the delegate, so a converter handling <see cref="Delegate"/>
+    /// would replace every global created here with whatever it returns. Jint 4.x offers no public way to
+    /// wrap a delegate that bypasses the converters other than <c>SetValue</c> itself, which is eager.
+    /// </remarks>
+    internal static JsValue CreateGlobal(Engine engine, IServiceProvider serviceProvider, Func<IServiceProvider, Delegate> factory)
+        => JsValue.FromObject(engine, factory(serviceProvider));
 
     /// <summary>
     /// A <see cref="GlobalMethod"/> whose globals are declared on the engine options, and which of the two

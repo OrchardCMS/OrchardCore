@@ -63,6 +63,68 @@ public class JavaScriptScopeTests
     }
 
     [Fact]
+    public void ScopedMethods_AreNotBuiltWhenTheScriptDoesNotUseThem()
+    {
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal(0, scoped.BuildCount);
+        Assert.Equal(1, Convert.ToInt32(engine.Evaluate(scope, "return 1;")));
+        Assert.Equal(0, scoped.BuildCount);
+    }
+
+    [Fact]
+    public void ScopedMethods_AreBuiltOncePerEngine()
+    {
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal("scoped", engine.Evaluate(scope, "return scoped();"));
+        Assert.Equal(1, scoped.BuildCount);
+
+        // The materialized value is kept by the engine, so the identity of the global is stable.
+        Assert.True((bool)engine.Evaluate(scope, "var first = scoped; var second = scoped; return first === second;"));
+        Assert.Equal(1, scoped.BuildCount);
+
+        // A second scope gets its own engine, and therefore its own delegate.
+        var otherScope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal("scoped", engine.Evaluate(otherScope, "return scoped();"));
+        Assert.Equal(2, scoped.BuildCount);
+    }
+
+    [Fact]
+    public void ScopedMethods_AreNotEnumerable()
+    {
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.True((bool)engine.Evaluate(scope, "return Object.keys(globalThis).indexOf('scoped') === -1;"));
+        Assert.True((bool)engine.Evaluate(scope, "return 'scoped' in globalThis;"));
+    }
+
+    [Fact]
+    public void ScopedMethods_AreReachableThroughGlobalThis()
+    {
+        // A lazily declared global is a real own property of globalThis, so it is reachable by every route a
+        // script has to a global and not only by the identifier. This is what makes deferring the delegate
+        // unobservable rather than a narrowing of what scripts can do.
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal("scoped", engine.Evaluate(scope, "return globalThis['scoped']();"));
+        Assert.Equal(1, scoped.BuildCount);
+    }
+
+    [Fact]
     public void ScopedMethods_TakePrecedenceOverRegisteredGlobalsOfTheSameName()
     {
         var (engine, methods, serviceProvider, provider) = CreateEngine();
@@ -77,6 +139,38 @@ public class JavaScriptScopeTests
 
         Assert.Equal("scoped", engine.Evaluate(scope, "return counted();"));
         Assert.Equal(0, provider.BuildCount);
+    }
+
+    [Fact]
+    public void ScopedMethods_AreBuiltWithTheServicesOfTheirOwnScope()
+    {
+        // The same method handed to two scopes that are alive at the same time: each engine has to build it
+        // from the services of the scope it was handed to, not from whichever scope was created last.
+        var (engine, methods, _, _) = CreateEngine();
+        var scoped = new ScopeNameMethodProvider();
+
+        var firstScope = engine.CreateScope(methods.Concat(scoped.GetMethods()), CreateServices("first"), null, null);
+        var secondScope = engine.CreateScope(methods.Concat(scoped.GetMethods()), CreateServices("second"), null, null);
+
+        Assert.Equal("second", engine.Evaluate(secondScope, "return scopeName();"));
+        Assert.Equal("first", engine.Evaluate(firstScope, "return scopeName();"));
+    }
+
+    [Fact]
+    public void RegisteredGlobals_ContributedByTwoProviders_ResolveToTheLaterOne_WhichIsTheOnlyOneBuilt()
+    {
+        // A name more than one provider contributes is not declared on the shared options, because which
+        // provider wins depends on order. It is declared by the scope instead, in the order the methods
+        // arrive, so the later provider still wins - and the one it replaces is never built at all.
+        var first = new CountingMethodProvider("shared", "first");
+        var second = new CountingMethodProvider("shared", "second");
+        var (engine, methods, serviceProvider) = CreateEngine(first, second);
+
+        var scope = engine.CreateScope(methods, serviceProvider, null, null);
+
+        Assert.Equal("second", engine.Evaluate(scope, "return shared();"));
+        Assert.Equal(0, first.BuildCount);
+        Assert.Equal(1, second.BuildCount);
     }
 
     [Fact]
@@ -138,9 +232,9 @@ public class JavaScriptScopeTests
     public void PublicConstructor_RecordsTheServicesOnAnEngineWhoseHostSlotIsFree()
     {
         // An engine built from the tenant's own Jint options carries the declarations for the registered
-        // globals. A method this constructor is handed is set eagerly and never reaches the declaration, so
-        // the shape where the slot matters is a global the caller does not pass: it stays lazy, and the
-        // services it is eventually built from can only come from the engine.
+        // globals. A method this constructor is handed is declared on the engine together with the services
+        // it is to be built from, so it never consults the slot; the shape where the slot matters is a
+        // global the caller does not pass, whose services can only come from the engine.
         var (engine, _, tenantServices) = CreateEngineWithScopeNames();
         var callerEngine = CreateEngineFromTenantOptions(tenantServices);
         var callerServices = CreateServices("caller");
@@ -174,7 +268,7 @@ public class JavaScriptScopeTests
     {
         // A scope can be created without services, which is what DefaultScriptingManager does outside of a
         // shell scope. The globals still work there, and their factories are handed no services, exactly as
-        // when the scope's methods are set eagerly.
+        // the factories of the methods handed to that scope are.
         var (engine, methods, _, provider) = CreateEngine();
 
         var scope = engine.CreateScope(methods, null, null, null);
@@ -220,6 +314,36 @@ public class JavaScriptScopeTests
 
         var exception = Assert.Throws<InvalidOperationException>(() => callerEngine.Evaluate("scopeName()"));
         Assert.Contains("scopeName", exception.Message);
+    }
+
+    [Fact]
+    public void ScopedMethods_AreBuiltWithoutServices_WhenTheScopeWasCreatedWithoutServices()
+    {
+        var (engine, methods, _, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), null, null, null);
+
+        Assert.Equal("scoped", engine.Evaluate(scope, "return scoped();"));
+        Assert.Equal(1, scoped.BuildCount);
+        Assert.Null(scoped.LastServices);
+    }
+
+    [Fact]
+    public void PublicConstructor_BuildsTheMethodsItIsHandedFromItsOwnServices_WhenTheHostSlotIsInUse()
+    {
+        // A method handed to the scope travels with the services it is to be built from, so unlike a global
+        // the caller does not pass, it does not depend on the slot and keeps working when the slot is the
+        // caller's.
+        var (engine, methods, tenantServices) = CreateEngineWithScopeNames();
+        var callerEngine = CreateEngineFromTenantOptions(tenantServices);
+        var callerState = new object();
+        callerEngine.Advanced.HostDefined = callerState;
+
+        var scope = new JavaScriptScope(callerEngine, CreateServices("caller"), methods);
+
+        Assert.Equal("caller", engine.Evaluate(scope, "return scopeName();"));
+        Assert.Same(callerState, callerEngine.Advanced.HostDefined);
     }
 
     private static (IScriptingEngine Engine, IEnumerable<GlobalMethod> Methods, IServiceProvider Services) CreateEngineWithScopeNames()
@@ -283,28 +407,48 @@ public class JavaScriptScopeTests
         return (engine, methods, serviceProvider, provider);
     }
 
+    private static (IScriptingEngine Engine, IEnumerable<GlobalMethod> Methods, IServiceProvider ServiceProvider) CreateEngine(params IGlobalMethodProvider[] providers)
+    {
+        var services = new ServiceCollection()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine();
+
+        foreach (var provider in providers)
+        {
+            services.AddSingleton(provider);
+        }
+
+        var serviceProvider = services.BuildServiceProvider();
+        var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
+        var engine = scriptingManager.GetScriptingEngine("js");
+        var methods = scriptingManager.GlobalMethodProviders.SelectMany(p => p.GetMethods()).ToArray();
+
+        return (engine, methods, serviceProvider);
+    }
+
     private sealed class CountingMethodProvider : IGlobalMethodProvider
     {
         private readonly GlobalMethod _globalMethod;
 
-        public CountingMethodProvider()
+        public CountingMethodProvider(string name = "counted", string value = null)
         {
             _globalMethod = new GlobalMethod
             {
-                Name = "counted",
+                Name = name,
                 Method = sp =>
                 {
                     BuildCount++;
                     LastServices = sp;
 
-                    return (Func<string>)(() => "counted");
+                    return (Func<string>)(() => value ?? name);
                 },
                 AsyncMethod = sp =>
                 {
                     AsyncBuildCount++;
                     LastServices = sp;
 
-                    return (Func<Task<string>>)(() => Task.FromResult("counted async"));
+                    return (Func<Task<string>>)(() => Task.FromResult((value ?? name) + " async"));
                 },
             };
         }
