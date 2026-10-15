@@ -32,7 +32,7 @@ vi.mock("@media-gallery", () => ({
 vi.mock("../components/MediaFieldBasic.vue", () => ({
   default: {
     name: "MediaFieldBasic",
-    template: "<div class='stub-basic' :data-max-file-size='config?.maxFileSize' :data-media-app-translations='config?.mediaAppTranslations' :data-signalr-enabled='config?.signalrEnabled'></div>",
+    template: "<div class='stub-basic' :data-max-file-size='config?.maxFileSize' :data-media-app-translations='config?.mediaAppTranslations' :data-signalr-enabled='config?.signalrEnabled' :data-disable-thumbnails='config?.disableThumbnails'></div>",
     props: ["config", "inputName"],
   },
 }));
@@ -316,6 +316,18 @@ describe("main.ts", () => {
       const elOff = createMountEl("basic");
       main.mountMediaField(elOff);
       expect(elOff.querySelector(".stub-basic")?.getAttribute("data-signalr-enabled")).toBe("false");
+    });
+
+    it("parses data-disable-thumbnails", () => {
+      const el = createMountEl("basic", { disableThumbnails: "true" });
+      main.mountMediaField(el);
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-disable-thumbnails")).toBe("true");
+    });
+
+    it("defaults disableThumbnails to false when the attribute is absent", () => {
+      const el = createMountEl("basic");
+      main.mountMediaField(el);
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-disable-thumbnails")).toBe("false");
     });
   });
 
