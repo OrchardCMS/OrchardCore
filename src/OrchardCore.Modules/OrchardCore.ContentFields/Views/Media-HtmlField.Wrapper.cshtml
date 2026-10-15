@@ -16,5 +16,6 @@
          data-max-file-size="@MediaOptions.Value.MaxFileSize"
          data-translations="@JsonSerializer.Serialize(jsLocalizations)"
          data-base-path="@Url.Content("~/")"
-         data-upload-files-url="@Url.Content("~/api/media/Upload")"></div>
+         data-upload-files-url="@Url.Content("~/api/media/Upload")"
+         data-disable-thumbnails="@(MediaOptions.Value.DisableThumbnails ? "true" : "false")"></div>
 }
