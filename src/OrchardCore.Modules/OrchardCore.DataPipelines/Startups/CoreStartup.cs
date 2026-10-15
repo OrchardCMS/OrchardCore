@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.SharedLinks;
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Contents;
@@ -24,6 +25,7 @@ public sealed class CoreStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataSourcesCore();
+        services.AddScoped<IDataTimeZoneResolver, DataTimeZoneResolver>();
 
         // Shared links: any module shares a kind of resource by registering a handler (AddSharedLinkHandler).
         services.AddDataMigration<SharedLinkMigrations>();

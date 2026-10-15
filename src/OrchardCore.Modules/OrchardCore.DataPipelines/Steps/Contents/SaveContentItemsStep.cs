@@ -325,7 +325,9 @@ public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItems
 
         var options = services.GetService<IOptions<ContentDataSourceOptions>>()?.Value ?? new ContentDataSourceOptions();
 
-        return ContentDataColumns.Build(definition, options, S);
+        var contentOptions = services.GetService<IOptions<ContentOptions>>()?.Value;
+
+        return ContentDataColumns.Build(definition, options, contentOptions, S);
     }
 
     private enum SaveResult

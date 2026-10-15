@@ -8,8 +8,10 @@ namespace OrchardCore.DataSources.Files;
 public static class DataFileValues
 {
     /// <summary>
-    /// Formats a value as invariant text for a text based file: dates as <c>yyyy-MM-dd</c>, date-times in ISO 8601 UTC,
-    /// numbers without grouping, and booleans as <c>true</c> or <c>false</c>.
+    /// Formats a value as invariant text for a text based file: dates as <c>yyyy-MM-dd</c>, date-times in ISO 8601,
+    /// numbers without grouping, and booleans as <c>true</c> or <c>false</c>. A date-time in UTC ends with <c>Z</c>; a
+    /// date-time of the <see cref="DateTimeKind.Unspecified"/> kind is a local time without a time zone, such as one
+    /// converted to a time zone, or read from a file without an offset, and is written as it is, without <c>Z</c>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="type">The type of the field the value belongs to.</param>
@@ -26,7 +28,9 @@ public static class DataFileValues
             DataFieldType.Date when DataValues.Coerce(value, DataFieldType.Date) is DateTime date
                 => date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             DataFieldType.DateTime when DataValues.Coerce(value, DataFieldType.DateTime) is DateTime dateTime
-                => ToUtc(dateTime).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF'Z'", CultureInfo.InvariantCulture),
+                => dateTime.Kind == DateTimeKind.Unspecified
+                    ? dateTime.ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF", CultureInfo.InvariantCulture)
+                    : dateTime.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF'Z'", CultureInfo.InvariantCulture),
             _ => DataValues.ToText(value),
         };
     }
@@ -104,15 +108,5 @@ public static class DataFileValues
         }
 
         return result;
-    }
-
-    private static DateTime ToUtc(DateTime value)
-    {
-        return value.Kind switch
-        {
-            DateTimeKind.Local => value.ToUniversalTime(),
-            DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),
-            _ => value,
-        };
     }
 }

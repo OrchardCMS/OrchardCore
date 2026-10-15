@@ -248,9 +248,10 @@ public sealed class DataPipelineDesignerModelBuilder
         return value switch
         {
             null => null,
-            DateTime date => date.TimeOfDay == TimeSpan.Zero && date.Kind != DateTimeKind.Utc
-                ? date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
-                : DateTime.SpecifyKind(date, DateTimeKind.Utc).ToString("O", CultureInfo.InvariantCulture),
+            // A date and time of no kind is a local time, such as one converted to a time zone: it has no "Z".
+            DateTime date => DataSources.Files.DataFileValues.ToText(
+                date,
+                date.TimeOfDay == TimeSpan.Zero && date.Kind != DateTimeKind.Utc ? DataSources.DataFieldType.Date : DataSources.DataFieldType.DateTime),
             string or bool or long or int or decimal or double => value,
             _ => DataSources.DataValues.ToText(value),
         };

@@ -1,0 +1,17 @@
+@model ConvertTimeZoneStepViewModel
+
+@{
+    var timeZone = Model.TimeZone switch
+    {
+        TimeZoneSource.User => T["the user's time zone"].Value,
+        TimeZoneSource.Specific => Model.TimeZoneId ?? T["a time zone"].Value,
+        _ => T["the site's time zone"].Value,
+    };
+    var fields = Model.Fields.Length == 0 ? T["every date and time"].Value : string.Join(", ", Model.Fields);
+}
+
+<span class="text-break">
+    @(Model.Conversion == TimeZoneConversion.ToUtc
+        ? T["{0}, from {1} to UTC", fields, timeZone]
+        : T["{0}, from UTC to {1}", fields, timeZone])
+</span>

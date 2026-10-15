@@ -24,6 +24,21 @@ public sealed class DataFileFormatTests
         ["Gadget, \"large\"\nsecond line", null, 10m, false, null, null],
     ];
 
+    [Theory]
+    [InlineData(DateTimeKind.Utc, "2026-03-15T14:30:05Z")]
+    [InlineData(DateTimeKind.Unspecified, "2026-03-15T14:30:05")]
+    public void ToText_DateTime_EndsWithZOnlyInUtc(DateTimeKind kind, string expected)
+    {
+        // Arrange
+        var value = new DateTime(2026, 3, 15, 14, 30, 5, kind);
+
+        // Act
+        var text = DataFileValues.ToText(value, DataFieldType.DateTime);
+
+        // Assert
+        Assert.Equal(expected, text);
+    }
+
     [Fact]
     public async Task CsvWrite_ValuesWithDelimitersQuotesAndNewlines_QuotesThem()
     {

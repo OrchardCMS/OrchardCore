@@ -6,9 +6,13 @@ using OrchardCore.ContentManagement.Metadata.Models;
 namespace OrchardCore.DataSources.Contents;
 
 /// <summary>
-/// The columns of a content type: the common columns of every content item, followed by the values of its parts and
-/// fields that <see cref="ContentDataSourceOptions"/> describes. The content items data source reads them, and steps
-/// that write content items write them.
+/// The columns of a content type: the common columns of every content item, followed, part by part, by the values of
+/// the part and the values of its content fields. The values of a part or a field type described in
+/// <see cref="ContentDataSourceOptions"/> come first; the other public properties of the classes of the parts and
+/// fields written in code follow, described by <see cref="ContentDataValueDiscovery"/>, including the content fields a
+/// part class declares as properties. The content fields added to a part in the admin, including the fields of the
+/// parts created in the admin, are read from the part's definition. The content items data source reads the columns,
+/// and steps that write content items write them.
 /// </summary>
 public static class ContentDataColumns
 {
@@ -16,10 +20,14 @@ public static class ContentDataColumns
     /// Builds the columns of a content type.
     /// </summary>
     /// <param name="definition">The content type.</param>
-    /// <param name="options">The values of the parts and fields.</param>
+    /// <param name="options">The values of the parts and fields described explicitly.</param>
+    /// <param name="contentOptions">
+    /// The parts and fields registered in code, whose other properties become columns, or <see langword="null"/> to
+    /// use the values of <paramref name="options"/> only.
+    /// </param>
     /// <param name="S">Localizes the labels.</param>
     /// <returns>The columns.</returns>
-    public static List<ContentDataColumn> Build(ContentTypeDefinition definition, ContentDataSourceOptions options, IStringLocalizer S)
+    public static List<ContentDataColumn> Build(ContentTypeDefinition definition, ContentDataSourceOptions options, ContentOptions contentOptions, IStringLocalizer S)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentNullException.ThrowIfNull(options);
@@ -46,53 +54,95 @@ public static class ContentDataColumns
             new(new DataField("PublishedUtc", S["Published on"], DataFieldType.DateTime, common), item => item.PublishedUtc),
         };
 
+        var names = new HashSet<string>(columns.Select(column => column.Field.Name), StringComparer.Ordinal);
+
         foreach (var typePart in definition.Parts)
         {
+            if (typePart?.PartDefinition is null || string.IsNullOrEmpty(typePart.Name))
+            {
+                continue;
+            }
+
             var partName = typePart.Name;
             var partLabel = typePart.DisplayName();
+            var partClass = contentOptions?.ContentPartOptionsLookup.TryGetValue(typePart.PartDefinition.Name, out var partOption) == true
+                ? partOption.Type
+                : null;
+            var description = partClass is null ? null : ContentDataValueDiscovery.Describe(partClass);
 
-            if (options.Parts.TryGetValue(typePart.PartDefinition.Name, out var partValues))
+            options.Parts.TryGetValue(typePart.PartDefinition.Name, out var describedValues);
+
+            foreach (var value in (describedValues ?? []).Concat(description?.Values ?? []))
             {
-                foreach (var value in partValues)
-                {
-                    // The title of a TitlePart is "Title", not "Title Title".
-                    var label = string.Equals(partLabel, value.Property, StringComparison.OrdinalIgnoreCase) ? partLabel : $"{partLabel} {value.Property}";
+                var suffix = value.DisplayName ?? value.Property;
 
-                    columns.Add(new(
-                        new DataField($"{partName}.{value.Property}", label, value.Type, partLabel),
-                        item => ReadValue(((JsonObject)item.Content)[partName]?[value.Property], value))
-                    {
-                        Write = (item, data) => WriteValue(item, partName, null, value, data),
-                    });
-                }
+                // The title of a TitlePart is "Title", not "Title Title".
+                var label = string.Equals(partLabel, suffix, StringComparison.OrdinalIgnoreCase) ? partLabel : $"{partLabel} {suffix}";
+
+                Add(new(
+                    new DataField($"{partName}.{value.Property}", label, value.Type, partLabel),
+                    item => ReadValue(Select(((JsonObject)item.Content)[partName], value.Property), value))
+                {
+                    Write = value.IsReadOnly ? null : (item, data) => WriteValue(item, partName, null, value, data),
+                });
             }
+
+            var definedFields = new HashSet<string>(StringComparer.Ordinal);
 
             foreach (var partField in typePart.PartDefinition.Fields)
             {
-                if (!options.Fields.TryGetValue(partField.FieldDefinition.Name, out var fieldValues))
+                definedFields.Add(partField.Name);
+
+                var fieldType = partField.FieldDefinition?.Name;
+                var fieldClass = fieldType is not null && contentOptions?.ContentFieldOptionsLookup.TryGetValue(fieldType, out var fieldOption) == true
+                    ? fieldOption.Type
+                    : null;
+
+                AddField(partName, partLabel, partField.Name, partField.DisplayName(), fieldType, fieldClass);
+            }
+
+            // The content fields a part class declares as properties, which its definition doesn't list.
+            foreach (var codeField in description?.Fields ?? [])
+            {
+                if (!definedFields.Contains(codeField.Name))
                 {
-                    continue;
-                }
-
-                var fieldName = partField.Name;
-                var fieldLabel = partField.DisplayName();
-
-                foreach (var value in fieldValues)
-                {
-                    var name = fieldValues.Length == 1 ? $"{partName}.{fieldName}" : $"{partName}.{fieldName}.{value.Property}";
-                    var label = fieldValues.Length == 1 ? fieldLabel : $"{fieldLabel} {value.Property}";
-
-                    columns.Add(new(
-                        new DataField(name, label, value.Type, partLabel),
-                        item => ReadValue(((JsonObject)item.Content)[partName]?[fieldName]?[value.Property], value))
-                    {
-                        Write = (item, data) => WriteValue(item, partName, fieldName, value, data),
-                    });
+                    AddField(partName, partLabel, codeField.Name, ContentDataValueDiscovery.Humanize(codeField.Name), codeField.Type.Name, codeField.Type);
                 }
             }
         }
 
         return columns;
+
+        void Add(ContentDataColumn column)
+        {
+            // The first column of a name wins, so a value described explicitly hides the property of the same name.
+            if (names.Add(column.Field.Name))
+            {
+                columns.Add(column);
+            }
+        }
+
+        void AddField(string partName, string partLabel, string fieldName, string fieldLabel, string fieldType, Type fieldClass)
+        {
+            // A field type described explicitly is read as described; any other field type, from its class.
+            IReadOnlyList<ContentDataValue> fieldValues = fieldType is not null && options.Fields.TryGetValue(fieldType, out var described)
+                ? described
+                : fieldClass is null ? [] : ContentDataValueDiscovery.Describe(fieldClass).Values;
+
+            foreach (var value in fieldValues)
+            {
+                var single = fieldValues.Count == 1;
+                var name = single ? $"{partName}.{fieldName}" : $"{partName}.{fieldName}.{value.Property}";
+                var label = single ? fieldLabel : $"{fieldLabel} {value.DisplayName ?? value.Property}";
+
+                Add(new(
+                    new DataField(name, label, value.Type, partLabel),
+                    item => ReadValue(Select(((JsonObject)item.Content)[partName]?[fieldName], value.Property), value))
+                {
+                    Write = value.IsReadOnly ? null : (item, data) => WriteValue(item, partName, fieldName, value, data),
+                });
+            }
+        }
     }
 
     /// <summary>
@@ -138,7 +188,7 @@ public static class ContentDataColumns
     /// <param name="item">The content item.</param>
     /// <param name="partName">The name of the part.</param>
     /// <param name="fieldName">The name of the field, or <see langword="null"/> for a value of the part itself.</param>
-    /// <param name="value">The description of the value.</param>
+    /// <param name="value">The description of the value, whose missing nested objects are created.</param>
     /// <param name="data">The value.</param>
     public static void WriteValue(ContentItem item, string partName, string fieldName, ContentDataValue value, object data)
     {
@@ -166,7 +216,36 @@ public static class ContentDataColumns
             target = field;
         }
 
-        target[value.Property] = ToJson(data, value);
+        var segments = value.Property.Split('.');
+
+        for (var index = 0; index < segments.Length - 1; index++)
+        {
+            if (target[segments[index]] is not JsonObject child)
+            {
+                child = [];
+                target[segments[index]] = child;
+            }
+
+            target = child;
+        }
+
+        target[segments[^1]] = ToJson(data, value);
+    }
+
+    // Reads a property of a node, or a nested property when the path has several names separated by dots.
+    private static JsonNode Select(JsonNode node, string path)
+    {
+        foreach (var segment in path.Split('.'))
+        {
+            if (node is not JsonObject element)
+            {
+                return null;
+            }
+
+            node = element[segment];
+        }
+
+        return node;
     }
 
     private static JsonNode ToJson(object data, ContentDataValue value)

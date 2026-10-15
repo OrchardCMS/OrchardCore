@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
@@ -16,17 +17,20 @@ public sealed class SaveContentItemsStepDisplayDriver : DataPipelineStepDisplayD
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ContentDataSourceOptions _options;
+    private readonly ContentOptions _contentOptions;
     private readonly DataPipelineEditorContext _editorContext;
     private readonly IStringLocalizer S;
 
     public SaveContentItemsStepDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
         IOptions<ContentDataSourceOptions> options,
+        IOptions<ContentOptions> contentOptions,
         DataPipelineEditorContext editorContext,
         IStringLocalizer<SaveContentItemsStepDisplayDriver> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _options = options.Value;
+        _contentOptions = contentOptions.Value;
         _editorContext = editorContext;
         S = localizer;
     }
@@ -51,7 +55,7 @@ public sealed class SaveContentItemsStepDisplayDriver : DataPipelineStepDisplayD
             if (definition.Name == settings.ContentType)
             {
                 model.ContentTypeName = definition.DisplayName;
-                model.Targets = ContentDataColumns.Build(definition, _options, S)
+                model.Targets = ContentDataColumns.Build(definition, _options, _contentOptions, S)
                     .Where(column => column.Write is not null)
                     .Select(column => column.Field)
                     .ToArray();

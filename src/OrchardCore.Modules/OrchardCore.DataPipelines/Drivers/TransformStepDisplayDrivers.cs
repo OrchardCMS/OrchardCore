@@ -5,6 +5,7 @@ using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataSources;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.DataPipelines.Drivers;
@@ -366,4 +367,70 @@ public class LimitStepViewModel
     public int Count { get; set; }
 
     public int Skip { get; set; }
+}
+
+public sealed class ConvertTimeZoneStepDisplayDriver : DataPipelineStepDisplayDriver<ConvertTimeZoneStepSettings, ConvertTimeZoneStepViewModel>
+{
+    private readonly DataPipelineEditorContext _editorContext;
+    private readonly IClock _clock;
+    private readonly IDataTimeZoneResolver _timeZoneResolver;
+    private readonly IStringLocalizer S;
+
+    public ConvertTimeZoneStepDisplayDriver(
+        DataPipelineEditorContext editorContext,
+        IClock clock,
+        IDataTimeZoneResolver timeZoneResolver,
+        IStringLocalizer<ConvertTimeZoneStepDisplayDriver> localizer)
+    {
+        _editorContext = editorContext;
+        _clock = clock;
+        _timeZoneResolver = timeZoneResolver;
+        S = localizer;
+    }
+
+    protected override string StepName => ConvertTimeZoneStep.StepName;
+
+    protected override ValueTask EditAsync(DataPipelineStep step, ConvertTimeZoneStepSettings settings, ConvertTimeZoneStepViewModel model)
+    {
+        model.Fields = settings.Fields.ToArray();
+        model.Conversion = settings.Conversion;
+        model.TimeZone = settings.TimeZone;
+        model.TimeZoneId = settings.TimeZoneId;
+        model.AvailableFields = _editorContext.GetInputFields().Where(field => field.Type == DataFieldType.DateTime).ToArray();
+        model.TimeZones = _clock.GetTimeZones().Select(timeZone => timeZone.TimeZoneId).ToArray();
+
+        return ValueTask.CompletedTask;
+    }
+
+    protected override ValueTask UpdateAsync(DataPipelineStep step, ConvertTimeZoneStepSettings settings, ConvertTimeZoneStepViewModel model, UpdateEditorContext context)
+    {
+        settings.Fields = (model.Fields ?? []).Where(name => !string.IsNullOrEmpty(name)).ToList();
+        settings.Conversion = model.Conversion;
+        settings.TimeZone = model.TimeZone;
+        settings.TimeZoneId = model.TimeZone == TimeZoneSource.Specific ? model.TimeZoneId?.Trim() : null;
+
+        if (model.TimeZone == TimeZoneSource.Specific && _timeZoneResolver.GetTimeZone(settings.TimeZoneId) is null)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.TimeZoneId), S["Choose a time zone."]);
+        }
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public class ConvertTimeZoneStepViewModel
+{
+    public string[] Fields { get; set; } = [];
+
+    public TimeZoneConversion Conversion { get; set; }
+
+    public TimeZoneSource TimeZone { get; set; }
+
+    public string TimeZoneId { get; set; }
+
+    [BindNever]
+    public IReadOnlyList<DataField> AvailableFields { get; set; } = [];
+
+    [BindNever]
+    public IReadOnlyList<string> TimeZones { get; set; } = [];
 }

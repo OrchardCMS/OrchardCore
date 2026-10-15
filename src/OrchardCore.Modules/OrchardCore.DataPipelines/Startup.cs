@@ -66,6 +66,7 @@ public sealed class Startup : StartupBase
         services.AddDataPipelineStep<DataSourceStep, DataSourceStepDisplayDriver>();
         services.AddDataPipelineStep<FilterStep, FilterStepDisplayDriver>();
         services.AddDataPipelineStep<CalculatedFieldsStep, CalculatedFieldsStepDisplayDriver>();
+        services.AddDataPipelineStep<ConvertTimeZoneStep, ConvertTimeZoneStepDisplayDriver>();
         services.AddDataPipelineStep<SelectFieldsStep, SelectFieldsStepDisplayDriver>();
         services.AddDataPipelineStep<SortStep, SortStepDisplayDriver>();
         services.AddDataPipelineStep<AggregateStep, AggregateStepDisplayDriver>();

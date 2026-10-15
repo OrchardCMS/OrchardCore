@@ -17,8 +17,7 @@ namespace OrchardCore.DataSources.Contents;
 
 /// <summary>
 /// Exposes each content type as a data set. Rows are read page by page in document order, with the common columns of
-/// every content item followed by the values of its parts and fields that <see cref="ContentDataSourceOptions"/>
-/// describes. A user sees the content types they may view. A user who may also edit a content type reads the latest
+/// every content item followed by the values of its parts and fields, described by <see cref="ContentDataColumns"/>. A user sees the content types they may view. A user who may also edit a content type reads the latest
 /// version of its items, drafts included; any other user reads the published versions only.
 /// </summary>
 public sealed class ContentItemsDataSource : IDataSource
@@ -32,6 +31,7 @@ public sealed class ContentItemsDataSource : IDataSource
     private readonly ISession _session;
     private readonly IAuthorizationService _authorizationService;
     private readonly ContentDataSourceOptions _options;
+    private readonly ContentOptions _contentOptions;
     private readonly IStringLocalizer S;
 
     public ContentItemsDataSource(
@@ -39,12 +39,14 @@ public sealed class ContentItemsDataSource : IDataSource
         ISession session,
         IAuthorizationService authorizationService,
         IOptions<ContentDataSourceOptions> options,
+        IOptions<ContentOptions> contentOptions,
         IStringLocalizer<ContentItemsDataSource> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _session = session;
         _authorizationService = authorizationService;
         _options = options.Value;
+        _contentOptions = contentOptions.Value;
         S = localizer;
     }
 
@@ -271,6 +273,6 @@ public sealed class ContentItemsDataSource : IDataSource
 
     private List<ContentDataColumn> BuildColumns(ContentTypeDefinition definition)
     {
-        return ContentDataColumns.Build(definition, _options, S);
+        return ContentDataColumns.Build(definition, _options, _contentOptions, S);
     }
 }

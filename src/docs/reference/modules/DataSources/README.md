@@ -28,7 +28,7 @@ The feature has no admin screen of its own. It is enabled only as a dependency o
 | Data source | A connector that data is read from, such as the content items of the site. A data source is an `IDataSource` service with a stable technical name, such as `Contents`. |
 | Data set | One table a data source exposes, such as the content items of the `Article` content type, or the users of the site. A data set has a stable technical name, a label, an optional group and an optional description. |
 | Schema | The fields of a data set, in order. Each field has a stable technical name (which may contain dots, such as `TitlePart.Title`), a label, a type, and an optional group. |
-| Field type | The type of the values of a field: `Text`, `Integer`, `Decimal`, `Boolean`, `Date` (a calendar date, with no time and no time zone) or `DateTime` (a point in time, in UTC). |
+| Field type | The type of the values of a field: `Text`, `Integer`, `Decimal`, `Boolean`, `Date` (a calendar date, with no time and no time zone) or `DateTime` (a date and a time: in UTC, as Orchard Core stores dates, or a local time without a time zone, such as a date and time converted to a time zone, or read from a file without an offset). |
 | Batch | Rows are read one batch at a time (500 rows by default), so a consumer can read any number of rows without holding them all in memory. |
 
 Each field type has one CLR type: `string` for `Text`, `long` for `Integer`, `decimal` for `Decimal`, `bool` for `Boolean`, and `DateTime` for `Date` and `DateTime`. A missing value is `null`.
@@ -65,15 +65,23 @@ Every content type has these fields:
 | `ModifiedUtc` | DateTime | When the item was last changed. |
 | `PublishedUtc` | DateTime | When the item was published. |
 
-They are followed by the values of the parts and fields of the content type that `ContentDataSourceOptions` describes:
+They are followed, part by part, by the values of each part of the content type, and of its content fields:
 
-- a value of a part becomes the field `{PartName}.{Property}`, such as `TitlePart.Title`;
+- a value of a part becomes the field `{PartName}.{Property}`, such as `TitlePart.Title`, and a value of an object the part holds becomes `{PartName}.{Object}.{Property}`;
 - a content field with one value becomes the field `{PartName}.{FieldName}`, such as `Product.Price`;
 - a content field with several values becomes one field per value, `{PartName}.{FieldName}.{Property}`, such as `Product.Website.Url` and `Product.Website.Text`.
 
 A value that holds a list, such as the content item ids of a content picker, is read as one text with the items separated by commas.
 
-The parts and content fields mapped by default are:
+The values come from:
+
+- **the values described in `ContentDataSourceOptions`**, which come first, with the types they are described with. The ones described by default are listed below;
+- **the classes of the parts and content fields written in code**, registered with `AddContentPart<TPart>()` and `AddContentField<TField>()`: each other public property of the class is a value, typed by the type of the property, a number, a boolean, a date, a text, an enumeration, or a list of them. The properties of the objects a part holds are read too, up to three levels deep, and a content field that a part class declares as a property, such as the images of the `SeoMetaPart`, is read like the fields of the part's definition. Lists of objects, dictionaries, raw JSON, the properties marked `[JsonIgnore]`, and the properties whose name names a secret, such as `Password`, `Secret`, `ApiKey` or `ConnectionString`, or ends with `Token`, are left out;
+- **the definition of each part**: the content fields added to a part in the admin are read, including the fields of the parts created in the admin, such as the part named after its content type.
+
+A field type described in `ContentDataSourceOptions` is read only as described, so the fields named after it don't change; a part gets its described values, then the other properties of its class.
+
+The parts and content fields described by default are:
 
 | Part or field | Values |
 |---------------|--------|
@@ -103,7 +111,7 @@ The parts and content fields mapped by default are:
 | `YoutubeField` | `RawAddress` |
 | `LocalizationSetContentPickerField` | `LocalizationSets` (list) |
 
-Other parts and fields are not read until they are described, see [Reading more parts and fields](#reading-more-parts-and-fields).
+To give a value another name or type, or to read a value that no class describes, describe it, see [Reading more parts and fields](#reading-more-parts-and-fields).
 
 The data source applies some conditions while it queries the database, such as a list of content item ids or owners, and ranges of the `CreatedUtc`, `ModifiedUtc` and `PublishedUtc` dates. It reads the items in pages, and releases each page from the session before reading the next one.
 
@@ -158,7 +166,7 @@ The feature provides file formats that rows can be written to and read from. The
 | `json` | JSON | `.json` | An array with one object per row. When reading, the fields and their types are inferred from the objects of the first batch; properties that first appear later are ignored, and nested objects and arrays are read as JSON text. |
 | `jsonl` | JSON Lines | `.jsonl` | One JSON object per line, which suits large exports. Fields are inferred as for JSON. |
 
-When written to a text file, dates are formatted as `yyyy-MM-dd`, date-times in ISO 8601 UTC, numbers without grouping, and booleans as `true` or `false`.
+When written to a text file, dates are formatted as `yyyy-MM-dd`, date-times in ISO 8601, ending with `Z` when they are in UTC and as they are when they are local times, numbers without grouping, and booleans as `true` or `false`.
 
 The `DataFileOptions` class holds the options of a format: the `Delimiter` of a CSV file, whether the first row holds the column names (`HasHeaderRow`), the `SheetName` of a workbook, whether JSON is `Indented`, whether columns are named with the labels of the fields (`UseDisplayNames`), and the `BatchSize` of reading.
 
@@ -764,7 +772,7 @@ To offer several functions, implement `IExpressionFunctionProvider`, whose `GetF
 
 ### Reading more parts and fields
 
-The content items data source reads the parts and content fields that `ContentDataSourceOptions`, from the `OrchardCore.DataPipelines` module, describes. A module that adds a part or a field type describes its values, so they show up as fields of the content type data sets, and can be written by the **Save content items** step of data pipelines. Each value is read from the JSON property of the same name:
+The content items data source reads the parts and content fields registered in code from the properties of their classes, and the fields added in the admin from the definitions of the parts. A module describes the values of a part or a field type in `ContentDataSourceOptions`, from the `OrchardCore.DataPipelines` module, to read them differently: with another type, such as a number stored as text, as a list, or when the part or field has no class, such as a part a module stores without registering it. The described values show up as fields of the content type data sets, and can be written by the **Save content items** step of data pipelines, unless they are `IsReadOnly`. Each value is read from the JSON property of the same name, or from a nested property, with a path such as `Settings.Mode`:
 
 ```csharp
 using OrchardCore.DataSources;
@@ -785,7 +793,13 @@ services.Configure<ContentDataSourceOptions>(options =>
     // A property that holds a list is read as text, its items separated by commas.
     options.Fields["TagsField"] = [new("Tags", DataFieldType.Text) { IsList = true }];
 
-    // A part value becomes the field {PartName}.{Property}.
-    options.Parts["RatingPart"] = [new("Score", DataFieldType.Decimal)];
+    // A part value becomes the field {PartName}.{Property}, labeled with its DisplayName.
+    options.Parts["RatingPart"] =
+    [
+        new("Score", DataFieldType.Decimal),
+        new("Votes.Count", DataFieldType.Integer) { DisplayName = "Votes", IsReadOnly = true },
+    ];
 });
 ```
+
+`ContentDataValueDiscovery.Describe(type)` describes the values of a class as the data source reads them, which other modules can use to list the values of a part or a field type.

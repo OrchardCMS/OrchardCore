@@ -1,0 +1,61 @@
+@model ConvertTimeZoneStepViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="Conversion" class="ocat-label">@T["Convert"]</label>
+    <div class="ocat-end">
+        <select asp-for="Conversion" class="form-select">
+            <option value="@TimeZoneConversion.FromUtc">@T["From UTC to the time zone"]</option>
+            <option value="@TimeZoneConversion.ToUtc">@T["From the time zone to UTC"]</option>
+        </select>
+        <span class="hint">@T["Orchard Core stores dates in UTC: convert them from UTC to show local dates and times, and convert local dates and times, such as the ones of a file, to UTC to save them."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="TimeZone" class="ocat-label">@T["Time zone"]</label>
+    <div class="ocat-end">
+        <select asp-for="TimeZone" class="form-select">
+            <option value="@TimeZoneSource.Site">@T["The time zone of the site"]</option>
+            <option value="@TimeZoneSource.User">@T["The time zone of the user the pipeline runs for"]</option>
+            <option value="@TimeZoneSource.Specific">@T["A time zone"]</option>
+        </select>
+        <span class="hint">@T["A published pipeline runs for the user who published it, and a preview for you. A user who chose no time zone in their profile gets the time zone of the site."]</span>
+    </div>
+</div>
+
+@if (Model.TimeZone == TimeZoneSource.Specific)
+{
+    <div class="ocat-wrapper" asp-validation-class-for="TimeZoneId">
+        <label asp-for="TimeZoneId" class="ocat-label ocat-label-required">@T["Name"]</label>
+        <div class="ocat-end">
+            <select asp-for="TimeZoneId" class="form-select">
+                <option value="">@T["Choose a time zone"]</option>
+                @foreach (var timeZoneId in Model.TimeZones)
+                {
+                    <option value="@timeZoneId" selected="@(timeZoneId == Model.TimeZoneId)">@timeZoneId</option>
+                }
+            </select>
+            <span asp-validation-for="TimeZoneId"></span>
+        </div>
+    </div>
+}
+
+<div class="ocat-wrapper">
+    <label asp-for="Fields" class="ocat-label">@T["Fields"]</label>
+    <div class="ocat-end">
+        @if (Model.AvailableFields.Count == 0)
+        {
+            <span class="hint">@T["The input has no date and time field."]</span>
+        }
+        else
+        {
+            <select asp-for="Fields" class="form-select" multiple size="@Math.Min(8, Math.Max(3, Model.AvailableFields.Count))">
+                @foreach (var field in Model.AvailableFields)
+                {
+                    <option value="@field.Name" selected="@Model.Fields.Contains(field.Name)">@field.Name</option>
+                }
+            </select>
+            <span class="hint">@T["The date and time fields to convert. Select none to convert all of them. Dates without a time have no time zone, so they aren't converted."]</span>
+        }
+    </div>
+</div>
