@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Keeps, orders, renames and converts the fields of the rows. Without any field selected, the rows pass unchanged.
 /// </summary>
-public sealed class SelectFieldsStep : DataPipelineStepType<SelectFieldsStepSettings>
+public sealed class SelectFieldsStep : DataPipelineStepType<SelectFieldsStep, SelectFieldsStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -20,15 +21,15 @@ public sealed class SelectFieldsStep : DataPipelineStepType<SelectFieldsStepSett
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Select fields"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SelectFieldsStep>("Select fields");
 
-    public override LocalizedString Description => S["Keeps, orders, renames and converts fields."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SelectFieldsStep>("Keeps, orders, renames and converts fields.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-table-columns";
+    public static string Icon => "fa-solid fa-table-columns";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

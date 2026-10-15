@@ -31,6 +31,7 @@ public sealed class AdminController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly ISiteService _siteService;
     private readonly INotifier _notifier;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IHtmlLocalizer H;
     private readonly IStringLocalizer S;
 
@@ -43,6 +44,7 @@ public sealed class AdminController : Controller
         IShapeFactory shapeFactory,
         ISiteService siteService,
         INotifier notifier,
+        IStringLocalizerFactory localizerFactory,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -50,6 +52,7 @@ public sealed class AdminController : Controller
         _runManager = runManager;
         _stateManager = stateManager;
         _stepTypeManager = stepTypeManager;
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _shapeFactory = shapeFactory;
         _siteService = siteService;
@@ -309,7 +312,7 @@ public sealed class AdminController : Controller
         {
             stepNames[step.StepId] = !string.IsNullOrWhiteSpace(step.Title)
                 ? step.Title
-                : _stepTypeManager.GetStepType(step.Type)?.DisplayName.Value ?? step.Type;
+                : _localizerFactory.Localize(_stepTypeManager.GetDescriptor(step.Type)?.DisplayName)?.Value ?? step.Type;
         }
 
         return View(new DataPipelineRunViewModel

@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Operations;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -12,7 +13,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// <see cref="DataSourceStepSettings.IncrementalField"/>, a run reads only the rows whose value of that field is larger
 /// than the largest value the last successful run read, which it keeps in the state of the pipeline.
 /// </summary>
-public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings>
+public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSourceStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -37,21 +38,15 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Read a data source"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DataSourceStep>("Read a data source");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Reads content items, users, query results or any other data set."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<DataSourceStep>("Reads content items, users, query results or any other data set.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
 
-    public override string Icon => "fa-solid fa-database";
+    public static string Icon => "fa-solid fa-database";
 
     public override async Task DescribeAsync(DataPipelineDescribeContext context)
     {
@@ -241,7 +236,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
         }
     }
 
-    private async Task<(IDataSource DataSource, DataSetSchema Schema, string Error)> GetSchemaAsync(
+    private async Task<SourceSchema> GetSchemaAsync(
         DataSourceStepSettings settings,
         IServiceProvider services,
         System.Security.Claims.ClaimsPrincipal user,
@@ -249,24 +244,48 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
     {
         if (string.IsNullOrEmpty(settings.Source) || string.IsNullOrEmpty(settings.DataSet))
         {
-            return (null, null, S["Choose the data source and the data set to read."]);
+            return new(null, null, S["Choose the data source and the data set to read."]);
         }
 
         var dataSource = services?.GetService<IDataSourceManager>()?.GetDataSource(settings.Source);
 
         if (dataSource is null)
         {
-            return (null, null, S["The data source '{0}' is not available. The feature that provides it may be disabled.", settings.Source]);
+            return new(null, null, S["The data source '{0}' is not available. The feature that provides it may be disabled.", settings.Source]);
         }
 
         var schema = await dataSource.GetSchemaAsync(settings.DataSet, new DataSourceContext { User = user }, cancellationToken);
 
         if (schema is null)
         {
-            return (dataSource, null, S["The data set '{0}' doesn't exist, or the user the pipeline runs for may not read it.", settings.DataSet]);
+            return new(dataSource, null, S["The data set '{0}' doesn't exist, or the user the pipeline runs for may not read it.", settings.DataSet]);
         }
 
-        return (dataSource, schema, null);
+        return new(dataSource, schema, null);
+    }
+
+    // A class rather than a tuple: a data source has static members, so it can't be the type argument of a tuple.
+    private sealed class SourceSchema
+    {
+        public SourceSchema(IDataSource dataSource, DataSetSchema schema, string error)
+        {
+            DataSource = dataSource;
+            Schema = schema;
+            Error = error;
+        }
+
+        public IDataSource DataSource { get; }
+
+        public DataSetSchema Schema { get; }
+
+        public string Error { get; }
+
+        public void Deconstruct(out IDataSource dataSource, out DataSetSchema schema, out string error)
+        {
+            dataSource = DataSource;
+            schema = Schema;
+            error = Error;
+        }
     }
 
     private Plan BuildPlan(DataSetSchema schema, DataSourceStepSettings settings, out List<string> errors)

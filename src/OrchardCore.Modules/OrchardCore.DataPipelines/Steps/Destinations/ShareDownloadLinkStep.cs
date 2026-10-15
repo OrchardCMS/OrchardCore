@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.SharedLinks;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -11,7 +12,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// recipients, once signed in, until it expires, is used as many times as allowed, or is revoked; only the hash of its
 /// token is stored. Available when the Email feature is enabled.
 /// </summary>
-public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLinkStepSettings>
+public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLinkStep, ShareDownloadLinkStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -30,21 +31,15 @@ public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLi
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Share a download link"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ShareDownloadLinkStep>("Share a download link");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Shares files with users through secure, expiring download links."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<ShareDownloadLinkStep>("Shares files with users through secure, expiring download links.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public override string Icon => "fa-solid fa-link";
+    public static string Icon => "fa-solid fa-link";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

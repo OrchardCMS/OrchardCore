@@ -18,7 +18,7 @@ internal sealed class StepTestHost : IDisposable
     public StepTestHost(IDataPipelineStepType stepType, object settings = null, IServiceProvider services = null)
     {
         StepType = stepType;
-        Step = new DataPipelineStep { StepId = "step", Type = stepType.Name };
+        Step = new DataPipelineStep { StepId = "step", Type = TestSteps.Describe(stepType.GetType()).Name };
 
         if (settings is not null)
         {

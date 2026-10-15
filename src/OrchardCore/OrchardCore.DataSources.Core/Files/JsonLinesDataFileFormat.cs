@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources.Files;
 
@@ -19,18 +19,13 @@ public sealed class JsonLinesDataFileFormat : IDataFileFormat
 
     private static readonly byte[] _newLine = "\n"u8.ToArray();
 
-    public JsonLinesDataFileFormat(IStringLocalizer<JsonLinesDataFileFormat> localizer)
-    {
-        DisplayName = localizer["JSON Lines"];
-    }
+    public static string Name => FormatName;
 
-    public string Name => FormatName;
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<JsonLinesDataFileFormat>("JSON Lines");
 
-    public LocalizedString DisplayName { get; }
+    public static string Extension => ".jsonl";
 
-    public string Extension => ".jsonl";
-
-    public string ContentType => "application/jsonl";
+    public static string ContentType => "application/jsonl";
 
     public async Task<long> WriteAsync(
         Stream stream,

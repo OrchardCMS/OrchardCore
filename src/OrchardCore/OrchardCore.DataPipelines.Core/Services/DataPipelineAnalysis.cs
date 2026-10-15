@@ -59,10 +59,12 @@ public sealed class DataPipelineAnalysis
 /// </summary>
 public sealed class DataPipelineStepAnalysis
 {
-    internal DataPipelineStepAnalysis(DataPipelineStep step, IDataPipelineStepType stepType)
+    internal DataPipelineStepAnalysis(DataPipelineStep step, DataPipelineStepTypeDescriptor descriptor, IDataPipelineStepType stepType, string displayName)
     {
         Step = step;
+        Descriptor = descriptor;
         StepType = stepType;
+        DisplayName = displayName;
     }
 
     /// <summary>
@@ -71,9 +73,20 @@ public sealed class DataPipelineStepAnalysis
     public DataPipelineStep Step { get; }
 
     /// <summary>
+    /// Gets the descriptor of the type of the step, with its category, or <see langword="null"/> when it is not
+    /// available.
+    /// </summary>
+    public DataPipelineStepTypeDescriptor Descriptor { get; }
+
+    /// <summary>
     /// Gets the type of the step, or <see langword="null"/> when it is not available.
     /// </summary>
     public IDataPipelineStepType StepType { get; }
+
+    /// <summary>
+    /// Gets the localized name of the type of the step, or <see langword="null"/> when it is not available.
+    /// </summary>
+    public string DisplayName { get; }
 
     /// <summary>
     /// Gets the inputs of the step.

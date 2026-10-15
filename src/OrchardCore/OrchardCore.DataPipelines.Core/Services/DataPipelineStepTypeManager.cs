@@ -1,20 +1,26 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.DataPipelines.Steps;
 
 namespace OrchardCore.DataPipelines.Services;
 
 /// <summary>
-/// The default <see cref="IDataPipelineStepTypeManager"/>, built from the registered step types.
+/// The default <see cref="IDataPipelineStepTypeManager"/>, built from the step types of
+/// <see cref="DataPipelineStepTypeOptions"/>. It lists them from their descriptors, and resolves a step type from the
+/// services of the scope only when it is used.
 /// </summary>
 public sealed class DataPipelineStepTypeManager : IDataPipelineStepTypeManager
 {
-    private readonly IReadOnlyList<IDataPipelineStepType> _stepTypes;
-    private readonly Dictionary<string, IDataPipelineStepType> _byName = new(StringComparer.Ordinal);
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IReadOnlyList<DataPipelineStepTypeDescriptor> _stepTypes;
+    private readonly Dictionary<string, DataPipelineStepTypeDescriptor> _byName = new(StringComparer.Ordinal);
 
-    public DataPipelineStepTypeManager(IEnumerable<IDataPipelineStepType> stepTypes)
+    public DataPipelineStepTypeManager(IOptions<DataPipelineStepTypeOptions> options, IServiceProvider serviceProvider)
     {
-        ArgumentNullException.ThrowIfNull(stepTypes);
+        ArgumentNullException.ThrowIfNull(options);
 
-        _stepTypes = stepTypes.ToArray();
+        _serviceProvider = serviceProvider;
+        _stepTypes = options.Value.StepTypes;
 
         foreach (var stepType in _stepTypes)
         {
@@ -22,10 +28,17 @@ public sealed class DataPipelineStepTypeManager : IDataPipelineStepTypeManager
         }
     }
 
-    public IReadOnlyList<IDataPipelineStepType> GetStepTypes() => _stepTypes;
+    public IReadOnlyList<DataPipelineStepTypeDescriptor> GetStepTypes() => _stepTypes;
+
+    public DataPipelineStepTypeDescriptor GetDescriptor(string name)
+    {
+        return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    }
 
     public IDataPipelineStepType GetStepType(string name)
     {
-        return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+        return GetDescriptor(name) is { } descriptor
+            ? (IDataPipelineStepType)_serviceProvider.GetRequiredService(descriptor.Type)
+            : null;
     }
 }

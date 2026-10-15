@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Operations;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.DataSources;
 
@@ -218,13 +218,13 @@ public sealed class RecordDataSourceTests
 
     private sealed record Ticket(string Id, TicketState State, DateTimeOffset Opened, int Priority);
 
-    private sealed class TicketsSource : RecordDataSource
+    private sealed class TicketsSource : RecordDataSource, IDataSource
     {
-        public override string Name => "Tickets";
+        public static string Name => "Tickets";
 
-        public override LocalizedString DisplayName => new("Tickets", "Tickets");
+        public static LocalizationSource DisplayName { get; } = new("Tickets");
 
-        public override LocalizedString Description => new("Tickets", "Tickets");
+        public static LocalizationSource Description { get; } = new("Tickets");
 
         protected override IEnumerable<IRecordDataSet> DataSets { get; } = [new TicketsDataSet()];
     }

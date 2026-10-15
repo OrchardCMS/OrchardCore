@@ -457,9 +457,9 @@ A module extends data pipelines with services it registers in its startup. Each 
 | A data source, such as the records of a module or an external service | `RecordDataSource` and `RecordDataSet<TRecord>`, or `IDataSource` | `services.AddDataSource<TSource>()` | [Adding a data source](../DataSources/README.md#adding-a-data-source) |
 | A file format, read and written by the file steps | `IDataFileFormat`, or `IDataWorkbookFormat` for several worksheets | `services.AddDataFileFormat<TFormat>()` | [Adding a file format](../DataSources/README.md#adding-a-file-format) |
 | A function of the formulas, computed per row or per group | `ExpressionFunction.CreateScalar` or `ExpressionFunction.CreateAggregate`, or an `IExpressionFunctionProvider` | `services.AddExpressionFunction(function)` | [Adding a formula function](../DataSources/README.md#adding-a-formula-function) |
-| A transform of rows, such as masking or enriching fields | `DataPipelineStepType<TSettings>`, in the `Transform` category | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
+| A transform of rows, such as masking or enriching fields | `DataPipelineStepType<TStep, TSettings>`, in the `Transform` category | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
 | A transform that sees every row before writing any, such as a sort | A step type, with the [data operations](../DataSources/README.md#data-operations) | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
-| A source or a destination of the pipelines | `DataPipelineStepType<TSettings>`, in the `Source`, `File` or `Destination` category | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
+| A source or a destination of the pipelines | `DataPipelineStepType<TStep, TSettings>`, in the `Source`, `File` or `Destination` category | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
 | The editor of a step | `DataPipelineStepDisplayDriver<TSettings, TViewModel>` | with its step type | [Adding the editor of a step type](#adding-the-editor-of-a-step-type) |
 | Values a step keeps between runs, such as a watermark | `context.GetState` and `context.SetState` | | [Keeping values between runs](#keeping-values-between-runs) |
 | Work confirmed when a run succeeds | `context.Run.OnSucceeded` | | [Confirming work when a run succeeds](#confirming-work-when-a-run-succeeds) |
@@ -472,7 +472,7 @@ The **Read a data source** step reads every registered data source, and the **Cr
 
 ### Adding a step type
 
-A step type is a stateless, scoped service; the settings of each step are stored on its `DataPipelineStep`. Derive from `DataPipelineStepType<TSettings>`, from the `OrchardCore.DataPipelines.Abstractions` package, to store the settings as one object, read with `GetSettings(step)`:
+A step type is a stateless, scoped service; the settings of each step are stored on its `DataPipelineStep`. Derive from `DataPipelineStepType<TStep, TSettings>`, from the `OrchardCore.DataPipelines.Abstractions` package, with the step type's own class as `TStep`, to store the settings as one object, read with `GetSettings(step)`, and implement `IDataPipelineStepType`. What describes the step type, its `Name`, `DisplayName`, `Description`, `Category` and `Icon`, is static: the designer lists the step types, and the engine knows the category of each step, without creating them. A step type without settings derives from `DataPipelineStepType<TStep>`.
 
 - `Category` sets the default ports: a `Source` has one rows output; a `Transform` has one required rows input and one rows output; a `File` step has one required rows input and one files output; a `Destination` has one required files input. Override `GetInputs` and `GetOutputs` for other ports, such as the two inputs of **Join**, or an input whose port sets `AllowsMany` to accept several connections. Destinations are never executed by a preview.
 - `DescribeAsync` checks the settings against the fields of the inputs, reports errors and warnings, and sets the fields of each rows output. The designer calls it to list the fields available to the next steps, and the engine calls it before a run. By default, a step passes the fields of its input to its outputs.
@@ -482,6 +482,7 @@ A step type is a stateless, scoped service; the settings of each step are stored
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 public sealed class MaskTextStepSettings
 {
@@ -490,7 +491,7 @@ public sealed class MaskTextStepSettings
     public int VisibleCharacters { get; set; } = 4;
 }
 
-public sealed class MaskTextStep : DataPipelineStepType<MaskTextStepSettings>
+public sealed class MaskTextStep : DataPipelineStepType<MaskTextStep, MaskTextStepSettings>, IDataPipelineStepType
 {
     public const string StepName = "MaskText";
 
@@ -501,15 +502,15 @@ public sealed class MaskTextStep : DataPipelineStepType<MaskTextStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Mask text"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<MaskTextStep>("Mask text");
 
-    public override LocalizedString Description => S["Hides all but the last characters of text fields."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<MaskTextStep>("Hides all but the last characters of text fields.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-mask";
+    public static string Icon => "fa-solid fa-mask";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
@@ -802,21 +803,14 @@ A module that depends on the Data Pipelines Core feature shares its own resource
 ```csharp
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.SharedLinks;
+using OrchardCore.Localization;
 
 public sealed class ReportLinkHandler : ISharedLinkHandler
 {
-    private readonly IStringLocalizer S;
+    public static string Kind => "Reports.Report";
 
-    public ReportLinkHandler(IStringLocalizer<ReportLinkHandler> localizer)
-    {
-        S = localizer;
-    }
-
-    public string Kind => "Reports.Report";
-
-    public LocalizedString DisplayName => S["Report"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ReportLinkHandler>("Report");
 
     // The link was checked: the user is signed in, is a recipient, and has the token.
     public Task<IActionResult> OpenAsync(SharedLink link, HttpContext httpContext)

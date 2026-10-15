@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataSources;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DataPipelines.Steps;
@@ -12,7 +13,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// saving time with <see cref="IClock"/>. A local time that a change of offset skips, or repeats, takes the offset in
 /// effect before the change.
 /// </summary>
-public sealed class ConvertTimeZoneStep : DataPipelineStepType<ConvertTimeZoneStepSettings>
+public sealed class ConvertTimeZoneStep : DataPipelineStepType<ConvertTimeZoneStep, ConvertTimeZoneStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -33,21 +34,15 @@ public sealed class ConvertTimeZoneStep : DataPipelineStepType<ConvertTimeZoneSt
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Convert time zone"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ConvertTimeZoneStep>("Convert time zone");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Converts dates and times from UTC to a time zone, or from a time zone to UTC."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<ConvertTimeZoneStep>("Converts dates and times from UTC to a time zone, or from a time zone to UTC.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-earth-americas";
+    public static string Icon => "fa-solid fa-earth-americas";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

@@ -84,7 +84,8 @@ public static class DataSourcesServiceCollectionExtensions
     public static IServiceCollection AddDataSource<TDataSource>(this IServiceCollection services)
         where TDataSource : class, IDataSource
     {
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IDataSource, TDataSource>());
+        services.TryAddScoped<TDataSource>();
+        services.Configure<DataSourceOptions>(options => options.Add(DataSourceDescriptor.Create<TDataSource>()));
 
         return services;
     }
@@ -98,7 +99,8 @@ public static class DataSourcesServiceCollectionExtensions
     public static IServiceCollection AddDataFileFormat<TFormat>(this IServiceCollection services)
         where TFormat : class, IDataFileFormat
     {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDataFileFormat, TFormat>());
+        services.TryAddSingleton<TFormat>();
+        services.Configure<DataFileFormatOptions>(options => options.Add(DataFileFormatDescriptor.Create<TFormat>()));
 
         return services;
     }

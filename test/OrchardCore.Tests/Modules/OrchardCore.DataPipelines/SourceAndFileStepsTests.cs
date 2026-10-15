@@ -25,7 +25,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_SelectedFieldsAndFilter_ReadsMatchingRows()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings
         {
             Source = "Memory",
@@ -52,7 +52,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_SourceAsksToConfirm_RunsTheActionWhenTheRunSucceeds()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         source.OnRead = query => query.Context.OnSucceeded((_, _) => Task.CompletedTask);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
@@ -69,7 +69,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_PreviewOfASourceThatAsksToConfirm_ConfirmsNothing()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         source.OnRead = query => query.Context.OnSucceeded((_, _) => Task.CompletedTask);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
@@ -87,7 +87,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_IncrementalFirstRun_ReadsEveryRowAndKeepsTheLargestValue()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People", IncrementalField = "Joined" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
 
@@ -104,7 +104,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_IncrementalNextRun_ReadsOnlyTheRowsAfterTheSavedValue()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People", IncrementalField = "Joined" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
         host.Run.State.Set(DataPipelineStepContext.GetStateKey("step", DataSourceStep.WatermarkStateKey), "2026-02-10T00:00:00Z");
@@ -124,7 +124,7 @@ public sealed class SourceAndFileStepsTests
     {
         // Arrange
         object[][] rows = [[1L, "Ada", new DateTime(2026, 1, 10, 12, 0, 0, 500, DateTimeKind.Utc)]];
-        var source = new InMemoryDataSource("Memory").Add("People", _people, rows);
+        var source = new InMemoryDataSource().Add("People", _people, rows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People", IncrementalField = "Joined" };
         using var first = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
         await first.ExecuteAsync(TestContext.Current.CancellationToken);
@@ -144,7 +144,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_IncrementalNothingNew_KeepsTheSavedValue()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People", IncrementalField = "Id" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
         host.Run.State.Set(DataPipelineStepContext.GetStateKey("step", DataSourceStep.WatermarkStateKey), "3");
@@ -164,7 +164,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_IncrementalFieldChanged_StartsOver()
     {
         // Arrange: the saved value was reached on another field.
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People", IncrementalField = "Id" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
         host.Run.State.Set(DataPipelineStepContext.GetStateKey("step", DataSourceStep.WatermarkStateKey), "2026-02-10T00:00:00Z");
@@ -182,7 +182,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_IncrementalPreview_ReadsAsAFirstRunAndKeepsNothing()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People", IncrementalField = "Id" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
         host.Run.IsPreview = true;
@@ -204,7 +204,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_InvalidIncrementalField_ReportsError(string field, int maxRows)
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People", IncrementalField = field, MaxRows = maxRows };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
 
@@ -219,7 +219,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_Preview_ReadsPreviewLimitRows()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
         host.Run.IsPreview = true;
@@ -237,7 +237,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_DataSetTheUserCannotRead_ReportsError()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         source.CanRead = _ => false;
         var settings = new DataSourceStepSettings { Source = "Memory", DataSet = "People" };
         using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
@@ -253,7 +253,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_UnknownFieldInFilter_ReportsError()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings
         {
             Source = "Memory",
@@ -273,7 +273,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_MostRowsWithFilterTheSourceIgnores_ReadsUpToMostMatchingRows()
     {
         // Arrange: the source applies the most rows, but not the conditions.
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings
         {
             Source = "Memory",
@@ -294,7 +294,7 @@ public sealed class SourceAndFileStepsTests
     public async Task DataSource_ParameterPlaceholders_UseTheParametersOfTheRun()
     {
         // Arrange
-        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
         var settings = new DataSourceStepSettings
         {
             Source = "Memory",
@@ -500,7 +500,7 @@ public sealed class SourceAndFileStepsTests
         Assert.Equal(expected, name);
     }
 
-    private static ServiceProvider Services(params IDataSource[] sources)
+    private static ServiceProvider Services(params InMemoryDataSource[] sources)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -509,7 +509,8 @@ public sealed class SourceAndFileStepsTests
 
         foreach (var source in sources)
         {
-            services.AddScoped<IDataSource>(_ => source);
+            services.AddSingleton(source);
+            services.Configure<DataSourceOptions>(options => options.Add(DataSourceDescriptor.Create<InMemoryDataSource>()));
         }
 
         return services.BuildServiceProvider();

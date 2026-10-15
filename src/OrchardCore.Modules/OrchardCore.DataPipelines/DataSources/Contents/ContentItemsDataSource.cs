@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
+using OrchardCore.Localization;
 using YesSql;
 using YesSql.Services;
 
@@ -50,17 +51,11 @@ public sealed class ContentItemsDataSource : IDataSource
         S = localizer;
     }
 
-    public string Name => SourceName;
+    public static string Name => SourceName;
 
-    public LocalizedString DisplayName => S["Content items"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ContentItemsDataSource>("Content items");
 
-    public LocalizedString Description
-    {
-        get
-        {
-            return S["The content items of each content type, with their parts and fields."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<ContentItemsDataSource>("The content items of each content type, with their parts and fields.");
 
     public async Task<IReadOnlyList<DataSetDescriptor>> GetDataSetsAsync(DataSourceContext context, CancellationToken cancellationToken = default)
     {

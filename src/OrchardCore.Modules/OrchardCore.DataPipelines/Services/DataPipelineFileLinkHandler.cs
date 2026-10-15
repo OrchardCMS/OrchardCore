@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DataPipelines.SharedLinks;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using IIdGenerator = OrchardCore.Entities.IIdGenerator;
 
 namespace OrchardCore.DataPipelines.Services;
@@ -33,23 +33,20 @@ public sealed class DataPipelineFileLinkHandler : ISharedLinkHandler
     private readonly IOptions<ShellOptions> _shellOptions;
     private readonly ShellSettings _shellSettings;
     private readonly IIdGenerator _idGenerator;
-    private readonly IStringLocalizer S;
 
     public DataPipelineFileLinkHandler(
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
-        IIdGenerator idGenerator,
-        IStringLocalizer<DataPipelineFileLinkHandler> localizer)
+        IIdGenerator idGenerator)
     {
         _shellOptions = shellOptions;
         _shellSettings = shellSettings;
         _idGenerator = idGenerator;
-        S = localizer;
     }
 
-    public string Kind => LinkKind;
+    public static string Kind => LinkKind;
 
-    public LocalizedString DisplayName => S["Pipeline file"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DataPipelineFileLinkHandler>("Pipeline file");
 
     /// <summary>
     /// Keeps a copy of a file, to share it.

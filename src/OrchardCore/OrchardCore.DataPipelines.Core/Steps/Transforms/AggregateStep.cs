@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Operations;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -11,7 +12,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// <see cref="DataPipelineOptions.StepMemoryLimitMegabytes"/>, with <see cref="DataAggregator"/>; the values of a median
 /// and of a distinct count stay in memory with their group.
 /// </summary>
-public sealed class AggregateStep : DataPipelineStepType<AggregateStepSettings>
+public sealed class AggregateStep : DataPipelineStepType<AggregateStep, AggregateStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -25,21 +26,15 @@ public sealed class AggregateStep : DataPipelineStepType<AggregateStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Group and summarize"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<AggregateStep>("Group and summarize");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Groups rows and computes counts, sums, averages, minimums and maximums."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<AggregateStep>("Groups rows and computes counts, sums, averages, minimums and maximums.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-layer-group";
+    public static string Icon => "fa-solid fa-layer-group";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

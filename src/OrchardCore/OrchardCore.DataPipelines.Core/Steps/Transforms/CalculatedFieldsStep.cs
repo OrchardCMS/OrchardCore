@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Expressions;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -8,7 +9,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// Adds fields computed by formulas, such as <c>[Price] * [Quantity]</c> or <c>UPPER([Country])</c>. A formula can
 /// use the fields calculated before it, and a calculated field with the name of an existing field replaces its value.
 /// </summary>
-public sealed class CalculatedFieldsStep : DataPipelineStepType<CalculatedFieldsStepSettings>
+public sealed class CalculatedFieldsStep : DataPipelineStepType<CalculatedFieldsStep, CalculatedFieldsStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -24,15 +25,15 @@ public sealed class CalculatedFieldsStep : DataPipelineStepType<CalculatedFields
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Add calculated fields"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CalculatedFieldsStep>("Add calculated fields");
 
-    public override LocalizedString Description => S["Adds fields computed by formulas."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<CalculatedFieldsStep>("Adds fields computed by formulas.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-calculator";
+    public static string Icon => "fa-solid fa-calculator";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

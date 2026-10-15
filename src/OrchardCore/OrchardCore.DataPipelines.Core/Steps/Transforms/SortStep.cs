@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Operations;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -9,7 +10,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// first one, and writes the rows that don't fit in <see cref="DataPipelineOptions.StepMemoryLimitMegabytes"/> to
 /// temporary files. Text is compared ignoring case, empty values come first, and rows with equal keys keep their order.
 /// </summary>
-public sealed class SortStep : DataPipelineStepType<SortStepSettings>
+public sealed class SortStep : DataPipelineStepType<SortStep, SortStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -23,15 +24,15 @@ public sealed class SortStep : DataPipelineStepType<SortStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Sort rows"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SortStep>("Sort rows");
 
-    public override LocalizedString Description => S["Sorts the rows by one or more fields."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SortStep>("Sorts the rows by one or more fields.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-arrow-down-wide-short";
+    public static string Icon => "fa-solid fa-arrow-down-wide-short";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

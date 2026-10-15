@@ -2,8 +2,9 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Files;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -13,7 +14,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// gets a worksheet per connection, named after the step it comes from; other formats write the rows of every
 /// connection, mapped by name to the fields of the first one.
 /// </summary>
-public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings>
+public sealed class CreateFileStep : DataPipelineStepType<CreateFileStep, CreateFileStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -27,21 +28,15 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Create a file"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CreateFileStep>("Create a file");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Writes the rows to a CSV, JSON or Excel file."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<CreateFileStep>("Writes the rows to a CSV, JSON or Excel file.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.File;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.File;
 
-    public override string Icon => "fa-solid fa-file-export";
+    public static string Icon => "fa-solid fa-file-export";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {
@@ -54,7 +49,7 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
 
         var settings = GetSettings(context.Step);
 
-        if (GetFormat(context.Services, settings) is null)
+        if (context.Services?.GetService<IDataFileFormatManager>()?.GetDescriptor(settings.Format) is null)
         {
             context.AddError(S["Choose the format of the file."]);
         }
@@ -72,8 +67,10 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
         ArgumentNullException.ThrowIfNull(context);
 
         var settings = GetSettings(context.Step);
-        var format = GetFormat(context.Services, settings)
+        var formats = context.Services?.GetService<IDataFileFormatManager>();
+        var descriptor = formats?.GetDescriptor(settings.Format)
             ?? throw new InvalidOperationException(S["The file format '{0}' is not available.", settings.Format ?? string.Empty]);
+        var format = formats.GetFormat(descriptor.Name);
 
         var now = await DataPipelineFormulas.GetRunTimeAsync(context.Run);
         var name = DataPipelineTemplate.RenderFileName(string.IsNullOrWhiteSpace(settings.FileName) ? "{PipelineName}-{Date:yyyyMMdd-HHmmss}" : settings.FileName, context.Run, now);
@@ -83,7 +80,7 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
             name = "export";
         }
 
-        var file = context.Run.CreateFile(DataPipelineTemplate.WithExtension(name, format.Extension), format.ContentType);
+        var file = context.Run.CreateFile(DataPipelineTemplate.WithExtension(name, descriptor.Extension), descriptor.ContentType);
         var input = context.GetInput();
 
         var options = new DataFileOptions
@@ -199,10 +196,5 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
 
             yield return enumerator.Current;
         }
-    }
-
-    private static IDataFileFormat GetFormat(IServiceProvider services, CreateFileStepSettings settings)
-    {
-        return services?.GetService<IDataFileFormatManager>()?.GetFormat(settings.Format);
     }
 }

@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Users;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -44,11 +45,11 @@ public sealed class UsersDataSource : IDataSource
         S = localizer;
     }
 
-    public string Name => SourceName;
+    public static string Name => SourceName;
 
-    public LocalizedString DisplayName => S["Users"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UsersDataSource>("Users");
 
-    public LocalizedString Description => S["The users of the site and their roles."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<UsersDataSource>("The users of the site and their roles.");
 
     public async Task<IReadOnlyList<DataSetDescriptor>> GetDataSetsAsync(DataSourceContext context, CancellationToken cancellationToken = default)
     {

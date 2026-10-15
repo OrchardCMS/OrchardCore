@@ -1,36 +1,46 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
 namespace OrchardCore.DataSources;
 
 /// <summary>
-/// The default <see cref="IDataSourceManager"/>, built from the registered <see cref="IDataSource"/> services.
+/// The default <see cref="IDataSourceManager"/>, built from the data sources of <see cref="DataSourceOptions"/>. It
+/// lists them from their descriptors, and resolves a data source from the services of the scope only when it is used.
 /// </summary>
 public sealed class DataSourceManager : IDataSourceManager
 {
-    private readonly IReadOnlyList<IDataSource> _dataSources;
-    private readonly Dictionary<string, IDataSource> _byName;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IReadOnlyList<DataSourceDescriptor> _dataSources;
+    private readonly Dictionary<string, DataSourceDescriptor> _byName;
 
-    public DataSourceManager(IEnumerable<IDataSource> dataSources)
+    public DataSourceManager(IOptions<DataSourceOptions> options, IServiceProvider serviceProvider)
     {
-        ArgumentNullException.ThrowIfNull(dataSources);
+        ArgumentNullException.ThrowIfNull(options);
 
-        _byName = new Dictionary<string, IDataSource>(StringComparer.OrdinalIgnoreCase);
+        _serviceProvider = serviceProvider;
+        _dataSources = options.Value.DataSources;
+        _byName = new Dictionary<string, DataSourceDescriptor>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var dataSource in dataSources)
+        foreach (var dataSource in _dataSources)
         {
             if (!_byName.TryAdd(dataSource.Name, dataSource))
             {
                 throw new InvalidOperationException($"More than one data source is registered with the name '{dataSource.Name}'.");
             }
         }
-
-        _dataSources = _byName.Values
-            .OrderBy(dataSource => dataSource.DisplayName?.Value ?? dataSource.Name, StringComparer.CurrentCultureIgnoreCase)
-            .ToArray();
     }
 
-    public IReadOnlyList<IDataSource> GetDataSources() => _dataSources;
+    public IReadOnlyList<DataSourceDescriptor> GetDataSources() => _dataSources;
+
+    public DataSourceDescriptor GetDescriptor(string name)
+    {
+        return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    }
 
     public IDataSource GetDataSource(string name)
     {
-        return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+        return GetDescriptor(name) is { } descriptor
+            ? (IDataSource)_serviceProvider.GetRequiredService(descriptor.Type)
+            : null;
     }
 }

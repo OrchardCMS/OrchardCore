@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.DataSources;
 
@@ -10,17 +11,11 @@ internal sealed class InMemoryDataSource : IDataSource
 {
     private readonly Dictionary<string, (DataField[] Fields, List<object[]> Rows)> _dataSets = new(StringComparer.Ordinal);
 
-    public InMemoryDataSource(string name = "Memory", string displayName = null)
-    {
-        Name = name;
-        DisplayName = new LocalizedString(name, displayName ?? name);
-    }
+    public static string Name => "Memory";
 
-    public string Name { get; }
+    public static LocalizationSource DisplayName { get; } = new("Memory");
 
-    public LocalizedString DisplayName { get; }
-
-    public LocalizedString Description => new(Name, string.Empty);
+    public static LocalizationSource Description { get; } = new(string.Empty);
 
     public List<DataSourceQuery> Queries { get; } = [];
 

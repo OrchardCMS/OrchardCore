@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Expressions;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -9,7 +10,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// Keeps the rows that match a condition, such as <c>[Amount] &gt;= 100 AND [Country] = 'CA'</c>. The rows that
 /// don't match go to a second output, which may be left unconnected.
 /// </summary>
-public sealed class FilterStep : DataPipelineStepType<FilterStepSettings>
+public sealed class FilterStep : DataPipelineStepType<FilterStep, FilterStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -35,15 +36,15 @@ public sealed class FilterStep : DataPipelineStepType<FilterStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Filter rows"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<FilterStep>("Filter rows");
 
-    public override LocalizedString Description => S["Keeps the rows that match a condition."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<FilterStep>("Keeps the rows that match a condition.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-filter";
+    public static string Icon => "fa-solid fa-filter";
 
     public override IReadOnlyList<DataPipelinePort> GetOutputs(DataPipelineStep step)
         =>

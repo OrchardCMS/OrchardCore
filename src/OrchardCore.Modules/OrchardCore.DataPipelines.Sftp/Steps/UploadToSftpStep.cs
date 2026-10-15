@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Sftp;
 
@@ -8,7 +9,7 @@ namespace OrchardCore.DataPipelines.Sftp;
 /// Uploads the files it reads to a folder of an SFTP server, authenticating with a password, a private key, or both,
 /// and verifying the host key of the server when its fingerprint is set.
 /// </summary>
-public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStepSettings>
+public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStep, UploadToSftpStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -29,21 +30,15 @@ public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStepSett
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Upload to an SFTP server"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UploadToSftpStep>("Upload to an SFTP server");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Uploads files to a folder of an SFTP server, over SSH."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<UploadToSftpStep>("Uploads files to a folder of an SFTP server, over SSH.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public override string Icon => "fa-solid fa-lock";
+    public static string Icon => "fa-solid fa-lock";
 
     /// <summary>
     /// Describes where a step uploads its files, such as <c>sftp://host:22/folder</c>. It holds no secrets.

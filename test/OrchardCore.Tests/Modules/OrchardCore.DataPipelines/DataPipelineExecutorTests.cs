@@ -385,15 +385,15 @@ public sealed class DataPipelineExecutorTests : IDisposable
 
     private DataPipelineAnalyzer CreateAnalyzer(IDataPipelineStepType[] steps = null)
     {
-        return new(new DataPipelineStepTypeManager(steps ?? TestSteps.All(_collector)), new PassThroughStringLocalizer<DataPipelineAnalyzer>());
+        return new(TestSteps.CreateManager(steps ?? TestSteps.All(_collector)), new PassThroughStringLocalizerFactory(), new PassThroughStringLocalizer<DataPipelineAnalyzer>());
     }
 
     private DataPipelineExecutor CreateExecutor(IDataPipelineStepType[] steps = null)
     {
-        var manager = new DataPipelineStepTypeManager(steps ?? TestSteps.All(_collector));
+        var manager = TestSteps.CreateManager(steps ?? TestSteps.All(_collector));
 
         return new DataPipelineExecutor(
-            new DataPipelineAnalyzer(manager, new PassThroughStringLocalizer<DataPipelineAnalyzer>()),
+            new DataPipelineAnalyzer(manager, new PassThroughStringLocalizerFactory(), new PassThroughStringLocalizer<DataPipelineAnalyzer>()),
             NullLogger<DataPipelineExecutor>.Instance);
     }
 

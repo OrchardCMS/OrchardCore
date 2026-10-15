@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Files;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -9,7 +10,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// Appends the rows of every step connected to its input, one connection after the other. Fields are matched by name;
 /// a field missing from some rows is empty in them, and fields of different types become the type both can hold.
 /// </summary>
-public sealed class UnionStep : DataPipelineStepType
+public sealed class UnionStep : DataPipelineStepType<UnionStep>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -23,15 +24,15 @@ public sealed class UnionStep : DataPipelineStepType
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Combine rows"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UnionStep>("Combine rows");
 
-    public override LocalizedString Description => S["Appends the rows of several steps."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<UnionStep>("Appends the rows of several steps.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-object-group";
+    public static string Icon => "fa-solid fa-object-group";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {

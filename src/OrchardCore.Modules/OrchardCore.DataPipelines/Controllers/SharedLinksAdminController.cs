@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DataPipelines.SharedLinks;
 using OrchardCore.DataPipelines.ViewModels;
@@ -26,6 +27,7 @@ public sealed class SharedLinksAdminController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly INotifier _notifier;
     private readonly IClock _clock;
+    private readonly IStringLocalizerFactory _localizerFactory;
 
     internal readonly IHtmlLocalizer H;
 
@@ -36,6 +38,7 @@ public sealed class SharedLinksAdminController : Controller
         IShapeFactory shapeFactory,
         INotifier notifier,
         IClock clock,
+        IStringLocalizerFactory localizerFactory,
         IHtmlLocalizer<SharedLinksAdminController> htmlLocalizer)
     {
         _manager = manager;
@@ -44,6 +47,7 @@ public sealed class SharedLinksAdminController : Controller
         _shapeFactory = shapeFactory;
         _notifier = notifier;
         _clock = clock;
+        _localizerFactory = localizerFactory;
         H = htmlLocalizer;
     }
 
@@ -66,7 +70,7 @@ public sealed class SharedLinksAdminController : Controller
             KindNames = links
                 .Select(link => link.Kind)
                 .Distinct(StringComparer.Ordinal)
-                .ToDictionary(kind => kind, kind => _manager.FindHandler(kind)?.DisplayName.Value ?? kind, StringComparer.Ordinal),
+                .ToDictionary(kind => kind, kind => _localizerFactory.Localize(_manager.FindDescriptor(kind)?.DisplayName)?.Value ?? kind, StringComparer.Ordinal),
             SourceUrls = links
                 .Select(link => (link.LinkId, Url: _manager.FindHandler(link.Kind)?.GetSourceUrl(link, Url)))
                 .Where(entry => !string.IsNullOrEmpty(entry.Url))

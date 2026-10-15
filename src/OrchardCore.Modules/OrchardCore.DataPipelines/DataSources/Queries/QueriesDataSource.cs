@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.DataSources.Files;
+using OrchardCore.Localization;
 using OrchardCore.Queries;
 
 namespace OrchardCore.DataSources.Queries;
@@ -38,11 +39,11 @@ public sealed class QueriesDataSource : IDataSource
         S = localizer;
     }
 
-    public string Name => SourceName;
+    public static string Name => SourceName;
 
-    public LocalizedString DisplayName => S["Queries"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<QueriesDataSource>("Queries");
 
-    public LocalizedString Description => S["The results of the saved queries."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<QueriesDataSource>("The results of the saved queries.");
 
     public async Task<IReadOnlyList<DataSetDescriptor>> GetDataSetsAsync(DataSourceContext context, CancellationToken cancellationToken = default)
     {

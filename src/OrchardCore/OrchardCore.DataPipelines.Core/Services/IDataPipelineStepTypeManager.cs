@@ -8,15 +8,22 @@ namespace OrchardCore.DataPipelines.Services;
 public interface IDataPipelineStepTypeManager
 {
     /// <summary>
-    /// Lists the registered step types.
+    /// Lists the registered step types, in the order they were registered, without creating them.
     /// </summary>
-    /// <returns>The step types.</returns>
-    IReadOnlyList<IDataPipelineStepType> GetStepTypes();
+    /// <returns>The descriptors of the step types.</returns>
+    IReadOnlyList<DataPipelineStepTypeDescriptor> GetStepTypes();
 
     /// <summary>
-    /// Finds a step type by its name.
+    /// Finds the descriptor of a step type by its technical name.
     /// </summary>
-    /// <param name="name">The name of the step type.</param>
-    /// <returns>The step type, or <see langword="null"/> when none is registered with that name.</returns>
+    /// <param name="name">The technical name of the step type.</param>
+    /// <returns>The descriptor, or <see langword="null"/> when no step type has that name.</returns>
+    DataPipelineStepTypeDescriptor GetDescriptor(string name);
+
+    /// <summary>
+    /// Gets a step type by its technical name, resolved from the services of the current scope.
+    /// </summary>
+    /// <param name="name">The technical name of the step type.</param>
+    /// <returns>The step type, or <see langword="null"/> when no step type has that name.</returns>
     IDataPipelineStepType GetStepType(string name);
 }

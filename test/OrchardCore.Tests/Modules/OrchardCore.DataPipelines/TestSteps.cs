@@ -1,7 +1,11 @@
+using System.Collections;
+using Microsoft.Extensions.Options;
 using OrchardCore.DataPipelines.Models;
+using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataSources;
 using OrchardCore.Entities;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.DataPipelines;
 
@@ -38,6 +42,34 @@ internal static class TestSteps
             new FileCollector(collector),
         ];
 
+    /// <summary>
+    /// Creates a step type manager over the given step type instances, so tests can observe them.
+    /// </summary>
+    public static DataPipelineStepTypeManager CreateManager(IEnumerable stepTypes)
+    {
+        var services = new ServiceCollection();
+        var options = new DataPipelineStepTypeOptions();
+
+        foreach (var stepType in stepTypes)
+        {
+            services.AddSingleton(stepType.GetType(), stepType);
+            options.Add(Describe(stepType.GetType()));
+        }
+
+        return new DataPipelineStepTypeManager(Options.Create(options), services.BuildServiceProvider());
+    }
+
+    /// <summary>
+    /// Describes a step type from the static members of its class.
+    /// </summary>
+    public static DataPipelineStepTypeDescriptor Describe(Type stepType)
+    {
+        return (DataPipelineStepTypeDescriptor)typeof(DataPipelineStepTypeDescriptor)
+            .GetMethod(nameof(DataPipelineStepTypeDescriptor.Create))
+            .MakeGenericMethod(stepType)
+            .Invoke(null, null);
+    }
+
     public sealed class TestSettings
     {
         public int Count { get; set; }
@@ -45,23 +77,24 @@ internal static class TestSteps
         public string Message { get; set; }
     }
 
-    public abstract class TestStep : DataPipelineStepType<TestSettings>
+    public abstract class TestStep<TStep> : DataPipelineStepType<TStep, TestSettings>
+        where TStep : TestStep<TStep>, IDataPipelineStepType
     {
-        public override string Name => GetType().Name;
+        public static string Name => typeof(TStep).Name;
 
-        public override LocalizedString DisplayName => new(Name, Name);
+        public static LocalizationSource DisplayName { get; } = new(typeof(TStep).Name);
 
-        public override LocalizedString Description => new(Name, Name);
+        public static LocalizationSource Description => DisplayName;
     }
 
     /// <summary>
     /// Writes the numbers 1 to Count, in batches of 100, or a preview's limit.
     /// </summary>
-    public sealed class NumbersSource : TestStep
+    public sealed class NumbersSource : TestStep<NumbersSource>, IDataPipelineStepType
     {
         public int Executions;
 
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
 
         public override Task DescribeAsync(DataPipelineDescribeContext context)
         {
@@ -98,9 +131,9 @@ internal static class TestSteps
     /// <summary>
     /// Adds a Double field.
     /// </summary>
-    public sealed class DoubleTransform : TestStep
+    public sealed class DoubleTransform : TestStep<DoubleTransform>, IDataPipelineStepType
     {
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
         public override Task DescribeAsync(DataPipelineDescribeContext context)
         {
@@ -133,9 +166,9 @@ internal static class TestSteps
     /// <summary>
     /// Keeps the first Count rows, then stops reading.
     /// </summary>
-    public sealed class LimitTransform : TestStep
+    public sealed class LimitTransform : TestStep<LimitTransform>, IDataPipelineStepType
     {
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
         public override async Task ExecuteAsync(DataPipelineStepContext context)
         {
@@ -159,9 +192,9 @@ internal static class TestSteps
     /// <summary>
     /// Throws once it has read Count rows.
     /// </summary>
-    public sealed class FailTransform : TestStep
+    public sealed class FailTransform : TestStep<FailTransform>, IDataPipelineStepType
     {
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
         public override async Task ExecuteAsync(DataPipelineStepContext context)
         {
@@ -185,9 +218,9 @@ internal static class TestSteps
     /// <summary>
     /// Appends every connection of its input.
     /// </summary>
-    public sealed class UnionTransform : TestStep
+    public sealed class UnionTransform : TestStep<UnionTransform>, IDataPipelineStepType
     {
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
         public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
         {
@@ -206,7 +239,7 @@ internal static class TestSteps
     /// <summary>
     /// Collects the rows it reads, keyed by its step id.
     /// </summary>
-    public sealed class CollectDestination : TestStep
+    public sealed class CollectDestination : TestStep<CollectDestination>, IDataPipelineStepType
     {
         private readonly TestCollector _collector;
 
@@ -215,7 +248,7 @@ internal static class TestSteps
             _collector = collector;
         }
 
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
         public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
         {
@@ -243,9 +276,9 @@ internal static class TestSteps
     /// <summary>
     /// Writes its rows to a text file, one number per line.
     /// </summary>
-    public sealed class FileMaker : TestStep
+    public sealed class FileMaker : TestStep<FileMaker>, IDataPipelineStepType
     {
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.File;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.File;
 
         public override async Task ExecuteAsync(DataPipelineStepContext context)
         {
@@ -272,7 +305,7 @@ internal static class TestSteps
     /// <summary>
     /// Collects the content of the files it reads.
     /// </summary>
-    public sealed class FileCollector : TestStep
+    public sealed class FileCollector : TestStep<FileCollector>, IDataPipelineStepType
     {
         private readonly TestCollector _collector;
 
@@ -281,7 +314,7 @@ internal static class TestSteps
             _collector = collector;
         }
 
-        public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+        public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
         public override async Task ExecuteAsync(DataPipelineStepContext context)
         {

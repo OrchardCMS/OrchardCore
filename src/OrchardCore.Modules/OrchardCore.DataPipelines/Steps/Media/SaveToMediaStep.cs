@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.Localization;
 using OrchardCore.Media;
 
 namespace OrchardCore.DataPipelines.Steps;
@@ -11,7 +12,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// Saves the files it reads to a folder of the media library. It checks that the user the run is for may manage the
 /// media of the folder, and that the media library accepts the extension of each file.
 /// </summary>
-public sealed class SaveToMediaStep : DataPipelineStepType<SaveToMediaStepSettings>
+public sealed class SaveToMediaStep : DataPipelineStepType<SaveToMediaStep, SaveToMediaStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -25,21 +26,15 @@ public sealed class SaveToMediaStep : DataPipelineStepType<SaveToMediaStepSettin
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Save to the media library"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SaveToMediaStep>("Save to the media library");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Saves files to a folder of the media library."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SaveToMediaStep>("Saves files to a folder of the media library.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public override string Icon => "fa-solid fa-photo-film";
+    public static string Icon => "fa-solid fa-photo-film";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

@@ -43,7 +43,7 @@ public sealed class DataFileFormatTests
     public async Task CsvWrite_ValuesWithDelimitersQuotesAndNewlines_QuotesThem()
     {
         // Arrange
-        var format = new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>());
+        var format = new CsvDataFileFormat();
         using var stream = new MemoryStream();
 
         // Act
@@ -63,7 +63,7 @@ public sealed class DataFileFormatTests
     public async Task CsvWrite_UseDisplayNames_WritesLabelsInHeader()
     {
         // Arrange
-        var format = new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>());
+        var format = new CsvDataFileFormat();
         using var stream = new MemoryStream();
 
         // Act
@@ -78,7 +78,7 @@ public sealed class DataFileFormatTests
     public async Task CsvRead_QuotedValues_ReturnsTextFieldsAndRows()
     {
         // Arrange
-        var format = new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>());
+        var format = new CsvDataFileFormat();
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("﻿Name;Note\n\"a;b\";\"say \"\"hi\"\"\nthere\"\r\nc;\n"));
 
         // Act
@@ -96,7 +96,7 @@ public sealed class DataFileFormatTests
     public async Task CsvRead_NoHeaderRow_NamesColumnsByPosition()
     {
         // Arrange
-        var format = new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>());
+        var format = new CsvDataFileFormat();
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("1,2\n3,4,5\n"));
 
         // Act
@@ -112,7 +112,7 @@ public sealed class DataFileFormatTests
     public async Task CsvRead_DuplicateOrEmptyHeaders_MakesNamesUnique()
     {
         // Arrange
-        var format = new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>());
+        var format = new CsvDataFileFormat();
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name,Name,\nx,y,z\n"));
 
         // Act
@@ -126,7 +126,7 @@ public sealed class DataFileFormatTests
     public async Task CsvRead_BatchSize_SplitsRowsIntoBatches()
     {
         // Arrange
-        var format = new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>());
+        var format = new CsvDataFileFormat();
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("N\n1\n2\n3\n4\n5\n"));
 
         // Act
@@ -140,7 +140,7 @@ public sealed class DataFileFormatTests
     public async Task CsvRead_HeaderOnly_YieldsOneEmptyBatchWithFields()
     {
         // Arrange
-        var format = new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>());
+        var format = new CsvDataFileFormat();
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("A,B\n"));
 
         // Act
@@ -156,7 +156,7 @@ public sealed class DataFileFormatTests
     public async Task JsonWrite_Rows_WritesArrayOfTypedObjects()
     {
         // Arrange
-        var format = new JsonDataFileFormat(new PassThroughStringLocalizer<JsonDataFileFormat>());
+        var format = new JsonDataFileFormat();
         using var stream = new MemoryStream();
 
         // Act
@@ -175,7 +175,7 @@ public sealed class DataFileFormatTests
     public async Task JsonRead_Objects_InfersFieldTypesFromValues()
     {
         // Arrange
-        var format = new JsonDataFileFormat(new PassThroughStringLocalizer<JsonDataFileFormat>());
+        var format = new JsonDataFileFormat();
         var json = "[{\"Id\":1,\"Name\":\"a\",\"Price\":1.5,\"On\":true,\"Tags\":[\"x\"]},{\"Id\":2,\"Name\":\"b\",\"Extra\":\"later\"}]";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
@@ -195,7 +195,7 @@ public sealed class DataFileFormatTests
     public async Task JsonLinesRoundTrip_Rows_PreservesValues()
     {
         // Arrange
-        var format = new JsonLinesDataFileFormat(new PassThroughStringLocalizer<JsonLinesDataFileFormat>());
+        var format = new JsonLinesDataFileFormat();
         using var stream = new MemoryStream();
 
         // Act
@@ -463,18 +463,24 @@ public sealed class DataFileFormatTests
     }
 
     [Fact]
-    public void GetFormatByFileName_KnownExtension_ReturnsFormatIgnoringCase()
+    public void GetDescriptorByFileName_KnownExtension_ReturnsFormatIgnoringCase()
     {
         // Arrange
-        var manager = new DataFileFormatManager([new CsvDataFileFormat(new PassThroughStringLocalizer<CsvDataFileFormat>()), new JsonDataFileFormat(new PassThroughStringLocalizer<JsonDataFileFormat>()), new ExcelDataFileFormat(new PassThroughStringLocalizer<ExcelDataFileFormat>())]);
+        var services = new ServiceCollection();
+        services.AddLocalization();
+        services.AddDataSourcesCore();
+        using var provider = services.BuildServiceProvider();
+        var manager = provider.GetRequiredService<IDataFileFormatManager>();
 
         // Act
-        var format = manager.GetFormatByFileName("exports/ORDERS.XLSX");
+        var descriptor = manager.GetDescriptorByFileName("exports/ORDERS.XLSX");
 
         // Assert
-        Assert.Equal("xlsx", format.Name);
-        Assert.Null(manager.GetFormatByFileName("notes.txt"));
-        Assert.Equal("csv", manager.GetFormat("CSV").Name);
+        Assert.Equal("xlsx", descriptor.Name);
+        Assert.True(descriptor.IsWorkbook);
+        Assert.Null(manager.GetDescriptorByFileName("notes.txt"));
+        Assert.IsType<CsvDataFileFormat>(manager.GetFormat("CSV"));
+        Assert.Equal(".csv", manager.GetDescriptor("csv").Extension);
     }
 
     private static async IAsyncEnumerable<DataBatch> LoggedBatches(IReadOnlyList<DataField> fields, string name, List<string> log)

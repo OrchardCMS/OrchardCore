@@ -1,13 +1,14 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Ftp;
 
 /// <summary>
 /// Uploads the files it reads to a folder of an FTP server, over TLS unless told otherwise.
 /// </summary>
-public sealed class UploadToFtpStep : DataPipelineStepType<UploadToFtpStepSettings>
+public sealed class UploadToFtpStep : DataPipelineStepType<UploadToFtpStep, UploadToFtpStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -28,15 +29,15 @@ public sealed class UploadToFtpStep : DataPipelineStepType<UploadToFtpStepSettin
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Upload to an FTP server"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UploadToFtpStep>("Upload to an FTP server");
 
-    public override LocalizedString Description => S["Uploads files to a folder of an FTP server."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<UploadToFtpStep>("Uploads files to a folder of an FTP server.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public override string Icon => "fa-solid fa-server";
+    public static string Icon => "fa-solid fa-server";
 
     /// <summary>
     /// Describes where a step uploads its files, such as <c>ftps://host:21/folder</c>. It holds no secrets.

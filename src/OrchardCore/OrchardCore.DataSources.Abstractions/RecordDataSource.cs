@@ -1,22 +1,16 @@
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.DataSources;
 
 /// <summary>
-/// A data source whose data sets read .NET records, such as documents or the rows of an index. Derive from it, list its
-/// data sets, each a <see cref="RecordDataSet{TRecord}"/>, and register it with
+/// The base of a data source whose data sets read .NET records, such as documents or the rows of an index. Derive from
+/// it, implement <see cref="IDataSource"/> with the static <c>Name</c>, <c>DisplayName</c> and <c>Description</c> of
+/// the data source, list its data sets, each a <see cref="RecordDataSet{TRecord}"/>, and register it with
 /// <c>services.AddDataSource&lt;TDataSource&gt;()</c>. It lists, describes and reads only the data sets the user may
 /// read.
 /// </summary>
-public abstract class RecordDataSource : IDataSource
+public abstract class RecordDataSource
 {
-    public abstract string Name { get; }
-
-    public abstract LocalizedString DisplayName { get; }
-
-    public abstract LocalizedString Description { get; }
-
     /// <summary>
     /// Gets the data sets of the source.
     /// </summary>

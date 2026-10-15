@@ -1,22 +1,24 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
 namespace OrchardCore.DataSources.Files;
 
 /// <summary>
-/// The default <see cref="IDataFileFormatManager"/>, built from the registered <see cref="IDataFileFormat"/> services.
+/// The default <see cref="IDataFileFormatManager"/>, built from the formats of <see cref="DataFileFormatOptions"/>. It
+/// lists them from their descriptors, and resolves a format from the services only when it is used.
 /// </summary>
 public sealed class DataFileFormatManager : IDataFileFormatManager
 {
-    private readonly IReadOnlyList<IDataFileFormat> _formats;
-    private readonly Dictionary<string, IDataFileFormat> _byName;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IReadOnlyList<DataFileFormatDescriptor> _formats;
+    private readonly Dictionary<string, DataFileFormatDescriptor> _byName = new(StringComparer.OrdinalIgnoreCase);
 
-    public DataFileFormatManager(IEnumerable<IDataFileFormat> formats)
+    public DataFileFormatManager(IOptions<DataFileFormatOptions> options, IServiceProvider serviceProvider)
     {
-        ArgumentNullException.ThrowIfNull(formats);
+        ArgumentNullException.ThrowIfNull(options);
 
-        _formats = formats
-            .OrderBy(format => format.DisplayName?.Value ?? format.Name, StringComparer.CurrentCultureIgnoreCase)
-            .ToArray();
-
-        _byName = new Dictionary<string, IDataFileFormat>(StringComparer.OrdinalIgnoreCase);
+        _serviceProvider = serviceProvider;
+        _formats = options.Value.Formats;
 
         foreach (var format in _formats)
         {
@@ -24,20 +26,15 @@ public sealed class DataFileFormatManager : IDataFileFormatManager
         }
     }
 
-    public IReadOnlyList<IDataFileFormat> GetFormats() => _formats;
+    public IReadOnlyList<DataFileFormatDescriptor> GetFormats() => _formats;
 
-    public IDataFileFormat GetFormat(string name)
+    public DataFileFormatDescriptor GetDescriptor(string name)
     {
         return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
     }
 
-    public IDataFileFormat GetFormatByFileName(string fileName)
+    public DataFileFormatDescriptor GetDescriptorByFileName(string fileName)
     {
-        if (string.IsNullOrEmpty(fileName))
-        {
-            return null;
-        }
-
         var extension = Path.GetExtension(fileName);
 
         if (string.IsNullOrEmpty(extension))
@@ -46,5 +43,12 @@ public sealed class DataFileFormatManager : IDataFileFormatManager
         }
 
         return _formats.FirstOrDefault(format => string.Equals(format.Extension, extension, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public IDataFileFormat GetFormat(string name)
+    {
+        return GetDescriptor(name) is { } descriptor
+            ? (IDataFileFormat)_serviceProvider.GetRequiredService(descriptor.Type)
+            : null;
     }
 }

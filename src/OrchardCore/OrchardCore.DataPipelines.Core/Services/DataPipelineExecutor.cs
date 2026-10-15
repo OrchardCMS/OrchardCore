@@ -91,7 +91,7 @@ public sealed class DataPipelineExecutor
         }
 
         var ancestors = Ancestors(analysis, stepId);
-        var isDestination = target.StepType.Category == DataPipelineStepCategory.Destination;
+        var isDestination = target.Descriptor.Category == DataPipelineStepCategory.Destination;
         var scope = isDestination ? ancestors : [.. ancestors, stepId];
 
         if (analysis.Issues.Any(issue => issue.Severity == DataPipelineIssueSeverity.Error && (issue.StepId is null || scope.Contains(issue.StepId) || issue.StepId == stepId)))
@@ -101,7 +101,7 @@ public sealed class DataPipelineExecutor
             return preview;
         }
 
-        if (ancestors.Any(id => analysis.GetStep(id).StepType.Category == DataPipelineStepCategory.Destination))
+        if (ancestors.Any(id => analysis.GetStep(id).Descriptor.Category == DataPipelineStepCategory.Destination))
         {
             preview.Error = "A step that comes after a destination can't be previewed, because a preview never executes destinations.";
 
@@ -387,7 +387,7 @@ public sealed class DataPipelineExecutor
             return analysis.Step.Title.Trim();
         }
 
-        return analysis?.StepType?.DisplayName.Value ?? analysis?.Step?.Type;
+        return analysis?.DisplayName ?? analysis?.Step?.Type;
     }
 
     private static void AddEdge(Dictionary<(string StepId, string Port), List<DataPipelineEdge>> map, (string StepId, string Port) key, DataPipelineEdge edge)

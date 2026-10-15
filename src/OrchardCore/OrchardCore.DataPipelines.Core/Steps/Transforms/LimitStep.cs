@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -7,7 +8,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// Keeps a number of rows, optionally after skipping the first ones. Once it has its rows, the step stops reading, and
 /// the steps before it stop too.
 /// </summary>
-public sealed class LimitStep : DataPipelineStepType<LimitStepSettings>
+public sealed class LimitStep : DataPipelineStepType<LimitStep, LimitStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -21,21 +22,15 @@ public sealed class LimitStep : DataPipelineStepType<LimitStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Keep first rows"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<LimitStep>("Keep first rows");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Keeps a number of rows, optionally after skipping some."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<LimitStep>("Keeps a number of rows, optionally after skipping some.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-scissors";
+    public static string Icon => "fa-solid fa-scissors";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

@@ -1,13 +1,14 @@
 using System.IO.Compression;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Compresses the files it reads into one zip archive. Files with the same name get a number appended.
 /// </summary>
-public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStepSettings>
+public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStep, ZipFilesStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -26,15 +27,15 @@ public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Zip files"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ZipFilesStep>("Zip files");
 
-    public override LocalizedString Description => S["Compresses files into one zip archive."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<ZipFilesStep>("Compresses files into one zip archive.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.File;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.File;
 
-    public override string Icon => "fa-solid fa-file-zipper";
+    public static string Icon => "fa-solid fa-file-zipper";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {

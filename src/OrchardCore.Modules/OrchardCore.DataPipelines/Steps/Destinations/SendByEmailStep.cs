@@ -3,13 +3,14 @@ using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Sends one email with every file it reads attached, with the default email provider of the site.
 /// </summary>
-public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStepSettings>
+public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStep, SendByEmailStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -32,21 +33,15 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStepSettin
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Send by email"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SendByEmailStep>("Send by email");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Sends the files as the attachments of an email."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SendByEmailStep>("Sends the files as the attachments of an email.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public override string Icon => "fa-solid fa-envelope";
+    public static string Icon => "fa-solid fa-envelope";
 
     /// <summary>
     /// Splits a list of email addresses separated by commas or semicolons.

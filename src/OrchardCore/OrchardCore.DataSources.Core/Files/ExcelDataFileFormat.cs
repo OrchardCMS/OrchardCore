@@ -8,6 +8,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources.Files;
 
@@ -44,22 +45,15 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
     public ExcelDataFileFormat(IStringLocalizer<ExcelDataFileFormat> localizer)
     {
         S = localizer;
-        DisplayName = localizer["Excel workbook"];
     }
 
-    public string Name => FormatName;
+    public static string Name => FormatName;
 
-    public LocalizedString DisplayName { get; }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ExcelDataFileFormat>("Excel workbook");
 
-    public string Extension => ".xlsx";
+    public static string Extension => ".xlsx";
 
-    public string ContentType
-    {
-        get
-        {
-            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        }
-    }
+    public static string ContentType => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     public async Task<long> WriteAsync(
         Stream stream,

@@ -25,13 +25,13 @@ public abstract class DataPipelineStepDisplayDriver<TSettings, TViewModel> : Dis
 
     public override IDisplayResult Display(DataPipelineStep step, BuildDisplayContext context)
     {
-        return Initialize<TViewModel>($"{StepName}_Fields_Design", model => EditAsync(step, DataPipelineStepType<TSettings>.GetSettings(step), model))
+        return Initialize<TViewModel>($"{StepName}_Fields_Design", model => EditAsync(step, DataPipelineStepSettings.Get<TSettings>(step), model))
             .Location("Design", "Content");
     }
 
     public override IDisplayResult Edit(DataPipelineStep step, BuildEditorContext context)
     {
-        return Initialize<TViewModel>($"{StepName}_Fields_Edit", model => EditAsync(step, DataPipelineStepType<TSettings>.GetSettings(step), model))
+        return Initialize<TViewModel>($"{StepName}_Fields_Edit", model => EditAsync(step, DataPipelineStepSettings.Get<TSettings>(step), model))
             .Location("Content");
     }
 
@@ -40,9 +40,9 @@ public abstract class DataPipelineStepDisplayDriver<TSettings, TViewModel> : Dis
         var model = new TViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var settings = DataPipelineStepType<TSettings>.GetSettings(step);
+        var settings = DataPipelineStepSettings.Get<TSettings>(step);
         await UpdateAsync(step, settings, model, context);
-        DataPipelineStepType<TSettings>.SetSettings(step, settings);
+        DataPipelineStepSettings.Set(step, settings);
 
         return Edit(step, context);
     }

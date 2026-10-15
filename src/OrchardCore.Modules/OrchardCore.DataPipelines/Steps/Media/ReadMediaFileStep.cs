@@ -2,8 +2,9 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Files;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 using OrchardCore.Media;
 
 namespace OrchardCore.DataPipelines.Steps;
@@ -12,7 +13,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// Reads the rows of a CSV, JSON, JSON Lines or Excel file of the media library. The user the run is for must be
 /// allowed to manage the media of the file's folder.
 /// </summary>
-public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSettings>
+public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStep, ReadMediaFileStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -26,21 +27,15 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSe
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Read a media file"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ReadMediaFileStep>("Read a media file");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Reads the rows of a CSV, JSON or Excel file of the media library."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<ReadMediaFileStep>("Reads the rows of a CSV, JSON or Excel file of the media library.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
 
-    public override string Icon => "fa-solid fa-file-import";
+    public static string Icon => "fa-solid fa-file-import";
 
     public override async Task DescribeAsync(DataPipelineDescribeContext context)
     {
@@ -63,7 +58,9 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSe
         var options = CreateOptions(settings);
         options.BatchSize = 50;
 
-        await foreach (var batch in format.ReadAsync(stream, options, context.CancellationToken))
+        var reader = context.Services.GetRequiredService<IDataFileFormatManager>().GetFormat(format.Name);
+
+        await foreach (var batch in reader.ReadAsync(stream, options, context.CancellationToken))
         {
             context.SetOutputFields(batch.Fields);
 
@@ -91,7 +88,9 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSe
 
         await using var stream = await OpenSeekableAsync(store, path, context.CancellationToken);
 
-        await foreach (var batch in format.ReadAsync(stream, CreateOptions(settings), context.CancellationToken))
+        var reader = context.Services.GetRequiredService<IDataFileFormatManager>().GetFormat(format.Name);
+
+        await foreach (var batch in reader.ReadAsync(stream, CreateOptions(settings), context.CancellationToken))
         {
             if (output.IsClosed || remaining <= 0)
             {
@@ -105,7 +104,7 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSe
         }
     }
 
-    private async Task<(string Path, IDataFileFormat Format, string Error)> ResolveAsync(ReadMediaFileStepSettings settings, IServiceProvider services, System.Security.Claims.ClaimsPrincipal user)
+    private async Task<(string Path, DataFileFormatDescriptor Format, string Error)> ResolveAsync(ReadMediaFileStepSettings settings, IServiceProvider services, System.Security.Claims.ClaimsPrincipal user)
     {
         var path = MediaStepPaths.Normalize(settings.Path);
 
@@ -115,7 +114,7 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSe
         }
 
         var formats = services.GetRequiredService<IDataFileFormatManager>();
-        var format = string.IsNullOrEmpty(settings.Format) ? formats.GetFormatByFileName(path) : formats.GetFormat(settings.Format);
+        var format = string.IsNullOrEmpty(settings.Format) ? formats.GetDescriptorByFileName(path) : formats.GetDescriptor(settings.Format);
 
         if (format is null)
         {

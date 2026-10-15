@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Options;
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Expressions;
+using OrchardCore.Localization;
 using ExpressionCompiler = OrchardCore.DataSources.Expressions.ExpressionCompiler;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.DataSources;
@@ -9,26 +11,38 @@ public sealed class DataSourceManagerTests
     private static readonly DataField[] _fields = [new("Id", "Id", DataFieldType.Integer)];
 
     [Fact]
-    public void GetDataSources_SeveralSources_OrdersByDisplayName()
+    public void GetDataSources_SeveralSources_ListsThemWithoutCreatingThem()
     {
         // Arrange
-        var manager = new DataSourceManager([new InMemoryDataSource("b", "Zebra"), new InMemoryDataSource("a", "Apple")]);
+        var created = 0;
+        var manager = CreateManager(
+            services => services.AddScoped(_ =>
+            {
+                created++;
+
+                return new ZebraSource();
+            }),
+            DataSourceDescriptor.Create<ZebraSource>(),
+            DataSourceDescriptor.Create<AppleSource>());
 
         // Act
         var sources = manager.GetDataSources();
 
         // Assert
-        Assert.Equal(["a", "b"], sources.Select(source => source.Name));
+        Assert.Equal(["b", "a"], sources.Select(source => source.Name));
+        Assert.Equal(["Zebra", "Apple"], sources.Select(source => source.DisplayName.Value));
+        Assert.Equal(0, created);
     }
 
     [Fact]
     public void GetDataSource_DifferentCase_FindsSource()
     {
         // Arrange
-        var manager = new DataSourceManager([new InMemoryDataSource("Contents")]);
+        var manager = CreateManager(services => services.AddScoped<AppleSource>(), DataSourceDescriptor.Create<AppleSource>());
 
         // Act & Assert
-        Assert.NotNull(manager.GetDataSource("contents"));
+        Assert.IsType<AppleSource>(manager.GetDataSource("A"));
+        Assert.Equal("a", manager.GetDescriptor("A").Name);
         Assert.Null(manager.GetDataSource("missing"));
         Assert.Null(manager.GetDataSource(null));
     }
@@ -37,7 +51,7 @@ public sealed class DataSourceManagerTests
     public void Constructor_DuplicateNames_Throws()
     {
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() => new DataSourceManager([new InMemoryDataSource("x"), new InMemoryDataSource("X")]));
+        Assert.Throws<InvalidOperationException>(() => CreateManager(_ => { }, DataSourceDescriptor.Create<LowerXSource>(), DataSourceDescriptor.Create<UpperXSource>()));
     }
 
     [Fact]
@@ -110,6 +124,21 @@ public sealed class DataSourceManagerTests
         Assert.Equal(["Age", "First name"], expression.References.Order(StringComparer.Ordinal));
     }
 
+    private static DataSourceManager CreateManager(Action<IServiceCollection> configure, params DataSourceDescriptor[] descriptors)
+    {
+        var services = new ServiceCollection();
+        configure(services);
+
+        var options = new DataSourceOptions();
+
+        foreach (var descriptor in descriptors)
+        {
+            options.Add(descriptor);
+        }
+
+        return new DataSourceManager(Options.Create(options), services.BuildServiceProvider());
+    }
+
     [Fact]
     public void Compile_UnknownField_ThrowsExpressionException()
     {
@@ -118,5 +147,59 @@ public sealed class DataSourceManagerTests
 
         // Act & Assert
         Assert.Throws<ExpressionException>(() => ExpressionCompiler.Compile("[Missing] + 1", scope, new PassThroughStringLocalizer<DataSourceManagerTests>()));
+    }
+
+    private abstract class EmptySource
+    {
+        public virtual Task<IReadOnlyList<DataSetDescriptor>> GetDataSetsAsync(DataSourceContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult<IReadOnlyList<DataSetDescriptor>>([]);
+        }
+
+        public virtual Task<DataSetSchema> GetSchemaAsync(string dataSet, DataSourceContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult<DataSetSchema>(null);
+        }
+
+        public virtual IAsyncEnumerable<DataBatch> ReadAsync(DataSourceQuery query, CancellationToken cancellationToken = default)
+        {
+            return AsyncEnumerable.Empty<DataBatch>();
+        }
+    }
+
+    private sealed class AppleSource : EmptySource, IDataSource
+    {
+        public static string Name => "a";
+
+        public static LocalizationSource DisplayName { get; } = new("Apple");
+
+        public static LocalizationSource Description { get; } = new(string.Empty);
+    }
+
+    private sealed class ZebraSource : EmptySource, IDataSource
+    {
+        public static string Name => "b";
+
+        public static LocalizationSource DisplayName { get; } = new("Zebra");
+
+        public static LocalizationSource Description { get; } = new(string.Empty);
+    }
+
+    private sealed class LowerXSource : EmptySource, IDataSource
+    {
+        public static string Name => "x";
+
+        public static LocalizationSource DisplayName { get; } = new("x");
+
+        public static LocalizationSource Description { get; } = new(string.Empty);
+    }
+
+    private sealed class UpperXSource : EmptySource, IDataSource
+    {
+        public static string Name => "X";
+
+        public static LocalizationSource DisplayName { get; } = new("X");
+
+        public static LocalizationSource Description { get; } = new(string.Empty);
     }
 }

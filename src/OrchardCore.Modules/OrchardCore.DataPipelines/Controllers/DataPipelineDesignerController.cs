@@ -230,7 +230,7 @@ public sealed class DataPipelineDesignerController : Controller
         var step = new DataPipelineStep
         {
             StepId = _idGenerator.GenerateUniqueId(),
-            Type = stepType.Name,
+            Type = request.Type,
             X = request.X,
             Y = request.Y,
         };
@@ -524,7 +524,7 @@ public sealed class DataPipelineDesignerController : Controller
 
             var stopwatch = Stopwatch.StartNew();
             var preview = await _executor.PreviewAsync(definition, step.StepId, run);
-            var isDestination = _stepTypeManager.GetStepType(step.Type)?.Category == DataPipelineStepCategory.Destination;
+            var isDestination = _stepTypeManager.GetDescriptor(step.Type)?.Category == DataPipelineStepCategory.Destination;
 
             return Ok(DataPipelineDesignerModelBuilder.BuildPreview(preview, isDestination, stopwatch.Elapsed));
         }

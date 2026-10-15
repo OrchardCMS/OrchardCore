@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Email;
 using OrchardCore.Modules;
 using OrchardCore.Users;
@@ -211,13 +212,26 @@ public sealed class SharedLinkManager : ISharedLinkManager
     }
 
     /// <summary>
+    /// Finds the descriptor of the handler of a kind of resource, without creating the handler.
+    /// </summary>
+    /// <param name="kind">The kind of resource.</param>
+    /// <returns>The descriptor, or <see langword="null"/> when the feature that registered it is disabled.</returns>
+    public SharedLinkHandlerDescriptor FindDescriptor(string kind)
+    {
+        return _services.GetService<IOptions<SharedLinkHandlerOptions>>()?.Value.Handlers
+            .FirstOrDefault(handler => string.Equals(handler.Kind, kind, StringComparison.Ordinal));
+    }
+
+    /// <summary>
     /// Finds the handler of a kind of resource.
     /// </summary>
     /// <param name="kind">The kind of resource.</param>
     /// <returns>The handler, or <see langword="null"/> when the feature that registered it is disabled.</returns>
     public ISharedLinkHandler FindHandler(string kind)
     {
-        return _services.GetServices<ISharedLinkHandler>().FirstOrDefault(handler => string.Equals(handler.Kind, kind, StringComparison.Ordinal));
+        return FindDescriptor(kind) is { } descriptor
+            ? (ISharedLinkHandler)_services.GetRequiredService(descriptor.Type)
+            : null;
     }
 
     // The counter of the uses is the reference, the copy in the document of a link may be stale.

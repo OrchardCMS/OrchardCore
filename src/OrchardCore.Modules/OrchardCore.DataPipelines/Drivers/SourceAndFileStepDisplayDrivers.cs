@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
+using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Files;
 using OrchardCore.DisplayManagement.Handlers;
@@ -18,17 +19,20 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
     private readonly IDataSourceManager _dataSourceManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly DataPipelineEditorContext _editorContext;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
 
     public DataSourceStepDisplayDriver(
         IDataSourceManager dataSourceManager,
         IHttpContextAccessor httpContextAccessor,
         DataPipelineEditorContext editorContext,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<DataSourceStepDisplayDriver> localizer)
     {
         _dataSourceManager = dataSourceManager;
         _httpContextAccessor = httpContextAccessor;
         _editorContext = editorContext;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -53,20 +57,22 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
 
         var context = new DataSourceContext { User = _httpContextAccessor.HttpContext?.User };
 
-        foreach (var dataSource in _dataSourceManager.GetDataSources())
+        foreach (var descriptor in _dataSourceManager.GetDataSources())
         {
-            foreach (var dataSet in await dataSource.GetDataSetsAsync(context))
+            var group = _localizerFactory.Localize(descriptor.DisplayName)?.Value ?? descriptor.Name;
+
+            foreach (var dataSet in await _dataSourceManager.GetDataSource(descriptor.Name).GetDataSetsAsync(context))
             {
                 model.DataSets.Add(new DataSetOption
                 {
-                    Value = dataSource.Name + Separator + dataSet.Name,
+                    Value = descriptor.Name + Separator + dataSet.Name,
                     Text = dataSet.DisplayName,
-                    Group = dataSource.DisplayName.Value,
+                    Group = group,
                 });
             }
         }
 
-        model.SourceName = _dataSourceManager.GetDataSource(settings.Source)?.DisplayName.Value;
+        model.SourceName = _localizerFactory.Localize(_dataSourceManager.GetDescriptor(settings.Source)?.DisplayName)?.Value;
         model.DataSetName = model.DataSets.FirstOrDefault(option => option.Value == model.DataSet)?.Text ?? settings.DataSet;
 
         if (!string.IsNullOrEmpty(settings.Source) && _dataSourceManager.GetDataSource(settings.Source) is { } source)
@@ -197,15 +203,18 @@ public sealed class CreateFileStepDisplayDriver : DataPipelineStepDisplayDriver<
 {
     private readonly IDataFileFormatManager _formatManager;
     private readonly DataPipelineEditorContext _editorContext;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
 
     public CreateFileStepDisplayDriver(
         IDataFileFormatManager formatManager,
         DataPipelineEditorContext editorContext,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<CreateFileStepDisplayDriver> localizer)
     {
         _formatManager = formatManager;
         _editorContext = editorContext;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -220,15 +229,15 @@ public sealed class CreateFileStepDisplayDriver : DataPipelineStepDisplayDriver<
         model.Delimiter = settings.Delimiter;
         model.SheetName = settings.SheetName;
         model.Indented = settings.Indented;
-        model.Formats = _formatManager.GetFormats();
-        model.FormatName = _formatManager.GetFormat(settings.Format)?.DisplayName.Value ?? settings.Format;
+        model.Formats = DataFileFormatOption.List(_formatManager, _localizerFactory);
+        model.FormatName = model.Formats.FirstOrDefault(format => string.Equals(format.Name, settings.Format, StringComparison.OrdinalIgnoreCase))?.DisplayName ?? settings.Format;
 
         return ValueTask.CompletedTask;
     }
 
     protected override ValueTask UpdateAsync(DataPipelineStep step, CreateFileStepSettings settings, CreateFileStepViewModel model, UpdateEditorContext context)
     {
-        if (_formatManager.GetFormat(model.Format) is null)
+        if (_formatManager.GetDescriptor(model.Format) is null)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Format), S["Choose the format of the file."]);
         }
@@ -265,7 +274,7 @@ public class CreateFileStepViewModel
     public bool Indented { get; set; }
 
     [BindNever]
-    public IReadOnlyList<IDataFileFormat> Formats { get; set; } = [];
+    public IReadOnlyList<DataFileFormatOption> Formats { get; set; } = [];
 
     [BindNever]
     public string FormatName { get; set; }

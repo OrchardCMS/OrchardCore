@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Operations;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -9,7 +10,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// duplicate when every field is equal. Values compare exactly, and the rows keep their order. The step keeps the keys
 /// it saw in memory, up to <see cref="DataPipelineOptions.StepMemoryLimitMegabytes"/>, with <see cref="DataDistinct"/>.
 /// </summary>
-public sealed class DistinctStep : DataPipelineStepType<DistinctStepSettings>
+public sealed class DistinctStep : DataPipelineStepType<DistinctStep, DistinctStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -23,21 +24,15 @@ public sealed class DistinctStep : DataPipelineStepType<DistinctStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Remove duplicates"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DistinctStep>("Remove duplicates");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Keeps the first row of each set of equal values."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<DistinctStep>("Keeps the first row of each set of equal values.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-clone";
+    public static string Icon => "fa-solid fa-clone";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

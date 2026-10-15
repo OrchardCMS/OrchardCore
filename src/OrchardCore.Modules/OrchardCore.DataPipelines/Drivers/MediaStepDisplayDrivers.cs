@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Steps;
+using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.DataSources.Files;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Media;
@@ -62,10 +64,12 @@ public class SaveToMediaStepViewModel
 public sealed class ReadMediaFileStepDisplayDriver : DataPipelineStepDisplayDriver<ReadMediaFileStepSettings, ReadMediaFileStepViewModel>
 {
     private readonly IDataFileFormatManager _formatManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
 
-    public ReadMediaFileStepDisplayDriver(IDataFileFormatManager formatManager)
+    public ReadMediaFileStepDisplayDriver(IDataFileFormatManager formatManager, IStringLocalizerFactory localizerFactory)
     {
         _formatManager = formatManager;
+        _localizerFactory = localizerFactory;
     }
 
     protected override string StepName => ReadMediaFileStep.StepName;
@@ -77,7 +81,7 @@ public sealed class ReadMediaFileStepDisplayDriver : DataPipelineStepDisplayDriv
         model.Delimiter = settings.Delimiter;
         model.HasHeaderRow = settings.HasHeaderRow;
         model.SheetName = settings.SheetName;
-        model.Formats = _formatManager.GetFormats();
+        model.Formats = DataFileFormatOption.List(_formatManager, _localizerFactory);
 
         return ValueTask.CompletedTask;
     }
@@ -107,5 +111,5 @@ public class ReadMediaFileStepViewModel
     public string SheetName { get; set; }
 
     [BindNever]
-    public IReadOnlyList<IDataFileFormat> Formats { get; set; } = [];
+    public IReadOnlyList<DataFileFormatOption> Formats { get; set; } = [];
 }

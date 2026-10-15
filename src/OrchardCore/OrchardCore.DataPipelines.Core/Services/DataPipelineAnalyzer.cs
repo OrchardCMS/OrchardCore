@@ -15,11 +15,16 @@ namespace OrchardCore.DataPipelines.Services;
 public sealed class DataPipelineAnalyzer
 {
     private readonly IDataPipelineStepTypeManager _stepTypeManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
 
-    public DataPipelineAnalyzer(IDataPipelineStepTypeManager stepTypeManager, IStringLocalizer<DataPipelineAnalyzer> localizer)
+    public DataPipelineAnalyzer(
+        IDataPipelineStepTypeManager stepTypeManager,
+        IStringLocalizerFactory localizerFactory,
+        IStringLocalizer<DataPipelineAnalyzer> localizer)
     {
         _stepTypeManager = stepTypeManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -56,14 +61,15 @@ public sealed class DataPipelineAnalyzer
                 continue;
             }
 
-            var stepType = _stepTypeManager.GetStepType(step.Type);
+            var descriptor = _stepTypeManager.GetDescriptor(step.Type);
+            var stepType = descriptor is null ? null : _stepTypeManager.GetStepType(step.Type);
 
             if (stepType is null)
             {
                 issues.Add(new(DataPipelineIssueSeverity.Error, S["The step type '{0}' is not available. The feature that provides it may be disabled.", step.Type ?? string.Empty], step.StepId));
             }
 
-            steps[step.StepId] = new DataPipelineStepAnalysis(step, stepType)
+            steps[step.StepId] = new DataPipelineStepAnalysis(step, descriptor, stepType, descriptor is null ? null : _localizerFactory.Localize(descriptor.DisplayName)?.Value)
             {
                 InputPorts = stepType?.GetInputs(step) ?? [],
                 OutputPorts = stepType?.GetOutputs(step) ?? [],
@@ -105,7 +111,7 @@ public sealed class DataPipelineAnalyzer
             }
 
             if (analysis.StepType is not null &&
-                analysis.StepType.Category != DataPipelineStepCategory.Destination &&
+                analysis.Descriptor.Category != DataPipelineStepCategory.Destination &&
                 analysis.OutputPorts.Count > 0 &&
                 outgoing[stepId].Count == 0)
             {

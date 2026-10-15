@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources.Files;
 
@@ -16,18 +16,13 @@ public sealed class JsonDataFileFormat : IDataFileFormat
     /// </summary>
     public const string FormatName = "json";
 
-    public JsonDataFileFormat(IStringLocalizer<JsonDataFileFormat> localizer)
-    {
-        DisplayName = localizer["JSON"];
-    }
+    public static string Name => FormatName;
 
-    public string Name => FormatName;
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<JsonDataFileFormat>("JSON");
 
-    public LocalizedString DisplayName { get; }
+    public static string Extension => ".json";
 
-    public string Extension => ".json";
-
-    public string ContentType => "application/json";
+    public static string ContentType => "application/json";
 
     public async Task<long> WriteAsync(
         Stream stream,

@@ -24,7 +24,7 @@ public static class DataPipelinesServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers a step type, as a scoped service.
+    /// Registers a step type: its descriptor, built from its static members, and its class, as a scoped service.
     /// </summary>
     /// <typeparam name="TStepType">The step type.</typeparam>
     /// <param name="services">The service collection.</param>
@@ -32,7 +32,8 @@ public static class DataPipelinesServiceCollectionExtensions
     public static IServiceCollection AddDataPipelineStepType<TStepType>(this IServiceCollection services)
         where TStepType : class, IDataPipelineStepType
     {
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IDataPipelineStepType, TStepType>());
+        services.TryAddScoped<TStepType>();
+        services.Configure<DataPipelineStepTypeOptions>(options => options.Add(DataPipelineStepTypeDescriptor.Create<TStepType>()));
 
         return services;
     }

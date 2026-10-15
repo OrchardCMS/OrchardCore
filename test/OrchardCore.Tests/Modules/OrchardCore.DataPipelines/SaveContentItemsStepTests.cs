@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataSources;
 using OrchardCore.Environment.Shell;
@@ -154,7 +155,7 @@ public sealed class SaveContentItemsStepTests
 
     private static async Task<StepTestHost> CreateHostAsync(ShellScope scope, SaveContentItemsStepSettings settings)
     {
-        var stepType = scope.ServiceProvider.GetServices<IDataPipelineStepType>().Single(step => step.Name == SaveContentItemsStep.StepName);
+        var stepType = scope.ServiceProvider.GetRequiredService<IDataPipelineStepTypeManager>().GetStepType(SaveContentItemsStep.StepName);
         var host = new StepTestHost(stepType, settings, scope.ServiceProvider);
         host.Run.User = await GetAdminAsync(scope);
 

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources;
 
@@ -13,17 +13,17 @@ public interface IDataSource
     /// <summary>
     /// Gets the stable technical name of the data source. Saved definitions store this name.
     /// </summary>
-    string Name { get; }
+    static abstract string Name { get; }
 
     /// <summary>
     /// Gets the label shown to users.
     /// </summary>
-    LocalizedString DisplayName { get; }
+    static abstract LocalizationSource DisplayName { get; }
 
     /// <summary>
     /// Gets the description shown to users.
     /// </summary>
-    LocalizedString Description { get; }
+    static abstract LocalizationSource Description { get; }
 
     /// <summary>
     /// Lists the data sets the principal in <paramref name="context"/> is allowed to read.

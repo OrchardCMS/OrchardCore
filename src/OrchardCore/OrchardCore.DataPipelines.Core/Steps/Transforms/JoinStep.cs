@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Operations;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -12,7 +13,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// data set to the right; otherwise both inputs are sorted in temporary files and merged. A field of the right input
 /// whose name the left input already has gets a prefix.
 /// </summary>
-public sealed class JoinStep : DataPipelineStepType<JoinStepSettings>
+public sealed class JoinStep : DataPipelineStepType<JoinStep, JoinStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -36,21 +37,15 @@ public sealed class JoinStep : DataPipelineStepType<JoinStepSettings>
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Join"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<JoinStep>("Join");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Combines the rows of two inputs that share key values."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<JoinStep>("Combines the rows of two inputs that share key values.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public override string Icon => "fa-solid fa-code-merge";
+    public static string Icon => "fa-solid fa-code-merge";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
         =>

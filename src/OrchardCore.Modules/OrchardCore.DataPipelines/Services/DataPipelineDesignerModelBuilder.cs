@@ -5,6 +5,7 @@ using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataPipelines.ViewModels.Designer;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Services;
 
@@ -26,6 +27,7 @@ public sealed class DataPipelineDesignerModelBuilder
     private readonly IDisplayManager<DataPipelineStep> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeHtmlRenderer _shapeHtmlRenderer;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
 
     public DataPipelineDesignerModelBuilder(
@@ -33,12 +35,14 @@ public sealed class DataPipelineDesignerModelBuilder
         IDisplayManager<DataPipelineStep> displayManager,
         IUpdateModelAccessor updateModelAccessor,
         IShapeHtmlRenderer shapeHtmlRenderer,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<DataPipelineDesignerModelBuilder> localizer)
     {
         _stepTypeManager = stepTypeManager;
         _displayManager = displayManager;
         _updateModelAccessor = updateModelAccessor;
         _shapeHtmlRenderer = shapeHtmlRenderer;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -53,23 +57,24 @@ public sealed class DataPipelineDesignerModelBuilder
         foreach (var category in _categories)
         {
             var steps = _stepTypeManager.GetStepTypes()
-                .Where(stepType => stepType.Category == category)
-                .OrderBy(stepType => stepType.DisplayName.Value, StringComparer.CurrentCultureIgnoreCase)
-                .Select(stepType =>
+                .Where(descriptor => descriptor.Category == category)
+                .Select(descriptor =>
                 {
-                    var step = new DataPipelineStep { Type = stepType.Name };
+                    var step = new DataPipelineStep { Type = descriptor.Name };
+                    var stepType = _stepTypeManager.GetStepType(descriptor.Name);
 
                     return new DesignerLibraryStep
                     {
-                        Name = stepType.Name,
-                        DisplayText = stepType.DisplayName.Value,
-                        Description = stepType.Description.Value,
+                        Name = descriptor.Name,
+                        DisplayText = Localize(descriptor.DisplayName) ?? descriptor.Name,
+                        Description = Localize(descriptor.Description),
                         Category = category.ToString(),
-                        Icon = stepType.Icon,
+                        Icon = descriptor.Icon,
                         Inputs = stepType.GetInputs(step).Select(DesignerPort.From).ToList(),
                         Outputs = stepType.GetOutputs(step).Select(DesignerPort.From).ToList(),
                     };
                 })
+                .OrderBy(step => step.DisplayText, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
 
             if (steps.Count > 0)
@@ -95,7 +100,8 @@ public sealed class DataPipelineDesignerModelBuilder
     {
         ArgumentNullException.ThrowIfNull(step);
 
-        var stepType = _stepTypeManager.GetStepType(step.Type);
+        var descriptor = _stepTypeManager.GetDescriptor(step.Type);
+        var stepType = descriptor is null ? null : _stepTypeManager.GetStepType(step.Type);
 
         if (stepType is null)
         {
@@ -120,9 +126,9 @@ public sealed class DataPipelineDesignerModelBuilder
             Id = step.StepId,
             Type = step.Type,
             Title = step.Title,
-            DisplayText = string.IsNullOrEmpty(step.Title) ? stepType.DisplayName.Value : step.Title,
-            Category = stepType.Category.ToString(),
-            Icon = stepType.Icon,
+            DisplayText = string.IsNullOrEmpty(step.Title) ? Localize(descriptor.DisplayName) ?? step.Type : step.Title,
+            Category = descriptor.Category.ToString(),
+            Icon = descriptor.Icon,
             HasEditor = true,
             X = step.X,
             Y = step.Y,
@@ -255,6 +261,11 @@ public sealed class DataPipelineDesignerModelBuilder
             string or bool or long or int or decimal or double => value,
             _ => DataSources.DataValues.ToText(value),
         };
+    }
+
+    private string Localize(LocalizationSource source)
+    {
+        return source is null ? null : _localizerFactory.Localize(source)?.Value;
     }
 
     private string GetCategoryName(DataPipelineStepCategory category)

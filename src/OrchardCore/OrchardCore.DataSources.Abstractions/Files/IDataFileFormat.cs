@@ -1,32 +1,33 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources.Files;
 
 /// <summary>
 /// A file format tabular data can be written to and read from, such as CSV, JSON or Excel. Register an implementation
-/// as a singleton with <c>services.AddDataFileFormat&lt;TFormat&gt;()</c> to offer it to every consumer.
+/// as a singleton with <c>services.AddDataFileFormat&lt;TFormat&gt;()</c> to offer it to every consumer. What describes
+/// the format, such as its name and its extension, is static, so formats are listed without being created.
 /// </summary>
 public interface IDataFileFormat
 {
     /// <summary>
     /// Gets the stable technical name of the format. Saved definitions store this name.
     /// </summary>
-    string Name { get; }
+    static abstract string Name { get; }
 
     /// <summary>
     /// Gets the label shown to users.
     /// </summary>
-    LocalizedString DisplayName { get; }
+    static abstract LocalizationSource DisplayName { get; }
 
     /// <summary>
     /// Gets the file extension of the format, with its leading dot, such as <c>.csv</c>.
     /// </summary>
-    string Extension { get; }
+    static abstract string Extension { get; }
 
     /// <summary>
     /// Gets the media type of the format, such as <c>text/csv</c>.
     /// </summary>
-    string ContentType { get; }
+    static abstract string ContentType { get; }
 
     /// <summary>
     /// Writes rows to a stream.

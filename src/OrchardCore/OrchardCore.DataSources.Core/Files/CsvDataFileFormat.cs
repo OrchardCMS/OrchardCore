@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Text;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources.Files;
 
@@ -18,18 +18,13 @@ public sealed class CsvDataFileFormat : IDataFileFormat
 
     private static readonly UTF8Encoding _encoding = new(encoderShouldEmitUTF8Identifier: true);
 
-    public CsvDataFileFormat(IStringLocalizer<CsvDataFileFormat> localizer)
-    {
-        DisplayName = localizer["CSV (comma separated values)"];
-    }
+    public static string Name => FormatName;
 
-    public string Name => FormatName;
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CsvDataFileFormat>("CSV (comma separated values)");
 
-    public LocalizedString DisplayName { get; }
+    public static string Extension => ".csv";
 
-    public string Extension => ".csv";
-
-    public string ContentType => "text/csv";
+    public static string ContentType => "text/csv";
 
     public async Task<long> WriteAsync(
         Stream stream,

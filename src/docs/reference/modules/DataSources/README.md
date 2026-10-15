@@ -157,7 +157,7 @@ A consumer can offer conditions to a data source, with the operators of `DataFil
 
 ## File formats
 
-The feature provides file formats that rows can be written to and read from. They are `IDataFileFormat` services, listed by the `IDataFileFormatManager` service, which also finds the format of a file from its extension.
+The feature provides file formats that rows can be written to and read from. They are `IDataFileFormat` services, listed by the `IDataFileFormatManager` service, which also finds the format of a file from its extension. The name, the label, the extension and the media type of a format are static members of its class, so the manager lists the formats with their `DataFileFormatDescriptor` without creating them, and `GetFormat(name)` returns the format to read or write a file with.
 
 | Name | Format | Extension | Notes |
 |------|--------|-----------|-------|
@@ -404,27 +404,25 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 public sealed record Ticket(string TicketId, TicketState State, DateTimeOffset OpenedUtc, int Priority, string OwnerId);
 
-public sealed class SupportDataSource : RecordDataSource
+public sealed class SupportDataSource : RecordDataSource, IDataSource
 {
-    private readonly IStringLocalizer S;
-
     public SupportDataSource(
         ITicketStore ticketStore,
         IAuthorizationService authorizationService,
         IStringLocalizer<SupportDataSource> localizer)
     {
-        S = localizer;
         DataSets = [new TicketsDataSet(ticketStore, authorizationService, localizer)];
     }
 
-    public override string Name => "Support";
+    public static string Name => "Support";
 
-    public override LocalizedString DisplayName => S["Support"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SupportDataSource>("Support");
 
-    public override LocalizedString Description => S["The tickets of the help desk."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SupportDataSource>("The tickets of the help desk.");
 
     protected override IEnumerable<IRecordDataSet> DataSets { get; }
 }
@@ -488,6 +486,8 @@ public sealed class TicketsDataSet : RecordDataSet<Ticket>
 }
 ```
 
+A data source implements `IDataSource`, whose `Name`, `DisplayName` and `Description` are static members of its class: `RecordDataSource` is a base class, so the data source declares `IDataSource` itself. `IDataSourceManager` lists the data sources with their `DataSourceDescriptor`, without creating them, and `GetDataSource(name)` resolves the data source to read from the services of the scope.
+
 Register the data source with `AddDataSource<T>()`, from the `OrchardCore.DataSources.Core` package, in a module that depends on the `OrchardCore.DataPipelines.Core` feature, or in a startup that requires it:
 
 ```csharp
@@ -545,6 +545,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
+using OrchardCore.Localization;
 
 public sealed class WarehouseDataSource : IDataSource
 {
@@ -564,11 +565,11 @@ public sealed class WarehouseDataSource : IDataSource
         S = localizer;
     }
 
-    public string Name => "Warehouse";
+    public static string Name => "Warehouse";
 
-    public LocalizedString DisplayName => S["Warehouse"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<WarehouseDataSource>("Warehouse");
 
-    public LocalizedString Description => S["The stock of the warehouse."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<WarehouseDataSource>("The stock of the warehouse.");
 
     public async Task<IReadOnlyList<DataSetDescriptor>> GetDataSetsAsync(DataSourceContext context, CancellationToken cancellationToken = default)
         => await CanReadAsync(context) ? [Describe()] : [];
@@ -657,27 +658,22 @@ Data sources are scoped services. Two data sources can't be registered with the 
 
 ### Adding a file format
 
-Implement `IDataFileFormat` and register it with `AddDataFileFormat<T>()`. Formats are singletons.
+Implement `IDataFileFormat` and register it with `AddDataFileFormat<T>()`. Formats are singletons. Their name, label, extension and media type are static, read once when the format is registered.
 
 ```csharp
-using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Files;
+using OrchardCore.Localization;
 
 public sealed class XmlDataFileFormat : IDataFileFormat
 {
-    public XmlDataFileFormat(IStringLocalizer<XmlDataFileFormat> localizer)
-    {
-        DisplayName = localizer["XML"];
-    }
+    public static string Name => "xml";
 
-    public string Name => "xml";
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<XmlDataFileFormat>("XML");
 
-    public LocalizedString DisplayName { get; }
+    public static string Extension => ".xml";
 
-    public string Extension => ".xml";
-
-    public string ContentType => "application/xml";
+    public static string ContentType => "application/xml";
 
     public Task<long> WriteAsync(
         Stream stream,

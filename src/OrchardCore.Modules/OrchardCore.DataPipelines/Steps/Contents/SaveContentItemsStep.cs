@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.DataPipelines.Models;
-using OrchardCore.DataSources;
 using OrchardCore.DataSources.Contents;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
 using YesSql;
 
 namespace OrchardCore.DataPipelines.Steps;
@@ -19,7 +20,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// validated before it is saved, as the editor would. Rows that can't be saved go to the Rejected output, with the
 /// reason. The user the run is for must be allowed to edit, and to publish, the content type.
 /// </summary>
-public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItemsStepSettings>
+public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItemsStep, SaveContentItemsStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -43,15 +44,15 @@ public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItems
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Save content items"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SaveContentItemsStep>("Save content items");
 
-    public override LocalizedString Description => S["Creates or updates content items from rows."];
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SaveContentItemsStep>("Creates or updates content items from rows.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public override string Icon => "fa-solid fa-file-pen";
+    public static string Icon => "fa-solid fa-file-pen";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {

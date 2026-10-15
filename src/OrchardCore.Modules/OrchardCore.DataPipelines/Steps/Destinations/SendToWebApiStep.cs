@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -10,7 +11,7 @@ namespace OrchardCore.DataPipelines.Steps;
 /// Sends each file it reads to a web API, in one HTTP request per file. A response with a status code other than 2xx
 /// fails the step.
 /// </summary>
-public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApiStepSettings>
+public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApiStep, SendToWebApiStepSettings>, IDataPipelineStepType
 {
     /// <summary>
     /// The name of the step type.
@@ -56,21 +57,15 @@ public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApi
         S = localizer;
     }
 
-    public override string Name => StepName;
+    public static string Name => StepName;
 
-    public override LocalizedString DisplayName => S["Send to a web API"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SendToWebApiStep>("Send to a web API");
 
-    public override LocalizedString Description
-    {
-        get
-        {
-            return S["Sends each file to a web API, in an HTTP request."];
-        }
-    }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SendToWebApiStep>("Sends each file to a web API, in an HTTP request.");
 
-    public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public override string Icon => "fa-solid fa-cloud-arrow-up";
+    public static string Icon => "fa-solid fa-cloud-arrow-up";
 
     /// <summary>
     /// Describes a URL without its credentials, query string and fragment, which may hold secrets.
