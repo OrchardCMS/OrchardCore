@@ -34,7 +34,7 @@ public sealed class Permissions : IPermissionProvider
     {
         return new Permission(
                 CreatePermissionName(type.Name),
-                string.Format(s_manageCustomSettings.Description, type.DisplayName),
+                string.Format(s_manageCustomSettings.Description.Value, type.DisplayName),
                 s_manageCustomSettings.ImpliedBy
             );
     }

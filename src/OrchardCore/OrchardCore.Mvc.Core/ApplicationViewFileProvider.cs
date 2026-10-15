@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileProviders.Internal;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Mvc;
 
@@ -14,12 +15,19 @@ public class ApplicationViewFileProvider : IFileProvider
 {
     private readonly IApplicationContext _applicationContext;
 
+    private string _root;
+
     public ApplicationViewFileProvider(IApplicationContext applicationContext)
     {
         _applicationContext = applicationContext;
     }
 
     private Application Application => _applicationContext.Application;
+
+    /// <summary>
+    /// The application root folder, canonicalized so that resolved paths can be checked for containment.
+    /// </summary>
+    private string Root => _root ??= PhysicalPathResolver.NormalizeRoot(Application.Root);
 
     public IDirectoryContents GetDirectoryContents(string subpath)
     {
@@ -52,11 +60,13 @@ public class ApplicationViewFileProvider : IFileProvider
             var tokenizer = new StringTokenizer(folder, ['/']);
             if (tokenizer.Any(s => s == "Pages" || s == "Views"))
             {
-                // Resolve the subpath relative to the application's module root.
-                var folderSubPath = folder[Application.ModuleRoot.Length..];
-
-                // And serve the contents from the physical application root folder.
-                return new PhysicalDirectoryContents(Application.Root + folderSubPath);
+                // Resolve the subpath relative to the application's module root, but only
+                // inside the physical application root folder.
+                if (PhysicalPathResolver.TryResolve(Root, folder[Application.ModuleRoot.Length..], out var folderPath))
+                {
+                    // And serve the contents from the physical application root folder.
+                    return new PhysicalDirectoryContents(folderPath);
+                }
             }
         }
 
@@ -75,11 +85,13 @@ public class ApplicationViewFileProvider : IFileProvider
         // "Areas/{ApplicationName}/**/*.*".
         if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
         {
-            // Resolve the subpath relative to the application's module.
-            var fileSubPath = path[Application.ModuleRoot.Length..];
-
-            // And serve the file from the physical application root folder.
-            return new PhysicalFileInfo(new FileInfo(Application.Root + fileSubPath));
+            // Resolve the subpath relative to the application's module, but only
+            // inside the physical application root folder.
+            if (PhysicalPathResolver.TryResolve(Root, path[Application.ModuleRoot.Length..], out var filePath))
+            {
+                // And serve the file from the physical application root folder.
+                return new PhysicalFileInfo(new FileInfo(filePath));
+            }
         }
 
         return new NotFoundFileInfo(subpath);
@@ -97,11 +109,13 @@ public class ApplicationViewFileProvider : IFileProvider
         // "Areas/{ApplicationName}/**/*.*".
         if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
         {
-            // Resolve the subpath relative to the application's module.
-            var fileSubPath = path[Application.ModuleRoot.Length..];
-
-            // And watch the application file from the physical application root folder.
-            return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
+            // Resolve the subpath relative to the application's module, but only
+            // inside the physical application root folder.
+            if (PhysicalPathResolver.TryResolve(Root, path[Application.ModuleRoot.Length..], out var filePath))
+            {
+                // And watch the application file from the physical application root folder.
+                return new PollingFileChangeToken(new FileInfo(filePath));
+            }
         }
 
         return NullChangeToken.Singleton;

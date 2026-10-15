@@ -284,7 +284,7 @@
                         var friendlyName = certificate.FriendlyName;
                         if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                         {
-                            friendlyName = T["No Friendly Name"].Value;
+                            friendlyName = T.GetString("No Friendly Name");
                         }
                         <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
                             @friendlyName [<datetime utc="certificate.NotBefore" format="@localizedDateFormat" /> - <datetime utc="certificate.NotAfter" format="@localizedDateFormat" />] @certificate.Subject
@@ -356,7 +356,7 @@
                         var friendlyName = certificate.FriendlyName;
                         if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                         {
-                            friendlyName = T["No Friendly Name"].Value;
+                            friendlyName = T.GetString("No Friendly Name");
                         }
                         <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
                             @friendlyName [<datetime utc="certificate.NotBefore" format="@localizedDateFormat" /> - <datetime utc="certificate.NotAfter" format="@localizedDateFormat" />] @certificate.Subject

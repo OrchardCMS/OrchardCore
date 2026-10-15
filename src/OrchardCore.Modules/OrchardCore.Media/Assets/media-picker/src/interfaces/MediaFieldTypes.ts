@@ -42,6 +42,8 @@ export interface IMediaFieldConfig {
   allowMediaText: boolean;
   allowAnchors: boolean;
   allowedExtensions: string;
+  /** Maximum upload size in bytes; nonpositive or absent means no client-side size limit. */
+  maxFileSize?: number;
   mediaItemUrl: string;
   mediaItemsUrl?: string;
   /** JSON-serialized translations for the media-gallery picker */

@@ -285,12 +285,31 @@ public sealed class Startup : StartupBase
             throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
         }
 
-        return Path.GetFullPath(Path.Combine(
+        // The tenant name is a path segment too. It is validated when a tenant is created, but not every
+        // code path that can create one is guaranteed to do so, so don't trust it to stay in its container.
+        var tenantsPath = Path.GetFullPath(Path.Combine(
             shellOptions.ShellsApplicationDataPath,
-            shellOptions.ShellsContainerName,
-            shellSettings.Name,
+            shellOptions.ShellsContainerName
+        ));
+
+        var tenantPath = Path.GetFullPath(Path.Combine(tenantsPath, shellSettings.Name ?? string.Empty));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantsPath, tenantPath))
+        {
+            throw new ArgumentException("The tenant name must resolve to a subdirectory of the tenants directory.", nameof(shellSettings));
+        }
+
+        var mediaPath = Path.GetFullPath(Path.Combine(
+            tenantPath,
             assetsPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
         ));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantPath, mediaPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        return mediaPath;
     }
 }
 

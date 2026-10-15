@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Templates.Deployment;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.Templates.Deployment;
 /// </summary>
 public class AllTemplatesDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllTemplatesDeploymentStep>("Development");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AllTemplatesDeploymentStep>("All Templates");
+
     public AllTemplatesDeploymentStep()
     {
         Name = "AllTemplates";
-    }
-
-    public AllTemplatesDeploymentStep(IStringLocalizer<AllTemplatesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Development"];
-        Title = S["All Templates"];
+        Category = s_category;
+        Title = s_title;
     }
     public bool ExportAsFiles { get; set; }
 }

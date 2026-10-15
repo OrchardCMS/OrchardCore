@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Users.Deployment;
 
@@ -8,14 +8,11 @@ namespace OrchardCore.Users.Deployment;
 /// </summary>
 public class AllUsersDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllUsersDeploymentStep>("Security");
+
     public AllUsersDeploymentStep()
     {
         Name = "AllUsers";
-    }
-
-    public AllUsersDeploymentStep(IStringLocalizer<AllUsersDeploymentStep> S)
-        : this()
-    {
-        Category = S["Security"];
+        Category = s_category;
     }
 }

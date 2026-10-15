@@ -13,6 +13,7 @@
     <script asp-name="media-picker" at="Foot"></script>
     <div hidden
          data-media-picker-config
+         data-max-file-size="@MediaOptions.Value.MaxFileSize"
          data-translations="@JsonSerializer.Serialize(jsLocalizations)"
          data-base-path="@Url.Content("~/")"
          data-upload-files-url="@Url.Content("~/api/media/Upload")"
