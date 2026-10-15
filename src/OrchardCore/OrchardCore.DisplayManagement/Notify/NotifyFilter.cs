@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Notify;
 
 public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
 {
-    public const string CookiePrefix = "orch_notify";
+    public const string CookiePrefix = $"{OrchardCoreConstants.Cookies.Notification}.";
 
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
