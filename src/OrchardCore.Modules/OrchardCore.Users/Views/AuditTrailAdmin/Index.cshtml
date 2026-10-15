@@ -23,7 +23,7 @@
                     {
                         Text = redactor == nameof(RemoveRedactor)
                             ? string.Empty
-                            : (redactor == nameof(NullRedactor) ? T["Store"].Value : redactor),
+                            : (redactor == nameof(NullRedactor) ? T.GetString("Store") : redactor),
                         Value = redactor,
                         Selected = redactor == value,
                     })

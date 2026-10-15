@@ -1,18 +1,15 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataLocalization.Deployment;
 
 public class AllDataTranslationsDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllDataTranslationsDeploymentStep>("Internationalization");
+
     public AllDataTranslationsDeploymentStep()
     {
         Name = "AllDataTranslations";
-    }
-
-    public AllDataTranslationsDeploymentStep(IStringLocalizer<AllDataTranslationsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Internationalization"];
+        Category = s_category;
     }
 }

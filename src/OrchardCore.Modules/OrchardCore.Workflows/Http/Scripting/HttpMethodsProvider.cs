@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
 
@@ -41,27 +42,9 @@ public class HttpMethodsProvider : IGlobalMethodProvider
                 {
                     return httpContextAccessor.HttpContext.Request.QueryString.ToString();
                 }
-                object result;
-                if (httpContextAccessor.HttpContext.Request.Query.TryGetValue(name, out var values))
-                {
-                    if (values.Count == 0)
-                    {
-                        result = null;
-                    }
-                    else if (values.Count == 1)
-                    {
-                        result = values[0];
-                    }
-                    else
-                    {
-                        result = values.ToArray();
-                    }
-                }
-                else
-                {
-                    result = null;
-                }
-                return result;
+                return httpContextAccessor.HttpContext.Request.Query.TryGetValue(name, out var values)
+                    ? ToScriptValue(values)
+                    : null;
             }),
         };
 
@@ -95,27 +78,9 @@ public class HttpMethodsProvider : IGlobalMethodProvider
             Name = "requestForm",
             Method = serviceProvider => (Func<string, object>)(field =>
             {
-                object result;
-                if (httpContextAccessor.HttpContext.Request.Form.TryGetValue(field, out var values))
-                {
-                    if (values.Count == 0)
-                    {
-                        result = null;
-                    }
-                    else if (values.Count == 1)
-                    {
-                        result = values[0];
-                    }
-                    else
-                    {
-                        result = values.ToArray();
-                    }
-                }
-                else
-                {
-                    result = null;
-                }
-                return result;
+                return httpContextAccessor.HttpContext.Request.Form.TryGetValue(field, out var values)
+                    ? ToScriptValue(values)
+                    : null;
             }),
         };
 
@@ -180,7 +145,7 @@ public class HttpMethodsProvider : IGlobalMethodProvider
 
                     try
                     {
-                        result = formData.ToDictionary(x => x.Key, x => (object)x.Value);
+                        result = formData.ToDictionary(x => x.Key, x => ToScriptValue(x.Value));
                     }
                     catch
                     {
@@ -212,7 +177,7 @@ public class HttpMethodsProvider : IGlobalMethodProvider
 
                 try
                 {
-                    result = queryData.ToDictionary(x => x.Key, x => (object)x.Value);
+                    result = queryData.ToDictionary(x => x.Key, x => ToScriptValue(x.Value));
 
                     // We never need to keep the Workflow token
                     result.Remove("token");
@@ -230,6 +195,22 @@ public class HttpMethodsProvider : IGlobalMethodProvider
 
         return result;
     }
+
+    /// <summary>
+    /// Converts the values of a query string or form field to what a script can use directly: <see langword="null"/>
+    /// when there is none, a string when there is one, and an array of strings when there are several.
+    /// </summary>
+    /// <remarks>
+    /// A <see cref="StringValues"/> handed to a script as it is reaches it as an object rather than a string, so
+    /// <c>=== 'value'</c> is <see langword="false"/> and string methods such as <c>toUpperCase()</c> do not exist.
+    /// </remarks>
+    private static object ToScriptValue(StringValues values)
+        => values.Count switch
+        {
+            0 => null,
+            1 => values[0],
+            _ => values.ToArray(),
+        };
 
     private static bool isValidJSON(string json)
     {

@@ -15,6 +15,9 @@ It is used by default for the following parts and fields:
 !!! note
     To disable final-output sanitization for trusted content, disable the `Sanitize Html` option in the field or part settings.
 
+!!! info
+    The content is sanitized each time it is displayed. As the configuration of the sanitizer doesn't change during the lifetime of a tenant, the sanitized result of an HTML fragment up to 64K characters is cached by the tenant, and reused when the same fragment is sanitized again, which saves parsing it again on each request. So the sanitizer event handlers that are configured with `ConfigureHtmlSanitizer()` must return the same result for the same fragment.
+
 ## Razor Helper
 
 `@Orchard.SanitizeHtml((string)Model.ContentItem.HtmlBodyPart.Html);`

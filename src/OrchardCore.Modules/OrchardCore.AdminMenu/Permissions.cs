@@ -17,12 +17,6 @@ public sealed class Permissions : IPermissionProvider
 
     private readonly IAdminMenuService _adminMenuService;
 
-    [Obsolete("This will be removed in a future release. Instead use 'AdminMenuPermissions.ViewAdminMenuAll'.")]
-    public static readonly Permission ManageAdminMenu = AdminMenuPermissions.ViewAdminMenuAll;
-
-    [Obsolete("This will be removed in a future release. Instead use 'AdminMenuPermissions.ManageAdminMenu'.")]
-    public static readonly Permission ViewAdminMenuAll = AdminMenuPermissions.ManageAdminMenu;
-
     public Permissions(IAdminMenuService adminMenuService)
     {
         _adminMenuService = adminMenuService;
@@ -63,7 +57,7 @@ public sealed class Permissions : IPermissionProvider
     public static Permission CreatePermissionForAdminMenu(string name)
         => new(
             string.Format(s_viewAdminMenu.Name, name),
-            string.Format(s_viewAdminMenu.Description, name),
+            string.Format(s_viewAdminMenu.Description.Value, name),
             s_viewAdminMenu.ImpliedBy
         );
 }

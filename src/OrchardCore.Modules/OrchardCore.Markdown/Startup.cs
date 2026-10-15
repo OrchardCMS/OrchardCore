@@ -69,8 +69,10 @@ public sealed class Startup : StartupBase
             pipeline.Configure(extensions);
         });
 
-        services.AddScoped<IMarkdownService, DefaultMarkdownService>();
+        // The Markdig pipeline is thread-safe, building it once per tenant prevents rebuilding it on each request.
+        services.AddSingleton<IMarkdownService, DefaultMarkdownService>();
         services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }
