@@ -1,18 +1,15 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tenants.Deployment;
 
 public class AllFeatureProfilesDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllFeatureProfilesDeploymentStep>("Infrastructure");
+
     public AllFeatureProfilesDeploymentStep()
     {
         Name = "AllFeatureProfiles";
-    }
-
-    public AllFeatureProfilesDeploymentStep(IStringLocalizer<AllFeatureProfilesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Infrastructure"];
+        Category = s_category;
     }
 }

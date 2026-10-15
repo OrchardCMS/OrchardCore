@@ -411,6 +411,26 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
+`MaxFileSize` is the maximum size of an individual upload, in bytes. The admin media library
+and media field editors pass the tenant's configured value to the uploader, including galleries
+opened by media fields and HTML/Markdown editors. Files larger than a positive limit are rejected
+locally with a validation notification without starting an upload; files exactly at the limit
+pass this client-side size check. This applies to regular and resumable gallery uploads.
+Existing file-extension restrictions still apply, and server-side validation remains authoritative.
+
+For a standalone media gallery, set the optional numeric `maxFileSize` property in its
+`config.json` to the same byte limit as the tenant's `Media:MaxFileSize`, for example:
+
+```json
+{
+  "orchardBaseUrl": "https://cms.example.com/",
+  "maxFileSize": 30000000
+}
+```
+
+Keep this value aligned with the tenant configuration. An absent or nonpositive `maxFileSize`
+disables only the client-side size limit; it does not bypass server-side validation.
+
 ### Media storage location
 
 `AssetsPath` is relative to the current tenant's data directory, which defaults to `App_Data/Sites/{tenant}`.
@@ -465,14 +485,7 @@ On-demand image resizing is performed by a built-in middleware backed by an `IIm
 
 The image processing engine is a pluggable service contract (`IImageProcessingEngine`, defined in `OrchardCore.Media.Abstractions`). The middleware parses the validated request into an engine-agnostic `ImageProcessingCommands` instance and hands it to the registered engine, so engines never deal with query strings, tokens or cache keys.
 
-Two engines ship with Orchard Core:
-
-| Engine | Provided by | Backed by | Default |
-| --- | --- | --- | --- |
-| NetVips | `OrchardCore.Media` (built in) | [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library | Yes |
-| ImageSharp (v3) | `OrchardCore.Media.ImageSharpV3` feature | [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) `3.1.x` | No |
-
-The NetVips engine is registered by default. To use ImageSharp instead, enable the **Media ImageSharp Image Processing** feature (`OrchardCore.Media.ImageSharpV3`); it replaces the default engine registration. Only one engine should be enabled at a time.
+Orchard Core ships a single engine, backed by [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library. It is registered by default by the `OrchardCore.Media` module.
 
 To provide your own engine, implement `IImageProcessingEngine` and replace the registration after the `OrchardCore.Media` module's services are configured:
 
@@ -482,7 +495,7 @@ services.Replace(ServiceDescriptor.Singleton<IImageProcessingEngine, MyImageProc
 
 ### Supported output formats
 
-Both engines support resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
+The default engine supports resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
 
 !!! note
     The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.

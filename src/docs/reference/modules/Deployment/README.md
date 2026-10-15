@@ -92,16 +92,32 @@ A module can provide a custom deployment step by implementing an `IDeploymentSou
 services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDisplayDriver>();
 ```
 
-Set the step's `Category` and `Title` in its constructor. `Title` is a `LocalizedString` holding the step's display name; it is shown as the heading of the step's add and edit screens (and in their breadcrumb), so the screen no longer needs a `<h5>` of its own:
+The step model sets its `Name`, `Category`, and `Title` in its parameterless constructor. Create the category and the title with `LocalizationSource`, specifying the step type as their localization context:
+
+- The category groups the step in the list of steps that can be added to a plan.
+- The title is the display name of the step. It is shown as the heading of the step's add and edit screens, and in their breadcrumb, so the screens do not need an `<h5>` of their own.
 
 ```csharp
-public MyDeploymentStep()
+using OrchardCore.Deployment;
+using OrchardCore.Localization;
+
+namespace MyModule.Deployment;
+
+public sealed class MyDeploymentStep : DeploymentStep
 {
-    Name = nameof(MyDeploymentStep);
-    Category = S["Content"];
-    Title = S["Export My Data"];
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<MyDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<MyDeploymentStep>("Export My Data");
+
+    public MyDeploymentStep()
+    {
+        Name = "MyStep";
+        Category = s_category;
+        Title = s_title;
+    }
 }
 ```
+
+The immutable sources are stored in static readonly fields to avoid allocating them for every step instance. They can be shared across tenants and cultures because the category and the title are translated only when they are shown with `IStringLocalizerFactory.Localize()`. The translation uses the source type as the context, for example `MyModule.Deployment.MyDeploymentStep`, so a PO file entry for them uses `msgctxt "MyModule.Deployment.MyDeploymentStep"`. These sources are not persisted with the deployment plan; the step factory assigns them to fresh instances. See [Deferring localization](../Localize/README.md#deferring-localization-with-localizationsource).
 
 The source processes the configured step and adds recipe steps or files to the `DeploymentPlanResult`. Register a custom execution destination by implementing `IDeploymentTargetProvider`.
 

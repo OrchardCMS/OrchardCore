@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Deployment;
 
@@ -9,13 +9,10 @@ public class DeploymentStepSerializationTests
     [Fact]
     public void DeploymentStep_RoundTrips_WhenItsLocalizedNamesWereSet()
     {
-        // A step is built through its localizer constructor when the user adds it to a plan, so both localized names
-        // are set on the instance that gets persisted. LocalizedString has no constructor the serializer can call, so
-        // persisting either of them makes the plan unreadable from that point on.
         var step = new StubDeploymentStep
         {
-            Category = new LocalizedString("Content", "Content"),
-            Title = new LocalizedString("All Content", "All Content"),
+            Category = LocalizationSource.Create<StubDeploymentStep>("Content"),
+            Title = LocalizationSource.Create<StubDeploymentStep>("All Content"),
         };
 
         var json = JsonSerializer.Serialize(step, JOptions.Base);
@@ -32,8 +29,8 @@ public class DeploymentStepSerializationTests
         // would only be dead data.
         var step = new StubDeploymentStep
         {
-            Category = new LocalizedString("Content", "Content"),
-            Title = new LocalizedString("All Content", "All Content"),
+            Category = LocalizationSource.Create<StubDeploymentStep>("Content"),
+            Title = LocalizationSource.Create<StubDeploymentStep>("All Content"),
         };
 
         var json = JsonSerializer.Serialize(step, JOptions.Base);

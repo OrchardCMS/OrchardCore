@@ -44,6 +44,11 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), string.Join(' ', phoneErrors));
         }
 
+        if (!string.IsNullOrWhiteSpace(viewModel.FromPhoneNumber) && !_liquidTemplateManager.Validate(viewModel.FromPhoneNumber, out var fromPhoneErrors))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.FromPhoneNumber), string.Join(' ', fromPhoneErrors));
+        }
+
         if (string.IsNullOrWhiteSpace(viewModel.Body))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), S["Message Body requires a value."]);
@@ -54,6 +59,7 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
         }
 
         activity.PhoneNumber = new WorkflowExpression<string>(viewModel.PhoneNumber);
+        activity.FromNumber = new WorkflowExpression<string>(viewModel.FromPhoneNumber);
         activity.Body = new WorkflowExpression<string>(viewModel.Body);
 
         return await EditAsync(activity, context);

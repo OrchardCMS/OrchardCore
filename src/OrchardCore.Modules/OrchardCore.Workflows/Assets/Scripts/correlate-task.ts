@@ -9,8 +9,9 @@ const initializeEditor = (textArea: HTMLTextAreaElement) =>
         mode: { name: textArea.dataset.mode ?? "liquid" },
     });
 
-const valueTextArea = document.getElementById("Value") as HTMLTextAreaElement | null;
-const syntaxSelect = document.getElementById("Syntax") as HTMLSelectElement | null;
+const editorElement = document.querySelector<HTMLElement>('[data-task-editor="correlate"]');
+const valueTextArea = document.getElementById(editorElement?.dataset.valueId ?? "") as HTMLTextAreaElement | null;
+const syntaxSelect = document.getElementById(editorElement?.dataset.syntaxId ?? "") as HTMLSelectElement | null;
 
 if (valueTextArea && syntaxSelect) {
     const editor = initializeEditor(valueTextArea);

@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * Bootstrap-select v1.2.4 (https://github.com/CrestApps/bootstrap-select)
+ * Bootstrap-select v1.2.6 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
@@ -60,7 +60,7 @@ select.selectpicker {
   color: var(--bs-secondary-color, #6c757d);
 }
 .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:active {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--bs-white-rgb, 255, 255, 255), 0.5);
 }
 .bootstrap-select > select {
   position: absolute !important;
@@ -98,7 +98,7 @@ select.selectpicker {
   box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.25);
 }
 
-.bootstrap-select > .dropdown-toggle.btn-light {
+.bootstrap-select > .dropdown-toggle.btn-theme {
   --bs-btn-color: var(--bs-body-color, #212529);
   --bs-btn-bg: var(--bs-body-bg, #fff);
   --bs-btn-border-color: var(--bs-border-color, #dee2e6);
@@ -112,6 +112,33 @@ select.selectpicker {
   --bs-btn-disabled-bg: var(--bs-secondary-bg, #e9ecef);
   --bs-btn-disabled-border-color: var(--bs-border-color, #dee2e6);
   --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb, 13, 110, 253);
+}
+
+.bootstrap-select > .dropdown-toggle.btn-light {
+  --bs-btn-color: var(--bs-gray-900, #212529);
+  --bs-btn-bg: var(--bs-white, #fff);
+  --bs-btn-border-color: var(--bs-gray-300, #dee2e6);
+  --bs-btn-hover-color: var(--bs-gray-900, #212529);
+  --bs-btn-hover-bg: var(--bs-white, #fff);
+  --bs-btn-hover-border-color: var(--bs-gray-300, #dee2e6);
+  --bs-btn-active-color: var(--bs-gray-900, #212529);
+  --bs-btn-active-bg: var(--bs-white, #fff);
+  --bs-btn-active-border-color: var(--bs-gray-300, #dee2e6);
+  --bs-btn-disabled-color: var(--bs-gray-600, #6c757d);
+  --bs-btn-disabled-bg: var(--bs-gray-200, #e9ecef);
+  --bs-btn-disabled-border-color: var(--bs-gray-300, #dee2e6);
+  --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb, 13, 110, 253);
+}
+
+[data-bs-theme=dark] .bootstrap-select .dropdown-menu:not(.inner):not([data-bs-theme=light]) {
+  --bs-select-menu-shadow: 0 0.5rem 1.25rem rgba(var(--bs-black-rgb, 0, 0, 0), 0.65);
+}
+
+[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.btn-dark {
+  --bs-btn-border-color: var(--bs-border-color, #495057);
+  --bs-btn-hover-border-color: var(--bs-border-color, #495057);
+  --bs-btn-active-border-color: var(--bs-border-color, #495057);
+  --bs-btn-disabled-border-color: var(--bs-border-color, #495057);
 }
 
 .bootstrap-select.form-control {
@@ -232,6 +259,13 @@ select.selectpicker {
 .bootstrap-select .dropdown-menu {
   min-width: 100%;
   box-sizing: border-box;
+  --bs-dropdown-link-hover-color: var(--bs-body-color, #212529);
+  --bs-dropdown-link-hover-bg: var(--bs-tertiary-bg, #f8f9fa);
+  --bs-dropdown-link-active-color: var(--bs-body-color, #212529);
+  --bs-dropdown-link-active-bg: var(--bs-secondary-bg, #e9ecef);
+}
+.bootstrap-select .dropdown-menu:not(.inner) {
+  box-shadow: var(--bs-select-menu-shadow, var(--bs-box-shadow, 0 0.5rem 1rem rgba(var(--bs-black-rgb, 0, 0, 0), 0.15)));
 }
 .bootstrap-select .dropdown-menu > .inner:focus {
   outline: none !important;
@@ -249,7 +283,7 @@ select.selectpicker {
   position: relative;
 }
 .bootstrap-select .dropdown-menu li.active small {
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: var(--bs-secondary-color, #6c757d) !important;
 }
 .bootstrap-select .dropdown-menu li.disabled a {
   color: var(--bs-dropdown-link-disabled-color, rgba(var(--bs-emphasis-color-rgb, 33, 37, 41), 0.5));
@@ -284,7 +318,7 @@ select.selectpicker {
   background: var(--bs-tertiary-bg, rgb(245, 245, 245));
   color: var(--bs-secondary-color, inherit);
   border: 1px solid var(--bs-border-color, rgb(227, 227, 227));
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(var(--bs-black-rgb, 0, 0, 0), 0.05);
   pointer-events: none;
   opacity: 0.9;
   box-sizing: border-box;
@@ -408,7 +442,7 @@ select.selectpicker {
   content: "";
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-bottom: 7px solid rgba(204, 204, 204, 0.2);
+  border-bottom: 7px solid var(--bs-border-color-translucent, rgba(204, 204, 204, 0.2));
   position: absolute;
   bottom: -4px;
   left: 9px;
@@ -418,7 +452,7 @@ select.selectpicker {
   content: "";
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 6px solid white;
+  border-bottom: 6px solid var(--bs-dropdown-bg, var(--bs-body-bg, #fff));
   position: absolute;
   bottom: -4px;
   left: 10px;
@@ -427,13 +461,13 @@ select.selectpicker {
 .bootstrap-select.show-menu-arrow.dropup .dropdown-toggle .filter-option:before {
   bottom: auto;
   top: -4px;
-  border-top: 7px solid rgba(204, 204, 204, 0.2);
+  border-top: 7px solid var(--bs-border-color-translucent, rgba(204, 204, 204, 0.2));
   border-bottom: 0;
 }
 .bootstrap-select.show-menu-arrow.dropup .dropdown-toggle .filter-option:after {
   bottom: auto;
   top: -4px;
-  border-top: 6px solid white;
+  border-top: 6px solid var(--bs-dropdown-bg, var(--bs-body-bg, #fff));
   border-bottom: 0;
 }
 .bootstrap-select.show-menu-arrow.pull-right .dropdown-toggle .filter-option:before {
@@ -491,7 +525,7 @@ select.selectpicker {
 .bs-actionsbox .btn-group button {
   width: 50%;
 }
-.bs-actionsbox .btn-light {
+.bs-actionsbox .btn-theme, .bs-actionsbox .btn-light {
   --bs-btn-color: var(--bs-body-color, #212529);
   --bs-btn-bg: var(--bs-tertiary-bg, #f8f9fa);
   --bs-btn-border-color: var(--bs-border-color, #dee2e6);
@@ -573,7 +607,7 @@ select.selectpicker {
   font-size: 0.8125rem;
   line-height: 1.125rem;
   text-align: left;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(var(--bs-black-rgb, 0, 0, 0), 0.04);
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   -moz-appearance: none;
        appearance: none;

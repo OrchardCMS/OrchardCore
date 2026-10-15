@@ -64,6 +64,8 @@ import { resolvePickerFilePath } from "../services/MediaPath";
 const props = defineProps<{
   fieldId?: string;
   allowedExtensions: string;
+  /** Maximum upload size in bytes. */
+  maxFileSize?: number;
   allowMultiple?: boolean;
   /** Enables real-time media updates (MediaHub) inside the embedded gallery. */
   signalrEnabled?: boolean;
@@ -156,6 +158,7 @@ async function onOpened() {
       basePath: props.basePath,
       uploadFilesUrl: props.uploadFilesUrl,
       allowedExtensions: props.allowedExtensions,
+      maxFileSize: props.maxFileSize,
       allowMultiple: allowMultipleSelection.value,
       signalrEnabled: props.signalrEnabled === true,
       onSelectionChange: (count: number) => {

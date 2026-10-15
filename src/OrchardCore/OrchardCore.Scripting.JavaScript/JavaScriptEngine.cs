@@ -217,8 +217,12 @@ public sealed class JavaScriptEngine : IScriptingEngine
         // The factory captures the services it is given, so the delegate has to be built with the services
         // of the scope that owns this engine, and cannot be shared between engines. The scope records them
         // in the engine's [[HostDefined]] slot, which Jint reserves for the host and which no part of the
-        // engine reads.
-        if (engine.Advanced.HostDefined is not IServiceProvider serviceProvider)
+        // engine reads. A scope created without services records that instead, and its globals are built
+        // without services, as the methods of that scope that are set eagerly are.
+        var hostDefined = engine.Advanced.HostDefined;
+        var serviceProvider = hostDefined as IServiceProvider;
+
+        if (serviceProvider is null && !ReferenceEquals(hostDefined, JavaScriptScope.NoServices))
         {
             // The lazy property stores whatever this returns and never runs again, so returning a value here
             // would leave the global permanently undefined and fail as 'x is not a function' somewhere else.

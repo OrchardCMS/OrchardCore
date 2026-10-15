@@ -1,9 +1,13 @@
 using System.Collections;
+using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
@@ -372,6 +376,98 @@ public class WorkflowManagerTests
     }
 
     [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_StringExpression_UsesViewLocalizer()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var localizer = Mock.Get(serviceProvider.GetRequiredService<IViewLocalizer>());
+        localizer
+            .Setup(viewLocalizer => viewLocalizer.GetString("Name", It.IsAny<object[]>()))
+            .Returns(new LocalizedString("Name", "Localized name"));
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<string>("{{ \"Name\" | t }}"),
+            workflowContext,
+            null);
+
+        Assert.Equal("Localized name", result);
+    }
+
+    [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_NonStringExpression_UsesViewLocalizer()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var localizer = Mock.Get(serviceProvider.GetRequiredService<IViewLocalizer>());
+        localizer
+            .Setup(viewLocalizer => viewLocalizer.GetString("Name", It.IsAny<object[]>()))
+            .Returns(new LocalizedString("Name", "Localized name"));
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<object>("{{ \"Name\" | t }}"),
+            workflowContext,
+            null);
+
+        Assert.Equal("Localized name", result.ToString());
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task LiquidWorkflowExpressionEvaluator_CustomHandler_ExposesVariables(bool stringResult, bool hasViewContext)
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        if (!hasViewContext)
+        {
+            serviceProvider.GetRequiredService<ViewContextAccessor>().ViewContext = null;
+        }
+
+        var handler = new Mock<IWorkflowExecutionContextHandler>();
+        handler.Setup(value => value.EvaluatingExpressionAsync(It.IsAny<WorkflowExecutionExpressionContext>()))
+            .Callback<WorkflowExecutionExpressionContext>(context => context.TemplateContext.SetValue("Greeting", "Hello"))
+            .Returns(Task.CompletedTask);
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider, [handler.Object]);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+        workflowContext.Properties["Name"] = "World";
+        const string expression = "{{ Greeting }} {{ Workflow.Properties.Name }}";
+
+        object result = stringResult
+            ? await evaluator.EvaluateAsync(new WorkflowExpression<string>(expression), workflowContext, null)
+            : await evaluator.EvaluateAsync(new WorkflowExpression<object>(expression), workflowContext, null);
+
+        Assert.Equal("Hello World", result);
+        handler.Verify(value => value.EvaluatingExpressionAsync(It.IsAny<WorkflowExecutionExpressionContext>()), Times.Once);
+    }
+
+    [Fact]
     public async Task WorkflowScriptEvaluator_Default_EvaluateAsyncScopedGlobalMethods()
     {
         var serviceProvider = CreateServiceProvider();
@@ -470,6 +566,106 @@ public class WorkflowManagerTests
         Assert.Equal(2, faultTriggerCount);
     }
 
+    [Fact]
+    public async Task StartWorkflowAsync_ScriptStoppedByAnExecutionLimit_FaultsTheWorkflow()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var jintOptions = new Jint.Options();
+        Jint.ConstraintsOptionsExtensions.MaxStatements(jintOptions, 1_000);
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider, jintOptions);
+        var localizer = new Mock<IStringLocalizer<WriteLineTask>>();
+
+        var stringBuilder = new StringBuilder();
+        var output = new StringWriter(stringBuilder);
+        var ifElseTask = new IfElseTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<IfElseTask>>().Object);
+        var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "1",
+                    IsStart = true,
+                    Name = ifElseTask.Name,
+                    Properties = JObject.FromObject(new { Condition = new WorkflowExpression<bool>("while (true) {} true") }),
+                },
+                new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("'took the false branch'") }) },
+            ],
+            Transitions =
+            [
+                new() { SourceActivityId = "1", SourceOutcomeName = "False", DestinationActivityId = "2" },
+            ],
+        };
+
+        var workflowManager = CreateWorkflowManager(serviceProvider, [ifElseTask, writeLineTask], workflowType);
+
+        var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        // The condition never finished, so neither outcome was decided: the workflow has to stop as faulted
+        // rather than take the False branch as though the script had answered false.
+        Assert.Equal(WorkflowStatus.Faulted, workflowExecutionContext.Status);
+        Assert.Empty(stringBuilder.ToString());
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_WorkflowCancelledWhileAScriptRuns_FaultsTheWorkflow()
+    {
+        var services = new ServiceCollection();
+        services.AddScoped(typeof(Resolver<>));
+        services.AddScoped(provider => new Mock<IShapeFactory>().Object);
+        services.AddScoped(provider => new Mock<IViewLocalizer>().Object);
+        services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
+        services.AddScoped<IWorkflowExecutionContextHandler, CancelWorkflowMethodHandler>();
+        var serviceProvider = services.BuildServiceProvider();
+
+        // The constraint AddJavaScriptEngine() registers, through which a running script observes the token.
+        var jintOptions = new Jint.Options();
+        Jint.OptionsExtensions.Constraint(jintOptions, static () => new Jint.Constraints.OperationDeadlineConstraint());
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider, jintOptions);
+
+        var stringBuilder = new StringBuilder();
+        var ifElseTask = new IfElseTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<IfElseTask>>().Object);
+        var writeLineTask = new WriteLineTask(scriptEvaluator, new Mock<IStringLocalizer<WriteLineTask>>().Object, new StringWriter(stringBuilder));
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "1",
+                    IsStart = true,
+                    Name = ifElseTask.Name,
+                    Properties = JObject.FromObject(new { Condition = new WorkflowExpression<bool>("cancelWorkflow(); for (let i = 0; i < 10000000; i++) {} true") }),
+                },
+                new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("'took the true branch'") }) },
+            ],
+            Transitions =
+            [
+                new() { SourceActivityId = "1", SourceOutcomeName = "True", DestinationActivityId = "2" },
+            ],
+        };
+
+        Exception fault = null;
+        var workflowManager = CreateWorkflowManager(serviceProvider, [ifElseTask, writeLineTask], workflowType, (workflowFaultHandler, manager) =>
+            workflowFaultHandler
+                .Setup(x => x.OnWorkflowFaultAsync(It.IsAny<IWorkflowManager>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<ActivityContext>(), It.IsAny<Exception>()))
+                .Callback<IWorkflowManager, WorkflowExecutionContext, ActivityContext, Exception>((_, _, _, exception) => fault = exception)
+                .Returns(Task.CompletedTask));
+
+        var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        // The workflow is cancelled while its condition is still running. The script is stopped rather than
+        // finishing the loop and answering, and the stopped evaluation faults the workflow at that activity.
+        Assert.Equal(WorkflowStatus.Faulted, workflowExecutionContext.Status);
+        Assert.IsAssignableFrom<OperationCanceledException>(fault);
+        Assert.Empty(stringBuilder.ToString());
+    }
+
     private static ServiceProvider CreateServiceProvider()
     {
         var services = new ServiceCollection();
@@ -488,31 +684,39 @@ public class WorkflowManagerTests
         services.Configure<LiquidViewOptions>(_ => { });
         services.Configure<TemplateOptions>(options =>
         {
+            options.Filters.AddFilter("t", LiquidViewFilters.Localize);
             options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext>();
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Output, name, context)));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Properties, name, context)));
         });
+        services.AddHttpContextAccessor();
+        services.AddScoped(_ => new ViewContextAccessor { ViewContext = new ViewContext() });
+        services.AddScoped(_ => Mock.Of<IViewLocalizer>());
+        var localClock = new Mock<ILocalClock>();
+        localClock.Setup(clock => clock.GetLocalNowAsync()).ReturnsAsync(DateTimeOffset.UtcNow);
+        localClock.Setup(clock => clock.GetLocalTimeZoneAsync()).ReturnsAsync(Mock.Of<ITimeZone>(timeZone => timeZone.TimeZoneId == "UTC"));
+        services.AddScoped(_ => localClock.Object);
 
         return services.BuildServiceProvider();
     }
 
-    private static LiquidWorkflowExpressionEvaluator CreateLiquidWorkflowExpressionEvaluator(ServiceProvider serviceProvider)
+    private static LiquidWorkflowExpressionEvaluator CreateLiquidWorkflowExpressionEvaluator(ServiceProvider serviceProvider, IEnumerable<IWorkflowExecutionContextHandler> handlers = null)
         => new(
             new LiquidViewParser(
                 serviceProvider.GetRequiredService<IOptions<LiquidViewOptions>>(),
                 serviceProvider.GetRequiredService<IOptions<FluidParserOptions>>()),
-            [],
+            handlers ?? [],
             serviceProvider,
             new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object,
             serviceProvider.GetRequiredService<IOptions<TemplateOptions>>());
 
-    private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
+    private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider, Jint.Options jintOptions = null)
     {
         var memoryCache = new MemoryCache(new MemoryCacheOptions());
         var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
-        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(new Jint.Options()), globalMethodProviders);
+        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(jintOptions ?? new Jint.Options()), globalMethodProviders);
         var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
         var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
@@ -641,6 +845,37 @@ public class WorkflowManagerTests
                     await Task.Yield();
                     return "async";
                 }),
+            };
+        }
+    }
+
+    private sealed class CancelWorkflowMethodHandler : WorkflowExecutionContextHandlerBase
+    {
+        public override Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
+        {
+            var workflowContext = context.WorkflowContext;
+
+            context.ScopedMethodProviders.Add(new CancelWorkflowMethodProvider(() => workflowContext.Cancel("cancelled by the test")));
+
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class CancelWorkflowMethodProvider : IGlobalMethodProvider
+    {
+        private readonly Action _cancel;
+
+        public CancelWorkflowMethodProvider(Action cancel)
+        {
+            _cancel = cancel;
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "cancelWorkflow",
+                Method = serviceProvider => _cancel,
             };
         }
     }
