@@ -166,6 +166,7 @@ nav:
         - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
         - Gulp pipeline: guides/gulp-pipeline/README.md
       - Lucene Query Syntax: guides/lucene-query-syntax/README.md
+      - Upgrading the .NET SDK Version: guides/upgrading-sdk-version/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
