@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
@@ -12,7 +13,7 @@ public class Module
 
     private readonly string _baseNamespace;
     private readonly DateTimeOffset _lastModified;
-    private readonly Dictionary<string, IFileInfo> _fileInfos = [];
+    private readonly ConcurrentDictionary<string, IFileInfo> _fileInfos = [];
 
     // TODO: MWP: trace back to usage, etc...
     // TODO: MWP: perhaps we filter up front so we are not discovering all this during ctor...
@@ -126,31 +127,24 @@ public class Module
 
     public IFileInfo GetFileInfo(string subpath)
     {
-        if (!_fileInfos.TryGetValue(subpath, out var fileInfo))
+        if (_fileInfos.TryGetValue(subpath, out var fileInfo))
         {
-            if (!AssetPaths.Contains(Root + subpath))
-            {
-                return new NotFoundFileInfo(subpath);
-            }
-
-            lock (_fileInfos)
-            {
-                if (!_fileInfos.TryGetValue(subpath, out fileInfo))
-                {
-                    var resourcePath = _baseNamespace + subpath.Replace('/', '>');
-                    var fileName = Path.GetFileName(subpath);
-
-                    if (Assembly.GetManifestResourceInfo(resourcePath) == null)
-                    {
-                        return new NotFoundFileInfo(fileName);
-                    }
-
-                    _fileInfos[subpath] = fileInfo = new EmbeddedResourceFileInfo(
-                        Assembly, resourcePath, fileName, _lastModified);
-                }
-            }
+            return fileInfo;
         }
 
-        return fileInfo;
+        if (!AssetPaths.Contains(Root + subpath))
+        {
+            return new NotFoundFileInfo(subpath);
+        }
+
+        var resourcePath = _baseNamespace + subpath.Replace('/', '>');
+        var fileName = Path.GetFileName(subpath);
+
+        if (Assembly.GetManifestResourceInfo(resourcePath) == null)
+        {
+            return new NotFoundFileInfo(fileName);
+        }
+
+        return _fileInfos.GetOrAdd(subpath, new EmbeddedResourceFileInfo(Assembly, resourcePath, fileName, _lastModified));
     }
 }
