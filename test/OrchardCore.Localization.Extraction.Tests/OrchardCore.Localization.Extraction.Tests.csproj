@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.DisplayManagement.Liquid/OrchardCore.DisplayManagement.Liquid.csproj" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.Localization.Core/OrchardCore.Localization.Core.csproj" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.Localization.Tools/OrchardCore.Localization.Tools.csproj" ReferenceOutputAssembly="false" />
+    <Compile Remove="Fixtures/**/*.cs" />
+    <None Update="Fixtures/**/*" CopyToOutputDirectory="Never" />
+    <None Update="Snapshots/*.pot" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

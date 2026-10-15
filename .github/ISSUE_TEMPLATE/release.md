@@ -40,7 +40,7 @@ assignees: ''
 
 **Update Translations**: After finalizing code changes, update translations in the [Translations project](https://github.com/OrchardCMS/OrchardCore.Translations):
 
-- [ ] Update .po files using [PoExtractor](https://github.com/lukaskabrt/PoExtractor) to refresh translations on [Crowdin](https://crowdin.com/project/orchard-core).
+- [ ] Export POT templates into an empty output directory by building the solution from the repository root in PowerShell with `dotnet build OrchardCore.slnx -c Release -p:LocalizationCatalogOutputPath="$PWD/artifacts/localization"`. Upload the templates from the desired target-framework directory to [Crowdin](https://crowdin.com/project/orchard-core), then download the translated PO files to update the Translations project. Follow the [build-time POT export workflow](../../src/docs/reference/modules/Localize/README.md#export-translation-templates-for-localization-platforms), the recommended successor to POExtractor.
 - [ ] Publish the new version on NuGet.
 - [ ] Update the `OrchardCore.Translations.All` package reference in the main repository's `./Dependencies.Packages.props` file.
 

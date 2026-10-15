@@ -1,0 +1,80 @@
+<Project>
+  <Target Name="OrchardCoreGenerateLocalizationCatalog"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="ResolveReferences;GenerateGlobalUsings"
+          Condition="'$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true' and '$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <LocalizationToolPath Condition="'$(LocalizationToolPath)' == ''">$(_LocalizationToolsDirectory)bin/$(Configuration)/$(DefaultTargetFramework)/OrchardCore.Localization.Tools.dll</LocalizationToolPath>
+      <LocalizationCatalogPath Condition="'$(LocalizationCatalogPath)' == ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Localization', '$(AssemblyName).pot'))</LocalizationCatalogPath>
+      <_LocalizationRequestPath>$(LocalizationCatalogPath).request</_LocalizationRequestPath>
+      <LocalizationViewPrefix Condition="'$(LocalizationViewPrefix)' == '' and '$(ModuleType)' != ''">$(AssemblyName)</LocalizationViewPrefix>
+      <LocalizationDotNetHostPath Condition="'$(LocalizationDotNetHostPath)' == '' and '$(DotNetHostPath)' != ''">$(DotNetHostPath)</LocalizationDotNetHostPath>
+      <LocalizationDotNetHostPath Condition="'$(LocalizationDotNetHostPath)' == '' and '$(NetCoreRoot)' != ''">$(NetCoreRoot)dotnet$(ExeExtension)</LocalizationDotNetHostPath>
+      <LocalizationDotNetHostPath Condition="'$(LocalizationDotNetHostPath)' == ''">dotnet</LocalizationDotNetHostPath>
+      <_LocalizationRazorLanguageVersion Condition="'$(RazorLangVersion)' != ''">$(RazorLangVersion)</_LocalizationRazorLanguageVersion>
+      <_LocalizationRazorLanguageVersion Condition="'$(_LocalizationRazorLanguageVersion)' == ''">10.0</_LocalizationRazorLanguageVersion>
+      <_LocalizationRazorConfiguration Condition="'$(RazorConfiguration)' != ''">$(RazorConfiguration)</_LocalizationRazorConfiguration>
+      <_LocalizationRazorConfiguration Condition="'$(_LocalizationRazorConfiguration)' == ''">MVC-3.0</_LocalizationRazorConfiguration>
+    </PropertyGroup>
+    <Error Code="OCLOC009" Condition="!Exists('$(LocalizationToolPath)')" Text="Localization worker not found: $(LocalizationToolPath). Build the tooling or reference OrchardCore.Localization.Build." />
+    <ItemGroup>
+      <_LocalizationSource Include="@(Compile)" />
+      <_LocalizationRazor Include="@(RazorGenerate)" />
+      <_LocalizationLiquid Include="@(EmbeddedResource->WithMetadataValue('Extension', '.liquid'));@(Content->WithMetadataValue('Extension', '.liquid'));@(None->WithMetadataValue('Extension', '.liquid'));@(LocalizationLiquid)" />
+      <_LocalizationReference Include="@(ReferencePath)" />
+      <_LocalizationAnalyzer Include="@(Analyzer)" />
+    </ItemGroup>
+    <RemoveDuplicates Inputs="@(_LocalizationLiquid)">
+      <Output TaskParameter="Filtered" ItemName="_LocalizationUniqueLiquid" />
+    </RemoveDuplicates>
+    <ItemGroup>
+      <_LocalizationSource LogicalPath="%(_LocalizationSource.Identity)" />
+      <_LocalizationSource Condition="'%(_LocalizationSource.Link)' != ''" LogicalPath="%(_LocalizationSource.Link)" />
+      <_LocalizationRazor LogicalPath="%(_LocalizationRazor.Identity)" />
+      <_LocalizationRazor Condition="'%(_LocalizationRazor.TargetPath)' != ''" LogicalPath="%(_LocalizationRazor.TargetPath)" />
+      <_LocalizationRazor Condition="'%(_LocalizationRazor.Link)' != ''" LogicalPath="%(_LocalizationRazor.Link)" />
+      <_LocalizationUniqueLiquid LogicalPath="%(_LocalizationUniqueLiquid.Identity)" />
+      <_LocalizationUniqueLiquid Condition="'%(_LocalizationUniqueLiquid.Link)' != ''" LogicalPath="%(_LocalizationUniqueLiquid.Link)" />
+      <_LocalizationSource EncodedPath="$([MSBuild]::ConvertToBase64('%(_LocalizationSource.FullPath)'))" EncodedLogicalPath="$([MSBuild]::ConvertToBase64('%(_LocalizationSource.LogicalPath)'))" />
+      <_LocalizationRazor EncodedPath="$([MSBuild]::ConvertToBase64('%(_LocalizationRazor.FullPath)'))" EncodedLogicalPath="$([MSBuild]::ConvertToBase64('%(_LocalizationRazor.LogicalPath)'))" />
+      <_LocalizationUniqueLiquid EncodedPath="$([MSBuild]::ConvertToBase64('%(_LocalizationUniqueLiquid.FullPath)'))" EncodedLogicalPath="$([MSBuild]::ConvertToBase64('%(_LocalizationUniqueLiquid.LogicalPath)'))" />
+      <_LocalizationReference EncodedPath="$([MSBuild]::ConvertToBase64('%(_LocalizationReference.FullPath)'))" EncodedAliases="$([MSBuild]::ConvertToBase64('%(_LocalizationReference.Aliases)'))" />
+      <_LocalizationAnalyzer EncodedPath="$([MSBuild]::ConvertToBase64('%(_LocalizationAnalyzer.FullPath)'))" />
+      <_LocalizationProperty Include="ProjectDirectory" Value="$(MSBuildProjectDirectory)" />
+      <_LocalizationProperty Include="AssemblyName" Value="$(AssemblyName)" />
+      <_LocalizationProperty Include="RootNamespace" Value="$(RootNamespace)" />
+      <_LocalizationProperty Include="ViewPrefix" Value="$(LocalizationViewPrefix)" />
+      <_LocalizationProperty Include="LanguageVersion" Value="$(LangVersion)" />
+      <_LocalizationProperty Include="InterceptorsNamespaces" Value="$(InterceptorsNamespaces)" />
+      <_LocalizationProperty Include="RazorLanguageVersion" Value="$(_LocalizationRazorLanguageVersion)" />
+      <_LocalizationProperty Include="RazorConfiguration" Value="$(_LocalizationRazorConfiguration)" />
+      <_LocalizationProperty Include="Nullable" Value="$(Nullable)" />
+      <_LocalizationProperty Include="AllowUnsafe" Value="$(AllowUnsafeBlocks)" />
+      <_LocalizationProperty Include="OutputType" Value="$(OutputType)" />
+      <_LocalizationProperty Include="Strict" Value="$(LocalizationStrict)" />
+      <_LocalizationProperty Include="Defines" Value="$(DefineConstants)" />
+      <_LocalizationProperty Include="OutputPath" Value="$(LocalizationCatalogPath)" />
+      <_LocalizationProperty EncodedValue="$([MSBuild]::ConvertToBase64('%(_LocalizationProperty.Value)'))" />
+    </ItemGroup>
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(_LocalizationRequestPath)'))" />
+    <WriteLinesToFile File="$(_LocalizationRequestPath)"
+                      Lines="Version|1;@(_LocalizationProperty->'Property|%(Identity)|%(EncodedValue)');@(_LocalizationSource->'Source|%(EncodedPath)|%(EncodedLogicalPath)');@(_LocalizationRazor->'Razor|%(EncodedPath)|%(EncodedLogicalPath)');@(_LocalizationUniqueLiquid->'Liquid|%(EncodedPath)|%(EncodedLogicalPath)');@(_LocalizationReference->'Reference|%(EncodedPath)|%(EncodedAliases)');@(_LocalizationAnalyzer->'Analyzer|%(EncodedPath)|')"
+                      Encoding="UTF-8" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <Exec Command="&quot;$(LocalizationDotNetHostPath)&quot; &quot;$(LocalizationToolPath)&quot; --request &quot;$(_LocalizationRequestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <ItemGroup>
+      <EmbeddedResource Include="$(LocalizationCatalogPath)" LogicalName="$(AssemblyName).Localization.pot" WithCulture="false" />
+      <LocalizationCatalog Include="$(LocalizationCatalogPath)" AssemblyName="$(AssemblyName)" LogicalName="$(AssemblyName).Localization.pot" TargetFramework="$(TargetFramework)" />
+      <FileWrites Include="$(LocalizationCatalogPath);$(LocalizationCatalogPath).stamp.json;$(_LocalizationRequestPath)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="OrchardCoreCollectLocalizationCatalog"
+          AfterTargets="OrchardCoreGenerateLocalizationCatalog"
+          Condition="'$(LocalizationCatalogOutputPath)' != '' and '$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true' and '$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <_LocalizationCatalogOutputDirectory>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(LocalizationCatalogOutputPath)', '$(TargetFramework)'))</_LocalizationCatalogOutputDirectory>
+    </PropertyGroup>
+    <MakeDir Directories="$(_LocalizationCatalogOutputDirectory)" />
+    <Copy SourceFiles="@(LocalizationCatalog)" DestinationFiles="@(LocalizationCatalog->'$(_LocalizationCatalogOutputDirectory)/%(AssemblyName).pot')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="GetLocalizationCatalogs" DependsOnTargets="OrchardCoreGenerateLocalizationCatalog" Returns="@(LocalizationCatalog)" />
+</Project>
