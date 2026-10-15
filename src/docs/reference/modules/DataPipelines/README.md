@@ -363,7 +363,14 @@ To save these files to the media library, add their extensions to the `AllowedFi
 
 ## Recipes and deployment
 
-The **All Data Pipelines** deployment step, in the **Data** category of deployment plans, exports every pipeline with its published definition, or its draft when it was never published. The secrets of the steps, the settings whose names start with `Protected`, aren't exported, as they can't be read on another site.
+The **Data Pipelines** deployment step, in the **Data** category of deployment plans, exports the pipelines with their published definition, or their draft when they were never published:
+
+- with **Include all the data pipelines**, the default, it exports every pipeline, including the ones created after the step was added to the plan;
+- otherwise, it exports the pipelines checked in its list.
+
+The secrets of the steps, the settings whose names start with `Protected`, aren't exported, as they can't be read on another site. Neither are the runs, their history and the shared links: a deployment moves the design of the pipelines, not what they did.
+
+To move pipelines to another site, add the step to a deployment plan, and import the plan's recipe on the other site, with the `DataPipelines` recipe step below.
 
 The `DataPipelines` recipe step imports pipelines:
 
@@ -447,6 +454,22 @@ services.Configure<DataPipelineOptions>(options =>
 ```
 
 ## Extending data pipelines
+
+A module extends data pipelines with services it registers in its startup. Each extension point is described below, or in the [Data Sources](../DataSources/README.md) page for the parts of the Data Pipelines Core feature, which other modules, such as reports, use too:
+
+| To add | Implement | Register with | See |
+|--------|-----------|---------------|-----|
+| A data source, such as the records of a module or an external service | `RecordDataSource` and `RecordDataSet<TRecord>`, or `IDataSource` | `services.AddDataSource<TSource>()` | [Adding a data source](../DataSources/README.md#adding-a-data-source) |
+| A file format, read and written by the file steps | `IDataFileFormat`, or `IDataWorkbookFormat` for several worksheets | `services.AddDataFileFormat<TFormat>()` | [Adding a file format](../DataSources/README.md#adding-a-file-format) |
+| A function of the formulas, computed per row or per group | `ExpressionFunction.CreateScalar` or `ExpressionFunction.CreateAggregate`, or an `IExpressionFunctionProvider` | `services.AddExpressionFunction(function)` | [Adding a formula function](../DataSources/README.md#adding-a-formula-function) |
+| A transform of rows, such as masking or enriching fields | `DataPipelineStepType<TSettings>`, in the `Transform` category | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
+| A transform that sees every row before writing any, such as a sort | A step type, with the [data operations](../DataSources/README.md#data-operations) | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
+| A source or a destination of the pipelines | `DataPipelineStepType<TSettings>`, in the `Source`, `File` or `Destination` category | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
+| The editor of a step | `DataPipelineStepDisplayDriver<TSettings, TViewModel>` | with its step type | [Adding the editor of a step type](#adding-the-editor-of-a-step-type) |
+| Values a step keeps between runs, such as a watermark | `context.GetState` and `context.SetState` | | [Keeping values between runs](#keeping-values-between-runs) |
+| Work confirmed when a run succeeds | `context.Run.OnSucceeded` | | [Confirming work when a run succeeds](#confirming-work-when-a-run-succeeds) |
+| Reactions to the changes of pipelines, or to the end of runs | `IDataPipelineHandler`, `IDataPipelineRunHandler` | `services.AddScoped<IDataPipelineHandler, THandler>()` | [Reacting to changes of pipelines](#reacting-to-changes-of-pipelines) |
+| Links to a resource of a module, such as a report | `ISharedLinkHandler` | `services.AddSharedLinkHandler<THandler>()` | [Sharing a resource from a module](#sharing-a-resource-from-a-module) |
 
 ### Adding a data source or a file format
 

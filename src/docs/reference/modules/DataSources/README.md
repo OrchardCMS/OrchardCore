@@ -742,6 +742,24 @@ The formula `[Price] + TAX([Price])` then adds the tax to a price, and the funct
 - The `category` groups the function in the list of functions, such as one of the `ExpressionFunctions` categories: `TextCategory`, `NumberCategory`, `DateCategory`, `LogicalCategory` or `AggregateCategory`, the category of the functions `CreateAggregate` creates.
 - The `description` is in English: the list of functions passes it through the localizer.
 
+An aggregate function combines the values of a group of rows, such as in the **Group and summarize** step. It takes one argument, and receives its values for every row of the group, with a `null` for a missing value. With `requiresNumericArgument`, the formula is invalid unless the argument is a number:
+
+```csharp
+services.AddExpressionFunction(ExpressionFunction.CreateAggregate(
+    name: "RANGE",
+    signature: "RANGE(number)",
+    description: "Returns the difference between the largest and the smallest value of the group.",
+    requiresNumericArgument: true,
+    returnType: _ => DataFieldType.Decimal,
+    aggregate: values =>
+    {
+        var numbers = values.Where(value => value is not null).Select(Convert.ToDecimal).ToList();
+
+        // A group without values has no range.
+        return numbers.Count == 0 ? null : numbers.Max() - numbers.Min();
+    }));
+```
+
 To offer several functions, implement `IExpressionFunctionProvider`, whose `GetFunctions` returns them, and register it as a singleton with `services.AddExpressionFunctionProvider<TProvider>()`. The built-in functions come from the `BuiltInExpressionFunctionProvider`.
 
 ### Reading more parts and fields

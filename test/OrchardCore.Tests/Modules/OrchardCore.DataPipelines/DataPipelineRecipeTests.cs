@@ -43,6 +43,28 @@ public sealed class DataPipelineRecipeTests
     }
 
     [Fact]
+    public async Task Export_SelectedPipelines_ExportsThemOnly()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var nightlyId = await CreatePublishedPipelineAsync(context);
+        string weeklyId = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            weeklyId = (await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().CreateAsync("Weekly export", null, user: null)).PipelineId;
+        });
+
+        // Act
+        var all = await ExportAsync(context);
+        var selected = await ExportAsync(context, new DataPipelinesDeploymentStep { IncludeAll = false, PipelineIds = [weeklyId] });
+
+        // Assert
+        Assert.Equal(new[] { nightlyId, weeklyId }.Order(), all["Pipelines"].AsArray().Select(pipeline => pipeline["PipelineId"].GetValue<string>()).Order());
+        Assert.Equal([weeklyId], selected["Pipelines"].AsArray().Select(pipeline => pipeline["PipelineId"].GetValue<string>()));
+    }
+
+    [Fact]
     public async Task Import_ExportedPipeline_CreatesItAsADraft()
     {
         // Arrange
@@ -129,7 +151,7 @@ public sealed class DataPipelineRecipeTests
         Assert.Single(errors);
     }
 
-    private static async Task<JsonObject> ExportAsync(BlogContext context)
+    private static async Task<JsonObject> ExportAsync(BlogContext context, DataPipelinesDeploymentStep deploymentStep = null)
     {
         JsonObject step = null;
 
@@ -137,9 +159,9 @@ public sealed class DataPipelineRecipeTests
         {
             var fileBuilder = new MemoryFileBuilder();
             var result = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
-            var deploymentSource = ActivatorUtilities.CreateInstance<AllDataPipelinesDeploymentSource>(scope.ServiceProvider);
+            var deploymentSource = ActivatorUtilities.CreateInstance<DataPipelinesDeploymentSource>(scope.ServiceProvider);
 
-            await deploymentSource.ProcessDeploymentStepAsync(new AllDataPipelinesDeploymentStep(), result);
+            await deploymentSource.ProcessDeploymentStepAsync(deploymentStep ?? new DataPipelinesDeploymentStep(), result);
             await result.FinalizeAsync();
 
             step = JsonNode.Parse(fileBuilder.GetFileContents("Recipe.json", Encoding.UTF8))["steps"][0].AsObject();

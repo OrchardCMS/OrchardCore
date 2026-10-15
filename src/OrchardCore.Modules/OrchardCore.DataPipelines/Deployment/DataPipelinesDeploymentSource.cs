@@ -9,26 +9,32 @@ using OrchardCore.Json;
 namespace OrchardCore.DataPipelines.Deployment;
 
 /// <summary>
-/// Exports every data pipeline as a <see cref="DataPipelinesRecipeStep"/>, without the secrets of its steps, which
-/// can't be read on another site.
+/// Exports data pipelines as a <see cref="DataPipelinesRecipeStep"/>, without the secrets of their steps, which can't
+/// be read on another site.
 /// </summary>
-public sealed class AllDataPipelinesDeploymentSource : DeploymentSourceBase<AllDataPipelinesDeploymentStep>
+public sealed class DataPipelinesDeploymentSource : DeploymentSourceBase<DataPipelinesDeploymentStep>
 {
     private readonly DataPipelineManager _pipelineManager;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public AllDataPipelinesDeploymentSource(DataPipelineManager pipelineManager, IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
+    public DataPipelinesDeploymentSource(DataPipelineManager pipelineManager, IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
         _pipelineManager = pipelineManager;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    protected override async Task ProcessAsync(AllDataPipelinesDeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DataPipelinesDeploymentStep step, DeploymentPlanResult result)
     {
+        var selected = new HashSet<string>(step.PipelineIds ?? [], StringComparer.Ordinal);
         var pipelines = new JsonArray();
 
         foreach (var pipeline in await _pipelineManager.ListAsync())
         {
+            if (!step.IncludeAll && !selected.Contains(pipeline.PipelineId))
+            {
+                continue;
+            }
+
             var definition = JObject.FromObject(pipeline.Published ?? pipeline.GetEditableDefinition(), _jsonSerializerOptions);
             DataPipelineSecrets.RemoveProtectedValues(definition);
 
