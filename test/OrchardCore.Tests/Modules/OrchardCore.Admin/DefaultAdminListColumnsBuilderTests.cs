@@ -64,15 +64,26 @@ public class DefaultAdminListColumnsBuilderTests
         Assert.Equal(new AdminListColumnsProviderKey("Contents"), services[0].ServiceKey);
     }
 
-    [Fact]
-    public async Task BuildColumnsAsync_ProviderFailure_IsLoggedAndOtherProvidersContinue()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task BuildColumnsAsync_ProviderFailure_IsLoggedAndOtherProvidersContinue(bool globalFailure)
     {
         var failing = new Mock<IAdminListColumnsProvider>();
         failing.Setup(p => p.PopulateAsync(It.IsAny<AdminListColumnsContext>()))
             .ThrowsAsync(new InvalidOperationException("Invalid column"));
         var logger = new Mock<ILogger<DefaultAdminListColumnsBuilder>>();
-        using var services = new ServiceCollection()
-            .AddKeyedSingleton(new AdminListColumnsProviderKey("Contents"), failing.Object)
+        var registrations = new ServiceCollection();
+        if (globalFailure)
+        {
+            registrations.AddSingleton(failing.Object);
+        }
+        else
+        {
+            registrations.AddKeyedSingleton(new AdminListColumnsProviderKey("Contents"), failing.Object);
+        }
+
+        using var services = registrations
             .AddKeyedSingleton<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Contents"), new TestColumnsProvider())
             .BuildServiceProvider();
         var builder = new DefaultAdminListColumnsBuilder(services, logger.Object);
@@ -143,6 +154,90 @@ public class DefaultAdminListColumnsBuilderTests
         Assert.NotSame(contents, Assert.Single(second.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(key)));
         Assert.NotSame(contents, Assert.Single(first.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Users"))));
         Assert.Empty(first.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("contents")));
+    }
+
+    [Fact]
+    public void AddAdminListColumnsProvider_GlobalRegistration_IsIdempotentScopedAndDistinctFromNamedRegistration()
+    {
+        var services = new ServiceCollection()
+            .AddAdminListColumnsProvider<TestColumnsProvider>()
+            .AddAdminListColumnsProvider<TestColumnsProvider>()
+            .AddAdminListColumnsProvider<TestColumnsProvider>("Contents");
+        Assert.Equal(2, services.Count);
+        using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
+        using var first = provider.CreateScope();
+        using var second = provider.CreateScope();
+        var global = Assert.Single(first.ServiceProvider.GetServices<IAdminListColumnsProvider>());
+
+        Assert.Same(global, Assert.Single(first.ServiceProvider.GetServices<IAdminListColumnsProvider>()));
+        Assert.NotSame(global, Assert.Single(second.ServiceProvider.GetServices<IAdminListColumnsProvider>()));
+        Assert.NotSame(global, Assert.Single(first.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Contents"))));
+    }
+
+    [Fact]
+    public async Task BuildColumnsAsync_GlobalProvider_ExtendsEveryListIncludingEmptyLists()
+    {
+        using var services = new ServiceCollection()
+            .AddAdminListColumnsProvider<TestColumnsProvider>()
+            .BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
+        using var scope = services.CreateScope();
+        var builder = new DefaultAdminListColumnsBuilder(scope.ServiceProvider, NullLogger<DefaultAdminListColumnsBuilder>.Instance);
+
+        foreach (var name in new[] { "Contents", "Users" })
+        {
+            var context = await builder.BuildColumnsAsync(name, [], cancellationToken: TestContext.Current.CancellationToken);
+
+            Assert.Equal(name, context.ListName);
+            Assert.Equal("Culture", Assert.Single(context.Columns).Name);
+        }
+    }
+
+    [Fact]
+    public async Task BuildColumnsAsync_MixedProviders_RunsGlobalsBeforeNamedProvidersAndThenSorts()
+    {
+        var calls = new List<string>();
+        IAdminListColumnsProvider Create(string name, Action<AdminListColumnsContext> populate)
+        {
+            var provider = new Mock<IAdminListColumnsProvider>();
+            provider.Setup(value => value.PopulateAsync(It.IsAny<AdminListColumnsContext>()))
+                .Callback<AdminListColumnsContext>(context =>
+                {
+                    calls.Add(name);
+                    Assert.Equal("BlogPost", Assert.Single(context.GetData<string[]>("ContentTypes")));
+                    populate(context);
+                })
+                .Returns(Task.CompletedTask);
+            return provider.Object;
+        }
+
+        using var services = new ServiceCollection()
+            .AddKeyedSingleton(new AdminListColumnsProviderKey("Contents"), Create("NamedFirst", context =>
+            {
+                Assert.Equal("global", context.Find("Title").CssClass);
+                Assert.Equal(["Title", "Global"], context.Columns.Select(column => column.Name));
+                context.Find("Title").CssClass = "named";
+                context.Columns.Add(new AdminListColumn { Name = "Named", Position = "10" });
+            }))
+            .AddSingleton(Create("GlobalFirst", context =>
+            {
+                context.Find("Title").CssClass = "global";
+                context.Columns.Add(new AdminListColumn { Name = "Global", Position = "40" });
+            }))
+            .AddKeyedSingleton(new AdminListColumnsProviderKey("Contents"), Create("NamedSecond", context =>
+                Assert.Equal("named", context.Find("Title").CssClass)))
+            .AddSingleton(Create("GlobalSecond", context => Assert.NotNull(context.Find("Global"))))
+            .AddKeyedScoped<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Users"), (_, _) =>
+                throw new InvalidOperationException("Unrelated provider must not be constructed"))
+            .BuildServiceProvider();
+        var builder = new DefaultAdminListColumnsBuilder(services, NullLogger<DefaultAdminListColumnsBuilder>.Instance);
+
+        var columns = await builder.BuildColumnsAsync("Contents", [new() { Name = "Title", Position = "20" }],
+            new Dictionary<string, object> { ["ContentTypes"] = new[] { "BlogPost" } },
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(["GlobalFirst", "GlobalSecond", "NamedFirst", "NamedSecond"], calls);
+        Assert.Equal(["Named", "Title", "Global"], columns.Columns.Select(column => column.Name));
+        Assert.Equal("named", columns.Find("Title").CssClass);
     }
 
     private static IAdminListColumnsProvider CreateProvider(string name)

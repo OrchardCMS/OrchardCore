@@ -110,9 +110,14 @@ Implement `IAdminListColumnsProvider.PopulateAsync(AdminListColumnsContext conte
 Use `context.Columns.Add(...)`, `context.Find(name)` or `context.Remove(name)`.
 Register with `services.AddAdminListColumnsProvider<TProvider>(listName)`; duplicate registrations for
 the same provider and list are ignored. Multiple providers can target a list; a provider can target several lists.
-Only matching providers are constructed and run. Resolution uses keyed DI with an
+Only matching named providers are constructed and run. Resolution uses keyed DI with an
 `AdminListColumnsProviderKey` record key, not a plain string. List names are case-sensitive.
-Providers run after the view declarations, in feature dependency order, before columns are sorted.
+Omit the name, `services.AddAdminListColumnsProvider<TProvider>()`, for an unkeyed scoped global provider
+that runs for every list building columns. Global providers must tolerate different column sets; check
+`context.Find(name)` before modifying an optional column. Duplicate global registrations are ignored.
+Global providers run before matching named providers, in registration/feature dependency order within
+each group, after the view declarations and before columns are sorted. Registering the same provider
+globally and for a list invokes it twice for that list.
 Providers do not build cells; use the normal row display driver to supply shapes.
 
 Use a string literal for a list name used only once in its module. Keep a module constant when its name

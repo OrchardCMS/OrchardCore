@@ -23,7 +23,10 @@ public sealed class DefaultAdminListColumnsBuilder : IAdminListColumnsBuilder
         cancellationToken.ThrowIfCancellationRequested();
         var context = new AdminListColumnsContext(listName, columns, data);
 
-        await _serviceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey(listName)).InvokeAsync(
+        var providers = _serviceProvider.GetServices<IAdminListColumnsProvider>()
+            .Concat(_serviceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey(listName)));
+
+        await providers.InvokeAsync(
             static (provider, context) => provider.PopulateAsync(context),
             context,
             _logger);

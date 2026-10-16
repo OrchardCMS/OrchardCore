@@ -7,7 +7,8 @@ namespace OrchardCore.Admin;
 public interface IAdminListColumnsProvider
 {
     /// <summary>
-    /// Adds, removes or changes columns of the list this provider is registered for before they are sorted.
+    /// Adds, removes or changes columns of the lists this provider is registered for before they are sorted.
+    /// Global providers run before list-specific providers and must tolerate different column sets.
     /// </summary>
     /// <param name="context">The list name, view-defined columns and contextual data.</param>
     Task PopulateAsync(AdminListColumnsContext context);

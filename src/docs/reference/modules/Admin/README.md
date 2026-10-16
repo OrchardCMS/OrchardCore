@@ -606,8 +606,9 @@ and is not duplicated. Overridden `AdminListCell` templates receive the row as `
 
 #### Extending columns
 
-Implement `IAdminListColumnsProvider` to add, remove or change the view's columns, and register it for the
-target list name. Providers see the view-defined columns before sorting, including when there are no rows:
+Implement `IAdminListColumnsProvider` to add, remove or change the view's columns, and register it for a
+target list name or globally for all lists. Providers see the view-defined columns before sorting,
+including when there are no rows:
 
 ```csharp
 public sealed class CultureColumnsProvider : IAdminListColumnsProvider
@@ -636,11 +637,25 @@ public sealed class CultureColumnsProvider : IAdminListColumnsProvider
 
 Register it with `services.AddAdminListColumnsProvider<CultureColumnsProvider>(ContentsAdminList.Name)`.
 Multiple providers can target the same list, and the same provider can be registered for different lists.
-The helper prevents duplicate provider registrations for the same list. Providers are scoped keyed services,
+The helper prevents duplicate provider registrations for the same list. Named providers are scoped keyed services,
 resolved with `GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey(listName))`.
 The record key keeps them distinct from services registered with plain string keys. List names are
-case-sensitive; only providers registered for the rendering's exact name are constructed and invoked.
-Providers run in feature dependency order; depend on the owning
+case-sensitive; only named providers registered for the rendering's exact name are constructed and invoked.
+
+Omit the list name to register a scoped global provider:
+
+```csharp
+services.AddAdminListColumnsProvider<SiteColumnsProvider>();
+```
+
+Global providers use unkeyed registrations and run for every list that builds columns. They must tolerate
+different column sets: check `context.Find(name)` before modifying an optional column. Repeated registration
+of the same global provider is ignored. Global and named registrations are separate scopes of applicability;
+registering a provider both globally and for a list invokes it twice for that list.
+
+Global providers run first, then the matching named providers, so a list can refine a global convention.
+Registration order is preserved within each group, and columns are sorted after both groups finish.
+Within each group, providers run in feature dependency order; depend on the owning
 feature when changing its columns. Duplicate column names throw; provider errors are logged and other providers continue.
 `context.Find(name)` and `context.Remove(name)` access existing columns.
 
