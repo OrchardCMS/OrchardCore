@@ -31,7 +31,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<UpdateContentTask, UpdateContentTaskDisplayDriver>();
 
         services.AddScoped<IWorkflowValueSerializer, ContentItemSerializer>();
-        services.AddScoped<IWorkflowVariableType, ContentItemVariableType>();
+        services.AddWorkflowVariableType<ContentItemVariableType>();
     }
 }
 

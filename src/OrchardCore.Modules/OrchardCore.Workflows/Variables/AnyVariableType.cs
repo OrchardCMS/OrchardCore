@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Variables;
@@ -9,18 +9,11 @@ namespace OrchardCore.Workflows.Variables;
 /// </summary>
 public sealed class AnyVariableType : IWorkflowVariableType
 {
-    internal readonly IStringLocalizer S;
+    public static string Name => "any";
 
-    public AnyVariableType(IStringLocalizer<AnyVariableType> localizer)
-    {
-        S = localizer;
-    }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<AnyVariableType>("Any");
 
-    public string Name => "any";
-
-    public LocalizedString DisplayName => S["Any"];
-
-    public string Editor => "json";
+    public static string Editor => "json";
 
     public bool TryCoerce(object value, out object result)
     {

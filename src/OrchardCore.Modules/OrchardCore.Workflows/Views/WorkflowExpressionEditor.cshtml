@@ -1,7 +1,9 @@
+@using OrchardCore.Localization
 @using OrchardCore.Workflows.Services
 @using OrchardCore.Workflows.ViewModels
 @model WorkflowExpressionEditorViewModel
 @inject IWorkflowExpressionManager ExpressionManager
+@inject IStringLocalizerFactory LocalizerFactory
 
 @{
     var allowed = Model.Syntaxes ?? [];
@@ -28,7 +30,7 @@
             <select id="@syntaxId" name="@syntaxName" class="form-select form-select-sm w-auto mb-1" aria-label="@T["Syntax of {0}", Model.Label]" data-expression-syntax>
                 @foreach (var provider in providers)
                 {
-                    <option value="@provider.Name" selected="@(provider == selected)" data-language="@provider.EditorLanguage">@provider.DisplayName</option>
+                    <option value="@provider.Name" selected="@(provider == selected)" data-language="@provider.EditorLanguage">@LocalizerFactory.Localize(provider.DisplayName)</option>
                 }
                 @if (selected is null && !string.IsNullOrEmpty(syntax))
                 {
@@ -44,7 +46,7 @@
                 <select id="@syntaxId" name="@syntaxName" class="form-select flex-grow-0 w-auto" aria-label="@T["Syntax of {0}", Model.Label]" data-expression-syntax>
                     @foreach (var provider in providers)
                     {
-                        <option value="@provider.Name" selected="@(provider == selected)" data-language="@provider.EditorLanguage" data-placeholder="@(Model.Examples is not null && Model.Examples.TryGetValue(provider.Name, out var providerExample) ? providerExample : null)">@provider.DisplayName</option>
+                        <option value="@provider.Name" selected="@(provider == selected)" data-language="@provider.EditorLanguage" data-placeholder="@(Model.Examples is not null && Model.Examples.TryGetValue(provider.Name, out var providerExample) ? providerExample : null)">@LocalizerFactory.Localize(provider.DisplayName)</option>
                     }
                     @if (selected is null && !string.IsNullOrEmpty(syntax))
                     {

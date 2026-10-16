@@ -1,5 +1,5 @@
 using System.Globalization;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -10,11 +10,11 @@ namespace WorkflowsSample;
 /// </summary>
 public sealed class UpperCaseExpressionProvider : IWorkflowExpressionProvider
 {
-    public string Name => "UpperCase";
+    public static string Name => "UpperCase";
 
-    public LocalizedString DisplayName => new("UpperCase", "Upper case");
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UpperCaseExpressionProvider>("Upper case");
 
-    public string EditorLanguage => "plaintext";
+    public static string EditorLanguage => "plaintext";
 
     public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, WorkflowExpressionEvaluationContext context)
         => Task.FromResult((T)Convert.ChangeType(expression.Expression?.ToUpperInvariant(), typeof(T), CultureInfo.InvariantCulture));

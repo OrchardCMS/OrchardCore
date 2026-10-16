@@ -33,7 +33,7 @@ public sealed class WorkflowExecutionContext : IDisposable
         WorkflowType = workflowType;
         Workflow = workflow;
         Activities = activities.ToDictionary(x => x.ActivityRecord.ActivityId);
-        Variables = new WorkflowVariables(Properties, workflowType?.Variables, variableTypes is null ? null : variableTypes.Get);
+        Variables = new WorkflowVariables(Properties, workflowType?.Variables, variableTypes);
     }
 
     // The outputs the activities set while this context runs, by activity id, then output name.

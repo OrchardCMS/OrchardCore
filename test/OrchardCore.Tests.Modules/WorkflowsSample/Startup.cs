@@ -9,7 +9,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IWorkflowExpressionProvider, UpperCaseExpressionProvider>();
+        services.AddWorkflowExpressionProvider<UpperCaseExpressionProvider>();
         services.AddActivity<TransientFailureTask, TransientFailureTaskDisplayDriver>();
     }
 }

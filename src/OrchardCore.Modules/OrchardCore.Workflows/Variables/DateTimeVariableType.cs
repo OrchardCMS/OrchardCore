@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Variables;
@@ -10,18 +10,11 @@ namespace OrchardCore.Workflows.Variables;
 /// </summary>
 public sealed class DateTimeVariableType : IWorkflowVariableType
 {
-    internal readonly IStringLocalizer S;
+    public static string Name => "datetime";
 
-    public DateTimeVariableType(IStringLocalizer<DateTimeVariableType> localizer)
-    {
-        S = localizer;
-    }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DateTimeVariableType>("Date and time");
 
-    public string Name => "datetime";
-
-    public LocalizedString DisplayName => S["Date and time"];
-
-    public string Editor => "datetime";
+    public static string Editor => "datetime";
 
     public bool TryCoerce(object value, out object result)
     {

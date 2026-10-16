@@ -1,29 +1,37 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Expressions;
 
 /// <summary>
-/// Looks up the registered <see cref="IWorkflowExpressionProvider"/> services, and evaluates expressions with them.
+/// The default <see cref="IWorkflowExpressionManager"/>, built from the syntaxes of
+/// <see cref="WorkflowExpressionOptions"/>. It lists them from their descriptors, and resolves a provider from the
+/// services of the scope only when it is used.
 /// </summary>
 public sealed class WorkflowExpressionManager : IWorkflowExpressionManager
 {
     private static readonly string[] s_order = [WorkflowExpressionSyntaxes.Literal, WorkflowExpressionSyntaxes.Liquid, WorkflowExpressionSyntaxes.JavaScript];
 
-    private readonly Dictionary<string, IWorkflowExpressionProvider> _providers = new(StringComparer.OrdinalIgnoreCase);
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IReadOnlyList<WorkflowExpressionProviderDescriptor> _providers;
+    private readonly Dictionary<string, WorkflowExpressionProviderDescriptor> _providersByName = new(StringComparer.OrdinalIgnoreCase);
 
-    public WorkflowExpressionManager(IEnumerable<IWorkflowExpressionProvider> providers)
+    public WorkflowExpressionManager(IOptions<WorkflowExpressionOptions> options, IServiceProvider serviceProvider)
     {
-        // The last registration of a name wins, so a module can replace a built-in syntax.
-        foreach (var provider in providers)
-        {
-            _providers[provider.Name] = provider;
-        }
-    }
+        ArgumentNullException.ThrowIfNull(options);
 
-    /// <inheritdoc />
-    public IReadOnlyList<IWorkflowExpressionProvider> List()
-        => _providers.Values
+        _serviceProvider = serviceProvider;
+
+        // The options keep the last registration of a name, so a module can replace a built-in syntax.
+        foreach (var provider in options.Value.Providers)
+        {
+            _providersByName[provider.Name] = provider;
+        }
+
+        _providers = _providersByName.Values
             .OrderBy(provider =>
             {
                 var index = Array.FindIndex(s_order, name => string.Equals(name, provider.Name, StringComparison.OrdinalIgnoreCase));
@@ -32,10 +40,24 @@ public sealed class WorkflowExpressionManager : IWorkflowExpressionManager
             })
             .ThenBy(provider => provider.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<WorkflowExpressionProviderDescriptor> List() => _providers;
+
+    /// <inheritdoc />
+    public WorkflowExpressionProviderDescriptor GetDescriptor(string syntax)
+    {
+        return string.IsNullOrEmpty(syntax) ? null : _providersByName.GetValueOrDefault(syntax);
+    }
 
     /// <inheritdoc />
     public IWorkflowExpressionProvider Get(string syntax)
-        => !string.IsNullOrEmpty(syntax) && _providers.TryGetValue(syntax, out var provider) ? provider : null;
+    {
+        return GetDescriptor(syntax) is { } descriptor
+            ? (IWorkflowExpressionProvider)_serviceProvider.GetRequiredService(descriptor.Type)
+            : null;
+    }
 
     /// <inheritdoc />
     public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, string defaultSyntax = null, WorkflowExpressionEvaluationContext context = null)

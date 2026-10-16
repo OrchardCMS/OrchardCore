@@ -1,6 +1,7 @@
 using System.Dynamic;
 using System.Text.Json.Nodes;
 using OrchardCore.Contents.Workflows.Variables;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.Variables;
 
@@ -8,20 +9,20 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Workflows.Variables;
 
 public sealed class WorkflowVariableTypesTests
 {
-    private static readonly StringVariableType s_string = new StringVariableType(new PassThroughStringLocalizer<StringVariableType>());
-    private static readonly NumberVariableType s_number = new NumberVariableType(new PassThroughStringLocalizer<NumberVariableType>());
-    private static readonly BooleanVariableType s_boolean = new BooleanVariableType(new PassThroughStringLocalizer<BooleanVariableType>());
-    private static readonly DateTimeVariableType s_dateTime = new DateTimeVariableType(new PassThroughStringLocalizer<DateTimeVariableType>());
-    private static readonly ObjectVariableType s_object = new ObjectVariableType(new PassThroughStringLocalizer<ObjectVariableType>());
-    private static readonly ArrayVariableType s_array = new ArrayVariableType(new PassThroughStringLocalizer<ArrayVariableType>());
-    private static readonly AnyVariableType s_any = new AnyVariableType(new PassThroughStringLocalizer<AnyVariableType>());
+    private static readonly StringVariableType s_string = new StringVariableType();
+    private static readonly NumberVariableType s_number = new NumberVariableType();
+    private static readonly BooleanVariableType s_boolean = new BooleanVariableType();
+    private static readonly DateTimeVariableType s_dateTime = new DateTimeVariableType();
+    private static readonly ObjectVariableType s_object = new ObjectVariableType();
+    private static readonly ArrayVariableType s_array = new ArrayVariableType();
+    private static readonly AnyVariableType s_any = new AnyVariableType();
 
     [Fact]
     public void TryCoerce_Null_IsValidForEveryType()
     {
         foreach (var type in new IWorkflowVariableType[] { s_string, s_number, s_boolean, s_dateTime, s_object, s_array, s_any })
         {
-            Assert.True(type.TryCoerce(null, out var result), type.Name);
+            Assert.True(type.TryCoerce(null, out var result), type.GetType().Name);
             Assert.Null(result);
         }
     }
@@ -131,14 +132,20 @@ public sealed class WorkflowVariableTypesTests
     [Fact]
     public void List_TypesRegisteredInAnyOrder_ListsTheBuiltInTypesFirstAndAnyLast()
     {
-        var provider = new WorkflowVariableTypeProvider([s_any, new ContentItemVariableType(new PassThroughStringLocalizer<ContentItemVariableType>()), s_array, s_boolean, s_string, s_number]);
+        var provider = TestVariableTypes.Create(services => services
+            .AddWorkflowVariableType<AnyVariableType>()
+            .AddWorkflowVariableType<ContentItemVariableType>()
+            .AddWorkflowVariableType<ArrayVariableType>()
+            .AddWorkflowVariableType<BooleanVariableType>()
+            .AddWorkflowVariableType<StringVariableType>()
+            .AddWorkflowVariableType<NumberVariableType>());
 
         Assert.Equal(["string", "number", "boolean", "array", "contentItem", "any"], provider.List().Select(type => type.Name));
     }
 
     private static object Coerce(IWorkflowVariableType type, object value)
     {
-        Assert.True(type.TryCoerce(value, out var result), $"{type.Name} should accept {value}.");
+        Assert.True(type.TryCoerce(value, out var result), $"{type.GetType().Name} should accept {value}.");
 
         return result;
     }

@@ -1,28 +1,30 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Services;
 
 /// <summary>
-/// A type of workflow variable: how values are converted to it. Register implementations as services; their
-/// <see cref="Name"/> is what <see cref="Models.WorkflowVariableDefinition.TypeName"/> refers to.
+/// A type of workflow variable: how values are converted to it. Register an implementation with
+/// <c>services.AddWorkflowVariableType&lt;TType&gt;()</c>; its <see cref="Name"/> is what
+/// <see cref="Models.WorkflowVariableDefinition.TypeName"/> refers to, and a later registration of a name replaces an
+/// earlier one. The types are listed from their static members, without creating them.
 /// </summary>
 public interface IWorkflowVariableType
 {
     /// <summary>
-    /// The unique name of the type, for example <c>string</c>.
+    /// Gets the unique name of the type, for example <c>string</c>.
     /// </summary>
-    string Name { get; }
+    static abstract string Name { get; }
 
     /// <summary>
-    /// The name of the type shown in the designer.
+    /// Gets the name of the type shown in the designer.
     /// </summary>
-    LocalizedString DisplayName { get; }
+    static abstract LocalizationSource DisplayName { get; }
 
     /// <summary>
-    /// How the designer edits a default value of this type: <c>text</c>, <c>number</c>, <c>boolean</c>,
+    /// Gets how the designer edits a default value of this type: <c>text</c>, <c>number</c>, <c>boolean</c>,
     /// <c>datetime</c>, <c>json</c>, or <c>none</c> when the type has no default value.
     /// </summary>
-    string Editor { get; }
+    static abstract string Editor { get; }
 
     /// <summary>
     /// Converts a value to this type. A <see langword="null"/> value is always valid.

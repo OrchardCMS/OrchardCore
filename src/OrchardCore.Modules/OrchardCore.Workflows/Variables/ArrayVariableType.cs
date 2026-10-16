@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Variables;
@@ -11,18 +11,11 @@ namespace OrchardCore.Workflows.Variables;
 /// </summary>
 public sealed class ArrayVariableType : IWorkflowVariableType
 {
-    internal readonly IStringLocalizer S;
+    public static string Name => "array";
 
-    public ArrayVariableType(IStringLocalizer<ArrayVariableType> localizer)
-    {
-        S = localizer;
-    }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ArrayVariableType>("List");
 
-    public string Name => "array";
-
-    public LocalizedString DisplayName => S["List"];
-
-    public string Editor => "json";
+    public static string Editor => "json";
 
     public bool TryCoerce(object value, out object result)
     {

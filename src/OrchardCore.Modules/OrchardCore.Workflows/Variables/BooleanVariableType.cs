@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Variables;
@@ -9,18 +9,11 @@ namespace OrchardCore.Workflows.Variables;
 /// </summary>
 public sealed class BooleanVariableType : IWorkflowVariableType
 {
-    internal readonly IStringLocalizer S;
+    public static string Name => "boolean";
 
-    public BooleanVariableType(IStringLocalizer<BooleanVariableType> localizer)
-    {
-        S = localizer;
-    }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<BooleanVariableType>("Yes or no");
 
-    public string Name => "boolean";
-
-    public LocalizedString DisplayName => S["Yes or no"];
-
-    public string Editor => "boolean";
+    public static string Editor => "boolean";
 
     public bool TryCoerce(object value, out object result)
     {

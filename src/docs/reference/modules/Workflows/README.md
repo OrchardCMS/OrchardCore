@@ -412,12 +412,28 @@ The page of a workflow instance lists its variables, with the values the instanc
 
 - `WorkflowExecutionContext.Variables` reads and writes the declared variables with their types; a value that doesn't convert throws `WorkflowVariableException`.
 - An activity declares outputs by implementing `IActivityOutputs`, each with a `Name`, a `TypeName`, a `DisplayName` and an optional `Description`, and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
-- A module adds a variable type by registering an `IWorkflowVariableType`: its name, display name, how the designer edits its default (`text`, `number`, `boolean`, `datetime`, `json` or `none`), and how values convert to it. Its values are persisted with the instance like other workflow properties, so it needs an `IWorkflowValueSerializer` if they don't serialize to JSON and back. A type registered with an existing name replaces it.
+- A module adds a variable type by implementing `IWorkflowVariableType` and registering it with `services.AddWorkflowVariableType<TType>()`. Its name, display name and how the designer edits its default (`text`, `number`, `boolean`, `datetime`, `json` or `none`) are static members of the class, so the designer lists the types without creating them; `TryCoerce` converts values to it. Its values are persisted with the instance like other workflow properties, so it needs an `IWorkflowValueSerializer` if they don't serialize to JSON and back. A type registered with an existing name replaces it.
 - The built-in types cover most values. A type of its own is worth it for a value that needs its own conversion, editor or storage. For example, `contentItem` stores the id of the content item, and loads the item again when the instance resumes, so instances don't keep a copy of the item that goes stale.
 
 ```csharp
-services.AddScoped<IWorkflowVariableType, MyVariableType>();
+public sealed class PhoneNumberVariableType : IWorkflowVariableType
+{
+    public static string Name => "phoneNumber";
+
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<PhoneNumberVariableType>("Phone number");
+
+    public static string Editor => "text";
+
+    public bool TryCoerce(object value, out object result)
+    {
+        // Convert the value, or return false when it isn't a phone number.
+    }
+}
+
+services.AddWorkflowVariableType<PhoneNumberVariableType>();
 ```
+
+`IWorkflowVariableTypeProvider` lists the types (`WorkflowVariableTypeDescriptor`), and resolves a type from the services when a value is converted.
 
 ## Vocabulary
 
@@ -688,13 +704,28 @@ Activities saved before syntaxes could be chosen for each expression had one syn
 
 ### Adding a Syntax
 
-A module adds a syntax by registering an `IWorkflowExpressionProvider`: its name (stored in `WorkflowExpression<T>.Syntax`), its display name, the language of the code editor (a Monaco language such as `plaintext`, `liquid` or `javascript`), how it evaluates an expression to the expected type, and how it validates the text of an expression in the editor. A provider registered with the name of an existing one replaces it.
+A module adds a syntax by implementing `IWorkflowExpressionProvider` and registering it with `services.AddWorkflowExpressionProvider<TProvider>()`. Its name (stored in `WorkflowExpression<T>.Syntax`), its display name and the language of the code editor (a Monaco language such as `plaintext`, `liquid` or `javascript`) are static members of the class, so the expression editors list the syntaxes without creating their providers. Its instance members evaluate an expression to the expected type, and validate the text of an expression in the editor. A provider registered with the name of an existing one replaces it.
 
 ```csharp
-services.AddScoped<IWorkflowExpressionProvider, MyExpressionProvider>();
+public sealed class UpperCaseExpressionProvider : IWorkflowExpressionProvider
+{
+    public static string Name => "UpperCase";
+
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UpperCaseExpressionProvider>("Upper case");
+
+    public static string EditorLanguage => "plaintext";
+
+    public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, WorkflowExpressionEvaluationContext context)
+        => Task.FromResult((T)Convert.ChangeType(expression.Expression?.ToUpperInvariant(), typeof(T), CultureInfo.InvariantCulture));
+
+    public IReadOnlyList<string> Validate(string expression, Type valueType)
+        => [];
+}
+
+services.AddWorkflowExpressionProvider<UpperCaseExpressionProvider>();
 ```
 
-`IWorkflowExpressionManager` lists the syntaxes and evaluates an expression with the provider of its syntax. An activity evaluates its expressions with it:
+`IWorkflowExpressionManager` lists the syntaxes (`WorkflowExpressionProviderDescriptor`), resolves the provider of a syntax from the services, and evaluates an expression with the provider of its syntax. An activity evaluates its expressions with it:
 
 ```csharp
 var condition = await _expressionManager.EvaluateAsync(Condition, workflowContext, defaultSyntax: WorkflowExpressionSyntaxes.JavaScript);

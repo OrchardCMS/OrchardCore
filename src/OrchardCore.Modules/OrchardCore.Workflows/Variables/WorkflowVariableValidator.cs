@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -33,11 +34,17 @@ public sealed partial class WorkflowVariableValidator
 {
     private readonly IWorkflowVariableTypeProvider _typeProvider;
 
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public WorkflowVariableValidator(IWorkflowVariableTypeProvider typeProvider, IStringLocalizer<WorkflowVariableValidator> localizer)
+    public WorkflowVariableValidator(
+        IWorkflowVariableTypeProvider typeProvider,
+        IStringLocalizerFactory localizerFactory,
+        IStringLocalizer<WorkflowVariableValidator> localizer)
     {
         _typeProvider = typeProvider;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -82,16 +89,16 @@ public sealed partial class WorkflowVariableValidator
             return S["Another variable is named '{0}'.", variable.Name];
         }
 
-        var type = _typeProvider.Get(variable.TypeName);
+        var descriptor = _typeProvider.GetDescriptor(variable.TypeName);
 
-        if (type is null)
+        if (descriptor is null)
         {
             return S["The type '{0}' isn't available.", variable.TypeName ?? string.Empty];
         }
 
-        if (variable.DefaultValue is not null && !type.TryCoerce(variable.DefaultValue, out _))
+        if (variable.DefaultValue is not null && !_typeProvider.Get(descriptor.Name).TryCoerce(variable.DefaultValue, out _))
         {
-            return S["The default value of '{0}' isn't a valid {1}.", variable.Name, type.DisplayName];
+            return S["The default value of '{0}' isn't a valid {1}.", variable.Name, _localizerFactory.Localize(descriptor.DisplayName)];
         }
 
         return null;

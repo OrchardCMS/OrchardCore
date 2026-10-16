@@ -73,13 +73,13 @@ public sealed class Startup : StartupBase
         services.Configure<StoreCollectionOptions>(options => options.Collections.Add(WorkflowExecutionRecord.Collection));
 
         // Variable types; modules can add their own.
-        services.AddScoped<IWorkflowVariableType, StringVariableType>();
-        services.AddScoped<IWorkflowVariableType, NumberVariableType>();
-        services.AddScoped<IWorkflowVariableType, BooleanVariableType>();
-        services.AddScoped<IWorkflowVariableType, DateTimeVariableType>();
-        services.AddScoped<IWorkflowVariableType, ObjectVariableType>();
-        services.AddScoped<IWorkflowVariableType, ArrayVariableType>();
-        services.AddScoped<IWorkflowVariableType, AnyVariableType>();
+        services.AddWorkflowVariableType<StringVariableType>();
+        services.AddWorkflowVariableType<NumberVariableType>();
+        services.AddWorkflowVariableType<BooleanVariableType>();
+        services.AddWorkflowVariableType<DateTimeVariableType>();
+        services.AddWorkflowVariableType<ObjectVariableType>();
+        services.AddWorkflowVariableType<ArrayVariableType>();
+        services.AddWorkflowVariableType<AnyVariableType>();
         services.AddScoped<IWorkflowVariableTypeProvider, WorkflowVariableTypeProvider>();
         services.AddScoped<WorkflowVariableValidator>();
         services.AddScoped<IWorkflowStore, WorkflowStore>();
@@ -105,9 +105,9 @@ public sealed class Startup : StartupBase
         services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
         // Expression syntaxes; modules can add their own.
-        services.AddScoped<IWorkflowExpressionProvider, LiteralExpressionProvider>();
-        services.AddScoped<IWorkflowExpressionProvider, LiquidExpressionProvider>();
-        services.AddScoped<IWorkflowExpressionProvider, JavaScriptExpressionProvider>();
+        services.AddWorkflowExpressionProvider<LiteralExpressionProvider>();
+        services.AddWorkflowExpressionProvider<LiquidExpressionProvider>();
+        services.AddWorkflowExpressionProvider<JavaScriptExpressionProvider>();
         services.AddScoped<IWorkflowExpressionManager, WorkflowExpressionManager>();
         services.AddScoped<WorkflowExpressionInputValidator>();
 

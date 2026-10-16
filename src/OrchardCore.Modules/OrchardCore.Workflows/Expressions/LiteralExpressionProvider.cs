@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.Variables;
@@ -22,11 +23,11 @@ public sealed class LiteralExpressionProvider : IWorkflowExpressionProvider
         S = localizer;
     }
 
-    public string Name => WorkflowExpressionSyntaxes.Literal;
+    public static string Name => WorkflowExpressionSyntaxes.Literal;
 
-    public LocalizedString DisplayName => S["Literal"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<LiteralExpressionProvider>("Literal");
 
-    public string EditorLanguage => "plaintext";
+    public static string EditorLanguage => "plaintext";
 
     public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, WorkflowExpressionEvaluationContext context)
     {

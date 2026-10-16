@@ -10,10 +10,17 @@ public interface IWorkflowExpressionManager
     /// <summary>
     /// Returns every syntax: Literal, Liquid and JavaScript first, then the others by name.
     /// </summary>
-    IReadOnlyList<IWorkflowExpressionProvider> List();
+    IReadOnlyList<WorkflowExpressionProviderDescriptor> List();
 
     /// <summary>
     /// Returns the syntax with the given name (ignoring case), or <see langword="null"/>.
+    /// </summary>
+    /// <param name="syntax">The <see cref="IWorkflowExpressionProvider.Name"/>.</param>
+    WorkflowExpressionProviderDescriptor GetDescriptor(string syntax);
+
+    /// <summary>
+    /// Returns the provider of the syntax with the given name (ignoring case), resolved from the services, or
+    /// <see langword="null"/>.
     /// </summary>
     /// <param name="syntax">The <see cref="IWorkflowExpressionProvider.Name"/>.</param>
     IWorkflowExpressionProvider Get(string syntax);

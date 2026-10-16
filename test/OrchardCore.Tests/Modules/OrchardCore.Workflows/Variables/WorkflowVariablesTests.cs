@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Workflows.Variables;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -105,7 +106,7 @@ public sealed class WorkflowVariablesTests
         Assert.True(type.TryCoerce(contentItem, out var result));
         Assert.Same(contentItem, result);
         Assert.False(type.TryCoerce("item-1", out _));
-        Assert.Equal("none", type.Editor);
+        Assert.Equal("none", ContentItemVariableType.Editor);
     }
 
     [Fact]
@@ -181,6 +182,6 @@ public sealed class WorkflowVariablesTests
     {
         var provider = TestVariableTypes.CreateProvider();
 
-        return new WorkflowVariables(_properties, definitions, provider.Get);
+        return new WorkflowVariables(_properties, definitions, provider);
     }
 }

@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Variables;
@@ -10,18 +10,11 @@ namespace OrchardCore.Workflows.Variables;
 /// </summary>
 public sealed class NumberVariableType : IWorkflowVariableType
 {
-    internal readonly IStringLocalizer S;
+    public static string Name => "number";
 
-    public NumberVariableType(IStringLocalizer<NumberVariableType> localizer)
-    {
-        S = localizer;
-    }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<NumberVariableType>("Number");
 
-    public string Name => "number";
-
-    public LocalizedString DisplayName => S["Number"];
-
-    public string Editor => "number";
+    public static string Editor => "number";
 
     public bool TryCoerce(object value, out object result)
     {

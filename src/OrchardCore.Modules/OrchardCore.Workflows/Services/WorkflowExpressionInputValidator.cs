@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
@@ -14,11 +15,17 @@ public sealed class WorkflowExpressionInputValidator
 {
     private readonly IWorkflowExpressionManager _expressionManager;
 
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public WorkflowExpressionInputValidator(IWorkflowExpressionManager expressionManager, IStringLocalizer<WorkflowExpressionInputValidator> localizer)
+    public WorkflowExpressionInputValidator(
+        IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
+        IStringLocalizer<WorkflowExpressionInputValidator> localizer)
     {
         _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -39,16 +46,16 @@ public sealed class WorkflowExpressionInputValidator
 
         var syntax = string.IsNullOrWhiteSpace(input?.Syntax) ? options.DefaultSyntax : input.Syntax.Trim();
         var text = input?.Expression;
-        var provider = _expressionManager.Get(syntax);
-        var allowed = provider is not null && (options.Syntaxes.Count == 0 || options.Syntaxes.Contains(provider.Name, StringComparer.OrdinalIgnoreCase));
+        var descriptor = _expressionManager.GetDescriptor(syntax);
+        var allowed = descriptor is not null && (options.Syntaxes.Count == 0 || options.Syntaxes.Contains(descriptor.Name, StringComparer.OrdinalIgnoreCase));
 
-        if (provider is null)
+        if (descriptor is null)
         {
             modelState.AddModelError(prefix, $"{name}.{nameof(WorkflowExpressionInput.Syntax)}", S["The {0} syntax isn't available.", syntax]);
         }
         else if (!allowed)
         {
-            modelState.AddModelError(prefix, $"{name}.{nameof(WorkflowExpressionInput.Syntax)}", S["{0} can't be written in {1}.", options.Label, provider.DisplayName]);
+            modelState.AddModelError(prefix, $"{name}.{nameof(WorkflowExpressionInput.Syntax)}", S["{0} can't be written in {1}.", options.Label, _localizerFactory.Localize(descriptor.DisplayName)]);
         }
 
         if (string.IsNullOrWhiteSpace(text))
@@ -60,13 +67,13 @@ public sealed class WorkflowExpressionInputValidator
         }
         else if (allowed)
         {
-            foreach (var error in provider.Validate(text, typeof(T)))
+            foreach (var error in _expressionManager.Get(descriptor.Name).Validate(text, typeof(T)))
             {
                 modelState.AddModelError(prefix, $"{name}.{nameof(WorkflowExpressionInput.Expression)}", error);
             }
         }
 
-        return new WorkflowExpression<T>(text, provider?.Name ?? syntax);
+        return new WorkflowExpression<T>(text, descriptor?.Name ?? syntax);
     }
 }
 

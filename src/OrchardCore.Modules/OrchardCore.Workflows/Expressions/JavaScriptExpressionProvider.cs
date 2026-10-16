@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -11,19 +11,16 @@ public sealed class JavaScriptExpressionProvider : IWorkflowExpressionProvider
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
-    internal readonly IStringLocalizer S;
-
-    public JavaScriptExpressionProvider(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<JavaScriptExpressionProvider> localizer)
+    public JavaScriptExpressionProvider(IWorkflowScriptEvaluator scriptEvaluator)
     {
         _scriptEvaluator = scriptEvaluator;
-        S = localizer;
     }
 
-    public string Name => WorkflowExpressionSyntaxes.JavaScript;
+    public static string Name => WorkflowExpressionSyntaxes.JavaScript;
 
-    public LocalizedString DisplayName => S["JavaScript"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<JavaScriptExpressionProvider>("JavaScript");
 
-    public string EditorLanguage => "javascript";
+    public static string EditorLanguage => "javascript";
 
     public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, WorkflowExpressionEvaluationContext context)
         => _scriptEvaluator.EvaluateAsync(expression, workflowContext, context?.MethodProviders ?? []);

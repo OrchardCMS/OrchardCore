@@ -1,4 +1,6 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Localization;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.Variables;
@@ -8,11 +10,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Workflows.Variables;
 public sealed class WorkflowVariableValidatorTests
 {
     private readonly WorkflowVariableValidator _validator = new(
-        new WorkflowVariableTypeProvider(
-        [
-            new StringVariableType(new PassThroughStringLocalizer<StringVariableType>()),
-            new NumberVariableType(new PassThroughStringLocalizer<NumberVariableType>()),
-        ]),
+        TestVariableTypes.Create(services => services
+            .AddWorkflowVariableType<StringVariableType>()
+            .AddWorkflowVariableType<NumberVariableType>()),
+        new PassThroughStringLocalizerFactory(),
         new PassThroughStringLocalizer<WorkflowVariableValidator>());
 
     [Fact]
@@ -60,11 +61,29 @@ public sealed class WorkflowVariableValidatorTests
     [Fact]
     public void TypeProvider_LaterRegistration_ReplacesTheType()
     {
-        var replacement = Mock.Of<IWorkflowVariableType>(type => type.Name == "string");
-        var provider = new WorkflowVariableTypeProvider([new StringVariableType(new PassThroughStringLocalizer<StringVariableType>()), replacement]);
+        var provider = TestVariableTypes.Create(services => services
+            .AddWorkflowVariableType<StringVariableType>()
+            .AddWorkflowVariableType<ReplacementStringType>());
 
-        Assert.Same(replacement, provider.Get("STRING"));
-        Assert.Single(provider.List());
+        Assert.IsType<ReplacementStringType>(provider.Get("STRING"));
+        Assert.Equal("Short text", Assert.Single(provider.List()).DisplayName.Value);
         Assert.Null(provider.Get("missing"));
+        Assert.Null(provider.GetDescriptor("missing"));
+    }
+
+    private sealed class ReplacementStringType : IWorkflowVariableType
+    {
+        public static string Name => "string";
+
+        public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ReplacementStringType>("Short text");
+
+        public static string Editor => "text";
+
+        public bool TryCoerce(object value, out object result)
+        {
+            result = value;
+
+            return true;
+        }
     }
 }

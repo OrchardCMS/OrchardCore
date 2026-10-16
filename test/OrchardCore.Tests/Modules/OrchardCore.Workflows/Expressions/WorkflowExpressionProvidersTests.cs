@@ -3,7 +3,9 @@ using System.Text.Json.Nodes;
 using OrchardCore.Liquid;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Variables;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Expressions;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -60,7 +62,7 @@ public sealed class WorkflowExpressionProvidersTests
 
         Assert.Equal("rendered", value);
         Assert.Contains("Unexpected end", Assert.Single(provider.Validate("{{ x", typeof(string))));
-        Assert.Equal("liquid", provider.EditorLanguage);
+        Assert.Equal("liquid", LiquidExpressionProvider.EditorLanguage);
     }
 
     [Fact]
@@ -69,7 +71,7 @@ public sealed class WorkflowExpressionProvidersTests
         var methods = new[] { Mock.Of<IGlobalMethodProvider>() };
         var evaluator = new Mock<IWorkflowScriptEvaluator>();
         evaluator.Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<bool>>(), It.IsAny<WorkflowExecutionContext>(), methods)).ReturnsAsync(true);
-        var provider = new JavaScriptExpressionProvider(evaluator.Object, new PassThroughStringLocalizer<JavaScriptExpressionProvider>());
+        var provider = new JavaScriptExpressionProvider(evaluator.Object);
 
         Assert.True(await provider.EvaluateAsync(new WorkflowExpression<bool>("1 < 2"), null, new WorkflowExpressionEvaluationContext { MethodProviders = methods }));
         Assert.Empty(provider.Validate("((", typeof(bool)));
@@ -78,21 +80,24 @@ public sealed class WorkflowExpressionProvidersTests
     [Fact]
     public void Manager_Providers_AreListedBuiltInFirstAndFoundIgnoringCase()
     {
-        var custom = CustomProvider("Upper");
-        var replacement = CustomProvider(WorkflowExpressionSyntaxes.Literal);
-        var manager = new WorkflowExpressionManager([custom, s_literal, CustomProvider(WorkflowExpressionSyntaxes.JavaScript), replacement]);
+        // A provider registered after the built-in Literal one replaces it.
+        var manager = TestExpressions.CreateManager(configure: services => services
+            .AddWorkflowExpressionProvider<UpperProvider>()
+            .AddWorkflowExpressionProvider<ReplacementLiteralProvider>());
 
-        Assert.Equal(["Literal", "JavaScript", "Upper"], manager.List().Select(provider => provider.Name));
-        Assert.Same(custom, manager.Get("upper"));
-        Assert.Same(replacement, manager.Get("literal"));
+        Assert.Equal(["Literal", "Liquid", "JavaScript", "Upper"], manager.List().Select(provider => provider.Name));
+        Assert.Equal("Upper case", manager.GetDescriptor("upper").DisplayName.Value);
+        Assert.IsType<UpperProvider>(manager.Get("upper"));
+        Assert.IsType<ReplacementLiteralProvider>(manager.Get("literal"));
         Assert.Null(manager.Get("Python"));
         Assert.Null(manager.Get(null));
+        Assert.Null(manager.GetDescriptor(null));
     }
 
     [Fact]
     public async Task Manager_EvaluateAsync_UsesTheSyntaxOfTheExpressionOrTheDefault()
     {
-        var manager = new WorkflowExpressionManager([s_literal, CustomProvider("Upper")]);
+        var manager = TestExpressions.CreateManager(configure: services => services.AddWorkflowExpressionProvider<UpperProvider>());
 
         Assert.Equal("ABC", await manager.EvaluateAsync(new WorkflowExpression<string>("abc", "Upper"), null, WorkflowExpressionSyntaxes.Literal));
         Assert.Equal("abc", await manager.EvaluateAsync(new WorkflowExpression<string>("abc"), null, WorkflowExpressionSyntaxes.Literal));
@@ -125,13 +130,35 @@ public sealed class WorkflowExpressionProvidersTests
     private static Task<T> EvaluateLiteralAsync<T>(string text)
         => s_literal.EvaluateAsync(new WorkflowExpression<T>(text, WorkflowExpressionSyntaxes.Literal), null, null);
 
-    private static IWorkflowExpressionProvider CustomProvider(string name)
-    {
-        var provider = new Mock<IWorkflowExpressionProvider>();
-        provider.SetupGet(x => x.Name).Returns(name);
-        provider.Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<string>>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<WorkflowExpressionEvaluationContext>()))
-            .Returns((WorkflowExpression<string> expression, WorkflowExecutionContext _, WorkflowExpressionEvaluationContext _) => Task.FromResult(expression.Expression.ToUpperInvariant()));
+    // Evaluates an expression as its text in upper case.
+    private static Task<T> UpperCaseAsync<T>(WorkflowExpression<T> expression)
+        => Task.FromResult((T)(object)expression.Expression.ToUpperInvariant());
 
-        return provider.Object;
+    private sealed class UpperProvider : IWorkflowExpressionProvider
+    {
+        public static string Name => "Upper";
+
+        public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UpperProvider>("Upper case");
+
+        public static string EditorLanguage => "plaintext";
+
+        public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, WorkflowExpressionEvaluationContext context)
+            => UpperCaseAsync(expression);
+
+        public IReadOnlyList<string> Validate(string expression, Type valueType) => [];
+    }
+
+    private sealed class ReplacementLiteralProvider : IWorkflowExpressionProvider
+    {
+        public static string Name => WorkflowExpressionSyntaxes.Literal;
+
+        public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ReplacementLiteralProvider>("Literal");
+
+        public static string EditorLanguage => "plaintext";
+
+        public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, WorkflowExpressionEvaluationContext context)
+            => UpperCaseAsync(expression);
+
+        public IReadOnlyList<string> Validate(string expression, Type valueType) => [];
     }
 }

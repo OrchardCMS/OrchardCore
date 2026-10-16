@@ -11,25 +11,25 @@ public sealed class WorkflowVariables
 {
     private readonly IDictionary<string, object> _properties;
     private readonly Dictionary<string, WorkflowVariableDefinition> _definitions;
-    private readonly Func<string, IWorkflowVariableType> _typeResolver;
+    private readonly IWorkflowVariableTypeProvider _typeProvider;
 
     /// <summary>
     /// Creates the variables of a workflow.
     /// </summary>
     /// <param name="properties">The workflow properties, which hold the values.</param>
     /// <param name="definitions">The declared variables.</param>
-    /// <param name="typeResolver">Returns the type of a name, or <see langword="null"/> when it isn't registered
-    /// (the values of such variables are then kept as they are).</param>
+    /// <param name="typeProvider">The registered variable types, or <see langword="null"/> for none. The values of a
+    /// variable whose type isn't registered are kept as they are.</param>
     public WorkflowVariables(
         IDictionary<string, object> properties,
         IEnumerable<WorkflowVariableDefinition> definitions,
-        Func<string, IWorkflowVariableType> typeResolver)
+        IWorkflowVariableTypeProvider typeProvider)
     {
         ArgumentNullException.ThrowIfNull(properties);
 
         _properties = properties;
         _definitions = new Dictionary<string, WorkflowVariableDefinition>(StringComparer.OrdinalIgnoreCase);
-        _typeResolver = typeResolver ?? (_ => null);
+        _typeProvider = typeProvider;
 
         foreach (var definition in definitions ?? [])
         {
@@ -93,7 +93,7 @@ public sealed class WorkflowVariables
             return false;
         }
 
-        value = definition is not null && _typeResolver(definition.TypeName) is { } type && type.TryCoerce(stored, out var coerced) ? coerced : stored;
+        value = definition is not null && _typeProvider?.Get(definition.TypeName) is { } type && type.TryCoerce(stored, out var coerced) ? coerced : stored;
 
         return true;
     }
@@ -115,7 +115,7 @@ public sealed class WorkflowVariables
             return;
         }
 
-        var type = _typeResolver(definition.TypeName);
+        var type = _typeProvider?.Get(definition.TypeName);
 
         if (type is null)
         {
@@ -126,7 +126,7 @@ public sealed class WorkflowVariables
 
         if (!type.TryCoerce(value, out var coerced))
         {
-            throw new WorkflowVariableException(definition.Name, $"The variable '{definition.Name}' can't hold this value: it isn't a valid {type.DisplayName}.");
+            throw new WorkflowVariableException(definition.Name, $"The variable '{definition.Name}' can't hold this value: it isn't a valid {_typeProvider.GetDescriptor(definition.TypeName)?.DisplayName?.Value ?? definition.TypeName}.");
         }
 
         _properties[definition.Name] = coerced;
@@ -198,7 +198,7 @@ public sealed class WorkflowVariables
                 continue;
             }
 
-            var type = _typeResolver(definition.TypeName);
+            var type = _typeProvider?.Get(definition.TypeName);
 
             if (type is not null && type.TryCoerce(definition.DefaultValue, out var value))
             {

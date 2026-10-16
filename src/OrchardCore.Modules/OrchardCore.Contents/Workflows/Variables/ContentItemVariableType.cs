@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Variables;
@@ -10,18 +10,11 @@ namespace OrchardCore.Contents.Workflows.Variables;
 /// </summary>
 public sealed class ContentItemVariableType : IWorkflowVariableType
 {
-    internal readonly IStringLocalizer S;
+    public static string Name => "contentItem";
 
-    public ContentItemVariableType(IStringLocalizer<ContentItemVariableType> localizer)
-    {
-        S = localizer;
-    }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ContentItemVariableType>("Content item");
 
-    public string Name => "contentItem";
-
-    public LocalizedString DisplayName => S["Content item"];
-
-    public string Editor => "none";
+    public static string Editor => "none";
 
     public bool TryCoerce(object value, out object result)
     {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Helpers;
@@ -55,6 +56,7 @@ public sealed class WorkflowDesignerController : Controller
     private readonly ISession _session;
     private readonly IClock _clock;
     private readonly IWorkflowVariableTypeProvider _variableTypes;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IWorkflowExecutionJournal _journal;
     private readonly WorkflowVariableValidator _variableValidator;
     private readonly IEnumerable<IWorkflowGlobalValueProvider> _globalValueProviders;
@@ -77,6 +79,7 @@ public sealed class WorkflowDesignerController : Controller
         WorkflowVariableValidator variableValidator,
         IWorkflowExecutionJournal journal,
         IEnumerable<IWorkflowGlobalValueProvider> globalValueProviders,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -94,6 +97,7 @@ public sealed class WorkflowDesignerController : Controller
         _journal = journal;
         _variableValidator = variableValidator;
         _globalValueProviders = globalValueProviders;
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -1103,7 +1107,7 @@ public sealed class WorkflowDesignerController : Controller
             .Select(type => new WorkflowDesignerVariableType
             {
                 Name = type.Name,
-                DisplayName = type.DisplayName?.Value ?? type.Name,
+                DisplayName = type.DisplayName is null ? type.Name : _localizerFactory.Localize(type.DisplayName).Value,
                 Editor = type.Editor,
             })
             .ToList();

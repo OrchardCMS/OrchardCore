@@ -18,13 +18,8 @@ public sealed class WorkflowExpressionInputValidatorTests
         var templateManager = new Mock<ILiquidTemplateManager>();
         IEnumerable<string> errors = ["Unexpected end"];
         templateManager.Setup(x => x.Validate("{{ x", out errors)).Returns(false);
-        var manager = new WorkflowExpressionManager(
-        [
-            new LiteralExpressionProvider(new PassThroughStringLocalizer<LiteralExpressionProvider>()),
-            new LiquidExpressionProvider(Mock.Of<IWorkflowExpressionEvaluator>(), templateManager.Object, new PassThroughStringLocalizer<LiquidExpressionProvider>()),
-            new JavaScriptExpressionProvider(Mock.Of<IWorkflowScriptEvaluator>(), new PassThroughStringLocalizer<JavaScriptExpressionProvider>()),
-        ]);
-        _validator = new WorkflowExpressionInputValidator(manager, new PassThroughStringLocalizer<WorkflowExpressionInputValidator>());
+        var manager = TestExpressions.CreateManager(templateManager: templateManager.Object);
+        _validator = new WorkflowExpressionInputValidator(manager, new PassThroughStringLocalizerFactory(), new PassThroughStringLocalizer<WorkflowExpressionInputValidator>());
     }
 
     [Fact]

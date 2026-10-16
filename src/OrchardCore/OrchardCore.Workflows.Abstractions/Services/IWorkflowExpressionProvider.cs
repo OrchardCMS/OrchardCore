@@ -1,30 +1,32 @@
 using System.Text.Encodings.Web;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Scripting;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services;
 
 /// <summary>
-/// An expression syntax, such as Literal, Liquid or JavaScript. Register implementations as
-/// <see cref="IWorkflowExpressionProvider"/> services; a later registration of a name replaces an earlier one.
+/// An expression syntax, such as Literal, Liquid or JavaScript. Register an implementation with
+/// <c>services.AddWorkflowExpressionProvider&lt;TProvider&gt;()</c>; a later registration of a name replaces an earlier
+/// one. The syntaxes are listed from their static members, without creating their providers.
 /// </summary>
 public interface IWorkflowExpressionProvider
 {
     /// <summary>
-    /// The name of the syntax, stored in <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// Gets the name of the syntax, stored in <see cref="WorkflowExpression{T}.Syntax"/>.
     /// </summary>
-    string Name { get; }
+    static abstract string Name { get; }
 
     /// <summary>
-    /// The name shown in the expression editors.
+    /// Gets the name shown in the expression editors.
     /// </summary>
-    LocalizedString DisplayName { get; }
+    static abstract LocalizationSource DisplayName { get; }
 
     /// <summary>
-    /// The Monaco language of the multi-line editor, such as <c>plaintext</c>, <c>liquid</c> or <c>javascript</c>.
+    /// Gets the Monaco language of the multi-line editor, such as <c>plaintext</c>, <c>liquid</c> or
+    /// <c>javascript</c>.
     /// </summary>
-    string EditorLanguage { get; }
+    static abstract string EditorLanguage { get; }
 
     /// <summary>
     /// Evaluates <paramref name="expression"/> and converts its value to <typeparamref name="T"/>.

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -25,11 +26,11 @@ public sealed class LiquidExpressionProvider : IWorkflowExpressionProvider
         S = localizer;
     }
 
-    public string Name => WorkflowExpressionSyntaxes.Liquid;
+    public static string Name => WorkflowExpressionSyntaxes.Liquid;
 
-    public LocalizedString DisplayName => S["Liquid"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<LiquidExpressionProvider>("Liquid");
 
-    public string EditorLanguage => "liquid";
+    public static string EditorLanguage => "liquid";
 
     public Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, WorkflowExpressionEvaluationContext context)
         => _expressionEvaluator.EvaluateAsync(expression, workflowContext, context?.Encoder);
