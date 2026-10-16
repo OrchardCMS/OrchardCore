@@ -6,11 +6,7 @@ The telemetry is multi-tenant aware: spans, log records and HTTP server metrics 
 
 This video shows how to enable it, the traces, metrics and logs of two instances serving two tenants in the Aspire dashboard, and how to configure it.
 
-<video controls preload="metadata" width="100%" poster="videos/opentelemetry.jpg">
-    <source src="videos/opentelemetry.mp4" type="video/mp4">
-    <track kind="captions" src="videos/opentelemetry.vtt" srclang="en" label="English">
-    Your browser does not support embedded videos. <a href="videos/opentelemetry.mp4">Download the video</a>.
-</video>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/r6aAa3TrLus" title="OpenTelemetry in Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Enabling OpenTelemetry
 
