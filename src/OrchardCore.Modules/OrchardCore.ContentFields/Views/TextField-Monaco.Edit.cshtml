@@ -21,7 +21,7 @@
     <label asp-for="Text" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
         <div id="@Html.IdFor(x => x.Text)_editor" asp-for="Text" style="min-height: 400px;" class="form-control text-field-monaco-container" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Text" hidden class="text-field-monaco-value">@Html.Raw(Model.Text)</textarea>
+        <textarea asp-for="Text" hidden class="text-field-monaco-value"></textarea>
         <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {

@@ -14,5 +14,7 @@ public sealed class MediaIndexViewModel
 
     public bool DebugEnabled { get; set; }
 
+    public bool DisableThumbnails { get; set; }
+
     public string ApiAuthenticationScheme { get; set; } = nameof(MediaApiAuthenticationScheme.Cookie);
 }

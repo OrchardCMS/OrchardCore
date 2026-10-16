@@ -11,15 +11,6 @@ public sealed class Permissions : IPermissionProvider
         DeploymentPermissions.ExportRemoteInstances,
     ];
 
-    [Obsolete("This will be removed in a future release. Instead use 'DeploymentPermissions.ManageRemoteInstances'.")]
-    public static readonly Permission ManageRemoteInstances = DeploymentPermissions.ManageRemoteInstances;
-
-    [Obsolete("This will be removed in a future release. Instead use 'DeploymentPermissions.ManageRemoteClients'.")]
-    public static readonly Permission ManageRemoteClients = DeploymentPermissions.ManageRemoteClients;
-
-    [Obsolete("This will be removed in a future release. Instead use 'DeploymentPermissions.ExportRemoteInstances'.")]
-    public static readonly Permission Export = DeploymentPermissions.ExportRemoteInstances;
-
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 

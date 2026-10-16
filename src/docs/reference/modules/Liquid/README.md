@@ -4,6 +4,16 @@ This module provides a way to create templates securely from the admin site.
 For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>.
 Liquid syntax is powered by Fluid. Check <https://github.com/sebastienros/fluid> for extra examples and custom filters.
 
+## Liquid content
+
+The module provides both `LiquidPart` and `LiquidField`. Their authored `Liquid` source is stored exactly as submitted and rendered when the corresponding shape, body aspect, or GraphQL field is requested. Because Liquid can produce HTML, JSON, XML, plain text, or another format, these components do not expose a `Sanitize HTML` setting.
+
+Editing Liquid parts, fields, Templates, Admin Templates, and template previews requires the security-critical `ManageLiquidTemplates` permission. The permission is granted to the Administrator and Editor roles by default. Template navigation and content-definition shortcuts are hidden when this permission is not granted.
+
+The permission also applies to the containing content item whenever it includes a `LiquidPart` or `LiquidField`, including content items serialized recursively inside Flow, Bag, or other custom content. Orchard Core enforces this requirement for standard editors, the Content API, and remote publishing endpoints, and rejects the entire mutation instead of ignoring the protected Liquid component.
+
+Use `LiquidPart` or `LiquidField` whenever authored content needs Liquid execution. `HtmlBodyPart`, `HtmlField`, `MarkdownBodyPart`, and `MarkdownField` treat Liquid syntax as ordinary source text.
+
 ## General concepts
 
 ### HTML escaping
@@ -797,7 +807,7 @@ Input
 
 ### `layout`
 
-Sets the layout of a view.
+Sets the layout of a view, or of the page from a shape template.
 
 Input
 
@@ -1231,6 +1241,14 @@ Output
 ```
 
 Optionally you can pass a class for model binding.
+
+## Evaluating Liquid in code
+
+The `LiquidViewTemplateExtensions.RenderAsync` overloads render parsed templates in a Liquid view scope. They reuse the current `ViewContext` or create one from the current HTTP request.
+
+For custom evaluation that needs the same model and localization scope, use `LiquidViewTemplateExtensions.InvokeInScopeAsync` with a `LiquidTemplateContext`, an explicit `ViewContext`, a model, and an asynchronous callback. The helper initializes the context, exposes `Model` and `ViewLocalizer` in a child scope, and releases that scope even when the callback throws. Both callbacks returning a result and callbacks returning only a `Task` are supported.
+
+The caller is responsible for resolving the view context. Passing `null` initializes the Liquid context without entering a child scope or setting `Model` and `ViewLocalizer`; this supports non-view evaluation outside an HTTP request.
 
 ## CREDITS
 

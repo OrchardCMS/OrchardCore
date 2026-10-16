@@ -9,8 +9,7 @@ public class LocalClock : ILocalClock
     private readonly IClock _clock;
     private readonly ICalendarManager _calendarManager;
 
-    private ITimeZone _timeZone;
-
+    private Task<ITimeZone> _timeZoneTask;
 
     public LocalClock(
         IEnumerable<ITimeZoneSelector> timeZoneSelectors,
@@ -25,9 +24,9 @@ public class LocalClock : ILocalClock
     public async Task<DateTimeOffset> GetLocalNowAsync()
         => _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
 
-    // Caching the result per request.
-    public async Task<ITimeZone> GetLocalTimeZoneAsync()
-        => _timeZone ??= await LoadLocalTimeZoneAsync();
+    // Caching the result per request, as a completed task to not allocate one on each call.
+    public Task<ITimeZone> GetLocalTimeZoneAsync()
+        => _timeZoneTask ?? LoadAndCacheLocalTimeZoneAsync();
 
     public async Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
     {
@@ -48,6 +47,15 @@ public class LocalClock : ILocalClock
         var localDate = LocalDateTime.FromDateTime(dateTime);
 
         return dateTimeZone.AtStrictly(localDate).ToDateTimeUtc();
+    }
+
+    private async Task<ITimeZone> LoadAndCacheLocalTimeZoneAsync()
+    {
+        var timeZone = await LoadLocalTimeZoneAsync();
+
+        _timeZoneTask = Task.FromResult(timeZone);
+
+        return timeZone;
     }
 
     private async Task<ITimeZone> LoadLocalTimeZoneAsync()
