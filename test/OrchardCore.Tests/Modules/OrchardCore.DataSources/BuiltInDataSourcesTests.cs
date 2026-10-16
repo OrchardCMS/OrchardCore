@@ -199,22 +199,42 @@ public sealed class BuiltInDataSourcesTests
         // Arrange
         using var context = await CreateContextAsync();
 
-        await context.UsingTenantScopeAsync(async scope =>
+        // The saved query reads the Lucene index, which the blog posts reach in deferred tasks and background jobs.
+        await context.WaitForDeferredTasksAsync(TestContext.Current.CancellationToken);
+        await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
+
+        IReadOnlyList<DataSetDescriptor> dataSets = [];
+        DataSetSchema schema = null;
+        IReadOnlyList<DataField> fields = [];
+        IReadOnlyList<object[]> rows = [];
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var attempts = 0;
+
+        // Act
+        // A busy machine can index the posts later still: read again until the index has them.
+        while (rows.Count == 0 && stopwatch.Elapsed < TimeSpan.FromSeconds(30))
         {
-            var source = GetSource(scope, "Queries");
-            var dataSourceContext = new DataSourceContext { User = await GetUserAsync(scope, "admin") };
+            if (attempts++ > 0)
+            {
+                await Task.Delay(250, TestContext.Current.CancellationToken);
+            }
 
-            // Act
-            var dataSets = await source.GetDataSetsAsync(dataSourceContext);
-            var schema = await source.GetSchemaAsync("RecentBlogPosts", dataSourceContext);
-            var (fields, rows) = await DataTestHelpers.ReadAllAsync(source.ReadAsync(new DataSourceQuery { DataSet = "RecentBlogPosts", Context = dataSourceContext }));
+            await context.UsingTenantScopeAsync(async scope =>
+            {
+                var source = GetSource(scope, "Queries");
+                var dataSourceContext = new DataSourceContext { User = await GetUserAsync(scope, "admin") };
 
-            // Assert
-            Assert.Contains(dataSets, dataSet => dataSet.Name == "RecentBlogPosts");
-            Assert.Contains(schema.Fields, field => field.Name == "ContentItemId");
-            Assert.NotEmpty(rows);
-            Assert.All(rows, row => Assert.Equal("BlogPost", row[fields.IndexOf("ContentType")]));
-        });
+                dataSets = await source.GetDataSetsAsync(dataSourceContext);
+                schema = await source.GetSchemaAsync("RecentBlogPosts", dataSourceContext);
+                (fields, rows) = await DataTestHelpers.ReadAllAsync(source.ReadAsync(new DataSourceQuery { DataSet = "RecentBlogPosts", Context = dataSourceContext }));
+            });
+        }
+
+        // Assert
+        Assert.Contains(dataSets, dataSet => dataSet.Name == "RecentBlogPosts");
+        Assert.Contains(schema.Fields, field => field.Name == "ContentItemId");
+        Assert.NotEmpty(rows);
+        Assert.All(rows, row => Assert.Equal("BlogPost", row[fields.IndexOf("ContentType")]));
     }
 
     [Fact]
