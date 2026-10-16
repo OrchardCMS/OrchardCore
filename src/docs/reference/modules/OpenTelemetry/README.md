@@ -32,7 +32,7 @@ Other exporters or instrumentations can be added with the optional callback, whi
 builder.Services
     .AddOrchardCms()
     .AddOpenTelemetry(openTelemetry => openTelemetry
-        .WithTracing(tracing => tracing.AddSqlClientInstrumentation()));
+        .WithTracing(tracing => tracing.AddConsoleExporter()));
 ```
 
 ### Why it isn't a tenant feature
@@ -64,7 +64,8 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
       "Tracing": {
         "Enabled": true,
         "SamplingRatio": 0.25,
-        "Sources": [ "MyCompany.MyModule" ]
+        "Sources": [ "MyCompany.MyModule" ],
+        "IncludeDatabaseQueryText": true
       },
       "Metrics": {
         "Enabled": true,
@@ -92,6 +93,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
 | `Tracing:IncludeClientLibraries` | Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to `true`. See [Client libraries](#client-libraries). |
+| `Tracing:IncludeDatabaseQueryText` | Whether the spans of the database operations include their SQL text, in `db.query.text`. Defaults to `true`. The commands run by YesSql are parameterized, so their text holds no values. |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
 | `Metrics:Meters` | The names of additional `Meter` to collect metrics from. |
@@ -120,9 +122,11 @@ The spans of Orchard Core come from the `OrchardCore` activity source:
 | `Execute recipe {recipe}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name` |
 | `Execute recipe step {step}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name`, `orchardcore.recipe.step.name` |
 
+Each database command run through YesSql is traced too, whatever the database provider (SQLite, SQL Server, PostgreSQL, MySQL), with a `Client` span named after its operation and table, e.g. `SELECT ContentItemIndex`, and the `db.system.name`, `db.namespace`, `db.operation.name`, `db.collection.name`, `db.query.text` and `orchardcore.tenant.name` attributes. Its duration is the one of the execution, until the first results are available.
+
 A failed operation has the `Error` status, the `error.type` attribute and an `exception` event. A background task run is the root of its own trace.
 
-The spans of ASP.NET Core (one for each HTTP request, also tagged with the `orchardcore.tenant.name` of the tenant that served it) and of HttpClient (one for each outgoing HTTP request) are collected too, as well as the ones of the client libraries listed below.
+The spans of ASP.NET Core (one for each HTTP request, also tagged with the `orchardcore.tenant.name` of the tenant that served it, the number of database operations it ran, `orchardcore.db.operations`, and their total duration in seconds, `orchardcore.db.duration`) and of HttpClient (one for each outgoing HTTP request) are collected too, as well as the ones of the client libraries listed below.
 
 Every span started in the scope of a tenant, including the spans of other libraries, is tagged with `orchardcore.tenant.name`.
 
@@ -139,6 +143,9 @@ The metrics of Orchard Core come from the `OrchardCore` meter:
 | `orchardcore.tenant.activation.duration` | Histogram | `s` | `orchardcore.tenant.name`, `error.type` | Duration of activating a tenant. |
 | `orchardcore.tenant.releases` | Counter | `{release}` | `orchardcore.tenant.name`, `orchardcore.tenant.release.reason` | Number of times a tenant was released: `reload`, `release` or `remove`. |
 | `orchardcore.background_task.duration` | Histogram | `s` | `orchardcore.tenant.name`, `orchardcore.background_task.name`, `error.type` | Duration of running a background task. |
+| `db.client.operation.duration` | Histogram | `s` | `db.system.name`, `db.operation.name`, `orchardcore.tenant.name`, `error.type` | Duration of a database command, as defined by the OpenTelemetry semantic conventions. |
+| `orchardcore.request.db.operations` | Histogram | `{operation}` | `orchardcore.tenant.name`, `http.route` | Number of database operations run by an HTTP request. A route running many of them reveals an N+1 query pattern. |
+| `orchardcore.request.db.duration` | Histogram | `s` | `orchardcore.tenant.name`, `http.route` | Total duration of the database operations run by an HTTP request. |
 
 `error.type` is only set when the operation failed.
 
@@ -161,9 +168,9 @@ OpenTelemetry only collects the activity sources and meters it's told about: the
 | Elasticsearch client | Elasticsearch | `Elastic.Transport` spans. |
 | MailKit | SMTP email | `MailKit.Net.SmtpClient` spans. |
 | Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` spans. Their activity sources are experimental, so Orchard Core enables them with the `Azure.Experimental.EnableActivitySource` switch, unless the application already sets it or the `AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE` variable. |
-| Npgsql, MySqlConnector | PostgreSQL and MySQL databases | Spans of the database commands, and connection pool metrics. |
+| Npgsql, MySqlConnector | PostgreSQL and MySQL databases | Connection pool metrics. Their own spans aren't collected, as they would duplicate the database spans of Orchard Core. |
 
-`Tracing:IncludeClientLibraries` turns the Elasticsearch, MailKit and Azure SDK spans off. Other libraries are added with the `Tracing:Sources` and `Metrics:Meters` settings, and the libraries that don't emit telemetry themselves need an instrumentation package. For instance, the SQL Server client is traced by the `OpenTelemetry.Instrumentation.SqlClient` package, added with the callback of `AddOpenTelemetry()`. StackExchange.Redis, used by the Redis features, emits no telemetry itself either, and its `OpenTelemetry.Instrumentation.StackExchangeRedis` package only traces the connections registered with it, which the ones opened by the Redis features aren't.
+`Tracing:IncludeClientLibraries` turns the Elasticsearch, MailKit and Azure SDK spans off. Other libraries are added with the `Tracing:Sources` and `Metrics:Meters` settings, and the libraries that don't emit telemetry themselves need an instrumentation package. For instance, StackExchange.Redis, used by the Redis features, emits no telemetry itself, and its `OpenTelemetry.Instrumentation.StackExchangeRedis` package only traces the connections registered with it, which the ones opened by the Redis features aren't.
 
 ### Logs
 

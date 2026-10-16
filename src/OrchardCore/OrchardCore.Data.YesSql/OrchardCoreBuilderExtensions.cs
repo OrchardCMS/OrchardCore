@@ -5,12 +5,14 @@ using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
+using OrchardCore.Data.YesSql.Telemetry;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Json;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 using YesSql;
 using YesSql.Indexes;
 using YesSql.Provider.MySql;
@@ -109,6 +111,15 @@ public static class OrchardCoreBuilderExtensions
                     storeConfiguration.SetTablePrefix(tablePrefix);
                 }
 
+                // Traces and measures the database commands of the tenant, while anything listens.
+                var telemetryOptions = sp.GetRequiredService<IOptions<OrchardCoreTelemetryOptions>>().Value;
+                storeConfiguration.ConnectionFactory = new TelemetryConnectionFactory(
+                    storeConfiguration.ConnectionFactory,
+                    new DatabaseTelemetryContext(
+                        shellSettings.Name,
+                        GetDbSystemName(shellSettings["DatabaseProvider"]),
+                        telemetryOptions.IncludeDatabaseQueryText));
+
                 var store = StoreFactory.Create(storeConfiguration);
 
                 var indexes = sp.GetServices<IIndexProvider>();
@@ -179,6 +190,19 @@ public static class OrchardCoreBuilderExtensions
         });
 
         return builder;
+    }
+
+    // The values of 'db.system.name' defined by the OpenTelemetry semantic conventions.
+    private static string GetDbSystemName(string databaseProvider)
+    {
+        return databaseProvider switch
+        {
+            DatabaseProviderValue.SqlConnection => "microsoft.sql_server",
+            DatabaseProviderValue.Sqlite => "sqlite",
+            DatabaseProviderValue.MySql => "mysql",
+            DatabaseProviderValue.Postgres => "postgresql",
+            _ => databaseProvider?.ToLowerInvariant(),
+        };
     }
 
     private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
