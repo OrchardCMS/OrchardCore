@@ -58,10 +58,7 @@ public sealed class MediaProfilesController : Controller
     [Admin("MediaProfiles", "MediaProfiles.Index")]
     public async Task<IActionResult> Index(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<MediaProfileEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
@@ -107,22 +104,12 @@ public sealed class MediaProfilesController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<AdminListRow<MediaProfileEntry>>(model.MediaProfiles.Count);
-
-        foreach (var entry in model.MediaProfiles)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<MediaProfileEntry>(MediaProfilesAdminList.Name)
+        model.List = new AdminListContext<MediaProfileEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = model.MediaProfiles,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no media profiles for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }
@@ -379,7 +366,6 @@ public sealed class MediaProfilesController : Controller
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Min"], Value = ((int)ResizeMode.Min).ToString() });
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Stretch"], Value = ((int)ResizeMode.Stretch).ToString() });
-
 
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Default"], Value = ((int)Format.Undefined).ToString() });
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Gif"], Value = ((int)Format.Gif).ToString() });

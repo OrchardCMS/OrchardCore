@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Sitemaps.ViewModels;
@@ -9,9 +10,9 @@ public class ListSitemapIndexViewModel
     public IShape Pager { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the rows, the toolbar and the pager in the configured layout.
+    /// The data context for rendering the rows, the toolbar and the pager in the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class SitemapIndexListEntry

@@ -285,8 +285,6 @@ public sealed class ManagementStartup : StartupBase
         services.AddDisplayDriver<OpenIdApplicationEntry, OpenIdApplicationDisplayDriver>();
         services.AddDisplayDriver<OpenIdScopeEntry, OpenIdScopeDisplayDriver>();
 
-        services.AddAdminListColumnDriver<OpenIdApplicationEntry, OpenIdApplicationsAdminListColumnDriver>();
-        services.AddAdminListColumnDriver<OpenIdScopeEntry, OpenIdScopesAdminListColumnDriver>();
     }
 }
 

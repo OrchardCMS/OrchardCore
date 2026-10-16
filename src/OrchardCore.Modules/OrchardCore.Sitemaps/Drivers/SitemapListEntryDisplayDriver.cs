@@ -14,15 +14,20 @@ public sealed class SitemapListEntryDisplayDriver : DisplayDriver<SitemapListEnt
     {
         return CombineAsync(
             View("SitemapListEntry_Checkbox_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:1"),
             View("SitemapListEntry_Fields_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1"),
             View("SitemapListEntry_DefaultTags_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Status:5"),
             View("SitemapListEntry_Buttons_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5"),
             View("SitemapListEntry_ActionsMenuItems_SummaryAdmin", entry)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:5")
         );
     }
 }

@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model AdminIndexViewModel
 
 <style asp-name="bootstrap-select" at="Head"></style>
@@ -29,7 +31,21 @@
     </div>
 
     @* The tenants, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="Tenants" context="Model.List"
+                bulk-actions="Model.Options.TenantsBulkAction"
+                empty-message="@T["<strong>Nothing here!</strong> There are no tenants for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column name="Category" position="30" title="@T["Category"]" width="auto" />
+            <admin-list-column name="Database" position="40" title="@T["Database"]" width="auto" />
+            <admin-list-column name="Recipe" position="50" title="@T["Recipe"]" width="auto" />
+            <admin-list-column name="Tags" position="60" title="@T["Tags"]" width="auto" />
+            <admin-list-column name="State" position="70" title="@T["State"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
 
 <script asp-src="~/OrchardCore.Tenants/Scripts/tenants-admin-lists/tenants-admin-list.min.js" debug-src="~/OrchardCore.Tenants/Scripts/tenants-admin-lists/tenants-admin-list.js" at="Foot" type="module"></script>

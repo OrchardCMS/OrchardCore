@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model ListContentPartsViewModel
 
 <zone Name="Title">
@@ -22,7 +24,15 @@
     </div>
 
     @* The rows are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="ContentParts" context="Model.List"
+                show-select-all="false"
+                empty-message="@T["<strong>Nothing here!</strong> There are no content parts for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column name="DisplayName" position="10" title="@T["Display name"]" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 
     <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
         @T["Your search returned no results."]

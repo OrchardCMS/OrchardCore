@@ -11,14 +11,13 @@ namespace OrchardCore.Admin.Models;
 public enum AdminListCellRendering
 {
     /// <summary>
-    /// The zones of the row the column names, then the cells the column drivers built for it, rendered as they
-    /// are, like <c>AdminListCell.cshtml</c> does.
+    /// The row's column zones, rendered directly as <c>AdminListCell.cshtml</c> does.
     /// </summary>
     Zones,
 
     /// <summary>
-    /// The actions of the row, rendered by the <c>AdminListActions</c> shape, then the cells the column drivers built
-    /// for the column, like <c>AdminListCell-Actions.cshtml</c> does for the column named <see cref="AdminListColumns.ActionsName"/>.
+    /// The row's actions, rendered by <c>AdminListActions</c>, like <c>AdminListCell-Actions.cshtml</c>
+    /// does for the column named <see cref="AdminListColumns.ActionsName"/>.
     /// </summary>
     Actions,
 

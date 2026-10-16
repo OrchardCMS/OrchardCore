@@ -230,7 +230,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
         services.AddChunkFileUploadServices();
 
-        services.AddAdminListColumnDriver<MediaProfileEntry, MediaProfilesAdminListColumnDriver>();
     }
 
     public override void Configure(

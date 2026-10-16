@@ -62,8 +62,7 @@ public sealed class AdminController : Controller
         IndexingEntityOptions options,
         PagerParameters pagerParameters,
         [FromServices] IOptions<PagerOptions> pagerOptions,
-        [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IAdminListFactory adminListFactory)
+        [FromServices] IShapeFactory shapeFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
@@ -107,21 +106,12 @@ public sealed class AdminController : Controller
 
         var viewModel = new AdminIndexViewModel
         {
-            Models = [],
+            Models = result.Models.ToList(),
             Options = options,
             Pager = await shapeFactory.PagerAsync(pager, result.Count, routeData),
             Sources = sourceGroups.SelectMany(x => x.Sources).ToArray(),
             SourceGroups = sourceGroups,
         };
-
-        foreach (var record in result.Models)
-        {
-            viewModel.Models.Add(new ModelEntry<IndexProfile>
-            {
-                Model = record,
-                Shape = await _displayManager.BuildDisplayAsync(record, _updateModelAccessor.ModelUpdater, "SummaryAdmin"),
-            });
-        }
 
         viewModel.Options.BulkActions =
         [
@@ -131,29 +121,12 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(IndexingEntityAction.Remove)),
         ];
 
-        // The rows carry the attributes used by the client-side search of the list-management script.
-        var rows = new List<AdminListRow<IndexProfile>>(viewModel.Models.Count);
-
-        foreach (var entry in viewModel.Models)
-        {
-            if (entry.Shape is Shape rowShape)
-            {
-                rowShape.Classes.Add("item");
-                rowShape.Attributes["data-filter-value"] = entry.Model.Name?.ToLowerInvariant() ?? string.Empty;
-            }
-
-            rows.Add(new(entry.Model, entry.Shape));
-        }
-
         // The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
-        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext<IndexProfile>(IndexingAdminList.Name)
+        viewModel.List = new AdminListContext<IndexProfile>
         {
-            Rows = rows,
-            BulkActions = viewModel.Options.BulkActions,
+            Source = viewModel.Models,
             Pager = viewModel.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(viewModel);
     }

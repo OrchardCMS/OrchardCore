@@ -93,10 +93,7 @@ public sealed class WorkflowTypeController : Controller
     [Admin("Workflows/Types", "WorkflowTypes")]
     public async Task<IActionResult> Index(
         WorkflowTypeIndexOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<WorkflowTypeEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -169,22 +166,12 @@ public sealed class WorkflowTypeController : Controller
             new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
         ];
 
-        var rows = new List<AdminListRow<WorkflowTypeEntry>>(model.WorkflowTypes.Count);
-
-        foreach (var entry in model.WorkflowTypes)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the types with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<WorkflowTypeEntry>(WorkflowTypesAdminList.Name)
+        model.List = new AdminListContext<WorkflowTypeEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.WorkflowTypesBulkAction,
+            Source = model.WorkflowTypes,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow types for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

@@ -6,7 +6,7 @@ namespace OrchardCore.Layers.Drivers;
 
 /// <summary>
 /// Builds the row of the layers admin list. Each shape is placed in the zone that the matching
-/// <see cref="Admin.Models.AdminListColumn"/> of <see cref="LayersAdminList"/> renders.
+/// <see cref="Admin.Models.AdminListColumn"/> of <c>Layers</c> renders.
 /// </summary>
 public sealed class LayerDisplayDriver : DisplayDriver<Layer>
 {
@@ -14,13 +14,17 @@ public sealed class LayerDisplayDriver : DisplayDriver<Layer>
     {
         return Combine(
             View("Layer_Checkbox_SummaryAdmin", layer)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:1"),
             View("Layer_Fields_SummaryAdmin", layer)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1"),
             View("Layer_Description_SummaryAdmin", layer)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Description:5"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Description:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:5"),
             View("Layer_Buttons_SummaryAdmin", layer)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5")
         );
     }
 }

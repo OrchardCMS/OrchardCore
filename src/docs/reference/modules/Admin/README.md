@@ -1,4 +1,4 @@
-﻿# Admin (`OrchardCore.Admin`)
+# Admin (`OrchardCore.Admin`)
 
 The Admin module provides an admin dashboard for your site.
 
@@ -224,7 +224,7 @@ You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [cust
 
 ## Admin List Layouts
 
-Admin lists such as the content items list are rendered by the `AdminList` shape, which supports several layouts. Two layouts are built in:
+Admin lists such as the content items list are rendered by the `AdminList` shape, which supports exactly two layouts, defined by the `AdminListLayout` enum:
 
 | Layout  | Description                                                                                         |
 | ------- | --------------------------------------------------------------------------------------------------- |
@@ -233,7 +233,7 @@ Admin lists such as the content items list are rendered by the `AdminList` shape
 
 The `Grid` layout uses a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and a row takes the shape of a `List` row — the selection and the title share the first line with the actions at its end, and every other cell takes a line under them — so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
 
-The layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in `AdminSettings.ListLayout`. When that setting is empty the value comes from `AdminListOptions.DefaultLayout`, which a site can set per tenant in `appsettings.json`:
+The layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in the nullable `AdminSettings.ListLayout` enum property. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultLayout`, which a site can set per tenant in `appsettings.json`:
 
 ```json
   "OrchardCore": {
@@ -246,11 +246,11 @@ The layout is selected in **Configuration → Settings → Admin** under **List 
   }
 ```
 
-`AdminListOptions` is the single place the shipped defaults are decided, so changing them for a site never means editing a template or a driver. The values are `List` and `Grid` for `DefaultLayout`, and `Buttons` or `Menu` for `DefaultActionsLayout`. A blank or missing value falls back to `List` and `Buttons`.
+`AdminListOptions` is the single place the shipped defaults are decided, so changing them for a site never means editing a template or a driver. The values are `List` and `Grid` for `DefaultLayout`, and `Buttons` or `Menu` for `DefaultActionsLayout`. Missing values default to `List` and `Buttons`. An invalid configured list layout is an error; templates cannot register additional layouts.
 
 ### Letting a user choose
 
-**Let users choose the layout of a list** (`AdminSettings.AllowUserListLayoutSelection`, or `AllowUserSelection` in the configuration) adds a selector to every list, one button per available layout, beside the item count:
+**Let users choose the layout of a list** (`AdminSettings.AllowUserListLayoutSelection`, or `AllowUserSelection` in the configuration) adds a List/Grid selector to every list beside the item count:
 
 Clicking one reloads the page with `?layout=Grid`, and the choice is kept in a cookie **per list**, so a user can read the content items as a grid and the users as a list while everyone else sees the site default. The layout resolves from the most specific source to the least:
 
@@ -261,115 +261,207 @@ Clicking one reloads the page with `?layout=Grid`, and the choice is kept in a c
 | The cookie, for this list | the site lets a user choose and no layout was asked for |
 | The site setting, then `AdminListOptions.DefaultLayout` | otherwise |
 
-A layout the site cannot render is ignored, so a stale cookie or a hand-written query string cannot reach for a template that is not there. Turning the setting off makes every list use the site default again, cookies and query strings included.
+A query or cookie value other than `List` or `Grid` is ignored, so a stale cookie or a hand-written query string cannot select another template. Names are case-insensitive. Turning the setting off makes every list use the site default again, cookies and query strings included.
 
-The pager and the page size selector keep the query string of the page they are on, so paging or changing the page size holds on to the layout. A custom layout joins the selector by declaring itself (`AdminListLayout-Cards.Option.cshtml`) and can ship the button offering it, `AdminListLayoutSelectorItem-Cards.cshtml`, which is how the built-in layouts carry their icon.
+The pager and the page size selector keep the query string of the page they are on, so paging or changing the page size holds on to the layout.
 
-Every list offers the selector itself. A page that renders several lists, e.g. the features, whose categories are one list each, or that would rather place the selector in a header of its own, turns it off on its lists with `ShowLayoutSelector = false` and builds one from `IAdminListLayoutResolver`:
+Every list offers the selector itself. A page that renders several lists, e.g. the features, whose categories are one list each, or that would rather place the selector in a header of its own, turns it off on its lists with `ShowLayoutSelector = false` and creates an `AdminListLayoutSelector` shape:
 
 ```csharp
-var layout = await layoutResolver.GetLayoutAsync("Features", HttpContext.RequestAborted);
-var layoutOptions = await layoutResolver.GetLayoutOptionsAsync(HttpContext.RequestAborted);
-
-if (layoutOptions.Count > 0)
+model.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
 {
-    model.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
-    {
-        ListName = "Features",
-        Current = layout,
-        Layouts = layoutOptions,
-    }));
-}
+    ListName = "Features",
+}));
 
 foreach (var group in groups)
 {
-    group.List = await adminListFactory.CreateAsync(new AdminListContext<FeatureEntry>("Features")
+    group.List = new AdminListContext<FeatureEntry>
     {
-        Layout = layout,
-        Rows = group.Rows,
+        Source = group.Features,
         ShowLayoutSelector = false,
-    }, HttpContext.RequestAborted);
+    };
 }
 ```
 
-A page that forces a layout turns the selector off as well, since it would offer layouts the page does not render.
+The selector resolves its current layout and URLs when displayed, and emits no markup when user selection is disabled. Grouped lists use the same list name so they share a preference.
+
+A page that forces a layout sets `Layout = AdminListLayout.List` or `AdminListLayout.Grid` and turns the selector off as well, since it would offer a layout the page does not render.
 
 The options follow Orchard Core's signal-backed options pattern. `AdminListOptionsConfiguration` layers the site settings on top of the configuration section, the module registers `AddSignalOptionsChangeTokenSource<AdminListOptions>()`, and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()` when the choice changes. Consumers inject `IOptionsMonitor<AdminListOptions>` and read `CurrentValue`, so saving the settings takes effect without releasing the shell.
 
 ### How it works
 
-The rows of a list are shapes built with the `SummaryAdmin` display type, e.g. `Content_SummaryAdmin`. Display drivers and `placement.json` place shapes in the zones of these rows (`Checkbox`, `Title`, `Type`, `Header`, `Tags`, `Meta`, `Actions`, `ActionsMenu`, `Content`, ...). The layout only decides how a row is presented:
+The list resolves its layout after the view has declared columns and column providers have extended them.
+It then renders the supplied model items once through their display manager, using `SummaryAdmin` for `List`
+or `SummaryAdminGrid` for layouts with columns. Only the selected representation of each row is built.
 
-- In the `List` layout the row shape is rendered as a whole, so its template (e.g. `Content.SummaryAdmin.cshtml` or `Content-BlogPost.SummaryAdmin.cshtml`) decides the look.
-- In the `Grid` layout each cell renders the zones of the row its column names, then the shapes the column drivers built for that cell, see [Declaring the columns of a list](#declaring-the-columns-of-a-list). The row template is not used.
-
-A layout renders the whole listing, not only the rows. The shipped ones render, in order: the action bar holding `Search` and `Actions`, then the toolbar strip holding `Toolbar` or `Header` and the layout selector, then the rows (or the empty message), then a footer holding `Pager` and `PageSize`. A custom layout is free to order them differently, to leave one out, or to put the search bar beside the pager.
-
-Two rules keep the shipped layouts looking the same from one page to the next:
-
-- Only the bar carrying the search follows the page as it scrolls (`position-sticky`). A page that renders its own search bar already has one, and a second sticky bar would cover it.
-- The pager is centred on the footer row and the page size selector sits at its end, whether the pager renders the selector itself or the layout places it apart.
-
-A page describes its list with an `AdminListContext<TModel>` and creates the `AdminList` shape with `IAdminListFactory`. Only the name is required: the factory builds the columns with the column drivers of the items of the list (see [Declaring the columns of a list](#declaring-the-columns-of-a-list)) and resolves the layout, so a page never passes either. Each row pairs an item with the row shape the page built for it: the `List` layout renders the shape, and the layouts with columns render its zones and the cells the column drivers build from the item.
+Shared row shapes have a location for each display type:
 
 ```csharp
-var rows = new List<AdminListRow<ContentItem>>();
+View("IndexProfile_Fields_SummaryAdmin", indexProfile)
+    .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")
+    .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1");
+```
 
-foreach (var contentItem in pageOfContentItems)
-{
-    rows.Add(new(contentItem, await contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin")));
-}
+The shape type and template are reused. In `List`, the row template renders `Content`; in `Grid`, the
+`Name` column renders the row's `Name` zone directly. No column metadata or cell projection is involved.
+Display types do not inherit placement rules: a `SummaryAdmin` location or placement rule does not
+automatically apply to `SummaryAdminGrid`.
 
-var listShape = await adminListFactory.CreateAsync(new AdminListContext<ContentItem>(ContentsAdminList.Name)
+A shape declared only for `SummaryAdminGrid` is built only for column layouts:
+
+```csharp
+View("IndexProfile_Statistics", indexProfile)
+    .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Statistics:1");
+```
+
+Controllers query the items and supply the other shapes. They do not build the list or row shapes.
+An `AdminListContext<TModel>` carries a typed source collection and region shapes. Its generic argument
+selects the display model type, so no `ItemType` assignment is needed:
+
+```csharp
+model.List = new AdminListContext<ContentItem>
 {
-    Rows = rows,
+    Source = pageOfContentItems,
     Header = header,
-    Search = await shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
-    {
-        Name = "Options.Search",
-        Value = options.Search,
-    })),
     Pager = pagerShape,
-}, HttpContext.RequestAborted);
+};
 ```
 
-A list without an options editor passes no `Header`, and the factory gives it the `AdminListToolbar` shape: the item count, which it takes from the rows and the pager, the select-all checkbox, and a dropdown of the bulk actions of the page. The page only passes what the factory cannot know:
+The generic context derives from `AdminListContext`, so the same `context` tag attribute and
+`IAdminListFactory` methods accept either version. Its `Source` is an `IEnumerable<TModel>`; use a base
+class or interface as `TModel` to render derived items through that type's registered display manager,
+including when the source is empty. The non-generic context still supports explicit `ItemType` or
+collection-based inference.
 
-```csharp
-model.List = await adminListFactory.CreateAsync(new AdminListContext<Query>(QueriesAdminList.Name)
-{
-    Rows = model.Queries.Select(entry => new AdminListRow<Query>(entry.Query, entry.Shape)).ToList(),
-    Pager = model.Pager,
-    BulkActions = model.Options.ContentsBulkAction,
-}, HttpContext.RequestAborted);
+Initialization runs during the `AdminList` displaying event, before layout-specific alternates are selected,
+so both `IAdminListFactory` and standard shape creation work. Column providers run when needed for a column
+layout or layout selection, including when the list has no rows. A fallback to `List`, or a forced `List`
+layout for ordering, is resolved before the row builder runs.
+
+The rendering view can declare columns and presentation with tag helpers. Add
+`@addTagHelper *, OrchardCore.Admin.Abstractions` to the view or its `_ViewImports.cshtml`:
+
+```cshtml
+<admin-list name="Contents" context="Model.List" empty-message="@T["No results found."]">
+    <admin-list-list item-css-class="list-group-item" rows-class="example-list-rows" />
+    <admin-list-grid rows-class="example-grid-rows">
+        <admin-list-column type="Select" />
+        <admin-list-column name="Title" title="@T["Title"]" position="20" />
+        <admin-list-column name="Status" title="@T["Status"]" position="30" width="auto" />
+        <admin-list-column type="Actions" title="@T["Actions"]" />
+    </admin-list-grid>
+</admin-list>
 ```
 
-`ShowSelectAll = false` keeps the count alone for a list whose rows cannot be selected, `ToolbarActions` renders a shape at the end of the toolbar, e.g. the filters of the list, and `ShowToolbar = false` leaves a list without a toolbar. A page that needs a toolbar of its own passes it as `Toolbar`, and the factory builds none.
+The rendering view supplies the list's `name`, which identifies it for column providers, layout preferences
+and alternates. `AdminListContext` does not carry this identity, so the same context can be rendered as
+different named lists. Grouped pages such as Features and Recipes share a name between their groups;
+their controllers and views reuse a constant when the controller also needs it for layout selection.
 
-A list no driver declares columns for is rendered with the `List` layout, the only one that does not need them, and a warning is logged. The shape carries these properties, which is what a layout template reads:
+`admin-list` requires `name` with either `context`, or directly with `items`:
 
-| Property       | Description                                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------------- |
-| `Name`         | The name of the list, e.g. `Contents`.                                                         |
-| `Layout`       | The layout name: `AdminListContext.Layout` when the page sets it, otherwise resolved with `IAdminListLayoutResolver.GetLayoutAsync()`. |
-| `Columns`      | The `AdminListColumn` collection the column drivers of the list declared, built with `IAdminListColumnsBuilder`. Empty when the list is rendered with the `List` layout and offers no other layout: that layout renders the rows whole, so the columns are not built. |
-| `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or its grid row, e.g. `data-filter-value` for the client-side search of the page's script. |
-| `Headers`      | Set when a layout other than `List` renders a list with columns: an `IZoneHolding` with one zone per column, named after it, holding the shapes the column drivers built for its header. A column whose zone is empty shows its `Title`. |
-| `Cells`        | Set when a layout other than `List` renders a list with columns: one `IZoneHolding` per row, in the order of `Rows`, with one zone per column, named after it, holding the shapes the column drivers built for that cell. |
-| `Header`       | The options editor shape whose `Summary` and `Actions` zones are rendered above the items.     |
-| `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. Unless the page sets one, or turns it off with `ShowToolbar = false`, the factory builds the `AdminListToolbar` shape, which renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex`, `ShowSelectAll`, `BulkActions` and `Actions` properties. |
-| `Search`       | Optional. The search bar of the list. The `AdminListSearch` shape renders the standard one from its `Name`, `Value`, `Placeholder`, `Id`, `SubmitName` and `Autofocus` properties, and renders its `Filters` zone before the input, e.g. a filter dropdown. |
-| `Actions`      | Optional. The buttons of the page, e.g. "Add", rendered beside the search.                     |
-| `LayoutSelector` | The selector offering the other layouts of the list, built for the list when the site lets a user choose. |
-| `ShowLayoutSelector` | Whether the list offers its other layouts. `false` when the page turned it off, or when the list has no columns to switch to. |
-| `CellRenderings` | Set when a layout other than `List` renders the list: how the cells of each column are rendered, one `AdminListCellRendering` per column, see [Overriding templates](#overriding-templates). |
-| `Pager`        | The pager shape.                                                                               |
-| `PageSize`     | Optional. The page size selector, so the layout places it instead of the pager. Build it with `PageSizeSelector.BuildOptions()` and set `ShowPageSizeSelector = false` on the pager so it is not rendered twice. |
-| `RowsAttributes` | Optional. Attributes rendered on the element wrapping the rows, whichever layout renders it, e.g. the id a sortable script needs. |
-| `ItemCssClass` | Optional. The CSS classes of each item in the `List` layout.                                   |
-| `EmptyMessage` | Optional. The message displayed when there are no items.                                       |
+```cshtml
+<admin-list name="Example" items="Model.Entries" pager="Model.Pager" show-select-all="false">
+    <admin-list-grid>
+        <admin-list-column name="Name" title="@T["Name"]" position="20" />
+        <admin-list-column type="Actions" title="@T["Actions"]" />
+    </admin-list-grid>
+</admin-list>
+```
 
-Every property but `Columns`, `Headers`, `Cells`, `LayoutSelector` and `CellRenderings` comes from `AdminListContext`, the `Toolbar` included when the factory builds it from the `BulkActions`, `ShowSelectAll` and `ToolbarActions` of the context. Everything a listing is made of belongs to the shape, so a layout decides where each part goes: a layout can put the search bar beside the pager, drop the page size selector, or move the actions of the page under the rows. A list that passes none of the optional properties simply renders without them.
+The item type is inferred from the collection's unambiguous `IEnumerable<T>` interface, including empty
+collections, without reading the first item. Use `item-type="typeof(MyBaseModel)"` to select a registered base
+or interface display manager, or when supplying a non-generic collection. Every item must be non-null and
+assignable to that type.
+
+By default, `IAdminListItemDisplayManager<TModel>` delegates to `IDisplayManager<TModel>` with the current
+update model. Register a closed `IAdminListItemDisplayManager<TModel>` to use another display pipeline.
+The Contents module supplies an adapter for `ContentItem` that calls `IContentItemDisplayManager`.
+ListPart uses its own typed entries and adapter to suppress selection and add drag-ordering handles.
+
+Optional row attributes belong to the row display driver, not the controller or a grid-specific options
+contract. For example, `FeatureEntryDisplayDriver` sets `data-filter-value` and the feature-state attributes
+on `context.Shape` for both admin display types. Other model types do not need to provide these attributes.
+Row CSS classes and attributes are preserved in both layouts.
+
+For existing callers, `shape` accepts an uninitialized `AdminList` shape instead of `context`.
+With `shape`, omitting `name` preserves its identity; supplying `name` overrides it before display.
+All paths use the standard display pipeline. The tag accepts `show-toolbar`, `show-select-all`, `show-layout-selector`, `layout`, `bulk-actions`,
+`empty-message`, and `item-css-class` (the latter applies to List rows). Omitted attributes preserve the shape's settings.
+
+`admin-list-list` and `admin-list-grid` configure their respective layouts; **neither selects or forces a layout**.
+Both accept `rows-class` and `item-css-class`. For List, `item-css-class` overrides the common setting or default
+row classes; for Grid, it adds classes alongside the required grid row class. `rows-class` merges with the
+existing `RowsAttributes` class. Each layout may be declared once. These declarations become the shape's
+`ListOptions` and `GridOptions`, both of type `AdminListLayoutOptions`, so standard shape rendering can use the same settings.
+
+Declare columns directly inside `admin-list`, or inside `admin-list-grid`. Grid columns are collected even when
+the selected layout is List, so providers and the layout selector see the same available columns. Column attributes
+are `name`, `title` (localized plain text), `position`, `width`, `css-class`, `alignment` (`Start`, `Center`, `End`),
+`no-wrap`, and `zones` (comma- or space-separated zone names). Optional `type="Select"` and `type="Actions"` reuse
+the built-in presets; other attributes override their defaults. Regular columns require a name, and duplicate
+column names are rejected ignoring case. The declaration tags emit no HTML of their own.
+
+Alternatively, build and render the standard shape in Razor:
+
+```cshtml
+@using OrchardCore.Admin.Models
+@{
+    var columns = new AdminListColumn[]
+    {
+        new() { Name = "Title", Title = new("Title", T["Title"].Value), Position = "20" },
+    };
+    var list = await New.AdminList(Name: "Example", Source: Model.Entries, Columns: columns,
+        Pager: Model.Pager, ItemCssClass: "list-group-item", ShowSelectAll: false);
+}
+@await DisplayAsync(list)
+```
+
+The standard `<shape type="AdminList" ...>` tag helper uses the same shape pipeline.
+Source models use the shape property `Source`, not `Items`, which is reserved for shape children.
+`IAdminListFactory.CreateAsync(name, context)` is also available for callers that need an uninitialized shape.
+A custom `BuildRowsAsync` callback remains supported instead of `Source`; a caller that already knows the
+layout can supply `Rows` built with the matching display type. Do not supply both `Source` and `BuildRowsAsync`.
+Built-in listing models expose their raw queried records eagerly, e.g. `ListContentsViewModel.ContentItems`
+contains `ContentItem` records, not deferred summary shapes. Their `List` property is an `AdminListContext`.
+
+| Property | Description |
+| --- | --- |
+| `Name` | Required shape identity, supplied by the tag's `name` or the factory's name argument, not by `AdminListContext`. Used by preferences, column providers and alternates. |
+| `Source` | Raw model collection. The tag calls this `items`; rows are built only after resolving the display type. |
+| `ItemType` | Optional registered display model type, otherwise inferred from the source's `IEnumerable<T>`. |
+| `Rows` | Already-built row shapes for the selected display type, never `Items` (the shape's reserved child collection). Row classes and attributes are preserved in either layout. |
+| `BuildRowsAsync` | Optional `Func<string, Task<IList<IShape>>>`, invoked once with the resolved display type; its result replaces `Rows`. |
+| `DisplayType` | Resolved row display type: `SummaryAdmin` for `List`, `SummaryAdminGrid` for column layouts. |
+| `Columns` | View-defined `AdminListColumn` instances, extended by providers and sorted by position. |
+| `Data` | Optional contextual data for column providers, e.g. the filtered content types. |
+| `Layout` | Optional forced `AdminListLayout.List` or `AdminListLayout.Grid`; otherwise resolved from the user's preference or site settings. |
+| `Headers` | Optional zone-holding shape with a zone per column for custom headers; otherwise the column title is used. |
+| `Header` | Options editor shape whose `Summary` and `Actions` zones render above the rows. |
+| `Toolbar` | Optional toolbar shape instead of `Header`. Otherwise a generic toolbar is built from the row count, pager, `BulkActions`, `ShowSelectAll` and `ToolbarActions`. |
+| `ShowToolbar` | Set to `false` to omit the generic toolbar. |
+| `ShowSelectAll` | Set to `false` to show the item count without selection. |
+| `BulkActions` | Bulk action options for the generic toolbar. |
+| `ToolbarActions` | Optional shape rendered at the end of the generic toolbar. |
+| `Search` | Optional search-bar shape, e.g. `AdminListSearch` with `Name`, `Value`, `Placeholder`, `Id`, `SubmitName`, `Autofocus` and a `Filters` zone. |
+| `Actions` | Optional page buttons rendered beside the search. |
+| `LayoutSelector` | Built when user layout selection is enabled and columns are available. |
+| `ShowLayoutSelector` | Set to `false` when the page places its own selector or forces a layout. |
+| `CellRenderings` | Built for column layouts to select direct cell rendering or an overridden `AdminListCell` template. |
+| `Pager` | Pager shape. |
+| `PageSize` | Optional separately rendered page-size selector; set `ShowPageSizeSelector = false` on the pager to avoid rendering twice. |
+| `RowsAttributes` | Attributes on the rows container, e.g. a sortable-list ID. |
+| `ListOptions`, `GridOptions` | Optional `AdminListLayoutOptions` for each layout: `RowsCssClass` and `ItemCssClass`. Settings apply only to that layout; declaring them does not force it. |
+| `ItemCssClass` | Row classes for the `List` layout. |
+| `EmptyMessage` | Localized message when the list has no rows. |
+
+A list without columns falls back to `List` and cannot offer a layout selector. A warning is logged when
+column rendering was requested but no columns were declared. A list rendered only as `List` does not run column providers.
+
+The shipped layouts render the search and page actions, toolbar, rows, pager and page-size selector.
+Only an action bar carrying the search is sticky. The footer centres the pager and places the page-size selector at its end.
+A template override can reorder or omit these regions.
 
 ### Row templates
 
@@ -404,8 +496,10 @@ Items of the `ActionsMenu` zone are **bare** `<a>` or `<button>` elements with `
 
 A list whose order is data, e.g. the URL rewriting rules, marks the element wrapping its rows with `RowsAttributes` so its script can find it, whichever layout renders it:
 
-```csharp
-RowsAttributes = new Dictionary<string, string> { ["id"] = "rewrite-rules-sortable-list" },
+```cshtml
+<admin-list name="Rules" items="Model.Rules" rows-id="rewrite-rules-sortable-list">
+    ...
+</admin-list>
 ```
 
 Two things a sortable list has to know:
@@ -425,9 +519,9 @@ The following alternates are available, from the least to the most specific:
 | `AdminListToolbar` | `AdminListToolbar__{Layout}`, `AdminListToolbar__{Name}`, `AdminListToolbar__{Name}__{Layout}` | `AdminListToolbar-Grid.cshtml`, `AdminListToolbar-Contents.cshtml`, `AdminListToolbar-Contents-Grid.cshtml` |
 | `AdminListSearch`  | `AdminListSearch__{Layout}`, `AdminListSearch__{Name}`, `AdminListSearch__{Name}__{Layout}` | `AdminListSearch-Grid.cshtml`, `AdminListSearch-Contents.cshtml`, `AdminListSearch-Contents-Grid.cshtml` |
 
-`{Name}` is the name of the list, e.g. `Contents`, which each module publishes as a constant (`ContentsAdminList.Name`). The names are unique, so every alternate above targets a single list: a theme can restyle the search bar of the content items without touching any other list.
+`{Name}` is the stable name of the list, e.g. `Contents`. The names are unique, so every alternate above targets a single list: a theme can restyle the search bar of the content items without touching any other list.
 
-`{Layout}` is the layout rendering the list (`List`, `Grid`, or a custom one), except for `AdminListActions`, where it is the layout of the row actions (`Buttons` or `Menu`) since that is what the shape renders.
+`{Layout}` is the layout rendering the list (`List` or `Grid`), except for `AdminListActions`, where it is the layout of the row actions (`Buttons` or `Menu`) since that is what the shape renders.
 
 The name and the layout reach these shapes on their own. The `AdminList` shape stamps them on everything it renders — the toolbar, the search bar, the pager, the page size selector and each row — so a row template that renders `AdminListActions` without naming a list still gets the alternates of the list it belongs to. A part that already names a list keeps its own, which is what a list rendered inside another one needs.
 
@@ -435,16 +529,16 @@ An alternate that names a list but no layout applies to **every** layout of that
 
 `AdminListCell` has no layout variant: cells only exist in the layouts with columns, and a column renders the same zones and cells in each of them.
 
-The layouts with columns only create an `AdminListCell` shape for the cells a template overrides: `AdminListCell`, `AdminListCell-{Column}` or `AdminListCell-{Name}-{Column}`, from a theme or another module. The shape carries the `Row`, the `Column`, and the `Cells` of the row, whose zone named after the column holds what the column drivers built. The other cells render the zones of the row, or its actions for the `Actions` column, then the shapes the column drivers built, as the templates of the Admin module do, without a shape for every row and column. The `AdminList` shape tells a layout which is which with its `CellRenderings` property, one `AdminListCellRendering` per column, so a custom layout can do the same.
+The `Grid` layout only creates an `AdminListCell` shape for the cells a template overrides: `AdminListCell`, `AdminListCell-{Column}` or `AdminListCell-{Name}-{Column}`, from a theme or another module. The shape carries the `Row` and `Column`. The other cells render the row's column zone, or its `Actions` and `ActionsMenu` zones for the `Actions` column, without a shape for every row and column. The `AdminList` shape's `CellRenderings` property carries one `AdminListCellRendering` per column for template overrides to use.
 
 ### Column properties
 
 | Property    | Description                                                                                                                                                                  |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Name`      | The technical name, unique in the list ignoring case, used for the `AdminListCell__{Name}` alternates and the `admin-list-column-{name}` CSS class. It is the key of the column in `context.Columns`, so it is set before the column is added. |
-| `Title`     | The localized header text. `null` for a column without a header, e.g. the selection checkbox. A driver can render the header with a shape instead; the title still labels the cells when a narrow list hides the headers, so it stays plain text. |
-| `Position`  | The position in the placement syntax (`10`, `25`, `35.5`, or `end` to stay last). Columns are sorted by position once every driver ran, so several features can insert columns between the ones of the list owner without knowing each other. The owner gives its columns increasing positions (`10`, `20`, ...); a column without a position goes after all positioned columns. |
-| `Zones`     | The zones of the row shape rendered in the cell, in order, before the shapes the column drivers built for it. A column filled by the drivers alone names none.               |
+| `Title`     | The localized header text. `null` for a column without a header, e.g. the selection checkbox. A view can supply a header shape instead; the title still labels the cells when a narrow list hides the headers, so it stays plain text. |
+| `Position`  | The position in the placement syntax (`10`, `25`, `35.5`, or `end` to stay last). Columns are sorted after all providers run, so features can insert columns independently. A column without a position goes after positioned columns. |
+| `Zones`     | Optional row zones to render in order instead of the zone named after the column. |
 | `Width`     | Any CSS width (`20%`, `12rem`), or `AdminListColumn.AutoWidth` (`auto`) to make the column as narrow as its content. Columns without a width share the remaining space.        |
 | `Alignment` | `Start` (default), `Center` or `End`. Applied to the header and the cells.                                                                                                   |
 | `NoWrap`    | Prevents the cell content from wrapping, e.g. dates and badges.                                                                                                              |
@@ -456,13 +550,12 @@ context.Columns.Add(new AdminListColumn
     Name = "Modified",
     Position = "50",
     Title = S["Last modified"],
-    Zones = ["Meta"],
     Width = "18%",
     NoWrap = true,
 });
 ```
 
-Most lists share their first and last columns, so `AdminListColumns` declares them: `AdminListColumns.Select()` renders the `Checkbox` zone at position `10` for a list with bulk actions, and `AdminListColumns.Actions(S["Actions"])` renders the `Actions` and `ActionsMenu` zones at position `end`, aligned to the end.
+Most lists share their first and last columns, so `AdminListColumns` declares them: `AdminListColumns.Select()` renders the `Select` zone at position `10` for a list with bulk actions, and `AdminListColumns.Actions(S["Actions"])` renders the `Actions` and `ActionsMenu` zones at position `end`, aligned to the end.
 
 ### Row actions
 
@@ -473,239 +566,162 @@ The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListAct
 | `Buttons` | The default. The shapes of the `Actions` zone as buttons, followed by an "Actions" dropdown for `ActionsMenu`. |
 | `Menu`    | A single dropdown opened by an ellipsis button, holding the `Actions` shapes (restyled as menu items) and the `ActionsMenu` shapes. |
 
-Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Grid` layout renders it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. An actions layout is discovered like a list layout: add `AdminListActions-Icons.cshtml` to render it and `AdminListActions-Icons.Option.cshtml` to make it selectable.
-
-### Adding a layout
-
-A layout is discovered from the shape table, like a content field editor. To add a `Cards` layout, add two templates to a module or a theme:
-
-- `AdminList-Cards.cshtml` renders the list. The `Rows` are the row shapes, so the template can display a row as a whole with `@await DisplayAsync(item)`, or read its zones through `IZoneHolding`, like `AdminList-Grid.cshtml` does.
-- `AdminListLayout-Cards.Option.cshtml` renders an `<option>` element so the layout can be selected in the admin settings:
-
-```html
-@{
-    string current = Model.ListLayout;
-}
-<option value="Cards" selected="@(current == "Cards")">@T["Cards"]</option>
-```
+Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Grid` layout renders it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. Actions layouts are discovered from option shapes: add `AdminListActions-Icons.cshtml` to render one and `AdminListActions-Icons.Option.cshtml` to make it selectable.
 
 ### Declaring the columns of a list
 
-Every column of a list comes from an `IAdminListColumnDriver<TModel>`, including the ones of the module owning the list: a page names its list and never passes columns. A column driver is to a list what a display driver is to a shape. It is registered for the items the list renders, e.g. `User`, and it does two things:
+Declare the columns in the view that renders the list. Their names are unique, ignoring case.
+`Position` sorts columns independently of provider order; `AdminListColumns.Select()` and
+`AdminListColumns.Actions()` supply the shared selection and actions columns.
 
-- Once per list, before any row is rendered, it adds, removes or changes the columns of the list. So every row has the same columns, a page without rows still has its headers, and the columns do not change from one page of the list to the next. It can also return shapes for the headers of its columns.
-- Once per row, for the layouts with columns only, it can build the shapes of the cells of the row from the item of the row.
+```cshtml
+@using OrchardCore.Admin
+@using OrchardCore.Admin.Models
+@inject IAdminListFactory AdminListFactory
+@{
+    var columns = new AdminListColumnCollection
+    {
+        AdminListColumns.Select(),
+        new() { Name = "Title", Position = "20", Title = new("Title", T["Title"].Value) },
+        new() { Name = "Status", Position = "30", Title = new("Status", T["Status"].Value), Width = AdminListColumn.AutoWidth },
+        AdminListColumns.Actions(new("Actions", T["Actions"].Value)),
+    };
 
-A driver derives from `AdminListColumnDriver<TModel>` and builds its shapes like a display driver, with `Initialize`, `Factory`, `View` or `Combine`. The location of a shape is the name of the column it goes in. The owner declares its columns the same way any other module adds to them, so its driver is where to look up the names of the columns to change:
+    var list = await AdminListFactory.CreateAsync("Contents", Model.List);
+    list.Properties["Columns"] = columns;
+    list.Properties["ItemCssClass"] = "list-group-item";
+    list.Properties["EmptyMessage"] = T["No results found."];
+}
+@await DisplayAsync(list)
+```
+
+#### Placing cell shapes
+
+Use the row's existing display driver, not a column-specific driver:
 
 ```csharp
-public sealed class QueriesAdminListColumnDriver : AdminListColumnDriver<Query>
+public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
 {
-    private readonly IStringLocalizer S;
-
-    public QueriesAdminListColumnDriver(IStringLocalizer<QueriesAdminListColumnDriver> stringLocalizer)
-    {
-        S = stringLocalizer;
-    }
-
-    public override IDisplayResult Columns(AdminListColumnsContext context)
-    {
-        context.Columns.Add(AdminListColumns.Select());
-
-        context.Columns.Add(new AdminListColumn
-        {
-            // The name takes the space left by the other columns.
-            Name = "Name",
-            Position = "20",
-            Title = S["Name"],
-            Zones = ["Content"],
-        });
-
-        context.Columns.Add(new AdminListColumn
-        {
-            Name = "Source",
-            Position = "30",
-            Title = S["Source"],
-            Zones = ["Tags"],
-            Width = AdminListColumn.AutoWidth,
-        });
-
-        context.Columns.Add(AdminListColumns.Actions(S["Actions"]));
-
-        // The titles of the columns are their headers.
-        return null;
-    }
+    return Initialize<CultureViewModel>("ContentCulture_SummaryAdmin",
+        model => model.Culture = contentItem.As<LocalizationPart>()?.Culture)
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10")
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Culture:10");
 }
 ```
 
-```csharp
-services.AddAdminListColumnDriver<Query, QueriesAdminListColumnDriver>();
+The normal placement pipeline applies `placement.json` and `IShapePlacementProvider` rules before the shape is built.
+A theme can move one shape to another column, hide it, change its template, or add wrappers and alternates:
+
+```json
+{
+  "ContentCulture_SummaryAdmin": [
+    { "displayType": "SummaryAdminGrid", "place": "Status:10" }
+  ]
+}
 ```
 
-The driver is registered in the `Startup` of the feature rendering the list, for the items of the list, so it is only created when a list of these items is rendered, however many drivers the site has. Several lists can render the same items, e.g. the content items of the **Content** page and the ones of a list part: a driver declaring the columns of one of them only overrides `CanHandleList`, and a driver adding a column to every list of these items does not. The column titles are localized with the driver's own `IStringLocalizer<T>`, so they are extracted and translated like any other string of the module. `context.Columns` is an `AdminListColumnCollection` keyed by the column name ignoring case: adding a column without a name, or a second column with a name the list already has, throws. The error is logged with the driver it came from, and the columns added before it are kept.
+Use `place: "-"` to hide a shape. Moving a shape to another column means moving it to that row zone.
+A zone not rendered by any declared column is omitted; removing a column therefore hides its cells.
+The optional `Zones` property renders several zones in a cell instead of the zone named after the column.
+Placement for `SummaryAdminGrid` is independent of `SummaryAdmin`, so list rendering remains unchanged.
 
-#### Reusing the zones of the rows
+The `Actions` column renders the row's `Actions` and `ActionsMenu` zones through `AdminListActions`,
+preserving the configured Buttons/Menu mode. An action moved to another zone is no longer in those zones
+and is not duplicated. Overridden `AdminListCell` templates receive the row as `Row` and its definition as `Column`.
 
-A column names the zones of the row shape it renders, in `Zones`. The shapes the display drivers place in the `SummaryAdmin` row, e.g. the title, the status badges or the dates, are built once for the row, and each layout presents them its own way: the `List` layout renders the row whole, and the `Grid` layout renders the zones of each column in its cell. All the columns the built-in lists declare render the zones of their rows this way.
+#### Extending columns
 
-#### Building the cells of a column
-
-A column whose content the rows do not have gets it from its driver: `Cells` builds the shapes of the cells of a row, from its item, and places them in the column they belong to. The cell renders them after the zones the column names, if any. The row shape is still there as `context.Row`, e.g. to read a value one of its shapes computed.
+Implement `IAdminListColumnsProvider` to add, remove or change the view's columns. Check `context.ListName`
+to target a list. Providers see the view-defined columns before sorting, including when there are no rows:
 
 ```csharp
-public sealed class PublishLaterColumnDriver : AdminListColumnDriver<ContentItem>
+public sealed class CultureColumnsProvider : IAdminListColumnsProvider
 {
     private readonly IStringLocalizer S;
 
-    public PublishLaterColumnDriver(IStringLocalizer<PublishLaterColumnDriver> stringLocalizer)
+    public CultureColumnsProvider(IStringLocalizer<CultureColumnsProvider> localizer)
     {
-        S = stringLocalizer;
+        S = localizer;
     }
 
-    public override IDisplayResult Columns(AdminListColumnsContext context)
+    public Task PopulateAsync(AdminListColumnsContext context)
     {
-        context.Columns.Add(new AdminListColumn
+        if (context.ListName == "Contents")
         {
-            Name = "Scheduled",
-            Position = "45",
-            Title = S["Scheduled"],
-            Width = AdminListColumn.AutoWidth,
-        });
-
-        // A header of its own, e.g. with a tooltip explaining the dates.
-        return Dynamic("PublishLater_AdminListHeader")
-            .Location("Scheduled");
-    }
-
-    public override IDisplayResult Cells(ContentItem contentItem, AdminListCellsContext context)
-    {
-        var part = contentItem.As<PublishLaterPart>();
-
-        if (part?.ScheduledPublishUtc is null)
-        {
-            return null;
+            context.Columns.Add(new AdminListColumn
+            {
+                Name = "Culture",
+                Position = "25",
+                Title = S["Culture"],
+                Width = AdminListColumn.AutoWidth,
+            });
         }
 
-        return Initialize<PublishLaterPartViewModel>("PublishLater_AdminListCell", model => model.ScheduledPublishUtc = part.ScheduledPublishUtc)
-            .Location("Scheduled");
+        return Task.CompletedTask;
     }
 }
 ```
 
-The cells are only built for the layouts with columns, so a driver building them costs nothing to a list rendered with the `List` layout. A shape placed in a zone no column is named after is not rendered, e.g. when another driver removed the column; `context.Find(name)` tells whether the list has it. The headers and the cells are built with the `AdminListHeader` and `AdminListCell` display types, `AdminListConstants.HeaderDisplayType` and `AdminListConstants.CellDisplayType`.
+Register it with `services.AddAdminListColumnsProvider<CultureColumnsProvider>()`.
+The helper prevents duplicate registrations. Providers run in feature dependency order; depend on the owning
+feature when changing its columns. Duplicate column names throw; provider errors are logged and other providers continue.
+`context.Find(name)` and `context.Remove(name)` access existing columns.
 
-#### Adding a column
+#### Contextual data
 
-Another module adds, removes or changes the columns of a list with a driver of its own, registered for the items of the list. Its `Position` decides where a column goes, whatever the order the drivers run in. `context.Find(name)` and `context.Remove(name)` help altering existing columns: to replace a column of the owner, change the one `Find` returns, or remove it before adding yours under the same name.
-
-The drivers of a list run in the order their features depend on each other, so the owner of a list declares its columns before the modules depending on it run. A module that changes or removes a column of another module's list depends on the feature owning it, e.g. `OrchardCore.Contents` for the content items list. Adding a column does not depend on that order.
-
-```csharp
-public sealed class CultureColumnDriver : AdminListColumnDriver<ContentItem>
-{
-    private readonly IStringLocalizer S;
-
-    public CultureColumnDriver(IStringLocalizer<CultureColumnDriver> stringLocalizer)
-    {
-        S = stringLocalizer;
-    }
-
-    public override bool CanHandleList(string listName)
-        => listName == ContentsAdminList.Name;
-
-    public override IDisplayResult Columns(AdminListColumnsContext context)
-    {
-        // Between "Title" (20) and "Type" (30), regardless of the other drivers.
-        context.Columns.Add(new AdminListColumn
-        {
-            Name = "Culture",
-            Position = "25",
-            Title = S["Culture"],
-            Zones = ["Culture"],
-            Width = "10%",
-        });
-
-        return null;
-    }
-}
-```
+The page passes data through `AdminListContext.Data`, or the standard shape's `Data` property:
 
 ```csharp
-services.AddAdminListColumnDriver<ContentItem, CultureColumnDriver>();
-```
-
-#### What the page knows
-
-A driver often needs more than the name of the list to decide on a column: the content items list, for instance, is the same list whether it shows every item or only the blog posts. The page passes what it knows in `AdminListContext.Data`, and it reaches the driver as `context.Data`:
-
-```csharp
-var list = new AdminListContext<ContentItem>(ContentsAdminList.Name)
-{
-    Rows = rows,
-};
-
+var list = new AdminListContext { Rows = rows };
 list.Data[ContentsAdminList.ContentTypesKey] = new[] { "BlogPost" };
-
-var listShape = await adminListFactory.CreateAsync(list, HttpContext.RequestAborted);
+model.List = list;
 ```
 
-```csharp
-public override IDisplayResult Columns(AdminListColumnsContext context)
-{
-    // Only add the column while the list is filtered by a type that has the field this column renders.
-    if (context.TryGetData<string[]>(ContentsAdminList.ContentTypesKey, out var contentTypes) &&
-        contentTypes.Contains("BlogPost"))
-    {
-        context.Columns.Add(new AdminListColumn { Name = "Category", Position = "25", Title = S["Category"], Zones = ["Category"] });
-    }
-
-    return null;
-}
-```
-
-`context.Data` is never null, and `TryGetData<T>` / `GetData<T>` fall back instead of throwing when a key is missing or holds another type, so a driver written for one list stays safe on every other one. The keys are up to the list: the content items list fills `ContentsAdminList.ContentTypesKey` and `ContentsAdminList.StereotypesKey` with the types and stereotypes from its route, and leaves them out when the listing is not filtered. The cells see the same data as `context.Data`.
+Providers read `context.Data`, `TryGetData<T>()` or `GetData<T>()`. Missing keys or mismatched types return
+the supplied default. The content items list supplies `ContentsAdminList.ContentTypesKey` and
+`ContentsAdminList.StereotypesKey` when its route is filtered by types or stereotypes.
 
 ### The lists to target
 
-A list is named by the constant its module publishes, e.g. `QueriesAdminList.Name`. The same name tells the column drivers which list they render, and selects the layout a user picked for the list, the `AdminList__{Name}` alternate and the `AdminListCell__{Name}__{Column}` alternates. The pages that render one list per group, e.g. the features by category and the recipes by feature, give every group the same name.
+A list has a stable name declared in its rendering view, e.g. `name="Queries"`. Use the string value directly when it is used only once in its module; keep a constant for reused names or shared contracts in an abstractions project. The same name tells column providers which list they extend, and selects the layout a user picked for the list, the `AdminList__{Name}` alternate and the `AdminListCell__{Name}__{Column}` alternates. The pages that render one list per group, e.g. the features by category and the recipes by feature, give every group the same name.
 
-The columns of a list are declared by the driver named after its class with a `ColumnDriver` suffix, e.g. `QueriesAdminListColumnDriver`, registered for the items of the list.
+The columns of a list are declared in its rendering view.
 
-| Name | Declared by | Items | Module |
-| --- | --- | --- | --- |
-| `AdminMenus` | `AdminMenusAdminList` | `AdminMenuEntry` | `OrchardCore.AdminMenu` |
-| `AuditTrail` | `AuditTrailAdminList` | `AuditTrailEvent` | `OrchardCore.AuditTrail` |
-| `BackgroundTasks` | `BackgroundTasksAdminList` | `BackgroundTaskEntry` | `OrchardCore.BackgroundTasks` |
-| `ContentParts` | `ContentPartsAdminList` | `ContentPartEntry` | `OrchardCore.ContentTypes` |
-| `ContentTypes` | `ContentTypesAdminList` | `ContentTypeEntry` | `OrchardCore.ContentTypes` |
-| `Contents` | `ContentsAdminList` | `ContentItem` | `OrchardCore.Contents` |
-| `DeploymentPlans` | `DeploymentPlansAdminList` | `DeploymentPlanEntry` | `OrchardCore.Deployment` |
-| `FeatureProfiles` | `FeatureProfilesAdminList` | `FeatureProfileEntry` | `OrchardCore.Tenants` |
-| `Features` | `FeaturesAdminList` | `FeatureEntry` | `OrchardCore.Features` |
-| `Indexes` | `IndexingAdminList` | `IndexProfile` | `OrchardCore.Indexing` |
-| `Layers` | `LayersAdminList` | `Layer` | `OrchardCore.Layers` |
-| `ListPartContents` | `ListPartContentsAdminList` | `ContentItem` | `OrchardCore.Lists` |
-| `MediaProfiles` | `MediaProfilesAdminList` | `MediaProfileEntry` | `OrchardCore.Media` |
-| `Notifications` | `NotificationsAdminList` | `Notification` | `OrchardCore.Notifications` |
-| `OpenIdApplications` | `OpenIdApplicationsAdminList` | `OpenIdApplicationEntry` | `OrchardCore.OpenId` |
-| `OpenIdScopes` | `OpenIdScopesAdminList` | `OpenIdScopeEntry` | `OrchardCore.OpenId` |
-| `Placements` | `PlacementsAdminList` | `ShapePlacement` | `OrchardCore.Placements` |
-| `Queries` | `QueriesAdminList` | `Query` | `OrchardCore.Queries` |
-| `RateLimits` | `RateLimitsAdminList` | `RateLimitPolicy` | `OrchardCore.RateLimits` |
-| `Recipes` | `RecipesAdminList` | `RecipeEntry` | `OrchardCore.Recipes` |
-| `RemoteClients` | `RemoteClientsAdminList` | `RemoteClient` | `OrchardCore.Deployment.Remote` |
-| `RemoteInstances` | `RemoteInstancesAdminList` | `RemoteInstance` | `OrchardCore.Deployment.Remote` |
-| `Roles` | `RolesAdminList` | `RoleEntry` | `OrchardCore.Roles` |
-| `Shortcodes` | `ShortcodesAdminList` | `ShortcodeTemplateEntry` | `OrchardCore.Shortcodes` |
-| `SitemapCache` | `SitemapCacheAdminList` | `SitemapCacheEntry` | `OrchardCore.Sitemaps` |
-| `SitemapIndexes` | `SitemapIndexesAdminList` | `SitemapIndexListEntry` | `OrchardCore.Sitemaps` |
-| `Sitemaps` | `SitemapsAdminList` | `SitemapListEntry` | `OrchardCore.Sitemaps` |
-| `Templates` | `TemplatesAdminList` | `TemplateEntry` | `OrchardCore.Templates` |
-| `Tenants` | `TenantsAdminList` | `ShellSettingsEntry` | `OrchardCore.Tenants` |
-| `UrlRewriting` | `UrlRewritingAdminList` | `RewriteRule` | `OrchardCore.UrlRewriting` |
-| `Users` | `UsersAdminList` | `User` | `OrchardCore.Users` |
-| `WorkflowInstances` | `WorkflowInstancesAdminList` | `WorkflowEntry` | `OrchardCore.Workflows` |
-| `WorkflowTypes` | `WorkflowTypesAdminList` | `WorkflowTypeEntry` | `OrchardCore.Workflows` |
+| Name | Items | Module |
+| --- | --- | --- |
+| `AdminMenus` | `AdminMenuEntry` | `OrchardCore.AdminMenu` |
+| `AuditTrail` | `AuditTrailEvent` | `OrchardCore.AuditTrail` |
+| `BackgroundTasks` | `BackgroundTaskEntry` | `OrchardCore.BackgroundTasks` |
+| `ContentParts` | `ContentPartEntry` | `OrchardCore.ContentTypes` |
+| `ContentTypes` | `ContentTypeEntry` | `OrchardCore.ContentTypes` |
+| `Contents` | `ContentItem` | `OrchardCore.Contents` |
+| `DeploymentPlans` | `DeploymentPlanEntry` | `OrchardCore.Deployment` |
+| `FeatureProfiles` | `FeatureProfileEntry` | `OrchardCore.Tenants` |
+| `Features` | `FeatureEntry` | `OrchardCore.Features` |
+| `Indexes` | `IndexProfile` | `OrchardCore.Indexing` |
+| `Layers` | `Layer` | `OrchardCore.Layers` |
+| `ListPartContents` | `ListPartAdminListEntry` | `OrchardCore.Lists` |
+| `MediaProfiles` | `MediaProfileEntry` | `OrchardCore.Media` |
+| `Notifications` | `Notification` | `OrchardCore.Notifications` |
+| `OpenIdApplications` | `OpenIdApplicationEntry` | `OrchardCore.OpenId` |
+| `OpenIdScopes` | `OpenIdScopeEntry` | `OrchardCore.OpenId` |
+| `Placements` | `ShapePlacement` | `OrchardCore.Placements` |
+| `Queries` | `Query` | `OrchardCore.Queries` |
+| `RateLimits` | `RateLimitPolicy` | `OrchardCore.RateLimits` |
+| `Recipes` | `RecipeEntry` | `OrchardCore.Recipes` |
+| `RemoteClients` | `RemoteClient` | `OrchardCore.Deployment.Remote` |
+| `RemoteInstances` | `RemoteInstance` | `OrchardCore.Deployment.Remote` |
+| `Roles` | `RoleEntry` | `OrchardCore.Roles` |
+| `Shortcodes` | `ShortcodeTemplateEntry` | `OrchardCore.Shortcodes` |
+| `SitemapCache` | `SitemapCacheEntry` | `OrchardCore.Sitemaps` |
+| `SitemapIndexes` | `SitemapIndexListEntry` | `OrchardCore.Sitemaps` |
+| `Sitemaps` | `SitemapListEntry` | `OrchardCore.Sitemaps` |
+| `Templates` | `TemplateEntry` | `OrchardCore.Templates` |
+| `Tenants` | `ShellSettingsEntry` | `OrchardCore.Tenants` |
+| `UrlRewriting` | `RewriteRule` | `OrchardCore.UrlRewriting` |
+| `Users` | `User` | `OrchardCore.Users` |
+| `WorkflowInstances` | `WorkflowEntry` | `OrchardCore.Workflows` |
+| `WorkflowTypes` | `WorkflowTypeEntry` | `OrchardCore.Workflows` |
 
 A few admin pages are deliberately not lists and have no name: the media library, the widgets by zone of the layers page, the admin menu node tree, the dashboard, the CORS policies, the data localization table, the media cache and the themes gallery. They are edited or arranged rather than listed, so they keep their own presentation.
 

@@ -24,10 +24,10 @@ namespace OrchardCore.Admin;
 public class AdminListOptions
 {
     /// <summary>
-    /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/> or
-    /// <see cref="AdminListConstants.Grid"/>.
+    /// The layout used to render admin lists, e.g. <see cref="AdminListLayout.List"/> or
+    /// <see cref="AdminListLayout.Grid"/>.
     /// </summary>
-    public string DefaultLayout { get; set; } = AdminListConstants.List;
+    public AdminListLayout DefaultLayout { get; set; } = AdminListLayout.List;
 
     /// <summary>
     /// The layout used to render the actions of each row, e.g. <see cref="AdminListActionsLayouts.Buttons"/>

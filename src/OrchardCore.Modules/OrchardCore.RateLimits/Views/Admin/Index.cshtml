@@ -1,4 +1,6 @@
-﻿@using System.Globalization
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
+@using System.Globalization
 @model OrchardCore.RateLimits.ViewModels.RateLimitsIndexViewModel
 
 <zone Name="Title">
@@ -33,7 +35,17 @@
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
     @* The policies, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="RateLimits" context="Model.List"
+                empty-message="@(string.IsNullOrWhiteSpace(Model.SearchText) ? T["<strong>Nothing here!</strong> There are no rate limit policies yet."] : T["<strong>Nothing here!</strong> No policies match the current search."])">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column name="Status" position="30" title="@T["Status"]" width="auto" />
+            <admin-list-column name="Enabled" position="40" title="@T["Enabled"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
 
 <form asp-action="Delete" method="post" id="delete-policy-form" class="d-none">

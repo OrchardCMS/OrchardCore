@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @using OrchardCore.UrlRewriting
 @using OrchardCore.UrlRewriting.Endpoints.Rules
 
@@ -30,7 +32,25 @@
     </div>
 
     @* The rules, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="UrlRewriting" context="Model.List"
+                rows-id="@UrlRewritingAdminList.SortableContainerId"
+                rows-class="bulk-select-list"
+                rows-data-checkbox-name="ruleIds"
+                rows-data-selected-text="@T["selected"].Value"
+                rows-data-sort-url="@Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" })"
+                rows-data-sort-error-message="@T["Unable to sort the list. Try refreshing your page and try again."].Value"
+                bulk-actions="Model.Options.BulkActions"
+                empty-message="@T["<strong>Nothing here!</strong> There are no rewrite rules at the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column name="Handle" position="5" width="auto" />
+            <admin-list-column type="Select" />
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column name="Source" position="30" title="@T["Source"]" width="auto" />
+            <admin-list-column name="Modified" position="40" title="@T["Last modified"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 
     <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
         @T["Your search returned no results."]

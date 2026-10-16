@@ -69,7 +69,6 @@ public sealed class AdminController : Controller, IUpdateModel
         [FromServices] IOptions<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IContentsAdminListQueryService contentsAdminListQueryService,
-        [FromServices] IAdminListFactory adminListFactory,
         [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
         ContentOptionsViewModel options,
         PagerParameters pagerParameters,
@@ -243,37 +242,24 @@ public sealed class AdminController : Controller, IUpdateModel
             .Take(pager.PageSize)
             .ListAsync(_contentManager);
 
-        // We prepare the content items SummaryAdmin shape.
-        var contentItemSummaries = new List<dynamic>();
-        var rows = new List<AdminListRow<ContentItem>>();
-
-        foreach (var contentItem in pageOfContentItems)
-        {
-            var summary = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin");
-
-            contentItemSummaries.Add(summary);
-            rows.Add(new(contentItem, summary));
-        }
-
         // Populate options pager summary values.
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + contentItemSummaries.Count - 1;
-        options.ContentItemsCount = contentItemSummaries.Count;
+        options.EndIndex = startIndex + pageOfContentItems.Count() - 1;
+        options.ContentItemsCount = pageOfContentItems.Count();
         options.TotalItemCount = itemsPerPage;
 
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the items with the configured layout (List, Grid, ...).
-        var list = new AdminListContext<ContentItem>(ContentsAdminList.Name)
+        var list = new AdminListContext<ContentItem>
         {
-            // ListContentsViewModel.ContentItems keeps the summaries as dynamic for the templates that read it.
-            Rows = rows,
+            Source = pageOfContentItems,
             Header = header,
             Pager = pagerShape,
         };
 
-        // What this listing is filtered by, so a column driver can decide on a column from it, e.g. add one
+        // What this listing is filtered by, so a column provider can decide on a column from it, e.g. add one
         // that only makes sense for a content type or a stereotype.
         if (contentTypeIds is { Length: > 0 })
         {
@@ -285,15 +271,14 @@ public sealed class AdminController : Controller, IUpdateModel
             list.Data[ContentsAdminList.StereotypesKey] = stereotypes;
         }
 
-        var listShape = await adminListFactory.CreateAsync(list, HttpContext.RequestAborted);
 
         var shapeViewModel = await shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
         {
-            viewModel.ContentItems = contentItemSummaries;
+            viewModel.ContentItems = pageOfContentItems.ToList();
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
-            viewModel.List = listShape;
+            viewModel.List = list;
         });
 
         if (TempData.TryGetValue(nameof(ModelState), out var modelStateJson) && modelStateJson is string)
@@ -764,7 +749,6 @@ public sealed class AdminController : Controller, IUpdateModel
         {
             await _notifier.ErrorAsync(H["The operation was canceled."]);
         }
-
 
         return Url.IsLocalUrl(returnUrl)
             ? this.LocalRedirect(returnUrl, true)

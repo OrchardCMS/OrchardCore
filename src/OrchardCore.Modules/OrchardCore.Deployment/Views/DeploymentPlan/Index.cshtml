@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model DeploymentPlanIndexViewModel
 
 <zone Name="Title">
@@ -27,7 +29,16 @@
     </div>
 
     @* The plans, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="DeploymentPlans" context="Model.List"
+                bulk-actions="Model.Options.DeploymentPlansBulkAction"
+                empty-message="@T["<strong>Nothing here!</strong> There are no deployment plans at the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
 
 <script asp-src="~/OrchardCore.Deployment/Scripts/deployment-plan-index/deployment-plan-index.min.js" debug-src="~/OrchardCore.Deployment/Scripts/deployment-plan-index/deployment-plan-index.js" at="Foot" type="module"></script>

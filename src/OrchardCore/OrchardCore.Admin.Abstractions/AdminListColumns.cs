@@ -19,21 +19,20 @@ public static class AdminListColumns
     public const string ActionsName = "Actions";
 
     /// <summary>
-    /// The first column of a list whose rows can be selected for a bulk action: the <c>Checkbox</c> zone of the
+    /// The first column of a list whose rows can be selected for a bulk action: the <c>Select</c> zone of the
     /// row, at position <c>10</c>, as narrow as the checkbox.
     /// </summary>
     public static AdminListColumn Select() => new()
     {
         Name = SelectName,
         Position = "10",
-        Zones = ["Checkbox"],
         CssClass = "admin-list-select",
         Width = AdminListColumn.AutoWidth,
     };
 
     /// <summary>
     /// The last column of a list: the <c>Actions</c> and <c>ActionsMenu</c> zones of the row, aligned to the end
-    /// and as narrow as the buttons. Its position is <c>end</c>, so it stays last even when a driver adds a
+    /// and as narrow as the buttons. Its position is <c>end</c>, so it stays last even when a provider adds a
     /// column without a position.
     /// </summary>
     /// <param name="title">The localized header of the column, e.g. <c>S["Actions"]</c>.</param>

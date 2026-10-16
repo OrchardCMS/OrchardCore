@@ -1,19 +1,10 @@
 @using OrchardCore.Admin
-@using OrchardCore.ContentManagement
 @using OrchardCore.Lists
-@using OrchardCore.DisplayManagement
-@using OrchardCore.DisplayManagement.Shapes
 
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
 
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject IAdminListFactory AdminListFactory
-
 @{
-    var enableOrdering =
-        Model.EnableOrdering &&
-        Model.ContentItems.Count() > 1 &&
-        Model.ListPartFilterViewModel.Status == ContentsStatus.Latest && string.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
+    var enableOrdering = Model.List.Layout == AdminListLayout.List;
 
     if (enableOrdering)
     {
@@ -30,36 +21,17 @@ else
 {
     @if (Model.ContentItems.Any())
     {
-        var rows = new List<AdminListRow<ContentItem>>();
-
-        foreach (var contentItem in Model.ContentItems)
-        {
-            var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-            contentItemSummary.Checkbox = null;
-
-            if (enableOrdering)
-            {
-                await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
-            }
-
-            rows.Add(new(contentItem, contentItemSummary));
-        }
-
-        @* Ordering is drag and drop over the rows, which only the List layout can express, so it wins over
-           the configured layout while ordering is enabled, and the list offers no other layout meanwhile. *@
-        var list = await AdminListFactory.CreateAsync(new AdminListContext<ContentItem>(ListPartContentsAdminList.Name)
-        {
-            Layout = enableOrdering ? AdminListConstants.List : null,
-            Rows = rows,
-            Pager = Model.Pager,
-            ShowLayoutSelector = !enableOrdering,
-            // The contained items are managed one at a time, so the list has nothing to select.
-            ShowToolbar = false,
-            ItemCssClass = "list-group-item list-group-item-action",
-        }, Context.RequestAborted);
-
         <div id="ci-sortable">
-            @await DisplayAsync(list)
+            <admin-list name="ListPartContents" context="Model.List">
+                <admin-list-list item-css-class="list-group-item list-group-item-action" />
+                <admin-list-grid>
+                    <admin-list-column name="Title" title="@T["Title"]" position="10" />
+                    <admin-list-column name="Type" title="@T["Type"]" position="20" width="auto" />
+                    <admin-list-column name="Status" title="@T["Status"]" position="30" width="auto" />
+                    <admin-list-column name="Modified" title="@T["Last modified"]" position="40" width="auto" />
+                    <admin-list-column type="Actions" title="@T["Actions"]" />
+                </admin-list-grid>
+            </admin-list>
         </div>
 
         @if (enableOrdering)

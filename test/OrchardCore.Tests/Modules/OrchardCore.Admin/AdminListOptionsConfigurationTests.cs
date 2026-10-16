@@ -14,14 +14,14 @@ public class AdminListOptionsConfigurationTests
         var site = new SiteSettings();
         site.Put(new AdminSettings
         {
-            ListLayout = AdminListConstants.Grid,
+            ListLayout = AdminListLayout.Grid,
             ListActionsLayout = AdminListActionsLayouts.Menu,
             AllowUserListLayoutSelection = true,
         });
 
-        var options = Configure(new AdminListOptions { DefaultLayout = AdminListConstants.List }, site);
+        var options = Configure(new AdminListOptions { DefaultLayout = AdminListLayout.List }, site);
 
-        Assert.Equal(AdminListConstants.Grid, options.DefaultLayout);
+        Assert.Equal(AdminListLayout.Grid, options.DefaultLayout);
         Assert.Equal(AdminListActionsLayouts.Menu, options.DefaultActionsLayout);
         Assert.True(options.AllowUserSelection);
     }
@@ -30,20 +30,20 @@ public class AdminListOptionsConfigurationTests
     public void Configure_SiteWithoutChoice_KeepsTheConfiguredValues()
     {
         var options = Configure(
-            new AdminListOptions { DefaultLayout = AdminListConstants.Grid, DefaultActionsLayout = AdminListActionsLayouts.Menu },
+            new AdminListOptions { DefaultLayout = AdminListLayout.Grid, DefaultActionsLayout = AdminListActionsLayouts.Menu },
             new SiteSettings());
 
-        Assert.Equal(AdminListConstants.Grid, options.DefaultLayout);
+        Assert.Equal(AdminListLayout.Grid, options.DefaultLayout);
         Assert.Equal(AdminListActionsLayouts.Menu, options.DefaultActionsLayout);
         Assert.False(options.AllowUserSelection);
     }
 
     [Fact]
-    public void Configure_BlankConfiguredValues_FallBackToTheShippedLayouts()
+    public void Configure_BlankActionsLayout_FallsBackToButtons()
     {
-        var options = Configure(new AdminListOptions { DefaultLayout = "  ", DefaultActionsLayout = "" }, new SiteSettings());
+        var options = Configure(new AdminListOptions { DefaultActionsLayout = "" }, new SiteSettings());
 
-        Assert.Equal(AdminListConstants.List, options.DefaultLayout);
+        Assert.Equal(AdminListLayout.List, options.DefaultLayout);
         Assert.Equal(AdminListActionsLayouts.Buttons, options.DefaultActionsLayout);
     }
 
@@ -53,10 +53,29 @@ public class AdminListOptionsConfigurationTests
         var site = new SiteSettings();
         site.Put(new AdminSettings { ListActionsLayout = " Menu " });
 
-        var options = Configure(new AdminListOptions { DefaultLayout = " Grid " }, site);
+        var options = Configure(new AdminListOptions { DefaultLayout = AdminListLayout.Grid }, site);
 
-        Assert.Equal(AdminListConstants.Grid, options.DefaultLayout);
+        Assert.Equal(AdminListLayout.Grid, options.DefaultLayout);
         Assert.Equal(AdminListActionsLayouts.Menu, options.DefaultActionsLayout);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Configure_UndefinedLayout_ThrowsValidationError(bool siteOverride)
+    {
+        var site = new SiteSettings();
+        var options = new AdminListOptions();
+        if (siteOverride)
+        {
+            site.Put(new AdminSettings { ListLayout = (AdminListLayout)42 });
+        }
+        else
+        {
+            options.DefaultLayout = (AdminListLayout)42;
+        }
+
+        Assert.Throws<OptionsValidationException>(() => Configure(options, site));
     }
 
     private static AdminListOptions Configure(AdminListOptions options, ISite site)

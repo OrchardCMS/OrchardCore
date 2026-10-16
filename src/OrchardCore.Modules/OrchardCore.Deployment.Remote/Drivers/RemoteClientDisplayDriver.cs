@@ -6,7 +6,7 @@ namespace OrchardCore.Deployment.Remote.Drivers;
 
 /// <summary>
 /// Builds the row of the remote clients admin list. Each shape is placed in the zone that the matching
-/// <see cref="Admin.Models.AdminListColumn"/> of <see cref="RemoteClientsAdminList"/> renders.
+/// <see cref="Admin.Models.AdminListColumn"/> of <c>RemoteClients</c> renders.
 /// </summary>
 public sealed class RemoteClientDisplayDriver : DisplayDriver<RemoteClient>
 {
@@ -14,11 +14,14 @@ public sealed class RemoteClientDisplayDriver : DisplayDriver<RemoteClient>
     {
         return CombineAsync(
             View("RemoteClient_Checkbox_SummaryAdmin", client)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:1"),
             View("RemoteClient_Fields_SummaryAdmin", client)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ClientName:1"),
             View("RemoteClient_Buttons_SummaryAdmin", client)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5")
         );
     }
 }

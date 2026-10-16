@@ -1,4 +1,4 @@
-﻿@using OrchardCore.Features
+@using OrchardCore.Features
 
 @model FeaturesViewModel
 @{
@@ -88,7 +88,16 @@
             <h3 class="mb-2">@group.Category</h3>
 
             @* The features of this category are rendered by the AdminList shape using the configured layout. *@
-            @await DisplayAsync(group.List)
+            <admin-list name="@FeaturesAdminList.Name" context="group.List" show-toolbar="false">
+                <admin-list-list item-css-class="list-group-item" />
+                <admin-list-grid>
+                    <admin-list-column type="Select" />
+                    <admin-list-column name="Name" title="@T["Name"]" position="20" />
+                    <admin-list-column name="Dependencies" title="@T["Dependencies"]" position="30" />
+                    <admin-list-column name="Status" title="@T["Status"]" position="40" width="auto" no-wrap="true" />
+                    <admin-list-column type="Actions" title="@T["Actions"]" alignment="End" />
+                </admin-list-grid>
+            </admin-list>
         </div>
     }
 

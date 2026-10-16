@@ -30,7 +30,5 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<RemoteInstance, RemoteInstanceDisplayDriver>();
         services.AddDisplayDriver<RemoteClient, RemoteClientDisplayDriver>();
 
-        services.AddAdminListColumnDriver<RemoteInstance, RemoteInstancesAdminListColumnDriver>();
-        services.AddAdminListColumnDriver<RemoteClient, RemoteClientsAdminListColumnDriver>();
     }
 }

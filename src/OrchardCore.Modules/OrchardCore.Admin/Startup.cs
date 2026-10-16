@@ -69,7 +69,9 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddShapeTableProvider<AdminListShapeTableProvider>();
         services.AddScoped<IAdminListFactory, DefaultAdminListFactory>();
-        services.AddScoped<IAdminListLayoutResolver, DefaultAdminListLayoutResolver>();
+        services.AddScoped<IAdminListRowBuilder, DefaultAdminListRowBuilder>();
+        services.AddScoped(typeof(IAdminListItemDisplayManager<>), typeof(DefaultAdminListItemDisplayManager<>));
+        services.AddScoped<AdminListLayoutResolver>();
         services.AddScoped<IAdminListColumnsBuilder, DefaultAdminListColumnsBuilder>();
         services.AddScoped<AdminListLayoutPreference>();
 

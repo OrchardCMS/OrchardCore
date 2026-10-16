@@ -6,7 +6,7 @@ namespace OrchardCore.Deployment.Drivers;
 
 /// <summary>
 /// Builds the row of the deployment plans admin list. Each shape is placed in the zone that the matching
-/// <see cref="Admin.Models.AdminListColumn"/> of <see cref="DeploymentPlansAdminList"/> renders.
+/// <see cref="Admin.Models.AdminListColumn"/> of <c>DeploymentPlans</c> renders.
 /// </summary>
 public sealed class DeploymentPlanEntryDisplayDriver : DisplayDriver<DeploymentPlanEntry>
 {
@@ -14,11 +14,14 @@ public sealed class DeploymentPlanEntryDisplayDriver : DisplayDriver<DeploymentP
     {
         return CombineAsync(
             View("DeploymentPlanEntry_Checkbox_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:1"),
             View("DeploymentPlanEntry_Fields_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1"),
             View("DeploymentPlanEntry_Buttons_SummaryAdmin", entry)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5")
         );
     }
 }

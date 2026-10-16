@@ -83,7 +83,6 @@ public sealed class AdminController : Controller
     }
 
     public async Task<ActionResult> Index(
-        [FromServices] IAdminListFactory adminListFactory,
         [ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult,
         PagerParameters pagerParameters)
     {
@@ -120,22 +119,6 @@ public sealed class AdminController : Controller
             .ListAsync();
 
         var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
-
-        var userEntries = new List<UserEntry>();
-        var rows = new List<AdminListRow<User>>();
-
-        foreach (var user in results)
-        {
-            var shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin");
-
-            userEntries.Add(new UserEntry
-            {
-                UserId = user.UserId,
-                Shape = shape,
-            });
-
-            rows.Add(new(user, shape));
-        }
 
         options.UserFilters =
         [
@@ -189,28 +172,27 @@ public sealed class AdminController : Controller
         // Populate options pager summary values.
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + userEntries.Count - 1;
-        options.UsersCount = userEntries.Count;
+        options.EndIndex = startIndex + results.Count() - 1;
+        options.UsersCount = results.Count();
         options.TotalItemCount = count;
 
         var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the users with the configured layout (List, Grid, ...).
-        var listShape = await adminListFactory.CreateAsync(new AdminListContext<User>(UsersAdminList.Name)
+        var list = new AdminListContext<User>
         {
-            Rows = rows,
+            Source = results,
             Header = header,
             Pager = pagerShape,
-            ItemCssClass = "list-group-item",
-        }, HttpContext.RequestAborted);
+        };
 
         var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
         {
-            viewModel.Users = userEntries;
+            viewModel.Users = results.ToList();
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
-            viewModel.List = listShape;
+            viewModel.List = list;
         });
 
         return View(shapeViewModel);

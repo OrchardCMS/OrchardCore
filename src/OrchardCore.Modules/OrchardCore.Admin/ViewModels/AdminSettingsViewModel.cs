@@ -18,7 +18,7 @@ public class AdminSettingsViewModel
 
     public AdminMenuBehavior MenuBehavior { get; set; }
 
-    public string ListLayout { get; set; }
+    public AdminListLayout? ListLayout { get; set; }
 
     public string ListActionsLayout { get; set; }
 

@@ -4,8 +4,7 @@ namespace OrchardCore.Admin.Models;
 
 /// <summary>
 /// Describes a column of an admin list when it is rendered with a layout that has columns, e.g. the <c>Grid</c> layout.
-/// A cell of the column renders the zones of the row shape (e.g. <c>Content_SummaryAdmin</c>) the column names, then
-/// the shapes the column drivers built for it, see <see cref="IAdminListColumnDriver{TModel}"/>.
+/// A cell renders the row zone named after this column, or the zones listed in <see cref="Zones"/>.
 /// </summary>
 public class AdminListColumn
 {
@@ -17,20 +16,19 @@ public class AdminListColumn
 
     /// <summary>
     /// The localized header text of the column. Can be <see langword="null"/> for columns without a header, e.g. a selection checkbox.
-    /// It is rendered in the header unless a driver built a shape for it, and it labels the cells when a narrow
+    /// It is rendered in the header unless a header shape is supplied, and it labels the cells when a narrow
     /// list hides the headers, so it stays plain text even when the header is a shape.
     /// </summary>
     public LocalizedString Title { get; set; }
 
     /// <summary>
-    /// The zones of the row shape that are rendered in this column, in order, before the shapes the column drivers
-    /// built for its cells. A column filled by the drivers alone names none.
+    /// Optional row zones to render in order instead of the zone named after this column.
     /// </summary>
     public string[] Zones { get; set; } = [];
 
     /// <summary>
     /// The position of the column using the placement position syntax, e.g. <c>10</c>, <c>25</c> or <c>35.5</c>.
-    /// Columns are sorted by position once every <see cref="IAdminListColumnDriver{TModel}"/> ran, so a feature can insert
+    /// Columns are sorted by position once every <see cref="IAdminListColumnsProvider"/> ran, so a feature can insert
     /// a column between two others without knowing which other features add columns. The module owning a list
     /// gives its columns increasing positions (e.g. <c>10</c>, <c>20</c>, ...); a column added without a
     /// position is placed after all positioned columns.

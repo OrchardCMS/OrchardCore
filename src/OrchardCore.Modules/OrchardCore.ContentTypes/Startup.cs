@@ -70,8 +70,6 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
 
-        services.AddAdminListColumnDriver<ContentTypeEntry, ContentTypesAdminListColumnDriver>();
-        services.AddAdminListColumnDriver<ContentPartEntry, ContentPartsAdminListColumnDriver>();
     }
 }
 

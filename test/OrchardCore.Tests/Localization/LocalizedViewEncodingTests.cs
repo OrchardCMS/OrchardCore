@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Compliance.Redaction;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Views;
@@ -90,7 +91,14 @@ public class LocalizedViewEncodingTests
 
         // The controller names the categories, "Uncategorized" with its string localizer, so they are plain text.
         var model = CreateFeaturesModel(category);
-        model.Groups.Add(new FeatureGroupViewModel { Category = category });
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            model.Groups.Add(new FeatureGroupViewModel
+            {
+                Category = category,
+                List = new AdminListContext(),
+            });
+        });
 
         var html = await RenderAsync(context, "OrchardCore.Features", "Admin/Features", model);
         using var document = new HtmlParser().ParseDocument(html);

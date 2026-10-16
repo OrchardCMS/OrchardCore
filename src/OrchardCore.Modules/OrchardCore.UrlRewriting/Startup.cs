@@ -40,7 +40,6 @@ public sealed class Startup : StartupBase
             .AddScoped<IRewriteRuleHandler, UrlRewriteRuleHandler>()
             .AddDisplayDriver<RewriteRule, UrlRewriteRuleDisplayDriver>();
 
-        services.AddAdminListColumnDriver<RewriteRule, UrlRewritingAdminListColumnDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

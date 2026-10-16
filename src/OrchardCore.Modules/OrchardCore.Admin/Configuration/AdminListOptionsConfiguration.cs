@@ -27,9 +27,9 @@ public sealed class AdminListOptionsConfiguration : IConfigureOptions<AdminListO
     {
         var settings = _siteService.GetSettings<AdminSettings>();
 
-        if (!string.IsNullOrWhiteSpace(settings.ListLayout))
+        if (settings.ListLayout.HasValue)
         {
-            options.DefaultLayout = settings.ListLayout;
+            options.DefaultLayout = settings.ListLayout.Value;
         }
 
         if (!string.IsNullOrWhiteSpace(settings.ListActionsLayout))
@@ -39,11 +39,11 @@ public sealed class AdminListOptionsConfiguration : IConfigureOptions<AdminListO
 
         options.AllowUserSelection = settings.AllowUserListLayoutSelection;
 
-        // The one place the defaults are guarded, so a blank value in appsettings.json cannot leave a list
-        // without a layout, and the services reading the options can use them as they are.
-        options.DefaultLayout = string.IsNullOrWhiteSpace(options.DefaultLayout)
-            ? AdminListConstants.List
-            : options.DefaultLayout.Trim();
+        if (!Enum.IsDefined(options.DefaultLayout))
+        {
+            throw new OptionsValidationException(nameof(AdminListOptions), typeof(AdminListOptions),
+                ["DefaultLayout must be List or Grid."]);
+        }
 
         options.DefaultActionsLayout = string.IsNullOrWhiteSpace(options.DefaultActionsLayout)
             ? AdminListActionsLayouts.Buttons

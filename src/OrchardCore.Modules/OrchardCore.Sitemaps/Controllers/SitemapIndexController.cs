@@ -7,7 +7,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
@@ -61,10 +60,7 @@ public sealed class SitemapIndexController : Controller
 
     public async Task<IActionResult> List(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<SitemapIndexListEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -110,22 +106,12 @@ public sealed class SitemapIndexController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<AdminListRow<SitemapIndexListEntry>>(model.SitemapIndexes.Count);
-
-        foreach (var entry in model.SitemapIndexes)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<SitemapIndexListEntry>(SitemapIndexesAdminList.Name)
+        model.List = new AdminListContext<SitemapIndexListEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = model.SitemapIndexes,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemap indexes for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

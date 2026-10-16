@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
@@ -19,9 +20,9 @@ public class WorkflowIndexViewModel
     public string ReturnUrl { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the instances, the toolbar and the pager in the configured layout.
+    /// The data context for rendering the instances, the toolbar and the pager in the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class WorkflowIndexOptions

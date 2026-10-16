@@ -43,7 +43,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<AdminTemplatesManager>();
         services.AddPermissionProvider<AdminTemplatesPermissions>();
 
-        services.AddAdminListColumnDriver<TemplateEntry, TemplatesAdminListColumnDriver>();
     }
 }
 

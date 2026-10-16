@@ -1,18 +1,23 @@
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.ViewModels;
 
 public class UsersIndexViewModel
 {
-    public IList<UserEntry> Users { get; set; }
+    /// <summary>
+    /// The queried users on this page, before their row shapes are built.
+    /// </summary>
+    public IList<User> Users { get; set; }
     public UserIndexOptions Options { get; set; } = new UserIndexOptions();
     public IShape Pager { get; set; }
     public IShape Header { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering <see cref="Users"/>, <see cref="Header"/> and <see cref="Pager"/> with the configured layout.
+    /// The data context for rendering <see cref="Users"/>, <see cref="Header"/> and <see cref="Pager"/> with the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class UserEntry

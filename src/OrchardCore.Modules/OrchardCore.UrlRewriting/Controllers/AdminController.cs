@@ -58,8 +58,7 @@ public sealed class AdminController : Controller
     }
 
     public async Task<IActionResult> Index(
-        RewriteRuleOptions options,
-        [FromServices] IAdminListFactory adminListFactory)
+        RewriteRuleOptions options)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
@@ -70,30 +69,10 @@ public sealed class AdminController : Controller
 
         var model = new ListRewriteRuleViewModel
         {
-            Rules = [],
+            Rules = rules.ToList(),
             Options = options,
             SourceNames = _urlRewritingRuleSources.Select(x => x.TechnicalName),
         };
-
-        foreach (var rule in rules)
-        {
-            var shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
-
-            if (shape is Shape rowShape)
-            {
-                // The rules are dragged to be reordered, and the sortable script only moves the rows of that class.
-                rowShape.Classes.Add("item");
-
-                // The row carries the value used by the client-side search of the list-management script.
-                rowShape.Attributes["data-filter-value"] = rule.Name?.ToLowerInvariant();
-            }
-
-            model.Rules.Add(new RewriteRuleEntry
-            {
-                Rule = rule,
-                Shape = shape,
-            });
-        }
 
         model.Options.BulkActions =
         [
@@ -101,24 +80,10 @@ public sealed class AdminController : Controller
         ];
 
         // The AdminList shape renders the rules with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<RewriteRule>(UrlRewritingAdminList.Name)
+        model.List = new AdminListContext<RewriteRule>
         {
-            Rows = model.Rules.Select(entry => new AdminListRow<RewriteRule>(entry.Rule, entry.Shape)).ToList(),
-            // The rules are evaluated in order, so the element holding the rows is the one the script of the page
-            // selects, reorders and saves, whichever layout renders it. See url-rewriting-admin-index.ts.
-            RowsAttributes = new Dictionary<string, string>
-            {
-                ["id"] = UrlRewritingAdminList.SortableContainerId,
-                ["class"] = "bulk-select-list",
-                ["data-checkbox-name"] = "ruleIds",
-                ["data-selected-text"] = S["selected"],
-                ["data-sort-url"] = Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" }),
-                ["data-sort-error-message"] = S["Unable to sort the list. Try refreshing your page and try again."],
-            },
-            BulkActions = model.Options.BulkActions,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no rewrite rules at the moment."],
-        }, HttpContext.RequestAborted);
+            Source = model.Rules,
+        };
 
         return View(model);
     }

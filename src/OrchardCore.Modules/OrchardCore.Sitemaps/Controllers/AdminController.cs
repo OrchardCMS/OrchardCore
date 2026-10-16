@@ -7,7 +7,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
@@ -67,10 +66,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> List(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<SitemapListEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -114,22 +110,12 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<AdminListRow<SitemapListEntry>>(model.Sitemaps.Count);
-
-        foreach (var entry in model.Sitemaps)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<SitemapListEntry>(SitemapsAdminList.Name)
+        model.List = new AdminListContext<SitemapListEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = model.Sitemaps,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemaps for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

@@ -6,7 +6,7 @@ namespace OrchardCore.Workflows.Drivers;
 
 /// <summary>
 /// Builds the row of the workflow types admin list. Each shape is placed in the zone that the matching
-/// <see cref="Admin.Models.AdminListColumn"/> of <see cref="WorkflowTypesAdminList"/> renders.
+/// <see cref="Admin.Models.AdminListColumn"/> of <c>WorkflowTypes</c> renders.
 /// </summary>
 public sealed class WorkflowTypeEntryDisplayDriver : DisplayDriver<WorkflowTypeEntry>
 {
@@ -14,15 +14,20 @@ public sealed class WorkflowTypeEntryDisplayDriver : DisplayDriver<WorkflowTypeE
     {
         return CombineAsync(
             View("WorkflowTypeEntry_Checkbox_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:1"),
             View("WorkflowTypeEntry_Fields_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1"),
             View("WorkflowTypeEntry_DefaultTags_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Status:5"),
             View("WorkflowTypeEntry_Buttons_SummaryAdmin", entry)
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5"),
             View("WorkflowTypeEntry_ActionsMenuItems_SummaryAdmin", entry)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:5")
         );
     }
 }

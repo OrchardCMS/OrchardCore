@@ -76,7 +76,6 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
         services.AddScoped<Sc.IShortcodeProvider, TemplateShortcodeProvider>();
         services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
 
-        services.AddAdminListColumnDriver<ShortcodeTemplateEntry, ShortcodesAdminListColumnDriver>();
     }
 }
 

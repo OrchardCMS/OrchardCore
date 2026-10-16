@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement;
 
@@ -8,9 +9,9 @@ public class RolesViewModel
     public List<RoleEntry> RoleEntries { get; set; } = [];
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the roles in the configured layout.
+    /// The data context for rendering the roles in the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class RoleEntry

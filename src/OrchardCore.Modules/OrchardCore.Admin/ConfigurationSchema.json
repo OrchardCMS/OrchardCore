@@ -19,8 +19,8 @@
               "properties": {
                 "DefaultLayout": {
                   "type": "string",
-                  "description": "How the items of a list are rendered. 'List' renders each item whole, 'Grid' renders one column per column of the list. A theme or a module can add other layouts.",
-                  "examples": [
+                  "description": "How the items of a list are rendered. 'List' renders each item whole; 'Grid' renders the declared columns.",
+                  "enum": [
                     "List",
                     "Grid"
                   ],

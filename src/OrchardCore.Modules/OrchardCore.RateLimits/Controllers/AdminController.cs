@@ -48,7 +48,6 @@ public sealed class AdminController : Controller
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
-    private readonly IDisplayManager<RateLimitPolicy> _policyDisplayManager;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -62,7 +61,6 @@ public sealed class AdminController : Controller
         IShellReleaseManager shellReleaseManager,
         EndpointDataSource endpointDataSource,
         IOptions<RateLimitsOptions> rateLimitsOptions,
-        IDisplayManager<RateLimitPolicy> policyDisplayManager,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -74,7 +72,6 @@ public sealed class AdminController : Controller
         _shellReleaseManager = shellReleaseManager;
         _endpointDataSource = endpointDataSource;
         _rateLimitsOptions = rateLimitsOptions.Value;
-        _policyDisplayManager = policyDisplayManager;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -84,8 +81,7 @@ public sealed class AdminController : Controller
         string searchText = null,
         PagerParameters pagerParameters = null,
         [FromServices] IOptions<PagerOptions> pagerOptions = null,
-        [FromServices] IShapeFactory shapeFactory = null,
-        [FromServices] IAdminListFactory adminListFactory = null)
+        [FromServices] IShapeFactory shapeFactory = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
@@ -119,11 +115,8 @@ public sealed class AdminController : Controller
 
         var model = new RateLimitsIndexViewModel
         {
+            Policies = pagedPolicies,
             SearchText = searchText,
-            Policies =
-            [
-                .. await Task.WhenAll(pagedPolicies.Select(BuildPolicyEntryAsync)),
-            ],
             BuiltInRouteLimits = BuildBuiltInRouteLimits(),
             BuiltInGroupLimits = BuildBuiltInGroupLimits(),
             BulkActions =
@@ -141,21 +134,17 @@ public sealed class AdminController : Controller
         // module's own toolbar rather than the generic AdminListToolbar.
         var toolbar = await shapeFactory.CreateAsync("RateLimitsToolbar", Arguments.From(new
         {
-            ItemsCount = model.Policies.Count,
+            ItemsCount = pagedPolicies.Length,
             BulkActions = model.BulkActions,
         }));
 
         // The AdminList shape renders the policies with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<RateLimitPolicy>(RateLimitsAdminList.Name)
+        model.List = new AdminListContext<RateLimitPolicy>
         {
-            Rows = model.Policies.Select(entry => new AdminListRow<RateLimitPolicy>(entry.Policy, entry.Shape)).ToList(),
+            Source = model.Policies,
             Toolbar = toolbar,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = string.IsNullOrWhiteSpace(searchText)
-                ? H["<strong>Nothing here!</strong> There are no rate limit policies yet."]
-                : H["<strong>Nothing here!</strong> No policies match the current search."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }
@@ -441,24 +430,6 @@ public sealed class AdminController : Controller
         }
 
         return RedirectToAction(nameof(Index));
-    }
-
-    private async Task<RateLimitPolicyEntryViewModel> BuildPolicyEntryAsync(RateLimitPolicy policy)
-    {
-        dynamic shape = await _policyDisplayManager.BuildDisplayAsync(policy, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin);
-
-        return new RateLimitPolicyEntryViewModel
-        {
-            PolicyId = policy.PolicyId,
-            ActionsMenu = shape.ActionsMenu,
-            Shape = shape,
-            Policy = policy,
-            Name = policy.Name,
-            Description = policy.Description,
-            Status = policy.Status,
-            EnabledUtc = policy.EnabledUtc,
-            IsEnabled = policy.IsEnabled,
-        };
     }
 
     private async Task<RateLimitPolicyEditViewModel> CreateEditViewModelAsync(RateLimitPolicy policy)

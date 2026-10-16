@@ -31,7 +31,6 @@ public sealed class AdminController : Controller, IUpdateModel
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
     private readonly ITagCache _tagCache;
-    private readonly IDisplayManager<Notification> _notificationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
@@ -47,7 +46,6 @@ public sealed class AdminController : Controller, IUpdateModel
         ISession session,
         ITagCache tagCache,
         IOptions<PagerOptions> pagerOptions,
-        IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
         IDisplayManager<ListNotificationOptions> notificationOptionsDisplayManager,
         INotifier notifier,
@@ -59,7 +57,6 @@ public sealed class AdminController : Controller, IUpdateModel
         _authorizationService = authorizationService;
         _session = session;
         _tagCache = tagCache;
-        _notificationDisplayManager = notificationDisplayManager;
         _notificationsAdminListQueryService = notificationsAdminListQueryService;
         _notificationOptionsDisplayManager = notificationOptionsDisplayManager;
         _notifier = notifier;
@@ -75,8 +72,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
-        ListNotificationOptions options,
-        [FromServices] IAdminListFactory adminListFactory)
+        ListNotificationOptions options)
     {
         if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
@@ -115,49 +111,27 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
 
-        var notificationShapes = new List<IShape>();
-        var rows = new List<AdminListRow<Notification>>();
-
-        foreach (var notification in queryResult.Notifications)
-        {
-            var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, OrchardCoreConstants.DisplayType.SummaryAdmin);
-            shape.Properties[nameof(Notification)] = notification;
-
-            // The read state is a class on the row itself, so every layout renders it on its own row element.
-            if (shape is Shape rowShape)
-            {
-                rowShape.Classes.Add(notification.GetOrCreate<NotificationReadInfo>().IsRead
-                    ? NotificationsAdminList.ReadCssClass
-                    : NotificationsAdminList.UnreadCssClass);
-            }
-
-            notificationShapes.Add(shape);
-            rows.Add(new(notification, shape));
-        }
-
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + notificationShapes.Count - 1;
-        options.NotificationsCount = notificationShapes.Count;
+        options.EndIndex = startIndex + queryResult.Notifications.Count() - 1;
+        options.NotificationsCount = queryResult.Notifications.Count();
         options.TotalItemCount = queryResult.TotalCount;
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the notifications with the configured layout (List, Grid, ...).
-        var list = await adminListFactory.CreateAsync(new AdminListContext<Notification>(NotificationsAdminList.Name)
+        var list = new AdminListContext<Notification>
         {
-            Rows = rows,
+            Source = queryResult.Notifications,
             Header = header,
             Pager = pagerShape,
-            ItemCssClass = "list-group-item notification-container-item",
-            EmptyMessage = H["No notifications found."],
-        }, HttpContext.RequestAborted);
+        };
 
         var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
         {
             viewModel.Options = options;
             viewModel.Header = header;
-            viewModel.Notifications = notificationShapes;
+            viewModel.Notifications = queryResult.Notifications;
             viewModel.Pager = pagerShape;
             viewModel.List = list;
         });

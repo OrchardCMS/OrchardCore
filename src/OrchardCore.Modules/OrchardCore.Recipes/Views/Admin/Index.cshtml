@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model OrchardCore.Recipes.ViewModels.RecipesIndexViewModel
 
 <zone Name="Title">
@@ -32,7 +34,15 @@
                 <h4 class="mb-2" data-filter-value="@group.FilterValue">@group.Feature</h4>
 
                 @* The recipes of this feature are rendered by the AdminList shape using the configured layout. *@
-                @await DisplayAsync(group.List)
+                <admin-list name="@OrchardCore.Recipes.RecipesAdminList.Name" context="group.List"
+                            show-toolbar="false">
+                    <admin-list-list item-css-class="list-group-item" />
+                    <admin-list-grid>
+                        <admin-list-column name="Name" position="10" title="@T["Name"]" />
+                        <admin-list-column name="Tags" position="20" title="@T["Tags"]" width="auto" />
+                        <admin-list-column type="Actions" title="@T["Actions"]" />
+                    </admin-list-grid>
+                </admin-list>
             </div>
         }
     </form>

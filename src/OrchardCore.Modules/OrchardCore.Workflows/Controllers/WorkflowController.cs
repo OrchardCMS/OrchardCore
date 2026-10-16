@@ -79,9 +79,6 @@ public sealed class WorkflowController : Controller
         long workflowTypeId,
         WorkflowIndexViewModel model,
         PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<WorkflowEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory,
         string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
@@ -160,13 +157,6 @@ public sealed class WorkflowController : Controller
             new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
         ];
 
-        var rows = new List<AdminListRow<WorkflowEntry>>(viewModel.Workflows.Count);
-
-        foreach (var entry in viewModel.Workflows)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The status and sort filters render at the end of the toolbar, next to the bulk actions.
         var filters = await _shapeFactory.CreateAsync("WorkflowInstancesFilters", Arguments.From(new
         {
@@ -174,15 +164,12 @@ public sealed class WorkflowController : Controller
         }));
 
         // The AdminList shape renders the instances with the configured layout (List, Grid, ...).
-        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext<WorkflowEntry>(WorkflowInstancesAdminList.Name)
+        viewModel.List = new AdminListContext<WorkflowEntry>
         {
-            Rows = rows,
-            BulkActions = viewModel.Options.WorkflowsBulkAction,
+            Source = viewModel.Workflows,
             ToolbarActions = filters,
             Pager = viewModel.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow instances at the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(viewModel);
     }

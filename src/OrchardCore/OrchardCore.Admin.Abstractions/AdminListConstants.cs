@@ -1,27 +1,10 @@
 ﻿namespace OrchardCore.Admin;
 
 /// <summary>
-/// Well-known admin list layouts and shape names, and the naming conventions used to discover them.
+/// Well-known admin list shape and property names.
 /// </summary>
-/// <remarks>
-/// A layout is a named presentation of an admin list. It is rendered by the <c>AdminList</c> shape using the
-/// alternate <c>AdminList__{Layout}</c> (e.g. <c>AdminList-Grid.cshtml</c>). A layout is made available in the
-/// admin settings when a shape named <c>AdminListLayout_Option__{Layout}</c> exists (e.g. <c>AdminListLayout-Grid.Option.cshtml</c>),
-/// which mirrors how content field editors are discovered.
-/// </remarks>
 public static class AdminListConstants
 {
-    /// <summary>
-    /// The default layout, rendering the items as a vertical list.
-    /// </summary>
-    public const string List = "List";
-
-    /// <summary>
-    /// Renders the items with one column per <see cref="Models.AdminListColumn"/>, laid out with a CSS grid so the
-    /// header always lines up with the data.
-    /// </summary>
-    public const string Grid = "Grid";
-
     /// <summary>
     /// The shape type rendering an admin list.
     /// </summary>
@@ -31,18 +14,6 @@ public static class AdminListConstants
     /// The shape type rendering a single cell of an admin list with columns.
     /// </summary>
     public const string CellShapeType = "AdminListCell";
-
-    /// <summary>
-    /// The display type of the shapes the column drivers build for the headers of the columns, see
-    /// <see cref="IAdminListColumnDriver{TModel}.BuildColumnsAsync"/>.
-    /// </summary>
-    public const string HeaderDisplayType = "AdminListHeader";
-
-    /// <summary>
-    /// The display type of the shapes the column drivers build for the cells of a row, see
-    /// <see cref="IAdminListColumnDriver{TModel}.BuildCellsAsync"/>.
-    /// </summary>
-    public const string CellDisplayType = "AdminListCell";
 
     /// <summary>
     /// The shape type rendering the toolbar of an admin list, above its rows.
@@ -66,12 +37,7 @@ public static class AdminListConstants
 
     /// <summary>
     /// The name of the property every part of a list carries with the layout rendering it, so a template can
-    /// be overridden for one layout, e.g. a toolbar that only applies to <see cref="Grid"/>.
+    /// be overridden for one layout, e.g. a toolbar that only applies to <see cref="AdminListLayout.Grid"/>.
     /// </summary>
     public const string ListLayoutProperty = "ListLayout";
-
-    /// <summary>
-    /// The prefix of the shapes that declare an available layout, e.g. <c>AdminListLayout_Option__Grid</c>.
-    /// </summary>
-    public const string OptionShapePrefix = "AdminListLayout_Option__";
 }

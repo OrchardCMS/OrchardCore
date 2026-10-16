@@ -8,14 +8,19 @@ namespace OrchardCore.Admin;
 public interface IAdminListFactory
 {
     /// <summary>
-    /// Creates the <c>AdminList</c> shape of the given list. The columns are built with
-    /// <see cref="IAdminListColumnsBuilder"/>, and the layout is resolved with <see cref="IAdminListLayoutResolver"/>
-    /// unless <see cref="AdminListContext.Layout"/> is set. A list no driver declared columns for is rendered with
-    /// the <see cref="AdminListConstants.List"/> layout, the only one that does not need them. The cells of the
-    /// rows are only built for the layouts with columns.
+    /// Creates an <c>AdminList</c> shape. The rendering view can set its columns and presentation properties
+    /// before displaying it. Initialization is deferred until display so standard shape creation works too.
     /// </summary>
-    /// <typeparam name="TModel">The items of the list, e.g. <c>User</c>.</typeparam>
-    /// <param name="context">The list to render.</param>
+    /// <param name="name">The list identity used by column providers, layout preferences and shape alternates.</param>
+    /// <param name="context">The items, contextual data and region shapes to render.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to observe.</param>
-    Task<IShape> CreateAsync<TModel>(AdminListContext<TModel> context, CancellationToken cancellationToken = default);
+    Task<IShape> CreateAsync(string name, AdminListContext context, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Prepares an <c>AdminList</c> shape for display: extends its columns, resolves its layout, builds its
+    /// rows using the selected display type and its toolbar. Called by the shape's displaying event.
+    /// </summary>
+    /// <param name="shape">The shape created through this factory or the standard shape factory.</param>
+    /// <param name="cancellationToken">The cancellation token to observe.</param>
+    Task BuildAsync(IShape shape, CancellationToken cancellationToken = default);
 }

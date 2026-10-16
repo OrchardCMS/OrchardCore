@@ -1,20 +1,24 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Queries.ViewModels;
 
 public class QueriesIndexViewModel
 {
-    public IList<QueryEntry> Queries { get; set; }
+    /// <summary>
+    /// The queried definitions on this page, before their row shapes are built.
+    /// </summary>
+    public IList<Query> Queries { get; set; }
     public ContentOptions Options { get; set; } = new ContentOptions();
     public IShape Pager { get; set; }
     public IEnumerable<string> QuerySourceNames { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the queries, the toolbar and the pager in the configured layout.
+    /// The data context for rendering the queries, the toolbar and the pager in the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class QueryEntry

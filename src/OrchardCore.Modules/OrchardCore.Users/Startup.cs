@@ -170,7 +170,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
         services.AddScoped<ILoginFormEvent, DisabledUserLoginFormEvent>();
 
-        services.AddAdminListColumnDriver<User, UsersAdminListColumnDriver>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

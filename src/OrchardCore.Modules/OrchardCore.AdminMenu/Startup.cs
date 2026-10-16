@@ -46,7 +46,6 @@ public sealed class Startup : StartupBase
         // Migrate admin menu to the 3.0 format.
         services.AddDataMigration<Migrations>();
 
-        services.AddAdminListColumnDriver<AdminMenuEntry, AdminMenusAdminListColumnDriver>();
     }
 }
 

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -59,11 +58,7 @@ public sealed class AdminController : Controller
     [Admin("Features/{tenant?}", "Features")]
     public async Task<ActionResult> Features(
         string tenant,
-        [FromServices] IDisplayManager<FeatureEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IAdminListFactory adminListFactory,
-        [FromServices] IAdminListLayoutResolver layoutResolver)
+        [FromServices] IShapeFactory shapeFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, FeaturesPermissions.ManageFeatures))
         {
@@ -85,49 +80,20 @@ public sealed class AdminController : Controller
             viewModel.Features = await featureService.GetModuleFeaturesAsync();
         });
 
-        var layout = await layoutResolver.GetLayoutAsync(FeaturesAdminList.Name, HttpContext.RequestAborted);
-
         // The categories share one layout, so the page offers it once, beside its filters, and its lists do not
         // carry a selector of their own.
-        var layoutOptions = await layoutResolver.GetLayoutOptionsAsync(HttpContext.RequestAborted);
-
-        if (layoutOptions.Count > 0)
+        viewModel.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
         {
-            viewModel.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
-            {
-                ListName = FeaturesAdminList.Name,
-                Current = layout,
-                // Not "Items": a shape already exposes that name for its child shapes.
-                Layouts = layoutOptions,
-            }));
-        }
+            ListName = FeaturesAdminList.Name,
+        }));
 
         // The page keeps one list per category, and every list follows the configured layout.
         foreach (var group in viewModel.Features.GroupBy(feature => feature.Descriptor.Category).OrderBy(group => group.Key))
         {
             var category = group.Key ?? S["Uncategorized"].Value;
-            var rows = new List<AdminListRow<FeatureEntry>>();
-            var hasSelectableFeature = false;
-
-            foreach (var feature in group.OrderBy(feature => feature.Descriptor.Name))
-            {
-                var entry = CreateEntry(viewModel, feature, category, tenant);
-
-                hasSelectableFeature |= entry.IsSelectable;
-
-                var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
-
-                // The rows carry the attributes used by the client-side search and filters of the list-management script.
-                if (shape is Shape rowShape)
-                {
-                    rowShape.Attributes["data-filter-value"] = $"{feature.Descriptor.Name} {feature.Descriptor.Id} {feature.Descriptor.Description}";
-                    rowShape.Attributes["data-is-on-demand"] = feature.Descriptor.EnabledByDependencyOnly.ToString().ToLowerInvariant();
-                    rowShape.Attributes["data-is-always-enabled"] = entry.IsAlwaysEnabled.ToString().ToLowerInvariant();
-                    rowShape.Attributes["data-is-enabled"] = feature.IsEnabled.ToString().ToLowerInvariant();
-                }
-
-                rows.Add(new(entry, shape));
-            }
+            var entries = group.OrderBy(feature => feature.Descriptor.Name)
+                .Select(feature => CreateEntry(viewModel, feature, category, tenant)).ToArray();
+            var hasSelectableFeature = entries.Any(entry => entry.IsSelectable);
 
             // A category with nothing to select has no select-all checkbox, so it gets no toolbar at all, not even
             // the generic one.
@@ -142,15 +108,12 @@ public sealed class AdminController : Controller
             viewModel.Groups.Add(new FeatureGroupViewModel
             {
                 Category = category,
-                List = await adminListFactory.CreateAsync(new AdminListContext<FeatureEntry>(FeaturesAdminList.Name)
+                List = new AdminListContext<FeatureEntry>
                 {
-                    Layout = layout,
-                    Rows = rows,
+                    Source = entries,
                     Toolbar = toolbar,
-                    ShowToolbar = false,
                     ShowLayoutSelector = false,
-                    ItemCssClass = "list-group-item",
-                }, HttpContext.RequestAborted),
+                },
             });
         }
 

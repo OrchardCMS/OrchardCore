@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.OpenId.ViewModels;
@@ -10,9 +11,9 @@ public class OpenIdScopeIndexViewModel
     public IShape Pager { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the scopes and the pager in the configured layout.
+    /// The data context for rendering the scopes and the pager in the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class OpenIdScopeEntry

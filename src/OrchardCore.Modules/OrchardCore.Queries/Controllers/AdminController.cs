@@ -61,8 +61,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Index(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
         {
@@ -86,20 +85,11 @@ public sealed class AdminController : Controller
 
         var model = new QueriesIndexViewModel
         {
-            Queries = [],
+            Queries = result.Records.ToList(),
             Options = options,
             Pager = await _shapeFactory.PagerAsync(pager, result.Count, routeData),
             QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToArray(),
         };
-
-        foreach (var query in result.Records)
-        {
-            model.Queries.Add(new QueryEntry
-            {
-                Query = query,
-                Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin),
-            });
-        }
 
         model.Options.ContentsBulkAction =
         [
@@ -107,14 +97,11 @@ public sealed class AdminController : Controller
         ];
 
         // The AdminList shape renders the queries with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<Query>(QueriesAdminList.Name)
+        model.List = new AdminListContext<Query>
         {
-            Rows = model.Queries.Select(entry => new AdminListRow<Query>(entry.Query, entry.Shape)).ToList(),
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = model.Queries,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no queries for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

@@ -41,16 +41,14 @@ public class AdminControllerTests
             {
                 Page = 2,
                 PageSize = 2,
-            },
-            CreateDisplayManager(),
-            Mock.Of<IUpdateModelAccessor>(),
-            CreateAdminListFactory());
+            });
 
         var viewResult = Assert.IsType<ViewResult>(result);
         var model = Assert.IsType<AdminIndexViewModel>(viewResult.Model);
         var entry = Assert.Single(model.ShellSettingsEntries);
         Assert.Equal("zeta", entry.Name);
         Assert.Equal("Zeta description", entry.Description);
+        Assert.Same(entry, Assert.Single(model.List.Source.Cast<ShellSettingsEntry>()));
 
         var pager = Assert.IsAssignableFrom<IShape>((object)model.Pager);
         Assert.Equal(3, pager.Properties["TotalItemCount"]);
@@ -100,26 +98,6 @@ public class AdminControllerTests
                 HttpContext = new DefaultHttpContext(),
             },
         };
-    }
-
-    private static IDisplayManager<ShellSettingsEntry> CreateDisplayManager()
-    {
-        var displayManager = new Mock<IDisplayManager<ShellSettingsEntry>>();
-        displayManager
-            .Setup(x => x.BuildDisplayAsync(It.IsAny<ShellSettingsEntry>(), It.IsAny<IUpdateModel>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(() => new Shape());
-
-        return displayManager.Object;
-    }
-
-    private static IAdminListFactory CreateAdminListFactory()
-    {
-        var adminListFactory = new Mock<IAdminListFactory>();
-        adminListFactory
-            .Setup(x => x.CreateAsync(It.IsAny<AdminListContext<ShellSettingsEntry>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => new Shape());
-
-        return adminListFactory.Object;
     }
 
     private static Mock<IAuthorizationService> CreateAuthorizationService()

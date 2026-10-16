@@ -1,6 +1,5 @@
 @*
-    Renders one cell of an admin list in a layout with columns, e.g. 'Grid': the zones of the row shape listed by the column,
-    then the shapes the column drivers built for it, in the zone of 'Cells' named after the column.
+    Renders the column zones of a row built with the SummaryAdminGrid display type.
     Override per column with AdminListCell-{Column}.cshtml or per list with AdminListCell-{ListName}-{Column}.cshtml.
     The layouts render the zones this way themselves, and only create this shape when a template overrides a cell.
 *@
@@ -9,19 +8,15 @@
 @{
     var column = (AdminListColumn)Model.Column;
     var row = Model.Row as IZoneHolding;
-    var cells = Model.Cells as IZoneHolding;
+    var zones = column.Zones.Length > 0 ? column.Zones : [column.Name];
 }
 @if (row != null)
 {
-    foreach (var zone in column.Zones)
+    foreach (var zone in zones)
     {
         if (row.Zones.IsNotEmpty(zone))
         {
             @await DisplayAsync(row.Zones[zone])
         }
     }
-}
-@if (cells != null && cells.Zones.IsNotEmpty(column.Name))
-{
-    @await DisplayAsync(cells.Zones[column.Name])
 }

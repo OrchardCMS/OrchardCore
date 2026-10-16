@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Recipes.ViewModels;
@@ -16,7 +17,7 @@ public class RecipeViewModel
 
 
 /// <summary>
-/// The recipes admin list, one group per feature. Each group carries its own <c>AdminList</c> shape so the
+/// The recipes admin list, one group per feature. Each group carries its own admin list context so the
 /// page keeps the grouping it had while every group follows the configured layout.
 /// </summary>
 public class RecipesIndexViewModel
@@ -40,5 +41,8 @@ public class RecipeGroupViewModel
     /// </summary>
     public string FilterValue { get; set; }
 
-    public IShape List { get; set; }
+    /// <summary>
+    /// The recipe items and options for rendering this group's admin list.
+    /// </summary>
+    public AdminListContext List { get; set; }
 }

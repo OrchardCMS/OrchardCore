@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model MediaProfileIndexViewModel
 
 <zone Name="Title">
@@ -27,7 +29,16 @@
     </div>
 
     @* The profiles, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="MediaProfiles" context="Model.List"
+                bulk-actions="Model.Options.ContentsBulkAction"
+                empty-message="@T["<strong>Nothing here!</strong> There are no media profiles for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
 
 <script asp-src="~/OrchardCore.Media/Scripts/media-profiles-index/media-profiles-index.min.js" debug-src="~/OrchardCore.Media/Scripts/media-profiles-index/media-profiles-index.js" at="Foot" type="module"></script>

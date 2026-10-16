@@ -51,10 +51,7 @@ public sealed class ScopeController : Controller
     [Admin("OpenId/Scope", "OpenIdScope")]
     public async Task<ActionResult> Index(
         PagerParameters pagerParameters,
-        string searchText,
-        [FromServices] IDisplayManager<OpenIdScopeEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        string searchText)
     {
         if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
@@ -108,22 +105,12 @@ public sealed class ScopeController : Controller
             model.Scopes.Add(entry);
         }
 
-        var rows = new List<AdminListRow<OpenIdScopeEntry>>(model.Scopes.Count);
-
-        foreach (var entry in model.Scopes)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the scopes with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<OpenIdScopeEntry>(OpenIdScopesAdminList.Name)
+        model.List = new AdminListContext<OpenIdScopeEntry>
         {
-            Rows = rows,
-            ShowSelectAll = false,
+            Source = model.Scopes,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no scopes at the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

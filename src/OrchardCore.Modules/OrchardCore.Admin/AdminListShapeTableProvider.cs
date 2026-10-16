@@ -40,14 +40,18 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
             .OnDisplaying(async context =>
             {
                 var shape = context.Shape;
+                var factory = context.ServiceProvider?.GetService<IAdminListFactory>();
+                if (factory != null)
+                {
+                    var cancellationToken = context.ServiceProvider.GetService<IHttpContextAccessor>()?.HttpContext?.RequestAborted ?? CancellationToken.None;
+                    await factory.BuildAsync(shape, cancellationToken);
+                }
+
                 var alternates = shape.Metadata.Alternates;
 
                 shape.TryGetProperty<string>("Name", out var name);
 
-                if (!shape.TryGetProperty<string>("Layout", out var layout) || string.IsNullOrEmpty(layout))
-                {
-                    layout = AdminListConstants.List;
-                }
+                var layout = shape.GetProperty("Layout", AdminListLayout.List);
 
                 alternates.Add($"{AdminListConstants.ShapeType}__{layout}");
 
@@ -62,10 +66,27 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 
                 // Hand the name and the layout down to everything the layout renders, so a template can be
                 // overridden for this list, or for this layout, without a page passing them to every shape.
-                StampList(shape, name, layout);
+                StampList(shape, name, layout.ToString());
 
-                await AddCellRenderingsAsync(context, shape, name, layout);
+                await AddCellRenderingsAsync(context, shape, name, layout.ToString());
                 await AddLayoutSelectorAsync(context, shape, name, layout);
+            });
+
+        builder.Describe(AdminListConstants.LayoutSelectorShapeType)
+            .OnDisplaying(context =>
+            {
+                var shape = context.Shape;
+                var resolver = context.ServiceProvider.GetRequiredService<AdminListLayoutResolver>();
+                shape.Properties["ShowSelector"] = resolver.AllowUserSelection;
+                if (!resolver.AllowUserSelection)
+                {
+                    return;
+                }
+
+                shape.Properties["Current"] = shape.GetProperty<AdminListLayout?>("Current")
+                    ?? resolver.GetLayout(shape.GetProperty<string>(AdminListConstants.ListNameProperty));
+                shape.Properties["ListUrl"] = resolver.GetLayoutUrl(AdminListLayout.List);
+                shape.Properties["GridUrl"] = resolver.GetLayoutUrl(AdminListLayout.Grid);
             });
 
         builder.Describe(AdminListActionsLayouts.ShapeType)
@@ -152,7 +173,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         var services = context.ServiceProvider;
 
         if (services is null ||
-            string.Equals(layout, AdminListConstants.List, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(layout, nameof(AdminListLayout.List), StringComparison.OrdinalIgnoreCase) ||
             !shape.TryGetProperty<IList<AdminListColumn>>("Columns", out var columns) ||
             columns.Count == 0)
         {
@@ -180,7 +201,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 
     // Offers the user the other layouts of this list, unless the page placed a selector itself or turned it off,
     // e.g. the features, which render one list per category and offer the layout once beside their filters.
-    private static async Task AddLayoutSelectorAsync(ShapeDisplayContext context, IShape shape, string name, string layout)
+    private static async Task AddLayoutSelectorAsync(ShapeDisplayContext context, IShape shape, string name, AdminListLayout layout)
     {
         var services = context.ServiceProvider;
 
@@ -192,18 +213,10 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
             return;
         }
 
-        var layoutResolver = services.GetService<IAdminListLayoutResolver>();
+        var layoutResolver = services.GetService<AdminListLayoutResolver>();
         var shapeFactory = services.GetService<IShapeFactory>();
 
-        if (layoutResolver is null || shapeFactory is null)
-        {
-            return;
-        }
-
-        var cancellationToken = services.GetService<IHttpContextAccessor>()?.HttpContext?.RequestAborted ?? CancellationToken.None;
-        var layouts = await layoutResolver.GetLayoutOptionsAsync(cancellationToken);
-
-        if (layouts.Count == 0)
+        if (layoutResolver is null || shapeFactory is null || !layoutResolver.AllowUserSelection)
         {
             return;
         }
@@ -212,8 +225,6 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         {
             ListName = name,
             Current = layout,
-            // Not "Items": a shape already exposes that name for its child shapes.
-            Layouts = layouts,
         }));
     }
 
@@ -239,7 +250,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         var type = shape.Metadata.Type;
 
         shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName);
-        shape.TryGetProperty<string>(AdminListConstants.ListLayoutProperty, out var layout);
+        var layout = shape.GetProperty(AdminListConstants.ListLayoutProperty)?.ToString();
 
         var hasName = !string.IsNullOrEmpty(listName);
         var hasLayout = !string.IsNullOrEmpty(layout);

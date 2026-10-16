@@ -57,10 +57,7 @@ public sealed class BackgroundTaskController : Controller
     [Admin("BackgroundTasks", "BackgroundTasks")]
     public async Task<IActionResult> Index(
         AdminIndexOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<BackgroundTaskEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
         {
@@ -144,13 +141,6 @@ public sealed class BackgroundTaskController : Controller
             Options = options,
         };
 
-        var rows = new List<AdminListRow<BackgroundTaskEntry>>(model.Tasks.Count);
-
-        foreach (var entry in model.Tasks)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The status filter renders at the end of the toolbar, next to the bulk actions.
         var filters = await _shapeFactory.CreateAsync("BackgroundTasksFilters", Arguments.From(new
         {
@@ -158,15 +148,12 @@ public sealed class BackgroundTaskController : Controller
         }));
 
         // The AdminList shape renders the tasks with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<BackgroundTaskEntry>(BackgroundTasksAdminList.Name)
+        model.List = new AdminListContext<BackgroundTaskEntry>
         {
-            Rows = rows,
-            BulkActions = options.BulkActions,
+            Source = model.Tasks,
             ToolbarActions = filters,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no background tasks for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

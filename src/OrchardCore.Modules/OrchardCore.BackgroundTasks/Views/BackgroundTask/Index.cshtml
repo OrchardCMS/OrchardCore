@@ -1,4 +1,6 @@
-﻿@model BackgroundTaskIndexViewModel
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
+@model BackgroundTaskIndexViewModel
 
 <zone Name="Title">
     <breadcrumb name="BackgroundTasks" title="@T["Background Tasks"]" />
@@ -23,7 +25,17 @@
     </div>
 
     @* The tasks, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="BackgroundTasks" context="Model.List"
+                bulk-actions="Model.Options.BulkActions"
+                empty-message="@T["<strong>Nothing here!</strong> There are no background tasks for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="Title" position="20" title="@T["Title"]" />
+            <admin-list-column name="Status" position="30" title="@T["Status"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
 
 <style asp-name="bootstrap-select" at="Head"></style>

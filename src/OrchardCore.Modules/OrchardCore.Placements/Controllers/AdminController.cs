@@ -61,10 +61,7 @@ public sealed class AdminController : Controller
     [Admin("Placements", "Placements.Index")]
     public async Task<IActionResult> Index(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<ShapePlacement> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
         {
@@ -113,22 +110,12 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<AdminListRow<ShapePlacement>>(shapeList.Count);
-
-        foreach (var placement in shapeList)
-        {
-            rows.Add(new(placement, await displayManager.BuildDisplayAsync(placement, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the placements with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<ShapePlacement>(PlacementsAdminList.Name)
+        model.List = new AdminListContext<ShapePlacement>
         {
-            Rows = rows,
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = shapeList,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no placements at the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

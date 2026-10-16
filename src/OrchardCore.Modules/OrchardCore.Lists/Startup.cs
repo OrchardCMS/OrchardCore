@@ -61,8 +61,8 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddScoped<IDocumentIndexHandler, ContainedPartContentIndexHandler>();
         services.AddScoped<IContainerService, ContainerService>();
+        services.AddScoped<IAdminListItemDisplayManager<ListPartAdminListEntry>, ListPartAdminListDisplayManager>();
 
-        services.AddAdminListColumnDriver<ContentItem, ListPartContentsAdminListColumnDriver>();
     }
 }
 

@@ -1,17 +1,20 @@
-using OrchardCore.DisplayManagement;
+using OrchardCore.Admin;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing.ViewModels;
 
-public sealed class AdminIndexViewModel : ListSourcedEntitiesViewModel<IndexProfileKey, ModelEntry<IndexProfile>, IndexingEntityOptions>
+/// <summary>
+/// The queried index profiles and options for the indexing admin list.
+/// </summary>
+public sealed class AdminIndexViewModel : ListSourcedEntitiesViewModel<IndexProfileKey, IndexProfile, IndexingEntityOptions>
 {
     public IEnumerable<IndexSourceGroupViewModel> SourceGroups { get; set; } = [];
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the index profiles with the configured layout.
+    /// The data context for rendering the index profiles with the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public sealed class IndexSourceGroupViewModel

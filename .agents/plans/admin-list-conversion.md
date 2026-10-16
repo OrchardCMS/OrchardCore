@@ -41,11 +41,11 @@ A screen is **converted** only when every box below is ticked.
 
 | # | Requirement | How to verify |
 |---|-------------|---------------|
-| 1 | Rows come from a display driver as a `SummaryAdmin` shape — no hard-coded `<li>` row markup | `@await DisplayAsync(Model.List)` is the only row rendering in the view |
+| 1 | Rows come from a display driver using `SummaryAdmin` or `SummaryAdminGrid` — no hard-coded `<li>` row markup | `<admin-list name="ListName" context="Model.List">` renders the listing |
 | 2 | Every visible piece of a row (checkbox, title, badges, meta, buttons, menu items) lives in its own shape placed in a **zone** | Row template has no literal markup other than zone rendering |
-| 3 | A `{Module}AdminList` static class declares `Name`, and a `{List}AdminListColumnDriver` declares the columns, registered for the items with `AddAdminListColumnDriver<TModel, T>()` | Files exist next to the module root; `AdminListDefinitionsTests` passes |
-| 4 | Controller injects `IAdminListFactory` via `[FromServices]` and creates the list from an `AdminListContext<TModel>` with `Rows` (`AdminListRow<TModel>`: each item with its row shape), `BulkActions` (or a `Header`), `Pager`, `EmptyMessage` | Controller `Index`/`List` action |
-| 5 | Rows carry `Classes.Add("item")` and `Attributes["data-filter-value"]` when the page uses client-side search | Controller loop over row shapes |
+| 3 | Each list has a unique, stable name, and the rendering view declares columns with display-type-specific row zones | Use a literal for a single module use; keep constants for reused names or abstractions |
+| 4 | Controller supplies typed `Source` items, `Header` and `Pager` in an `AdminListContext<TModel>`; the view creates the shape and configures columns, `BulkActions` and `EmptyMessage` | Controller `Index`/`List` action has no row-building loop |
+| 5 | The model's driver adds optional row classes and `data-filter-value` when the page uses client-side search | Driver sets metadata for both admin display types |
 | 6 | Action bar uses `row gx-2` (**not** `gx-3`) | `grep gx-3` returns nothing for the view |
 | 7 | Search box is an `input-group` ending with a search button showing a magnifying glass (`name="submit.Filter"`), with no icon inside the input | View markup |
 | 8 | Hidden `submit.Filter` button stays **first** in the form (Enter key) | View markup |
@@ -117,11 +117,10 @@ takes a line under them, the way the `summary` of the List layout stacks below `
    > `InvalidOperationException: The shape type '...' is not found for the theme 'TheAdmin'`.
 2. **Row template** — `{Entity}.SummaryAdmin.cshtml` renders zones only. The actions zone uses
    `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`.
-3. **Columns** — add `{Module}AdminList.cs` with `Name`, and a `{List}AdminListColumnDriver` registered for
-   the items of the list with `services.AddAdminListColumnDriver<TModel, T>()`.
+3. **Columns** — declare a stable list `name` and its columns in the rendering view. Extend them with `IAdminListColumnsProvider`. Do not add a name constant for a single module use.
 4. **Controller** — build the row shapes, then create the list with
-   `adminListFactory.CreateAsync(new AdminListContext<TModel>({List}AdminList.Name) { Rows, BulkActions, Pager, ... }, HttpContext.RequestAborted)`.
-   The factory builds the columns, the layout and the toolbar.
+   `new AdminListContext<ModelType> { Source = items, Pager = pager, ... }`.
+   The displaying event extends the view's columns, resolves the layout and builds the toolbar.
 5. **View** — keep only the `<zone Name="Title">`, the form, the action bar (`gx-2` + search button),
    `@await DisplayAsync(Model.List)`, the no-results alert, any modals, and the
    `<script asp-name="list-management" at="Foot">`.
@@ -139,8 +138,8 @@ The admin route is the path after the admin prefix (default `/Admin`).
 | Screen | Route | View | Notes |
 |--------|-------|------|-------|
 | Manage Content | `Contents/ContentItems/{type?}` | `OrchardCore.Contents/Views/ContentsAdminList.cshtml` | `ContentsAdminList.cs`, `Header` pattern |
-| Users | `Users` | `OrchardCore.Users/Views/UsersAdminList.cshtml` | `UsersAdminList.cs`, `Header` pattern |
-| Indexes | `indexing` | `OrchardCore.Indexing/Views/Admin/Index.cshtml` | `IndexingAdminList.cs`, `Toolbar` pattern — **closest template for Tier 1/2** |
+| Users | `Users` | `OrchardCore.Users/Views/UsersAdminList.cshtml` | `Header` pattern |
+| Indexes | `indexing` | `OrchardCore.Indexing/Views/Admin/Index.cshtml` | `Toolbar` pattern — **closest template for Tier 1/2** |
 
 ## A.1 — Rows already driver-rendered (low effort)
 
@@ -150,7 +149,7 @@ the checkbox and buttons into zones, adding the columns class, and rewriting the
 | # | Screen | Route | View | Driver | What is missing |
 |---|--------|-------|------|--------|-----------------|
 | 1.1 | URL Rewriting | `UrlRewriting` | `OrchardCore.UrlRewriting/Views/Admin/Index.cshtml` | `RewriteRulesDisplayDriver` — already has `Fields`/`Buttons`/`DefaultMeta`/`DefaultTags` shapes | `gx-3`→`gx-2`, Go button, `Checkbox` zone, hand-written toolbar `<li>`, `UrlRewritingAdminList.cs`, controller wiring. **Blocked on decision 3**: the rules are a drag-sortable pipeline (`sortingListManager`, `#rewrite-rules-sortable-list`, `SortRulesEndpoint`) and the rows container differs per layout, so the shape needs a sortable-container hook first. Bulk-action inputs are named `ruleIds`, not `itemIds` |
-| 1.2 | Queries | `Queries` | `OrchardCore.Queries/Views/Admin/Index.cshtml` | `QueryDisplayDriver` plus `SqlQueryDisplayDriver`, `LuceneQueryDisplayDriver`, `ElasticsearchQueryDisplayDriver` | `gx-3`→`gx-2`, Go button, `Checkbox` zone, new `Tags` zone for the source badge, hand-written toolbar `<li>`, `QueriesAdminList.cs`, controller wiring. No sortable, no naming variance — **start here**. Per-source row templates only apply in the `List` layout |
+| 1.2 | Queries | `Queries` | `OrchardCore.Queries/Views/Admin/Index.cshtml` | `QueryDisplayDriver` plus `SqlQueryDisplayDriver`, `LuceneQueryDisplayDriver`, `ElasticsearchQueryDisplayDriver` | `gx-3`→`gx-2`, Go button, `Checkbox` zone, new `Tags` zone for the source badge, hand-written toolbar `<li>`, controller wiring. No sortable, no naming variance — **start here**. Per-source row templates only apply in the `List` layout |
 | 1.3 | ~~Placements~~ | | | | **Re-tiered to A.2 #2.16** — its rows are hard-coded `<li>` markup, not driver shapes. The survey grep that put it here matched `DisplayAsync(Model.Pager)`, not a row shape |
 | 1.4 | Rate Limits | `RateLimits` | `OrchardCore.RateLimits/Views/Admin/Index.cshtml` | `RateLimitPolicyDisplayDriver` — has `ActionsMenuItems`, `DefaultMeta`, `Buttons` | Same. The page also lists limiters nested under each policy — the nested list stays as-is |
 | 1.5 | Audit Trail | `AuditTrail` | `OrchardCore.AuditTrail/Views/AuditTrailAdminList.cshtml` | `AuditTrailEventDisplayDriver` — has `Meta`/`Tags`/`Actions` shapes | `Header` (options editor) pattern; `gx-3`→`gx-2`; add the Go button to `AuditTrailAdminListSearch.cshtml`; no bulk actions |
@@ -194,7 +193,7 @@ the layout setting applies; the toolbar can omit bulk actions.
 | 3.5 | Sitemap Cache | `SitemapsCache/List` | `OrchardCore.Sitemaps/Views/SitemapCache/List.cshtml` | Very small list |
 | 3.6 | ~~Media Cache~~ | | | **Moved to B.10** — it is a single Purge All action, not a list of records |
 | 3.7 | Workflow Instances | `Workflows/Types/{id}/Instances` | `OrchardCore.Workflows/Views/Workflow/Index.cshtml` | Has a pager and bulk actions but no search bar today — add one |
-| 3.8 | List Part contents | inside a List content item | `OrchardCore.Lists/Views/ListPartDetailAdmin.cshtml` | Rows are already `Content SummaryAdmin` shapes, so reuse the `ContentsAdminList` columns. Drag-ordering is optional here (`EnableOrdering`) — when it is on, force the `List` layout. See decision 3 |
+| 3.8 | List Part contents | inside a List content item | `OrchardCore.Lists/Views/ListPartDetailAdmin.cshtml` | Build rows as `SummaryAdmin` or `SummaryAdminGrid`, and reuse the `ContentsAdminList` columns. Drag-ordering is optional here (`EnableOrdering`) — when it is on, force the `List` layout. See decision 3 |
 
 ## A.4 — Eligible but high effort (do last)
 
@@ -409,7 +408,7 @@ Resolve each before the batch that needs it, and record the answer here.
       gained a viewport-based `d-md-none`. The stacking rules are per cell, not per column set, so
       the new columns (handle, dependencies, status) stack with the rest.
 - [x] `src/docs/reference/modules/Admin/README.md` — document every converted list name and its
-      default columns, so module authors know the names to target with a column driver.
+      default columns, so module authors know the names to target with placement or a column provider.
       Also document the Part B exclusion list so nobody re-opens it.
 - [x] `src/docs/releases/4.0.0.md` — list the converted screens and note the breaking change for
       anyone overriding the old row templates.
@@ -429,5 +428,5 @@ Resolve each before the batch that needs it, and record the answer here.
 | Client-side search stops matching | Set `data-filter-value` on the **row shape**, not in the layout template |
 | A theme or site overrode a row template that no longer renders | Call it out in the release notes; the old template still works under the `List` layout |
 | Sortable lists (List Part, Layers) break under Grid | Open decision 3 |
-| A module adds columns twice because its driver is registered twice | `AddAdminListColumnDriver<TModel, T>` already uses `TryAddEnumerable` — do not register manually |
+| A module adds columns twice because its provider is registered twice | `AddAdminListColumnsProvider<T>` uses `TryAddEnumerable` — do not register manually |
 | A batched commit makes one screen's regression hard to isolate | One screen per commit, pushed before the next starts — section 0 |

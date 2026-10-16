@@ -22,13 +22,17 @@ public sealed class AuditTrailEventDisplayDriver : DisplayDriver<AuditTrailEvent
 
         return CombineAsync(
             Initialize<AuditTrailEventViewModel>("AuditTrailEventName_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventName:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventName:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Event:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventCategory_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventCategory:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventCategory:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Category:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventMeta_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventMeta:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventMeta:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Details:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventActions_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventDetail_DetailAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
                 .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:before")
         );

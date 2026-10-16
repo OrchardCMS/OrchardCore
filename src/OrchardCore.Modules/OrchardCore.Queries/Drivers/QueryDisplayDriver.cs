@@ -30,14 +30,16 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
                 model.Source = query.Source;
                 model.Schema = query.Schema;
                 model.Query = query;
-            }, query).Location("Checkbox:1"),
+            }, query).Location("Checkbox:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:1"),
             Dynamic("Query_Fields_SummaryAdmin", static (model, query) =>
             {
                 model.Name = query.Name;
                 model.Source = query.Source;
                 model.Schema = query.Schema;
                 model.Query = query;
-            }, query).Location("Content:1"),
+            }, query).Location("Content:1")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1"),
             Dynamic("Query_Buttons_SummaryAdmin", static (model, query) =>
             {
                 model.Name = query.Name;
@@ -45,6 +47,7 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
                 model.Schema = query.Schema;
                 model.Query = query;
             }, query).Location("Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5")
         );
     }
 

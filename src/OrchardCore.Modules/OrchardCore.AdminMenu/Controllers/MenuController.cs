@@ -55,10 +55,7 @@ public sealed class MenuController : Controller
 
     public async Task<IActionResult> List(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<AdminMenuEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
@@ -115,22 +112,12 @@ public sealed class MenuController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<AdminListRow<AdminMenuEntry>>(model.AdminMenu.Count);
-
-        foreach (var entry in model.AdminMenu)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the menus with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<AdminMenuEntry>(AdminMenusAdminList.Name)
+        model.List = new AdminListContext<AdminMenuEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = model.AdminMenu,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no admin menus for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

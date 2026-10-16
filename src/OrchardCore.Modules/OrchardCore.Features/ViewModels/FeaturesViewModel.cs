@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Features.Models;
 
@@ -15,7 +16,7 @@ public class FeaturesViewModel
     public IEnumerable<ModuleFeature> Features { get; set; }
 
     /// <summary>
-    /// The features grouped by category, one <c>AdminList</c> shape per category.
+    /// The features grouped by category, one admin list context per category.
     /// </summary>
     public IList<FeatureGroupViewModel> Groups { get; set; } = [];
 
@@ -35,7 +36,7 @@ public class FeatureGroupViewModel
     public string Category { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the features of this category with the configured layout.
+    /// The data context for rendering the features of this category with the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }

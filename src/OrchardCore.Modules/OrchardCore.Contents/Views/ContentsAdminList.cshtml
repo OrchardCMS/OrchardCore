@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model ListContentsViewModel
 @using OrchardCore.DisplayManagement.Zones
 @{
@@ -27,7 +29,16 @@
     </div>
 </div>
 @* The items, the summary/actions bar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-@await DisplayAsync(Model.List)
+<admin-list name="Contents" context="Model.List">
+    <admin-list-grid>
+        <admin-list-column type="Select" />
+        <admin-list-column name="Title" position="20" title="@T["Title"]" />
+        <admin-list-column name="Type" position="30" title="@T["Type"]" width="auto" />
+        <admin-list-column name="Status" position="40" title="@T["Status"]" width="auto" />
+        <admin-list-column name="Modified" position="50" title="@T["Last modified"]" width="auto" />
+        <admin-list-column type="Actions" title="@T["Actions"]" />
+    </admin-list-grid>
+</admin-list>
 
 </div>
 

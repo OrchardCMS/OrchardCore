@@ -96,10 +96,7 @@ public sealed class AdminController : Controller
     [Admin("Tenants", "Tenants")]
     public async Task<IActionResult> Index(
         TenantIndexOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<ShellSettingsEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
@@ -224,13 +221,6 @@ public sealed class AdminController : Controller
             new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
         ];
 
-        var rows = new List<AdminListRow<ShellSettingsEntry>>(model.ShellSettingsEntries.Count);
-
-        foreach (var entry in model.ShellSettingsEntries)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The category, state and sort filters render at the end of the toolbar, next to the bulk actions.
         var filters = await _shapeFactory.CreateAsync("TenantsFilters", Arguments.From(new
         {
@@ -238,15 +228,12 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the tenants with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<ShellSettingsEntry>(TenantsAdminList.Name)
+        model.List = new AdminListContext<ShellSettingsEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.TenantsBulkAction,
+            Source = model.ShellSettingsEntries,
             ToolbarActions = filters,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no tenants for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

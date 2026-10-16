@@ -58,10 +58,7 @@ public sealed class RemoteClientController : Controller
 
     public async Task<IActionResult> Index(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<RemoteClient> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
@@ -104,22 +101,12 @@ public sealed class RemoteClientController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<AdminListRow<RemoteClient>>(model.RemoteClients.Count);
-
-        foreach (var entry in model.RemoteClients)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<RemoteClient>(RemoteClientsAdminList.Name)
+        model.List = new AdminListContext<RemoteClient>
         {
-            Rows = rows,
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = model.RemoteClients,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no remote clients for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

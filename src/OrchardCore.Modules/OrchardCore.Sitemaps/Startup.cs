@@ -96,9 +96,6 @@ public sealed class Startup : StartupBase
         services.AddJsonDerivedTypeInfo<CustomPathSitemapSource, SitemapSource>();
         services.AddJsonDerivedTypeInfo<SitemapIndexSource, SitemapSource>();
 
-        services.AddAdminListColumnDriver<SitemapListEntry, SitemapsAdminListColumnDriver>();
-        services.AddAdminListColumnDriver<SitemapIndexListEntry, SitemapIndexesAdminListColumnDriver>();
-        services.AddAdminListColumnDriver<SitemapCacheEntry, SitemapCacheAdminListColumnDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -119,7 +119,6 @@ public sealed class Startup : StartupBase
                     .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenBy(i => i.CreatedUtc)));
         });
 
-        services.AddAdminListColumnDriver<AuditTrailEvent, AuditTrailAdminListColumnDriver>();
     }
 }
 

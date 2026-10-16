@@ -1,3 +1,5 @@
+using System.Collections;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
@@ -5,144 +7,180 @@ using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Admin.Services;
 
-public sealed class DefaultAdminListFactory : IAdminListFactory
+internal sealed class DefaultAdminListFactory : IAdminListFactory
 {
-    private readonly IAdminListLayoutResolver _layoutResolver;
+    private readonly AdminListLayoutResolver _layoutResolver;
     private readonly IAdminListColumnsBuilder _columnsBuilder;
     private readonly IShapeFactory _shapeFactory;
     private readonly IOptionsMonitor<AdminListOptions> _options;
     private readonly ILogger _logger;
+    private readonly IAdminListRowBuilder _rowBuilder;
 
     public DefaultAdminListFactory(
-        IAdminListLayoutResolver layoutResolver,
+        AdminListLayoutResolver layoutResolver,
         IAdminListColumnsBuilder columnsBuilder,
         IShapeFactory shapeFactory,
         IOptionsMonitor<AdminListOptions> options,
-        ILogger<DefaultAdminListFactory> logger)
+        ILogger<DefaultAdminListFactory> logger,
+        IAdminListRowBuilder rowBuilder)
     {
         _layoutResolver = layoutResolver;
         _columnsBuilder = columnsBuilder;
         _shapeFactory = shapeFactory;
         _options = options;
         _logger = logger;
+        _rowBuilder = rowBuilder;
     }
 
-    public async Task<IShape> CreateAsync<TModel>(AdminListContext<TModel> context, CancellationToken cancellationToken = default)
+    public async Task<IShape> CreateAsync(string name, AdminListContext context, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(context);
+        cancellationToken.ThrowIfCancellationRequested();
 
+        return await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = name,
+            context.Source,
+            context.ItemType,
+            context.Rows,
+            context.BuildRowsAsync,
+            context.Columns,
+            context.Data,
+            context.Layout,
+            context.ShowLayoutSelector,
+            context.ShowToolbar,
+            context.ShowSelectAll,
+            context.BulkActions,
+            context.ToolbarActions,
+            context.Header,
+            context.Toolbar,
+            context.Search,
+            context.Actions,
+            context.Pager,
+            context.PageSize,
+            context.RowsAttributes,
+            context.ItemCssClass,
+            context.ListOptions,
+            context.GridOptions,
+            context.EmptyMessage,
+        }));
+    }
+
+    public async Task BuildAsync(IShape shape, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(shape);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (shape.GetProperty<bool>("AdminListInitialized"))
+        {
+            return;
+        }
+
+        var name = shape.GetProperty<string>("Name");
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        var requestedLayout = shape.GetProperty<AdminListLayout?>("Layout");
+        if (requestedLayout.HasValue && !Enum.IsDefined(requestedLayout.Value))
+        {
+            throw new ArgumentOutOfRangeException(nameof(shape), requestedLayout, "An admin list layout must be List or Grid.");
+        }
+
+        var layout = requestedLayout ?? AdminListLayout.List;
+        var resolvesLayout = !requestedLayout.HasValue;
         var allowUserSelection = _options.CurrentValue.AllowUserSelection;
-        var layout = context.Layout;
-        var resolvesLayout = string.IsNullOrWhiteSpace(layout);
+        var showLayoutSelector = shape.GetProperty("ShowLayoutSelector", true);
         AdminListColumnsContext columns = null;
+
+        async Task<AdminListColumnsContext> BuildColumnsAsync()
+        {
+            var result = await _columnsBuilder.BuildColumnsAsync(
+                name,
+                shape.GetProperty<IEnumerable<AdminListColumn>>("Columns") ?? [],
+                shape.GetProperty<IReadOnlyDictionary<string, object>>("Data"),
+                cancellationToken);
+
+            if (result.Columns.Count == 0)
+            {
+                _logger.LogWarning("No columns were declared for the '{ListName}' admin list, so it can only be rendered with the '{Layout}' layout.", name, AdminListLayout.List);
+            }
+
+            return result;
+        }
 
         if (resolvesLayout)
         {
             if (allowUserSelection)
             {
-                // The resolver remembers the layout a user asks for, so it is only asked for a list that has
-                // columns: without them, the List layout is the only one that can render the rows.
-                columns = await BuildColumnsAsync(context, cancellationToken);
+                columns = await BuildColumnsAsync();
                 layout = columns.Columns.Count > 0
-                    ? await _layoutResolver.GetLayoutAsync(context.Name, cancellationToken)
-                    : AdminListConstants.List;
+                    ? _layoutResolver.GetLayout(name)
+                    : AdminListLayout.List;
             }
             else
             {
-                layout = await _layoutResolver.GetLayoutAsync(context.Name, cancellationToken);
+                layout = _layoutResolver.GetLayout(name);
             }
         }
 
-        layout = layout.Trim();
+        var isList = layout == AdminListLayout.List;
 
-        // The List layout renders the rows whole, so its columns are only built when the list offers the other
-        // layouts, which only a list with columns has.
-        var needsColumns = !IsList(layout) || (allowUserSelection && context.ShowLayoutSelector);
-
-        if (columns is null && needsColumns)
+        if (columns == null && (!isList || (allowUserSelection && showLayoutSelector)))
         {
-            columns = await BuildColumnsAsync(context, cancellationToken);
-
-            if (resolvesLayout && columns.Columns.Count == 0)
-            {
-                layout = AdminListConstants.List;
-            }
+            columns = await BuildColumnsAsync();
         }
 
         var hasColumns = columns?.Columns.Count > 0;
 
-        var rows = context.Rows ?? [];
-        var rowShapes = new IShape[rows.Count];
-
-        for (var i = 0; i < rows.Count; i++)
+        if (!hasColumns)
         {
-            rowShapes[i] = rows[i].Shape;
+            layout = AdminListLayout.List;
+            isList = true;
         }
 
-        var toolbar = context.Toolbar;
-
-        // A list without an options editor or a toolbar of its own gets the generic one.
-        if (toolbar is null && context.Header is null && context.ShowToolbar)
+        var displayType = isList
+            ? OrchardCoreConstants.DisplayType.SummaryAdmin
+            : OrchardCoreConstants.DisplayType.SummaryAdminGrid;
+        var source = shape.GetProperty<IEnumerable>("Source");
+        var buildRowsAsync = shape.GetProperty<Func<string, Task<IList<IShape>>>>("BuildRowsAsync");
+        if (source != null && buildRowsAsync != null)
         {
-            toolbar = await CreateToolbarAsync(context, rows.Count);
+            throw new InvalidOperationException("An admin list cannot supply both Source and BuildRowsAsync.");
         }
 
-        var shape = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType);
+        var rows = source != null
+            ? (await _rowBuilder.BuildAsync(source, shape.GetProperty<Type>("ItemType"), displayType, cancellationToken)).ToArray()
+            : buildRowsAsync != null
+            ? (await buildRowsAsync(displayType)).ToArray()
+            : shape.GetProperty<IEnumerable<IShape>>("Rows")?.ToArray() ?? [];
+
         var properties = shape.Properties;
-
-        properties["Name"] = context.Name;
         properties["Layout"] = layout;
-        properties["Columns"] = hasColumns ? columns.Columns : Array.Empty<AdminListColumn>();
-        properties["Rows"] = rowShapes;
+        properties["DisplayType"] = displayType;
+        properties["Rows"] = rows;
+        properties["ShowLayoutSelector"] = showLayoutSelector && hasColumns;
 
-        // The headers and the cells the column drivers build are only rendered by the layouts with columns.
-        if (hasColumns && !IsList(layout))
+        if (columns != null)
         {
-            properties["Headers"] = columns.Headers;
-            properties["Cells"] = await _columnsBuilder.BuildCellsAsync(columns, rows, cancellationToken);
+            properties["Columns"] = columns.Columns;
         }
 
-        // There is nothing to switch to when the list can only be rendered as a list.
-        properties["ShowLayoutSelector"] = context.ShowLayoutSelector && hasColumns;
-
-        // A shape reads a property it does not have as null, so the optional parts are only set when the page
-        // passed them.
-        SetIfNotNull(properties, "RowsAttributes", context.RowsAttributes);
-        SetIfNotNull(properties, "Header", context.Header);
-        SetIfNotNull(properties, "Toolbar", toolbar);
-        SetIfNotNull(properties, "Search", context.Search);
-        SetIfNotNull(properties, "Actions", context.Actions);
-        SetIfNotNull(properties, "Pager", context.Pager);
-        SetIfNotNull(properties, "PageSize", context.PageSize);
-        SetIfNotNull(properties, "ItemCssClass", context.ItemCssClass);
-        SetIfNotNull(properties, "EmptyMessage", context.EmptyMessage);
-
-        return shape;
-    }
-
-    private async Task<AdminListColumnsContext> BuildColumnsAsync<TModel>(AdminListContext<TModel> context, CancellationToken cancellationToken)
-    {
-        var columns = await _columnsBuilder.BuildColumnsAsync<TModel>(context.Name, context.Data, cancellationToken);
-
-        if (columns.Columns.Count == 0)
+        if (shape.GetProperty<IShape>("Toolbar") == null &&
+            shape.GetProperty<IShape>("Header") == null &&
+            shape.GetProperty("ShowToolbar", true))
         {
-            _logger.LogWarning("No driver declared the columns of the '{ListName}' admin list, so it can only be rendered with the '{Layout}' layout.", context.Name, AdminListConstants.List);
+            properties["Toolbar"] = await CreateToolbarAsync(shape, rows.Length);
         }
 
-        return columns;
+        properties["AdminListInitialized"] = true;
     }
 
-    private static bool IsList(string layout)
-        => string.Equals(layout, AdminListConstants.List, StringComparison.OrdinalIgnoreCase);
-
-    // The item count of the page, and where it sits in the whole list: the pager knows the total and the page,
-    // and a list without one shows all of its items.
-    private async Task<IShape> CreateToolbarAsync(AdminListContext context, int itemsCount)
+    private async Task<IShape> CreateToolbarAsync(IShape list, int itemsCount)
     {
         var totalItemCount = itemsCount;
         var firstIndex = 0;
 
-        if (context.Pager is { } pager && pager.TryGetProperty<int>("TotalItemCount", out var pagerTotal))
+        if (list.GetProperty<IShape>("Pager") is { } pager && pager.TryGetProperty<int>("TotalItemCount", out var pagerTotal))
         {
             totalItemCount = pagerTotal;
 
@@ -152,26 +190,15 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
             }
         }
 
-        var toolbar = await _shapeFactory.CreateAsync(AdminListConstants.ToolbarShapeType);
-        var properties = toolbar.Properties;
-
-        properties["ItemsCount"] = itemsCount;
-        properties["TotalItemCount"] = totalItemCount;
-        properties["StartIndex"] = itemsCount > 0 ? firstIndex + 1 : 0;
-        properties["EndIndex"] = firstIndex + itemsCount;
-        properties["ShowSelectAll"] = context.ShowSelectAll;
-
-        SetIfNotNull(properties, "BulkActions", context.BulkActions);
-        SetIfNotNull(properties, "Actions", context.ToolbarActions);
-
-        return toolbar;
-    }
-
-    private static void SetIfNotNull(IDictionary<string, object> properties, string name, object value)
-    {
-        if (value != null)
+        return await _shapeFactory.CreateAsync(AdminListConstants.ToolbarShapeType, Arguments.From(new
         {
-            properties[name] = value;
-        }
+            ItemsCount = itemsCount,
+            TotalItemCount = totalItemCount,
+            StartIndex = itemsCount > 0 ? firstIndex + 1 : 0,
+            EndIndex = firstIndex + itemsCount,
+            ShowSelectAll = list.GetProperty("ShowSelectAll", true),
+            BulkActions = list.GetProperty<IList<SelectListItem>>("BulkActions"),
+            Actions = list.GetProperty<IShape>("ToolbarActions"),
+        }));
     }
 }

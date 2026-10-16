@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model RemoteClientIndexViewModel
 
 <zone Name="Title">
@@ -27,7 +29,16 @@
     </div>
 
     @* The rows, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="RemoteClients" context="Model.List"
+                bulk-actions="Model.Options.ContentsBulkAction"
+                empty-message="@T["<strong>Nothing here!</strong> There are no remote clients for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="ClientName" position="20" title="@T["Client name"]" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
 
 <script asp-src="~/OrchardCore.Deployment.Remote/Scripts/deployment-remote-admin-lists/remote-client-index.min.js" debug-src="~/OrchardCore.Deployment.Remote/Scripts/deployment-remote-admin-lists/remote-client-index.js" at="Foot" type="module"></script>

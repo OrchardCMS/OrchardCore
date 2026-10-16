@@ -50,7 +50,6 @@ public sealed class Startup : StartupBase
         // The 'OrchardCore_Tenants' section is deprecated and will be removed in a future major version, use 'Tenants' instead.
         services.Configure<TenantsOptions>(_shellConfiguration.GetSectionCompat("Tenants", "OrchardCore_Tenants"));
 
-        services.AddAdminListColumnDriver<ShellSettingsEntry, TenantsAdminListColumnDriver>();
     }
 }
 
@@ -131,7 +130,6 @@ public sealed class FeatureProfilesStartup : StartupBase
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
 
-        services.AddAdminListColumnDriver<FeatureProfileEntry, FeatureProfilesAdminListColumnDriver>();
     }
 }
 

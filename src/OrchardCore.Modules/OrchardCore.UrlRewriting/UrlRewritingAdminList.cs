@@ -1,17 +1,10 @@
 namespace OrchardCore.UrlRewriting;
 
 /// <summary>
-/// The admin list of rewrite rules rendered by the <c>AdminList</c> shape.
-/// Its columns are declared by <see cref="UrlRewritingAdminListColumnDriver"/>.
+/// Shared HTML identifiers for the rewrite rules admin list.
 /// </summary>
 public static class UrlRewritingAdminList
 {
-    /// <summary>
-    /// The name of the list, passed to its column drivers and used by the
-    /// <c>AdminList__UrlRewriting</c> and <c>AdminListCell__UrlRewriting__{Column}</c> alternates.
-    /// </summary>
-    public const string Name = "UrlRewriting";
-
     /// <summary>
     /// The id of the element wrapping the rows, which the sortable script reorders.
     /// </summary>

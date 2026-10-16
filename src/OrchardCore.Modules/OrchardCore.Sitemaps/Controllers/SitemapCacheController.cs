@@ -5,7 +5,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Sitemaps.Models;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Sitemaps.Cache;
@@ -38,10 +37,7 @@ public sealed class SitemapCacheController : Controller
         S = stringLocalizer;
     }
 
-    public async Task<IActionResult> List(
-        [FromServices] IDisplayManager<SitemapCacheEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+    public async Task<IActionResult> List()
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -53,31 +49,11 @@ public sealed class SitemapCacheController : Controller
             CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray(),
         };
 
-        var rows = new List<AdminListRow<SitemapCacheEntry>>(model.CachedFileNames.Length);
-
-        foreach (var fileName in model.CachedFileNames)
-        {
-            var entry = new SitemapCacheEntry { FileName = fileName };
-            var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
-
-            // The rows carry the attributes used by the client-side search of the list-management script.
-            if (shape is Shape rowShape)
-            {
-                rowShape.Classes.Add("item");
-                rowShape.Attributes["data-filter-value"] = fileName.ToLowerInvariant();
-            }
-
-            rows.Add(new(entry, shape));
-        }
-
         // The AdminList shape renders the cached files with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<SitemapCacheEntry>(SitemapCacheAdminList.Name)
+        model.List = new AdminListContext<SitemapCacheEntry>
         {
-            Rows = rows,
-            ShowSelectAll = false,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."],
-        }, HttpContext.RequestAborted);
+            Source = model.CachedFileNames.Select(fileName => new SitemapCacheEntry { FileName = fileName }).ToArray(),
+        };
 
         return View(model);
     }

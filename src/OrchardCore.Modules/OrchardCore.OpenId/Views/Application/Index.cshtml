@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model OpenIdApplicationsIndexViewModel
 @using OrchardCore.OpenId.ViewModels
 
@@ -29,4 +31,12 @@
 </form>
 
 @* The rows and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-@await DisplayAsync(Model.List)
+<admin-list name="OpenIdApplications" context="Model.List"
+            show-select-all="false"
+            empty-message="@T["<strong>Nothing here!</strong> There are no applications at the moment."]">
+    <admin-list-list item-css-class="list-group-item" />
+    <admin-list-grid>
+        <admin-list-column name="DisplayName" position="10" title="@T["Display name"]" />
+        <admin-list-column type="Actions" title="@T["Actions"]" />
+    </admin-list-grid>
+</admin-list>

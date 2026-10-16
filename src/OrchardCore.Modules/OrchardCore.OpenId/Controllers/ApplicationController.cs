@@ -63,10 +63,7 @@ public sealed class ApplicationController : Controller
     [Admin("OpenId/Application", "OpenIdApplication")]
     public async Task<ActionResult> Index(
         PagerParameters pagerParameters,
-        string searchText,
-        [FromServices] IDisplayManager<OpenIdApplicationEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        string searchText)
     {
         if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
@@ -117,22 +114,12 @@ public sealed class ApplicationController : Controller
             .ToArray(),
         };
 
-        var rows = new List<AdminListRow<OpenIdApplicationEntry>>(model.Applications.Count);
-
-        foreach (var application in model.Applications)
-        {
-            rows.Add(new(application, await displayManager.BuildDisplayAsync(application, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the applications with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<OpenIdApplicationEntry>(OpenIdApplicationsAdminList.Name)
+        model.List = new AdminListContext<OpenIdApplicationEntry>
         {
-            Rows = rows,
-            ShowSelectAll = false,
+            Source = model.Applications,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no applications at the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Admin;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Contents.ViewModels;
@@ -10,15 +12,18 @@ public class ListContentsViewModel
     [BindNever]
     public IShape Header { get; set; }
 
+    /// <summary>
+    /// The queried content items on this page, before their row shapes are built.
+    /// </summary>
     [BindNever]
-    public List<dynamic> ContentItems { get; set; }
+    public List<ContentItem> ContentItems { get; set; }
 
     [BindNever]
     public IShape Pager { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering <see cref="ContentItems"/>, <see cref="Header"/> and <see cref="Pager"/> with the configured layout.
+    /// The data context for rendering <see cref="ContentItems"/>, <see cref="Header"/> and <see cref="Pager"/> with the configured layout.
     /// </summary>
     [BindNever]
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }

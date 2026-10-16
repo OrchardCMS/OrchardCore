@@ -66,10 +66,7 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Index(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<DeploymentPlanEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
@@ -120,22 +117,12 @@ public sealed class DeploymentPlanController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),
         ];
 
-        var rows = new List<AdminListRow<DeploymentPlanEntry>>(model.DeploymentPlans.Count);
-
-        foreach (var entry in model.DeploymentPlans)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the plans with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<DeploymentPlanEntry>(DeploymentPlansAdminList.Name)
+        model.List = new AdminListContext<DeploymentPlanEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.DeploymentPlansBulkAction,
+            Source = model.DeploymentPlans,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no deployment plans at the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

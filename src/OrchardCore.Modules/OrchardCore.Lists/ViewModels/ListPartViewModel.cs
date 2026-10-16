@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -14,4 +15,9 @@ public class ListPartViewModel
     public BuildPartDisplayContext Context { get; set; }
     public dynamic Pager { get; set; }
     public bool EnableOrdering { get; set; }
+
+    /// <summary>
+    /// The item data and rendering options for the contained-items admin list.
+    /// </summary>
+    public AdminListContext List { get; set; }
 }

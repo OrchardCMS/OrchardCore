@@ -31,6 +31,5 @@ public sealed class Startup : StartupBase
 
         services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
 
-        services.AddAdminListColumnDriver<FeatureEntry, FeaturesAdminListColumnDriver>();
     }
 }

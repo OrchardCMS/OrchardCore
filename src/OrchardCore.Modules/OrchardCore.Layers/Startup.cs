@@ -55,6 +55,5 @@ public sealed class Startup : StartupBase
         services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
 
-        services.AddAdminListColumnDriver<Layer, LayersAdminListColumnDriver>();
     }
 }

@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Deployment.Remote.Models;
@@ -15,10 +16,10 @@ public class RemoteClientIndexViewModel
     public IShape Pager { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the rows, the toolbar and the pager in the configured layout.
+    /// The data context for rendering the rows, the toolbar and the pager in the configured layout.
     /// </summary>
     [BindNever]
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class ContentOptions

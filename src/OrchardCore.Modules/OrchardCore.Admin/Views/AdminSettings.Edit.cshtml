@@ -9,13 +9,7 @@
 @inject IShapeTableManager ShapeTableManager
 
 @{
-    // Layouts are discovered from the shape table, like content field editors: a layout is available
-    // when a shape named AdminListLayout_Option__{Layout} exists, e.g. AdminListLayout-Grid.Option.cshtml.
     var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
-    var layoutOptionShapes = AdminListOptionShapes.GetNames(shapeTable, AdminListConstants.OptionShapePrefix)
-        .Select(name => AdminListConstants.OptionShapePrefix + name);
-
-    // Same convention for the layouts of the row actions: AdminListActions_Option__{Layout}.
     var actionsLayoutOptionShapes = AdminListOptionShapes.GetNames(shapeTable, AdminListActionsLayouts.OptionShapePrefix)
         .Select(name => AdminListActionsLayouts.OptionShapePrefix + name);
 }
@@ -101,17 +95,17 @@
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="ListLayout">
-    <label asp-for="ListLayout" class="form-label">@T["List layout"]</label>
-    <select asp-for="ListLayout" class="form-select">
-        @foreach (var shapeType in layoutOptionShapes)
-        {
-            var optionShape = await Factory.CreateAsync(shapeType);
-            optionShape.Properties["ListLayout"] = Model.ListLayout;
-            @await DisplayAsync(optionShape)
-        }
-    </select>
-    <span class="hint">@T["How the admin lists are rendered, e.g. the content items list. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:Admin:List:DefaultLayout"]</span>
+<div class="ocat-wrapper" asp-validation-class-for="ListLayout">
+    <label asp-for="ListLayout" class="ocat-label">@T["List layout"]</label>
+    <div class="ocat-end">
+        <select asp-for="ListLayout" class="form-select">
+            <option value="">@T["Use configuration default"]</option>
+            <option value="@AdminListLayout.List">@T["List"]</option>
+            <option value="@AdminListLayout.Grid">@T["Grid"]</option>
+        </select>
+        <span asp-validation-for="ListLayout"></span>
+        <span class="hint">@T["How the admin lists are rendered, e.g. the content items list. Use the configuration default to inherit {0} from appsettings.json.", "OrchardCore:Admin:List:DefaultLayout"]</span>
+    </div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="ListActionsLayout">

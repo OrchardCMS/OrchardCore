@@ -1,227 +1,78 @@
 # Worked example: the Indexes admin page
 
-The real conversion of `OrchardCore.Indexing`, from a hand-written `<ul class="list-group">` to the `AdminList` shape. Four files change and the page gains the List and Grid layouts plus the configured row-action layout.
+The Indexes page uses standard row display drivers, view-defined columns and the shared `AdminList` shape.
 
-## 1. The row shape gains a `Checkbox` zone
+## Row display driver
 
-The selection checkbox used to be inline markup in the container view. It becomes a shape so the column layouts can put it in its own cell.
-
-`Views/IndexProfile.Checkbox.SummaryAdmin.cshtml`
-
-```html
-@using OrchardCore.DisplayManagement.Views
-@using OrchardCore.Indexing.Models
-
-@model ShapeViewModel<IndexProfile>
-
-<div class="form-check">
-    <input type="checkbox" class="form-check-input" value="@Model.Value.Id" name="itemIds" id="itemIds-@Model.Value.Id">
-    <label class="form-check-label" for="itemIds-@Model.Value.Id">&nbsp;</label>
-</div>
-```
-
-`Drivers/IndexProfileDisplayDriver.cs`
+`OrchardCore.Indexing/Drivers/IndexProfileDisplayDriver.cs` reuses shape types with display-specific locations:
 
 ```csharp
-public override Task<IDisplayResult> DisplayAsync(IndexProfile indexProfile, BuildDisplayContext context)
-{
-    return CombineAsync(
-        View("IndexProfile_Checkbox_SummaryAdmin", indexProfile)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
-        View("IndexProfile_Fields_SummaryAdmin", indexProfile)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
-        View("IndexProfile_Buttons_SummaryAdmin", indexProfile)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
-        View("IndexProfile_DefaultTags_SummaryAdmin", indexProfile)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5"),
-        View("IndexProfile_DefaultMeta_SummaryAdmin", indexProfile)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:5"),
-        View("IndexProfile_ActionsMenuItems_SummaryAdmin", indexProfile)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:5")
-    );
-}
+return CombineAsync(
+    View("IndexProfile_Checkbox_SummaryAdmin", indexProfile)
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1")
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:1"),
+    View("IndexProfile_Fields_SummaryAdmin", indexProfile)
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1"),
+    View("IndexProfile_DefaultTags_SummaryAdmin", indexProfile)
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5")
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Source:5"),
+    View("IndexProfile_DefaultMeta_SummaryAdmin", indexProfile)
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:5")
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Modified:5"),
+    View("IndexProfile_Buttons_SummaryAdmin", indexProfile)
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5"),
+    View("IndexProfile_ActionsMenuItems_SummaryAdmin", indexProfile)
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:5")
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:5"));
 ```
 
-The row template renders the checkbox zone and delegates the actions:
+The row template renders its zones for `List`; `Grid` renders the column zones directly.
+The same shape types and templates are reused, but only the selected display type is built.
 
-`Views/IndexProfile.SummaryAdmin.cshtml` (excerpt)
+## Controller
 
-```html
-@if (Model.Checkbox != null)
-{
-    <div class="selectors-container d-flex me-2">
-        @await DisplayAsync(Model.Checkbox)
-    </div>
-}
-...
-<div class="col-auto d-flex justify-content-end ps-2">
-    @* Rendered in the configured actions layout (Buttons, Menu, ...). *@
-    @await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))
-</div>
-```
-
-## 2. The list name and its columns
-
-`IndexingAdminList.cs` publishes the name of the list:
+The controller supplies queried `IndexProfile` records, not model/shape pairs:
 
 ```csharp
-namespace OrchardCore.Indexing;
-
-public static class IndexingAdminList
+viewModel.List = new AdminListContext<IndexProfile>
 {
-    public const string Name = "Indexes";
-}
-```
-
-`IndexingAdminListColumnDriver.cs` declares its columns, each a set of zones of the row shape:
-
-```csharp
-using Microsoft.Extensions.Localization;
-using OrchardCore.Admin;
-using OrchardCore.Admin.Models;
-using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Indexing.Models;
-
-namespace OrchardCore.Indexing;
-
-public sealed class IndexingAdminListColumnDriver : AdminListColumnDriver<IndexProfile>
-{
-    private readonly IStringLocalizer S;
-
-    public IndexingAdminListColumnDriver(IStringLocalizer<IndexingAdminListColumnDriver> stringLocalizer)
-    {
-        S = stringLocalizer;
-    }
-
-    public override IDisplayResult Columns(AdminListColumnsContext context)
-    {
-        context.Columns.Add(AdminListColumns.Select());
-
-        context.Columns.Add(new AdminListColumn
-        {
-            // The name takes the space left by the other columns.
-            Name = "Name",
-            Position = "20",
-            Title = S["Name"],
-            Zones = ["Content"],
-        });
-
-        context.Columns.Add(new AdminListColumn
-        {
-            Name = "Source",
-            Position = "30",
-            Title = S["Source"],
-            Zones = ["Tags"],
-            Width = AdminListColumn.AutoWidth,
-        });
-
-        context.Columns.Add(new AdminListColumn
-        {
-            Name = "Modified",
-            Position = "40",
-            Title = S["Last modified"],
-            Zones = ["Meta"],
-            Width = AdminListColumn.AutoWidth,
-        });
-
-        context.Columns.Add(AdminListColumns.Actions(S["Actions"]));
-
-        return null;
-    }
-}
-```
-
-`Startup.cs` registers it for the items of the list, so it is only created when a list of index profiles is
-rendered:
-
-```csharp
-services.AddAdminListColumnDriver<IndexProfile, IndexingAdminListColumnDriver>();
-```
-
-## 3. The controller
-
-The page describes the list with an `AdminListContext<IndexProfile>` and hands it to `IAdminListFactory`. Each
-row pairs an index profile with its row shape. It has no options
-editor shape, so the factory builds the generic `AdminListToolbar`: the item count from the rows and the pager,
-the select-all checkbox and the bulk actions the page passes. The rows carry the attributes the client-side
-search script reads.
-
-`Controllers/AdminController.cs` (excerpt, after the view model is populated)
-
-```csharp
-// The rows carry the attributes used by the client-side search of the list-management script.
-var rows = new List<AdminListRow<IndexProfile>>(viewModel.Models.Count);
-
-foreach (var entry in viewModel.Models)
-{
-    if (entry.Shape is Shape rowShape)
-    {
-        rowShape.Classes.Add("item");
-        rowShape.Attributes["data-filter-value"] = entry.Model.Name?.ToLowerInvariant() ?? string.Empty;
-    }
-
-    rows.Add(new(entry.Model, entry.Shape));
-}
-
-// The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
-viewModel.List = await adminListFactory.CreateAsync(new AdminListContext<IndexProfile>(IndexingAdminList.Name)
-{
-    Rows = rows,
-    BulkActions = viewModel.Options.BulkActions,
+    Source = viewModel.Models,
     Pager = viewModel.Pager,
-    ItemCssClass = "list-group-item",
-    EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],
-}, HttpContext.RequestAborted);
+};
 ```
 
-The action signature injects the factory and keeps the existing parameters:
+`IndexProfileDisplayDriver` sets the row's optional `item` class and `data-filter-value` search attribute
+on `context.Shape` for both admin display types. The list invokes the display manager after resolving
+its layout; the controller has no row-rendering dependencies.
 
-```csharp
-[Admin("indexing", "IndexingIndex")]
-public async Task<IActionResult> Index(
-    IndexingEntityOptions options,
-    PagerParameters pagerParameters,
-    [FromServices] IOptions<PagerOptions> pagerOptions,
-    [FromServices] IShapeFactory shapeFactory,
-    [FromServices] IAdminListFactory adminListFactory)
+## Rendering view
+
+`Views/Admin/Index.cshtml` declares the columns and presentation before displaying the list:
+
+```cshtml
+@addTagHelper *, OrchardCore.Admin.Abstractions
+<admin-list name="Indexes" context="Model.List" bulk-actions="Model.Options.BulkActions"
+            empty-message="@T["<strong>Nothing here!</strong> There are no indexes at the moment."]">
+    <admin-list-list item-css-class="list-group-item" />
+    <admin-list-grid>
+        <admin-list-column type="Select" />
+        <admin-list-column name="Name" title="@T["Name"]" position="20" />
+        <admin-list-column name="Source" title="@T["Source"]" position="30" width="auto" />
+        <admin-list-column name="Modified" title="@T["Last modified"]" position="40" width="auto" />
+        <admin-list-column type="Actions" title="@T["Actions"]" />
+    </admin-list-grid>
+</admin-list>
 ```
 
-The shape factory is still needed for the pager. A page that renders its search bar and its buttons through
-the list passes them as `Search` and `Actions`, as the templates list does, so the layout places them.
+The layout declarations configure each representation without choosing it. The tag helpers set the standard
+shape's properties before display. Direct `New.AdminList(Source: Model.Models, ...)` and ordinary shape
+rendering remain supported with C# column declarations. A simple listing can instead supply
+`name`, `items` and `pager` directly to the tag without a context.
 
-The view model gains one property:
-
-```csharp
-public dynamic List { get; set; }
-```
-
-## 4. The view
-
-`Views/Admin/Index.cshtml` keeps the form, the hidden submit buttons and its action bar with the search box and
-the "Add index" button, and replaces the listing with one call: the toolbar, the rows and the pager come from
-the shape.
-
-```html
-<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
-    <input asp-for="Options.BulkAction" type="hidden" />
-    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
-
-    @* ... the action bar card with the search box and the "Add index" button ... *@
-
-    @* The index profiles, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
-
-    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
-        @T["Your search returned no results."]
-    </div>
-</form>
-```
-
-## What was deleted
-
-- The `<ul class="list-group with-checkbox">` block, the item count and select-all markup, and the bulk actions dropdown, all now in `AdminListToolbar`.
-- The per-row `<li>` with its inline checkbox and `data-filter-value`, now the row shape plus its `Classes` and `Attributes`.
-- The empty-state `<li>`, now the `EmptyMessage` property.
-
-The pager was previously built but never rendered; `AdminList` renders it, so the page gained working paging and the page size selector for free.
+By default, each column renders its named row zone. `Zones` can explicitly render several zones in one cell.
+Other features can add columns by implementing `IAdminListColumnsProvider` and checking
+`context.ListName == "Indexes"`. They add cell shapes through ordinary row display drivers.
+Themes can move a shape to a different column with `placement.json`,
+e.g. `"displayType": "SummaryAdminGrid", "place": "Name:5"`.

@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
@@ -12,9 +13,9 @@ public class ListShapePlacementsViewModel
     public ContentOptions Options { get; set; } = new ContentOptions();
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the placements, the toolbar and the pager in the configured layout.
+    /// The data context for rendering the placements, the toolbar and the pager in the configured layout.
     /// </summary>
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
 
 public class ContentOptions

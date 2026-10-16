@@ -1,3 +1,5 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model ShortcodeTemplateIndexViewModel
 
 <zone Name="Title">
@@ -27,7 +29,17 @@
     </div>
 
     @* The templates, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-    @await DisplayAsync(Model.List)
+    <admin-list name="Shortcodes" context="Model.List"
+                bulk-actions="Model.Options.ContentsBulkAction"
+                empty-message="@T["<strong>Nothing here!</strong> There are no shortcode templates for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column name="Categories" position="30" title="@T["Categories"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
 
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes-admin-list/shortcodes-admin-list.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes-admin-list/shortcodes-admin-list.js" at="Foot" type="module"></script>

@@ -1,5 +1,6 @@
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -16,7 +17,7 @@ public class AdminListShapeTableProviderTests
         var shape = new Shape();
         shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
-        shape.Properties["Layout"] = AdminListConstants.Grid;
+        shape.Properties["Layout"] = AdminListLayout.Grid;
 
         await DisplayAsync(AdminListConstants.ShapeType, shape);
 
@@ -76,7 +77,7 @@ public class AdminListShapeTableProviderTests
         var shape = new Shape();
         shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
-        shape.Properties["Layout"] = AdminListConstants.Grid;
+        shape.Properties["Layout"] = AdminListLayout.Grid;
         shape.Properties["Toolbar"] = toolbar;
         shape.Properties["Search"] = search;
         shape.Properties["Pager"] = pager;
@@ -90,9 +91,9 @@ public class AdminListShapeTableProviderTests
         Assert.Equal("Contents", row.Properties["ListName"]);
 
         // The layout rendering the list is stamped as well, so a part can be overridden for one layout.
-        Assert.Equal(AdminListConstants.Grid, toolbar.Properties["ListLayout"]);
-        Assert.Equal(AdminListConstants.Grid, search.Properties["ListLayout"]);
-        Assert.Equal(AdminListConstants.Grid, row.Properties["ListLayout"]);
+        Assert.Equal("Grid", toolbar.Properties["ListLayout"]);
+        Assert.Equal("Grid", search.Properties["ListLayout"]);
+        Assert.Equal("Grid", row.Properties["ListLayout"]);
 
         // A part that already names a list keeps it, e.g. a list rendered inside another one.
         Assert.Equal("SomethingElse", namedRow.Properties["ListName"]);
@@ -104,7 +105,7 @@ public class AdminListShapeTableProviderTests
         var toolbar = new Shape();
         toolbar.Metadata.Type = AdminListConstants.ToolbarShapeType;
         toolbar.Properties["ListName"] = "Contents";
-        toolbar.Properties["ListLayout"] = AdminListConstants.Grid;
+        toolbar.Properties["ListLayout"] = AdminListLayout.Grid;
 
         await DisplayAsync(AdminListConstants.ToolbarShapeType, toolbar);
 
@@ -115,7 +116,7 @@ public class AdminListShapeTableProviderTests
         var search = new Shape();
         search.Metadata.Type = AdminListConstants.SearchShapeType;
         search.Properties["ListName"] = "Contents";
-        search.Properties["ListLayout"] = AdminListConstants.Grid;
+        search.Properties["ListLayout"] = AdminListLayout.Grid;
 
         await DisplayAsync(AdminListConstants.SearchShapeType, search);
 
@@ -129,7 +130,7 @@ public class AdminListShapeTableProviderTests
     {
         var toolbar = new Shape();
         toolbar.Metadata.Type = AdminListConstants.ToolbarShapeType;
-        toolbar.Properties["ListLayout"] = AdminListConstants.List;
+        toolbar.Properties["ListLayout"] = AdminListLayout.List;
 
         await DisplayAsync(AdminListConstants.ToolbarShapeType, toolbar);
 
@@ -202,12 +203,16 @@ public class AdminListShapeTableProviderTests
     {
         var shape = CreateNamedList();
 
-        await DisplayAsync(AdminListConstants.ShapeType, shape, CreateSelectorServices());
+        using var services = CreateSelectorServices();
+        await DisplayAsync(AdminListConstants.ShapeType, shape, services);
 
         var selector = Assert.IsAssignableFrom<IShape>(shape.Properties["LayoutSelector"]);
+        await DisplayAsync(AdminListConstants.LayoutSelectorShapeType, (Shape)selector, services);
         Assert.Equal("Contents", selector.Properties["ListName"]);
-        Assert.Equal(AdminListConstants.Grid, selector.Properties["Current"]);
-        Assert.Equal(2, ((IEnumerable<AdminListLayoutOption>)selector.Properties["Layouts"]).Count());
+        Assert.Equal(AdminListLayout.Grid, selector.Properties["Current"]);
+        Assert.Equal("/Admin/Contents?layout=List", selector.Properties["ListUrl"]);
+        Assert.Equal("/Admin/Contents?layout=Grid", selector.Properties["GridUrl"]);
+        Assert.Equal(true, selector.Properties["ShowSelector"]);
     }
 
     [Fact]
@@ -226,24 +231,22 @@ public class AdminListShapeTableProviderTests
         var shape = new Shape();
         shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
-        shape.Properties["Layout"] = AdminListConstants.Grid;
+        shape.Properties["Layout"] = AdminListLayout.Grid;
 
         return shape;
     }
 
     private static ServiceProvider CreateSelectorServices()
     {
-        var layoutResolver = new Mock<IAdminListLayoutResolver>();
-        layoutResolver
-            .Setup(r => r.GetLayoutOptionsAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<AdminListLayoutOption>
-            {
-                new() { Name = AdminListConstants.List, Url = "?layout=List" },
-                new() { Name = AdminListConstants.Grid, Url = "?layout=Grid" },
-            });
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Path = "/Admin/Contents";
 
         return new ServiceCollection()
-            .AddSingleton(layoutResolver.Object)
+            .AddSingleton(Mock.Of<IOptionsMonitor<AdminListOptions>>(monitor => monitor.CurrentValue ==
+                new AdminListOptions { AllowUserSelection = true }))
+            .AddSingleton<IHttpContextAccessor>(new HttpContextAccessor { HttpContext = httpContext })
+            .AddSingleton<AdminListLayoutPreference>()
+            .AddSingleton<AdminListLayoutResolver>()
             .AddSingleton<IShapeFactory, TestShapeFactory>()
             .BuildServiceProvider();
     }

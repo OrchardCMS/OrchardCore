@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -11,7 +11,6 @@ using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
-using ISession = YesSql.ISession;
 
 namespace OrchardCore.Lists.Drivers;
 
@@ -98,7 +97,8 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContentItem = listPart.ContentItem;
             model.ContainedContentTypes = listPartSettings?.ContainedContentTypes ?? Array.Empty<string>();
         })
-        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:4");
     }
 
     private ShapeResult InitializeDisplayListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
@@ -180,6 +180,24 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
 
                 model.Pager = await _shapeFactory.PagerSlimAsync(pagerSlim);
             }
+
+            var enableOrdering = model.EnableOrdering && model.ContentItems.Count() > 1
+                && listPartFilterViewModel.Status == ContentsStatus.Latest
+                && string.IsNullOrEmpty(listPartFilterViewModel.DisplayText);
+            model.List = new AdminListContext<ListPartAdminListEntry>
+            {
+                Source = model.ContentItems.Select(item => new ListPartAdminListEntry
+                {
+                    ContentItem = item,
+                    EnableOrdering = enableOrdering,
+                    GroupId = context.GroupId,
+                    Updater = context.Updater,
+                }).ToArray(),
+                Layout = enableOrdering ? AdminListLayout.List : null,
+                Pager = model.Pager,
+                ShowLayoutSelector = !enableOrdering,
+                ShowToolbar = false,
+            };
         }))
         .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
     }

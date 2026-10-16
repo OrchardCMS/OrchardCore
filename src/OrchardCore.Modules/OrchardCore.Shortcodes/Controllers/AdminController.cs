@@ -65,10 +65,7 @@ public sealed class AdminController : Controller
     [Admin("Shortcodes", "Shortcodes.Index")]
     public async Task<IActionResult> Index(
         ContentOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IDisplayManager<ShortcodeTemplateEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory)
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
@@ -113,22 +110,12 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<AdminListRow<ShortcodeTemplateEntry>>(model.ShortcodeTemplates.Count);
-
-        foreach (var entry in model.ShortcodeTemplates)
-        {
-            rows.Add(new(entry, await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<ShortcodeTemplateEntry>(ShortcodesAdminList.Name)
+        model.List = new AdminListContext<ShortcodeTemplateEntry>
         {
-            Rows = rows,
-            BulkActions = model.Options.ContentsBulkAction,
+            Source = model.ShortcodeTemplates,
             Pager = model.Pager,
-            ItemCssClass = "list-group-item",
-            EmptyMessage = H["<strong>Nothing here!</strong> There are no shortcode templates for the moment."],
-        }, HttpContext.RequestAborted);
+        };
 
         return View(model);
     }

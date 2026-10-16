@@ -12,7 +12,6 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Recipes.ViewModels;
 
 namespace OrchardCore.Recipes.Controllers;
@@ -61,11 +60,7 @@ public sealed class AdminController : Controller
 
     [Admin("Recipes", "Recipes")]
     public async Task<ActionResult> Index(
-        [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IDisplayManager<RecipeEntry> displayManager,
-        [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListFactory adminListFactory,
-        [FromServices] IAdminListLayoutResolver layoutResolver)
+        [FromServices] IShapeFactory shapeFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
@@ -87,56 +82,27 @@ public sealed class AdminController : Controller
             Description = recipe.Description,
         }).ToArray();
 
-        var layout = await layoutResolver.GetLayoutAsync(RecipesAdminList.Name, HttpContext.RequestAborted);
-
         var model = new RecipesIndexViewModel();
 
-        // The features share one layout, so the page offers it once, beside its search bar, and its lists do not
+        // The groups share one layout, so the page offers it once, beside its search bar, and its lists do not
         // carry a selector of their own.
-        var layoutOptions = await layoutResolver.GetLayoutOptionsAsync(HttpContext.RequestAborted);
-
-        if (layoutOptions.Count > 0)
+        model.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
         {
-            model.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
-            {
-                ListName = RecipesAdminList.Name,
-                Current = layout,
-                // Not "Items": a shape already exposes that name for its child shapes.
-                Layouts = layoutOptions,
-            }));
-        }
+            ListName = RecipesAdminList.Name,
+        }));
 
         // The page keeps one list per feature, and every list follows the configured layout.
         foreach (var group in entries.GroupBy(entry => entry.Feature).OrderBy(group => group.Key))
         {
-            var rows = new List<AdminListRow<RecipeEntry>>();
-
-            foreach (var entry in group.OrderBy(entry => entry.DisplayName))
-            {
-                var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
-
-                // The rows carry the attributes used by the client-side search of the list-management script.
-                if (shape is Shape rowShape)
-                {
-                    rowShape.Attributes["data-filter-value"] = group.Key + " " + entry.DisplayName;
-                }
-
-                rows.Add(new(entry, shape));
-            }
-
             model.Groups.Add(new RecipeGroupViewModel
             {
                 Feature = group.Key,
                 FilterValue = group.Key + " " + string.Join(' ', group.Select(entry => entry.DisplayName)),
-                List = await adminListFactory.CreateAsync(new AdminListContext<RecipeEntry>(RecipesAdminList.Name)
+                List = new AdminListContext<RecipeEntry>
                 {
-                    Layout = layout,
-                    Rows = rows,
+                    Source = group.OrderBy(entry => entry.DisplayName).ToArray(),
                     ShowLayoutSelector = false,
-                    // A recipe is run one at a time, so the list has nothing to count or select.
-                    ShowToolbar = false,
-                    ItemCssClass = "list-group-item",
-                }, HttpContext.RequestAborted),
+                },
             });
         }
 

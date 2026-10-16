@@ -84,9 +84,7 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Layers", "Layers.Index")]
-    public async Task<IActionResult> Index(
-        [FromServices] IDisplayManager<Layer> layerDisplayManager,
-        [FromServices] IAdminListFactory adminListFactory)
+    public async Task<IActionResult> Index()
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
         {
@@ -123,20 +121,11 @@ public sealed class AdminController : Controller
             }
         }
 
-        var rows = new List<AdminListRow<Layer>>();
-
-        foreach (var layer in model.Layers)
-        {
-            rows.Add(new(layer, await layerDisplayManager.BuildDisplayAsync(layer, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)));
-        }
-
         // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
-        model.List = await adminListFactory.CreateAsync(new AdminListContext<Layer>(LayersAdminList.Name)
+        model.List = new AdminListContext<Layer>
         {
-            Rows = rows,
-            ShowSelectAll = false,
-            ItemCssClass = "list-group-item",
-        }, HttpContext.RequestAborted);
+            Source = model.Layers,
+        };
 
         return View(model);
     }

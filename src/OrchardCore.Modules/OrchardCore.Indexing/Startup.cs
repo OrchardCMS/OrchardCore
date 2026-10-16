@@ -45,7 +45,6 @@ public sealed class Startup : StartupBase
             .AddIndexProvider<IndexProfileIndexProvider>()
             .AddDataMigration<IndexingMigrations>();
 
-        services.AddAdminListColumnDriver<IndexProfile, IndexingAdminListColumnDriver>();
     }
 }
 

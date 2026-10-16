@@ -1,3 +1,4 @@
+using OrchardCore.Admin;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Layers.Models;
@@ -16,8 +17,8 @@ public class LayersIndexViewModel
     public List<Layer> Layers { get; set; }
 
     /// <summary>
-    /// The <c>AdminList</c> shape rendering the layers with the configured layout.
+    /// The data context for rendering the layers with the configured layout.
     /// </summary>
     [BindNever]
-    public IShape List { get; set; }
+    public AdminListContext List { get; set; }
 }
