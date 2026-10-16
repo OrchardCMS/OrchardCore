@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Library } from "../api/types";
-import { sourceSteps, stepIcon } from "../toolbox/filter";
+import { sourceSteps } from "../toolbox/filter";
+import StepIcon from "../toolbox/StepIcon.vue";
 import { t } from "../i18n";
 
 // What an empty pipeline shows: every pipeline starts with a source, so it offers them.
@@ -28,7 +29,7 @@ const sources = computed(() => sourceSteps(props.library).slice(0, MAX));
                 :data-cy="`start-picker-${step.name}`"
                 @click="emit('pick', step.name)"
             >
-                <i class="fa-fw" :class="stepIcon(step)" aria-hidden="true"></i>
+                <StepIcon :step="step" />
                 <span>{{ step.displayText }}</span>
             </button>
         </div>

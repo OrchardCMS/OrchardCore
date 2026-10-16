@@ -32,8 +32,6 @@ public sealed class UnionStep : DataPipelineStepType<UnionStep>, IDataPipelineSt
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-object-group";
-
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {
         return [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true, AllowsMany = true }];

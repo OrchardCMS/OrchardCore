@@ -141,7 +141,7 @@ public sealed class DataPipelineDesignerController : Controller
             return this.ApiForbidProblem();
         }
 
-        return Ok(_modelBuilder.BuildLibrary());
+        return Ok(await _modelBuilder.BuildLibraryAsync());
     }
 
     [HttpPost]

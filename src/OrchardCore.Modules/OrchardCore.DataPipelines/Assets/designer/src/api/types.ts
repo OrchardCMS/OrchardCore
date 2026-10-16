@@ -46,7 +46,8 @@ export interface DesignerNode {
     // The title, or the display name of the step type.
     displayText: string;
     category: StepCategory;
-    icon?: string | null;
+    // The HTML of the icon of the step type, the rendered DataPipelineStepIcon shape.
+    iconHtml?: string | null;
     // The step type is not available (its feature is disabled).
     isMissing: boolean;
     hasEditor: boolean;
@@ -163,7 +164,8 @@ export interface LibraryStep {
     displayText: string;
     description: string;
     category: StepCategory;
-    icon?: string | null;
+    // The HTML of the icon of the step type, the rendered DataPipelineStepIcon shape.
+    iconHtml?: string | null;
     // The ports of a new step of this type, so the toolbox and the quick-add list only offer steps that can connect.
     inputs: DesignerPort[];
     outputs: DesignerPort[];

@@ -461,6 +461,7 @@ A module extends data pipelines with services it registers in its startup. Each 
 | A transform that sees every row before writing any, such as a sort | A step type, with the [data operations](../DataSources/README.md#data-operations) | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
 | A source or a destination of the pipelines | `DataPipelineStepType<TStep, TSettings>`, in the `Source`, `File` or `Destination` category | `services.AddDataPipelineStep<TStep, TDriver>()` | [Adding a step type](#adding-a-step-type) |
 | The editor of a step | `DataPipelineStepDisplayDriver<TSettings, TViewModel>` | with its step type | [Adding the editor of a step type](#adding-the-editor-of-a-step-type) |
+| The icon of a step type | A `DataPipelineStepIcon-{StepName}.cshtml` template | | [Giving a step type its icon](#giving-a-step-type-its-icon) |
 | Values a step keeps between runs, such as a watermark | `context.GetState` and `context.SetState` | | [Keeping values between runs](#keeping-values-between-runs) |
 | Work confirmed when a run succeeds | `context.Run.OnSucceeded` | | [Confirming work when a run succeeds](#confirming-work-when-a-run-succeeds) |
 | Reactions to the changes of pipelines, or to the end of runs | `IDataPipelineHandler`, `IDataPipelineRunHandler` | `services.AddScoped<IDataPipelineHandler, THandler>()` | [Reacting to changes of pipelines](#reacting-to-changes-of-pipelines) |
@@ -472,7 +473,7 @@ The **Read a data source** step reads every registered data source, and the **Cr
 
 ### Adding a step type
 
-A step type is a stateless, scoped service; the settings of each step are stored on its `DataPipelineStep`. Derive from `DataPipelineStepType<TStep, TSettings>`, from the `OrchardCore.DataPipelines.Abstractions` package, with the step type's own class as `TStep`, to store the settings as one object, read with `GetSettings(step)`, and implement `IDataPipelineStepType`. What describes the step type, its `Name`, `DisplayName`, `Description`, `Category` and `Icon`, is static: the designer lists the step types, and the engine knows the category of each step, without creating them. A step type without settings derives from `DataPipelineStepType<TStep>`.
+A step type is a stateless, scoped service; the settings of each step are stored on its `DataPipelineStep`. Derive from `DataPipelineStepType<TStep, TSettings>`, from the `OrchardCore.DataPipelines.Abstractions` package, with the step type's own class as `TStep`, to store the settings as one object, read with `GetSettings(step)`, and implement `IDataPipelineStepType`. What describes the step type, its `Name`, `DisplayName`, `Description` and `Category`, is static: the designer lists the step types, and the engine knows the category of each step, without creating them. A step type without settings derives from `DataPipelineStepType<TStep>`.
 
 - `Category` sets the default ports: a `Source` has one rows output; a `Transform` has one required rows input and one rows output; a `File` step has one required rows input and one files output; a `Destination` has one required files input. Override `GetInputs` and `GetOutputs` for other ports, such as the two inputs of **Join**, or an input whose port sets `AllowsMany` to accept several connections. Destinations are never executed by a preview.
 - `DescribeAsync` checks the settings against the fields of the inputs, reports errors and warnings, and sets the fields of each rows output. The designer calls it to list the fields available to the next steps, and the engine calls it before a run. By default, a step passes the fields of its input to its outputs.
@@ -509,8 +510,6 @@ public sealed class MaskTextStep : DataPipelineStepType<MaskTextStep, MaskTextSt
     public static LocalizationSource Description { get; } = LocalizationSource.Create<MaskTextStep>("Hides all but the last characters of text fields.");
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
-
-    public static string Icon => "fa-solid fa-mask";
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
@@ -609,6 +608,16 @@ public override async Task ExecuteAsync(DataPipelineStepContext context)
 
 !!! note
     A step reads and writes data for the user the run is for, `Run.User`: the user who published the pipeline, or the designer during a preview. A step that reads or writes data of the site must check this user's permissions, as the built-in steps do.
+
+### Giving a step type its icon
+
+The designer shows the icon of a step type with the `DataPipelineStepIcon` shape, which has the `StepType` and `Category` properties, and the `DataPipelineStepIcon__{StepName}` alternate. Without a template of its own, a step type gets the icon of its category. Give it its icon with a `DataPipelineStepIcon-{StepName}.cshtml` template in the `Views` folder of the module, such as `DataPipelineStepIcon-MaskText.cshtml`:
+
+```html
+<i class="fa-solid fa-mask" aria-hidden="true"></i>
+```
+
+A theme or a module overrides the icon of any step type the same way.
 
 ### Adding the editor of a step type
 

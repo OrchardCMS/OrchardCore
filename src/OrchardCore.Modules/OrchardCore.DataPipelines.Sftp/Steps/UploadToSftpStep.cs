@@ -38,8 +38,6 @@ public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStep, Up
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public static string Icon => "fa-solid fa-lock";
-
     /// <summary>
     /// Describes where a step uploads its files, such as <c>sftp://host:22/folder</c>. It holds no secrets.
     /// </summary>

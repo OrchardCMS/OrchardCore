@@ -41,8 +41,6 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStep, Send
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public static string Icon => "fa-solid fa-envelope";
-
     /// <summary>
     /// Splits a list of email addresses separated by commas or semicolons.
     /// </summary>

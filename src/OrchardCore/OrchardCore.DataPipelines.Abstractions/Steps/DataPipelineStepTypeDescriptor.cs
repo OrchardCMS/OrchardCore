@@ -16,14 +16,12 @@ public sealed class DataPipelineStepTypeDescriptor
     /// <param name="displayName">The label shown in the designer.</param>
     /// <param name="description">The description shown in the designer's toolbox.</param>
     /// <param name="category">The category the step is listed under.</param>
-    /// <param name="icon">The Font Awesome classes of the step's icon.</param>
     /// <param name="type">The class of the step type, resolved from the services when a step runs.</param>
     public DataPipelineStepTypeDescriptor(
         string name,
         LocalizationSource displayName,
         LocalizationSource description,
         DataPipelineStepCategory category,
-        string icon,
         Type type)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
@@ -33,7 +31,6 @@ public sealed class DataPipelineStepTypeDescriptor
         DisplayName = displayName;
         Description = description;
         Category = category;
-        Icon = icon;
         Type = type;
     }
 
@@ -58,11 +55,6 @@ public sealed class DataPipelineStepTypeDescriptor
     public DataPipelineStepCategory Category { get; }
 
     /// <summary>
-    /// Gets the Font Awesome classes of the step's icon.
-    /// </summary>
-    public string Icon { get; }
-
-    /// <summary>
     /// Gets the class of the step type, which implements <see cref="IDataPipelineStepType"/>.
     /// </summary>
     public Type Type { get; }
@@ -80,7 +72,6 @@ public sealed class DataPipelineStepTypeDescriptor
             TStepType.DisplayName,
             TStepType.Description,
             TStepType.Category,
-            TStepType.Icon,
             typeof(TStepType));
     }
 }

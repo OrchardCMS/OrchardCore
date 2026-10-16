@@ -3,7 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import type { DesignIssue, DesignerNode } from "../api/types";
 import type { NodeLayout } from "./geometry";
 import StepPort from "./StepPort.vue";
-import { stepIcon } from "../toolbox/filter";
+import StepIcon from "../toolbox/StepIcon.vue";
 import { stepStatusLabel, type StepOverlay } from "../runs/runOverlay";
 import { t } from "../i18n";
 
@@ -48,7 +48,6 @@ const emit = defineEmits<{
 
 const element = ref<HTMLElement | null>(null);
 
-const icon = computed(() => stepIcon(props.node));
 
 const errorCount = computed(() => props.issues.filter((issue) => issue.severity === "Error").length);
 
@@ -192,7 +191,7 @@ const onKeyDown = (event: KeyboardEvent) => {
         @keydown="onKeyDown"
     >
         <div class="dpd-node-header">
-            <i class="fa-fw" :class="icon" aria-hidden="true"></i>
+            <StepIcon :step="node" />
             <span class="dpd-node-title text-truncate">{{ node.displayText }}</span>
             <span
                 v-if="issues.length > 0"

@@ -52,8 +52,6 @@ public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItems
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public static string Icon => "fa-solid fa-file-pen";
-
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {
         return [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true }];

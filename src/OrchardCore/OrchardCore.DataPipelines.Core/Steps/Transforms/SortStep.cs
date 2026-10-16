@@ -32,8 +32,6 @@ public sealed class SortStep : DataPipelineStepType<SortStep, SortStepSettings>,
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-arrow-down-wide-short";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

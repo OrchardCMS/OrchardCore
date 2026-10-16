@@ -34,8 +34,6 @@ public sealed class SaveToMediaStep : DataPipelineStepType<SaveToMediaStep, Save
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public static string Icon => "fa-solid fa-photo-film";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

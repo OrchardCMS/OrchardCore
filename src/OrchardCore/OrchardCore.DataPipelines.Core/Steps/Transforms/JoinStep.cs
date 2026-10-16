@@ -45,8 +45,6 @@ public sealed class JoinStep : DataPipelineStepType<JoinStep, JoinStepSettings>,
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-code-merge";
-
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
         =>
         [

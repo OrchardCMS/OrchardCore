@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from "vue";
 import type { Library, LibraryStep, PortKind } from "../api/types";
-import { compatibleSteps, stepIcon } from "../toolbox/filter";
+import { compatibleSteps } from "../toolbox/filter";
+import StepIcon from "../toolbox/StepIcon.vue";
 import { t } from "../i18n";
 
 // The steps that can come after an output, searchable: clicking an unconnected output port opens it, and the step
@@ -122,7 +123,7 @@ onBeforeUnmount(() => document.removeEventListener("pointerdown", onDocumentPoin
                     @pointerenter="active = index"
                     @click="pick(item.step)"
                 >
-                    <i class="fa-fw" :class="stepIcon(item.step)" aria-hidden="true"></i>
+                    <StepIcon :step="item.step" />
                     <span class="dpd-quick-add-name">{{ item.step.displayText }}</span>
                     <span class="dpd-quick-add-category">{{ item.category.displayName }}</span>
                 </li>

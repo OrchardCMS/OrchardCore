@@ -32,8 +32,6 @@ public sealed class DistinctStep : DataPipelineStepType<DistinctStep, DistinctSt
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-clone";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

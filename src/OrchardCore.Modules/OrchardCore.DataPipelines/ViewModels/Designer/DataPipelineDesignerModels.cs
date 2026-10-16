@@ -84,7 +84,10 @@ public sealed class DesignerNode
 
     public string Category { get; set; }
 
-    public string Icon { get; set; }
+    /// <summary>
+    /// Gets or sets the HTML of the icon of the step type, the rendered <c>DataPipelineStepIcon</c> shape.
+    /// </summary>
+    public string IconHtml { get; set; }
 
     public bool IsMissing { get; set; }
 
@@ -285,7 +288,10 @@ public sealed class DesignerLibraryStep
 
     public string Category { get; set; }
 
-    public string Icon { get; set; }
+    /// <summary>
+    /// Gets or sets the HTML of the icon of the step type, the rendered <c>DataPipelineStepIcon</c> shape.
+    /// </summary>
+    public string IconHtml { get; set; }
 
     public List<DesignerPort> Inputs { get; set; } = [];
 

@@ -46,8 +46,6 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
 
-    public static string Icon => "fa-solid fa-database";
-
     public override async Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

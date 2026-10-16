@@ -7,8 +7,9 @@ namespace OrchardCore.DataPipelines.Steps;
 /// A kind of step that data pipelines are built from, such as reading a data source, filtering rows, creating a file
 /// or saving it to the media library. A step type is a stateless service: the settings of each step of a pipeline are
 /// stored on its <see cref="DataPipelineStep"/>. What describes the step type, such as its name and its category, is
-/// static, so step types are listed without being created. Register an implementation with
-/// <c>services.AddDataPipelineStep&lt;TStepType, TDisplayDriver&gt;()</c>; its display driver renders the step's
+/// static, so step types are listed without being created. Its icon is the <c>DataPipelineStepIcon</c> shape, with the
+/// <c>DataPipelineStepIcon__{Name}</c> alternate, so a template gives a step type its icon. Register an implementation
+/// with <c>services.AddDataPipelineStep&lt;TStepType, TDisplayDriver&gt;()</c>; its display driver renders the step's
 /// editor in the designer.
 /// </summary>
 public interface IDataPipelineStepType
@@ -32,11 +33,6 @@ public interface IDataPipelineStepType
     /// Gets the category the step is listed under, which also tells whether the step has effects outside the run.
     /// </summary>
     static abstract DataPipelineStepCategory Category { get; }
-
-    /// <summary>
-    /// Gets the Font Awesome classes of the step's icon, such as <c>fa-solid fa-filter</c>. A cube by default.
-    /// </summary>
-    static virtual string Icon => "fa-solid fa-cube";
 
     /// <summary>
     /// Lists the inputs of a step.

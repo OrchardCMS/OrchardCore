@@ -5,7 +5,7 @@ import { DesignerApiError } from "../api/designerApi";
 import type { EditorApplied } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { clearSelection, showStep } from "../canvas/useConnect";
-import { stepIcon } from "../toolbox/filter";
+import StepIcon from "../toolbox/StepIcon.vue";
 import ServerFormHost from "@bloom/designer/panel/ServerFormHost.vue";
 import PreviewTab from "./PreviewTab.vue";
 import FieldsTab from "./FieldsTab.vue";
@@ -422,7 +422,7 @@ defineExpose({ open, preview, settle, close, discardChanges, refresh, hasPending
 
         <div class="dpd-step-panel-header">
             <h3 v-if="editingNode" class="dpd-panel-title dpd-step-panel-title h6" tabindex="-1" data-cy="panel-step-title">
-                <i class="fa-fw" :class="stepIcon(editingNode)" aria-hidden="true"></i>
+                <StepIcon :step="editingNode" />
                 <span class="text-truncate">{{ editingNode.displayText }}</span>
             </h3>
             <h3 v-else class="dpd-panel-title dpd-step-panel-title h6" tabindex="-1">

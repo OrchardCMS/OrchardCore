@@ -39,8 +39,6 @@ public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLi
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public static string Icon => "fa-solid fa-link";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

@@ -44,8 +44,6 @@ public sealed class FilterStep : DataPipelineStepType<FilterStep, FilterStepSett
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-filter";
-
     public override IReadOnlyList<DataPipelinePort> GetOutputs(DataPipelineStep step)
         =>
         [

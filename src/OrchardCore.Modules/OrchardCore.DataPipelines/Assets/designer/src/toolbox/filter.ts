@@ -12,7 +12,7 @@ export const STEP_DRAG_TYPE = "application/x-orchard-data-pipeline-step";
 export const CATEGORY_ORDER: StepCategory[] = ["Source", "Transform", "File", "Destination"];
 
 /**
- * The default icon of each category, for a step type without one.
+ * The icon of each category, for a step whose type is not available, so the server didn't render its icon.
  */
 export const CATEGORY_ICONS: Record<StepCategory, string> = {
     Source: "fa-solid fa-database",
@@ -21,7 +21,7 @@ export const CATEGORY_ICONS: Record<StepCategory, string> = {
     Destination: "fa-solid fa-paper-plane",
 };
 
-export const stepIcon = (step: { icon?: string | null; category: StepCategory }) => step.icon || CATEGORY_ICONS[step.category] || "fa-solid fa-cube";
+export const categoryIcon = (category: StepCategory) => CATEGORY_ICONS[category] || "fa-solid fa-cube";
 
 const normalize = (value: string) =>
     value

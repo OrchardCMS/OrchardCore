@@ -23,11 +23,19 @@ public sealed class DataPipelineDesignerModelBuilder
         DataPipelineStepCategory.Destination,
     ];
 
+    /// <summary>
+    /// The type of the shape of the icon of a step type. The <c>DataPipelineStepIcon__{StepName}</c> alternate gives a
+    /// step type its icon.
+    /// </summary>
+    public const string StepIconShapeType = "DataPipelineStepIcon";
+
     private readonly IDataPipelineStepTypeManager _stepTypeManager;
     private readonly IDisplayManager<DataPipelineStep> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeHtmlRenderer _shapeHtmlRenderer;
+    private readonly IShapeFactory _shapeFactory;
     private readonly IStringLocalizerFactory _localizerFactory;
+    private readonly Dictionary<string, string> _icons = new(StringComparer.Ordinal);
     private readonly IStringLocalizer S;
 
     public DataPipelineDesignerModelBuilder(
@@ -35,6 +43,7 @@ public sealed class DataPipelineDesignerModelBuilder
         IDisplayManager<DataPipelineStep> displayManager,
         IUpdateModelAccessor updateModelAccessor,
         IShapeHtmlRenderer shapeHtmlRenderer,
+        IShapeFactory shapeFactory,
         IStringLocalizerFactory localizerFactory,
         IStringLocalizer<DataPipelineDesignerModelBuilder> localizer)
     {
@@ -42,6 +51,7 @@ public sealed class DataPipelineDesignerModelBuilder
         _displayManager = displayManager;
         _updateModelAccessor = updateModelAccessor;
         _shapeHtmlRenderer = shapeHtmlRenderer;
+        _shapeFactory = shapeFactory;
         _localizerFactory = localizerFactory;
         S = localizer;
     }
@@ -50,32 +60,32 @@ public sealed class DataPipelineDesignerModelBuilder
     /// Builds the toolbox: the step types grouped by category, in the order data flows.
     /// </summary>
     /// <returns>The toolbox.</returns>
-    public DesignerLibrary BuildLibrary()
+    public async Task<DesignerLibrary> BuildLibraryAsync()
     {
         var library = new DesignerLibrary();
 
         foreach (var category in _categories)
         {
-            var steps = _stepTypeManager.GetStepTypes()
-                .Where(descriptor => descriptor.Category == category)
-                .Select(descriptor =>
-                {
-                    var step = new DataPipelineStep { Type = descriptor.Name };
-                    var stepType = _stepTypeManager.GetStepType(descriptor.Name);
+            var steps = new List<DesignerLibraryStep>();
 
-                    return new DesignerLibraryStep
-                    {
-                        Name = descriptor.Name,
-                        DisplayText = Localize(descriptor.DisplayName) ?? descriptor.Name,
-                        Description = Localize(descriptor.Description),
-                        Category = category.ToString(),
-                        Icon = descriptor.Icon,
-                        Inputs = stepType.GetInputs(step).Select(DesignerPort.From).ToList(),
-                        Outputs = stepType.GetOutputs(step).Select(DesignerPort.From).ToList(),
-                    };
-                })
-                .OrderBy(step => step.DisplayText, StringComparer.CurrentCultureIgnoreCase)
-                .ToList();
+            foreach (var descriptor in _stepTypeManager.GetStepTypes().Where(descriptor => descriptor.Category == category))
+            {
+                var step = new DataPipelineStep { Type = descriptor.Name };
+                var stepType = _stepTypeManager.GetStepType(descriptor.Name);
+
+                steps.Add(new DesignerLibraryStep
+                {
+                    Name = descriptor.Name,
+                    DisplayText = Localize(descriptor.DisplayName) ?? descriptor.Name,
+                    Description = Localize(descriptor.Description),
+                    Category = category.ToString(),
+                    IconHtml = await RenderIconAsync(descriptor),
+                    Inputs = stepType.GetInputs(step).Select(DesignerPort.From).ToList(),
+                    Outputs = stepType.GetOutputs(step).Select(DesignerPort.From).ToList(),
+                });
+            }
+
+            steps.Sort((left, right) => StringComparer.CurrentCultureIgnoreCase.Compare(left.DisplayText, right.DisplayText));
 
             if (steps.Count > 0)
             {
@@ -128,7 +138,7 @@ public sealed class DataPipelineDesignerModelBuilder
             Title = step.Title,
             DisplayText = string.IsNullOrEmpty(step.Title) ? Localize(descriptor.DisplayName) ?? step.Type : step.Title,
             Category = descriptor.Category.ToString(),
-            Icon = descriptor.Icon,
+            IconHtml = await RenderIconAsync(descriptor),
             HasEditor = true,
             X = step.X,
             Y = step.Y,
@@ -261,6 +271,28 @@ public sealed class DataPipelineDesignerModelBuilder
             string or bool or long or int or decimal or double => value,
             _ => DataSources.DataValues.ToText(value),
         };
+    }
+
+    // The icon of a step type is a shape, so a template gives a step type its icon: DataPipelineStepIcon-{Name}.cshtml.
+    private async Task<string> RenderIconAsync(DataPipelineStepTypeDescriptor descriptor)
+    {
+        if (_icons.TryGetValue(descriptor.Name, out var html))
+        {
+            return html;
+        }
+
+        var shape = await _shapeFactory.CreateAsync(StepIconShapeType, Arguments.From(new
+        {
+            StepType = descriptor.Name,
+            descriptor.Category,
+        }));
+
+        shape.Metadata.Alternates.Add($"{StepIconShapeType}__{descriptor.Name}");
+
+        html = await _shapeHtmlRenderer.RenderAsync(shape);
+        _icons[descriptor.Name] = html;
+
+        return html;
     }
 
     private string Localize(LocalizationSource source)

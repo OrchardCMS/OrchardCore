@@ -35,8 +35,6 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStep, 
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
 
-    public static string Icon => "fa-solid fa-file-import";
-
     public override async Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

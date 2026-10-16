@@ -497,6 +497,14 @@
     outline-offset: 1px;
 }
 
+/* The icon of a step type: the rendered DataPipelineStepIcon shape, as wide as a fixed-width Font Awesome icon. */
+.dpd-step-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 1.25em;
+    text-align: center;
+}
+
 .dpd-toolbox-icon {
     margin-top: 0.125rem;
     color: var(--bs-secondary-color);

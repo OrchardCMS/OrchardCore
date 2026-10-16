@@ -33,8 +33,6 @@ public sealed class CalculatedFieldsStep : DataPipelineStepType<CalculatedFields
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-calculator";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

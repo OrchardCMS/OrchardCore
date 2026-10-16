@@ -65,8 +65,6 @@ public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApi
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public static string Icon => "fa-solid fa-cloud-arrow-up";
-
     /// <summary>
     /// Describes a URL without its credentials, query string and fragment, which may hold secrets.
     /// </summary>

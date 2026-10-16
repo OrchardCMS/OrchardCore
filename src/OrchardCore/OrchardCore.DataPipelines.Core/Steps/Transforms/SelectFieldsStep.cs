@@ -29,8 +29,6 @@ public sealed class SelectFieldsStep : DataPipelineStepType<SelectFieldsStep, Se
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-table-columns";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

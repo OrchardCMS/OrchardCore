@@ -35,8 +35,6 @@ public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStep, ZipFilesSt
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.File;
 
-    public static string Icon => "fa-solid fa-file-zipper";
-
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {
         return [new(DataPipelinePort.Input, S["Files"], DataPipelinePortKind.Files) { IsRequired = true, AllowsMany = true }];

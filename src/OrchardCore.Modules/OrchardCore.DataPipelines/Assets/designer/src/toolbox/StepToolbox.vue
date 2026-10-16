@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 import type { Library, LibraryStep, StepCategory } from "../api/types";
-import { STEP_DRAG_TYPE, filterLibrary, stepIcon } from "./filter";
+import { STEP_DRAG_TYPE, filterLibrary } from "./filter";
+import StepIcon from "./StepIcon.vue";
 import { t } from "../i18n";
 
 const props = defineProps<{ library: Library | null; loading: boolean; error: string | null }>();
@@ -78,7 +79,7 @@ const onDragStart = (step: LibraryStep, event: DragEvent) => {
                         @dragstart="onDragStart(step, $event)"
                         @click="emit('add', step.name)"
                     >
-                        <i class="dpd-toolbox-icon fa-fw" :class="stepIcon(step)" aria-hidden="true"></i>
+                        <StepIcon class="dpd-toolbox-icon" :step="step" />
                         <span class="dpd-toolbox-text">
                             <span class="dpd-toolbox-name">{{ step.displayText }}</span>
                             <span :id="`dpd-toolbox-${step.name}-description`" class="dpd-toolbox-description">{{ step.description }}</span>

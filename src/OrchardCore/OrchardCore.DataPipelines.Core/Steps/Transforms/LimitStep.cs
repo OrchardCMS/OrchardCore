@@ -30,8 +30,6 @@ public sealed class LimitStep : DataPipelineStepType<LimitStep, LimitStepSetting
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-scissors";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

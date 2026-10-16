@@ -34,8 +34,6 @@ public sealed class AggregateStep : DataPipelineStepType<AggregateStep, Aggregat
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
-    public static string Icon => "fa-solid fa-layer-group";
-
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

@@ -37,8 +37,6 @@ public sealed class UploadToFtpStep : DataPipelineStepType<UploadToFtpStep, Uplo
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
-    public static string Icon => "fa-solid fa-server";
-
     /// <summary>
     /// Describes where a step uploads its files, such as <c>ftps://host:21/folder</c>. It holds no secrets.
     /// </summary>

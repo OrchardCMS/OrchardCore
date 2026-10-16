@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CATEGORY_ICONS, compatibleSteps, filterLibrary, sourceSteps, stepIcon } from "../filter";
+import { CATEGORY_ICONS, categoryIcon, compatibleSteps, filterLibrary, sourceSteps } from "../filter";
 import { library } from "../../__tests__/fixtures";
 
 const names = (categories: ReturnType<typeof filterLibrary>) => categories.map((category) => [category.category, category.steps.map((step) => step.name)]);
@@ -32,8 +32,8 @@ describe("toolbox filter", () => {
         expect(sourceSteps(library).map((step) => step.name)).toEqual(["ContentItemsSource", "UsersSource"]);
     });
 
-    it("stepIcon_NoIcon_UsesTheCategoryIcon", () => {
-        expect(stepIcon({ icon: "fa-solid fa-user", category: "Source" })).toBe("fa-solid fa-user");
-        expect(stepIcon({ icon: null, category: "File" })).toBe(CATEGORY_ICONS.File);
+    it("categoryIcon_Category_ReturnsTheIconOfTheCategory", () => {
+        expect(categoryIcon("File")).toBe(CATEGORY_ICONS.File);
+        expect(categoryIcon("Unknown" as never)).toBe("fa-solid fa-cube");
     });
 });

@@ -36,8 +36,6 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStep, Create
 
     public static DataPipelineStepCategory Category => DataPipelineStepCategory.File;
 
-    public static string Icon => "fa-solid fa-file-export";
-
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
     {
         return [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true, AllowsMany = true }];
