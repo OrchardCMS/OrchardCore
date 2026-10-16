@@ -89,7 +89,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         site.AppendVersion = model.AppendVersion;
         site.CacheMode = model.CacheMode;
 
-        if (Uri.TryCreate(model.BaseUrl, UriKind.Absolute, out _))
+        if (ValidateUri(model.BaseUrl, restrictScheme: true))
         {
             site.BaseUrl = model.BaseUrl;
         }
@@ -98,7 +98,8 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
         }
 
-        if (Uri.TryCreate(model.CdnBaseUrl, UriKind.Absolute, out _))
+        // The site base URL is always HTTP or HTTPS, while the CDN base URL could be something else (like FTP) as well.
+        if (ValidateUri(model.CdnBaseUrl, restrictScheme: false))
         {
             site.CdnBaseUrl = model.CdnBaseUrl;
         }
@@ -192,4 +193,16 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         return true;
     }
+
+    /// <summary>
+    /// Checks if the provided <paramref name="url"/> is a valid <see cref="Uri"/> and a suitable base URL. The latter
+    /// means that it should end with the path and not contain any query or hash parameters.   
+    /// </summary>
+    /// <param name="url">Raw value to validate</param>
+    /// <param name="restrictScheme">If <see langword="true"/>, only HTTP and HTTPS URLs are allowed.</param>
+    private static bool ValidateUri(string url, bool restrictScheme) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
+        (!restrictScheme || uri.Scheme is "http" or "https") &&
+        string.IsNullOrEmpty(uri.Query) &&
+        string.IsNullOrEmpty(uri.Fragment);
 }
