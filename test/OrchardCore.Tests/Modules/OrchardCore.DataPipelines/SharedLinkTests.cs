@@ -405,6 +405,7 @@ public sealed class SharedLinkTests
             var features = (await featuresManager.GetAvailableFeaturesAsync()).Where(feature => feature.Id == "OrchardCore.DataPipelines").ToList();
             await featuresManager.UpdateFeaturesAsync([], features, force: true);
         });
+        await DataPipelineTestSites.WaitForFeaturesAsync(context);
 
         return context;
     }

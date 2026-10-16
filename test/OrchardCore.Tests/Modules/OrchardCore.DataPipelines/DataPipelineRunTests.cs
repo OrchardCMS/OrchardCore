@@ -205,6 +205,7 @@ public sealed class DataPipelineRunTests
 
             await featuresManager.UpdateFeaturesAsync([], features, force: true);
         });
+        await DataPipelineTestSites.WaitForFeaturesAsync(context);
 
         return context;
     }

@@ -239,6 +239,7 @@ public sealed class DataPipelineRecipeTests
 
             await featuresManager.UpdateFeaturesAsync([], features, force: true);
         });
+        await DataPipelineTestSites.WaitForFeaturesAsync(context);
 
         return context;
     }
