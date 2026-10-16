@@ -10,7 +10,6 @@
         Columns       View-defined columns extended by column providers, see IAdminListColumnsBuilder.
         Rows          The row shapes built with the "SummaryAdminGrid" display type. (Not "Items": that name is the shape's own child collection.)
                       The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its row element.
-        Headers       Optional header shapes, one zone per column. A column without one shows its Title.
         GridOptions   Optional layout-specific row and container classes, added to the required grid classes.
         RowsAttributes Optional attributes rendered on the rows container, e.g. the id a sortable list needs. A class joins the ones the layout gives it,
                        e.g. a hook a script of the page selects the list by.
@@ -64,7 +63,6 @@
     }
 
     var columns = (IList<AdminListColumn>)Model.Columns ?? [];
-    var headers = Model.Headers as IZoneHolding;
     var header = Model.Header;
     var toolbar = Model.Toolbar;
     string name = Model.Name;
@@ -230,16 +228,7 @@
         <div class="admin-list-grid-header" role="row">
             @for (var i = 0; i < columns.Count; i++)
             {
-                @* A custom header can include a tooltip; the title still labels the
-                   cells when the headers are hidden. *@
-                if (headers != null && headers.Zones.IsNotEmpty(columns[i].Name))
-                {
-                    <div class="@columnCssClasses[i]" role="columnheader">@await DisplayAsync(headers.Zones[columns[i].Name])</div>
-                }
-                else
-                {
-                    <div class="@columnCssClasses[i]" role="columnheader">@columnTitles[i]</div>
-                }
+                <div class="@columnCssClasses[i]" role="columnheader">@columnTitles[i]</div>
             }
         </div>
         <div class="admin-list-grid-body @rowsCssClass" role="rowgroup" @rowsAttributesHtml>

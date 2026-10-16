@@ -16,8 +16,7 @@ public class AdminListColumn
 
     /// <summary>
     /// The localized header text of the column. Can be <see langword="null"/> for columns without a header, e.g. a selection checkbox.
-    /// It is rendered in the header unless a header shape is supplied, and it labels the cells when a narrow
-    /// list hides the headers, so it stays plain text even when the header is a shape.
+    /// It is rendered in the header, and it labels the cells when a narrow list hides the headers.
     /// </summary>
     public LocalizedString Title { get; set; }
 

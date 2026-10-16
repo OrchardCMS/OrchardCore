@@ -35,11 +35,12 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            // The source is a badge in the Tags zone, which the 'Source' column of the admin list renders.
+            // The source is a badge in the Tags zone of the List layout, and in the 'Source' column of the Grid layout.
             Dynamic("SqlQuery_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }, query).Location("Tags:5"),
+            }, query).Location("Tags:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Source:5"),
             Dynamic("SqlQuery_Buttons_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;

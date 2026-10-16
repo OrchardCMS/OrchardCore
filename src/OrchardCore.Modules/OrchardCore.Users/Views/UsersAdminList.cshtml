@@ -31,7 +31,7 @@
 </div>
 
 @* The users, the summary/actions bar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-<admin-list name="Users" context="Model.List">
+<admin-list name="@UsersAdminList.Name" context="Model.List">
     <admin-list-list item-css-class="list-group-item" />
     <admin-list-grid>
         <admin-list-column type="Select" />

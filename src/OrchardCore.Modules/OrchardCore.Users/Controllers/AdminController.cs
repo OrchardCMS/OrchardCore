@@ -172,8 +172,8 @@ public sealed class AdminController : Controller
         // Populate options pager summary values.
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + results.Count() - 1;
-        options.UsersCount = results.Count();
+        options.EndIndex = startIndex + results.Count - 1;
+        options.UsersCount = results.Count;
         options.TotalItemCount = count;
 
         var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);

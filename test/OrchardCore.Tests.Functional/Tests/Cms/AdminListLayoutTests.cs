@@ -141,6 +141,12 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
             var headers = await HeadersAsync(page);
 
             Assert.True(headers.Contains("Actions"), $"Expected {url} to render its list as a grid, but its headers are [{string.Join(", ", headers)}].");
+
+            // A column renders the zone named after it, which the display drivers of the rows fill with their
+            // SummaryAdminGrid locations, so a column no driver places a shape in stays empty on every row.
+            var emptyColumns = await EmptyColumnsAsync(page);
+
+            Assert.True(emptyColumns.Length == 0, $"Expected every column of {url} to render something on a row, but [{string.Join(", ", emptyColumns)}] render nothing.");
         }
 
         Assert.Empty(consoleErrors);
@@ -297,6 +303,28 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
     }
 
     // The headers of the first grid of the page.
+    // The columns, across every grid of the page, whose cells render nothing on any row. A page without rows has none.
+    private static Task<string[]> EmptyColumnsAsync(IPage page)
+    {
+        return page.EvaluateAsync<string[]>("""
+            () => {
+                const columns = new Map();
+
+                for (const row of document.querySelectorAll('.admin-list-grid .admin-list-grid-row[role="row"]')) {
+                    for (const cell of row.querySelectorAll(':scope > [role="cell"]')) {
+                        const name = [...cell.classList].find(c => c.startsWith('admin-list-column-'));
+                        const content = cell.cloneNode(true);
+                        content.querySelectorAll('.admin-list-grid-label').forEach(label => label.remove());
+                        const filled = content.textContent.trim().length > 0 || content.querySelector('input, button, a, img, i, svg, select') !== null;
+                        columns.set(name, columns.get(name) === true || filled);
+                    }
+                }
+
+                return [...columns].filter(([, filled]) => !filled).map(([name]) => name);
+            }
+            """);
+    }
+
     private static async Task<string[]> HeadersAsync(IPage page)
     {
         var headers = await page.Locator(".admin-list-grid").First.Locator(".admin-list-grid-header [role='columnheader']").AllTextContentsAsync();

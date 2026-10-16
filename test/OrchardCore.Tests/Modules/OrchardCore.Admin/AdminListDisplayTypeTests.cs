@@ -66,8 +66,8 @@ public class AdminListDisplayTypeTests
         await site.UsingTenantScopeAsync(async scope =>
         {
             var factory = scope.ServiceProvider.GetRequiredService<IShapeFactory>();
-            IShape child = null;
-            IZoneHolding row = null;
+            Shape child = null;
+            ZoneHolding row = null;
             var builds = 0;
             async Task<IList<IShape>> BuildRowsAsync(string displayType)
             {
@@ -82,7 +82,7 @@ public class AdminListDisplayTypeTests
                     {
                         child = new Shape();
                         child.Metadata.ChildContent = new HtmlString("<span data-test-cell=\"moved\">Moved action</span>");
-                        return ValueTask.FromResult(child);
+                        return ValueTask.FromResult<IShape>(child);
                     })
                     .Location("SummaryAdmin", "Actions:10")
                     .Location("SummaryAdminGrid", "Actions:10")

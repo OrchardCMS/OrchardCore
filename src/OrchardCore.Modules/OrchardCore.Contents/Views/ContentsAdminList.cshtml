@@ -29,7 +29,7 @@
     </div>
 </div>
 @* The items, the summary/actions bar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
-<admin-list name="Contents" context="Model.List">
+<admin-list name="@ContentsAdminList.Name" context="Model.List">
     <admin-list-grid>
         <admin-list-column type="Select" />
         <admin-list-column name="Title" position="20" title="@T["Title"]" />

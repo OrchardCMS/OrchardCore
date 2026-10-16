@@ -77,8 +77,8 @@ public class DefaultAdminListRowBuilderTests
         var builder = new DefaultAdminListRowBuilder(services);
         var items = new ArrayList();
 
-        await Assert.ThrowsAsync<ArgumentException>(() => builder.BuildAsync(items, null, "SummaryAdmin"));
-        await Assert.ThrowsAsync<ArgumentException>(() => builder.BuildAsync(new AmbiguousItems(), null, "SummaryAdmin"));
+        await Assert.ThrowsAsync<ArgumentException>(() => builder.BuildAsync(items, null, "SummaryAdmin", TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<ArgumentException>(() => builder.BuildAsync(new AmbiguousItems(), null, "SummaryAdmin", TestContext.Current.CancellationToken));
         Assert.Empty(await builder.BuildAsync(items, typeof(string), "SummaryAdmin", TestContext.Current.CancellationToken));
     }
 

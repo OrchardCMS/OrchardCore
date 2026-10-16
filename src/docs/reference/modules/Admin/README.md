@@ -536,7 +536,7 @@ The `Grid` layout only creates an `AdminListCell` shape for the cells a template
 | Property    | Description                                                                                                                                                                  |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Name`      | The technical name, unique in the list ignoring case, used for the `AdminListCell__{Name}` alternates and the `admin-list-column-{name}` CSS class. It is the key of the column in `context.Columns`, so it is set before the column is added. |
-| `Title`     | The localized header text. `null` for a column without a header, e.g. the selection checkbox. A view can supply a header shape instead; the title still labels the cells when a narrow list hides the headers, so it stays plain text. |
+| `Title`     | The localized header text. `null` for a column without a header, e.g. the selection checkbox. It also labels the cells when a narrow list hides the headers. |
 | `Position`  | The position in the placement syntax (`10`, `25`, `35.5`, or `end` to stay last). Columns are sorted after all providers run, so features can insert columns independently. A column without a position goes after positioned columns. |
 | `Zones`     | Optional row zones to render in order instead of the zone named after the column. |
 | `Width`     | Any CSS width (`20%`, `12rem`), or `AdminListColumn.AutoWidth` (`auto`) to make the column as narrow as its content. Columns without a width share the remaining space.        |
@@ -646,7 +646,7 @@ public sealed class CultureColumnsProvider : IAdminListColumnsProvider
 
     public Task PopulateAsync(AdminListColumnsContext context)
     {
-        if (context.ListName == "Contents")
+        if (context.ListName == ContentsAdminList.Name)
         {
             context.Columns.Add(new AdminListColumn
             {
@@ -683,7 +683,7 @@ the supplied default. The content items list supplies `ContentsAdminList.Content
 
 ### The lists to target
 
-A list has a stable name declared in its rendering view, e.g. `name="Queries"`. Use the string value directly when it is used only once in its module; keep a constant for reused names or shared contracts in an abstractions project. The same name tells column providers which list they extend, and selects the layout a user picked for the list, the `AdminList__{Name}` alternate and the `AdminListCell__{Name}__{Column}` alternates. The pages that render one list per group, e.g. the features by category and the recipes by feature, give every group the same name.
+A list has a stable name declared in its rendering view, e.g. `name="Queries"`. Use the string value directly when it is used only once in its module; keep a constant for reused names or shared contracts in an abstractions project. The lists other modules are most likely to extend publish theirs, `ContentsAdminList.Name` and `UsersAdminList.Name`, so a column provider targets them without repeating the string. The same name tells column providers which list they extend, and selects the layout a user picked for the list, the `AdminList__{Name}` alternate and the `AdminListCell__{Name}__{Column}` alternates. The pages that render one list per group, e.g. the features by category and the recipes by feature, give every group the same name.
 
 The columns of a list are declared in its rendering view.
 

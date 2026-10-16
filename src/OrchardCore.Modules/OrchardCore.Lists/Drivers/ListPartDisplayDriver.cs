@@ -181,9 +181,11 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                 model.Pager = await _shapeFactory.PagerSlimAsync(pagerSlim);
             }
 
-            var enableOrdering = model.EnableOrdering && model.ContentItems.Count() > 1
+            model.IsOrdering = model.EnableOrdering && model.ContentItems.Count() > 1
                 && listPartFilterViewModel.Status == ContentsStatus.Latest
                 && string.IsNullOrEmpty(listPartFilterViewModel.DisplayText);
+
+            var enableOrdering = model.IsOrdering;
             model.List = new AdminListContext<ListPartAdminListEntry>
             {
                 Source = model.ContentItems.Select(item => new ListPartAdminListEntry
