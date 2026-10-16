@@ -206,7 +206,7 @@ public sealed class BuiltInDataSourcesTests
         IReadOnlyList<DataSetDescriptor> dataSets = [];
         DataSetSchema schema = null;
         IReadOnlyList<DataField> fields = [];
-        IReadOnlyList<object[]> rows = [];
+        List<object[]> rows = [];
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var attempts = 0;
 
