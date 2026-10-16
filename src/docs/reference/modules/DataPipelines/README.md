@@ -4,6 +4,8 @@ The Data Pipelines module lets administrators design pipelines that read data, t
 
 Pipelines read their data from the [data sources](../DataSources/README.md) of the site, and their formulas use the [formula language](../DataSources/README.md#formulas) of the Data Pipelines Core feature.
 
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/PP8oz3GGaM0" title="Data Pipelines in Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Features
 
 The Data Pipelines module has two features:
