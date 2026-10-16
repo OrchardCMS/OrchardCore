@@ -67,12 +67,7 @@ public sealed class TemplateController : Controller
         ContentOptions options,
         PagerParameters pagerParameters)
     {
-        if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
-        {
-            return Forbid();
-        }
-
-        if (options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
+        if (!await IsAuthorizedAsync(options.AdminTemplates))
         {
             return Forbid();
         }
@@ -167,12 +162,7 @@ public sealed class TemplateController : Controller
 
     public async Task<IActionResult> Create(string name = null, bool adminTemplates = false, string returnUrl = null)
     {
-        if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
-        {
-            return Forbid();
-        }
-
-        if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
+        if (!await IsAuthorizedAsync(adminTemplates))
         {
             return Forbid();
         }
@@ -190,12 +180,7 @@ public sealed class TemplateController : Controller
     [HttpPost, ActionName(nameof(Create))]
     public async Task<IActionResult> CreatePost(TemplateViewModel model, string submit, string returnUrl = null)
     {
-        if (!model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
-        {
-            return Forbid();
-        }
-
-        if (model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
+        if (!await IsAuthorizedAsync(model.AdminTemplates))
         {
             return Forbid();
         }
@@ -234,12 +219,7 @@ public sealed class TemplateController : Controller
 
     public async Task<IActionResult> Edit(string name, bool adminTemplates = false, string returnUrl = null)
     {
-        if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
-        {
-            return Forbid();
-        }
-
-        if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
+        if (!await IsAuthorizedAsync(adminTemplates))
         {
             return Forbid();
         }
@@ -269,12 +249,7 @@ public sealed class TemplateController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(string sourceName, TemplateViewModel model, string submit, string returnUrl = null)
     {
-        if (!model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
-        {
-            return Forbid();
-        }
-
-        if (model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
+        if (!await IsAuthorizedAsync(model.AdminTemplates))
         {
             return Forbid();
         }
@@ -326,12 +301,7 @@ public sealed class TemplateController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string name, string returnUrl, bool adminTemplates = false)
     {
-        if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
-        {
-            return Forbid();
-        }
-
-        if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
+        if (!await IsAuthorizedAsync(adminTemplates))
         {
             return Forbid();
         }
@@ -358,7 +328,7 @@ public sealed class TemplateController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> ListPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
+        if (!await IsAuthorizedAsync(options.AdminTemplates))
         {
             return Forbid();
         }
@@ -400,10 +370,25 @@ public sealed class TemplateController : Controller
         {
             return this.Redirect(returnUrl, true);
         }
+
         else
         {
             return RedirectToAction(nameof(Index));
         }
+    }
+
+    private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
+        {
+            return false;
+        }
+
+        var permission = adminTemplates
+            ? AdminTemplatesPermissions.ManageAdminTemplates
+            : Permissions.ManageTemplates;
+
+        return await _authorizationService.AuthorizeAsync(User, permission);
     }
 
     private async Task ValidateModelAsync(TemplateViewModel model, TemplatesDocument templatesDocument = null, string sourceName = null)

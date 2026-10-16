@@ -32,7 +32,7 @@ vi.mock("@media-gallery", () => ({
 vi.mock("../components/MediaFieldBasic.vue", () => ({
   default: {
     name: "MediaFieldBasic",
-    template: "<div class='stub-basic' :data-max-file-size='config?.maxFileSize' :data-media-app-translations='config?.mediaAppTranslations' :data-signalr-enabled='config?.signalrEnabled'></div>",
+    template: "<div class='stub-basic' :data-max-file-size='config?.maxFileSize' :data-media-app-translations='config?.mediaAppTranslations' :data-signalr-enabled='config?.signalrEnabled' :data-disable-thumbnails='config?.disableThumbnails'></div>",
     props: ["config", "inputName"],
   },
 }));
@@ -98,6 +98,18 @@ function createMountEl(
   return el;
 }
 
+// The MutationObserver callbacks run asynchronously.
+function flushMutations(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+// observeAndInit keeps its registry and observer on window so they're shared across bundles;
+// reset them so each fresh import of main.ts starts from a clean state.
+function resetObserveAndInit() {
+  window.__orchardCoreObserveAndInit?.observer?.disconnect();
+  delete window.__orchardCoreObserveAndInit;
+}
+
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 describe("main.ts", () => {
@@ -137,6 +149,7 @@ describe("main.ts", () => {
   beforeEach(async () => {
     document.body.innerHTML = "";
     mockSetTranslations.mockClear();
+    resetObserveAndInit();
     vi.resetModules();
     main = await import("../main");
   });
@@ -304,6 +317,18 @@ describe("main.ts", () => {
       main.mountMediaField(elOff);
       expect(elOff.querySelector(".stub-basic")?.getAttribute("data-signalr-enabled")).toBe("false");
     });
+
+    it("parses data-disable-thumbnails", () => {
+      const el = createMountEl("basic", { disableThumbnails: "true" });
+      main.mountMediaField(el);
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-disable-thumbnails")).toBe("true");
+    });
+
+    it("defaults disableThumbnails to false when the attribute is absent", () => {
+      const el = createMountEl("basic");
+      main.mountMediaField(el);
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-disable-thumbnails")).toBe("false");
+    });
   });
 
   // ── readTranslations (tested indirectly via mount) ──────────────────────
@@ -409,6 +434,49 @@ describe("main.ts", () => {
 
       // Should not be marked as mounted
       expect(el.dataset.mediaFieldMounted).toBeUndefined();
+    });
+
+    // The Flow and Bag part editors fetch widget editors via AJAX and insert them after the
+    // module has been evaluated, which only happens once per page.
+    it("mounts fields inserted after the module loaded", async () => {
+      const container = document.createElement("div");
+      container.innerHTML = `
+        <div data-media-field-type="basic" data-input-name="A" data-paths="[]"></div>
+        <div data-media-field-type="gallery" data-input-name="B" data-paths="[]"></div>`;
+      document.body.appendChild(container);
+
+      await flushMutations();
+
+      const [basicEl, galleryEl] = Array.from(container.querySelectorAll<HTMLElement>("[data-media-field-type]"));
+      expect(basicEl.dataset.mediaFieldMounted).toBe("true");
+      expect(basicEl.querySelector(".stub-basic")).not.toBeNull();
+      expect(galleryEl.dataset.mediaFieldMounted).toBe("true");
+      expect(galleryEl.querySelector(".stub-gallery")).not.toBeNull();
+    });
+
+    it("mounts a field directly inserted after the module loaded only once", async () => {
+      const el = createMountEl("basic");
+
+      await flushMutations();
+
+      expect(el.dataset.mediaFieldMounted).toBe("true");
+      expect(el.querySelectorAll(".stub-basic")).toHaveLength(1);
+
+      // Moving the element (e.g. reordering widgets) must not mount it again.
+      document.body.appendChild(el);
+      await flushMutations();
+
+      expect(el.querySelectorAll(".stub-basic")).toHaveLength(1);
+    });
+
+    it("registers openMediaPicker on config elements inserted after the module loaded", async () => {
+      const config = document.createElement("div") as HTMLElement & { __openMediaPicker?: unknown };
+      config.dataset.mediaPickerConfig = "";
+      document.body.appendChild(config);
+
+      await flushMutations();
+
+      expect(config.__openMediaPicker).toBe(main.openMediaPicker);
     });
   });
 });

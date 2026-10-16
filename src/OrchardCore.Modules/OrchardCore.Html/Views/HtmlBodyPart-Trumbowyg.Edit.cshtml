@@ -1,4 +1,6 @@
 @model HtmlBodyPartViewModel
+@using OrchardCore.Infrastructure.Html
+@inject IHtmlSanitizerService HtmlSanitizerService
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
@@ -21,7 +23,7 @@ else
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="ocat-wrapper html-body-part-trumbowyg-editor" data-language-code="@culture.TwoLetterISOLanguageName" data-is-rtl="@(culture.GetLanguageDirection() == LanguageDirection.RTL ? "true" : "false")" data-language-direction="@culture.GetLanguageDirection()" data-options="@trumbowygSettings.Options">
+<div class="ocat-wrapper html-body-part-trumbowyg-editor" data-language-code="@culture.TwoLetterISOLanguageName" data-is-rtl="@(culture.GetLanguageDirection() == LanguageDirection.RTL ? "true" : "false")" data-language-direction="@culture.GetLanguageDirection()" data-options="@trumbowygSettings.Options" data-editor-value="@HtmlSanitizerService.Sanitize(Model.Html ?? string.Empty)">
     <label asp-for="Html" class="ocat-label">@Model.TypePartDefinition.DisplayName()</label>
     <div class="ocat-end">
         @if (culture.IsRightToLeft())
