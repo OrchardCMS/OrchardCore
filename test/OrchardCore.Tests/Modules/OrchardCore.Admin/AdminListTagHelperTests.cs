@@ -5,47 +5,33 @@ using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.TagHelpers;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.ContentManagement;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
 public class AdminListTagHelperTests
 {
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task ProcessAsync_ItemsOrContext_CreatesShapeBeforeCollectingColumns(bool useContext)
+    [Fact]
+    public async Task ProcessAsync_Context_CreatesShapeBeforeCollectingColumns()
     {
-        var shape = CreateShape();
         string[] items = ["item"];
         var data = new AdminListContext<string> { Source = items };
-        var factory = new Mock<IAdminListFactory>();
-        factory.Setup(value => value.CreateAsync("Items", It.IsAny<AdminListContext>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string name, AdminListContext value, CancellationToken _) =>
-            {
-                Assert.Equal("Items", name);
-                if (useContext)
-                {
-                    Assert.Same(data, value);
-                    shape.Properties["Source"] = value.Source;
-                }
-
-                return shape;
-            });
         var display = new Mock<IDisplayHelper>();
-        display.Setup(value => value.ShapeExecuteAsync(shape)).Returns((IShape value) =>
+        display.Setup(value => value.ShapeExecuteAsync(It.IsAny<IShape>())).Returns((IShape value) =>
         {
+            Assert.Equal(AdminListConstants.ShapeType, value.Metadata.Type);
+            Assert.Equal("Items", value.GetProperty<string>("Name"));
             Assert.Same(items, value.GetProperty<System.Collections.IEnumerable>("Source"));
+            Assert.Equal(typeof(string), value.GetProperty<Type>("ItemType"));
             Assert.Single(value.GetProperty<AdminListColumnCollection>("Columns"));
             Assert.Equal("rows", value.GetProperty<IDictionary<string, string>>("RowsAttributes")["id"]);
             return Task.FromResult<IHtmlContent>(HtmlString.Empty);
         });
-        var helper = new AdminListTagHelper(display.Object, factory.Object)
+        var helper = new AdminListTagHelper(display.Object, new AdminListTestShapeFactory())
         {
-            Context = useContext ? data : null,
+            Context = data,
             Name = "Items",
-            Items = useContext ? null : items,
             RowsAttributes = new Dictionary<string, string> { ["id"] = "rows" },
         };
         var context = CreateContext("admin-list");
@@ -57,26 +43,21 @@ public class AdminListTagHelperTests
 
         await helper.ProcessAsync(context, output);
 
-        factory.Verify(value => value.CreateAsync("Items", It.IsAny<AdminListContext>(), It.IsAny<CancellationToken>()), Times.Once);
-        display.Verify(value => value.ShapeExecuteAsync(shape), Times.Once);
+        display.Verify(value => value.ShapeExecuteAsync(It.IsAny<IShape>()), Times.Once);
     }
 
     [Theory]
-    [InlineData(false, null)]
-    [InlineData(false, "")]
-    [InlineData(false, " ")]
-    [InlineData(true, null)]
-    [InlineData(true, "")]
-    [InlineData(true, " ")]
-    public async Task ProcessAsync_InvalidNameWithItemsOrContext_Throws(bool useContext, string name)
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task ProcessAsync_InvalidName_Throws(string name)
     {
-        var factory = new Mock<IAdminListFactory>();
+        var factory = new Mock<IShapeFactory>();
         var display = new Mock<IDisplayHelper>();
         var helper = new AdminListTagHelper(display.Object, factory.Object)
         {
             Name = name,
-            Context = useContext ? new AdminListContext<string> { Source = [] } : null,
-            Items = useContext ? null : Array.Empty<string>(),
+            Context = new AdminListContext<string> { Source = [] },
         };
 
         await Assert.ThrowsAnyAsync<ArgumentException>(() =>
@@ -86,56 +67,31 @@ public class AdminListTagHelperTests
         display.VerifyNoOtherCalls();
     }
 
-    [Theory]
-    [InlineData(null, "Existing")]
-    [InlineData("FromView", "FromView")]
-    public async Task ProcessAsync_ExistingShape_PreservesOrOverridesName(string name, string expected)
+    [Fact]
+    public async Task ProcessAsync_NullContext_Throws()
     {
-        var shape = CreateShape();
-        shape.Properties["Name"] = "Existing";
-        var factory = new Mock<IAdminListFactory>();
+        var factory = new Mock<IShapeFactory>();
         var display = new Mock<IDisplayHelper>();
-        display.Setup(value => value.ShapeExecuteAsync(shape)).Returns((IShape value) =>
-        {
-            Assert.Equal(expected, value.GetProperty<string>("Name"));
-            return Task.FromResult<IHtmlContent>(HtmlString.Empty);
-        });
-        var helper = new AdminListTagHelper(display.Object, factory.Object) { Shape = shape, Name = name };
+        var helper = new AdminListTagHelper(display.Object, factory.Object) { Name = "Items" };
 
-        await helper.ProcessAsync(CreateContext("admin-list"), CreateOutput("admin-list"));
-
-        factory.VerifyNoOtherCalls();
-        display.Verify(value => value.ShapeExecuteAsync(shape), Times.Once);
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    public async Task ProcessAsync_ExistingShapeWithInvalidNameOverride_Throws(string name)
-    {
-        var shape = CreateShape();
-        shape.Properties["Name"] = "Existing";
-        var helper = new AdminListTagHelper(Mock.Of<IDisplayHelper>(), Mock.Of<IAdminListFactory>())
-        {
-            Shape = shape,
-            Name = name,
-        };
-
-        await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
             helper.ProcessAsync(CreateContext("admin-list"), CreateOutput("admin-list")));
 
-        Assert.Equal("Existing", shape.GetProperty<string>("Name"));
+        factory.VerifyNoOtherCalls();
+        display.VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task ProcessAsync_Children_ConfigureShapeBeforeDisplay()
     {
-        var shape = CreateShape();
-        shape.Properties["ShowLayoutSelector"] = false;
-        shape.Properties["Columns"] = new AdminListColumn[] { new() { Name = "Existing" } };
+        var data = new AdminListContext
+        {
+            ShowLayoutSelector = false,
+            Columns = [new() { Name = "Existing" }],
+        };
         var context = CreateContext("admin-list");
         var display = new Mock<IDisplayHelper>();
-        display.Setup(helper => helper.ShapeExecuteAsync(shape)).Returns((IShape value) =>
+        display.Setup(helper => helper.ShapeExecuteAsync(It.IsAny<IShape>())).Returns((IShape value) =>
         {
             Assert.Equal(false, value.Properties["ShowToolbar"]);
             Assert.Equal(false, value.Properties["ShowLayoutSelector"]);
@@ -147,11 +103,12 @@ public class AdminListTagHelperTests
             Assert.Equal("10", columns["Select"].Position);
             Assert.Equal("end", columns["Actions"].Position);
             Assert.Equal(["Actions", "ActionsMenu"], columns["Actions"].Zones);
-            Assert.False(value.Properties.ContainsKey("Layout"));
+            Assert.Null(value.GetProperty("Layout"));
             return Task.FromResult<IHtmlContent>(new HtmlString("<div>Rendered shape</div>"));
         });
 
-        var helper = new AdminListTagHelper(display.Object, Mock.Of<IAdminListFactory>()) { Shape = shape, ShowToolbar = false };
+        var helper = CreateHelper(display.Object, data);
+        helper.ShowToolbar = false;
         var output = CreateOutput("admin-list", async () =>
         {
             await RenderLayoutAsync("admin-list-list", context.Items, "list-row", "list-rows");
@@ -169,7 +126,7 @@ public class AdminListTagHelperTests
         Assert.Null(output.TagName);
         Assert.Empty(output.Attributes);
         Assert.Equal("<div>Rendered shape</div>", output.Content.GetContent());
-        display.Verify(value => value.ShapeExecuteAsync(shape), Times.Once);
+        display.Verify(value => value.ShapeExecuteAsync(It.IsAny<IShape>()), Times.Once);
     }
 
     [Theory]
@@ -178,7 +135,7 @@ public class AdminListTagHelperTests
     public async Task ProcessAsync_DuplicateLayout_Throws(string tag)
     {
         var context = CreateContext("admin-list");
-        var helper = new AdminListTagHelper(Mock.Of<IDisplayHelper>(), Mock.Of<IAdminListFactory>()) { Shape = CreateShape() };
+        var helper = CreateHelper();
         var output = CreateOutput("admin-list", async () =>
         {
             await RenderLayoutAsync(tag, context.Items, null, null);
@@ -191,18 +148,16 @@ public class AdminListTagHelperTests
     [Fact]
     public async Task ProcessAsync_OmittedLayoutAttributes_PreserveExistingSettings()
     {
-        var shape = CreateShape();
         var options = new AdminListLayoutOptions { ItemCssClass = "existing-row", RowsCssClass = "existing-rows" };
-        shape.Properties["GridOptions"] = options;
         var context = CreateContext("admin-list");
         var display = new Mock<IDisplayHelper>();
-        display.Setup(helper => helper.ShapeExecuteAsync(shape)).ReturnsAsync(HtmlString.Empty);
-        var helper = new AdminListTagHelper(display.Object, Mock.Of<IAdminListFactory>()) { Shape = shape };
+        display.Setup(helper => helper.ShapeExecuteAsync(It.IsAny<IShape>())).ReturnsAsync(HtmlString.Empty);
+        var helper = CreateHelper(display.Object, new AdminListContext { GridOptions = options });
         var output = CreateOutput("admin-list", () => RenderLayoutAsync("admin-list-grid", context.Items, null, null));
 
         await helper.ProcessAsync(context, output);
 
-        Assert.Same(options, shape.Properties["GridOptions"]);
+        Assert.Same(options, ((IShape)context.Items[typeof(AdminListTagHelper)]).Properties["GridOptions"]);
         Assert.Equal("existing-row", options.ItemCssClass);
         Assert.Equal("existing-rows", options.RowsCssClass);
     }
@@ -214,7 +169,7 @@ public class AdminListTagHelperTests
     public async Task ProcessAsync_InvalidColumn_Throws(string type, string name)
     {
         var context = CreateContext("admin-list");
-        var helper = new AdminListTagHelper(Mock.Of<IDisplayHelper>(), Mock.Of<IAdminListFactory>()) { Shape = CreateShape() };
+        var helper = CreateHelper();
         var output = CreateOutput("admin-list", () =>
         {
             RenderColumn(context.Items, new() { Type = type, Name = name });
@@ -235,7 +190,7 @@ public class AdminListTagHelperTests
     public async Task ProcessAsync_DuplicateColumns_Throws()
     {
         var context = CreateContext("admin-list");
-        var helper = new AdminListTagHelper(Mock.Of<IDisplayHelper>(), Mock.Of<IAdminListFactory>()) { Shape = CreateShape() };
+        var helper = CreateHelper();
         var output = CreateOutput("admin-list", () =>
         {
             RenderColumn(context.Items, new() { Name = "Name" });
@@ -244,20 +199,6 @@ public class AdminListTagHelperTests
         });
 
         await Assert.ThrowsAsync<ArgumentException>(() => helper.ProcessAsync(context, output));
-    }
-
-    [Theory]
-    [InlineData("Other", false)]
-    [InlineData("AdminList", true)]
-    public async Task ProcessAsync_InvalidShape_Throws(string type, bool initialized)
-    {
-        var shape = CreateShape();
-        shape.Metadata.Type = type;
-        shape.Properties["AdminListInitialized"] = initialized;
-        var helper = new AdminListTagHelper(Mock.Of<IDisplayHelper>(), Mock.Of<IAdminListFactory>()) { Shape = shape };
-
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            helper.ProcessAsync(CreateContext("admin-list"), CreateOutput("admin-list")));
     }
 
     [Fact]
@@ -302,11 +243,12 @@ public class AdminListTagHelperTests
         await site.InitializeAsync();
         await site.UsingTenantScopeAsync(async scope =>
         {
-            var factory = scope.ServiceProvider.GetRequiredService<IAdminListFactory>();
-            var row = await scope.ServiceProvider.GetRequiredService<IShapeFactory>().CreateAsync("ContentZone");
-            var listContext = new AdminListContext
+            SiteContext.HttpContextAccessor.HttpContext.SetEndpoint(
+                new Endpoint(_ => Task.CompletedTask, new EndpointMetadataCollection(), "Admin list rendering"));
+            var factory = scope.ServiceProvider.GetRequiredService<IShapeFactory>();
+            var listContext = new AdminListContext<ContentItem>
             {
-                Rows = [row],
+                Source = [new ContentItem { ContentType = "BlogPost", DisplayText = "Item" }],
                 Layout = layout,
                 ShowToolbar = false,
                 ShowLayoutSelector = false,
@@ -330,7 +272,7 @@ public class AdminListTagHelperTests
             });
 
             await helper.ProcessAsync(context, output);
-            var list = helper.Shape;
+            var list = (IShape)context.Items[typeof(AdminListTagHelper)];
             var html = output.Content.GetContent();
             var selected = layout.ToString().ToLowerInvariant();
             var other = layout == AdminListLayout.Grid ? "list" : "grid";
@@ -351,12 +293,12 @@ public class AdminListTagHelperTests
         });
     }
 
-    private static Shape CreateShape()
-    {
-        var shape = new Shape();
-        shape.Metadata.Type = AdminListConstants.ShapeType;
-        return shape;
-    }
+    private static AdminListTagHelper CreateHelper(IDisplayHelper display = null, AdminListContext data = null)
+        => new(display ?? Mock.Of<IDisplayHelper>(), new AdminListTestShapeFactory())
+        {
+            Name = "Items",
+            Context = data ?? new AdminListContext(),
+        };
 
     private static TagHelperContext CreateContext(string tag, IDictionary<object, object> items = null)
         => new(tag, [], items == null ? new Dictionary<object, object>() : new Dictionary<object, object>(items), Guid.NewGuid().ToString("N"));

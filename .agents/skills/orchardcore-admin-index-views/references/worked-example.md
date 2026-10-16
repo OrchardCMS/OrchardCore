@@ -67,12 +67,12 @@ its layout; the controller has no row-rendering dependencies.
 ```
 
 The layout declarations configure each representation without choosing it. The tag helpers set the standard
-shape's properties before display. Direct `New.AdminList(Source: Model.Models, ...)` and ordinary shape
-rendering remain supported with C# column declarations. A simple listing can instead supply
-`name`, `items` and `pager` directly to the tag without a context.
+shape's properties before display. Supply a typed context and declare the name in the tag;
+shape creation and row building are implementation details.
 
 By default, each column renders its named row zone. `Zones` can explicitly render several zones in one cell.
-Other features can add columns by implementing `IAdminListColumnsProvider` and checking
-`context.ListName == "Indexes"`. They add cell shapes through ordinary row display drivers.
+Other features can add columns by implementing `IAdminListColumnsProvider` and registering it with
+`services.AddAdminListColumnsProvider<TProvider>("Indexes")`. Only that list resolves the provider.
+They add cell shapes through ordinary row display drivers.
 Themes can move a shape to a different column with `placement.json`,
 e.g. `"displayType": "SummaryAdminGrid", "place": "Name:5"`.

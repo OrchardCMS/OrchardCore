@@ -7,22 +7,22 @@ using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Admin.Services;
 
-internal sealed class DefaultAdminListFactory : IAdminListFactory
+internal sealed class AdminListBuilder
 {
     private readonly AdminListLayoutResolver _layoutResolver;
     private readonly IAdminListColumnsBuilder _columnsBuilder;
     private readonly IShapeFactory _shapeFactory;
     private readonly IOptionsMonitor<AdminListOptions> _options;
     private readonly ILogger _logger;
-    private readonly IAdminListRowBuilder _rowBuilder;
+    private readonly AdminListRowBuilder _rowBuilder;
 
-    public DefaultAdminListFactory(
+    public AdminListBuilder(
         AdminListLayoutResolver layoutResolver,
         IAdminListColumnsBuilder columnsBuilder,
         IShapeFactory shapeFactory,
         IOptionsMonitor<AdminListOptions> options,
-        ILogger<DefaultAdminListFactory> logger,
-        IAdminListRowBuilder rowBuilder)
+        ILogger<AdminListBuilder> logger,
+        AdminListRowBuilder rowBuilder)
     {
         _layoutResolver = layoutResolver;
         _columnsBuilder = columnsBuilder;
@@ -30,41 +30,6 @@ internal sealed class DefaultAdminListFactory : IAdminListFactory
         _options = options;
         _logger = logger;
         _rowBuilder = rowBuilder;
-    }
-
-    public async Task<IShape> CreateAsync(string name, AdminListContext context, CancellationToken cancellationToken = default)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        ArgumentNullException.ThrowIfNull(context);
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
-        {
-            Name = name,
-            context.Source,
-            context.ItemType,
-            context.Rows,
-            context.BuildRowsAsync,
-            context.Columns,
-            context.Data,
-            context.Layout,
-            context.ShowLayoutSelector,
-            context.ShowToolbar,
-            context.ShowSelectAll,
-            context.BulkActions,
-            context.ToolbarActions,
-            context.Header,
-            context.Toolbar,
-            context.Search,
-            context.Actions,
-            context.Pager,
-            context.PageSize,
-            context.RowsAttributes,
-            context.ItemCssClass,
-            context.ListOptions,
-            context.GridOptions,
-            context.EmptyMessage,
-        }));
     }
 
     public async Task BuildAsync(IShape shape, CancellationToken cancellationToken = default)
@@ -142,17 +107,9 @@ internal sealed class DefaultAdminListFactory : IAdminListFactory
             ? OrchardCoreConstants.DisplayType.SummaryAdmin
             : OrchardCoreConstants.DisplayType.SummaryAdminGrid;
         var source = shape.GetProperty<IEnumerable>("Source");
-        var buildRowsAsync = shape.GetProperty<Func<string, Task<IList<IShape>>>>("BuildRowsAsync");
-        if (source != null && buildRowsAsync != null)
-        {
-            throw new InvalidOperationException("An admin list cannot supply both Source and BuildRowsAsync.");
-        }
-
         var rows = source != null
             ? (await _rowBuilder.BuildAsync(source, shape.GetProperty<Type>("ItemType"), displayType, cancellationToken)).ToArray()
-            : buildRowsAsync != null
-            ? (await buildRowsAsync(displayType)).ToArray()
-            : shape.GetProperty<IEnumerable<IShape>>("Rows")?.ToArray() ?? [];
+            : [];
 
         var properties = shape.Properties;
         properties["Layout"] = layout;

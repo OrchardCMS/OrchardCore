@@ -94,9 +94,9 @@ takes a line under them, the way the `summary` of the List layout stacks below `
 
 - `<ul class="list-group with-checkbox">` plus a hand-written `<li class="list-group-item text-bg-theme">`
   header row containing `select-all` / `items` / `selected-items` / `#actions` dropdown.
-  Replaced by the `AdminListToolbar` shape the factory builds (or the options editor `Header`).
+  Replaced by the `AdminListToolbar` shape the list builds (or the options editor `Header`).
 - `int startIndex = (Model.Pager.Page - 1) * Model.Pager.PageSize + 1;` computed in the view.
-  The factory derives the indexes from the rows and the pager.
+  The list derives the indexes from the rows and the pager.
 - A magnifying glass inside the input (`form-control-feedback`, `has-search`), or a search box without the search button.
 - `float-end` / `float-start` positioning inside rows — breaks the Grid layout.
 - Naming the rows property `Items` on the shape — silently renders nothing, it must be `Rows`.
@@ -428,5 +428,5 @@ Resolve each before the batch that needs it, and record the answer here.
 | Client-side search stops matching | Set `data-filter-value` on the **row shape**, not in the layout template |
 | A theme or site overrode a row template that no longer renders | Call it out in the release notes; the old template still works under the `List` layout |
 | Sortable lists (List Part, Layers) break under Grid | Open decision 3 |
-| A module adds columns twice because its provider is registered twice | `AddAdminListColumnsProvider<T>` uses `TryAddEnumerable` — do not register manually |
+| A module adds columns twice because its provider is registered twice | `AddAdminListColumnsProvider<T>(listName)` uses keyed `TryAddEnumerable` — do not register manually |
 | A batched commit makes one screen's regression hard to isolate | One screen per commit, pushed before the next starts — section 0 |

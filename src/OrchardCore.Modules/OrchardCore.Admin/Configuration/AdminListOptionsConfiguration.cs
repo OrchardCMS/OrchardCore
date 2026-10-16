@@ -32,9 +32,9 @@ public sealed class AdminListOptionsConfiguration : IConfigureOptions<AdminListO
             options.DefaultLayout = settings.ListLayout.Value;
         }
 
-        if (!string.IsNullOrWhiteSpace(settings.ListActionsLayout))
+        if (settings.ListActionsLayout.HasValue)
         {
-            options.DefaultActionsLayout = settings.ListActionsLayout;
+            options.DefaultActionsLayout = settings.ListActionsLayout.Value;
         }
 
         options.AllowUserSelection = settings.AllowUserListLayoutSelection;
@@ -45,8 +45,10 @@ public sealed class AdminListOptionsConfiguration : IConfigureOptions<AdminListO
                 ["DefaultLayout must be List or Grid."]);
         }
 
-        options.DefaultActionsLayout = string.IsNullOrWhiteSpace(options.DefaultActionsLayout)
-            ? AdminListActionsLayouts.Buttons
-            : options.DefaultActionsLayout.Trim();
+        if (!Enum.IsDefined(options.DefaultActionsLayout))
+        {
+            throw new OptionsValidationException(nameof(AdminListOptions), typeof(AdminListOptions),
+                ["DefaultActionsLayout must be Buttons or Menu."]);
+        }
     }
 }

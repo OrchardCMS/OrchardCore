@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin.Models;
 using OrchardCore.Modules;
@@ -6,14 +7,14 @@ namespace OrchardCore.Admin.Services;
 
 public sealed class DefaultAdminListColumnsBuilder : IAdminListColumnsBuilder
 {
-    private readonly IEnumerable<IAdminListColumnsProvider> _providers;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public DefaultAdminListColumnsBuilder(
-        IEnumerable<IAdminListColumnsProvider> providers,
+        IServiceProvider serviceProvider,
         ILogger<DefaultAdminListColumnsBuilder> logger)
     {
-        _providers = providers;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -22,7 +23,7 @@ public sealed class DefaultAdminListColumnsBuilder : IAdminListColumnsBuilder
         cancellationToken.ThrowIfCancellationRequested();
         var context = new AdminListColumnsContext(listName, columns, data);
 
-        await _providers.InvokeAsync(
+        await _serviceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey(listName)).InvokeAsync(
             static (provider, context) => provider.PopulateAsync(context),
             context,
             _logger);

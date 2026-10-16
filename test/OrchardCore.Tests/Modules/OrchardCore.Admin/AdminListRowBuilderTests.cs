@@ -14,7 +14,7 @@ using OrchardCore.Lists.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
-public class DefaultAdminListRowBuilderTests
+public class AdminListRowBuilderTests
 {
     [Theory]
     [InlineData(0)]
@@ -36,7 +36,7 @@ public class DefaultAdminListRowBuilderTests
             .AddSingleton(Mock.Of<IUpdateModelAccessor>(accessor => accessor.ModelUpdater == updater))
             .BuildServiceProvider();
 
-        var rows = await new DefaultAdminListRowBuilder(services)
+        var rows = await new AdminListRowBuilder(services)
             .BuildAsync(items, null, "SummaryAdminGrid", TestContext.Current.CancellationToken);
 
         Assert.Equal(items, rows.Select(row => row.GetProperty<string>("Model")));
@@ -59,7 +59,7 @@ public class DefaultAdminListRowBuilderTests
             .AddSingleton(Mock.Of<IUpdateModelAccessor>())
             .BuildServiceProvider();
 
-        var rows = await new DefaultAdminListRowBuilder(services)
+        var rows = await new AdminListRowBuilder(services)
             .BuildAsync(context.Source, context.ItemType, "SummaryAdmin", TestContext.Current.CancellationToken);
 
         Assert.Equal(count, rows.Count);
@@ -74,7 +74,7 @@ public class DefaultAdminListRowBuilderTests
             .AddSingleton(Mock.Of<IAdminListItemDisplayManager<string>>())
             .AddSingleton(Mock.Of<IUpdateModelAccessor>())
             .BuildServiceProvider();
-        var builder = new DefaultAdminListRowBuilder(services);
+        var builder = new AdminListRowBuilder(services);
         var items = new ArrayList();
 
         await Assert.ThrowsAsync<ArgumentException>(() => builder.BuildAsync(items, null, "SummaryAdmin", TestContext.Current.CancellationToken));
@@ -92,7 +92,7 @@ public class DefaultAdminListRowBuilderTests
             .AddSingleton(Mock.Of<IUpdateModelAccessor>())
             .BuildServiceProvider();
 
-        await Assert.ThrowsAsync<ArgumentException>(() => new DefaultAdminListRowBuilder(services)
+        await Assert.ThrowsAsync<ArgumentException>(() => new AdminListRowBuilder(services)
             .BuildAsync(new ArrayList { item }, typeof(string), "SummaryAdmin", TestContext.Current.CancellationToken));
     }
 
@@ -111,7 +111,7 @@ public class DefaultAdminListRowBuilderTests
             .AddSingleton(display.Object)
             .AddSingleton(Mock.Of<IUpdateModelAccessor>())
             .BuildServiceProvider();
-        var builder = new DefaultAdminListRowBuilder(services);
+        var builder = new AdminListRowBuilder(services);
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
             builder.BuildAsync(new[] { "one", "two" }, null, "SummaryAdmin", cancellation.Token));

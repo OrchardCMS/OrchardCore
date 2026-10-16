@@ -1,18 +1,5 @@
 @using OrchardCore.Admin.Models
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
-@using OrchardCore.Admin.Services
-@using OrchardCore.DisplayManagement
-@using OrchardCore.DisplayManagement.Descriptors
-@using OrchardCore.DisplayManagement.Theming
-
-@inject IThemeManager ThemeManager
-@inject IShapeTableManager ShapeTableManager
-
-@{
-    var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
-    var actionsLayoutOptionShapes = AdminListOptionShapes.GetNames(shapeTable, AdminListActionsLayouts.OptionShapePrefix)
-        .Select(name => AdminListActionsLayouts.OptionShapePrefix + name);
-}
 
 <div class="ocat-wrapper" asp-validation-class-for="DisplayThemeToggler">
     <div class="ocat-end-offset">
@@ -108,17 +95,17 @@
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="ListActionsLayout">
-    <label asp-for="ListActionsLayout" class="form-label">@T["List actions layout"]</label>
-    <select asp-for="ListActionsLayout" class="form-select">
-        @foreach (var shapeType in actionsLayoutOptionShapes)
-        {
-            var optionShape = await Factory.CreateAsync(shapeType);
-            optionShape.Properties["ListActionsLayout"] = Model.ListActionsLayout;
-            @await DisplayAsync(optionShape)
-        }
-    </select>
-    <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:Admin:List:DefaultActionsLayout"]</span>
+<div class="ocat-wrapper" asp-validation-class-for="ListActionsLayout">
+    <label asp-for="ListActionsLayout" class="ocat-label">@T["List actions layout"]</label>
+    <div class="ocat-end">
+        <select asp-for="ListActionsLayout" class="form-select">
+            <option value="">@T["Use configuration default"]</option>
+            <option value="@AdminListActionsLayout.Buttons">@T["Buttons"]</option>
+            <option value="@AdminListActionsLayout.Menu">@T["Menu"]</option>
+        </select>
+        <span asp-validation-for="ListActionsLayout"></span>
+        <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. Use the configuration default to inherit {0} from appsettings.json.", "OrchardCore:Admin:List:DefaultActionsLayout"]</span>
+    </div>
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="AllowUserListLayoutSelection">

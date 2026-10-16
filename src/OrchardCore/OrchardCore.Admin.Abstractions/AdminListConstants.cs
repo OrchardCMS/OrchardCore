@@ -16,6 +16,11 @@ public static class AdminListConstants
     public const string CellShapeType = "AdminListCell";
 
     /// <summary>
+    /// The shape type rendering the actions of an admin list row.
+    /// </summary>
+    public const string ActionsShapeType = "AdminListActions";
+
+    /// <summary>
     /// The shape type rendering the toolbar of an admin list, above its rows.
     /// </summary>
     public const string ToolbarShapeType = "AdminListToolbar";

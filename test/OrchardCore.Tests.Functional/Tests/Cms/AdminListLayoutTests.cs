@@ -337,7 +337,7 @@ public sealed class AdminListLayoutTestsFixture : CmsRecipeFixture
 {
     public AdminListLayoutTestsFixture()
         : base(builder => builder.Services.AddOrchardCore()
-            .ConfigureServices(services => services.AddAdminListColumnsProvider<ColumnOverridesProvider>()))
+            .ConfigureServices(services => services.AddAdminListColumnsProvider<ColumnOverridesProvider>("Users")))
     {
     }
 
@@ -354,7 +354,7 @@ public sealed class AdminListLayoutTestsFixture : CmsRecipeFixture
 
         public Task PopulateAsync(AdminListColumnsContext context)
         {
-            if (context.ListName != "Users" || _httpContextAccessor.HttpContext.Request.Query["columns"] != "override")
+            if (_httpContextAccessor.HttpContext.Request.Query["columns"] != "override")
             {
                 return Task.CompletedTask;
             }

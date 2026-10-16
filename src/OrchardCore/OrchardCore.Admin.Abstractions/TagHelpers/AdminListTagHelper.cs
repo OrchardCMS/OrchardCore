@@ -1,4 +1,3 @@
-using System.Collections;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -8,58 +7,36 @@ using OrchardCore.DisplayManagement;
 namespace OrchardCore.Admin.TagHelpers;
 
 /// <summary>
-/// Creates or configures an AdminList shape from model items, a context or an existing shape,
+/// Creates an AdminList shape from a context,
 /// then displays it after collecting child column and layout declarations.
 /// </summary>
-[HtmlTargetElement("admin-list", Attributes = "shape")]
 [HtmlTargetElement("admin-list", Attributes = "context")]
-[HtmlTargetElement("admin-list", Attributes = "items")]
 public sealed class AdminListTagHelper : TagHelper
 {
     private readonly IDisplayHelper _displayHelper;
-    private readonly IAdminListFactory _listFactory;
+    private readonly IShapeFactory _shapeFactory;
 
     /// <summary>
     /// Creates a helper that renders through the standard shape pipeline.
     /// </summary>
     /// <param name="displayHelper">The shape display helper.</param>
-    /// <param name="listFactory">The admin list factory.</param>
-    public AdminListTagHelper(IDisplayHelper displayHelper, IAdminListFactory listFactory)
+    /// <param name="shapeFactory">The shape factory.</param>
+    public AdminListTagHelper(IDisplayHelper displayHelper, IShapeFactory shapeFactory)
     {
         _displayHelper = displayHelper;
-        _listFactory = listFactory;
+        _shapeFactory = shapeFactory;
     }
 
     /// <summary>
-    /// The AdminList shape to configure. It must not have been initialized or displayed yet.
-    /// </summary>
-    public IShape Shape { get; set; }
-
-    /// <summary>
-    /// Optional list data and region shapes. The tag creates its AdminList shape, not the controller.
+    /// The items, list data and region shapes. The tag creates its AdminList shape, not the controller.
     /// </summary>
     public AdminListContext Context { get; set; }
 
     /// <summary>
     /// The list identity used by column providers, layout preferences and shape alternates.
-    /// Required with a context or items; when supplied with an existing shape, overrides its name.
+    /// Required for every rendering.
     /// </summary>
     public string Name { get; set; }
-
-    /// <summary>
-    /// Model items to render through their display manager. These are not row shapes.
-    /// </summary>
-    public IEnumerable Items { get; set; }
-
-    /// <summary>
-    /// Optional display model type; otherwise inferred from the typed items, including empty collections.
-    /// </summary>
-    public Type ItemType { get; set; }
-
-    /// <summary>
-    /// Optional pager shape when supplying items directly.
-    /// </summary>
-    public IShape Pager { get; set; }
 
     /// <summary>
     /// Attributes of the rows container, also supplied with rows-* attributes such as rows-id.
@@ -105,103 +82,96 @@ public sealed class AdminListTagHelper : TagHelper
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        if (Shape != null && Context != null)
-        {
-            throw new InvalidOperationException("Supply either an admin list context or an existing shape, not both.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(Name);
+        ArgumentNullException.ThrowIfNull(Context);
 
-        if (Name != null || Shape == null)
+        var shape = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(Name);
-        }
-
-        Shape ??= await _listFactory.CreateAsync(Name, Context ?? new AdminListContext());
-        if (Shape.Metadata.Type != AdminListConstants.ShapeType || Shape.GetProperty<bool>("AdminListInitialized"))
-        {
-            throw new InvalidOperationException("The admin-list tag requires an uninitialized AdminList shape.");
-        }
-
-        if (Name != null)
-        {
-            Shape.Properties[nameof(Name)] = Name;
-        }
+            Name,
+            Context.Source,
+            Context.ItemType,
+            Context.Columns,
+            Context.Data,
+            Context.Layout,
+            Context.ShowLayoutSelector,
+            Context.ShowToolbar,
+            Context.ShowSelectAll,
+            Context.BulkActions,
+            Context.ToolbarActions,
+            Context.Header,
+            Context.Toolbar,
+            Context.Search,
+            Context.Actions,
+            Context.Pager,
+            Context.PageSize,
+            Context.RowsAttributes,
+            Context.ItemCssClass,
+            Context.ListOptions,
+            Context.GridOptions,
+            Context.EmptyMessage,
+        }));
 
         if (ShowToolbar.HasValue)
         {
-            Shape.Properties[nameof(ShowToolbar)] = ShowToolbar.Value;
+            shape.Properties[nameof(ShowToolbar)] = ShowToolbar.Value;
         }
 
         if (ShowSelectAll.HasValue)
         {
-            Shape.Properties[nameof(ShowSelectAll)] = ShowSelectAll.Value;
+            shape.Properties[nameof(ShowSelectAll)] = ShowSelectAll.Value;
         }
 
         if (ShowLayoutSelector.HasValue)
         {
-            Shape.Properties[nameof(ShowLayoutSelector)] = ShowLayoutSelector.Value;
+            shape.Properties[nameof(ShowLayoutSelector)] = ShowLayoutSelector.Value;
         }
 
         if (Layout != null)
         {
-            Shape.Properties[nameof(Layout)] = Layout;
+            shape.Properties[nameof(Layout)] = Layout;
         }
 
         if (ItemCssClass != null)
         {
-            Shape.Properties[nameof(ItemCssClass)] = ItemCssClass;
+            shape.Properties[nameof(ItemCssClass)] = ItemCssClass;
         }
 
         if (EmptyMessage != null)
         {
-            Shape.Properties[nameof(EmptyMessage)] = EmptyMessage;
+            shape.Properties[nameof(EmptyMessage)] = EmptyMessage;
         }
 
         if (BulkActions != null)
         {
-            Shape.Properties[nameof(BulkActions)] = BulkActions;
-        }
-
-        if (Items != null)
-        {
-            Shape.Properties["Source"] = Items;
-        }
-
-        if (ItemType != null)
-        {
-            Shape.Properties[nameof(ItemType)] = ItemType;
-        }
-
-        if (Pager != null)
-        {
-            Shape.Properties[nameof(Pager)] = Pager;
+            shape.Properties[nameof(BulkActions)] = BulkActions;
         }
 
         if (RowsAttributes.Count > 0)
         {
-            var attributes = new Dictionary<string, string>(Shape.GetProperty<IDictionary<string, string>>(nameof(RowsAttributes))
+            var attributes = new Dictionary<string, string>(shape.GetProperty<IDictionary<string, string>>(nameof(RowsAttributes))
                 ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
             foreach (var attribute in RowsAttributes)
             {
                 attributes[attribute.Key] = attribute.Value;
             }
 
-            Shape.Properties[nameof(RowsAttributes)] = attributes;
+            shape.Properties[nameof(RowsAttributes)] = attributes;
         }
 
         var columns = new AdminListColumnCollection();
-        foreach (var column in Shape.GetProperty<IEnumerable<AdminListColumn>>("Columns") ?? [])
+        foreach (var column in shape.GetProperty<IEnumerable<AdminListColumn>>("Columns") ?? [])
         {
             columns.Add(column);
         }
 
-        context.Items[typeof(AdminListTagHelper)] = Shape;
+        context.Items[typeof(AdminListTagHelper)] = shape;
         context.Items[typeof(AdminListColumnTagHelper)] = columns;
         context.Items[typeof(AdminListLayoutTagHelper)] = new HashSet<string>(StringComparer.Ordinal);
         await output.GetChildContentAsync();
-        Shape.Properties["Columns"] = columns;
+        shape.Properties["Columns"] = columns;
 
         output.TagName = null;
         output.Attributes.Clear();
-        output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(Shape));
+        output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
     }
 }

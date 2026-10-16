@@ -1,14 +1,18 @@
 using AngleSharp.Html.Parser;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.Services;
+using OrchardCore.Admin.TagHelpers;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Tests.Apis.Context;
-using Arguments = OrchardCore.DisplayManagement.Arguments;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
@@ -69,46 +73,73 @@ public class AdminListDisplayTypeTests
             Shape child = null;
             ZoneHolding row = null;
             var builds = 0;
-            async Task<IList<IShape>> BuildRowsAsync(string displayType)
-            {
-                builds++;
-                Assert.Equal("SummaryAdminGrid", displayType);
-                row = new ZoneHolding(() => factory.CreateAsync("ContentZone"));
-                var context = new BuildDisplayContext(row, displayType, "", factory, null, null)
+            var manager = new Mock<IAdminListItemDisplayManager<string>>();
+            manager.Setup(value => value.BuildDisplayAsync("item", It.IsAny<IUpdateModel>(), It.IsAny<string>()))
+                .Returns(async (string _, IUpdateModel _, string displayType) =>
                 {
-                    FindPlacement = (_, _, type, _) => type == "SummaryAdminGrid" ? new PlacementInfo(location) : null,
-                };
-                await new ShapeResult("AdminListTestCell", _ =>
+                    builds++;
+                    Assert.Equal("SummaryAdminGrid", displayType);
+                    row = new ZoneHolding(() => factory.CreateAsync("ContentZone"));
+                    var context = new BuildDisplayContext(row, displayType, "", factory, null, null)
                     {
-                        child = new Shape();
-                        child.Metadata.ChildContent = new HtmlString("<span data-test-cell=\"moved\">Moved action</span>");
-                        return ValueTask.FromResult<IShape>(child);
-                    })
-                    .Location("SummaryAdmin", "Actions:10")
-                    .Location("SummaryAdminGrid", "Actions:10")
-                    .ApplyAsync(context);
+                        FindPlacement = (_, _, type, _) => type == "SummaryAdminGrid" ? new PlacementInfo(location) : null,
+                    };
+                    await new ShapeResult("AdminListTestCell", _ =>
+                        {
+                            child = new Shape();
+                            child.Metadata.ChildContent = new HtmlString("<span data-test-cell=\"moved\">Moved action</span>");
+                            return ValueTask.FromResult<IShape>(child);
+                        })
+                        .Location("SummaryAdmin", "Actions:10")
+                        .Location("SummaryAdminGrid", "Actions:10")
+                        .ApplyAsync(context);
 
-                return [row];
-            }
+                    return row;
+                });
 
-            var list = await factory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+            using var services = new ServiceCollection()
+                .AddSingleton(manager.Object)
+                .AddSingleton(Mock.Of<IUpdateModelAccessor>())
+                .BuildServiceProvider();
+            var builder = new AdminListBuilder(
+                scope.ServiceProvider.GetRequiredService<AdminListLayoutResolver>(),
+                scope.ServiceProvider.GetRequiredService<IAdminListColumnsBuilder>(),
+                factory,
+                scope.ServiceProvider.GetRequiredService<IOptionsMonitor<AdminListOptions>>(),
+                NullLogger<AdminListBuilder>.Instance,
+                new AdminListRowBuilder(services));
+            var renderer = scope.ServiceProvider.GetRequiredService<IDisplayHelper>();
+            var display = new Mock<IDisplayHelper>();
+            IShape list = null;
+            display.Setup(value => value.ShapeExecuteAsync(It.IsAny<IShape>())).Returns(async (IShape shape) =>
+            {
+                list = shape;
+                Assert.Equal(0, builds);
+                await builder.BuildAsync(shape, TestContext.Current.CancellationToken);
+                return await renderer.ShapeExecuteAsync(shape);
+            });
+            var tag = new AdminListTagHelper(display.Object, factory)
             {
                 Name = "PlacementTest",
-                BuildRowsAsync = (Func<string, Task<IList<IShape>>>)BuildRowsAsync,
-                Columns = new AdminListColumn[]
+                Context = new AdminListContext<string>
                 {
-                    new() { Name = "Culture" },
-                    AdminListColumns.Actions(new("Actions", "Actions")),
+                    Source = ["item"],
+                    Columns =
+                    [
+                        new() { Name = "Culture" },
+                        AdminListColumns.Actions(new("Actions", "Actions")),
+                    ],
+                    Layout = AdminListLayout.Grid,
+                    ShowLayoutSelector = false,
+                    ShowToolbar = false,
                 },
-                Layout = AdminListLayout.Grid,
-                ShowLayoutSelector = false,
-                ShowToolbar = false,
-            }));
+            };
+            var tagContext = new TagHelperContext("admin-list", [], new Dictionary<object, object>(), "placement");
+            var output = new TagHelperOutput("admin-list", [],
+                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
             Assert.Equal(0, builds);
-            var html = await scope.ServiceProvider.GetRequiredService<IDisplayHelper>().ShapeExecuteAsync(list);
-            using var writer = new StringWriter();
-            html.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
-            using var document = new HtmlParser().ParseDocument(writer.ToString());
+            await tag.ProcessAsync(tagContext, output);
+            using var document = new HtmlParser().ParseDocument(output.Content.GetContent());
 
             Assert.Equal(1, builds);
             Assert.False(list.Properties.ContainsKey("Cells"));

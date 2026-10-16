@@ -5,11 +5,11 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Admin.Services;
 
-public sealed class DefaultAdminListRowBuilder : IAdminListRowBuilder
+internal sealed class AdminListRowBuilder
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public DefaultAdminListRowBuilder(IServiceProvider serviceProvider)
+    public AdminListRowBuilder(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }

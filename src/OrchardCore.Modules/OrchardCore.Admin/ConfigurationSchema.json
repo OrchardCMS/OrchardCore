@@ -29,7 +29,7 @@
                 "DefaultActionsLayout": {
                   "type": "string",
                   "description": "How the actions of each row are rendered: 'Buttons', or 'Menu' for a single compact dropdown.",
-                  "examples": [
+                  "enum": [
                     "Buttons",
                     "Menu"
                   ],

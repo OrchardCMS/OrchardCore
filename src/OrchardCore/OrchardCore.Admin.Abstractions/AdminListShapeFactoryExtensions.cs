@@ -18,7 +18,7 @@ public static class AdminListShapeFactoryExtensions
         ArgumentNullException.ThrowIfNull(factory);
         ArgumentNullException.ThrowIfNull(row);
 
-        var actions = await factory.CreateAsync(AdminListActionsLayouts.ShapeType);
+        var actions = await factory.CreateAsync(AdminListConstants.ActionsShapeType);
 
         actions.Properties["Row"] = row;
 

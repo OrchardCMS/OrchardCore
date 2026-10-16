@@ -31,7 +31,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 {
     // The alternates of the shapes a list renders for each row, by list and layout, and by list and column. The
     // names of the lists, the layouts and the columns are declared in code, so these stay small.
-    private static readonly ConcurrentDictionary<(string ListName, string Layout), string[]> _actionsAlternates = new();
+    private static readonly ConcurrentDictionary<(string ListName, AdminListActionsLayout Layout), string[]> _actionsAlternates = new();
     private static readonly ConcurrentDictionary<(string ListName, string Column), string[]> _cellAlternates = new();
 
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
@@ -40,11 +40,11 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
             .OnDisplaying(async context =>
             {
                 var shape = context.Shape;
-                var factory = context.ServiceProvider?.GetService<IAdminListFactory>();
-                if (factory != null)
+                var listBuilder = context.ServiceProvider?.GetService<AdminListBuilder>();
+                if (listBuilder != null)
                 {
                     var cancellationToken = context.ServiceProvider.GetService<IHttpContextAccessor>()?.HttpContext?.RequestAborted ?? CancellationToken.None;
-                    await factory.BuildAsync(shape, cancellationToken);
+                    await listBuilder.BuildAsync(shape, cancellationToken);
                 }
 
                 var alternates = shape.Metadata.Alternates;
@@ -89,7 +89,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                 shape.Properties["GridUrl"] = resolver.GetLayoutUrl(AdminListLayout.Grid);
             });
 
-        builder.Describe(AdminListActionsLayouts.ShapeType)
+        builder.Describe(AdminListConstants.ActionsShapeType)
             .OnDisplaying(context =>
             {
                 var shape = context.Shape;
@@ -108,28 +108,30 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                 }
 
                 // The layout is resolved here, before the template is selected, so the alternates can depend on it.
-                if (!shape.TryGetProperty<string>("Layout", out var layout) || string.IsNullOrEmpty(layout))
+                if (shape.GetProperty("Layout") is { } layoutValue && layoutValue is not AdminListActionsLayout)
                 {
-                    layout = context.ServiceProvider?.GetService<IOptionsMonitor<AdminListOptions>>()?.CurrentValue.DefaultActionsLayout;
-
-                    if (string.IsNullOrEmpty(layout))
-                    {
-                        layout = AdminListActionsLayouts.Buttons;
-                    }
-
-                    shape.Properties["Layout"] = layout;
+                    throw new InvalidOperationException("An admin list actions layout must be an AdminListActionsLayout value.");
                 }
 
+                var layout = shape.GetProperty<AdminListActionsLayout?>("Layout")
+                    ?? context.ServiceProvider?.GetService<IOptionsMonitor<AdminListOptions>>()?.CurrentValue.DefaultActionsLayout
+                    ?? AdminListActionsLayout.Buttons;
+                if (!Enum.IsDefined(layout))
+                {
+                    throw new InvalidOperationException($"The admin list actions layout '{layout}' must be Buttons or Menu.");
+                }
+
+                shape.Properties["Layout"] = layout;
                 shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName);
 
                 // Rendered once per row, so the alternates of a list and a layout are built once.
                 var alternates = _actionsAlternates.GetOrAdd((listName ?? string.Empty, layout), static key => string.IsNullOrEmpty(key.ListName)
-                    ? [$"{AdminListActionsLayouts.ShapeType}__{key.Layout}"]
+                    ? [$"{AdminListConstants.ActionsShapeType}__{key.Layout}"]
                     :
                     [
-                        $"{AdminListActionsLayouts.ShapeType}__{key.Layout}",
-                        $"{AdminListActionsLayouts.ShapeType}__{key.ListName.ToSafeName()}",
-                        $"{AdminListActionsLayouts.ShapeType}__{key.ListName.ToSafeName()}__{key.Layout}",
+                        $"{AdminListConstants.ActionsShapeType}__{key.Layout}",
+                        $"{AdminListConstants.ActionsShapeType}__{key.ListName.ToSafeName()}",
+                        $"{AdminListConstants.ActionsShapeType}__{key.ListName.ToSafeName()}__{key.Layout}",
                     ]);
 
                 AddAlternates(shape, alternates);

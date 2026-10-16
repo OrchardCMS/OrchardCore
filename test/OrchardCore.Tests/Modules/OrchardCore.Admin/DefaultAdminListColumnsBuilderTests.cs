@@ -20,7 +20,8 @@ public class DefaultAdminListColumnsBuilderTests
                 context.Remove("Removed");
             })
             .Returns(Task.CompletedTask);
-        var builder = CreateBuilder(provider.Object);
+        using var services = CreateServices(provider.Object);
+        var builder = new DefaultAdminListColumnsBuilder(services, NullLogger<DefaultAdminListColumnsBuilder>.Instance);
 
         var columns = await builder.BuildColumnsAsync("Contents",
             [
@@ -41,7 +42,9 @@ public class DefaultAdminListColumnsBuilderTests
     [Fact]
     public async Task BuildColumnsAsync_NoRowsOrProviders_KeepsViewColumns()
     {
-        var columns = await CreateBuilder().BuildColumnsAsync("Contents",
+        using var services = CreateServices();
+        var builder = new DefaultAdminListColumnsBuilder(services, NullLogger<DefaultAdminListColumnsBuilder>.Instance);
+        var columns = await builder.BuildColumnsAsync("Contents",
             [new() { Name = "Title", Position = "20" }, AdminListColumns.Select()],
             cancellationToken: TestContext.Current.CancellationToken);
 
@@ -53,11 +56,12 @@ public class DefaultAdminListColumnsBuilderTests
     public void AddAdminListColumnsProvider_RepeatedRegistration_IsIdempotent()
     {
         var services = new ServiceCollection()
-            .AddAdminListColumnsProvider<TestColumnsProvider>()
-            .AddAdminListColumnsProvider<TestColumnsProvider>();
+            .AddAdminListColumnsProvider<TestColumnsProvider>("Contents")
+            .AddAdminListColumnsProvider<TestColumnsProvider>("Contents");
 
         Assert.Single(services);
         Assert.Equal(typeof(IAdminListColumnsProvider), services[0].ServiceType);
+        Assert.Equal(new AdminListColumnsProviderKey("Contents"), services[0].ServiceKey);
     }
 
     [Fact]
@@ -67,8 +71,11 @@ public class DefaultAdminListColumnsBuilderTests
         failing.Setup(p => p.PopulateAsync(It.IsAny<AdminListColumnsContext>()))
             .ThrowsAsync(new InvalidOperationException("Invalid column"));
         var logger = new Mock<ILogger<DefaultAdminListColumnsBuilder>>();
-        var builder = new DefaultAdminListColumnsBuilder(
-            [failing.Object, new TestColumnsProvider()], logger.Object);
+        using var services = new ServiceCollection()
+            .AddKeyedSingleton(new AdminListColumnsProviderKey("Contents"), failing.Object)
+            .AddKeyedSingleton<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Contents"), new TestColumnsProvider())
+            .BuildServiceProvider();
+        var builder = new DefaultAdminListColumnsBuilder(services, logger.Object);
 
         var columns = await builder.BuildColumnsAsync("Contents", [],
             cancellationToken: TestContext.Current.CancellationToken);
@@ -79,8 +86,84 @@ public class DefaultAdminListColumnsBuilderTests
             It.IsAny<InvalidOperationException>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
     }
 
-    private static DefaultAdminListColumnsBuilder CreateBuilder(params IAdminListColumnsProvider[] providers)
-        => new(providers, NullLogger<DefaultAdminListColumnsBuilder>.Instance);
+    [Fact]
+    public async Task BuildColumnsAsync_ListKey_OnlyCreatesAndRunsMatchingProvidersInRegistrationOrder()
+    {
+        var created = new List<string>();
+        var services = new ServiceCollection()
+            .AddAdminListColumnsProvider<TestColumnsProvider>("Contents")
+            .AddAdminListColumnsProvider<TestColumnsProvider>("Users")
+            .AddKeyedScoped<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Contents"), (_, _) =>
+            {
+                created.Add("First");
+                return CreateProvider("First");
+            })
+            .AddKeyedScoped<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Contents"), (_, _) =>
+            {
+                created.Add("Second");
+                return CreateProvider("Second");
+            })
+            .AddKeyedScoped<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Users"), (_, _) =>
+                throw new InvalidOperationException("Unrelated provider must not be constructed"))
+            .AddKeyedScoped<IAdminListColumnsProvider>("Contents", (_, _) =>
+                throw new InvalidOperationException("String key must not match"));
+        using var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+        var builder = new DefaultAdminListColumnsBuilder(scope.ServiceProvider, NullLogger<DefaultAdminListColumnsBuilder>.Instance);
+
+        var columns = await builder.BuildColumnsAsync("Contents", [], cancellationToken: TestContext.Current.CancellationToken);
+        var unrelated = await builder.BuildColumnsAsync("Roles", [], cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal(["First", "Second"], created);
+        Assert.Equal(["Culture", "First", "Second"], columns.Columns.Select(column => column.Name));
+        Assert.Empty(unrelated.Columns);
+        Assert.Empty(scope.ServiceProvider.GetServices<IAdminListColumnsProvider>());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void AddAdminListColumnsProvider_InvalidName_Throws(string name)
+        => Assert.ThrowsAny<ArgumentException>(() => new ServiceCollection().AddAdminListColumnsProvider<TestColumnsProvider>(name));
+
+    [Fact]
+    public void AddAdminListColumnsProvider_MultipleLists_PreservesScopedLifetimeAndEachRegistration()
+    {
+        using var provider = new ServiceCollection()
+            .AddAdminListColumnsProvider<TestColumnsProvider>("Contents")
+            .AddAdminListColumnsProvider<TestColumnsProvider>("Users")
+            .BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
+        using var first = provider.CreateScope();
+        using var second = provider.CreateScope();
+        var key = new AdminListColumnsProviderKey("Contents");
+        var contents = Assert.Single(first.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(key));
+
+        Assert.Same(contents, Assert.Single(first.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(key)));
+        Assert.NotSame(contents, Assert.Single(second.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(key)));
+        Assert.NotSame(contents, Assert.Single(first.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("Users"))));
+        Assert.Empty(first.ServiceProvider.GetKeyedServices<IAdminListColumnsProvider>(new AdminListColumnsProviderKey("contents")));
+    }
+
+    private static IAdminListColumnsProvider CreateProvider(string name)
+    {
+        var provider = new Mock<IAdminListColumnsProvider>();
+        provider.Setup(value => value.PopulateAsync(It.IsAny<AdminListColumnsContext>()))
+            .Callback<AdminListColumnsContext>(context => context.Columns.Add(new AdminListColumn { Name = name }))
+            .Returns(Task.CompletedTask);
+        return provider.Object;
+    }
+
+    private static ServiceProvider CreateServices(params IAdminListColumnsProvider[] providers)
+    {
+        var services = new ServiceCollection();
+        foreach (var provider in providers)
+        {
+            services.AddKeyedSingleton(new AdminListColumnsProviderKey("Contents"), provider);
+        }
+
+        return services.BuildServiceProvider();
+    }
 
     private sealed class TestColumnsProvider : IAdminListColumnsProvider
     {

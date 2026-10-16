@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -17,18 +16,15 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IOptionsMonitor<AdminListOptions> _adminListOptions;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
     public AdminSiteSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptionsMonitor<AdminListOptions> adminListOptions,
         IOptionsUpdateNotifier optionsUpdateNotifier)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _adminListOptions = adminListOptions;
         _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
@@ -44,9 +40,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             return null;
         }
 
-        var adminListOptions = _adminListOptions.CurrentValue;
-
-        return Initialize<AdminSettingsViewModel, AdminSettings, AdminListOptions>("AdminSettings_Edit", static (model, settings, adminListOptions) =>
+        return Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit", static (model, settings) =>
         {
             model.DisplayThemeToggler = settings.DisplayThemeToggler;
             model.DisplayMenuFilter = settings.DisplayMenuFilter;
@@ -56,11 +50,9 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             model.ShowBreadcrumb = settings.ShowBreadcrumb;
             model.MenuBehavior = settings.MenuBehavior;
             model.ListLayout = settings.ListLayout;
-            model.ListActionsLayout = string.IsNullOrWhiteSpace(settings.ListActionsLayout)
-                ? adminListOptions.DefaultActionsLayout
-                : settings.ListActionsLayout;
+            model.ListActionsLayout = settings.ListActionsLayout;
             model.AllowUserListLayoutSelection = settings.AllowUserListLayoutSelection;
-        }, settings, adminListOptions).Location("Content:3")
+        }, settings).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
 
@@ -77,6 +69,11 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        if (!context.Updater.ModelState.IsValid)
+        {
+            return await EditAsync(site, settings, context);
+        }
+
         settings.DisplayThemeToggler = model.DisplayThemeToggler;
         settings.DisplayMenuFilter = model.DisplayMenuFilter;
         settings.DisplayQuickNavigation = model.DisplayQuickNavigation;
@@ -86,7 +83,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.MenuBehavior = model.MenuBehavior;
 
         var listLayout = model.ListLayout;
-        var listActionsLayout = string.IsNullOrWhiteSpace(model.ListActionsLayout) ? null : model.ListActionsLayout.Trim();
+        var listActionsLayout = model.ListActionsLayout;
 
         if (settings.ListLayout != listLayout ||
             settings.ListActionsLayout != listActionsLayout ||

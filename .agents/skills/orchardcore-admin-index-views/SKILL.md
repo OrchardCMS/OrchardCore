@@ -58,10 +58,10 @@ model.List = new AdminListContext<IndexProfile>
 
 `AdminListContext<TModel>` derives from `AdminListContext`, sets `ItemType` automatically and exposes
 `IEnumerable<TModel> Source`. Its generic argument can select a registered base/interface display manager,
-even with an empty collection of derived items. The tag and factory accept either context version.
+even with an empty collection of derived items. The tag accepts either context version.
 The tag creates the shape, and the list builds rows once after columns and layout are resolved.
-The non-generic context and direct `items` tag input can infer the collection's unambiguous
-`IEnumerable<T>` type or use an explicit `ItemType`/`item-type`. Items must be non-null and assignable
+The non-generic context can infer the collection's unambiguous
+`IEnumerable<T>` type or use an explicit `ItemType`. Items must be non-null and assignable
 to the selected type.
 
 The default `IAdminListItemDisplayManager<TModel>` adapter calls `IDisplayManager<TModel>`.
@@ -86,12 +86,9 @@ Do not introduce per-row controller callbacks.
 ```
 
 The parent creates the named shape from the context and renders it after evaluating child declarations.
-The context does not carry a name. Specify `name` with either `context` or `items`; it identifies this
-rendering for column providers, layout preferences and alternates. The factory's equivalent is
-`CreateAsync(name, context)`. With an existing `shape`, omitting `name` preserves its identity and supplying
-one overrides it before display.
-For simple lists, use `name="Example" items="Model.Entries" pager="Model.Pager"` instead of `context`;
-`item-type="typeof(MyBaseModel)"` overrides inference. `shape` still accepts an existing uninitialized shape.
+The context does not carry a name. Specify both `name` and `context`; the name identifies this
+rendering for column providers, layout preferences and alternates.
+The tag does not accept direct items or an existing shape.
 `rows-id` and other `rows-*` attributes, or `rows-attributes`, configure the rows container in the view.
 Children emit no HTML.
 Columns may also be direct `admin-list` children. `admin-list-list` and `admin-list-grid` configure their own
@@ -99,10 +96,8 @@ Columns may also be direct `admin-list` children. `admin-list-list` and `admin-l
 classes are added to the required grid row class. Rows classes merge with `RowsAttributes["class"]`.
 Each layout can be declared once. Column `type` presets preserve defaults unless explicitly overridden.
 
-Initialization runs during display, before alternates are chosen. A view may instead set shape properties and
-call `DisplayAsync`, or create the standard shape
-with `await New.AdminList(Name: ..., Source: ..., Columns: ..., Pager: ...)` or the standard `shape` tag helper.
-The tag helpers are optional syntax over this same pipeline, not a separate renderer.
+Initialization runs during display, before alternates are chosen. Use the context and tag as the public
+list-building API; shape creation and row building are internal implementation details.
 
 Column names are unique ignoring case. `Position` sorts them; `end` keeps actions last.
 `Width = AdminListColumn.AutoWidth` hugs content, no width shares remaining space.
@@ -112,8 +107,11 @@ optional `Zones` renders several explicitly named row zones instead. Zones witho
 ## 4. Extend columns
 
 Implement `IAdminListColumnsProvider.PopulateAsync(AdminListColumnsContext context)`.
-Check `context.ListName`, then use `context.Columns.Add(...)`, `context.Find(name)` or `context.Remove(name)`.
-Register with `services.AddAdminListColumnsProvider<TProvider>()`; duplicate registrations are ignored.
+Use `context.Columns.Add(...)`, `context.Find(name)` or `context.Remove(name)`.
+Register with `services.AddAdminListColumnsProvider<TProvider>(listName)`; duplicate registrations for
+the same provider and list are ignored. Multiple providers can target a list; a provider can target several lists.
+Only matching providers are constructed and run. Resolution uses keyed DI with an
+`AdminListColumnsProviderKey` record key, not a plain string. List names are case-sensitive.
 Providers run after the view declarations, in feature dependency order, before columns are sorted.
 Providers do not build cells; use the normal row display driver to supply shapes.
 
@@ -136,7 +134,7 @@ and `ContentsAdminList.StereotypesKey` when the route is filtered.
 - `ShowLayoutSelector`: hides the List/Grid switcher when false. For a shared page-level selector, create
   `AdminListLayoutSelector` with `ListName`; it resolves its current layout and URLs when displayed.
 - `Source`, `ItemType`: raw models and optional display model type. `Items` is reserved by the shape.
-- `BuildRowsAsync`: optional custom `Func<string, Task<IList<IShape>>>` instead of `Source`; prebuilt `Rows` remain supported.
+- `Rows`: output built during display, never an input. Supply `Source` models, not row callbacks or prebuilt shapes.
 - `DisplayType`: resolved row display type. Custom `AdminListCell` templates receive `Row` and `Column`.
 - `Headers`: optional zone-holding shape with a zone per column, otherwise the title is used.
 
@@ -164,6 +162,8 @@ not the `display: contents` container of the grid layout.
 `AdminListCell`: `__{Column}`, `__{Name}__{Column}`.
 `AdminListActions`, `AdminListToolbar`, `AdminListSearch`: layout, list and list/layout variants.
 Actions layout means Buttons/Menu; other layout variants mean List/Grid.
+`AdminListActionsLayout` has exactly two values, Buttons and Menu. Configuration and nullable site settings
+use the enum. Keep the templates and alternates overridable, but do not add option shapes or custom modes.
 Rows and regions inherit the list name/layout automatically.
 
 ## References

@@ -25,6 +25,10 @@ public sealed class AdminListDefaultsTests : CmsTestBase<AdminListDefaultsTestsF
         await Assertions.Expect(layoutSetting).ToHaveValueAsync(string.Empty);
         Assert.Equal(["", "List", "Grid"], await layoutSetting.Locator("option").EvaluateAllAsync<string[]>(
             "options => options.map(option => option.value)"));
+        var actionsSetting = page.GetByLabel("List actions layout", new() { Exact = true });
+        await Assertions.Expect(actionsSetting).ToHaveValueAsync(string.Empty);
+        Assert.Equal(["", "Buttons", "Menu"], await actionsSetting.Locator("option").EvaluateAllAsync<string[]>(
+            "options => options.map(option => option.value)"));
 
         await page.SetAdminListSettingsAsync("List", allowUserSelection: false, actionsLayout: "Buttons");
         await page.GotoAndAssertOkAsync("/Admin/Users/Index?layout=Grid");
@@ -32,11 +36,13 @@ public sealed class AdminListDefaultsTests : CmsTestBase<AdminListDefaultsTestsF
         await Assertions.Expect(page.Locator(".admin-list-actions-menu")).ToHaveCountAsync(0);
         await Assertions.Expect(page.Locator(".admin-list-layout-selector")).ToHaveCountAsync(0);
 
-        await page.SetAdminListSettingsAsync(string.Empty, allowUserSelection: false);
+        await page.SetAdminListSettingsAsync(string.Empty, allowUserSelection: false, actionsLayout: string.Empty);
         await page.GotoAndAssertOkAsync("/Admin/Users/Index");
         await Assertions.Expect(page.Locator(".admin-list-grid")).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator(".admin-list-actions-menu")).ToHaveCountAsync(1);
         await page.GotoAndAssertOkAsync("/Admin/Settings/admin");
         await Assertions.Expect(layoutSetting).ToHaveValueAsync(string.Empty);
+        await Assertions.Expect(actionsSetting).ToHaveValueAsync(string.Empty);
 
         await page.SetAdminListSettingsAsync("Grid", allowUserSelection: true, actionsLayout: "Menu");
         await page.GotoAndAssertOkAsync("/Admin/Users/Index");
@@ -45,6 +51,20 @@ public sealed class AdminListDefaultsTests : CmsTestBase<AdminListDefaultsTestsF
         await page.GotoAndAssertOkAsync("/Admin/Users/Index");
         await Assertions.Expect(page.Locator(".admin-list-list")).ToHaveCountAsync(1);
         await Assertions.Expect(page.Locator(".admin-list-actions-menu")).ToHaveCountAsync(1);
+
+        foreach (var invalidLayout in new[] { "Icons", "42" })
+        {
+            await page.GotoAndAssertOkAsync("/Admin/Settings/admin");
+            await actionsSetting.EvaluateAsync("(select, value) => select.add(new Option(value, value, true, true))", invalidLayout);
+            await page.ClickSaveAsync();
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await Assertions.Expect(page.Locator(".field-validation-error")).ToBeVisibleAsync();
+
+            await page.GotoAndAssertOkAsync("/Admin/Users/Index");
+            await Assertions.Expect(page.Locator(".admin-list-actions-menu")).ToHaveCountAsync(1);
+            await page.GotoAndAssertOkAsync("/Admin/Settings/admin");
+            await Assertions.Expect(actionsSetting).ToHaveValueAsync("Menu");
+        }
 
         await page.GotoAndAssertOkAsync("/Admin/Roles/Index");
         await Assertions.Expect(page.Locator(".admin-list-grid")).ToHaveCountAsync(1);

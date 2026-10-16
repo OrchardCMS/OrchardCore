@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement;
 namespace OrchardCore.Admin;
 
 /// <summary>
-/// Describes the items, contextual data and region shapes for <see cref="IAdminListFactory"/> to render.
+/// Describes the items, contextual data and region shapes for the <c>admin-list</c> tag to render.
 /// The view supplies the list identity, columns and presentation properties; row display drivers place
 /// shapes in zones for the selected display type.
 /// Use <see cref="AdminListContext{TModel}"/> for a typed source with an automatically selected item type.
@@ -15,7 +15,6 @@ public class AdminListContext
 {
     /// <summary>
     /// The model items to render. The list invokes their display manager after selecting the layout.
-    /// Leave unset when supplying prebuilt rows or a custom row builder.
     /// </summary>
     public IEnumerable Source { get; set; }
 
@@ -24,19 +23,6 @@ public class AdminListContext
     /// including empty collections. Specify a base type when its display manager should render derived items.
     /// </summary>
     public Type ItemType { get; set; }
-
-    /// <summary>
-    /// Gets or sets already-built row shapes for the selected layout: <c>SummaryAdmin</c> for List or
-    /// <c>SummaryAdminGrid</c> for layouts with columns. Use <see cref="BuildRowsAsync"/> to defer this choice.
-    /// </summary>
-    public IList<IShape> Rows { get; set; } = [];
-
-    /// <summary>
-    /// Gets or sets a builder invoked once after resolving the layout, with <c>SummaryAdmin</c> for List
-    /// or <c>SummaryAdminGrid</c> for layouts with columns. Its result replaces <see cref="Rows"/>.
-    /// Leave unset when the page supplies already-built rows.
-    /// </summary>
-    public Func<string, Task<IList<IShape>>> BuildRowsAsync { get; set; }
 
     /// <summary>
     /// Gets or sets the columns declared by the rendering view, before column providers extend them.
@@ -64,13 +50,13 @@ public class AdminListContext
 
     /// <summary>
     /// Alternative to <see cref="Header"/>: a shape rendered as is above the rows, for a list that needs a toolbar
-    /// of its own. When the page sets neither, the factory builds the <c>AdminListToolbar</c> shape, see
+    /// of its own. When the page sets neither, the list builds the <c>AdminListToolbar</c> shape, see
     /// <see cref="ShowToolbar"/>.
     /// </summary>
     public IShape Toolbar { get; set; }
 
     /// <summary>
-    /// Whether the factory builds the <c>AdminListToolbar</c> shape when the page sets neither <see cref="Header"/>
+    /// Whether the list builds the <c>AdminListToolbar</c> shape when the page sets neither <see cref="Header"/>
     /// nor <see cref="Toolbar"/>: the item count, taken from the rows and <see cref="Pager"/>, the
     /// select-all checkbox and the <see cref="BulkActions"/>. Defaults to <see langword="true"/>. A list without a
     /// toolbar, e.g. the recipes, turns it off.
@@ -78,19 +64,19 @@ public class AdminListContext
     public bool ShowToolbar { get; set; } = true;
 
     /// <summary>
-    /// The bulk actions offered by the toolbar the factory builds. The <see cref="SelectListItem.Value"/> of each
+    /// The bulk actions offered by the toolbar the list builds. The <see cref="SelectListItem.Value"/> of each
     /// is the name of the action posted with the form.
     /// </summary>
     public IList<SelectListItem> BulkActions { get; set; }
 
     /// <summary>
-    /// Whether the toolbar the factory builds precedes the item count with the select-all checkbox. Defaults to
+    /// Whether the toolbar the list builds precedes the item count with the select-all checkbox. Defaults to
     /// <see langword="true"/>. A list whose rows cannot be selected turns it off.
     /// </summary>
     public bool ShowSelectAll { get; set; } = true;
 
     /// <summary>
-    /// A shape rendered at the end of the toolbar the factory builds, e.g. the filters of the list.
+    /// A shape rendered at the end of the toolbar the list builds, e.g. the filters of the list.
     /// </summary>
     public IShape ToolbarActions { get; set; }
 

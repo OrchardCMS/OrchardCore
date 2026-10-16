@@ -41,11 +41,11 @@ public class AdminListShapeTableProviderTests
     public async Task AdminListActions_AddsLayoutAndListAlternates()
     {
         var shape = new Shape();
-        shape.Metadata.Type = AdminListActionsLayouts.ShapeType;
+        shape.Metadata.Type = AdminListConstants.ActionsShapeType;
         shape.Properties["ListName"] = "Contents";
-        shape.Properties["Layout"] = AdminListActionsLayouts.Menu;
+        shape.Properties["Layout"] = AdminListActionsLayout.Menu;
 
-        await DisplayAsync(AdminListActionsLayouts.ShapeType, shape);
+        await DisplayAsync(AdminListConstants.ActionsShapeType, shape);
 
         Assert.Equal(
             ["AdminListActions__Menu", "AdminListActions__Contents", "AdminListActions__Contents__Menu"],
@@ -56,11 +56,11 @@ public class AdminListShapeTableProviderTests
     public async Task AdminListActions_DefaultsToButtons_WithoutLayoutOrServices()
     {
         var shape = new Shape();
-        shape.Metadata.Type = AdminListActionsLayouts.ShapeType;
+        shape.Metadata.Type = AdminListConstants.ActionsShapeType;
 
-        await DisplayAsync(AdminListActionsLayouts.ShapeType, shape);
+        await DisplayAsync(AdminListConstants.ActionsShapeType, shape);
 
-        Assert.Equal(AdminListActionsLayouts.Buttons, shape.Properties["Layout"]);
+        Assert.Equal(AdminListActionsLayout.Buttons, shape.Properties["Layout"]);
         Assert.Equal(["AdminListActions__Buttons"], shape.Metadata.Alternates.ToArray());
     }
 
@@ -145,11 +145,11 @@ public class AdminListShapeTableProviderTests
         row.Properties["ListName"] = "Contents";
 
         var shape = new Shape();
-        shape.Metadata.Type = AdminListActionsLayouts.ShapeType;
+        shape.Metadata.Type = AdminListConstants.ActionsShapeType;
         shape.Properties["Row"] = row;
-        shape.Properties["Layout"] = AdminListActionsLayouts.Menu;
+        shape.Properties["Layout"] = AdminListActionsLayout.Menu;
 
-        await DisplayAsync(AdminListActionsLayouts.ShapeType, shape);
+        await DisplayAsync(AdminListConstants.ActionsShapeType, shape);
 
         Assert.Equal(
             ["AdminListActions__Menu", "AdminListActions__Contents", "AdminListActions__Contents__Menu"],
@@ -186,16 +186,70 @@ public class AdminListShapeTableProviderTests
     public async Task AdminListActions_WithoutLayout_UsesTheConfiguredActionsLayout()
     {
         var shape = new Shape();
-        shape.Metadata.Type = AdminListActionsLayouts.ShapeType;
+        shape.Metadata.Type = AdminListConstants.ActionsShapeType;
 
-        var services = new ServiceCollection()
-            .AddSingleton(Mock.Of<IOptionsMonitor<AdminListOptions>>(m => m.CurrentValue == new AdminListOptions { DefaultActionsLayout = AdminListActionsLayouts.Menu }))
+        using var services = new ServiceCollection()
+            .AddSingleton(Mock.Of<IOptionsMonitor<AdminListOptions>>(m => m.CurrentValue == new AdminListOptions { DefaultActionsLayout = AdminListActionsLayout.Menu }))
             .BuildServiceProvider();
 
-        await DisplayAsync(AdminListActionsLayouts.ShapeType, shape, services);
+        await DisplayAsync(AdminListConstants.ActionsShapeType, shape, services);
 
-        Assert.Equal(AdminListActionsLayouts.Menu, shape.Properties["Layout"]);
+        Assert.Equal(AdminListActionsLayout.Menu, shape.Properties["Layout"]);
         Assert.Equal(["AdminListActions__Menu"], shape.Metadata.Alternates.ToArray());
+    }
+
+    [Theory]
+    [InlineData(AdminListActionsLayout.Buttons)]
+    [InlineData(AdminListActionsLayout.Menu)]
+    public async Task AdminListActions_ExplicitLayout_OverridesConfiguration(AdminListActionsLayout layout)
+    {
+        var shape = new Shape();
+        shape.Metadata.Type = AdminListConstants.ActionsShapeType;
+        shape.Properties["Layout"] = layout;
+        using var services = new ServiceCollection()
+            .AddSingleton(Mock.Of<IOptionsMonitor<AdminListOptions>>(monitor => monitor.CurrentValue ==
+                new AdminListOptions { DefaultActionsLayout = AdminListActionsLayout.Menu }))
+            .BuildServiceProvider();
+
+        await DisplayAsync(AdminListConstants.ActionsShapeType, shape, services);
+
+        Assert.Equal(layout, shape.Properties["Layout"]);
+        Assert.Equal([$"AdminListActions__{layout}"], shape.Metadata.Alternates.ToArray());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task AdminListActions_UndefinedLayout_Throws(bool explicitLayout)
+    {
+        var shape = new Shape();
+        shape.Metadata.Type = AdminListConstants.ActionsShapeType;
+        if (explicitLayout)
+        {
+            shape.Properties["Layout"] = (AdminListActionsLayout)42;
+        }
+
+        using var services = new ServiceCollection()
+            .AddSingleton(Mock.Of<IOptionsMonitor<AdminListOptions>>(monitor => monitor.CurrentValue ==
+                new AdminListOptions { DefaultActionsLayout = (AdminListActionsLayout)42 }))
+            .BuildServiceProvider();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            DisplayAsync(AdminListConstants.ActionsShapeType, shape, services));
+    }
+
+    [Theory]
+    [InlineData("Buttons")]
+    [InlineData("Icons")]
+    [InlineData(42)]
+    public async Task AdminListActions_NonEnumLayout_ThrowsInsteadOfUsingDefault(object layout)
+    {
+        var shape = new Shape();
+        shape.Metadata.Type = AdminListConstants.ActionsShapeType;
+        shape.Properties["Layout"] = layout;
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            DisplayAsync(AdminListConstants.ActionsShapeType, shape));
     }
 
     [Fact]
