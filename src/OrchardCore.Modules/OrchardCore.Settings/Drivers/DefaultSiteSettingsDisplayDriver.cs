@@ -81,15 +81,31 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         site.SiteName = model.SiteName;
         site.PageTitleFormat = model.PageTitleFormat;
-        site.BaseUrl = model.BaseUrl;
         site.TimeZoneId = model.TimeZone;
         site.PageSize = model.PageSize.Value;
         site.AllowPageSizeSelection = model.AllowPageSizeSelection;
         site.UseCdn = model.UseCdn;
-        site.CdnBaseUrl = model.CdnBaseUrl;
         site.ResourceDebugMode = model.ResourceDebugMode;
         site.AppendVersion = model.AppendVersion;
         site.CacheMode = model.CacheMode;
+
+        if (Uri.TryCreate(model.BaseUrl, UriKind.Absolute, out _))
+        {
+            site.BaseUrl = model.BaseUrl;
+        }
+        else if (!string.IsNullOrEmpty(model.BaseUrl))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+        }
+
+        if (Uri.TryCreate(model.CdnBaseUrl, UriKind.Absolute, out _))
+        {
+            site.CdnBaseUrl = model.CdnBaseUrl;
+        }
+        else if (!string.IsNullOrEmpty(model.CdnBaseUrl))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.CdnBaseUrl), S["The CDN base url must be a fully qualified URL."]);
+        }
 
         if (model.PageSize.Value < 1)
         {
@@ -118,11 +134,6 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         else
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["The page size options must be a comma-separated list of positive numbers."]);
-        }
-
-        if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
         }
 
         _shellReleaseManager.RequestRelease();
