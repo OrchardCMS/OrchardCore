@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -77,8 +79,9 @@ public sealed class AccountController : AccountBaseController
             returnUrl = null;
         }
 
-        // Clear the existing external cookie to ensure a clean login process.
+        // Clear temporary authentication cookies to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        await HttpContext.SignOutAsync(UserConstants.EmailConfirmationAuthenticationScheme);
 
         foreach (var loginFormEvent in _loginFormEvents)
         {
@@ -149,6 +152,12 @@ public sealed class AccountController : AccountBaseController
 
                         if (loginResult != null)
                         {
+                            if (loginResult is EmailConfirmationRequiredResult)
+                            {
+                                // The password has been verified, so the user can request a new confirmation email.
+                                await SignInEmailConfirmationUserAsync(user);
+                            }
+
                             return loginResult;
                         }
                     }
@@ -270,4 +279,14 @@ public sealed class AccountController : AccountBaseController
     [HttpGet]
     public IActionResult ChangePasswordConfirmation()
         => View();
+
+    private async Task SignInEmailConfirmationUserAsync(IUser user)
+    {
+        var identity = new ClaimsIdentity(UserConstants.EmailConfirmationAuthenticationScheme);
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, await _userManager.GetUserIdAsync(user)));
+
+        await HttpContext.SignInAsync(
+            UserConstants.EmailConfirmationAuthenticationScheme,
+            new ClaimsPrincipal(identity));
+    }
 }

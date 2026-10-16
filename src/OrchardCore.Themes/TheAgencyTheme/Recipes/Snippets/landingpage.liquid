@@ -19,13 +19,14 @@
         </div>
         <div class="row text-center">
             {% for service in Model.ContentItem.Content.Services.ContentItems %}
+            {% assign serviceDisplay = service | shape_build_display %}
             <div class="col-md-4">
                 <span class="fa-stack fa-4x">
                     <i class="fas fa-circle fa-stack-2x text-primary"></i>
                     <i class="fas {{ service.Service.IconClass.Text }} fa-stack-1x fa-inverse"></i>
                 </span>
                 <h4 class="service-heading">{{ service.DisplayText }}</h4>
-                <p class="text-muted">{{ service.HtmlBodyPart.Html | raw }}</p>
+                <div class="text-muted">{{ serviceDisplay.Content.HtmlBodyPart | shape_render }}</div>
             </div>
             {% endfor %}
         </div>
@@ -73,6 +74,7 @@
         </div>
         <ul class="timeline">
             {% for milestone in Model.ContentItem.Content.About.ContentItems %}
+            {% assign milestoneDisplay = milestone | shape_build_display %}
             <li class="{% cycle '', 'timeline-inverted' %}">
                 <div class="timeline-image">
                     <img class="rounded-circle img-fluid" src="{{ milestone.Milestone.Image.Paths.first | asset_url | resize_url: profile: 'extrasmall', mode: 'stretch' }}" alt="">
@@ -83,7 +85,7 @@
                         <h4 class="subheading">{{ milestone.DisplayText }}</h4>
                     </div>
                     <div class="timeline-body">
-                        <p class="text-muted">{{ milestone.HtmlBodyPart.Html | raw }}</p>
+                        <div class="text-muted">{{ milestoneDisplay.Content.HtmlBodyPart | shape_render }}</div>
                     </div>
                 </div>
             </li>
@@ -202,6 +204,7 @@
 
 <!-- Modals -->
 {% for project in Model.ContentItem.Content.Portfolio.ContentItems %}
+{% assign projectDisplay = project | shape_build_display %}
 <div class="portfolio-modal modal fade" id="portfolioModal{{ forloop.index }}" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -214,7 +217,7 @@
                             <h2 class="text-uppercase">{{ project.DisplayText }}</h2>
                             <p class="item-intro text-muted">{{ project.Project.Category.Text }}</p>
                             <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: profile: 'medium', mode: 'max' }}" alt="{{ project.DisplayText }}">
-                            <p>{{ project.HtmlBodyPart.Html | raw }}</p>
+                            {{ projectDisplay.Content.HtmlBodyPart | shape_render }}
                             {% comment %}
                             <ul class="list-inline">
                                 <li>Date: January 2017</li>

@@ -122,13 +122,24 @@ public class ResourceManager : IResourceManager
         var name = settings.Name ?? "";
         var type = settings.Type;
 
-        var stream = _options.ResourceManifests.SelectMany(x => x.GetResources(type));
-        var resource = FindMatchingResource(stream, settings, name);
+        Version lower = null;
+        Version upper = null;
+        if (!string.IsNullOrEmpty(settings.Version))
+        {
+            // Specific version, filter.
+            lower = GetLowerBoundVersion(settings.Version);
+            upper = GetUpperBoundVersion(settings.Version);
+        }
+
+        ResourceDefinition resource = null;
+        foreach (var manifest in _options.ResourceManifests)
+        {
+            FindMatchingResource(manifest.GetResources(type), name, lower, upper, ref resource);
+        }
 
         if (resource == null && _dynamicManifest != null)
         {
-            stream = _dynamicManifest.GetResources(type);
-            resource = FindMatchingResource(stream, settings, name);
+            FindMatchingResource(_dynamicManifest.GetResources(type), name, lower, upper, ref resource);
         }
 
         if (resolveInlineDefinitions && resource == null)
@@ -145,49 +156,58 @@ public class ResourceManager : IResourceManager
         return resource;
     }
 
-    private static ResourceDefinition FindMatchingResource(
-        IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream,
-        RequireSettings settings,
-        string name)
+    private static void FindMatchingResource(
+        IDictionary<string, IList<ResourceDefinition>> resources,
+        string name,
+        Version lower,
+        Version upper,
+        ref ResourceDefinition resource)
     {
-        Version lower = null;
-        Version upper = null;
-        if (!string.IsNullOrEmpty(settings.Version))
+        // The resources of a manifest are keyed by their names ignoring the case, so they are looked up
+        // instead of being scanned for each required resource.
+        if (resources is Dictionary<string, IList<ResourceDefinition>> dictionary && dictionary.Comparer == StringComparer.OrdinalIgnoreCase)
         {
-            // Specific version, filter.
-            lower = GetLowerBoundVersion(settings.Version);
-            upper = GetUpperBoundVersion(settings.Version);
+            if (dictionary.TryGetValue(name, out var definitions))
+            {
+                SelectMatchingResource(definitions, lower, upper, ref resource);
+            }
+
+            return;
         }
 
-        ResourceDefinition resource = null;
-        foreach (var r in stream)
+        foreach (var r in resources)
         {
             if (string.Equals(r.Key, name, StringComparison.OrdinalIgnoreCase))
             {
-                foreach (var resourceDefinition in r.Value)
-                {
-                    var version = resourceDefinition.Version != null
-                        ? new Version(resourceDefinition.Version)
-                        : null;
-
-                    if (lower != null)
-                    {
-                        if (lower > version || version >= upper)
-                        {
-                            continue;
-                        }
-                    }
-
-                    // Use the highest version of all matches. Resources that don't specify a version have the lowest priority.
-                    if (resource?.Version is null || new Version(resource.Version) < version)
-                    {
-                        resource = resourceDefinition;
-                    }
-                }
+                SelectMatchingResource(r.Value, lower, upper, ref resource);
             }
         }
+    }
 
-        return resource;
+    private static void SelectMatchingResource(IList<ResourceDefinition> definitions, Version lower, Version upper, ref ResourceDefinition resource)
+    {
+        for (var i = 0; i < definitions.Count; i++)
+        {
+            var resourceDefinition = definitions[i];
+
+            var version = resourceDefinition.Version != null
+                ? new Version(resourceDefinition.Version)
+                : null;
+
+            if (lower != null)
+            {
+                if (lower > version || version >= upper)
+                {
+                    continue;
+                }
+            }
+
+            // Use the highest version of all matches. Resources that don't specify a version have the lowest priority.
+            if (resource?.Version is null || new Version(resource.Version) < version)
+            {
+                resource = resourceDefinition;
+            }
+        }
     }
 
     /// <summary>
