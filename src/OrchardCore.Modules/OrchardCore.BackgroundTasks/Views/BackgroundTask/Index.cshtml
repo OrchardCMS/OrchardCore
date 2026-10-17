@@ -6,7 +6,7 @@
     <breadcrumb name="BackgroundTasks" title="@T["Background Tasks"]" />
 </zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="taskNames" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="taskNames" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]" data-background-task-states-url="@Url.Action("States")">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -24,6 +24,13 @@
         </div>
     </div>
 
+    @if (!Model.IsMonitored)
+    {
+        <div class="alert alert-info">
+            @T["The execution state of the tasks is not available because the background service is not registered."]
+        </div>
+    }
+
     @* The tasks, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
     <admin-list name="BackgroundTasks" context="Model.List"
                 bulk-actions="Model.Options.BulkActions"
@@ -33,6 +40,11 @@
             <admin-list-column type="Select" />
             <admin-list-column name="Title" position="20" title="@T["Title"]" />
             <admin-list-column name="Status" position="30" title="@T["Status"]" width="auto" />
+            @if (Model.IsMonitored)
+            {
+                <admin-list-column name="LastRun" position="40" title="@T["Last run"]" width="auto" />
+                <admin-list-column name="NextRun" position="50" title="@T["Next run"]" width="auto" />
+            }
             <admin-list-column type="Actions" title="@T["Actions"]" />
         </admin-list-grid>
     </admin-list>
@@ -41,3 +53,4 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 <script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.js" at="Foot" type="module"></script>
+<script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-state.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-state.js" at="Foot" type="module"></script>

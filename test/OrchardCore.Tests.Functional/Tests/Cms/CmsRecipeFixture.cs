@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
+using OrchardCore.BackgroundTasks;
+using OrchardCore.Modules;
 using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
@@ -165,6 +168,30 @@ public sealed class UrlRewritingRulesTestsFixture : CmsRecipeFixture
 public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
 {
     protected override string RecipeName => "PredefinedListEditorTests";
+}
+
+public sealed class BackgroundTasksTestsFixture : CmsRecipeFixture
+{
+    public BackgroundTasksTestsFixture()
+        : base(builder =>
+        {
+            // Load the tasks of the tenant soon after it is set up, and pick up the requested runs quickly.
+            builder.Services.PostConfigure<BackgroundServiceOptions>(options =>
+            {
+                options.PollingTime = TimeSpan.FromSeconds(5);
+                options.MinimumIdleTime = TimeSpan.FromSeconds(1);
+            });
+
+            builder.Services.AddOrchardCore().ConfigureServices(services =>
+            {
+                services.AddSingleton<IBackgroundTask, SucceedingTestBackgroundTask>();
+                services.AddSingleton<IBackgroundTask, FailingTestBackgroundTask>();
+            });
+        })
+    {
+    }
+
+    protected override string RecipeName => "BackgroundTasksTests";
 }
 
 public sealed class PartToggleEditorTestsFixture : CmsRecipeFixture
