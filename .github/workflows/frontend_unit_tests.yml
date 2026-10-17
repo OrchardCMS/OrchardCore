@@ -30,6 +30,9 @@ jobs:
     - name: Run vitest unit tests (bloom)
       working-directory: .scripts/bloom
       run: yarn vitest run
+    - name: Run vitest unit tests (data-pipelines-designer)
+      working-directory: src/OrchardCore.Modules/OrchardCore.DataPipelines/Assets/designer
+      run: yarn vitest run
     - name: Run vitest unit tests (media-gallery)
       working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery
       run: yarn vitest run
@@ -46,6 +49,7 @@ jobs:
         name: vitest-results
         path: |
           .scripts/bloom/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.DataPipelines/Assets/designer/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer/testing/vitest-results.xml

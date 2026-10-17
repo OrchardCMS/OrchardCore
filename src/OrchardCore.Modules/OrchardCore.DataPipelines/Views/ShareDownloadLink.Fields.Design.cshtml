@@ -1,0 +1,11 @@
+@model ShareDownloadLinkStepViewModel
+
+@if (string.IsNullOrWhiteSpace(Model.Recipients))
+{
+    <span class="text-muted">@T["Enter the recipients"]</span>
+}
+else
+{
+    <span class="text-break">@Model.Recipients</span>
+    <span class="text-muted d-block">@T.Plural(Model.ExpiresAfterDays, "For 1 day", "For {0} days")</span>
+}
