@@ -1,0 +1,37 @@
+@using Microsoft.AspNetCore.Html
+@model OrchardCore.DataPipelines.ViewModels.Designer.DesignerFragmentViewModel
+@inject OrchardCore.ResourceManagement.IResourceManager ResourceManager
+@{
+    // Returns a server-rendered form to the designer as JSON: its markup, and the scripts and stylesheets it requires.
+    Layout = null;
+
+    IHtmlContent body = Model.Shape is not null
+        ? await DisplayAsync(Model.Shape)
+        : await Html.PartialAsync(Model.PartialName, Model.PartialModel);
+
+    using var contentWriter = new System.IO.StringWriter();
+    contentWriter.Write("<div class=\"data-pipeline-designer-form\" data-pipeline-id=\"");
+    HtmlEncoder.Encode(contentWriter, Model.PipelineId ?? string.Empty);
+    contentWriter.Write("\" data-step-id=\"");
+    HtmlEncoder.Encode(contentWriter, Model.StepId ?? string.Empty);
+    contentWriter.Write("\">");
+    var summary = Html.ValidationSummary(excludePropertyErrors: true, message: null, htmlAttributes: new { @class = "text-danger" });
+    summary?.WriteTo(contentWriter, HtmlEncoder);
+    body.WriteTo(contentWriter, HtmlEncoder);
+    contentWriter.Write("</div>");
+
+    using var scriptsWriter = new System.IO.StringWriter();
+    ResourceManager.RenderHeadScript(scriptsWriter);
+    scriptsWriter.WriteLine();
+    ResourceManager.RenderFootScript(scriptsWriter);
+
+    using var stylesWriter = new System.IO.StringWriter();
+    ResourceManager.RenderStylesheet(stylesWriter);
+}
+@Json.Serialize(new
+{
+    valid = Model.Valid,
+    content = contentWriter.ToString(),
+    scripts = scriptsWriter.ToString().Trim(),
+    styles = stylesWriter.ToString().Trim(),
+})

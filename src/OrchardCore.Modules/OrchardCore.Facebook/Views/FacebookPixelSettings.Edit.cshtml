@@ -1,6 +1,15 @@
-@using OrchardCore.Facebook.Settings
+@using OrchardCore.Facebook.ViewModels
 
-@model FacebookPixelSettings
+@model FacebookPixelSettingsViewModel
+
+@if (Model.HasDecryptionError)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+        </div>
+    </div>
+}
 
 <div class="ocat-wrapper" asp-validation-class-for="PixelId">
     <label asp-for="PixelId" class="ocat-label">@T["Pixel Identifier"]</label>
@@ -8,5 +17,30 @@
         <input asp-for="PixelId" class="form-control" autocomplete="off" />
         <span asp-validation-for="PixelId"></span>
         <span class="hint">@T["The Pixel ID found on the Meta Data Sources portal."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h3>@T["Conversions API"]</h3>
+        <p class="hint">@T["Optional server-side event delivery to Meta, in addition to the browser-side pixel. Configure this to let workflows send events (e.g. Purchase, Lead) directly from the server."]</p>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="ConversionsApiAccessToken">
+    <label asp-for="ConversionsApiAccessToken" class="ocat-label">@T["Conversions API Access Token"]</label>
+    <div class="ocat-end">
+        <input asp-for="ConversionsApiAccessToken" class="form-control" type="password" value="@Model.ConversionsApiAccessToken" autocomplete="off" />
+        <span asp-validation-for="ConversionsApiAccessToken"></span>
+        <span class="hint">@T["The access token generated for this dataset in the Events Manager's Conversions API settings."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="ConversionsApiTestEventCode">
+    <label asp-for="ConversionsApiTestEventCode" class="ocat-label">@T["Test Event Code"]</label>
+    <div class="ocat-end">
+        <input asp-for="ConversionsApiTestEventCode" class="form-control" autocomplete="off" />
+        <span asp-validation-for="ConversionsApiTestEventCode"></span>
+        <span class="hint">@T["Optional. Found on the Events Manager's Test Events tab. When set, every Conversions API event includes it, so events show up in the test console instead of counting as production data. Remove it before going live."]</span>
     </div>
 </div>

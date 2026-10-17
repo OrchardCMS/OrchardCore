@@ -10,6 +10,8 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -53,7 +55,9 @@ public sealed class BackgroundTaskController : Controller
     }
 
     [Admin("BackgroundTasks", "BackgroundTasks")]
-    public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        AdminIndexOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
         {
@@ -108,6 +112,12 @@ public sealed class BackgroundTaskController : Controller
             new SelectListItem(S["Disabled"], "disabled")
         ];
 
+        options.BulkActions =
+        [
+            new SelectListItem(S["Enable"], nameof(BackgroundTaskBulkAction.Enable)),
+            new SelectListItem(S["Disable"], nameof(BackgroundTaskBulkAction.Disable)),
+        ];
+
         var taskItems = items.ToList();
         var routeData = new RouteData();
 
@@ -121,7 +131,7 @@ public sealed class BackgroundTaskController : Controller
             routeData.Values.TryAdd(_optionsStatus, options.Status);
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
         var pagerShape = await _shapeFactory.PagerAsync(pager, taskItems.Count, routeData);
 
         var model = new BackgroundTaskIndexViewModel
@@ -129,6 +139,20 @@ public sealed class BackgroundTaskController : Controller
             Tasks = taskItems.OrderBy(entry => entry.Title).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
             Pager = pagerShape,
             Options = options,
+        };
+
+        // The status filter renders at the end of the toolbar, next to the bulk actions.
+        var filters = await _shapeFactory.CreateAsync("BackgroundTasksFilters", Arguments.From(new
+        {
+            Options = options,
+        }));
+
+        // The AdminList shape renders the tasks with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<BackgroundTaskEntry>
+        {
+            Source = model.Tasks,
+            ToolbarActions = filters,
+            Pager = model.Pager,
         };
 
         return View(model);
@@ -142,6 +166,60 @@ public sealed class BackgroundTaskController : Controller
             { _optionsSearch, model.Options.Search },
             { _optionsStatus, model.Options.Status },
         });
+
+    [HttpPost, ActionName(nameof(Index))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<IActionResult> IndexBulkActionPOST(AdminIndexOptions options, IEnumerable<string> taskNames)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+        {
+            return Forbid();
+        }
+
+        if (taskNames == null || !taskNames.Any())
+        {
+            await _notifier.WarningAsync(H["Please select one or more tasks."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        var document = await _backgroundTaskManager.LoadDocumentAsync();
+
+        foreach (var name in taskNames)
+        {
+            var task = _backgroundTasks.GetTaskByName(name);
+            if (task == null)
+            {
+                continue;
+            }
+
+            if (!document.Settings.TryGetValue(name, out var settings))
+            {
+                settings = task.GetDefaultSettings();
+            }
+
+            settings.Enable = options.BulkAction switch
+            {
+                BackgroundTaskBulkAction.Enable => true,
+                BackgroundTaskBulkAction.Disable => false,
+                _ => settings.Enable,
+            };
+
+            await _backgroundTaskManager.UpdateAsync(name, settings);
+        }
+
+        switch (options.BulkAction)
+        {
+            case BackgroundTaskBulkAction.Enable:
+                await _notifier.SuccessAsync(H["The tasks have been enabled."]);
+                break;
+            case BackgroundTaskBulkAction.Disable:
+                await _notifier.SuccessAsync(H["The tasks have been disabled."]);
+                break;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 
     public async Task<IActionResult> Edit(string name)
     {

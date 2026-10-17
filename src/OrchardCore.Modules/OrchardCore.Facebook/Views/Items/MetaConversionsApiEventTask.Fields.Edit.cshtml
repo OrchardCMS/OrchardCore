@@ -1,0 +1,50 @@
+@using OrchardCore.Facebook.ViewModels
+@using OrchardCore.Facebook.Models
+
+@model MetaConversionsApiEventTaskViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="EventName">
+    <label asp-for="EventName" class="ocat-label">@T["Event Name"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="EventName" class="form-control" list="metaStandardEventNames" />
+        <datalist id="metaStandardEventNames">
+            <option value="Purchase"></option>
+            <option value="Lead"></option>
+            <option value="CompleteRegistration"></option>
+            <option value="AddToCart"></option>
+            <option value="InitiateCheckout"></option>
+            <option value="AddPaymentInfo"></option>
+            <option value="Contact"></option>
+            <option value="Subscribe"></option>
+            <option value="StartTrial"></option>
+        </datalist>
+        <span asp-validation-for="EventName"></span>
+        <span class="hint">@T["A Meta standard event name (e.g. Purchase, Lead) or a custom event name. With Liquid support."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="ActionSource" class="ocat-label">@T["Action Source"]</label>
+    <div class="ocat-end">
+        <select asp-for="ActionSource" class="form-select" asp-items="Html.GetEnumSelectList<MetaActionSource>()"></select>
+        <span class="hint">@T["Where the conversion took place. Most server-side events triggered from a website workflow should use Website."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="EventSourceUrl">
+    <label asp-for="EventSourceUrl" class="ocat-label">@T["Event Source URL"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="EventSourceUrl" class="form-control" />
+        <span asp-validation-for="EventSourceUrl"></span>
+        <span class="hint">@T["Optional. The browser URL where the event happened. With Liquid support."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="EventId">
+    <label asp-for="EventId" class="ocat-label">@T["Event ID"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="EventId" class="form-control" />
+        <span asp-validation-for="EventId"></span>
+        <span class="hint">@T["Optional. A unique id for this event, used to deduplicate it against the same event reported by the browser Meta Pixel. With Liquid support."]</span>
+    </div>
+</div>

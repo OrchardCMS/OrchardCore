@@ -30,10 +30,11 @@ public sealed class Startup
 
         services.Configure<DefaultAzureEmailOptions>(options =>
         {
-            _shellConfiguration.GetSection("OrchardCore_Email_AzureCommunicationServices").Bind(options);
-
-            // The 'OrchardCore_Email_Azure' key can be removed in version 3. 
-            _shellConfiguration.GetSection("OrchardCore_Email_Azure").Bind(options);
+            // The 'OrchardCore_Email_Azure' and 'OrchardCore_Email_AzureCommunicationServices' sections are deprecated and will be removed
+            // in a future major version, use 'Email:Azure' instead.
+            _shellConfiguration
+                .GetSectionCompat("Email:Azure", "OrchardCore_Email_Azure", "OrchardCore_Email_AzureCommunicationServices")
+                .Bind(options);
 
             options.IsEnabled = options.ConfigurationExists();
         });

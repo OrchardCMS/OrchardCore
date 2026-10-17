@@ -1,5 +1,7 @@
+using OrchardCore.Admin;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tenants.ViewModels;
@@ -11,7 +13,13 @@ public class AdminIndexViewModel
     public TenantIndexOptions Options { get; set; } = new TenantIndexOptions();
 
     [BindNever]
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
+
+    /// <summary>
+    /// The data context for rendering the tenants, the toolbar and the pager in the configured layout.
+    /// </summary>
+    [BindNever]
+    public AdminListContext List { get; set; }
 }
 
 public class BulkActionViewModel

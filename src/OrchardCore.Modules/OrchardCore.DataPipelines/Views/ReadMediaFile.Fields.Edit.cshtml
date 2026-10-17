@@ -1,0 +1,47 @@
+@model ReadMediaFileStepViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Path">
+    <label asp-for="Path" class="ocat-label ocat-label-required">@T["File"]</label>
+    <div class="ocat-end">
+        <input asp-for="Path" class="form-control" placeholder="imports/customers.csv" />
+        <span asp-validation-for="Path"></span>
+        <span class="hint">@T["The path of the file in the media library."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Format" class="ocat-label">@T["Format"]</label>
+    <div class="ocat-end">
+        <select asp-for="Format" class="form-select">
+            <option value="">@T["From the extension of the file"]</option>
+            @foreach (var format in Model.Formats)
+            {
+                <option value="@format.Name" selected="@(format.Name == Model.Format)">@format.DisplayName (@format.Extension)</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="HasHeaderRow" />
+            <label class="form-check-label" asp-for="HasHeaderRow">@T["The first row holds the names of the columns (CSV, Excel)"]</label>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="Delimiter" class="ocat-label">@T["CSV delimiter"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Delimiter" class="form-control" maxlength="3" />
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="SheetName" class="ocat-label">@T["Worksheet"]</label>
+    <div class="ocat-end">
+        <input asp-for="SheetName" class="form-control" />
+        <span class="hint">@T["The worksheet of a workbook to read; empty for the first one."]</span>
+    </div>
+</div>

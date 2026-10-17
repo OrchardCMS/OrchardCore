@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "features-index",
+    "source": "Assets/ts/features-index.ts",
+    "dest": "wwwroot/Scripts/features-index/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

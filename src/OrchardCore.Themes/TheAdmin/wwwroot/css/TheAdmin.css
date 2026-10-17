@@ -6,13 +6,31 @@
 */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  /* The menu is built on the Bootstrap gray scale, the one of the top bar ('$gray-100'),
+     one step darker so that both read as one palette. The accent is the darkest of those
+     grays rather than a color of its own. A site can rebrand the menu by redefining the
+     accent and the surfaces. */
+  --oc-admin-accent-rgb: 73, 80, 87;
+  --oc-admin-accent-color: rgb(var(--oc-admin-accent-rgb));
+  /* The darker end of the scale, for the hairlines and text that have to stand out
+     against the light surfaces. */
+  --oc-admin-accent-strong-color: #343a40;
+  --oc-admin-menu-bg-color: #f1f3f5;
+  --oc-admin-menu-border-color: #dee2e6;
+  --oc-scrollbar-color: #7a838b;
+  --oc-admin-menu-font-color: #5c636a;
+  --oc-admin-menu-font-color-hover: #212529;
+  --oc-admin-menu-item-bg-color: var(--oc-admin-menu-bg-color);
+  --oc-admin-menu-item-font-color: #495057;
+  --oc-admin-menu-item-font-color-active: #212529;
+  --oc-admin-menu-group-font-color: #677078;
+  /* Hovering and the current page are washes of the accent gray, at two strengths. */
+  --oc-admin-menu-item-hover-bg-color: rgba(var(--oc-admin-accent-rgb), 0.08);
+  --oc-admin-menu-item-active-bg-color: rgba(var(--oc-admin-accent-rgb), 0.14);
+  --oc-admin-menu-separator-color: rgba(var(--oc-admin-accent-rgb), 0.15);
+  --oc-admin-menu-item-height: 38px;
+  --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.18);
+  --oc-start-navigation-width-when-mobile: min(280px, 85vw);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-height-dropdown: 250px;
@@ -24,7 +42,7 @@
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
+  --oc-selected-indicator-color: var(--oc-admin-accent-strong-color);
   /* Action bar should always be less than dropdown menu */
   --oc-action-bar-zindex: 980;
   --oc-second-action-bar-zindex: 983;
@@ -228,6 +246,294 @@ a:hover {
   z-index: var(--oc-second-action-bar-zindex);
 }
 
+/*
+ Admin lists rendered by the AdminList shape.
+
+ .admin-list-list is the default 'List' layout (a list-group, see _list-group.scss).
+ .admin-list-grid is the 'Grid' layout: a toolbar (count, select-all, filters, bulk actions) above a CSS grid with
+                  one column per AdminListColumn. The header and every row are subgrids spanning the columns, so
+                  every cell of every row shares the same tracks (--oc-admin-list-grid-columns, computed by
+                  AdminList-Grid.cshtml from the column widths) and the header always lines up with the data, while
+                  a row keeps a box of its own, which a sortable list needs to drag it.
+
+ The Grid layout is laid out for a wide list by default, and a container query on the list itself (not on the
+ viewport, the admin sidebar takes a good part of it) collapses it when the list is narrower than
+ $oc-admin-list-stack-width: the headers disappear and each row becomes a compact wrapped line, checkbox and title
+ first, badges after, actions at the end, like the 'List' layout.
+
+ Keep every narrow rule inside the container query and every wide rule outside it. A narrow rule left outside the
+ query wins over its wide counterpart inside it (a container query adds no specificity), which silently breaks the
+ alignment of the columns.
+
+ Column widths come from AdminListColumn.Width: "auto" hugs the content (.admin-list-column-auto), a value is a
+ fixed width (.admin-list-column-fixed), none shares the remaining space (.admin-list-column-fill).
+
+ The containers must not clip their overflow: the row action dropdowns open past the last row.
+*/
+.admin-list-grid {
+  --oc-admin-list-cell-padding-y: 0.5rem;
+  --oc-admin-list-cell-padding-x: 0.75rem;
+  container-type: inline-size;
+  container-name: admin-list;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+}
+
+.admin-list-grid .admin-list-toolbar {
+  padding: 0.75rem var(--oc-admin-list-cell-padding-x);
+  border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+}
+
+.admin-list-grid .badge {
+  vertical-align: middle;
+}
+
+.admin-list-grid .admin-list-select .form-check {
+  margin-bottom: 0;
+  min-height: 0;
+}
+
+.admin-list-grid .contentpart {
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color);
+}
+
+.admin-list-grid .admin-list-empty .alert {
+  margin: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+}
+
+/* A description under the title, in every layout. It always takes its own line, so the badges beside the
+   title stay at the same offset on every row instead of being pushed along by however long the description
+   happens to be. The Grid layout needs the width because a cell is a flex container. */
+.admin-list .admin-list-secondary {
+  flex-basis: 100%;
+  width: 100%;
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color);
+}
+
+/* The toolbar strip carries the layout selector beside the count, so the count takes the space left. */
+.admin-list-toolbar-content,
+.admin-list .admin-list-toolbar-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* The layouts a user can switch a list to. It ends the toolbar strip, on its own line when the strip wraps. */
+.admin-list-layout-selector {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+/*
+ The row under the list. The pager takes the space left by the page size selector, and centres itself in it,
+ whether it renders the selector itself (.pager-wrapper) or the layout places it apart.
+*/
+.admin-list-footer {
+  margin-top: 1rem;
+}
+
+.admin-list-footer .admin-list-footer-pager {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.admin-list-footer .admin-list-footer-page-size {
+  flex: 0 0 auto;
+}
+
+[dir="ltr"] .admin-list-footer .admin-list-footer-page-size {
+  margin-left: auto;
+}
+
+[dir="rtl"] .admin-list-footer .admin-list-footer-page-size {
+  margin-right: auto;
+}
+
+.admin-list-footer ul.pager {
+  margin: 0;
+}
+
+/* Row actions (AdminListActions shape), used by every layout. */
+.admin-list-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.admin-list-actions .dropdown-menu > li {
+  list-style: none;
+}
+
+.admin-list-actions-menu .admin-list-actions-primary {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.admin-list-actions-menu .admin-list-actions-primary .btn, .admin-list-actions-menu .admin-list-actions-primary .button {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x);
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--bs-dropdown-link-color);
+  font-size: var(--bs-dropdown-font-size);
+  font-weight: 400;
+  text-align: start;
+  box-shadow: none;
+}
+
+.admin-list-actions-menu .admin-list-actions-primary .btn:hover, .admin-list-actions-menu .admin-list-actions-primary .button:hover, .admin-list-actions-menu .admin-list-actions-primary .btn:focus, .admin-list-actions-menu .admin-list-actions-primary .button:focus {
+  background-color: var(--bs-dropdown-link-hover-bg);
+  color: var(--bs-dropdown-link-hover-color);
+}
+
+.admin-list-actions-menu .admin-list-actions-primary .btn:active, .admin-list-actions-menu .admin-list-actions-primary .button:active {
+  background-color: var(--bs-dropdown-link-active-bg);
+  color: var(--bs-dropdown-link-active-color);
+}
+
+/* Grid layout */
+.admin-list-grid .admin-list-grid-table {
+  display: grid;
+  grid-template-columns: var(--oc-admin-list-grid-columns, minmax(0, 1fr));
+}
+
+.admin-list-grid .admin-list-grid-body {
+  display: contents;
+}
+
+.admin-list-grid .admin-list-grid-header,
+.admin-list-grid .admin-list-grid-row {
+  display: grid;
+  grid-column: 1/-1;
+  grid-template-columns: subgrid;
+}
+
+.admin-list-grid .admin-list-grid-cell {
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: 0.375rem;
+  padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+  border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.admin-list-grid .admin-list-grid-cell.admin-list-align-center {
+  justify-content: center;
+}
+
+.admin-list-grid .admin-list-grid-cell.admin-list-align-end {
+  justify-content: flex-end;
+}
+
+.admin-list-grid .admin-list-grid-header .admin-list-grid-cell {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+  border-bottom-width: calc(var(--bs-border-width) * 2);
+}
+
+.admin-list-grid .admin-list-grid-label {
+  display: none;
+}
+
+.admin-list-grid .admin-list-grid-row:hover > .admin-list-grid-cell {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.admin-list-grid .admin-list-grid-row:last-child > .admin-list-grid-cell {
+  border-bottom: 0;
+}
+
+[dir="ltr"] .admin-list-grid .admin-list-grid-row:last-child > .admin-list-grid-cell:first-child {
+  border-bottom-left-radius: var(--bs-border-radius);
+}
+
+[dir="rtl"] .admin-list-grid .admin-list-grid-row:last-child > .admin-list-grid-cell:first-child {
+  border-bottom-right-radius: var(--bs-border-radius);
+}
+
+[dir="ltr"] .admin-list-grid .admin-list-grid-row:last-child > .admin-list-grid-cell:last-child {
+  border-bottom-right-radius: var(--bs-border-radius);
+}
+
+[dir="rtl"] .admin-list-grid .admin-list-grid-row:last-child > .admin-list-grid-cell:last-child {
+  border-bottom-left-radius: var(--bs-border-radius);
+}
+
+.admin-list-grid .admin-list-grid-row:has(.dropdown-menu.show:not(.inner)) > .admin-list-grid-cell {
+  position: relative;
+  z-index: var(--oc-zindex-dropdown);
+}
+
+.admin-list-grid .admin-list-grid-row.admin-list-empty {
+  display: block;
+  grid-column: 1/-1;
+}
+
+@container admin-list (max-width: 48rem) {
+  .admin-list-grid .admin-list-grid-table {
+    display: block;
+  }
+
+  .admin-list-grid .admin-list-grid-header {
+    display: none;
+  }
+
+  .admin-list-grid .admin-list-grid-body {
+    display: block;
+  }
+
+  .admin-list-grid .admin-list-grid-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+  }
+
+  .admin-list-grid .admin-list-grid-row:last-child {
+    border-bottom: 0;
+  }
+
+  .admin-list-grid .admin-list-grid-cell {
+    display: block;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .admin-list-grid .admin-list-grid-cell.admin-list-column-fill {
+    flex: 1 1 0;
+    min-width: 40%;
+  }
+
+  .admin-list-grid .admin-list-grid-cell.admin-list-align-end {
+    text-align: end;
+  }
+
+  .admin-list-grid .admin-list-grid-cell:not(.admin-list-column-fill):not(.admin-list-select):not(.admin-list-column-handle):not(.admin-list-align-end), .admin-list-grid .admin-list-grid-cell.admin-list-column-fill ~ .admin-list-column-fill {
+    order: 1;
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .admin-list-grid .admin-list-grid-row.admin-list-empty {
+    padding: 0;
+  }
+}
+
 .ta-badge {
   --ta-badge-extra-padding: var(--bs-border-width);
   border-radius: var(--bs-border-radius-pill) !important;
@@ -243,6 +549,32 @@ a:hover {
   --bs-btn-font-size: 0.75em;
   --bs-btn-padding-y: 0;
   --bs-btn-padding-x: 0.25rem;
+}
+
+.oc-breadcrumb .breadcrumb {
+  --bs-breadcrumb-divider: '\203A';
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+  font-size: 0.8125rem;
+  margin-bottom: 0.25rem;
+}
+
+[dir=rtl] .oc-breadcrumb .breadcrumb {
+  --bs-breadcrumb-divider: '\2039';
+}
+
+.oc-breadcrumb .breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.oc-breadcrumb-title {
+  margin-top: 0;
+}
+
+.oc-breadcrumb:not(:has(+ .oc-breadcrumb-title)) .breadcrumb {
+  margin-bottom: 1rem;
 }
 
 .card.collapsed .card-header {
@@ -480,6 +812,19 @@ input[type=password]::-ms-clear {
 
 .has-filter .btn:not(.show), .has-filter .button:not(.show) {
   border-color: var(--bs-border-color) !important;
+}
+
+.input-group.has-search > .form-control:first-of-type,
+.input-group.has-filter > .form-control:first-of-type {
+  border-start-start-radius: var(--bs-border-radius) !important;
+  border-end-start-radius: var(--bs-border-radius) !important;
+}
+
+.input-group.has-search > .btn ~ .form-control:first-of-type, .input-group.has-search > .button ~ .form-control:first-of-type,
+.input-group.has-filter > .btn ~ .form-control:first-of-type,
+.input-group.has-filter > .button ~ .form-control:first-of-type {
+  border-start-start-radius: 0 !important;
+  border-end-start-radius: 0 !important;
 }
 
 .ta-col-grouping.col-xs .col-xs {
@@ -9445,7 +9790,7 @@ div.editor-widget.find-widget .button.codicon:active {
   margin-top: 1rem;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
   .ta-navbar-top .brand-wrapper-title {
     display: block;
     position: absolute;
@@ -9478,22 +9823,58 @@ div.editor-widget.find-widget .button.codicon:active {
   }
 }
 
-[dir="ltr"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+@media (min-width: 768px) {
+  [dir="ltr"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+  }
+
+  [dir="rtl"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+  }
+
+  [dir="ltr"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+    left: auto;
+  }
+
+  [dir="rtl"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+    right: auto;
+  }
 }
 
-[dir="rtl"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+.ta-sidebar-toggler {
+  display: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--bs-border-radius);
+  background-color: transparent;
+  color: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
 }
 
-[dir="ltr"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-  left: auto;
+[dir="ltr"] .ta-sidebar-toggler {
+  margin-right: 0.25rem;
 }
 
-[dir="rtl"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-  right: auto;
+[dir="rtl"] .ta-sidebar-toggler {
+  margin-left: 0.25rem;
+}
+
+.ta-sidebar-toggler:hover, .ta-sidebar-toggler:focus-visible {
+  background-color: var(--oc-admin-menu-item-hover-bg-color);
+  color: var(--oc-admin-menu-font-color-hover);
+}
+
+@media (max-width: 767.98px) {
+  .ta-sidebar-toggler {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .brand-wrapper-title > h1 {
@@ -9515,8 +9896,10 @@ div.editor-widget.find-widget .button.codicon:active {
   height: 32px;
 }
 
-.left-sidebar-compact .ta-navbar-brand span {
-  display: none;
+@media (min-width: 768px) {
+  .left-sidebar-compact .ta-navbar-brand span {
+    display: none;
+  }
 }
 
 .user-top-navbar {
@@ -10008,6 +10391,15 @@ ul.pager {
   justify-content: center;
 }
 
+/*
+ When the page size selector is rendered, the pager and the selector share one flex row
+ (see PagerShapesTableProvider.WrapWithPageSizeSelector). The pager keeps filling the free space so it stays
+ centered instead of collapsing to the start of the row, and the selector sits at the end.
+*/
+.pager-wrapper ul.pager {
+  flex: 1 1 auto;
+}
+
 .g-recaptcha {
   margin-bottom: 1rem;
 }
@@ -10351,43 +10743,35 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
 }
 
 .btn-theme {
-  color: var(--bs-black);
-  background-color: #f8f9fa;
-  border-color: #f8f9fa;
-}
-
-.btn-theme:hover {
-  color: var(--bs-black);
-  background-color: #f9fafb;
-  border-color: #f9fafb;
-}
-
-.btn-check:focus + .btn-theme, .btn-theme:focus {
-  color: var(--bs-black);
-  background-color: #f9fafb;
-  border-color: #f9fafb;
-  box-shadow: 0 0 0 0.25rem rgba(211, 212, 213, 0.5);
-}
-
-.btn-check:checked + .btn-theme, .btn-check:active + .btn-theme, .btn-theme:active, .btn-theme.active, .show > .btn-theme.dropdown-toggle {
-  color: var(--bs-black);
-  background-color: #f9fafb;
-  border-color: #f9fafb;
-}
-
-.btn-check:checked + .btn-theme:focus, .btn-check:active + .btn-theme:focus, .btn-theme:active:focus, .btn-theme.active:focus, .show > .btn-theme.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.25rem rgba(211, 212, 213, 0.5);
-}
-
-.btn-theme:disabled, .btn-theme.disabled {
-  color: var(--bs-black);
-  background-color: #f8f9fa;
-  border-color: #f8f9fa;
+  --bs-btn-color: var(--bs-black);
+  --bs-btn-bg: #f8f9fa;
+  --bs-btn-border-color: #f8f9fa;
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: #f9fafb;
+  --bs-btn-hover-border-color: #f9fafb;
+  --bs-btn-focus-shadow-rgb: 211, 212, 213;
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: #f9fafb;
+  --bs-btn-active-border-color: #f9fafb;
+  --bs-btn-disabled-color: var(--bs-black);
+  --bs-btn-disabled-bg: #f8f9fa;
+  --bs-btn-disabled-border-color: #f8f9fa;
 }
 
 [data-bs-theme=dark] {
-  --oc-scrollbar-color: #76787A;
-  --oc-admin-menu-bg-color: var(--bs-dark);
+  /* The dark counterpart of the menu palette declared in '_variables.scss'. */
+  --oc-admin-accent-rgb: 173, 181, 189;
+  /* On the dark surfaces the accent is the lightest of the grays instead of the darkest. */
+  --oc-admin-accent-strong-color: #ced4da;
+  --oc-admin-menu-bg-color: #1c1f23;
+  --oc-admin-menu-border-color: #343a40;
+  --oc-scrollbar-color: #666e75;
+  --oc-admin-menu-font-color: #adb5bd;
+  --oc-admin-menu-font-color-hover: #f8f9fa;
+  --oc-admin-menu-item-font-color: #adb5bd;
+  --oc-admin-menu-item-font-color-active: #f8f9fa;
+  --oc-admin-menu-group-font-color: #7d8790;
+  --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.45);
 }
 
 [data-bs-theme=dark] .ta-badge {
@@ -10417,36 +10801,17 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
 }
 
 [data-bs-theme=dark] .btn-theme {
-  color: var(--bs-white);
-  background-color: var(--bs-gray-900);
-  border-color: var(--bs-gray-900);
-}
-
-[data-bs-theme=dark] .btn-theme:hover {
-  color: var(--bs-white);
-  background-color: #1c1f23;
-  border-color: #1a1e21;
-}
-
-[data-bs-theme=dark] .btn-check:focus + .btn-theme, [data-bs-theme=dark] .btn-theme:focus {
-  color: var(--bs-white);
-  background-color: #1c1f23;
-  border-color: #1a1e21;
-  box-shadow: 0 0 0 0.25rem rgba(66, 70, 73, 0.5);
-}
-
-[data-bs-theme=dark] .btn-check:checked + .btn-theme, [data-bs-theme=dark] .btn-check:active + .btn-theme, [data-bs-theme=dark] .btn-theme:active, [data-bs-theme=dark] .btn-theme.active, [data-bs-theme=dark] .show > .btn-theme.dropdown-toggle {
-  color: var(--bs-white);
-  background-color: #1a1e21;
-  border-color: #191c1f;
-}
-
-[data-bs-theme=dark] .btn-check:checked + .btn-theme:focus, [data-bs-theme=dark] .btn-check:active + .btn-theme:focus, [data-bs-theme=dark] .btn-theme:active:focus, [data-bs-theme=dark] .btn-theme.active:focus, [data-bs-theme=dark] .show > .btn-theme.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.25rem rgba(66, 70, 73, 0.5);
-}
-
-[data-bs-theme=dark] .btn-theme:disabled, [data-bs-theme=dark] .btn-theme.disabled {
-  color: var(--bs-white);
-  background-color: var(--bs-gray-900);
-  border-color: var(--bs-gray-900);
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--bs-gray-900);
+  --bs-btn-border-color: var(--bs-gray-900);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: #1c1f23;
+  --bs-btn-hover-border-color: #1a1e21;
+  --bs-btn-focus-shadow-rgb: 66, 70, 73;
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: #1a1e21;
+  --bs-btn-active-border-color: #191c1f;
+  --bs-btn-disabled-color: var(--bs-white);
+  --bs-btn-disabled-bg: var(--bs-gray-900);
+  --bs-btn-disabled-border-color: var(--bs-gray-900);
 }

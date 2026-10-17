@@ -36,7 +36,8 @@ public sealed class Startup : StartupBase
     {
         try
         {
-            var section = _configuration.GetSection("OrchardCore_Redis");
+            // The 'OrchardCore_Redis' section is deprecated and will be removed in a future major version, use 'Redis' instead.
+            var section = _configuration.GetSectionCompat("Redis", "OrchardCore_Redis");
 
             var configuration = section["Configuration"];
             var configurationOptions = ConfigurationOptions.Parse(configuration);

@@ -1,6 +1,10 @@
 @model RewriteRuleViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["New '{0}' rule", Model.DisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="UrlRewritingCreate" title="@T["New '{0}' rule", Model.DisplayName]">
+        <breadcrumb-item id="UrlRewriting" action="Index" controller="Admin" area="OrchardCore.UrlRewriting" permission="@UrlRewritingPermissions.ManageUrlRewritingRules.Name">@T["URL Rewriting Rules"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()

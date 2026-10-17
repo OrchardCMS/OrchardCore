@@ -15,7 +15,7 @@ public class FileSystemStore : IFileStore
     public FileSystemStore(string fileSystemPath, ILogger<FileSystemStore> logger)
     {
         _logger = logger;
-        _fileSystemPath = Path.GetFullPath(fileSystemPath);
+        _fileSystemPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(fileSystemPath));
     }
 
     public Task<IFileStoreEntry> GetFileInfoAsync(string path)
@@ -424,10 +424,13 @@ public class FileSystemStore : IFileStore
         {
             path = this.NormalizePath(path);
 
-            var physicalPath = string.IsNullOrEmpty(path) ? _fileSystemPath : Path.Combine(_fileSystemPath, path);
+            var physicalPath = string.IsNullOrEmpty(path) ? _fileSystemPath : Path.GetFullPath(Path.Combine(_fileSystemPath, path));
 
-            // Verify that the resulting path is inside the root file system path.
-            var pathIsAllowed = Path.GetFullPath(physicalPath).StartsWith(_fileSystemPath, StringComparison.OrdinalIgnoreCase);
+            // Verify that the resulting path is inside the root file system path. An ordinal comparison is
+            // used on every platform, because ignoring case is the permissive direction and the operating
+            // system is not a reliable proxy for the case sensitivity of the file system.
+            var rootPrefix = Path.EndsInDirectorySeparator(_fileSystemPath) ? _fileSystemPath : _fileSystemPath + Path.DirectorySeparatorChar;
+            var pathIsAllowed = physicalPath.Equals(_fileSystemPath, StringComparison.Ordinal) || physicalPath.StartsWith(rootPrefix, StringComparison.Ordinal);
             if (!pathIsAllowed)
             {
                 throw new FileStoreException($"The path '{path}' resolves to a physical path outside the file system store root.");

@@ -10,7 +10,10 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
+using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -53,14 +56,16 @@ public sealed class RemoteClientController : Controller
         _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
 
@@ -95,6 +100,13 @@ public sealed class RemoteClientController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<RemoteClient>
+        {
+            Source = model.RemoteClients,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

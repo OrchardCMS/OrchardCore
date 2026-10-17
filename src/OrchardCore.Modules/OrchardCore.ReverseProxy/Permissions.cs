@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ReverseProxy;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageReverseProxySettings = new("ManageReverseProxySettings", "Manage Reverse Proxy Settings");
+    public static readonly Permission ManageReverseProxySettings = new("ManageReverseProxySettings", LocalizationSource.Create<Permissions>("Manage Reverse Proxy Settings"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

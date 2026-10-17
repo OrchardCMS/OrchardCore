@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -27,6 +28,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Endpoints.Api;
@@ -94,6 +96,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<AuthorizationOptions>, MediaApiAuthorizationOptionsConfiguration>();
         services.AddSiteDisplayDriver<MediaApiSettingsDisplayDriver>();
         services.TryAddTransient<FileCreationService>();
+        services.AddTransient<FileSizeHelper>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -121,6 +124,7 @@ public sealed class Startup : StartupBase
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+            var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
             var mediaCreatingEventHandlers =
                 serviceProvider.GetServices<IMediaCreatingEventHandler>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<
@@ -159,6 +163,7 @@ public sealed class Startup : StartupBase
                 mediaOptions.CdnBaseUrl,
                 mediaEventHandlers,
                 mediaCreatingEventHandlers,
+                fileSizeHelper,
                 defaultMediaFileStoreLogger
             );
         });
@@ -213,6 +218,9 @@ public sealed class Startup : StartupBase
 
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
+
+        // Builds the rows of the media profiles admin list.
+        services.AddDisplayDriver<MediaProfileEntry, MediaProfileEntryDisplayDriver>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
         services.AddRecipeExecutionStep<MediaProfileStep>();
 
@@ -221,6 +229,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
         services.AddChunkFileUploadServices();
+
     }
 
     public override void Configure(
@@ -268,18 +277,44 @@ public sealed class Startup : StartupBase
 
     }
 
-    private static string GetMediaPath(
+    internal static string GetMediaPath(
         ShellOptions shellOptions,
         ShellSettings shellSettings,
         string assetsPath
     )
     {
-        return PathExtensions.Combine(
+        assetsPath = assetsPath?.TrimEnd(PathExtensions.PathSeparators);
+
+        if (!MediaFileStorePathHelper.IsValidRelativePath(assetsPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        // The tenant name is a path segment too. It is validated when a tenant is created, but not every
+        // code path that can create one is guaranteed to do so, so don't trust it to stay in its container.
+        var tenantsPath = Path.GetFullPath(Path.Combine(
             shellOptions.ShellsApplicationDataPath,
-            shellOptions.ShellsContainerName,
-            shellSettings.Name,
-            assetsPath
-        );
+            shellOptions.ShellsContainerName
+        ));
+
+        var tenantPath = Path.GetFullPath(Path.Combine(tenantsPath, shellSettings.Name ?? string.Empty));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantsPath, tenantPath))
+        {
+            throw new ArgumentException("The tenant name must resolve to a subdirectory of the tenants directory.", nameof(shellSettings));
+        }
+
+        var mediaPath = Path.GetFullPath(Path.Combine(
+            tenantPath,
+            assetsPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
+        ));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantPath, mediaPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        return mediaPath;
     }
 }
 

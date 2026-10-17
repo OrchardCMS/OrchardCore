@@ -311,103 +311,142 @@ The following configuration values are used by default and can be customized:
 
 ```json
 {
-  "OrchardCore_Media": {
-    // The accepted sizes for custom width and height.
-    // When the 'UseTokenizedQueryString' is True (default) all sizes are valid.
-    "SupportedSizes": [
-      16,
-      32,
-      50,
-      100,
-      160,
-      240,
-      480,
-      600,
-      1024,
-      2048
-    ],
-    // The number of days to store images in the browser cache.
-    // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
-    "MaxBrowserCacheDays": 30,
-    // The number of days to store secure media files in the browser cache.
-    // Set to 0 (default) to disable caching secure files.
-    "MaxSecureFilesBrowserCacheDays": 0,
-    // The number of days a cached resized media item will be valid for, before being rebuilt on request.
-    "MaxCacheDays": 365,
-    // The maximum size of an uploaded file in bytes. 
-    // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
-    "MaxFileSize": 30000000,
-    // A CDN base url that will be prefixed to the request path when serving images.
-    "CdnBaseUrl": "https://your-cdn.com",
-    // The path used when serving media assets.
-    "AssetsRequestPath": "/media",
-    // The name of the folder used to store media assets inside the App_Data folder.
-    "AssetsPath": "Media",
-    // Whether to use a token in the query string to prevent disc filling.
-    "UseTokenizedQueryString": true,
-    // The list of file extensions that require the standard media upload permissions.
-    "AllowedFileExtensions": [
-      // Images
-      ".jpg",
-      ".jpeg",
-      ".png",
-      ".gif",
-      ".ico",
-      // Documents
-      ".pdf",
-      // Portable Document Format; Adobe Acrobat
-      ".doc",
-      // Microsoft Word Document
-      ".docx",
-      ".ppt",
-      // Microsoft PowerPoint Presentation
-      ".pptx",
-      ".pps",
-      ".ppsx",
-      ".odt",
-      // OpenDocument Text Document
-      ".xls",
-      // Microsoft Excel Document
-      ".xlsx",
-      ".psd",
-      // Adobe Photoshop Document
+  "OrchardCore": {
+    "Media": {
+      // The accepted sizes for custom width and height.
+      // When the 'UseTokenizedQueryString' is True (default) all sizes are valid.
+      "SupportedSizes": [
+        16,
+        32,
+        50,
+        100,
+        160,
+        240,
+        480,
+        600,
+        1024,
+        2048
+      ],
+      // The number of days to store images in the browser cache.
+      // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
+      "MaxBrowserCacheDays": 30,
+      // The number of days to store secure media files in the browser cache.
+      // Set to 0 (default) to disable caching secure files.
+      "MaxSecureFilesBrowserCacheDays": 0,
+      // The number of days a cached resized media item will be valid for, before being rebuilt on request.
+      "MaxCacheDays": 365,
+      // The maximum size of an uploaded file in bytes. 
+      // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
+      "MaxFileSize": 30000000,
+      // A CDN base url that will be prefixed to the request path when serving images.
+      "CdnBaseUrl": "https://your-cdn.com",
+      // The path used when serving media assets.
+      "AssetsRequestPath": "/media",
+      // The relative subdirectory used to store media assets inside the tenant's data directory.
+      "AssetsPath": "Media",
+      // Whether to use a token in the query string to prevent disc filling.
+      "UseTokenizedQueryString": true,
+      // The list of file extensions that require the standard media upload permissions.
+      "AllowedFileExtensions": [
+        // Images
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".ico",
+        // Documents
+        ".pdf",
+        // Portable Document Format; Adobe Acrobat
+        ".doc",
+        // Microsoft Word Document
+        ".docx",
+        ".ppt",
+        // Microsoft PowerPoint Presentation
+        ".pptx",
+        ".pps",
+        ".ppsx",
+        ".odt",
+        // OpenDocument Text Document
+        ".xls",
+        // Microsoft Excel Document
+        ".xlsx",
+        ".psd",
+        // Adobe Photoshop Document
 
-      // Audio
-      ".mp3",
-      ".m4a",
-      ".ogg",
-      ".wav",
-      // Video
-      ".mp4",
-      // MPEG-4
-      ".m4v",
-      ".mov",
-      // QuickTime
-      ".wmv",
-      // Windows Media Video
-      ".avi",
-      ".mpg",
-      ".ogv",
-      // Ogg
-      ".3gp",
-      // 3GPP
-      ".webm"
-    ],
-    // The list of file extensions that also require the UploadRestrictedMedia permission.
-    "RestrictedFileExtensions": [
-      ".css",
-      ".js",
-      ".svg"
-    ],
-    // The Content Security Policy to apply to assets served from the media library.
-    "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
-    // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
-    "MaxUploadChunkSize": 104857600,
-    // The lifetime of temporary files created during upload. Defaults to 1 hour.
-    "TemporaryFileLifetime": "01:00:00"
+        // Audio
+        ".mp3",
+        ".m4a",
+        ".ogg",
+        ".wav",
+        // Video
+        ".mp4",
+        // MPEG-4
+        ".m4v",
+        ".mov",
+        // QuickTime
+        ".wmv",
+        // Windows Media Video
+        ".avi",
+        ".mpg",
+        ".ogv",
+        // Ogg
+        ".3gp",
+        // 3GPP
+        ".webm"
+      ],
+      // The list of file extensions that also require the UploadRestrictedMedia permission.
+      "RestrictedFileExtensions": [
+        ".css",
+        ".js",
+        ".svg"
+      ],
+      // The Content Security Policy to apply to assets served from the media library.
+      "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
+      // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
+      "MaxUploadChunkSize": 104857600,
+      // The lifetime of temporary files created during upload. Defaults to 1 hour.
+      "TemporaryFileLifetime": "01:00:00",
+      // Disables the thumbnails (grid) view in the media gallery, e.g. for security or performance
+      // reasons. When enabled, the gallery always uses the list view and hides the grid/list toggle.
+      "DisableThumbnails": false
+    }
   }
 }
 ```
+
+`MaxFileSize` is the maximum size of an individual upload, in bytes. The admin media library
+and media field editors pass the tenant's configured value to the uploader, including galleries
+opened by media fields and HTML/Markdown editors. Files larger than a positive limit are rejected
+locally with a validation notification without starting an upload; files exactly at the limit
+pass this client-side size check. This applies to regular and resumable gallery uploads.
+Existing file-extension restrictions still apply, and server-side validation remains authoritative.
+
+For a standalone media gallery, set the optional numeric `maxFileSize` property in its
+`config.json` to the same byte limit as the tenant's `Media:MaxFileSize`, for example:
+
+```json
+{
+  "orchardBaseUrl": "https://cms.example.com/",
+  "maxFileSize": 30000000
+}
+```
+
+Keep this value aligned with the tenant configuration. An absent or nonpositive `maxFileSize`
+disables only the client-side size limit; it does not bypass server-side validation.
+
+### Media storage location
+
+`AssetsPath` is relative to the current tenant's data directory, which defaults to `App_Data/Sites/{tenant}`.
+The default value `Media` therefore stores files in `App_Data/Sites/{tenant}/Media`. Nested directories such as
+`Assets/Media` are supported, and both `/` and `\` can be used as separators.
+
+Absolute paths, drive prefixes (including drive-relative paths such as `C:Media`), empty paths or segments,
+and segments ending in a dot or space (including `.` and `..`) are rejected. A trailing directory separator is
+allowed. Invalid configuration fails Media options validation instead of exposing another tenant's data or
+the application directory through the media store or static file provider.
+
+To relocate tenant data to another volume, configure the host's application data location (for example, with
+the `ORCHARD_APP_DATA` environment variable) rather than using an absolute path or traversal in `AssetsPath`.
 
 ### Temporary upload storage location
 
@@ -431,6 +470,11 @@ Users need the existing media upload and folder permissions for all uploads. The
     Permission-gating risky or active file types is defense in depth, not file sanitization. Validate file contents separately, use a restrictive content security policy, and configure the web server and storage provider appropriately for the file types you accept.
 
 Recipe media imports are trusted system operations and do not use an ambient HTTP user. They may import extensions from either configured list, but extensions absent from both lists are rejected.
+The `TargetPath` (or its `Path` alias) must be a relative file path within the media store. Rooted paths,
+drive prefixes, empty segments, and segments ending in a dot or space (including `.` and `..`) are rejected
+before any source is read or file is overwritten. This applies equally to `Base64`, `SourcePath`, and `SourceUrl`
+imports. Valid imports can overwrite existing media files, but cannot target application assemblies or files
+outside the tenant's media directory.
 
 To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
 
@@ -444,14 +488,7 @@ On-demand image resizing is performed by a built-in middleware backed by an `IIm
 
 The image processing engine is a pluggable service contract (`IImageProcessingEngine`, defined in `OrchardCore.Media.Abstractions`). The middleware parses the validated request into an engine-agnostic `ImageProcessingCommands` instance and hands it to the registered engine, so engines never deal with query strings, tokens or cache keys.
 
-Two engines ship with Orchard Core:
-
-| Engine | Provided by | Backed by | Default |
-| --- | --- | --- | --- |
-| NetVips | `OrchardCore.Media` (built in) | [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library | Yes |
-| ImageSharp (v3) | `OrchardCore.Media.ImageSharpV3` feature | [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) `3.1.x` | No |
-
-The NetVips engine is registered by default. To use ImageSharp instead, enable the **Media ImageSharp Image Processing** feature (`OrchardCore.Media.ImageSharpV3`); it replaces the default engine registration. Only one engine should be enabled at a time.
+Orchard Core ships a single engine, backed by [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library. It is registered by default by the `OrchardCore.Media` module.
 
 To provide your own engine, implement `IImageProcessingEngine` and replace the registration after the `OrchardCore.Media` module's services are configured:
 
@@ -461,7 +498,7 @@ services.Replace(ServiceDescriptor.Singleton<IImageProcessingEngine, MyImageProc
 
 ### Supported output formats
 
-Both engines support resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
+The default engine supports resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
 
 !!! note
     The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.

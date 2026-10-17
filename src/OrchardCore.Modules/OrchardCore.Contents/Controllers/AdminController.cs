@@ -229,7 +229,7 @@ public sealed class AdminController : Controller, IUpdateModel
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
+        var pager = new Pager(pagerParameters, pagerOptions.Value);
 
         var itemsPerPage = pagerOptions.Value.MaxPagedCount > 0
             ? pagerOptions.Value.MaxPagedCount
@@ -242,28 +242,43 @@ public sealed class AdminController : Controller, IUpdateModel
             .Take(pager.PageSize)
             .ListAsync(_contentManager);
 
-        // We prepare the content items SummaryAdmin shape.
-        var contentItemSummaries = new List<dynamic>();
-        foreach (var contentItem in pageOfContentItems)
-        {
-            contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
-        }
-
         // Populate options pager summary values.
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + contentItemSummaries.Count - 1;
-        options.ContentItemsCount = contentItemSummaries.Count;
+        options.EndIndex = startIndex + pageOfContentItems.Count() - 1;
+        options.ContentItemsCount = pageOfContentItems.Count();
         options.TotalItemCount = itemsPerPage;
 
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the items with the configured layout (List, Grid, ...).
+        var list = new AdminListContext<ContentItem>
+        {
+            Source = pageOfContentItems,
+            Header = header,
+            Pager = pagerShape,
+        };
+
+        // What this listing is filtered by, so a column provider can decide on a column from it, e.g. add one
+        // that only makes sense for a content type or a stereotype.
+        if (contentTypeIds is { Length: > 0 })
+        {
+            list.Data[ContentsAdminList.ContentTypesKey] = contentTypeIds;
+        }
+
+        if (stereotypes is { Length: > 0 })
+        {
+            list.Data[ContentsAdminList.StereotypesKey] = stereotypes;
+        }
+
+
         var shapeViewModel = await shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
         {
-            viewModel.ContentItems = contentItemSummaries;
+            viewModel.ContentItems = pageOfContentItems.ToList();
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
+            viewModel.List = list;
         });
 
         if (TempData.TryGetValue(nameof(ModelState), out var modelStateJson) && modelStateJson is string)
@@ -734,7 +749,6 @@ public sealed class AdminController : Controller, IUpdateModel
         {
             await _notifier.ErrorAsync(H["The operation was canceled."]);
         }
-
 
         return Url.IsLocalUrl(returnUrl)
             ? this.LocalRedirect(returnUrl, true)

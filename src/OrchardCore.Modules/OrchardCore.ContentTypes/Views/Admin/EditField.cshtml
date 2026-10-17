@@ -9,6 +9,7 @@
 
 @inject IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject IDataLocalizer D
 
 @{
@@ -19,9 +20,26 @@
     var fieldContext = $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}";
     string localizedFieldName = D[Model.DisplayName, fieldContext];
     string localizedPartName = D[Model.PartFieldDefinition.PartDefinition.DisplayName(), "Content Types"];
+
+    // A part named after a content type holds that type's own fields, which are edited from the type editor, so the
+    // trail leads back through the type rather than through the list of parts.
+    var typeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.PartFieldDefinition.PartDefinition.Name);
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", localizedFieldName, localizedPartName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentPartsEditField" title="@T["\"{0}\" settings", localizedFieldName]">
+        @if (typeDefinition is not null)
+        {
+            <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+            <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@typeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", D[typeDefinition.DisplayName, "Content Types"]]</breadcrumb-item>
+        }
+        else
+        {
+            <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+            <breadcrumb-item id="ContentPart" action="EditPart" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.PartFieldDefinition.PartDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Part - {0}", localizedPartName]</breadcrumb-item>
+        }
+    </breadcrumb>
+</zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
@@ -109,64 +127,4 @@
     </div>
 </form>
 
-<script at="Foot">
-    //<![CDATA[
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll('.field-editor').forEach(function (element) {
-            element.style.display = 'none';
-        });
-        var fieldEditorContainer = document.getElementById('field-editor-container');
-        if (fieldEditorContainer) {
-            fieldEditorContainer.style.display = '';
-        }
-
-        var fieldEditorSelect = document.getElementById('field-editor-select');
-        if (fieldEditorSelect) {
-            document.querySelectorAll('.field-editor-' + fieldEditorSelect.value.toLowerCase()).forEach(function (element) {
-                element.style.display = '';
-            });
-
-            fieldEditorSelect.addEventListener('change', function () {
-                document.querySelectorAll('.field-editor').forEach(function (element) {
-                    element.style.display = 'none';
-                });
-                document.querySelectorAll('.field-editor-' + fieldEditorSelect.value.toLowerCase()).forEach(function (element) {
-                    element.style.display = '';
-                });
-            });
-        }
-
-        document.querySelectorAll('.field-display').forEach(function (element) {
-            element.style.display = 'none';
-        });
-        var fieldDisplayContainer = document.getElementById('field-display-container');
-        if (fieldDisplayContainer) {
-            fieldDisplayContainer.style.display = '';
-        }
-
-        var fieldDisplaySelect = document.getElementById('field-display-select');
-        if (fieldDisplaySelect) {
-            document.querySelectorAll('.field-display-' + fieldDisplaySelect.value.toLowerCase()).forEach(function (element) {
-                element.style.display = '';
-            });
-
-            fieldDisplaySelect.addEventListener('change', function () {
-                document.querySelectorAll('.field-display').forEach(function (element) {
-                    element.style.display = 'none';
-                });
-                document.querySelectorAll('.field-display-' + fieldDisplaySelect.value.toLowerCase()).forEach(function (element) {
-                    element.style.display = '';
-                });
-            });
-        }
-    });
-    //]]>
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/edit-field-selector.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/edit-field-selector.js" at="Foot" type="module"></script>

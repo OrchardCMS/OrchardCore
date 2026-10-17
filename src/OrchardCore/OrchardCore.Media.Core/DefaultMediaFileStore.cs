@@ -17,6 +17,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     private readonly string _cdnBaseUrl;
     private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
     private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
+    private readonly FileSizeHelper _fileSizeHelper;
     private readonly ILogger _logger;
 
     private bool _requestBasePathValidated;
@@ -27,6 +28,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         string cdnBaseUrl,
         IEnumerable<IMediaEventHandler> mediaEventHandlers,
         IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
+        FileSizeHelper fileSizeHelper,
         ILogger<DefaultMediaFileStore> logger)
     {
         _fileStore = fileStore;
@@ -38,6 +40,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         _cdnBaseUrl = cdnBaseUrl;
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
+        _fileSizeHelper = fileSizeHelper;
         _logger = logger;
     }
 
@@ -269,8 +272,8 @@ public class DefaultMediaFileStore : IMediaFileStore
             requiredStorageSpace > storageLimit)
         {
             throw new FileStoreException(
-                $"You tried to upload a file that requires {FileSizeHelpers.FormatAsBytes(requiredStorageSpace)} of " +
-                $"storage space, but only {FileSizeHelpers.FormatAsBytes(storageLimit)} is available. Try uploading " +
+                $"You tried to upload a file that requires {_fileSizeHelper.FormatSize(requiredStorageSpace)} of " +
+                $"storage space, but only {_fileSizeHelper.FormatSize(storageLimit)} is available. Try uploading " +
                 $"a file that fits the available space, or delete some unnecessary files.");
         }
     }

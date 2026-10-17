@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Logging;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Tests.Functional.Helpers;
@@ -52,7 +53,18 @@ public sealed class OrchardTestServer : IAsyncDisposable
         _logCollector = logCollector;
     }
 
-    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null)
+    /// <summary>
+    /// Starts an isolated CMS host, with optional fixture-specific configuration and services.
+    /// </summary>
+    /// <param name="contentRoot">The CMS application's content root.</param>
+    /// <param name="appDataPath">The fixture's application data directory.</param>
+    /// <param name="instanceId">The fixture's database isolation identifier.</param>
+    /// <param name="configure">Optional host customization applied before building the application.</param>
+    public static async Task<OrchardTestServer> StartCmsAsync(
+        string contentRoot,
+        string appDataPath,
+        string instanceId = null,
+        Action<WebApplicationBuilder> configure = null)
     {
         var loggerProvider = new FakeLoggerProvider();
 
@@ -70,8 +82,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // Serve test recipes from embedded resources instead of copying files.
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
+        builder.Services.AddSingleton<IModuleNamesProvider, TestThemeModuleNamesProvider>();
 
         ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        configure?.Invoke(builder);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -114,6 +128,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
         return new OrchardTestServer(app, address, loggerProvider.Collector);
     }
 
+    private sealed class TestThemeModuleNamesProvider : IModuleNamesProvider
+    {
+        public IEnumerable<string> GetModuleNames() => ["AdminThemeSample"];
+    }
+
     public void AssertNoLoggedIssues()
     {
         var issues = _logCollector.GetSnapshot()
@@ -140,7 +159,14 @@ public sealed class OrchardTestServer : IAsyncDisposable
         || (record.Category == "Microsoft.AspNetCore.Server.Kestrel"
             && record.Message.Contains("Connection processing ended abnormally"))
         || (record.Category == "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware"
-            && record.Exception?.ToString().Contains("Cannot create directory '_Users") == true);
+            && record.Exception?.ToString().Contains("Cannot create directory '_Users") == true)
+        // Fires exactly once, on the first request after a test enables
+        // OrchardCore.OpenId.Client, before that test's setup code gets a chance to save
+        // valid settings - inherent to exercising this feature at all in a test, not a
+        // product regression (OpenIdClientConfiguration's background settings-validity
+        // check runs independently of page navigation timing).
+        || (record.Category == "OrchardCore.OpenId.Configuration.OpenIdClientConfiguration"
+            && record.Message.Contains("The OpenID client settings are invalid"));
 
     public async ValueTask DisposeAsync()
     {
@@ -214,7 +240,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // Disable YesSql concurrency checks during setup. Each recipe step runs in a new
         // scope with a new session, but the document cache can serve stale versions, causing
         // ConcurrencyException on SiteSettings with external databases.
-        builder.Configuration["OrchardCore:OrchardCore_Documents:CheckConcurrency"] = "false";
+        builder.Configuration["OrchardCore:Documents:CheckConcurrency"] = "false";
 
         builder.Logging.AddFilter<FakeLoggerProvider>(level => level >= LogLevel.Warning);
         builder.Logging.AddProvider(loggerProvider);

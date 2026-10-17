@@ -8,6 +8,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
@@ -61,14 +63,16 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Shortcodes", "Shortcodes.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
         var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
         var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
@@ -105,6 +109,13 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<ShortcodeTemplateEntry>
+        {
+            Source = model.ShortcodeTemplates,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

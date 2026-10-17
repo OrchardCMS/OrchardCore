@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -149,6 +150,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
+        services.AddScoped<IAdminListItemDisplayManager<ContentItem>, ContentItemAdminListDisplayManager>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();
 
@@ -211,6 +213,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -305,6 +308,18 @@ public sealed class DataLocalizationStartup : StartupBase
     {
         services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
         services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
+    }
+}
+
+// ContentTypesAdminNodeDataLocalizationProvider depends on IAdminMenuAccessor, which is only
+// registered when OrchardCore.AdminMenu is enabled (see AdminMenu/Startup.cs) - without this
+// separate feature-gated registration, enabling OrchardCore.DataLocalization alone throws an
+// unresolved-service exception on every /Admin/DataLocalization/Index request.
+[RequireFeatures("OrchardCore.DataLocalization", "OrchardCore.AdminMenu")]
+public sealed class DataLocalizationAdminMenuStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddScoped<ILocalizationDataProvider, ContentTypesAdminNodeDataLocalizationProvider>();
     }
 }

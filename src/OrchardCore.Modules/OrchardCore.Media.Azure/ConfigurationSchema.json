@@ -1,0 +1,96 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Media": {
+          "type": "object",
+          "properties": {
+            "Azure": {
+              "type": "object",
+              "description": "Azure Blob Storage media settings, used by the 'OrchardCore.Media.Azure.Storage' feature to store media files in an Azure Blob Storage container. The feature is only active when both 'ConnectionString' and 'ContainerName' are set. See https://docs.orchardcore.net/en/latest/reference/modules/Media.Azure/.",
+              "properties": {
+                "ConnectionString": {
+                  "type": "string",
+                  "description": "The Azure Storage account connection string (required)."
+                },
+                "ContainerName": {
+                  "type": "string",
+                  "description": "The name of the Azure Blob container (required). Templatable with Liquid, e.g. '{{ ShellSettings.Name }}-media' for a container per tenant. The resulting name is lowercased and must be a valid Azure container name."
+                },
+                "BasePath": {
+                  "type": "string",
+                  "description": "An optional path to store the media files in a subdirectory inside the container. Templatable with Liquid, e.g. '{{ ShellSettings.Name }}/Media' for a single container with a base folder per tenant.",
+                  "default": ""
+                },
+                "CreateContainer": {
+                  "type": "boolean",
+                  "description": "Whether the container is created if it does not already exist when the tenant is activated. Set to false to skip this check when the container already exists.",
+                  "default": true
+                },
+                "RemoveContainer": {
+                  "type": "boolean",
+                  "description": "Whether the container is deleted when the tenant is removed.",
+                  "default": false
+                },
+                "RemoveFilesFromBasePath": {
+                  "type": "boolean",
+                  "description": "Whether only the files under 'BasePath' are deleted, instead of the whole container, when the tenant is removed.",
+                  "default": false
+                },
+                "UseHierarchicalNamespace": {
+                  "type": "boolean",
+                  "description": "Overrides the auto-detection of Hierarchical Namespace (HNS / ADLS Gen2) support. Leave unset to auto-detect. Set to true for a Gen2 account or false for a Gen1 account when the detection is unavailable, such as when connecting with a container-scoped SAS token."
+                },
+                "ImageCache": {
+                  "type": "object",
+                  "description": "Azure Blob Storage resized image cache settings, used by the 'OrchardCore.Media.Azure.ImageCache' feature to store the cached resized images in an Azure Blob Storage container instead of the local file system. The feature is only active when both 'ConnectionString' and 'ContainerName' are set. See https://docs.orchardcore.net/en/latest/reference/modules/Media.Azure/.",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "The Azure Storage account connection string (required)."
+                    },
+                    "ContainerName": {
+                      "type": "string",
+                      "description": "The name of the Azure Blob container storing the resized images (required). Templatable with Liquid, e.g. '{{ ShellSettings.Name }}-imagecache' for a container per tenant. The resulting name is lowercased and must be a valid Azure container name."
+                    },
+                    "BasePath": {
+                      "type": "string",
+                      "description": "An optional path to store the resized images in a subdirectory inside the container. Templatable with Liquid, e.g. '{{ ShellSettings.Name }}/ImageCache'.",
+                      "default": ""
+                    },
+                    "CreateContainer": {
+                      "type": "boolean",
+                      "description": "Whether the container is created if it does not already exist when the tenant is activated.",
+                      "default": true
+                    },
+                    "RemoveContainer": {
+                      "type": "boolean",
+                      "description": "Whether the container is deleted when the tenant is removed. Cache files are only removed when using a separate container per tenant.",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Media_Azure": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Media_Azure' section is deprecated. Use 'OrchardCore:Media:Azure' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Media:Azure' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Media_Azure_ImageSharp_Cache": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Media_Azure_ImageSharp_Cache' section is deprecated. Use 'OrchardCore:Media:Azure:ImageCache' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Media:Azure:ImageCache' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

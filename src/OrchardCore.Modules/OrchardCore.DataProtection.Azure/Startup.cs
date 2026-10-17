@@ -27,13 +27,15 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var connectionString = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:ConnectionString");
+        // The 'OrchardCore_DataProtection_Azure' section is deprecated and will be removed in a future major version, use 'DataProtection:Azure' instead.
+        var connectionString = _configuration.GetSectionCompat("DataProtection:Azure", "OrchardCore_DataProtection_Azure")
+            .GetValue<string>("ConnectionString");
 
         if (!string.IsNullOrWhiteSpace(connectionString))
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("OrchardCore_DataProtection_Azure:ConnectionString was found. Adding 'OrchardCore.DataProtection.Azure' feature services.");
+                _logger.LogDebug("OrchardCore:DataProtection:Azure:ConnectionString was found. Adding 'OrchardCore.DataProtection.Azure' feature services.");
             }
 
             // Remove any previously registered options setups.
@@ -64,7 +66,7 @@ public sealed class Startup : StartupBase
         }
         else
         {
-            _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `OrchardCore:OrchardCore_DataProtection_Azure:ConnectionString`.");
+            _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `OrchardCore:DataProtection:Azure:ConnectionString`.");
         }
     }
 }

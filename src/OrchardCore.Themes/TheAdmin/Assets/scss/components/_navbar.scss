@@ -21,7 +21,7 @@
         margin-top: 1rem;
     }
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
         .brand-wrapper-title {
             display: block;
             position: absolute;
@@ -46,14 +46,46 @@
     }
 }
 
-.left-sidebar-compact .ta-navbar-top {
-    .brand-wrapper-title {
-        left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-    }
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact .ta-navbar-top {
+        .brand-wrapper-title {
+            left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+        }
 
-    [dir="rtl"] & .brand-wrapper-title {
-        right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-        left: auto;
+        [dir="rtl"] & .brand-wrapper-title {
+            right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+            left: auto;
+        }
+    }
+}
+
+// Shows or hides the off canvas menu, only rendered on small screens where
+// the menu would otherwise eat most of the available width.
+.ta-sidebar-toggler {
+    display: none;
+    width: 40px;
+    height: 40px;
+    margin-right: 0.25rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--bs-border-radius);
+    background-color: transparent;
+    color: inherit;
+    font-size: 1.125rem;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--oc-admin-menu-item-hover-bg-color);
+        color: var(--oc-admin-menu-font-color-hover);
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .ta-sidebar-toggler {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
@@ -78,9 +110,11 @@
 
 // When left-sidebar is compact nav brand is compacted too.
 // It displays logo only, not text.
-.left-sidebar-compact .ta-navbar-brand {
-    span {
-        display: none;
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact .ta-navbar-brand {
+        span {
+            display: none;
+        }
     }
 }
 

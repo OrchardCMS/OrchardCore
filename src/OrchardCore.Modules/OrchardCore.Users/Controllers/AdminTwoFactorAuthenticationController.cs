@@ -22,6 +22,7 @@ public sealed class AdminTwoFactorAuthenticationController : Controller
         _authorizationService = authorizationService;
     }
 
+    [HttpPost]
     public async Task<IActionResult> Disable(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.DisableTwoFactorAuthenticationForUsers))

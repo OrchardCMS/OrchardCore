@@ -2,6 +2,29 @@
 
 This module provides Content Management services.
 
+## Content Quick Navigation
+
+Enable **Content Quick Navigation** (`OrchardCore.Contents.QuickNavigation`) from **Configuration → Features** to add recently updated content items to the [admin quick navigation palette](../Admin/README.md#quick-navigation). This feature is opt-in and depends on `OrchardCore.Contents` and `OrchardCore.Admin`.
+
+The `ContentItemNavigationSource` contributes the **50 most recently updated content items** by default. Each destination uses the item's full display text and opens its **Edit** view. Only items that the current user can edit are displayed, using the same content-item authorization as the edit page.
+
+Configure **Recent content items in quick navigation** under **Configuration → Settings → Admin**. The count must be at least 1 and defaults to 50. This field appears only while the feature is enabled and requires the **Manage Admin Settings** permission. Quick navigation itself must also be enabled in the Admin settings.
+
+The source queries the latest content item versions, ordered by `ModifiedUtc` descending and then by content item ID for consistent ordering. This includes drafts and unpublished items, but not removed items or older versions. The limit is applied before filtering out items the user cannot edit or whose display text is empty, so fewer destinations may be displayed. Content translations remain separate content items with their own display text; the **Content** breadcrumb is localized for the current UI culture.
+
+The source queries recent items and refreshes its contribution on each palette load rather than caching content objects or rendered results. Updates, removals, permission changes, and count changes are reflected on the next palette open. The JSON response is not cached by the browser, and the source performs no queries when the feature is disabled.
+
+The count can also be configured through a `settings` recipe step:
+
+```json
+{
+  "name": "settings",
+  "ContentQuickNavigationSettings": {
+    "MaxItems": 50
+  }
+}
+```
+
 ## Content Life Cycle
 
 The content life cycle is managed through different content item versions. In Orchard Core, the content item could be:

@@ -1,0 +1,17 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Placements.Models
+
+@model ShapeViewModel<ShapePlacement>
+
+<a asp-action="Edit"
+   asp-controller="Admin"
+   asp-route-shapeType="@Model.Value.ShapeType"
+   asp-route-returnUrl="@FullRequestPath"
+   class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-action="Delete"
+   asp-controller="Admin"
+   asp-route-shapeType="@Model.Value.ShapeType"
+   asp-route-returnUrl="@FullRequestPath"
+   class="btn btn-danger btn-sm"
+   data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

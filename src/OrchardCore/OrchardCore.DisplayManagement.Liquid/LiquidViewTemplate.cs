@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Encodings.Web;
 using Fluid;
@@ -27,22 +28,39 @@ internal static class LiquidViewTemplate
     public const string ViewExtension = ".liquid";
     private static readonly MemoryCache s_cache = new(new MemoryCacheOptions());
 
+    // Maps the paths of the Razor pages to the paths of their Liquid templates, to not allocate them on each rendering.
+    private static readonly ConcurrentDictionary<string, string> s_templatePaths = new(StringComparer.Ordinal);
+
     internal static Task RenderAsync(RazorPage<dynamic> page)
     {
         var services = page.Context.RequestServices;
-        var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
+        var path = s_templatePaths.GetOrAdd(page.ViewContext.ExecutingFilePath, static path => Path.ChangeExtension(path, ViewExtension));
 
-        var templateTask = ParseAsync(path, services, s_cache);
+        var templateTask = GetTemplateAsync(path, services);
 
         return !templateTask.IsCompletedSuccessfully
             ? Awaited(templateTask, page, services)
             : RenderAsyncCore(page, services, templateTask.Result);
 
-        static async Task Awaited(Task<IFluidTemplate> templateTask, RazorPage<dynamic> page, IServiceProvider services)
+        static async Task Awaited(ValueTask<IFluidTemplate> templateTask, RazorPage<dynamic> page, IServiceProvider services)
         {
             var template = await templateTask;
             await RenderAsyncCore(page, services, template);
         }
+    }
+
+    /// <summary>
+    /// Gets the parsed Liquid template of a given file path.
+    /// </summary>
+    internal static ValueTask<IFluidTemplate> GetTemplateAsync(string path, IServiceProvider services)
+    {
+        // Fast path when the template is already parsed, to not allocate the closure and the task of 'GetOrCreateAsync()'.
+        if (s_cache.TryGetValue(path, out IFluidTemplate cachedTemplate))
+        {
+            return ValueTask.FromResult(cachedTemplate);
+        }
+
+        return new ValueTask<IFluidTemplate>(ParseAsync(path, services, s_cache));
     }
 
     private static async Task RenderAsyncCore(RazorPage<dynamic> page, IServiceProvider services, IFluidTemplate template)
@@ -55,21 +73,16 @@ internal static class LiquidViewTemplate
         var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
         ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
 
-        try
+        await context.InvokeInScopeAsync(page.ViewContext, (object)page.Model, static async state =>
         {
-            await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-            await template.RenderAsync(content, htmlEncoder, context);
+            await state.Template.RenderAsync(state.Content, state.HtmlEncoder, state.Context);
 
             // Use ViewBufferTextWriter.Write(object) from ASP.NET directly since it will use a special code path
             // for IHtmlContent. This prevent the TextWriter methods from copying the content from our buffer
             // if we did content.WriteTo(page.Output)
 
-            page.Output.Write(content);
-        }
-        finally
-        {
-            context.ReleaseScope();
-        }
+            state.Page.Output.Write(state.Content);
+        }, (Template: template, Content: content, HtmlEncoder: htmlEncoder, Context: context, Page: page));
     }
 
     private static Task<IFluidTemplate> ParseAsync(string path, IServiceProvider services, IMemoryCache cache)
@@ -112,15 +125,7 @@ public static class LiquidViewTemplateExtensions
 
         viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context);
 
-        try
-        {
-            await context.EnterScopeAsync(viewContext, model);
-            return await template.RenderAsync(context, encoder);
-        }
-        finally
-        {
-            context.ReleaseScope();
-        }
+        return await context.InvokeInScopeAsync(viewContext, model, async () => await template.RenderAsync(context, encoder));
     }
 
     public static async Task RenderAsync(this IFluidTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model)
@@ -130,10 +135,81 @@ public static class LiquidViewTemplateExtensions
 
         viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context);
 
+        await context.InvokeInScopeAsync(viewContext, model, static state => state.Template.RenderAsync(state.Writer, state.Encoder, state.Context), (Template: template, Writer: writer, Encoder: encoder, Context: context));
+    }
+
+    /// <summary>
+    /// Runs a callback inside a Liquid view scope with the supplied model and view localizer.
+    /// If <paramref name="viewContext"/> is <see langword="null"/>, initializes the context without entering a view scope.
+    /// </summary>
+    /// <typeparam name="TResult">The callback result type.</typeparam>
+    /// <param name="context">The Liquid template context.</param>
+    /// <param name="viewContext">The view context to use, or <see langword="null"/> to run without a view scope.</param>
+    /// <param name="model">The model to expose to the template.</param>
+    /// <param name="callback">The callback to run after initialization.</param>
+    /// <returns>The callback result.</returns>
+    public static async Task<TResult> InvokeInScopeAsync<TResult>(this LiquidTemplateContext context, ViewContext viewContext, object model, Func<Task<TResult>> callback)
+    {
+        await context.InitializeAsync(viewContext);
+
+        if (viewContext == null)
+        {
+            return await callback();
+        }
+
         try
         {
             await context.EnterScopeAsync(viewContext, model);
-            await template.RenderAsync(writer, encoder, context);
+            return await callback();
+        }
+        finally
+        {
+            context.ReleaseScope();
+        }
+    }
+
+    /// <summary>
+    /// Runs a callback inside a Liquid view scope with the supplied model and view localizer.
+    /// If <paramref name="viewContext"/> is <see langword="null"/>, initializes the context without entering a view scope.
+    /// </summary>
+    /// <param name="context">The Liquid template context.</param>
+    /// <param name="viewContext">The view context to use, or <see langword="null"/> to run without a view scope.</param>
+    /// <param name="model">The model to expose to the template.</param>
+    /// <param name="callback">The callback to run after initialization.</param>
+    /// <returns>A task representing the callback execution.</returns>
+    public static Task InvokeInScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model, Func<Task> callback)
+        => context.InvokeInScopeAsync(viewContext, model, async () =>
+        {
+            await callback();
+            return true;
+        });
+
+    /// <summary>
+    /// Runs a callback inside a Liquid view scope with the supplied model and view localizer, passing it a state
+    /// so that the callback doesn't need to capture a closure.
+    /// If <paramref name="viewContext"/> is <see langword="null"/>, initializes the context without entering a view scope.
+    /// </summary>
+    /// <typeparam name="TState">The type of the state passed to the callback.</typeparam>
+    /// <param name="context">The Liquid template context.</param>
+    /// <param name="viewContext">The view context to use, or <see langword="null"/> to run without a view scope.</param>
+    /// <param name="model">The model to expose to the template.</param>
+    /// <param name="callback">The callback to run after initialization.</param>
+    /// <param name="state">The state passed to the callback.</param>
+    /// <returns>A task representing the callback execution.</returns>
+    public static async ValueTask InvokeInScopeAsync<TState>(this LiquidTemplateContext context, ViewContext viewContext, object model, Func<TState, ValueTask> callback, TState state)
+    {
+        await context.InitializeAsync(viewContext);
+
+        if (viewContext == null)
+        {
+            await callback(state);
+            return;
+        }
+
+        try
+        {
+            await context.EnterScopeAsync(viewContext, model);
+            await callback(state);
         }
         finally
         {
@@ -226,14 +302,8 @@ public static class LiquidTemplateContextExtensions
 
         context.EnterChildScope();
 
-        var viewLocalizer = context.Services.GetRequiredService<IViewLocalizer>();
-
-        if (viewLocalizer is IViewContextAware contextable)
-        {
-            contextable.Contextualize(viewContext);
-        }
-
-        context.SetValue("ViewLocalizer", new ObjectValue(viewLocalizer));
+        // The view localizer is only resolved and contextualized if the template localizes something.
+        context.SetValue("ViewLocalizer", new ObjectValue(new LazyViewLocalizer(context.Services, viewContext)));
 
         if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
         {

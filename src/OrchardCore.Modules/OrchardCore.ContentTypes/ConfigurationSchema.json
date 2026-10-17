@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "ContentTypes": {
+          "type": "object",
+          "description": "Configures the default values applied to the content types created from the Content Types admin. The values can also be defined per tenant under 'OrchardCore:{TenantName}:ContentTypes'. See https://docs.orchardcore.net/en/latest/reference/modules/ContentTypes/.",
+          "properties": {
+            "DefaultCategory": {
+              "type": "string",
+              "description": "The category assigned to newly created content types, e.g. 'Widgets'."
+            },
+            "DefaultThumbnailPath": {
+              "type": "string",
+              "description": "The path of the thumbnail image assigned to newly created content types, e.g. '/media/thumbnails/default.png'. When empty, '~/OrchardCore.ContentTypes/placeholder.png' is used.",
+              "default": "~/OrchardCore.ContentTypes/placeholder.png"
+            }
+          }
+        },
+        "OrchardCore_ContentTypes": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_ContentTypes' section is deprecated. Use 'OrchardCore:ContentTypes' instead.",
+          "description": "Deprecated. Use 'OrchardCore:ContentTypes' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}
