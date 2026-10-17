@@ -7,9 +7,10 @@ namespace OrchardCore.DataSources;
 /// it, implement <see cref="IDataSource"/> with the static <c>Name</c>, <c>DisplayName</c> and <c>Description</c> of
 /// the data source, list its data sets, each a <see cref="RecordDataSet{TRecord}"/>, and register it with
 /// <c>services.AddDataSource&lt;TDataSource&gt;()</c>. It lists, describes and reads only the data sets the user may
-/// read.
+/// read. A data set that can group and aggregate its records itself, such as with a <c>GROUP BY</c> on an index,
+/// implements <see cref="IAggregateRecordDataSet"/>.
 /// </summary>
-public abstract class RecordDataSource
+public abstract class RecordDataSource : IDataAggregateSource
 {
     /// <summary>
     /// Gets the data sets of the source.
@@ -64,6 +65,19 @@ public abstract class RecordDataSource
         }
     }
 
+    public async Task<IReadOnlyList<object[]>> AggregateAsync(DataAggregateQuery query, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+
+        if (Find(query.DataSet) is not IAggregateRecordDataSet set ||
+            !await set.CanReadAsync(query.Context ?? new DataSourceContext(), cancellationToken))
+        {
+            return null;
+        }
+
+        return await set.AggregateAsync(query, cancellationToken);
+    }
+
     private IRecordDataSet Find(string name)
     {
         return string.IsNullOrEmpty(name)
@@ -102,6 +116,22 @@ public interface IRecordDataSet
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>The batches of rows.</returns>
     IAsyncEnumerable<DataBatch> ReadAsync(DataSourceQuery query, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// A data set of a <see cref="RecordDataSource"/> that can group and aggregate its records itself, such as with a
+/// <c>GROUP BY</c> on the index it reads. See <see cref="IDataAggregateSource"/>.
+/// </summary>
+public interface IAggregateRecordDataSet : IRecordDataSet
+{
+    /// <summary>
+    /// Groups the records and aggregates their values. The user was checked before.
+    /// </summary>
+    /// <param name="query">The groups, the measures and the conditions.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>The groups, or <see langword="null"/> when the data set can't answer the query exactly. See
+    /// <see cref="IDataAggregateSource.AggregateAsync"/>.</returns>
+    Task<IReadOnlyList<object[]>> AggregateAsync(DataAggregateQuery query, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

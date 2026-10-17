@@ -202,6 +202,55 @@ public sealed class RecordDataSourceTests
         Assert.NotSame(field.References, copy.References);
     }
 
+    [Fact]
+    public async Task AggregateAsync_DataSetThatAggregates_ReturnsItsGroups()
+    {
+        // Arrange
+        var query = new DataAggregateQuery
+        {
+            DataSet = "IndexedTickets",
+            Groups = [new DataAggregateGroup { Field = "State" }],
+            Measures = [new DataAggregateMeasure { Function = DataAggregate.Count }],
+            Context = Context(canRead: true),
+        };
+
+        // Act
+        var groups = await new TicketsSource().AggregateAsync(query, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal([["Open", 2L], ["Closed", 1L]], groups);
+    }
+
+    [Fact]
+    public async Task AggregateAsync_DataSetThatDoesNotAggregate_ReturnsNull()
+    {
+        // Arrange
+        var query = new DataAggregateQuery
+        {
+            DataSet = "Tickets",
+            Measures = [new DataAggregateMeasure { Function = DataAggregate.Count }],
+            Context = Context(canRead: true),
+        };
+
+        // Act & Assert
+        Assert.Null(await new TicketsSource().AggregateAsync(query, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task AggregateAsync_UserWhoCannotRead_ReturnsNull()
+    {
+        // Arrange
+        var query = new DataAggregateQuery
+        {
+            DataSet = "IndexedTickets",
+            Measures = [new DataAggregateMeasure { Function = DataAggregate.Count }],
+            Context = Context(canRead: false),
+        };
+
+        // Act & Assert
+        Assert.Null(await new TicketsSource().AggregateAsync(query, TestContext.Current.CancellationToken));
+    }
+
     private static DataSourceContext Context(bool canRead)
     {
         var context = new DataSourceContext();
@@ -226,13 +275,18 @@ public sealed class RecordDataSourceTests
 
         public static LocalizationSource Description { get; } = new("Tickets");
 
-        protected override IEnumerable<IRecordDataSet> DataSets { get; } = [new TicketsDataSet()];
+        protected override IEnumerable<IRecordDataSet> DataSets { get; } = [new TicketsDataSet(), new IndexedTicketsDataSet()];
     }
 
-    private sealed class TicketsDataSet : RecordDataSet<Ticket>
+    private class TicketsDataSet : RecordDataSet<Ticket>
     {
         public TicketsDataSet()
-            : base(new DataSetDescriptor("Tickets", "Tickets"))
+            : this("Tickets")
+        {
+        }
+
+        protected TicketsDataSet(string name)
+            : base(new DataSetDescriptor(name, name))
         {
             AddField("Id", "Ticket", DataFieldType.Text, ticket => ticket.Id).IsKeyFilterable = true;
             AddField("State", "State", DataFieldType.Text, ticket => ticket.State);
@@ -255,6 +309,28 @@ public sealed class RecordDataSourceTests
 
                 yield return ticket;
             }
+        }
+    }
+
+    // Counts the tickets of each state itself, the way a data set over an index would with a GROUP BY.
+    private sealed class IndexedTicketsDataSet : TicketsDataSet, IAggregateRecordDataSet
+    {
+        public IndexedTicketsDataSet()
+            : base("IndexedTickets")
+        {
+        }
+
+        public Task<IReadOnlyList<object[]>> AggregateAsync(DataAggregateQuery query, CancellationToken cancellationToken = default)
+        {
+            if (query.Groups is not [{ Field: "State", Boundaries: null }] || query.Measures is not [{ Function: DataAggregate.Count, Field: null }])
+            {
+                return Task.FromResult<IReadOnlyList<object[]>>(null);
+            }
+
+            return Task.FromResult<IReadOnlyList<object[]>>(_tickets
+                .GroupBy(ticket => ticket.State)
+                .Select(group => new object[] { group.Key.ToString(), (long)group.Count() })
+                .ToList());
         }
     }
 }
