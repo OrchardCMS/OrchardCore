@@ -147,6 +147,9 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
 
         await bulkActions.ClickAsync();
         await page.Locator("#actions .dropdown-item").Filter(new LocatorFilterOptions { HasText = "Run now" }).ClickAsync();
+
+        // The bulk actions of an admin list are confirmed in TheAdmin's modal dialog.
+        await page.Locator("#modalOkButton").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
         await Assertions.Expect(page.Locator(".message-success")).ToHaveCountAsync(2);
@@ -165,11 +168,12 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
     private static string ToText(int value) => value.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>
-    /// Clicks the run now action of the actions dropdown of a task.
+    /// Clicks the run now action of the actions dropdown of a task: the one of its row in the admin list, or the
+    /// one of its details page.
     /// </summary>
     private static async Task RunNowAsync(IPage page, ILocator task)
     {
-        await task.Locator("[data-task-actions]").ClickAsync();
+        await task.Locator(".admin-list-actions [data-bs-toggle='dropdown'], [data-task-actions]").First.ClickAsync();
         await task.Locator("a[data-run-task]").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }

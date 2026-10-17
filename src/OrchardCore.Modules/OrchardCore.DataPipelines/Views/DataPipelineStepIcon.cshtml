@@ -1,0 +1,12 @@
+@{
+    // The icon of a step type without its own template, DataPipelineStepIcon-{StepName}.cshtml: the one of its category.
+    var category = Model.Category is DataPipelineStepCategory value ? value : DataPipelineStepCategory.Transform;
+    var icon = category switch
+    {
+        DataPipelineStepCategory.Source => "fa-solid fa-database",
+        DataPipelineStepCategory.File => "fa-solid fa-file-lines",
+        DataPipelineStepCategory.Destination => "fa-solid fa-paper-plane",
+        _ => "fa-solid fa-shuffle",
+    };
+}
+<i class="@icon" aria-hidden="true"></i>

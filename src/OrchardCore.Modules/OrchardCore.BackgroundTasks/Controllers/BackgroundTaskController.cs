@@ -9,6 +9,8 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
@@ -61,7 +63,9 @@ public sealed class BackgroundTaskController : Controller
     }
 
     [Admin("BackgroundTasks", "BackgroundTasks")]
-    public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        AdminIndexOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
         {
@@ -89,6 +93,7 @@ public sealed class BackgroundTaskController : Controller
                 Description = settings.Description,
                 Enable = settings.Enable,
                 Schedule = settings.Schedule,
+                IsMonitored = _backgroundTaskMonitor is not null,
                 State = state,
             };
         });
@@ -162,6 +167,20 @@ public sealed class BackgroundTaskController : Controller
             Pager = pagerShape,
             Options = options,
             IsMonitored = _backgroundTaskMonitor is not null,
+        };
+
+        // The status filter renders at the end of the toolbar, next to the bulk actions.
+        var filters = await _shapeFactory.CreateAsync("BackgroundTasksFilters", Arguments.From(new
+        {
+            Options = options,
+        }));
+
+        // The AdminList shape renders the tasks with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<BackgroundTaskEntry>
+        {
+            Source = model.Tasks,
+            ToolbarActions = filters,
+            Pager = model.Pager,
         };
 
         return View(model);

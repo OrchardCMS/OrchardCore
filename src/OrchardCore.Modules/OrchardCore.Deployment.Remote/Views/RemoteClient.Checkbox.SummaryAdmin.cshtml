@@ -1,0 +1,9 @@
+@using OrchardCore.Deployment.Remote.Models
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<RemoteClient>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" value="@Model.Value.Id" name="itemIds" id="itemIds-@Model.Value.Id">
+    <label class="form-check-label" for="itemIds-@Model.Value.Id">&nbsp;</label>
+</div>

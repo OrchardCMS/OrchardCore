@@ -53,11 +53,18 @@ public sealed class OrchardTestServer : IAsyncDisposable
         _logCollector = logCollector;
     }
 
+    /// <summary>
+    /// Starts an isolated CMS host, with optional fixture-specific configuration and services.
+    /// </summary>
+    /// <param name="contentRoot">The CMS application's content root.</param>
+    /// <param name="appDataPath">The fixture's application data directory.</param>
+    /// <param name="instanceId">The fixture's database isolation identifier.</param>
+    /// <param name="configure">Optional host customization applied before building the application.</param>
     public static async Task<OrchardTestServer> StartCmsAsync(
         string contentRoot,
         string appDataPath,
         string instanceId = null,
-        Action<OrchardCoreBuilder> configureOrchardCore = null)
+        Action<WebApplicationBuilder> configure = null)
     {
         var loggerProvider = new FakeLoggerProvider();
 
@@ -69,17 +76,16 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Host.UseNLogHost();
 
-        var orchardCoreBuilder = builder.Services
+        builder.Services
             .AddOrchardCms()
             .AddSetupFeatures("OrchardCore.AutoSetup");
-
-        configureOrchardCore?.Invoke(orchardCoreBuilder);
 
         // Serve test recipes from embedded resources instead of copying files.
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
         builder.Services.AddSingleton<IModuleNamesProvider, TestThemeModuleNamesProvider>();
 
         ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        configure?.Invoke(builder);
 
         var app = builder.Build();
         app.UseStaticFiles();

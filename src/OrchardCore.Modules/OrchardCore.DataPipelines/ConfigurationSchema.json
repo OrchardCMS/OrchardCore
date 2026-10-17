@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "DataPipelines": {
+          "type": "object",
+          "description": "The limits of data pipelines, used by the 'OrchardCore.DataPipelines' feature. Can be set for all tenants or per tenant. See https://docs.orchardcore.net/en/latest/reference/modules/DataPipelines/.",
+          "properties": {
+            "StepMemoryLimitMegabytes": {
+              "type": "integer",
+              "description": "The memory, in megabytes, a step that must see many rows at once may use, such as a sort, the right input of a join, the groups of a summary, or the keys of a deduplication. The rows that don't fit are written to temporary files of the run.",
+              "minimum": 1,
+              "default": 32
+            },
+            "MaxConcurrentRuns": {
+              "type": "integer",
+              "description": "The number of runs of a tenant that execute at the same time. The other runs wait, queued, for one to end.",
+              "minimum": 1,
+              "default": 4
+            },
+            "RunRetentionDays": {
+              "type": "integer",
+              "description": "The number of days the runs of a pipeline are kept; older runs are deleted. 0 keeps them.",
+              "minimum": 0,
+              "default": 30
+            },
+            "PreviewRowLimit": {
+              "type": "integer",
+              "description": "The number of rows each source reads when a step is previewed in the designer.",
+              "minimum": 1,
+              "default": 100
+            }
+          }
+        }
+      }
+    }
+  }
+}

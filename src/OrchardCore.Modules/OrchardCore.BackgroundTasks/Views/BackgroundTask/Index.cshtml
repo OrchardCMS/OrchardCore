@@ -1,26 +1,26 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
 @model BackgroundTaskIndexViewModel
 
 <zone Name="Title">
     <breadcrumb name="BackgroundTasks" title="@T["Background Tasks"]" />
 </zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="taskNames" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]" data-background-task-states-url="@Url.Action("States")">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
-
-            <div class="row gx-3">
+            <div class="row gx-2">
                 <div class="col">
-                    <div class="has-search">
-                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <div class="input-group">
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -31,160 +31,26 @@
         </div>
     }
 
-    <ul class="list-group with-checkbox" data-background-task-states-url="@Url.Action("States")">
-        <li class="list-group-item text-bg-theme">
-            <div class="row gx-3 align-items-center">
-                <div class="col">
-                    @if (Model.Tasks.Count > 0)
-                    {
-                        <div class="form-check my-1">
-                            <input type="checkbox" class="form-check-input" id="select-all">
-                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T["{0} tasks", Model.Tasks.Count]</label>
-                            <label id="selected-items" class="text-muted" for="select-all"></label>
-                        </div>
-                    }
-                </div>
-                <div class="col-auto">
-                    <div class="dropdown d-none" id="actions">
-                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Actions"]
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            @foreach (var action in Model.Options.BulkActions)
-                            {
-                                <li><a class="dropdown-item" href="javascript:void(0)" data-action="@action.Value">@action.Text</a></li>
-                            }
-                        </ul>
-                    </div>
-                    <div class="btn-group filter">
-                        <select asp-for="Options.Status" asp-items="@Model.Options.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm"></select>
-                    </div>
-                </div>
-            </div>
-        </li>
-        @if (Model.Tasks.Count > 0)
-        {
-            foreach (var task in Model.Tasks)
+    @* The tasks, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+    <admin-list name="BackgroundTasks" context="Model.List"
+                bulk-actions="Model.Options.BulkActions"
+                empty-message="@T["<strong>Nothing here!</strong> There are no background tasks for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column type="Select" />
+            <admin-list-column name="Title" position="20" title="@T["Title"]" />
+            <admin-list-column name="Status" position="30" title="@T["Status"]" width="auto" />
+            @if (Model.IsMonitored)
             {
-                var checkboxId = Html.GenerateIdFromName(task.Name);
-                var state = task.State;
-
-                <li class="list-group-item" data-task-name="@task.Name" data-task-status="@state?.Status" data-task-run-count="@state?.RunCount">
-                    <div class="d-flex align-items-start">
-                        <div class="form-check pe-2">
-                            <input type="checkbox" class="form-check-input" name="taskNames" value="@task.Name" id="@checkboxId">
-                            <label class="form-check-label" for="@checkboxId">&nbsp;</label>
-                        </div>
-                        <div class="flex-grow-1 d-flex flex-column flex-md-row align-items-md-center gap-2" style="min-width: 0">
-                            <div class="flex-grow-1" style="min-width: 0">
-                                <div class="d-flex flex-wrap align-items-center gap-1">
-                                    <span class="text-primary me-1"><i class="fa-solid fa-gear" aria-hidden="true"></i> <a asp-action="Details" asp-route-name="@task.Name">@task.Title</a></span>
-                                    <partial name="_BackgroundTaskStatus" model="state" />
-                                    @if (!task.Enable)
-                                    {
-                                        <span class="badge text-bg-secondary">@T["Disabled"]</span>
-                                    }
-
-                                    @if (Model.IsMonitored)
-                                    {
-                                        if (state is null)
-                                        {
-                                            <span class="badge ta-badge fw-normal">@T["Waiting for the background service to load this task"]</span>
-                                        }
-                                        else
-                                        {
-                                            var lastRun = state.LastRun;
-                                            if (lastRun is null)
-                                            {
-                                                <span class="badge ta-badge fw-normal" data-last-run>
-                                                    <i class="fa-solid fa-circle-minus text-secondary" aria-hidden="true"></i>
-                                                    <span class="fw-bold">@T["Last run"]</span> @T["never"]
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                var (lastRunClasses, lastRunIcon) = lastRun.Result switch
-                                                {
-                                                    BackgroundTaskRunResult.Succeeded => ("text-success-emphasis bg-success-subtle border border-success-subtle", "fa-circle-check"),
-                                                    BackgroundTaskRunResult.Failed => ("text-danger-emphasis bg-danger-subtle border border-danger-subtle", "fa-circle-xmark"),
-                                                    _ => ("ta-badge", "fa-circle-stop"),
-                                                };
-
-                                                <span class="badge fw-normal @lastRunClasses" data-last-run data-run-result="@lastRun.Result" title="@await DisplayAsync(await New.DateTime(Utc: lastRun.StartTime, Format: "G"))">
-                                                    <i class="fa-solid @lastRunIcon" aria-hidden="true"></i>
-                                                    <span class="fw-bold">@T["Last run"]</span>
-                                                    <span class="visually-hidden"><partial name="_BackgroundTaskRunResult" model="lastRun.Result" /></span>
-                                                    @await DisplayAsync(await New.TimeSpan(Utc: lastRun.StartTime))
-                                                    &middot; <partial name="_BackgroundTaskDuration" model="lastRun.Duration" />
-                                                </span>
-                                            }
-
-                                            <span class="badge ta-badge fw-normal" data-next-run title="@(state.NextStartTime is null ? null : await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G")))">
-                                                <i class="fa-regular fa-clock text-secondary" aria-hidden="true"></i>
-                                                <span class="fw-bold">@T["Next run"]</span>
-                                                @if (state.NextStartTime is not null)
-                                                {
-                                                    @await DisplayAsync(await New.TimeSpan(Utc: state.NextStartTime.Value))
-                                                }
-                                                else if (task.Enable)
-                                                {
-                                                    @T["invalid schedule"]
-                                                }
-                                                else
-                                                {
-                                                    @T["not scheduled"]
-                                                }
-                                            </span>
-
-                                            if (state.FailureCount > 0)
-                                            {
-                                                <span class="badge fw-normal text-danger-emphasis bg-danger-subtle border border-danger-subtle" data-failure-count>
-                                                    <span class="fw-bold">@T["Failed runs"]</span> @T["{0} of {1}", state.FailureCount, state.RunCount]
-                                                </span>
-                                            }
-                                        }
-                                    }
-                                </div>
-
-                                @if (!string.IsNullOrWhiteSpace(task.Description))
-                                {
-                                    <p class="mb-0 mt-1"><small class="text-muted">@task.Description</small></p>
-                                }
-
-                                @if (state?.LastRun?.Result == BackgroundTaskRunResult.Failed && !string.IsNullOrEmpty(state.LastRun.ErrorMessage))
-                                {
-                                    <div class="small text-danger text-truncate mt-1" title="@state.LastRun.ErrorMessage" data-last-error>
-                                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @state.LastRun.ErrorMessage
-                                    </div>
-                                }
-                            </div>
-
-                            <div class="d-flex gap-1 justify-content-end flex-shrink-0">
-                                <a asp-action="Edit" asp-route-name="@task.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                                <partial name="_BackgroundTaskActions" model="new BackgroundTaskActionsViewModel { Name = task.Name, Enable = task.Enable, IsMonitored = Model.IsMonitored, State = state, ShowDetails = true }" />
-                            </div>
-                        </div>
-                    </div>
-                </li>
+                <admin-list-column name="LastRun" position="40" title="@T["Last run"]" width="auto" />
+                <admin-list-column name="NextRun" position="50" title="@T["Next run"]" width="auto" />
             }
-        }
-        else
-        {
-            <li class="list-group-item">
-                <div class="alert alert-info mb-0">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
-            </li>
-        }
-    </ul>
-
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
 </form>
-
-@await DisplayAsync(Model.Pager)
 
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
-
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.js" at="Foot" type="module"></script>
 <script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-state.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-state.js" at="Foot" type="module"></script>

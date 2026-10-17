@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 using OrchardCore.BackgroundTasks;
@@ -16,18 +17,9 @@ public abstract class CmsRecipeFixture : IAsyncLifetime
     public IBrowser Browser => _testFixture.Browser;
     public string BaseUrl => _testFixture.BaseUrl;
 
-    protected CmsRecipeFixture()
+    protected CmsRecipeFixture(Action<WebApplicationBuilder> configure = null)
     {
-        _testFixture = new OrchardTestFixture(
-            instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}",
-            configureOrchardCore: ConfigureOrchardCore);
-    }
-
-    /// <summary>
-    /// Customizes the services of the host started by this fixture, for instance to register test-only services.
-    /// </summary>
-    protected virtual void ConfigureOrchardCore(OrchardCoreBuilder builder)
-    {
+        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}", configure: configure);
     }
 
     public async ValueTask InitializeAsync()
@@ -180,22 +172,29 @@ public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
 
 public sealed class BackgroundTasksTestsFixture : CmsRecipeFixture
 {
-    protected override string RecipeName => "BackgroundTasksTests";
+    public BackgroundTasksTestsFixture()
+        : base(builder =>
+        {
+            // Load the tasks of the tenant soon after it is set up, and pick up the requested runs quickly.
+            builder.Services.PostConfigure<BackgroundServiceOptions>(options =>
+            {
+                options.PollingTime = TimeSpan.FromSeconds(5);
+                options.MinimumIdleTime = TimeSpan.FromSeconds(1);
+            });
 
-    protected override void ConfigureOrchardCore(OrchardCoreBuilder builder)
+            builder.Services.AddOrchardCore().ConfigureServices(services =>
+            {
+                services.AddSingleton<IBackgroundTask, SucceedingTestBackgroundTask>();
+                services.AddSingleton<IBackgroundTask, FailingTestBackgroundTask>();
+            });
+        })
     {
-        // Load the tasks of the tenant soon after it is set up, and pick up the requested runs quickly.
-        builder.ApplicationServices.PostConfigure<BackgroundServiceOptions>(options =>
-        {
-            options.PollingTime = TimeSpan.FromSeconds(5);
-            options.MinimumIdleTime = TimeSpan.FromSeconds(1);
-        });
-
-        builder.ConfigureServices(services =>
-        {
-            services.AddSingleton<IBackgroundTask, SucceedingTestBackgroundTask>();
-            services.AddSingleton<IBackgroundTask, FailingTestBackgroundTask>();
-        });
     }
+
+    protected override string RecipeName => "BackgroundTasksTests";
 }
 
+public sealed class PartToggleEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "PartToggleEditorTests";
+}

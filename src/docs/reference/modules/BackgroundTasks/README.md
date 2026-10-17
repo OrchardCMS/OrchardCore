@@ -20,7 +20,7 @@ After enabling the feature, you'll be able to manage background tasks under Tool
 
 ## Execution State
 
-Each task of the list shows badges next to its title telling whether it is running or queued, when its last run started with its outcome and duration, when its next scheduled run is expected, and how many of its runs failed. The error message of a failed run is shown under the description of the task. The **Status** filter lists the tasks that are running or queued, or whose last run failed.
+Each task of the list shows badges next to its title telling whether it is running or queued, when its last run started with its outcome and duration, when its next scheduled run is expected, and how many of its runs failed. The error message of a failed run is shown under the description of the task. With the **Grid** layout of the admin lists, the last run and the next run are shown in columns of their own. The **Status** filter lists the tasks that are running or queued, or whose last run failed.
 
 The title of a task is the `Title` of its `[BackgroundTask]` attribute. A task that doesn't define one is shown with a title built from the name of its type, for instance **Chunk File Upload** for `ChunkFileUploadBackgroundTask`.
 
@@ -39,7 +39,7 @@ The list and the details page stay up to date while they are visible: they check
 
 ## Running a Task on Demand
 
-The **Run now** item of the **Actions** menu of a task, available in the list and on the details page, queues the task to run as soon as possible, regardless of its schedule. Select several tasks and use the **Run now** bulk action to queue them all at once.
+The **Run now** item of the **Actions** menu of a task, available in the list and on the details page, queues the task to run as soon as possible, regardless of its schedule. With the **Menu** layout of the actions of the admin lists, it's in the menu of the row of the task. Select several tasks and use the **Run now** bulk action to queue them all at once.
 
 - A task that is already running or queued is not queued again.
 - A disabled task can also be run on demand, which is convenient to check a task before enabling it. Its schedule is not affected.

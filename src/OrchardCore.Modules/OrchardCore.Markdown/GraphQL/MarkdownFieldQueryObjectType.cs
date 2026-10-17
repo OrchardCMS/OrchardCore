@@ -1,20 +1,13 @@
-using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
-using Fluid.Values;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Infrastructure.Html;
-using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
-using OrchardCore.Markdown.ViewModels;
-using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.Markdown.GraphQL;
@@ -41,9 +34,6 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
         }
 
         var serviceProvider = ctx.RequestServices;
-        var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
-        var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
-
         var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
         var jObject = (JsonObject)ctx.Source.Content;
@@ -60,41 +50,14 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
 
         var settings = contentPartFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
-        var markdown = ctx.Source.Markdown ?? string.Empty;
-        if (settings.RenderLiquid)
-        {
-            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
-            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
-
-            var model = new MarkdownFieldViewModel()
-            {
-                Markdown = markdown,
-                Field = ctx.Source,
-                Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
-                PartFieldDefinition = contentPartFieldDefinition,
-            };
-
-            markdown = await liquidTemplateManager.RenderStringAsync(model.Markdown, htmlEncoder, model,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
-        }
-
-        // The default Markdown option is to entity escape html so filters must be run after the markdown has been
-        // processed.
-        var html = markdownService.ToHtml(markdown ?? string.Empty);
-
-        html = await shortcodeService.ProcessAsync(html,
+        var markdownDisplayService = serviceProvider.GetRequiredService<IMarkdownDisplayService>();
+        return await markdownDisplayService.ToHtmlAsync(
+            ctx.Source.Markdown,
             new Context
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
                 ["PartFieldDefinition"] = contentPartFieldDefinition,
-            });
-
-        if (settings.SanitizeHtml)
-        {
-            var htmlSanitizerService = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
-            html = htmlSanitizerService.Sanitize(html);
-        }
-
-        return html;
+            },
+            settings.SanitizeHtml);
     }
 }
