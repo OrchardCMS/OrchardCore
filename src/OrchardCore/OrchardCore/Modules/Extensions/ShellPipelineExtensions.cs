@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Modules;
 
@@ -29,7 +31,26 @@ public static class ShellPipelineExtensions
         {
             if (!context.HasPipeline())
             {
-                context.Pipeline = await context.BuildPipelineInternalAsync();
+                var tenantName = context.Settings.Name;
+                using var activity = OrchardCoreTelemetry.StartTenantActivity("Build tenant pipeline", tenantName);
+                var startTimestamp = Stopwatch.GetTimestamp();
+                Exception exception = null;
+
+                try
+                {
+                    context.Pipeline = await context.BuildPipelineInternalAsync();
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                    OrchardCoreTelemetry.RecordException(activity, ex);
+
+                    throw;
+                }
+                finally
+                {
+                    OrchardCoreTelemetry.RecordDuration(OrchardCoreTelemetry.TenantPipelineDuration, startTimestamp, tenantName, exception);
+                }
             }
         }
         finally
