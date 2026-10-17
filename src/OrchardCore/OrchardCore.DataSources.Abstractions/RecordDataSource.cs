@@ -7,8 +7,9 @@ namespace OrchardCore.DataSources;
 /// it, implement <see cref="IDataSource"/> with the static <c>Name</c>, <c>DisplayName</c> and <c>Description</c> of
 /// the data source, list its data sets, each a <see cref="RecordDataSet{TRecord}"/>, and register it with
 /// <c>services.AddDataSource&lt;TDataSource&gt;()</c>. It lists, describes and reads only the data sets the user may
-/// read. A data set that can group and aggregate its records itself, such as with a <c>GROUP BY</c> on an index,
-/// implements <see cref="IAggregateRecordDataSet"/>.
+/// read, and lists the data sets the fields of a data set reference among the data sets it links to. A data set that
+/// can group and aggregate its records itself, such as with a <c>GROUP BY</c> on an index, implements
+/// <see cref="IAggregateRecordDataSet"/>.
 /// </summary>
 public abstract class RecordDataSource : IDataAggregateSource
 {
@@ -25,7 +26,7 @@ public abstract class RecordDataSource : IDataAggregateSource
         {
             if (await dataSet.CanReadAsync(context ?? new DataSourceContext(), cancellationToken))
             {
-                descriptors.Add(dataSet.Descriptor);
+                descriptors.Add(Describe(dataSet));
             }
         }
 
@@ -43,7 +44,7 @@ public abstract class RecordDataSource : IDataAggregateSource
 
         return new DataSetSchema
         {
-            DataSet = set.Descriptor,
+            DataSet = Describe(set),
             Fields = [.. set.Fields],
         };
     }
@@ -76,6 +77,22 @@ public abstract class RecordDataSource : IDataAggregateSource
         }
 
         return await set.AggregateAsync(query, cancellationToken);
+    }
+
+    // Adds the data sets the fields reference to the data sets the data set links to.
+    private static DataSetDescriptor Describe(IRecordDataSet set)
+    {
+        var descriptor = set.Descriptor;
+
+        foreach (var reference in set.Fields.SelectMany(field => field.References))
+        {
+            if (!descriptor.References.Any(existing => existing.Source == reference.Source && existing.DataSet == reference.DataSet))
+            {
+                descriptor.References.Add(reference);
+            }
+        }
+
+        return descriptor;
     }
 
     private IRecordDataSet Find(string name)
