@@ -1,0 +1,66 @@
+/* Outer wrapper: flex so the iti wrapper stretches to available width */
+.phone-input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+/* The wrapper takes up available space and anchors the overlaid icons */
+.phone-input-group .phone-input-iti-wrapper {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.phone-input-group .phone-input-iti-wrapper .iti {
+    width: 100%;
+}
+
+/* Reserve right-side space for the status icon */
+.phone-input-group .phone-input-iti-wrapper .iti input.form-control {
+    padding-right: 36px;
+    width: 100%;
+}
+
+/* Status icon — overlaid on the right, no background or border */
+.phone-input-status-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* Dark mode overrides for intl-tel-input */
+[data-bs-theme="dark"] .iti__country-container .iti__selected-country,
+[data-bs-theme="dark"] .iti__country-container .iti__selected-country-primary {
+    background-color: transparent !important;
+    color: var(--bs-body-color, #dee2e6);
+}
+
+[data-bs-theme="dark"] .iti__dropdown-content {
+    background-color: var(--bs-dropdown-bg, #2b3035);
+    border-color: var(--bs-border-color, #495057);
+    color: var(--bs-body-color, #dee2e6);
+}
+
+[data-bs-theme="dark"] .iti__search-input {
+    background-color: var(--bs-input-bg, #212529);
+    border-color: var(--bs-border-color, #495057);
+    color: var(--bs-body-color, #dee2e6);
+}
+
+[data-bs-theme="dark"] .iti__country.iti__highlight {
+    background-color: var(--bs-tertiary-bg, #3a3f44);
+}
+
+[data-bs-theme="dark"] .iti__country-name,
+[data-bs-theme="dark"] .iti__dial-code {
+    color: var(--bs-body-color, #dee2e6);
+}
+
+[data-bs-theme="dark"] .iti__selected-dial-code {
+    color: var(--bs-body-color, #dee2e6);
+}
