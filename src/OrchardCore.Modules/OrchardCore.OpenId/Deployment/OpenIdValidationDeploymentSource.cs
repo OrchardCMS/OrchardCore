@@ -22,7 +22,7 @@ public sealed class OpenIdValidationDeploymentSource
         result.Steps.Add(new JsonObject
         {
             ["name"] = nameof(OpenIdValidationSettings),
-            ["OpenIdValidationSettings"] = JObject.FromObject(validationSettings),
+            [nameof(OpenIdValidationSettings)] = JObject.FromObject(validationSettings),
         });
     }
 }
