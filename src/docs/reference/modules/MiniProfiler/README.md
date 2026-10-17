@@ -2,7 +2,9 @@
 
 The module lets you use [Mini Profiler](https://miniprofiler.com/) to troubleshoot performance issues and generally to profile the performance of the application. Just enable the corresponding feature.
 
-By default, the module will display the Mini Profiler performance widget on the frontend only. If you want to enable it for the admin too then use the `AllowMiniProfilerOnAdmin()` extension method to set the `MiniProfilerOptions.EnableOnAdmin` option (see the [documentation on configuration](../Configuration/README.md)).
+Two permissions decide who sees the widget: `View Mini Profiler widget on front end pages` and `View Mini Profiler widget on back end pages`. The Administrator role has both by default.
+
+On front end pages, the widget uses Mini Profiler's default position, the top left corner. In the admin, it is docked to the middle of the right edge so that it stays clear of the menu and the top navbar, and its toggle hides or shows the profiles. The browser remembers whether the widget is collapsed, and the widget follows the admin's light or dark theme.
 
 ## Video
 
