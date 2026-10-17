@@ -395,6 +395,7 @@ The simplest way to add a data source is to derive from `RecordDataSource`, from
 
 - `AddField(name, displayName, type, read, group)` declares a field, in order, with the function that reads its value from a record. It returns the `DataField`, to set its other properties, such as `IsIdentifier`, `References`, or `IsKeyFilterable` when the data set loads only the records of a list of keys.
 - `CanReadAsync` tells whether the user of the context may read the data set; everyone may by default. The data source lists, describes and reads only the data sets the user may read.
+- The data sets the fields reference are listed among the data sets the data set links to (`DataSetDescriptor.References`), so consumers can tell which data sets are related before reading their fields.
 - `LoadAsync` streams the records, in a stable order, a page at a time, so that any number of records can be read. It stops when the enumeration stops: the base class reads only the fields and the number of rows the query asks for, and splits the rows into batches.
 
 The values are converted to the type of their field: an enumeration value becomes its name, and a date becomes a UTC date (a `DateTimeOffset`, a local date or a date without a kind).

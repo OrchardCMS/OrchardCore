@@ -251,6 +251,21 @@ public sealed class RecordDataSourceTests
         Assert.Null(await new TicketsSource().AggregateAsync(query, TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public async Task GetDataSetsAsync_FieldsWithReferences_ListTheDataSetsTheyReference()
+    {
+        // Act
+        var dataSets = await new TicketsSource().GetDataSetsAsync(Context(canRead: true), TestContext.Current.CancellationToken);
+        var schema = await new TicketsSource().GetSchemaAsync("Assignments", Context(canRead: true), TestContext.Current.CancellationToken);
+
+        // Assert: the two fields that reference tickets list the tickets once.
+        var assignments = Assert.Single(dataSets, dataSet => dataSet.Name == "Assignments");
+        var reference = Assert.Single(assignments.References);
+        Assert.Equal(("Tickets", "Tickets", "Id"), (reference.Source, reference.DataSet, reference.Field));
+        Assert.Single(schema.DataSet.References);
+        Assert.Empty(Assert.Single(dataSets, dataSet => dataSet.Name == "Tickets").References);
+    }
+
     private static DataSourceContext Context(bool canRead)
     {
         var context = new DataSourceContext();
@@ -275,7 +290,7 @@ public sealed class RecordDataSourceTests
 
         public static LocalizationSource Description { get; } = new("Tickets");
 
-        protected override IEnumerable<IRecordDataSet> DataSets { get; } = [new TicketsDataSet(), new IndexedTicketsDataSet()];
+        protected override IEnumerable<IRecordDataSet> DataSets { get; } = [new TicketsDataSet(), new IndexedTicketsDataSet(), new AssignmentsDataSet()];
     }
 
     private class TicketsDataSet : RecordDataSet<Ticket>
@@ -331,6 +346,31 @@ public sealed class RecordDataSourceTests
                 .GroupBy(ticket => ticket.State)
                 .Select(group => new object[] { group.Key.ToString(), (long)group.Count() })
                 .ToList());
+        }
+    }
+
+    private sealed record Assignment(string TicketId, string PreviousTicketId, string Agent);
+
+    private sealed class AssignmentsDataSet : RecordDataSet<Assignment>
+    {
+        public AssignmentsDataSet()
+            : base(new DataSetDescriptor("Assignments", "Assignments"))
+        {
+            AddField("TicketId", "Ticket", DataFieldType.Text, assignment => assignment.TicketId).References.Add(new DataFieldReference("Tickets", "Tickets", "Id"));
+            AddField("PreviousTicketId", "Previous ticket", DataFieldType.Text, assignment => assignment.PreviousTicketId).References.Add(new DataFieldReference("Tickets", "Tickets", "Id"));
+            AddField("Agent", "Agent", DataFieldType.Text, assignment => assignment.Agent);
+        }
+
+        public override Task<bool> CanReadAsync(DataSourceContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(context.Properties.TryGetValue("CanRead", out var canRead) && canRead is true);
+        }
+
+        protected override async IAsyncEnumerable<Assignment> LoadAsync(DataSourceQuery query, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            await Task.Yield();
+
+            yield return new Assignment("T1", null, "Ada");
         }
     }
 }

@@ -263,6 +263,8 @@ public sealed class ContentItemsDataSource : IDataSource
         {
             Group = definition.GetStereotype() is { Length: > 0 } stereotype ? stereotype : S["Content"].Value,
             DefaultDateField = "CreatedUtc",
+            // The owner of a content item is a user.
+            References = [new("Users", "Users", "UserId")],
         };
     }
 
