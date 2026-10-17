@@ -168,7 +168,11 @@ internal sealed class LiquidContentAuthorizationHandler : AuthorizationHandler<P
             if (string.Equals(
                 typePartDefinition.PartDefinition.Name,
                 nameof(LiquidPart),
-                StringComparison.Ordinal))
+                StringComparison.Ordinal) ||
+                string.Equals(
+                    typePartDefinition.PartDefinition.Name,
+                    "FacebookPluginPart",
+                    StringComparison.Ordinal))
             {
                 return true;
             }
