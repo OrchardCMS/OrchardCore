@@ -49,10 +49,16 @@ its layout; the controller has no row-rendering dependencies.
 
 ## Rendering view
 
+The module imports the tag helpers once, in `Views/_ViewImports.cshtml`:
+
+```cshtml
+@using OrchardCore.Admin
+@addTagHelper *, OrchardCore.Admin.Abstractions
+```
+
 `Views/Admin/Index.cshtml` declares the columns and presentation before displaying the list:
 
 ```cshtml
-@addTagHelper *, OrchardCore.Admin.Abstractions
 <admin-list name="Indexes" context="Model.List" bulk-actions="Model.Options.BulkActions"
             empty-message="@T["<strong>Nothing here!</strong> There are no indexes at the moment."]">
     <admin-list-list item-css-class="list-group-item" />
@@ -76,3 +82,8 @@ Other features can add columns by implementing `IAdminListColumnsProvider` and r
 They add cell shapes through ordinary row display drivers.
 Themes can move a shape to a different column with `placement.json`,
 e.g. `"displayType": "SummaryAdminGrid", "place": "Name:5"`.
+
+## Tests
+
+`/Admin/indexing` is in `_lists` of `AdminListLayoutTests`, which renders the list in the grid and fails when one of
+its columns renders nothing on any row.
