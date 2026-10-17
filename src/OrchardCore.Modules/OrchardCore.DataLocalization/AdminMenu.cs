@@ -26,26 +26,6 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Localization"], localization => localization
-                            .Add(S["Translations"], S["Translations"].PrefixPosition(), translations => translations
-                                .AddClass("translations")
-                                .Id("translations")
-                                .Permission(DataLocalizationPermissions.ViewDynamicTranslations)
-                                .Action(s_routeValues["action"].ToString(), s_routeValues["controller"].ToString(), s_routeValues)
-                                .LocalNav()
-                            )
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
