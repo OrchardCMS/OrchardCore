@@ -1,0 +1,50 @@
+@using OrchardCore.Workflows.Models
+@using OrchardCore.Workflows.ViewModels
+@model ActivityRetryPolicyEditViewModel
+
+<div class="ocat-wrapper" data-cy="retry-policy">
+    <div class="ocat-end-offset">
+        <h5>@T["When it fails"]</h5>
+        <span class="hint">@T["Retry the task when it throws, for example when a service it calls is down for a moment."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="MaxRetries">
+    <label asp-for="MaxRetries" class="ocat-label">@T["Retries"]</label>
+    <div class="ocat-limited">
+        <input asp-for="MaxRetries" type="number" min="0" max="@ActivityRetryPolicy.MaxRetriesLimit" class="form-control" data-cy="retry-max-retries" />
+        <span asp-validation-for="MaxRetries"></span>
+        <span class="hint">@T["How many times the task is retried, up to {0}. Leave it at zero to not retry it.", ActivityRetryPolicy.MaxRetriesLimit]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="DelaySeconds">
+    <label asp-for="DelaySeconds" class="ocat-label">@T["Delay (seconds)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="DelaySeconds" type="number" min="0" max="@ActivityRetryPolicy.MaxDelay.TotalSeconds" class="form-control" data-cy="retry-delay" />
+        <span asp-validation-for="DelaySeconds"></span>
+        <span class="hint">@T["How long to wait before the first retry. With zero, the task is retried at once; otherwise the instance waits, faulted, and is retried within a minute of the delay."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Backoff" class="ocat-label">@T["Delay between retries"]</label>
+    <div class="ocat-end">
+        <select asp-for="Backoff" class="form-select" data-cy="retry-backoff">
+            <option value="@ActivityRetryBackoff.Fixed">@T["The same each time"]</option>
+            <option value="@ActivityRetryBackoff.Exponential">@T["Twice as long each time"]</option>
+        </select>
+        <span class="hint">@T["Doubling the delay gives a service that's down more time to come back, up to a day between retries."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="OnFailure" class="ocat-label">@T["Once the retries are spent"]</label>
+    <div class="ocat-end">
+        <select asp-for="OnFailure" class="form-select" data-cy="retry-on-failure">
+            <option value="@ActivityFailureBehavior.FaultWorkflow">@T["Fault the workflow"]</option>
+            <option value="@ActivityFailureBehavior.FollowFailedOutcome">@T["Follow the Failed outcome"]</option>
+        </select>
+        <span class="hint">@T["A faulted workflow stops at the task, and can be retried from it. The Failed outcome lets the workflow go on, for example to notify someone; the error is the task's last result."]</span>
+    </div>
+</div>

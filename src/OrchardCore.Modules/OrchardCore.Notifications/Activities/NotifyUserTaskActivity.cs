@@ -10,7 +10,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Notifications.Activities;
 
-public abstract class NotifyUserTaskActivity : TaskActivity
+public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedValues
 {
     protected readonly INotificationService _notificationService;
     protected readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -73,6 +73,12 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     /// <returns>The possible workflow outcomes.</returns>
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"], S["Failed: no user found"]);
+
+    /// <summary>
+    /// Returns the values the activity provides: how many notifications it sent, as the last result.
+    /// </summary>
+    public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("number", S["How many notifications the activity sent."])];
 
     /// <summary>
     /// Sends the configured notification message to each resolved user.

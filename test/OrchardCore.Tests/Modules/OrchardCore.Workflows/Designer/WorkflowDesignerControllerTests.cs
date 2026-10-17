@@ -1,0 +1,1974 @@
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
+using Fluid;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Documents;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Security;
+using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Workflows.Http.Models;
+using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
+using static OrchardCore.Workflows.WorkflowDesignerConstants;
+
+namespace OrchardCore.Tests.Modules.OrchardCore.Workflows.Designer;
+
+public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesignerSiteFixture>
+{
+    private readonly WorkflowDesignerSiteFixture _fixture;
+
+    public WorkflowDesignerControllerTests(WorkflowDesignerSiteFixture fixture)
+    {
+        _fixture = fixture;
+    }
+
+    [Fact]
+    public async Task DesignerEndpoints_WithoutManageWorkflows_ReturnForbiddenProblem()
+    {
+        using var context = new SiteContext
+        {
+            PermissionsContext = new PermissionsContext
+            {
+                UsePermissionsContext = true,
+                AuthorizedPermissions = [AdminPermissions.AccessAdminPanel],
+            },
+        };
+        await context.InitializeAsync();
+        await WorkflowDesignerSiteFixture.EnableFeaturesAsync(context, "OrchardCore.Workflows");
+        var (id, _) = await WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(context, Activity("notify", "NotifyTask"));
+
+        foreach (var action in new[] { "Definition", "Library", "Editor?activityId=notify", "Settings", "Versions", "Version?versionId=x", "Compare?from=draft&to=draft" })
+        {
+            using var response = await context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/{action}", TestContext.Current.CancellationToken);
+
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            var problem = await ReadJsonAsync(response);
+            Assert.Equal(403, problem["status"].GetValue<int>());
+        }
+    }
+
+    [Fact]
+    public async Task DesignerPosts_WithoutManageWorkflows_ReturnForbidden()
+    {
+        // The posts go through the fixture's client, which has an antiforgery token, with a permissions context
+        // that only allows the admin panel.
+        var permissionsContextKey = Guid.NewGuid().ToString("n");
+        SiteStartup.PermissionsContexts.TryAdd(permissionsContextKey, new PermissionsContext
+        {
+            UsePermissionsContext = true,
+            AuthorizedPermissions = [AdminPermissions.AccessAdminPanel],
+        });
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+
+        foreach (var action in new[] { "Variables", "OutputBindings", "Retry", "Run" })
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"Admin/Workflows/Types/{id}/Designer/{action}")
+            {
+                Content = new StringContent("""{"revision":0,"activityId":"notify","variables":[],"bindings":{}}""", Encoding.UTF8, "application/json"),
+            };
+            await _fixture.AddAntiforgeryAsync(request);
+            request.Headers.Add("PermissionsContext", permissionsContextKey);
+
+            using var response = await _fixture.Context.Client.SendAsync(request, TestContext.Current.CancellationToken);
+
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+    }
+
+    [Fact]
+    public async Task Edit_ManageWorkflows_RendersDesignerWithTenantAwareConfig()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Edit/{id}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var host = Assert.Single(document.QuerySelectorAll("#workflow-designer"));
+        var config = JsonNode.Parse(host.GetAttribute("data-config"));
+        var tenantPrefix = $"/{_fixture.Context.TenantName}/";
+        Assert.Null(config["hubUrl"]);
+
+        Assert.Equal(id, config["workflowTypeId"].GetValue<long>());
+        Assert.False(config["readOnly"].GetValue<bool>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Definition", config["urls"]["definition"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Editor", config["urls"]["editor"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Versions", config["urls"]["versions"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Run", config["urls"]["run"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/LatestInstance", config["urls"]["latestInstance"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/Version/{id}", config["versionPageUrl"].GetValue<string>());
+        Assert.Equal("designer", config["mode"].GetValue<string>());
+        Assert.False(string.IsNullOrEmpty(config["translations"]["Undo"].GetValue<string>()));
+        Assert.NotNull(document.QuerySelector("input[name='__RequestVerificationToken']"));
+        Assert.Contains(document.QuerySelectorAll("script[src]"), x => x.GetAttribute("src").Contains("workflows-designer") && x.GetAttribute("type") == "module");
+        Assert.DoesNotContain(document.QuerySelectorAll("script[src]"), x => x.GetAttribute("src").Contains("workflow-editor") || x.GetAttribute("src").Contains("jsplumb"));
+        Assert.Null(config["initialActivityId"]);
+
+        // The designer compares the signed-in user with the draft's last editor to show the draft banner, so
+        // both are the same claim (null values are left out of the config).
+        using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision = 0,
+            nodes = new[] { new { id = "start", x = 0, y = 0, isStart = true } },
+            transitions = Array.Empty<object>(),
+            removedActivityIds = Array.Empty<string>(),
+        });
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.Equal(config["currentUserId"]?.GetValue<string>(), definition["draftModifiedByUserId"]?.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Edit_RealTimeFeature_ConfiguresTheHubAndLoadsSignalR()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        // Real time comes with SignalR; there is no feature of its own.
+        await WorkflowDesignerSiteFixture.EnableFeaturesAsync(context, "OrchardCore.Workflows", "OrchardCore.SignalR");
+        var (id, _) = await WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(context, Activity("notify", "NotifyTask"));
+
+        using var response = await context.Client.GetAsync($"Admin/Workflows/Types/Edit/{id}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal($"/{context.TenantName}/hubs/workflows", config["hubUrl"].GetValue<string>());
+        Assert.Contains(document.QuerySelectorAll("script[src]"), script => script.GetAttribute("src").Contains("signalr", StringComparison.OrdinalIgnoreCase));
+
+        // The hub requires the permission to manage workflows.
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var policy = await scope.ServiceProvider.GetRequiredService<IAuthorizationPolicyProvider>().GetPolicyAsync("WorkflowsHub");
+
+            Assert.Contains(policy.Requirements, requirement => requirement is PermissionRequirement { Permission.Name: "ManageWorkflows" });
+        });
+    }
+
+    [Fact]
+    public async Task Edit_ActivityIdQuery_OpensThatActivity()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Edit/{id}?activityId=notify", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal("notify", config["initialActivityId"].GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("Designer/Index", "")]
+    [InlineData("Designer/Index?activityId=notify", "?activityId=notify")]
+    [InlineData("Activity/notify/Edit", "?activityId=notify")]
+    [InlineData("Activity/NotifyTask/Add", "")]
+    public async Task OldUrls_DesignerAndActivityPages_RedirectToTheDesigner(string path, string expectedQuery)
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/{path}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal($"/{_fixture.Context.TenantName}/Admin/Workflows/Types/Edit/{id}{expectedQuery}", response.Headers.Location?.OriginalString);
+    }
+
+    [Fact]
+    public async Task OldUrls_PropertiesPage_RedirectsToTheDesignerOrToTheCreatePage()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+
+        // The properties of a workflow are edited in the designer.
+        using (var existing = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/EditProperties/{id}", TestContext.Current.CancellationToken))
+        {
+            Assert.Equal(HttpStatusCode.Redirect, existing.StatusCode);
+            Assert.Equal($"/{_fixture.Context.TenantName}/Admin/Workflows/Types/Edit/{id}", existing.Headers.Location?.OriginalString);
+        }
+
+        using var created = await _fixture.Context.Client.GetAsync("Admin/Workflows/Types/EditProperties", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, created.StatusCode);
+        Assert.Equal($"/{_fixture.Context.TenantName}/Admin/Workflows/Types/Create", created.Headers.Location?.OriginalString);
+    }
+
+    [Fact]
+    public async Task Create_NewWorkflow_RecordsActivityDataByDefault()
+    {
+        using var response = await _fixture.Context.Client.GetAsync("Admin/Workflows/Types/Create", TestContext.Current.CancellationToken);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+        Assert.True(document.QuerySelector("input[name='RecordActivityData']")?.HasAttribute("checked"));
+    }
+
+    [Fact]
+    public async Task Clone_Workflow_CopiesItsActivitiesVariablesAndPropertiesUnderTheNewName()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var source = await store.GetAsync(workflowTypeId);
+            source.Variables = [new WorkflowVariableDefinition { Name = "total", TypeName = "number" }];
+            source.DeleteFinishedWorkflows = true;
+            source.RecordActivityData = true;
+            await store.SaveAsync(source);
+        });
+
+        using (var form = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Clone/{id}", TestContext.Current.CancellationToken))
+        {
+            var document = new HtmlParser().ParseDocument(await form.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+            Assert.True(document.QuerySelector("input[name='DeleteFinishedWorkflows']")?.HasAttribute("checked"));
+            Assert.True(document.QuerySelector("input[name='RecordActivityData']")?.HasAttribute("checked"));
+        }
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/Clone/{id}", new Dictionary<string, string>
+        {
+            ["Name"] = "Cloned",
+            ["IsEnabled"] = "true",
+            ["DeleteFinishedWorkflows"] = "true",
+        });
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var clone = (await scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().ListAsync()).Single(workflowType => workflowType.Name == "Cloned");
+
+            Assert.NotEqual(workflowTypeId, clone.WorkflowTypeId);
+            Assert.Equal("notify", Assert.Single(clone.Activities).ActivityId);
+            Assert.Equal("total", Assert.Single(clone.Variables).Name);
+            Assert.True(clone.DeleteFinishedWorkflows);
+        });
+    }
+
+    [Fact]
+    public async Task Library_RegisteredActivities_ReturnsRegistrationIconsAndCategoryDefaults()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync();
+
+        var library = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Library");
+        var activities = library["categories"].AsArray().SelectMany(x => x["activities"].AsArray()).Where(x => x["preset"] is null).ToDictionary(x => x["name"].GetValue<string>());
+
+        // Set on the registration of a built-in Workflows activity.
+        Assert.Equal("fa-solid fa-bell", activities["NotifyTask"]["icon"].GetValue<string>());
+        Assert.Equal("fa-solid fa-globe", activities["HttpRequestEvent"]["icon"].GetValue<string>());
+        // Not set by its module (Forms), so the default of its category applies.
+        Assert.Equal("fa-solid fa-check-double", activities["ValidateFormTask"]["icon"].GetValue<string>());
+        Assert.False(string.IsNullOrWhiteSpace(activities["NotifyTask"]["thumbnailHtml"].GetValue<string>()));
+        Assert.True(activities["HttpRequestEvent"]["isEvent"].GetValue<bool>());
+    }
+
+    [Fact]
+    public async Task Definition_NoDraftThenSave_ReturnsLiveThenDraftGraph()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true, x: 10, y: 20),
+            Activity("notify", "NotifyTask", x: 300, y: 20));
+
+        var live = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+
+        Assert.False(live["hasDraft"].GetValue<bool>());
+        Assert.Equal(0, live["revision"].GetValue<int>());
+        Assert.Equal(["start", "notify"], live["nodes"].AsArray().Select(x => x["id"].GetValue<string>()));
+        var start = live["nodes"][0];
+        Assert.Equal(10, start["x"].GetValue<int>());
+        Assert.True(start["isStart"].GetValue<bool>());
+        Assert.True(start["isEvent"].GetValue<bool>());
+        Assert.Contains("Done", start["outcomes"].AsArray().Select(x => x["name"].GetValue<string>()));
+        Assert.False(string.IsNullOrWhiteSpace(start["designHtml"].GetValue<string>()));
+        Assert.Equal("fa-solid fa-globe", start["icon"].GetValue<string>());
+        Assert.Contains(live["issues"].AsArray(), x => x["code"].GetValue<string>() == "UnreachableActivity" && x["severity"].GetValue<string>() == "Warning");
+
+        using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision = 0,
+            nodes = new[]
+            {
+                new { id = "start", x = 40, y = 50, isStart = true },
+                new { id = "notify", x = 300, y = 20, isStart = false },
+            },
+            transitions = new[] { new { sourceActivityId = "start", sourceOutcomeName = "Done", destinationActivityId = "notify" } },
+            removedActivityIds = Array.Empty<string>(),
+        });
+
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        var savedJson = await ReadJsonAsync(saved);
+        Assert.Empty(savedJson["issues"].AsArray());
+        Assert.Empty(savedJson["issues"].AsArray());
+
+        var draft = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+
+        Assert.True(draft["hasDraft"].GetValue<bool>());
+        Assert.Equal(1, draft["revision"].GetValue<int>());
+        Assert.Equal(40, draft["nodes"][0]["x"].GetValue<int>());
+        Assert.Equal("notify", Assert.Single(draft["transitions"].AsArray())["destinationActivityId"].GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Save_StaleRevision_ReturnsConflictProblem()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var body = new { revision = 0, nodes = new[] { new { id = "start", x = 5, y = 5, isStart = true } }, transitions = Array.Empty<object>(), removedActivityIds = Array.Empty<string>() };
+
+        using (var first = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", body))
+        {
+            Assert.Equal(HttpStatusCode.OK, first.StatusCode);
+        }
+
+        using var stale = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", body);
+
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.Equal("application/problem+json", stale.Content.Headers.ContentType?.MediaType);
+        var problem = await ReadJsonAsync(stale);
+        Assert.Equal(1, problem["currentRevision"].GetValue<int>());
+        Assert.NotNull(problem["modifiedUtc"]);
+    }
+
+    [Fact]
+    public async Task AddActivity_ActivityWithoutEditor_AddsActivity()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync();
+
+        using var response = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 0, name = "ValidateAntiforgeryTokenTask", x = 120, y = 80 });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = await ReadJsonAsync(response);
+        Assert.Equal(1, json["revision"].GetValue<int>());
+        var node = json["node"];
+        Assert.Equal("ValidateAntiforgeryTokenTask", node["name"].GetValue<string>());
+        Assert.False(node["hasEditor"].GetValue<bool>());
+        Assert.False(node["isStart"].GetValue<bool>());
+        Assert.Equal(120, node["x"].GetValue<int>());
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+            Assert.Equal(node["id"].GetValue<string>(), Assert.Single(draft.Activities).ActivityId);
+
+            var live = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().GetAsync(workflowTypeId);
+            Assert.Empty(live.Activities);
+        });
+    }
+
+    [Fact]
+    public async Task AddActivity_RequiredSettingEmpty_IsAnIssueUntilItsEditorSavesIt()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync();
+
+        string logId;
+
+        using (var added = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 0, name = "LogTask", x = 0, y = 0 }))
+        {
+            var json = await ReadJsonAsync(added);
+            logId = json["node"]["id"].GetValue<string>();
+
+            // The Log task is added with an empty text, which its editor requires.
+            var issue = Assert.Single(json["issues"].AsArray(), issue => issue["code"].GetValue<string>() == IssueCodes.InvalidActivitySettings);
+            Assert.Equal("Error", issue["severity"].GetValue<string>());
+            Assert.Equal(logId, issue["activityId"].GetValue<string>());
+        }
+
+        using (var publish = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Publish", new { revision = 1 }))
+        {
+            Assert.NotEqual(HttpStatusCode.OK, publish.StatusCode);
+        }
+
+        using var saved = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId={logId}&revision=1", new Dictionary<string, string>
+        {
+            ["LogTask.LogLevel"] = "Information",
+            ["LogTask.Text"] = "Hello",
+        });
+
+        var result = await ReadJsonAsync(saved);
+        Assert.True(result["valid"].GetValue<bool>());
+        Assert.DoesNotContain(result["issues"].AsArray(), issue => issue["code"].GetValue<string>() == IssueCodes.InvalidActivitySettings);
+    }
+
+    [Fact]
+    public async Task Editor_ScriptTask_ReturnsContentAndScripts()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("script", "ScriptTask"));
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=script");
+
+        Assert.True(json["valid"].GetValue<bool>());
+        var content = json["content"].GetValue<string>();
+        Assert.Contains($"data-workflow-type-id=\"{id}\"", content);
+        Assert.Contains("data-activity-id=\"script\"", content);
+        Assert.Contains("ScriptTask.Script", content);
+        var scripts = json["scripts"].GetValue<string>();
+        Assert.Contains("monaco-loader", scripts);
+        Assert.Contains("workflow-monaco-text-editor", scripts);
+        Assert.Contains("monaco-loader", json["styles"].GetValue<string>());
+    }
+
+    [Fact]
+    public async Task EditorPost_InvalidLiquidIfElse_ReturnsInvalidContentWithError()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("if", "IfElseTask"));
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=if&revision=0", new Dictionary<string, string>
+        {
+            ["IActivity.ActivityMetadata.Title"] = string.Empty,
+            ["IfElseTask.Condition.Syntax"] = "Liquid",
+            ["IfElseTask.Condition.Expression"] = "{{ true ",
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = await ReadJsonAsync(response);
+        Assert.False(json["valid"].GetValue<bool>());
+
+        var document = new HtmlParser().ParseDocument(json["content"].GetValue<string>());
+        var error = Assert.Single(document.QuerySelectorAll(".field-validation-error"));
+        Assert.Contains("Liquid", error.TextContent);
+        Assert.Equal("Liquid", document.QuerySelector("select[name='IfElseTask.Condition.Syntax'] option[selected]")?.GetAttribute("value"));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            Assert.Null(await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId));
+        });
+    }
+
+    [Fact]
+    public async Task Editor_LegacyIfElse_OpensItsLiquidConditionAndSavesTheExpressionWithItsSyntax()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("if", "IfElseTask", properties: new JsonObject
+        {
+            ["Condition"] = new JsonObject { ["Expression"] = "1 < 2" },
+            ["LiquidCondition"] = new JsonObject { ["Expression"] = "{{ true }}" },
+            ["Syntax"] = "Liquid",
+        }));
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=if", TestContext.Current.CancellationToken))
+        {
+            var json = await ReadJsonAsync(editor);
+            var content = new HtmlParser().ParseDocument(json["content"].GetValue<string>());
+            var syntax = content.QuerySelector("select[name='IfElseTask.Condition.Syntax']");
+
+            Assert.Equal(["Literal", "Liquid", "JavaScript"], syntax.QuerySelectorAll("option").Select(option => option.GetAttribute("value")));
+            Assert.Equal("Liquid", syntax.QuerySelector("option[selected]")?.GetAttribute("value"));
+            Assert.Equal("{{ true }}", content.QuerySelector("input[name='IfElseTask.Condition.Expression']")?.GetAttribute("value"));
+            Assert.Contains("workflow-expression-editor", json["scripts"].GetValue<string>());
+        }
+
+        using var saved = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=if&revision=0", new Dictionary<string, string>
+        {
+            ["IfElseTask.Condition.Syntax"] = "Literal",
+            ["IfElseTask.Condition.Expression"] = "true",
+        });
+
+        Assert.True((await ReadJsonAsync(saved))["valid"].GetValue<bool>());
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+            var properties = Assert.Single(draft.Activities).Properties;
+
+            Assert.Equal("true", properties["Condition"]["Expression"].GetValue<string>());
+            Assert.Equal("Literal", properties["Condition"]["Syntax"].GetValue<string>());
+            Assert.False(properties.ContainsKey("LiquidCondition"));
+            Assert.False(properties.ContainsKey("Syntax"));
+        });
+    }
+
+    [Fact]
+    public async Task EditorPost_LiteralThatDoesNotConvertOrUnknownSyntax_ReturnsTheErrors()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("loop", "ForLoopTask"));
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=loop&revision=0", new Dictionary<string, string>
+        {
+            ["ForLoopTask.From.Syntax"] = "Literal",
+            ["ForLoopTask.From.Expression"] = "one",
+            ["ForLoopTask.To.Syntax"] = "Python",
+            ["ForLoopTask.To.Expression"] = "10",
+            ["ForLoopTask.Step.Syntax"] = "JavaScript",
+            ["ForLoopTask.Step.Expression"] = "1",
+            ["ForLoopTask.LoopVariableName"] = "i",
+        });
+
+        var json = await ReadJsonAsync(response);
+        var errors = new HtmlParser().ParseDocument(json["content"].GetValue<string>()).QuerySelectorAll(".field-validation-error").Select(error => error.TextContent).ToList();
+
+        Assert.False(json["valid"].GetValue<bool>());
+        Assert.Contains(errors, error => error.Contains("'one'", StringComparison.Ordinal));
+        Assert.Contains(errors, error => error.Contains("Python", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task EditorPost_SetVariableTask_SavesTheVariableAndValidatesLiquid()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("set", "SetVariableTask"));
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set", TestContext.Current.CancellationToken))
+        {
+            var content = new HtmlParser().ParseDocument((await ReadJsonAsync(editor))["content"].GetValue<string>());
+
+            // The designer fills this datalist with the declared variables.
+            Assert.Equal("wfd-variables", content.QuerySelector("input[name='SetVariableTask.VariableName']")?.GetAttribute("list"));
+        }
+
+        using (var invalid = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set&revision=0", new Dictionary<string, string>
+        {
+            ["SetVariableTask.VariableName"] = "greeting",
+            ["SetVariableTask.Value.Syntax"] = "Liquid",
+            ["SetVariableTask.Value.Expression"] = "{{ 'Hello' ",
+        }))
+        {
+            var json = await ReadJsonAsync(invalid);
+            Assert.False(json["valid"].GetValue<bool>());
+            Assert.Contains("Liquid", new HtmlParser().ParseDocument(json["content"].GetValue<string>()).QuerySelector(".field-validation-error")?.TextContent);
+        }
+
+        using var valid = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set&revision=0", new Dictionary<string, string>
+        {
+            ["SetVariableTask.VariableName"] = " greeting ",
+            ["SetVariableTask.Value.Syntax"] = "Liquid",
+            ["SetVariableTask.Value.Expression"] = "{{ 'Hello' }}",
+        });
+
+        Assert.True((await ReadJsonAsync(valid))["valid"].GetValue<bool>());
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+            var properties = Assert.Single(draft.Activities).Properties;
+            Assert.Equal("greeting", properties["VariableName"].GetValue<string>());
+        });
+    }
+
+    [Fact]
+    public async Task Editor_ExecuteWorkflowTask_ShowsTheInputsOfTheWorkflowAndStoresItsOutputs()
+    {
+        var (_, childId) = await CreateWorkflowTypeAsync(Activity("start", "StartedByWorkflowEvent", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var child = await store.GetAsync(childId);
+            child.Name = "Doubler";
+            child.IsActivity = true;
+            child.Variables =
+            [
+                new WorkflowVariableDefinition { Name = "amount", TypeName = "number", IsInput = true },
+                new WorkflowVariableDefinition { Name = "doubled", TypeName = "number", IsOutput = true, Description = "Twice the amount" },
+            ];
+            await store.SaveAsync(child);
+        });
+
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("exec", "ExecuteWorkflowTask"));
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec", TestContext.Current.CancellationToken))
+        {
+            var content = new HtmlParser().ParseDocument((await ReadJsonAsync(editor))["content"].GetValue<string>());
+
+            // The workflows usable as an activity are listed, and no inputs show until one is selected.
+            Assert.Contains(content.QuerySelectorAll("select[data-wfd-reload] option"), option => option.GetAttribute("value") == childId && option.TextContent == "Doubler");
+            Assert.Null(content.QuerySelector("input[name='ExecuteWorkflowTask.Inputs[0].Name']"));
+        }
+
+        using (var saved = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec&revision=0", new Dictionary<string, string>
+        {
+            ["ExecuteWorkflowTask.WorkflowTypeId"] = childId,
+            ["ExecuteWorkflowTask.WaitForCompletion"] = "true",
+        }))
+        {
+            var json = await ReadJsonAsync(saved);
+            Assert.True(json["valid"].GetValue<bool>());
+
+            var output = Assert.Single(json["node"]["outputs"].AsArray());
+            Assert.Equal("doubled", output["name"].GetValue<string>());
+
+            // The output is named as the variable it comes from, which describes it.
+            Assert.Equal("doubled", output["displayName"].GetValue<string>());
+            Assert.Equal("Twice the amount", output["description"].GetValue<string>());
+        }
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec", TestContext.Current.CancellationToken))
+        {
+            var content = new HtmlParser().ParseDocument((await ReadJsonAsync(editor))["content"].GetValue<string>());
+
+            Assert.Equal("amount", content.QuerySelector("input[name='ExecuteWorkflowTask.Inputs[0].Name']")?.GetAttribute("value"));
+            Assert.NotNull(content.QuerySelector("[name='ExecuteWorkflowTask.Inputs[0].Value.Expression']"));
+        }
+
+        using (var inputs = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec&revision=1", new Dictionary<string, string>
+        {
+            ["ExecuteWorkflowTask.WorkflowTypeId"] = childId,
+            ["ExecuteWorkflowTask.WaitForCompletion"] = "false",
+            ["ExecuteWorkflowTask.Inputs[0].Name"] = "amount",
+            ["ExecuteWorkflowTask.Inputs[0].Value.Expression"] = "21",
+            ["ExecuteWorkflowTask.Inputs[0].Value.Syntax"] = "Literal",
+            ["ExecuteWorkflowTask.Inputs[1].Name"] = "unknown",
+            ["ExecuteWorkflowTask.Inputs[1].Value.Expression"] = "1",
+        }))
+        {
+            Assert.True((await ReadJsonAsync(inputs))["valid"].GetValue<bool>());
+        }
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+            var properties = Assert.Single(draft.Activities).Properties;
+
+            Assert.Equal(childId, properties["WorkflowTypeId"].GetValue<string>());
+            Assert.False(properties["WaitForCompletion"].GetValue<bool>());
+            Assert.Equal("21", properties["Inputs"]["amount"]["Expression"].GetValue<string>());
+            Assert.Null(properties["Inputs"]["unknown"]);
+        });
+    }
+
+    [Fact]
+    public async Task Editor_ExecuteWorkflowTaskWithoutAWorkflow_IsInvalid()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("exec", "ExecuteWorkflowTask"));
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec&revision=0", new Dictionary<string, string>
+        {
+            ["ExecuteWorkflowTask.WorkflowTypeId"] = string.Empty,
+        });
+
+        var json = await ReadJsonAsync(response);
+        Assert.False(json["valid"].GetValue<bool>());
+        Assert.Contains("usable as an activity", new HtmlParser().ParseDocument(json["content"].GetValue<string>()).QuerySelector(".field-validation-error")?.TextContent);
+    }
+
+    [Fact]
+    public async Task Library_WorkflowUsableAsAnActivity_IsAPresetThatAddsAnExecuteWorkflowTask()
+    {
+        var (_, childId) = await CreateWorkflowTypeAsync(Activity("start", "StartedByWorkflowEvent", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var child = await store.GetAsync(childId);
+            child.Name = "Preset child";
+            child.IsActivity = true;
+            child.Variables = [new WorkflowVariableDefinition { Name = "approved", TypeName = "boolean", IsOutput = true }];
+            await store.SaveAsync(child);
+        });
+
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        var library = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Library");
+        var preset = library["categories"].AsArray()
+            .SelectMany(category => category["activities"].AsArray())
+            .Single(activity => activity["preset"]?.GetValue<string>() == $"workflow:{childId}");
+
+        Assert.Equal("ExecuteWorkflowTask", preset["name"].GetValue<string>());
+        Assert.Equal("Preset child", preset["displayText"].GetValue<string>());
+        Assert.Equal("Workflows", preset["category"].GetValue<string>());
+        Assert.Contains("Preset child", preset["thumbnailHtml"].GetValue<string>());
+
+        using (var added = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 0, preset = $"workflow:{childId}", x = 10, y = 10 }))
+        {
+            Assert.Equal(HttpStatusCode.OK, added.StatusCode);
+
+            // The task runs the workflow, and its output can be bound before the task is edited.
+            var node = (await ReadJsonAsync(added))["node"];
+            Assert.Equal("ExecuteWorkflowTask", node["name"].GetValue<string>());
+            Assert.Equal("approved", Assert.Single(node["outputs"].AsArray())["name"].GetValue<string>());
+
+            // On the canvas, the task is the workflow it runs, as in the activities pane.
+            Assert.Equal("Preset child", node["displayText"].GetValue<string>());
+            Assert.Equal("Preset child", node["title"].GetValue<string>());
+        }
+
+        using var unknown = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 1, preset = "workflow:missing", x = 0, y = 0 });
+
+        Assert.Equal(HttpStatusCode.BadRequest, unknown.StatusCode);
+    }
+
+    [Fact]
+    public async Task Definition_ActivitiesThatProvideValues_ListThem()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(
+            Activity("published", "ContentPublishedEvent", isStart: true),
+            Activity("signal", "SignalEvent"),
+            Activity("loop", "ForEachTask", properties: new JsonObject { ["LoopVariableName"] = "item" }),
+            Activity("set", "SetPropertyTask", properties: new JsonObject { ["PropertyName"] = "Owner" }),
+            Activity("notify", "NotifyTask"),
+            Activity("liquid", "LiquidTask"),
+            Activity("http", "HttpRequestTask"),
+            Activity("child", "ExecuteWorkflowTask", properties: new JsonObject { ["Outputs"] = new JsonArray(new JsonObject { ["Name"] = "greeting", ["TypeName"] = "string" }) }));
+
+        var nodes = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["nodes"].AsArray()
+            .ToDictionary(node => node["id"].GetValue<string>());
+
+        string ValuesOf(string activityId)
+            => string.Join(", ", nodes[activityId]["providedValues"].AsArray()
+                .Select(value => $"{value["source"].GetValue<string>()}.{value["name"].GetValue<string>()}:{value["typeName"].GetValue<string>()}"));
+
+        Assert.Equal("Input.ContentItem:contentItem, Input.ContentEvent:object", ValuesOf("published"));
+        Assert.Equal("Input.Signal:string", ValuesOf("signal"));
+
+        // The names of the values some activities set come from their settings.
+        Assert.Equal("Properties.item:any, LastResult.LastResult:any", ValuesOf("loop"));
+        Assert.Equal("Properties.Owner:any", ValuesOf("set"));
+        Assert.Equal(string.Empty, ValuesOf("notify"));
+        Assert.Equal("The content item of the event.", nodes["published"]["providedValues"][0]["description"].GetValue<string>());
+
+        // The content item and the event list their fields.
+        string FieldsOf(string activityId, int index)
+            => string.Join(", ", nodes[activityId]["providedValues"][index]["members"].AsArray().Select(member => member["name"].GetValue<string>()));
+
+        Assert.StartsWith("ContentItemId, ContentItemVersionId, ContentType, DisplayText", FieldsOf("published", 0));
+        Assert.Equal("Name, ContentType, ContentItemId, ContentItemVersionId, IsStart", FieldsOf("published", 1));
+        Assert.Empty(nodes["signal"]["providedValues"][0]["members"].AsArray());
+
+        // The global values and functions, from the Workflows module, its HTTP feature and the Contents module.
+        var globals = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["globalValues"].AsArray();
+        var site = globals.Single(value => value["name"].GetValue<string>() == "Site");
+        Assert.Equal("Value", site["kind"].GetValue<string>());
+        Assert.Equal("Site", site["liquidPath"].GetValue<string>());
+        Assert.Contains(site["members"].AsArray(), member => member["name"].GetValue<string>() == "SiteName");
+        Assert.Contains(globals, value => value["name"].GetValue<string>() == "uuid()" && value["kind"].GetValue<string>() == "Function" && value["javaScript"].GetValue<string>() == "uuid()");
+        Assert.Contains(globals, value => value["name"].GetValue<string>() == "queryString(\"name\")");
+        Assert.Contains(globals, value => value["name"].GetValue<string>() == "Content");
+
+        // Activities declare their last result, with its type and fields.
+        Assert.Equal("LastResult.LastResult:string", ValuesOf("liquid"));
+        Assert.Equal("LastResult.LastResult:object", ValuesOf("http"));
+        Assert.Equal("Body, Headers, StatusCode, ReasonPhrase, IsSuccessStatusCode", FieldsOf("http", 0));
+
+        // The last result of Execute Workflow has the outputs of the workflow it runs.
+        Assert.Equal("LastResult.LastResult:object", ValuesOf("child"));
+        Assert.Equal("greeting", FieldsOf("child", 0));
+
+        // Liquid can read the fields of the content event and of a fault.
+        await _fixture.Context.UsingTenantScopeAsync(scope =>
+        {
+            var strategy = scope.ServiceProvider.GetRequiredService<IOptions<TemplateOptions>>().Value.MemberAccessStrategy;
+
+            Assert.NotNull(strategy.GetAccessor(typeof(ContentEventContext), nameof(ContentEventContext.ContentType)));
+            Assert.NotNull(strategy.GetAccessor(typeof(WorkflowFaultModel), nameof(WorkflowFaultModel.ErrorMessage)));
+
+            return Task.CompletedTask;
+        });
+    }
+
+    [Fact]
+    public async Task Variables_ValidDeclarations_SavesThemIntoTheDraft()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true),
+            Activity("set", "SetVariableTask", properties: new JsonObject { ["VariableName"] = "count" }));
+
+        var before = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+
+        Assert.Empty(before["variables"].AsArray());
+        var types = before["variableTypes"].AsArray().ToDictionary(x => x["name"].GetValue<string>(), x => x["editor"].GetValue<string>());
+        Assert.Equal("number", types["number"]);
+        Assert.Equal("json", types["object"]);
+        Assert.Contains(before["issues"].AsArray(), x => x["code"].GetValue<string>() == "UndeclaredVariable" && x["activityId"].GetValue<string>() == "set");
+
+        using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Variables", new
+        {
+            revision = 0,
+            variables = new object[] { new { name = " count ", typeName = "number", defaultValue = 1, description = "Items seen" } },
+        });
+
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        var json = await ReadJsonAsync(saved);
+        Assert.Equal(1, json["revision"].GetValue<int>());
+        Assert.Equal("count", Assert.Single(json["variables"].AsArray())["name"].GetValue<string>());
+        Assert.DoesNotContain(json["issues"].AsArray(), x => x["code"].GetValue<string>() == "UndeclaredVariable");
+
+        using (var stale = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Variables", new { revision = 0, variables = Array.Empty<object>() }))
+        {
+            Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        }
+
+        var after = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        var variable = Assert.Single(after["variables"].AsArray());
+        Assert.Equal("number", variable["typeName"].GetValue<string>());
+        Assert.Equal(1, variable["defaultValue"].GetValue<int>());
+        Assert.Equal("Items seen", variable["description"].GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Variables_InvalidDeclarations_ReturnsVariableErrorsAndKeepsTheDraft()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        using var rejected = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Variables", new
+        {
+            revision = 0,
+            variables = new object[]
+            {
+                new { name = "count", typeName = "number", defaultValue = "many" },
+                new { name = "Count", typeName = "string" },
+                new { name = "x", typeName = "unknown" },
+            },
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, rejected.StatusCode);
+        Assert.Equal("application/problem+json", rejected.Content.Headers.ContentType?.MediaType);
+        var errors = (await ReadJsonAsync(rejected))["variableErrors"].AsArray();
+        Assert.Equal([0, 1, 2], errors.Select(x => x["index"].GetValue<int>()));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+            Assert.Null(await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId)));
+    }
+
+    [Fact]
+    public async Task OutputBindings_HttpRequestOutputs_SavesTheBindingsAndReportsProblems()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(
+            [Activity("start", "HttpRequestEvent", isStart: true), Activity("request", "HttpRequestTask")],
+            [Transition("start", "Done", "request")]);
+
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        var outputs = definition["nodes"][1]["outputs"].AsArray().ToDictionary(x => x["name"].GetValue<string>(), x => x["typeName"].GetValue<string>());
+        Assert.Equal("number", outputs["StatusCode"]);
+        Assert.Empty(definition["nodes"][1]["outputBindings"].AsObject());
+
+        using (var declared = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Variables", new
+        {
+            revision = 0,
+            variables = new object[] { new { name = "flag", typeName = "boolean" }, new { name = "body", typeName = "string" } },
+        }))
+        {
+            Assert.Equal(HttpStatusCode.OK, declared.StatusCode);
+        }
+
+        using var bound = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/OutputBindings", new
+        {
+            revision = 1,
+            activityId = "request",
+            bindings = new Dictionary<string, string> { ["Body"] = "body", ["StatusCode"] = "flag", ["Response"] = "missing" },
+        });
+
+        Assert.Equal(HttpStatusCode.OK, bound.StatusCode);
+        var json = await ReadJsonAsync(bound);
+        Assert.Equal(2, json["revision"].GetValue<int>());
+        Assert.Equal("flag", json["node"]["outputBindings"]["StatusCode"].GetValue<string>());
+        var codes = json["issues"].AsArray().Select(x => x["code"].GetValue<string>()).Order().ToArray();
+        Assert.Equal(["OutputTypeMismatch", "UndeclaredVariable"], codes);
+
+        using var unknown = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/OutputBindings", new { revision = 2, activityId = "missing", bindings = new Dictionary<string, string>() });
+
+        Assert.Equal(HttpStatusCode.NotFound, unknown.StatusCode);
+    }
+
+    [Fact]
+    public async Task Instance_DeclaredVariables_ReturnsTheirStoredValues()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        using (var declared = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Variables", new
+        {
+            revision = 0,
+            variables = new object[] { new { name = "greeting", typeName = "string" }, new { name = "count", typeName = "number" } },
+        }))
+        {
+            Assert.Equal(HttpStatusCode.OK, declared.StatusCode);
+        }
+
+        using (var published = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Publish", new { revision = 1 }))
+        {
+            Assert.Equal(HttpStatusCode.OK, published.StatusCode);
+        }
+
+        var workflow = new Workflow
+        {
+            WorkflowId = Guid.NewGuid().ToString("n"),
+            WorkflowTypeId = workflowTypeId,
+            Status = WorkflowStatus.Finished,
+            CreatedUtc = DateTime.UtcNow,
+            State = new JsonObject
+            {
+                ["Properties"] = new JsonObject { ["greeting"] = "hello", ["internal"] = "not declared" },
+            },
+        };
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowStore>().SaveAsync(workflow));
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={workflow.Id}");
+
+        Assert.Equal(["greeting", "count"], json["variables"].AsArray().Select(x => x["name"].GetValue<string>()));
+        var value = Assert.Single(json["instance"]["variableValues"].AsObject());
+        Assert.Equal("greeting", value.Key);
+        Assert.Equal("hello", value.Value.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task EditorPost_ForkBranchesChanged_UpdatesOutcomesAndRemovesTransitions()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(
+            [
+                Activity("start", "HttpRequestEvent", isStart: true),
+                Activity("fork", "ForkTask", properties: new JsonObject { ["Forks"] = new JsonArray("A", "B") }),
+                Activity("a", "NotifyTask"),
+                Activity("b", "NotifyTask"),
+            ],
+            [
+                Transition("start", "Done", "fork"),
+                Transition("fork", "A", "a"),
+                Transition("fork", "B", "b"),
+            ]);
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=fork&revision=0", new Dictionary<string, string>
+        {
+            ["IActivity.ActivityMetadata.Title"] = "Split",
+            ["ForkTask.Forks"] = "A, C",
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = await ReadJsonAsync(response);
+        Assert.True(json["valid"].GetValue<bool>());
+        Assert.Equal(1, json["revision"].GetValue<int>());
+        Assert.Equal(["A", "C"], json["node"]["outcomes"].AsArray().Select(x => x["name"].GetValue<string>()));
+        Assert.Equal("Split", json["node"]["title"].GetValue<string>());
+        var removed = Assert.Single(json["removedTransitions"].AsArray());
+        Assert.Equal("B", removed["sourceOutcomeName"].GetValue<string>());
+
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.DoesNotContain(definition["transitions"].AsArray(), x => x["sourceOutcomeName"].GetValue<string>() == "B");
+    }
+
+    [Fact]
+    public async Task RenderedShapes_JsonEndpoints_AreNotWrappedInTheLayout()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"), Activity("start", "HttpRequestEvent", isStart: true));
+
+        // The first shape rendered in a request is the one that would be rendered as a main page.
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        AssertFragment(definition["nodes"][0]["designHtml"].GetValue<string>());
+
+        var library = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Library");
+        AssertFragment(library["categories"][0]["activities"][0]["thumbnailHtml"].GetValue<string>());
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=notify&revision=0", new Dictionary<string, string>
+        {
+            ["IActivity.ActivityMetadata.Title"] = string.Empty,
+            ["NotifyTask.NotificationType"] = "Success",
+            ["NotifyTask.Message"] = "Hello",
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var designHtml = (await ReadJsonAsync(response))["node"]["designHtml"].GetValue<string>();
+        AssertFragment(designHtml);
+        Assert.Contains("Hello", designHtml);
+
+        static void AssertFragment(string html)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(html));
+            Assert.DoesNotContain("<html", html, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("<title", html, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    public async Task Publish_DraftWithHttpEvents_RegistersRoutesAndDeletesDraft()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync();
+
+        using (var addFilter = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 0, name = "HttpRequestFilterEvent", x = 0, y = 0 }))
+        {
+            Assert.Equal(HttpStatusCode.OK, addFilter.StatusCode);
+        }
+
+        string requestEventId = null;
+
+        using (var addRequest = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 1, name = "HttpRequestEvent", x = 0, y = 200 }))
+        {
+            requestEventId = (await ReadJsonAsync(addRequest))["node"]["id"].GetValue<string>();
+        }
+
+        // Both are start activities: the filter event because it was the first event, the request event set here.
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        using (var save = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision = 2,
+            nodes = definition["nodes"].AsArray().Select(x => new { id = x["id"].GetValue<string>(), x = 0, y = 0, isStart = true }).ToArray(),
+            transitions = Array.Empty<object>(),
+            removedActivityIds = Array.Empty<string>(),
+        }))
+        {
+            Assert.Equal(HttpStatusCode.OK, save.StatusCode);
+        }
+
+        using (var edit = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId={requestEventId}&revision=3", new Dictionary<string, string>
+        {
+            ["HttpRequestEvent.HttpMethod"] = "GET",
+            ["HttpRequestEvent.ValidateAntiforgeryToken"] = "false",
+            ["HttpRequestEvent.TokenLifeSpan"] = "0",
+        }))
+        {
+            Assert.True((await ReadJsonAsync(edit))["valid"].GetValue<bool>());
+        }
+
+        var invokeUrl = await _fixture.CreateInvokeUrlAsync(workflowTypeId, requestEventId);
+
+        using (var beforePublish = await _fixture.Context.Client.GetAsync(invokeUrl, TestContext.Current.CancellationToken))
+        {
+            Assert.Equal(HttpStatusCode.NotFound, beforePublish.StatusCode);
+        }
+
+        Assert.Empty(await _fixture.GetRouteEntriesAsync(id));
+
+        using var publish = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Publish", new { revision = 4 });
+
+        Assert.Equal(HttpStatusCode.OK, publish.StatusCode);
+        Assert.NotNull((await ReadJsonAsync(publish))["publishedUtc"]);
+        Assert.Single(await _fixture.GetRouteEntriesAsync(id));
+
+        using (var afterPublish = await _fixture.Context.Client.GetAsync(invokeUrl, TestContext.Current.CancellationToken))
+        {
+            Assert.NotEqual(HttpStatusCode.NotFound, afterPublish.StatusCode);
+        }
+
+        var published = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.False(published["hasDraft"].GetValue<bool>());
+        Assert.Equal(2, published["nodes"].AsArray().Count);
+    }
+
+    [Fact]
+    public async Task Discard_Draft_RevertsToLiveDefinition()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        using (var add = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 0, name = "NotifyTask", x = 0, y = 0 }))
+        {
+            Assert.Equal(HttpStatusCode.OK, add.StatusCode);
+        }
+
+        Assert.Equal(2, (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["nodes"].AsArray().Count);
+
+        using var discard = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Discard", new { });
+
+        Assert.Equal(HttpStatusCode.OK, discard.StatusCode);
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.False(definition["hasDraft"].GetValue<bool>());
+        Assert.Equal("start", Assert.Single(definition["nodes"].AsArray())["id"].GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Settings_UsableAsAnActivityAndBranchingMode_AreShownAndStoredInTheDraft()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        var form = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Settings");
+        Assert.Contains("name=\"IsActivity\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"BranchingMode\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"FaultOnScriptErrors\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"RecordActivityData\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"InstanceLimit\"", form["content"].GetValue<string>());
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Settings?revision=0", new Dictionary<string, string>
+        {
+            ["Name"] = "Approval",
+            ["IsEnabled"] = "true",
+            ["IsActivity"] = "true",
+            ["BranchingMode"] = "All",
+            ["FaultOnScriptErrors"] = "true",
+            ["RecordActivityData"] = "true",
+            ["InstanceLimit"] = "OnePerCorrelation",
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var settings = (await ReadJsonAsync(response))["settings"];
+        Assert.True(settings["isActivity"].GetValue<bool>());
+        Assert.Equal("All", settings["branchingMode"].GetValue<string>());
+        Assert.True(settings["isSingletonPerCorrelation"].GetValue<bool>());
+        Assert.False(settings["isSingleton"].GetValue<bool>());
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+
+            Assert.True(draft.IsActivity);
+            Assert.Equal(WorkflowBranchingMode.All, draft.BranchingMode);
+            Assert.True(draft.FaultOnScriptErrors);
+            Assert.True(draft.RecordActivityData);
+            Assert.True(draft.IsSingletonPerCorrelation);
+            Assert.False(draft.IsSingleton);
+        });
+    }
+
+    [Fact]
+    public async Task Save_WithoutAntiforgeryToken_IsRejected()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        using var response = await _fixture.Context.Client.PostAsync(
+            $"Admin/Workflows/Types/{id}/Designer/Save",
+            new StringContent("""{"revision":0,"nodes":[],"transitions":[],"removedActivityIds":[]}""", Encoding.UTF8, "application/json"),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            Assert.Null(await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId));
+        });
+    }
+
+    [Fact]
+    public async Task Instance_BlockedInstance_ReturnsTheLiveGraphWithItsBlockingActivities()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true, x: 10), Activity("notify", "NotifyTask", x: 300));
+
+        // The instance runs on the live type, so a draft change doesn't show.
+        using (var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision = 0,
+            nodes = new[] { new { id = "start", x = 99, y = 0, isStart = true }, new { id = "notify", x = 300, y = 0, isStart = false } },
+            transitions = Array.Empty<object>(),
+            removedActivityIds = Array.Empty<string>(),
+        }))
+        {
+            Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        }
+
+        var instanceId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "notify");
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}");
+
+        Assert.False(json["hasDraft"].GetValue<bool>());
+        Assert.Equal(10, json["nodes"][0]["x"].GetValue<int>());
+        Assert.False(string.IsNullOrWhiteSpace(json["nodes"][1]["designHtml"].GetValue<string>()));
+        var instance = json["instance"];
+        Assert.Equal(instanceId, instance["id"].GetValue<long>());
+        Assert.Equal("Halted", instance["status"].GetValue<string>());
+        Assert.Equal(["notify"], instance["blockingActivityIds"].AsArray().Select(x => x.GetValue<string>()));
+    }
+
+    [Fact]
+    public async Task Instance_Journal_ReturnsTheRecordsTheExecutedPathAndTheFault()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(
+            [Activity("start", "HttpRequestEvent", isStart: true), Activity("fork", "ForkTask"), Activity("a", "NotifyTask"), Activity("b", "NotifyTask")],
+            [Transition("start", "Done", "fork"), Transition("fork", "A", "a"), Transition("fork", "B", "b")]);
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(workflow.WorkflowId,
+        [
+            Record(workflow, 1, "start", WorkflowExecutionRecordStatus.Completed, "Done"),
+            Record(workflow, 2, "fork", WorkflowExecutionRecordStatus.Completed, "A", "B"),
+            Record(workflow, 3, "a", WorkflowExecutionRecordStatus.Completed, "Done"),
+            Record(workflow, 4, "b", WorkflowExecutionRecordStatus.Faulted),
+        ]));
+
+        var instance = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={workflow.Id}"))["instance"];
+
+        Assert.Equal("b", instance["faultedActivityId"].GetValue<string>());
+        Assert.Equal("Broken", instance["faultMessage"].GetValue<string>());
+        Assert.Equal([1, 2, 3, 4], instance["journal"].AsArray().Select(record => record["sequence"].GetValue<int>()));
+        Assert.Equal("Faulted", instance["journal"][3]["status"].GetValue<string>());
+        Assert.Equal(1500, instance["journal"][0]["durationMilliseconds"].GetValue<double>());
+        Assert.Equal(1, instance["executedActivityCounts"]["fork"].GetValue<int>());
+        var transitions = instance["executedTransitionCounts"].AsObject().ToDictionary(x => x.Key, x => x.Value.GetValue<int>());
+        Assert.Equal(new Dictionary<string, int> { ["start:Done:fork"] = 1, ["fork:A:a"] = 1, ["fork:B:b"] = 1 }, transitions);
+    }
+
+    [Fact]
+    public async Task JournalData_RecordOfTheInstance_ReturnsItsDataWhenItHasSome()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+        var withData = Record(workflow, 1, "start", WorkflowExecutionRecordStatus.Completed, "Done");
+        withData.Data = new WorkflowExecutionData
+        {
+            Evaluations = [new WorkflowExpressionEvaluation { Property = "Condition", Syntax = "JavaScript", Expression = "1 + 1", Result = "2" }],
+            Variables = new Dictionary<string, string> { ["total"] = "2" },
+            LastResult = "2",
+        };
+
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(workflow.WorkflowId,
+        [
+            withData,
+            Record(workflow, 2, "start", WorkflowExecutionRecordStatus.Completed, "Done"),
+        ]));
+
+        // The instance only says which records have data.
+        var journal = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={workflow.Id}"))["instance"]["journal"].AsArray();
+        Assert.Equal([true, false], journal.Select(record => record["hasData"].GetValue<bool>()));
+        Assert.Null(journal[0]["data"]);
+
+        var data = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/JournalData?instanceId={workflow.Id}&sequence=1");
+        var evaluation = Assert.Single(data["evaluations"].AsArray());
+        Assert.Equal("Condition", evaluation["property"].GetValue<string>());
+        Assert.Equal("2", evaluation["result"].GetValue<string>());
+        Assert.Equal("2", data["variables"]["total"].GetValue<string>());
+        Assert.Equal("2", data["lastResult"].GetValue<string>());
+
+        // A record without data, or that doesn't exist.
+        foreach (var sequence in new[] { 2, 9 })
+        {
+            using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/JournalData?instanceId={workflow.Id}&sequence={sequence}", TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+    }
+
+    private static WorkflowExecutionRecord Record(Workflow workflow, int sequence, string activityId, WorkflowExecutionRecordStatus status, params string[] outcomes)
+        => new()
+        {
+            WorkflowId = workflow.WorkflowId,
+            WorkflowTypeId = workflow.WorkflowTypeId,
+            Sequence = sequence,
+            ActivityId = activityId,
+            ActivityName = "Activity",
+            Status = status,
+            Outcomes = outcomes,
+            StartedUtc = new DateTime(2026, 10, 7, 12, 0, 0, DateTimeKind.Utc),
+            CompletedUtc = new DateTime(2026, 10, 7, 12, 0, 1, 500, DateTimeKind.Utc),
+            DurationMilliseconds = 1500,
+            Error = status == WorkflowExecutionRecordStatus.Faulted ? "Broken" : null,
+        };
+
+    [Fact]
+    public async Task Instance_OfAnotherWorkflowType_ReturnsNotFoundProblem()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var (_, otherWorkflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var instanceId = await _fixture.CreateInstanceAsync(otherWorkflowTypeId, WorkflowStatus.Halted, "start");
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Run_WorkflowStartedByWorkflow_RunsThePublishedVersionWithTheInputsAndReturnsTheOutputs()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(
+            [
+                Activity("start", "StartedByWorkflowEvent", isStart: true),
+                Activity("double", "SetVariableTask", properties: new JsonObject
+                {
+                    ["VariableName"] = "doubled",
+                    ["Value"] = new JsonObject { ["Expression"] = "variable('amount') * 2", ["Syntax"] = "JavaScript" },
+                }),
+            ],
+            [Transition("start", "Done", "double")]);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var workflowType = await store.GetAsync(workflowTypeId);
+            workflowType.IsActivity = true;
+            workflowType.Variables =
+            [
+                new WorkflowVariableDefinition { Name = "amount", TypeName = "number", IsInput = true },
+                new WorkflowVariableDefinition { Name = "doubled", TypeName = "number", IsOutput = true },
+            ];
+            await store.SaveAsync(workflowType);
+        });
+
+        var run = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["run"];
+        Assert.Equal("inputs", run["mode"].GetValue<string>());
+        Assert.Equal("start", run["activityId"].GetValue<string>());
+        Assert.Equal(["amount"], run["inputs"].AsArray().Select(input => input["name"].GetValue<string>()));
+
+        using (var response = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Run", new { inputs = new { amount = 21 } }))
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var json = await ReadJsonAsync(response);
+            Assert.Equal("Finished", json["status"].GetValue<string>());
+            Assert.Equal(42, json["outputs"]["doubled"].GetValue<double>());
+            Assert.EndsWith($"Workflow/Details/{json["instanceId"].GetValue<long>()}", json["instanceUrl"].GetValue<string>());
+
+            var latest = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/LatestInstance");
+            Assert.Equal(json["instanceId"].GetValue<long>(), latest["instanceId"].GetValue<long>());
+            Assert.Equal("Finished", latest["status"].GetValue<string>());
+        }
+
+        // An input that isn't a value of its type is refused, and runs nothing.
+        using var invalid = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Run", new { inputs = new { amount = "many" } });
+
+        Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode);
+        Assert.Contains("amount", (await ReadJsonAsync(invalid))["title"].GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Run_HttpOrDisabledWorkflow_IsRefused()
+    {
+        var (httpId, _) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true, properties: new JsonObject { ["HttpMethod"] = "POST" }),
+            Activity("read", "SetPropertyTask", properties: new JsonObject
+            {
+                ["PropertyName"] = "Order",
+                ["Value"] = new JsonObject { ["Expression"] = "queryString('size') + requestForm(\"note\") + queryString('size')", ["Syntax"] = "JavaScript" },
+            }),
+            Activity("reply", "HttpResponseTask", properties: new JsonObject
+            {
+                ["Content"] = new JsonObject { ["Expression"] = "{{ Request.QueryString[\"color\"] }} {{ Request.Form.city }}" },
+            }));
+        var (disabledId, disabledWorkflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "StartedByWorkflowEvent", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var workflowType = await store.GetAsync(disabledWorkflowTypeId);
+            workflowType.IsEnabled = false;
+            await store.SaveAsync(workflowType);
+        });
+
+        // A workflow started by an HTTP request is run with a request to its URL.
+        var run = (await GetJsonAsync($"Admin/Workflows/Types/{httpId}/Designer/Definition"))["run"];
+        Assert.Equal("http", run["mode"].GetValue<string>());
+        Assert.Equal("POST", run["httpMethod"].GetValue<string>());
+
+        // The values its expressions read from the request, once each.
+        Assert.Equal(["size", "color"], run["queryParameters"].AsArray().Select(name => name.GetValue<string>()));
+        Assert.Equal(["note", "city"], run["formFields"].AsArray().Select(name => name.GetValue<string>()));
+
+        using (var http = await PostJsonAsync($"Admin/Workflows/Types/{httpId}/Designer/Run", new { inputs = new { } }))
+        {
+            Assert.Equal(HttpStatusCode.BadRequest, http.StatusCode);
+        }
+
+        Assert.False((await GetJsonAsync($"Admin/Workflows/Types/{disabledId}/Designer/Definition"))["run"]["isEnabled"].GetValue<bool>());
+
+        using var disabled = await PostJsonAsync($"Admin/Workflows/Types/{disabledId}/Designer/Run", new { inputs = new { } });
+
+        Assert.Equal(HttpStatusCode.BadRequest, disabled.StatusCode);
+    }
+
+    [Fact]
+    public async Task AllInstances_Filters_ListAndCountTheInstancesOfTheWorkflowStatusAndDate()
+    {
+        var (_, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var (_, otherWorkflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var halted = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "start");
+        var faulted = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Faulted);
+        var old = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+        var other = await _fixture.CreateInstanceAsync(otherWorkflowTypeId, WorkflowStatus.Finished);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            var workflow = await store.GetAsync(old);
+            workflow.CreatedUtc = DateTime.UtcNow.AddDays(-3);
+            await store.SaveAsync(workflow);
+        });
+
+        // The instances of one workflow, with their counts by status.
+        var page = await GetDocumentAsync($"Admin/Workflows/Instances?Options.WorkflowTypeId={workflowTypeId}");
+        Assert.Equal(new[] { halted, faulted, old }.Order(), InstanceIds(page).Order());
+        Assert.Equal("3", Count(page, "All"));
+        Assert.Equal("1", Count(page, "Halted"));
+        Assert.Equal("1", Count(page, "Faulted"));
+        Assert.Equal("1", Count(page, "Finished"));
+        Assert.Equal("0", Count(page, "Running"));
+
+        // The status filter, the date filter, and every workflow.
+        Assert.Equal([faulted], InstanceIds(await GetDocumentAsync($"Admin/Workflows/Instances?Options.WorkflowTypeId={workflowTypeId}&Options.Filter=Faulted")));
+        Assert.DoesNotContain(old, InstanceIds(await GetDocumentAsync($"Admin/Workflows/Instances?Options.WorkflowTypeId={workflowTypeId}&Options.Created=Last24Hours")));
+
+        var all = await GetDocumentAsync("Admin/Workflows/Instances?pagesize=100");
+        Assert.Contains(other, InstanceIds(all));
+        Assert.Contains(halted, InstanceIds(all));
+        Assert.NotNull(all.QuerySelector($"[data-cy=instance-{other}] [data-cy=instance-workflow]"));
+    }
+
+    [Fact]
+    public async Task AllInstances_BulkActions_RetryCancelAndDeleteTheCheckedInstances()
+    {
+        var (_, workflowTypeId) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true),
+            Activity("set", "SetPropertyTask", properties: new JsonObject
+            {
+                ["PropertyName"] = "Fixed",
+                ["Value"] = new JsonObject { ["Expression"] = "yes", ["Syntax"] = "Literal" },
+            }));
+        var faulted = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+        var halted = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "start");
+        var finished = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+
+        // The journal says where the faulted instance faulted.
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(faulted.WorkflowId,
+        [
+            new WorkflowExecutionRecord { WorkflowId = faulted.WorkflowId, WorkflowTypeId = workflowTypeId, Sequence = 1, ActivityId = "set", ActivityName = "SetPropertyTask", Status = WorkflowExecutionRecordStatus.Faulted, Error = "Broken" },
+        ]));
+
+        // The list's actions need two checked instances.
+        await PostBulkActionAsync("Retry", faulted.Id, halted);
+        await PostBulkActionAsync("Cancel", halted, finished);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            Assert.Equal(WorkflowStatus.Finished, (await store.GetAsync(faulted.Id)).Status);
+
+            var canceled = await store.GetAsync(halted);
+            Assert.Equal(WorkflowStatus.Aborted, canceled.Status);
+            Assert.Empty(canceled.BlockingActivities);
+
+            // A finished instance isn't canceled.
+            Assert.Equal(WorkflowStatus.Finished, (await store.GetAsync(finished)).Status);
+        });
+
+        await PostBulkActionAsync("Delete", halted, finished);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            Assert.Null(await store.GetAsync(halted));
+            Assert.Null(await store.GetAsync(finished));
+        });
+    }
+
+    private async Task<IHtmlDocument> GetDocumentAsync(string path)
+    {
+        using var response = await _fixture.Context.Client.GetAsync(path, TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        return new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
+    private static long[] InstanceIds(IHtmlDocument document)
+        => document.QuerySelectorAll("input[name='itemIds']").Select(input => long.Parse(input.GetAttribute("value"), CultureInfo.InvariantCulture)).ToArray();
+
+    private static string Count(IHtmlDocument document, string filter)
+        => document.QuerySelector($"[data-cy=instance-count-{filter}] .badge").TextContent.Trim();
+
+    private async Task PostBulkActionAsync(string action, params long[] itemIds)
+    {
+        var content = new MultipartFormDataContent
+        {
+            { new StringContent(action), "Options.BulkAction" },
+            { new StringContent("Submit"), "submit.BulkAction" },
+        };
+
+        foreach (var id in itemIds)
+        {
+            content.Add(new StringContent(id.ToString(CultureInfo.InvariantCulture)), "itemIds");
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "Admin/Workflows/Instances") { Content = content };
+        await _fixture.AddAntiforgeryAsync(request);
+
+        using var response = await _fixture.Context.Client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.True(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.Redirect, $"The {action} bulk action returned {response.StatusCode}.");
+    }
+
+    [Fact]
+    public async Task Instance_ParentAndChild_LinkToEachOtherWhenTheyExist()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true), Activity("exec", "ExecuteWorkflowTask"));
+        var parentId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+        var childId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+        string parentWorkflowId = null;
+        string childWorkflowId = null;
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            var parent = await store.GetAsync(parentId);
+            var child = await store.GetAsync(childId);
+            parentWorkflowId = parent.WorkflowId;
+            childWorkflowId = child.WorkflowId;
+
+            child.ParentWorkflowId = parent.WorkflowId;
+            child.ParentActivityId = "exec";
+            await store.SaveAsync(child);
+
+            await scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(parent.WorkflowId,
+            [
+                new WorkflowExecutionRecord { WorkflowId = parent.WorkflowId, WorkflowTypeId = workflowTypeId, Sequence = 1, ActivityId = "exec", ActivityName = "ExecuteWorkflowTask", Status = WorkflowExecutionRecordStatus.Completed, ChildWorkflowId = child.WorkflowId },
+                new WorkflowExecutionRecord { WorkflowId = parent.WorkflowId, WorkflowTypeId = workflowTypeId, Sequence = 2, ActivityId = "exec", ActivityName = "ExecuteWorkflowTask", Status = WorkflowExecutionRecordStatus.Completed, ChildWorkflowId = "deletedchild" },
+            ]);
+        });
+
+        var parentJournal = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={parentId}"))["instance"]["journal"].AsArray();
+        Assert.Equal(childWorkflowId, parentJournal[0]["childWorkflowId"].GetValue<string>());
+        Assert.EndsWith($"Workflow/Details/{childId}", parentJournal[0]["childInstanceUrl"].GetValue<string>());
+
+        // A deleted child is named, without a link.
+        Assert.Equal("deletedchild", parentJournal[1]["childWorkflowId"].GetValue<string>());
+        Assert.Null(parentJournal[1]["childInstanceUrl"]);
+
+        var child = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={childId}"))["instance"];
+        Assert.Equal(parentWorkflowId, child["parentWorkflowId"].GetValue<string>());
+        Assert.EndsWith($"Workflow/Details/{parentId}", child["parentInstanceUrl"].GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Retry_FaultedInstance_RunsItAgainFromTheActivity()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true),
+            Activity("set", "SetPropertyTask", properties: new JsonObject
+            {
+                ["PropertyName"] = "Fixed",
+                ["Value"] = new JsonObject { ["Expression"] = "yes", ["Syntax"] = "Literal" },
+            }));
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+
+        using (var response = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Retry", new { instanceId = workflow.Id, activityId = "set" }))
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var json = await ReadJsonAsync(response);
+            Assert.Equal("Finished", json["status"].GetValue<string>());
+            Assert.Null(json["faultMessage"]);
+        }
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var saved = await scope.ServiceProvider.GetRequiredService<IWorkflowStore>().GetAsync(workflow.Id);
+            var record = Assert.Single(await scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().ListAsync(workflow.WorkflowId));
+
+            Assert.Equal(WorkflowStatus.Finished, saved.Status);
+            Assert.Equal("set", record.ActivityId);
+            Assert.Equal(WorkflowExecutionRecordStatus.Completed, record.Status);
+        });
+
+        // A finished instance can't be retried.
+        using var again = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Retry", new { instanceId = workflow.Id, activityId = "set" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, again.StatusCode);
+    }
+
+    [Fact]
+    public async Task Retry_UnknownActivityOrInstanceOfAnotherType_ReturnsAnError()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var (otherId, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+
+        using (var unknown = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Retry", new { instanceId = workflow.Id, activityId = "missing" }))
+        {
+            Assert.Equal(HttpStatusCode.BadRequest, unknown.StatusCode);
+        }
+
+        using var other = await PostJsonAsync($"Admin/Workflows/Types/{otherId}/Designer/Retry", new { instanceId = workflow.Id, activityId = "start" });
+
+        Assert.Equal(HttpStatusCode.NotFound, other.StatusCode);
+    }
+
+    [Fact]
+    public async Task Details_Instance_MountsTheReadOnlyDesigner()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var instanceId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "start");
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/OrchardCore.Workflows/Workflow/Details/{instanceId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.True(config["readOnly"].GetValue<bool>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}", config["urls"]["definition"].GetValue<string>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Retry", config["urls"]["retry"].GetValue<string>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/JournalData?instanceId={instanceId}", config["urls"]["journalData"].GetValue<string>());
+        Assert.Null(config["urls"]["save"]);
+
+        // The State tab is kept, and the jsPlumb viewer and the stale Bootstrap 4 script are gone.
+        Assert.NotNull(document.QuerySelector("#state pre"));
+        var scripts = document.QuerySelectorAll("script[src]").Select(x => x.GetAttribute("src")).ToList();
+        Assert.Contains(scripts, x => x.Contains("workflows-designer"));
+        Assert.DoesNotContain(scripts, x => x.Contains("workflow-viewer") || x.Contains("jsplumb"));
+        Assert.DoesNotContain(scripts, x => x.Contains("bootstrap") && x.Contains("4."));
+    }
+
+    [Fact]
+    public async Task Versions_AfterPublishing_ListsTheVersionsWithTheirInstances()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Halted, "notify");
+
+        var published = await PublishWithNotifyAtAsync(id, x: 40);
+
+        Assert.Equal(2, published["version"]["version"].GetValue<int>());
+        Assert.True(published["version"]["isPublished"].GetValue<bool>());
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Versions");
+        var versions = json["versions"].AsArray();
+
+        Assert.Equal(new[] { 2, 1 }, versions.Select(version => version["version"].GetValue<int>()));
+        Assert.Equal(new[] { true, false }, versions.Select(version => version["isPublished"].GetValue<bool>()));
+        Assert.Equal(new[] { 0, 1 }, versions.Select(version => version["instanceCount"].GetValue<int>()));
+        Assert.Equal(firstVersionId, versions[1]["versionId"].GetValue<string>());
+        Assert.Null(json["draft"]);
+
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.Equal(2, definition["publishedVersion"]["version"].GetValue<int>());
+    }
+
+    [Fact]
+    public async Task Version_EarlierVersion_ReturnsItsGraph()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Version?versionId={firstVersionId}");
+
+        Assert.Equal(0, json["nodes"][0]["x"].GetValue<int>());
+        Assert.Equal(1, json["version"]["version"].GetValue<int>());
+        Assert.Equal(2, json["publishedVersion"]["version"].GetValue<int>());
+        Assert.False(json["hasDraft"].GetValue<bool>());
+
+        using var unknown = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Version?versionId=unknown", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.NotFound, unknown.StatusCode);
+    }
+
+    [Fact]
+    public async Task Version_OfAnotherWorkflowType_ReturnsNotFoundProblem()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var (otherId, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var otherVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{otherId}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Version?versionId={otherVersionId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Compare_VersionWithDraft_ReturnsBothGraphsAndTheChanges()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var versionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        await SaveNotifyAtAsync(id, x: 40, revision: 0);
+
+        string addedId;
+        using (var added = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 1, name = "NotifyTask", x = 0, y = 200 }))
+        {
+            addedId = (await ReadJsonAsync(added))["node"]["id"].GetValue<string>();
+        }
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Compare?from={versionId}&to=draft");
+
+        Assert.Equal(1, json["from"]["version"]["version"].GetValue<int>());
+        Assert.True(json["to"]["hasDraft"].GetValue<bool>());
+        Assert.Single(json["from"]["nodes"].AsArray());
+        Assert.Equal(2, json["to"]["nodes"].AsArray().Count);
+
+        var changes = json["changes"];
+        Assert.Equal([addedId], changes["addedActivityIds"].AsArray().Select(x => x.GetValue<string>()));
+        Assert.Equal(["notify"], changes["movedActivityIds"].AsArray().Select(x => x.GetValue<string>()));
+        Assert.Empty(changes["removedActivityIds"].AsArray());
+        Assert.True(changes["hasChanges"].GetValue<bool>());
+    }
+
+    [Fact]
+    public async Task Restore_EarlierVersion_CopiesItIntoTheDraft()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+
+        using (var restored = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Restore", new { revision = 0, versionId = firstVersionId }))
+        {
+            Assert.Equal(HttpStatusCode.OK, restored.StatusCode);
+            Assert.Equal(1, (await ReadJsonAsync(restored))["revision"].GetValue<int>());
+        }
+
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.True(definition["hasDraft"].GetValue<bool>());
+        Assert.Equal(0, definition["nodes"][0]["x"].GetValue<int>());
+
+        // The draft moved on since revision 0.
+        using var stale = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Restore", new { revision = 0, versionId = firstVersionId });
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+    }
+
+    [Fact]
+    public async Task Instance_PinnedToAnEarlierVersion_ShowsThatVersion()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+        var instanceId = await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Halted, "notify");
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}");
+
+        Assert.Equal(0, json["nodes"][0]["x"].GetValue<int>());
+        Assert.Equal(1, json["version"]["version"].GetValue<int>());
+        Assert.Equal(2, json["publishedVersion"]["version"].GetValue<int>());
+    }
+
+    [Fact]
+    public async Task InstancesList_PinnedAndUnpinnedInstances_ShowsTheVersionOfEach()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+        var pinnedId = await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Halted, "notify");
+        var unpinnedId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "notify");
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Instances/Index", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var pinned = document.QuerySelector($"#itemIds-{pinnedId}").Closest("li");
+        var unpinned = document.QuerySelector($"#itemIds-{unpinnedId}").Closest("li");
+        Assert.Equal("Version 1", pinned.QuerySelector("[data-cy=instance-version]").TextContent.Trim());
+        Assert.Null(unpinned.QuerySelector("[data-cy=instance-version]"));
+    }
+
+    private async Task SaveNotifyAtAsync(long id, int x, int revision)
+    {
+        using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision,
+            nodes = new[] { new { id = "notify", x, y = 0, isStart = false } },
+            transitions = Array.Empty<object>(),
+            removedActivityIds = Array.Empty<string>(),
+        });
+
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+    }
+
+    // Moves the "notify" activity in a new draft and publishes it, which creates the next version.
+    private async Task<JsonNode> PublishWithNotifyAtAsync(long id, int x)
+    {
+        await SaveNotifyAtAsync(id, x, revision: 0);
+
+        using var published = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Publish", new { revision = 1 });
+        Assert.Equal(HttpStatusCode.OK, published.StatusCode);
+
+        return await ReadJsonAsync(published);
+    }
+
+    [Fact]
+    public async Task VersionPage_EarlierVersion_MountsTheReadOnlyDesigner()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var versionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Version/{id}?versionId={versionId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal("version", config["mode"].GetValue<string>());
+        Assert.True(config["readOnly"].GetValue<bool>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Version?versionId={versionId}", config["urls"]["definition"].GetValue<string>());
+        Assert.Null(config["urls"]["save"]);
+        Assert.EndsWith($"Admin/Workflows/Types/Edit/{id}", config["designerUrl"].GetValue<string>());
+
+        using var unknown = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Version/{id}?versionId=unknown", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.NotFound, unknown.StatusCode);
+    }
+
+    [Fact]
+    public async Task CompareVersionsPage_VersionAndDraft_MountsTheComparison()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var versionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/CompareVersions/{id}?from={versionId}&to=draft", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal("compare", config["mode"].GetValue<string>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Compare?from={versionId}&to=draft", config["urls"]["compare"].GetValue<string>());
+        Assert.Null(config["urls"]["definition"]);
+    }
+
+    private Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(params ActivityRecord[] activities)
+        => WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(_fixture.Context, activities);
+
+    private Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(ActivityRecord[] activities, Transition[] transitions)
+        => WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(_fixture.Context, activities, transitions);
+
+    private async Task<JsonNode> GetJsonAsync(string path)
+    {
+        using var response = await _fixture.Context.Client.GetAsync(path, TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        return await ReadJsonAsync(response);
+    }
+
+    private async Task<HttpResponseMessage> PostJsonAsync(string path, object body)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, path)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json"),
+        };
+        await _fixture.AddAntiforgeryAsync(request);
+
+        return await _fixture.Context.Client.SendAsync(request, TestContext.Current.CancellationToken);
+    }
+
+    private async Task<HttpResponseMessage> PostFormAsync(string path, Dictionary<string, string> fields)
+    {
+        var content = new MultipartFormDataContent();
+
+        foreach (var (name, value) in fields)
+        {
+            content.Add(new StringContent(value), name);
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = content };
+        await _fixture.AddAntiforgeryAsync(request);
+
+        return await _fixture.Context.Client.SendAsync(request, TestContext.Current.CancellationToken);
+    }
+
+    private static async Task<JsonNode> ReadJsonAsync(HttpResponseMessage response)
+        => JsonNode.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+    private static ActivityRecord Activity(string id, string name, bool isStart = false, int x = 0, int y = 0, JsonObject properties = null)
+        => new() { ActivityId = id, Name = name, IsStart = isStart, X = x, Y = y, Properties = properties ?? DefaultProperties(name) };
+
+    // The settings an activity needs for its editor to accept them, so it isn't reported as an issue.
+    private static JsonObject DefaultProperties(string name)
+        => name switch
+        {
+            "NotifyTask" => new JsonObject { ["Message"] = new JsonObject { ["Expression"] = "Hello" } },
+            "HttpRequestTask" => new JsonObject { ["Url"] = new JsonObject { ["Expression"] = "https://localhost/" } },
+            _ => [],
+        };
+
+    private static Transition Transition(string source, string outcome, string destination)
+        => new() { SourceActivityId = source, SourceOutcomeName = outcome, DestinationActivityId = destination };
+}
+
+public sealed class WorkflowDesignerSiteFixture : IAsyncLifetime
+{
+    private string _antiforgeryToken;
+    private string _antiforgeryCookie;
+
+    public SiteContext Context { get; } = new();
+
+    public async ValueTask InitializeAsync()
+    {
+        await Context.InitializeAsync();
+        await EnableFeaturesAsync(Context, "OrchardCore.Workflows", "OrchardCore.Workflows.Http", "OrchardCore.Forms");
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        Context.Dispose();
+
+        return ValueTask.CompletedTask;
+    }
+
+    // The test client doesn't keep cookies, so the antiforgery cookie issued with the token is sent explicitly.
+    public async Task AddAntiforgeryAsync(HttpRequestMessage request)
+    {
+        if (_antiforgeryToken is null)
+        {
+            using var response = await Context.Client.GetAsync("Admin/Workflows/Types/Create", TestContext.Current.CancellationToken);
+            response.EnsureSuccessStatusCode();
+            var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+            _antiforgeryToken = document.QuerySelector("input[name='__RequestVerificationToken']").GetAttribute("value");
+            _antiforgeryCookie = string.Join("; ", response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0]));
+        }
+
+        request.Headers.Add("RequestVerificationToken", _antiforgeryToken);
+        request.Headers.Add("Cookie", _antiforgeryCookie);
+    }
+
+    public async Task<string> CreateInvokeUrlAsync(string workflowTypeId, string activityId)
+    {
+        string token = null;
+
+        await Context.UsingTenantScopeAsync(scope =>
+        {
+            token = scope.ServiceProvider.GetRequiredService<ISecurityTokenService>()
+                .CreateToken(new WorkflowPayload(workflowTypeId, activityId), TimeSpan.FromDays(1));
+
+            return Task.CompletedTask;
+        });
+
+        return "workflows/invoke/" + Uri.EscapeDataString(token);
+    }
+
+    public async Task<IList<WorkflowRoutesEntry>> GetRouteEntriesAsync(long workflowTypeId)
+    {
+        IList<WorkflowRoutesEntry> entries = [];
+
+        await Context.UsingTenantScopeAsync(async scope =>
+        {
+            var document = await scope.ServiceProvider.GetRequiredService<IVolatileDocumentManager<WorkflowTypeRouteDocument>>().GetOrCreateImmutableAsync();
+
+            if (document.Entries.TryGetValue(workflowTypeId.ToString(CultureInfo.InvariantCulture), out var found))
+            {
+                entries = found;
+            }
+        });
+
+        return entries;
+    }
+
+    public static async Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(SiteContext context, params ActivityRecord[] activities)
+        => await CreateWorkflowTypeAsync(context, activities, []);
+
+    public static async Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(SiteContext context, ActivityRecord[] activities, Transition[] transitions)
+    {
+        var workflowType = new WorkflowType
+        {
+            WorkflowTypeId = Guid.NewGuid().ToString("n"),
+            Name = "Designer test",
+            IsEnabled = true,
+            Activities = activities,
+            Transitions = transitions,
+        };
+
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().SaveAsync(workflowType));
+
+        return (workflowType.Id, workflowType.WorkflowTypeId);
+    }
+
+    // A faulted instance of the workflow type, created as the engine does, so its state holds its activities.
+    public async Task<Workflow> CreateFaultedInstanceAsync(string workflowTypeId)
+    {
+        Workflow workflow = null;
+
+        await Context.UsingTenantScopeAsync(async scope =>
+        {
+            var workflowType = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().GetAsync(workflowTypeId);
+
+            workflow = scope.ServiceProvider.GetRequiredService<IWorkflowManager>().NewWorkflow(workflowType);
+            workflow.Status = WorkflowStatus.Faulted;
+            workflow.FaultMessage = "Broken";
+
+            await scope.ServiceProvider.GetRequiredService<IWorkflowStore>().SaveAsync(workflow);
+        });
+
+        return workflow;
+    }
+
+    public Task<long> CreateInstanceAsync(string workflowTypeId, WorkflowStatus status, params string[] blockingActivityIds)
+        => CreatePinnedInstanceAsync(workflowTypeId, null, status, blockingActivityIds);
+
+    public async Task<long> CreatePinnedInstanceAsync(string workflowTypeId, string versionId, WorkflowStatus status, params string[] blockingActivityIds)
+    {
+        var workflow = new Workflow
+        {
+            WorkflowId = Guid.NewGuid().ToString("n"),
+            WorkflowTypeId = workflowTypeId,
+            WorkflowTypeVersionId = versionId,
+            Status = status,
+            CreatedUtc = DateTime.UtcNow,
+            BlockingActivities = blockingActivityIds.Select(activityId => new BlockingActivity { ActivityId = activityId, Name = activityId }).ToList(),
+        };
+
+        await Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowStore>().SaveAsync(workflow));
+
+        return workflow.Id;
+    }
+
+    public static async Task EnableFeaturesAsync(SiteContext context, params string[] featureIds)
+    {
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var availableFeatures = await featuresManager.GetAvailableFeaturesAsync();
+            var features = availableFeatures.Where(feature => featureIds.Contains(feature.Id)).ToArray();
+            Assert.Equal(featureIds.Length, features.Length);
+            await featuresManager.EnableFeaturesAsync(features, force: true);
+        });
+
+        await context.WaitForDeferredTasksAsync(TestContext.Current.CancellationToken);
+    }
+}

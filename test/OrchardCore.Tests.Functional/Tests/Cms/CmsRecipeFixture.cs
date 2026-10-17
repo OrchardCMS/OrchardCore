@@ -166,6 +166,11 @@ public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "PredefinedListEditorTests";
 }
 
+public sealed class WorkflowsDesignerTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "WorkflowsDesignerTests";
+}
+
 public sealed class PartToggleEditorTestsFixture : CmsRecipeFixture
 {
     protected override string RecipeName => "PartToggleEditorTests";

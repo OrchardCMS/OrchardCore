@@ -30,6 +30,11 @@ public class WorkflowStore : IWorkflowStore
         return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) != null;
     }
 
+    public async Task<bool> HasHaltedInstanceAsync(string workflowTypeId, string correlationId)
+    {
+        return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId && x.WorkflowCorrelationId == (correlationId ?? "")).FirstOrDefaultAsync()) != null;
+    }
+
     public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
     {
         var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)
@@ -51,6 +56,15 @@ public class WorkflowStore : IWorkflowStore
     public async Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds)
     {
         return await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
+    }
+
+    public async Task<IEnumerable<Workflow>> ListDueRetriesAsync(DateTime utcNow, int take)
+    {
+        return await _session
+            .Query<Workflow, WorkflowIndex>(index => index.WorkflowStatus == WorkflowStatus.Faulted && index.RetryDueUtc != null && index.RetryDueUtc <= utcNow)
+            .OrderBy(index => index.RetryDueUtc)
+            .Take(take)
+            .ListAsync();
     }
 
     public Task<Workflow> GetAsync(long id)

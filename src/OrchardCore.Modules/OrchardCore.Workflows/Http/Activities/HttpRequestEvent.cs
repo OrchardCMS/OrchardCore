@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRequestEvent : EventActivity
+public class HttpRequestEvent : EventActivity, IActivityProvidedValues
 {
     public static string EventName => nameof(HttpRequestEvent);
 
@@ -100,4 +100,9 @@ public class HttpRequestEvent : EventActivity
 
         return value;
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(FormLocationKey)
+            ? []
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = WorkflowConstants.HttpFormLocationOutputKeyName, TypeName = "object", Description = S["The URLs to return to after a form is posted, by form location key."] }];
 }

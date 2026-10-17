@@ -7,7 +7,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class SignalEvent : EventActivity
+public class SignalEvent : EventActivity, IActivityProvidedValues
 {
     public static string EventName => nameof(SignalEvent);
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -40,4 +40,7 @@ public class SignalEvent : EventActivity
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome("Done");
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Signal", TypeName = "string", Description = S["The name of the signal."] }];
 }

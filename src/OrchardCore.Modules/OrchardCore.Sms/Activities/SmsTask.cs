@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Sms.Activities;
 
-public class SmsTask : TaskActivity<SmsTask>
+public class SmsTask : TaskActivity<SmsTask>, IActivityProvidedValues
 {
     private readonly ISmsService _smsService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -47,6 +48,9 @@ public class SmsTask : TaskActivity<SmsTask>
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("object", S["The result of sending the message."], WorkflowValueMembers.Result(S))];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

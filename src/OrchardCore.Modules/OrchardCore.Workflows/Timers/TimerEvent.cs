@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Timers;
 
-public class TimerEvent : EventActivity
+public class TimerEvent : EventActivity, IActivityProvidedValues
 {
     public static string EventName => nameof(TimerEvent);
 
@@ -49,6 +49,9 @@ public class TimerEvent : EventActivity
         get => GetProperty<DateTime?>();
         set => SetProperty(value);
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("string", S["The text TimerEvent."])];
 
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

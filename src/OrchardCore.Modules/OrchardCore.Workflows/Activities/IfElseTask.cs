@@ -7,17 +7,14 @@ namespace OrchardCore.Workflows.Activities;
 
 public class IfElseTask : TaskActivity<IfElseTask>
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
 
     public IfElseTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
         IStringLocalizer<IfElseTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
         S = localizer;
     }
 
@@ -26,7 +23,7 @@ public class IfElseTask : TaskActivity<IfElseTask>
     public override LocalizedString Category => S["Control Flow"];
 
     /// <summary>
-    /// A script evaluating to either true or false.
+    /// The condition: an expression evaluating to true or false.
     /// </summary>
     public WorkflowExpression<bool> Condition
     {
@@ -34,12 +31,20 @@ public class IfElseTask : TaskActivity<IfElseTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidcondition of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Condition"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<bool> LiquidCondition
     {
         get => GetProperty(() => new WorkflowExpression<bool>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Condition"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -51,12 +56,7 @@ public class IfElseTask : TaskActivity<IfElseTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var result = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidCondition, workflowContext, null),
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Condition, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for IfElseTask.")
-        };
+        var result = await _expressionManager.EvaluateAsync(WorkflowExpressionSyntaxes.Resolve(Condition, LiquidCondition.Expression, Syntax), workflowContext);
 
         return Outcome(result ? "True" : "False");
     }
