@@ -536,6 +536,45 @@ protected override async IAsyncEnumerable<ChangedOrder> LoadAsync(DataSourceQuer
 }
 ```
 
+### Aggregating in the data source
+
+A consumer that only counts, sums, or takes the smallest or largest values of a data set, such as a report of the orders of each month, doesn't need its rows. A data source that can group and aggregate its data itself, such as with a `GROUP BY` in its database, implements `IDataAggregateSource`, so the consumer reads a few groups instead of every row. The interface is optional: a consumer asks first, and reads the rows when the data source answers `null`.
+
+A `DataAggregateQuery` holds:
+
+- `Groups`, the fields to group by. A `DataAggregateGroup` with `Boundaries` groups the values of a date field into buckets, such as months, and the value of a group is the index of its bucket.
+- `Measures`, the values to compute for each group: a `DataAggregateMeasure` with the `Count`, `Sum`, `Min` or `Max` of a field, or the `Count` of the rows without a field. These are the aggregates a consumer can combine across groups, such as for totals, and derive others from, such as an average from a sum and a count.
+- `Conditions`, which, unlike the conditions of a row query, must be applied exactly: text compares ignoring case, dates in UTC, and `NotEquals` and `NotIn` keep the rows without a value.
+- `MaxGroups`, the most groups the result may have.
+
+The answer has one row per group, with the values of the groups followed by the values of the measures. A data source answers `null` to a query it can't answer exactly, such as for a field it can't group or aggregate, a condition it can't apply exactly, or more groups than `MaxGroups`, and must answer only with the rows the user of the context may read.
+
+A `RecordDataSource` asks its data sets: a data set that implements `IAggregateRecordDataSet` answers, once the data source checked that the user may read it, and the other data sets answer `null`.
+
+```csharp
+public sealed class TicketsDataSet : RecordDataSet<Ticket>, IAggregateRecordDataSet
+{
+    // ...
+
+    public async Task<IReadOnlyList<object[]>> AggregateAsync(DataAggregateQuery query, CancellationToken cancellationToken = default)
+    {
+        // Counts the tickets of each state with a GROUP BY on the index; declines anything else.
+        if (query.Conditions.Count > 0 ||
+            query.Groups is not [{ Field: "State", Boundaries: null }] ||
+            query.Measures is not [{ Function: DataAggregate.Count, Field: null }])
+        {
+            return null;
+        }
+
+        var counts = await _ticketStore.CountByStateAsync(cancellationToken);
+
+        return counts.Count > query.MaxGroups
+            ? null
+            : counts.Select(count => new object[] { count.State.ToString(), count.Count }).ToList();
+    }
+}
+```
+
 ### Adding a data source
 
 A data source that doesn't read records one by one, such as one that lists its data sets dynamically or builds its batches itself, implements `IDataSource` directly, and is registered the same way, with `AddDataSource<T>()`. Its data sets are then available to every consumer, such as the **Read a data source** step of data pipelines.
