@@ -144,11 +144,10 @@
                         </div>
                     </div>
 
-                    <div class="ocat-limited-wrapper" asp-validation-class-for="Password">
+                    <div class="ocat-wrapper" asp-validation-class-for="Password">
                         <label asp-for="Password" class="ocat-label">@T["Password"]</label>
-                        <div class="ocat-limited">
-                            <input asp-for="Password" class="form-control" type="password" autocomplete="off" />
-                            <span asp-validation-for="Password"></span>
+                        <div class="ocat-end">
+                            <secret-input asp-for="Password" secret-name="@SmtpOptionsConfiguration.PasswordSecretName" />
                             <span class="hint">@T["The password for authentication."]</span>
                         </div>
                     </div>

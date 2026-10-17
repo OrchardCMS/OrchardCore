@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Notifications;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sms.Activities;
 using OrchardCore.Sms.Drivers;
@@ -36,6 +37,15 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<SmsPermissionProvider>();
         services.AddSiteDisplayDriver<SmsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, TwilioSecretMigrationDisplayDriver>();
     }
 }
 

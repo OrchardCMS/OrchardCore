@@ -1,14 +1,13 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Authentication.Drivers;
@@ -17,22 +16,22 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public GoogleAuthenticationSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
-        ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
     }
 
     protected override string SettingsGroupId
@@ -49,24 +48,7 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
         return Initialize<GoogleAuthenticationSettingsViewModel>("GoogleAuthenticationSettings_Edit", model =>
         {
             model.ClientID = settings.ClientID;
-            if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-                    model.ClientSecret = protector.Unprotect(settings.ClientSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.ClientSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.ClientSecret = string.Empty;
-            }
+            model.ClientSecret = SecretInputViewModel.Create(settings.ClientSecret, settings.ClientSecretSecretName);
             if (settings.CallbackPath.HasValue)
             {
                 model.CallbackPath = settings.CallbackPath.Value;
@@ -87,16 +69,25 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
         var model = new GoogleAuthenticationSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var clientSecret = await model.ClientSecret.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication),
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.ClientSecret)}")
+        {
+            ProtectedValue = settings.ClientSecret,
+            SecretName = settings.ClientSecretSecretName,
+        });
+
+        if (clientSecret.Succeeded)
+        {
+            settings.ClientSecret = clientSecret.ProtectedValue;
+            settings.ClientSecretSecretName = clientSecret.SecretName;
+        }
+
         settings.ClientID = model.ClientID;
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-
-            settings.ClientSecret = protector.Protect(model.ClientSecret);
-        }
 
         _shellReleaseManager.RequestRelease();
 
