@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@* The tenant actions, contributed by the TenantActionButtons shape. *@
+@await DisplayAsync(await New.TenantActionButtons(ShellSettingsEntry: Model.Value))

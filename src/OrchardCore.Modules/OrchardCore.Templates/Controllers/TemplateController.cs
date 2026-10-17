@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Templates.Models;
@@ -51,7 +52,9 @@ public sealed class TemplateController : Controller
         H = htmlLocalizer;
     }
 
-    public Task<IActionResult> Admin(ContentOptions options, PagerParameters pagerParameters)
+    public Task<IActionResult> Admin(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         options.AdminTemplates = true;
 
@@ -60,7 +63,9 @@ public sealed class TemplateController : Controller
     }
 
     [Admin("Templates", "Templates.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await IsAuthorizedAsync(options.AdminTemplates))
         {
@@ -97,7 +102,7 @@ public sealed class TemplateController : Controller
         var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
         var model = new TemplateIndexViewModel
         {
-            Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
+            Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value, AdminTemplates = options.AdminTemplates }).ToList(),
             Options = options,
             Pager = pagerShape,
         };
@@ -106,6 +111,41 @@ public sealed class TemplateController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var search = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+        {
+            Name = "Options.Search",
+            Value = options.Search,
+        }));
+
+        var actions = await _shapeFactory.CreateAsync("TemplateCreateButton", Arguments.From(new
+        {
+            options.AdminTemplates,
+        }));
+
+        // The page renders the selector through the layout, so the pager leaves its own out.
+        pagerShape.Properties["ShowPageSizeSelector"] = false;
+
+        var pageSizes = PageSizeSelector.BuildOptions(HttpContext.RequestServices, pager.PageSize);
+
+        var pageSize = pageSizes == null
+            ? null
+            : await _shapeFactory.CreateAsync("Pager_PageSizeSelector", Arguments.From(new
+            {
+                // Not "Items": a shape already exposes that name for its child shapes.
+                PageSizes = pageSizes,
+                CurrentPageSize = pager.PageSize,
+            }));
+
+        // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<TemplateEntry>
+        {
+            Source = model.Templates,
+            Search = search,
+            Actions = actions,
+            Pager = model.Pager,
+            PageSize = pageSize,
+        };
 
         // The 'Admin' action redirect the user to the 'Index' action.
         // To ensure we render the same 'Index' view in both cases, we have to explicitly specify the name of the view that should be rendered.

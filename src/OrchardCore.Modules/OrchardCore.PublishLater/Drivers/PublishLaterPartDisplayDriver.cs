@@ -30,7 +30,8 @@ public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<Pub
     {
         return Initialize<PublishLaterPartViewModel>($"{nameof(PublishLaterPart)}_SummaryAdmin",
             model => PopulateViewModel(part, model))
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:25");
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:25")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Modified:25");
     }
 
     public override IDisplayResult Edit(PublishLaterPart part, BuildPartEditorContext context)

@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Sitemaps.ViewModels
+
+@model ShapeViewModel<SitemapIndexListEntry>
+
+@* A bare item, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
+<a asp-action="Toggle" asp-controller="SitemapIndex" asp-route-sitemapId="@Model.Value.SitemapId" class="dropdown-item" data-url-af="UnsafeUrl">@(Model.Value.Enabled ? T["Disable"] : T["Enable"])</a>
