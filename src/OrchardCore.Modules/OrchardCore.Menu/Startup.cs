@@ -14,6 +14,7 @@ using OrchardCore.Menu.Settings;
 using OrchardCore.Menu.TagHelpers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu;
@@ -23,6 +24,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<Migrations>();
+        services.AddRecipe("Recipes/Permissions/menu.add-permissions.recipe.json");
         services.AddShapeTableProvider<MenuShapes>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();

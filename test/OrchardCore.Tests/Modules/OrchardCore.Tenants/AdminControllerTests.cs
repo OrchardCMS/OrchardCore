@@ -9,7 +9,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Recipes.Services;
+using OrchardCore.Setup.Services;
 using OrchardCore.Tenants;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Services;
@@ -79,7 +79,7 @@ public class AdminControllerTests
             CreateAuthorizationService().Object,
             new ShellSettings { Name = ShellSettings.DefaultShellName }.AsRunning(),
             Mock.Of<IFeatureProfilesService>(),
-            [],
+            Mock.Of<ISetupService>(),
             new EphemeralDataProtectionProvider(),
             Mock.Of<IClock>(),
             Mock.Of<INotifier>(),

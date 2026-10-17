@@ -58,7 +58,7 @@ public sealed class SetupController : Controller
         var recipes = (await _setupService.GetSetupRecipesAsync())
             .Where(recipe => recipe.Tags == null || !recipe.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase))
             .ToArray();
-        var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
+        var defaultRecipe = recipes.FirstOrDefault(x => x.Tags != null && x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
         if (!await ShouldProceedWithTokenAsync(token))
         {

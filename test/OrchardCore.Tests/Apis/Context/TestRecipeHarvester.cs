@@ -15,6 +15,7 @@ public class TestRecipeHarvester : IRecipeHarvester
     public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         => HarvestRecipesAsync(
         [
+            "Apis/Context/Recipes/minimal.recipe.json",
             "Apis/Lucene/Recipes/luceneQueryTest.json",
             "Apis/GraphQL/ContentManagement/Recipes/DynamicContentTypeQueryTest.json"
         ]);

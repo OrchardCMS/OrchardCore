@@ -10,7 +10,7 @@ public class ShellScopeTests
     public static async Task ShellScopeConcurrencyTest()
     {
         var context = new SiteContext()
-            .WithRecipe("SaaS");
+            .WithRecipe("Minimal");
         await context.InitializeAsync();
 
         var waitHandle = new ManualResetEventSlim();

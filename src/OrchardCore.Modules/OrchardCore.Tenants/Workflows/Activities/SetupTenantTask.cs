@@ -183,7 +183,7 @@ public class SetupTenantTask : TenantTask
             recipeName = shellSettings["RecipeName"];
         }
 
-        var recipes = await SetupService.GetSetupRecipesAsync();
+        var recipes = await SetupService.GetSetupRecipesAsync(shellSettings);
         var recipe = recipes.FirstOrDefault(r => r.Name == recipeName);
 
         var setupContext = new SetupContext
