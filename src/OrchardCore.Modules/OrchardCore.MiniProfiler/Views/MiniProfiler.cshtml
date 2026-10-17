@@ -1,2 +1,181 @@
+@using OrchardCore.Admin
 @using StackExchange.Profiling
-@MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext)
+
+@if (!AdminAttribute.IsApplied(ViewContext.HttpContext))
+{
+    @MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext)
+}
+else
+{
+    @* The default top-left position covers the admin menu. Dock the widget to the middle of the right edge instead,
+       behind a toggle that tucks it away, and follow the admin's light and dark themes. *@
+    @MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext, new RenderOptions { Position = RenderPosition.Right })
+
+    <button type="button" id="oc-mp-toggle" class="oc-mp-toggle" data-hide-label="@T["Hide MiniProfiler"]" data-show-label="@T["Show MiniProfiler"]" hidden></button>
+
+    <style>
+        .mp-results.oc-mp-docked {
+            top: 0;
+            bottom: 0;
+            height: fit-content;
+            margin: auto 0;
+        }
+
+        .mp-results.oc-mp-docked .oc-mp-toggle {
+            display: block;
+            width: 100%;
+            min-width: 1.5rem;
+            padding: 0 6px;
+            border: 0;
+            border-top: var(--mp-result-border);
+            border-bottom: var(--mp-result-border);
+            border-left: var(--mp-result-border);
+            border-top-left-radius: var(--mp-result-border-radius);
+            background-color: var(--mp-main-bg-color);
+            color: var(--mp-muted-color);
+            font: 16px/1.25 sans-serif;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .mp-results.oc-mp-docked .oc-mp-toggle:hover,
+        .mp-results.oc-mp-docked .oc-mp-toggle:focus-visible {
+            color: var(--mp-link-color);
+        }
+
+        .mp-results.oc-mp-docked .mp-result:last-child .mp-button {
+            border-bottom-left-radius: var(--mp-result-border-radius);
+        }
+
+        .mp-results.oc-mp-docked.oc-mp-collapsed .oc-mp-toggle {
+            padding: 12px 4px;
+            border-bottom-left-radius: var(--mp-result-border-radius);
+        }
+
+        /* Keep a warning visible while the profiles that carry it are tucked away. */
+        .mp-results.oc-mp-docked.oc-mp-collapsed .oc-mp-toggle.oc-mp-warning {
+            background-color: var(--mp-button-warning-bg-color);
+            color: var(--mp-button-warning-text-color);
+        }
+
+        .mp-results.oc-mp-docked.oc-mp-collapsed .mp-result,
+        .mp-results.oc-mp-docked.oc-mp-collapsed .mp-controls {
+            display: none;
+        }
+
+        /* MiniProfiler opens a popup downward from its button, which leaves half the screen when the button sits in the middle.
+           Center it on the space below the admin's top navbar instead, as narrow as its content like MiniProfiler's own layout. */
+        .mp-results.oc-mp-docked .mp-popup {
+            position: fixed;
+            top: calc(50% + var(--oc-top-nav-height, 0px) / 2) !important;
+            transform: translateY(-50%);
+            width: min-content;
+            max-width: calc(100vw - 8rem);
+            max-height: calc(100vh - var(--oc-top-nav-height, 0px) - 2rem) !important;
+        }
+    </style>
+
+    <script>
+        (function () {
+            var storageKey = 'OrchardCore.MiniProfiler.Collapsed';
+            var root = document.documentElement;
+            var toggle = document.getElementById('oc-mp-toggle');
+            var includes = document.getElementById('mini-profiler');
+
+            var getScheme = function () {
+                return root.getAttribute('data-bs-theme') === 'dark' ? 'Dark' : 'Light';
+            };
+
+            // MiniProfiler reads its color scheme from the include tag when it starts.
+            if (includes) {
+                includes.setAttribute('data-scheme', getScheme());
+            }
+
+            var isCollapsed = function () {
+                try {
+                    return localStorage.getItem(storageKey) === 'true';
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            var setCollapsed = function (container, collapsed) {
+                var label = collapsed ? toggle.dataset.showLabel : toggle.dataset.hideLabel;
+
+                container.classList.toggle('oc-mp-collapsed', collapsed);
+                toggle.textContent = collapsed ? '‹' : '›';
+                toggle.title = label;
+                toggle.setAttribute('aria-label', label);
+                toggle.setAttribute('aria-expanded', String(!collapsed));
+            };
+
+            var applyScheme = function (container) {
+                var scheme = getScheme();
+
+                container.classList.remove('mp-scheme-auto', 'mp-scheme-light', 'mp-scheme-dark');
+                container.classList.add('mp-scheme-' + scheme.toLowerCase());
+
+                // The SQL overlay takes its scheme from the options when it opens.
+                if (window.MiniProfiler && window.MiniProfiler.options) {
+                    window.MiniProfiler.options.colorScheme = scheme;
+                }
+            };
+
+            var showWarning = function (container) {
+                toggle.classList.toggle('oc-mp-warning', container.querySelector('.mp-button-warning') !== null);
+            };
+
+            var dock = function (container) {
+                container.classList.add('oc-mp-docked');
+                container.insertAdjacentElement('afterbegin', toggle);
+                toggle.hidden = false;
+
+                applyScheme(container);
+                setCollapsed(container, isCollapsed());
+                showWarning(container);
+
+                // Profiles of later AJAX requests keep arriving in the container.
+                new MutationObserver(function () {
+                    showWarning(container);
+                }).observe(container, { childList: true });
+
+                toggle.addEventListener('click', function () {
+                    var collapsed = !container.classList.contains('oc-mp-collapsed');
+
+                    setCollapsed(container, collapsed);
+
+                    try {
+                        localStorage.setItem(storageKey, String(collapsed));
+                    } catch (e) {
+                    }
+                });
+
+                new MutationObserver(function () {
+                    applyScheme(container);
+                }).observe(root, { attributes: true, attributeFilter: ['data-bs-theme'] });
+            };
+
+            var findContainer = function () {
+                return document.querySelector('body > .mp-results');
+            };
+
+            // MiniProfiler creates its container once the page has loaded.
+            var container = findContainer();
+
+            if (container) {
+                dock(container);
+            } else {
+                var observer = new MutationObserver(function () {
+                    var container = findContainer();
+
+                    if (container) {
+                        observer.disconnect();
+                        dock(container);
+                    }
+                });
+
+                observer.observe(document.body, { childList: true });
+            }
+        })();
+    </script>
+}
