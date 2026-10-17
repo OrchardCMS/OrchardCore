@@ -1,0 +1,85 @@
+@model BatchCreateContentViewModel
+
+<zone Name="Title">
+    <breadcrumb name="ContentsBatchCreate" title="@T["Create multiple {0}", Model.ContentTypeDisplayName]">
+        <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents">@T["Manage Content"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<p class="text-muted">
+    @T["Create up to {0} items of type {1} using the standard editors. They will all be saved together.", 5, Model.ContentTypeDisplayName]
+</p>
+
+<form asp-action="BatchCreate"
+      asp-controller="Batch"
+      asp-area="OrchardCore.Contents"
+      asp-route-id="@Model.ContentType"
+      method="post"
+      enctype="multipart/form-data"
+      class="no-multisubmit"
+      id="batch-create-form">
+    @Html.ValidationSummary()
+
+    <input type="hidden" id="batch-create-count" name="count" value="@Model.Count" />
+
+    @for (var i = 0; i < Model.Editors.Count; i++)
+    {
+        <fieldset class="card mb-3" data-batch-row="@i" hidden="@(i >= Model.Count)" disabled="@(i >= Model.Count)">
+            <legend class="card-header fs-6 float-none w-100">
+                @T["Item {0}", i + 1]
+            </legend>
+            <div class="card-body">
+                @await DisplayAsync(Model.Editors[i])
+            </div>
+        </fieldset>
+    }
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-outline-secondary" id="batch-create-add">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            @T["Add another item"]
+        </button>
+        <button type="button" class="btn btn-outline-secondary" id="batch-create-remove">
+            @T["Remove last item"]
+        </button>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-secondary" name="submit" value="Save">@T["Save all as drafts"]</button>
+        <button type="submit" class="btn btn-primary" name="submit" value="Publish">@T["Publish all"]</button>
+    </div>
+</form>
+
+<script>
+    (() => {
+        const form = document.getElementById('batch-create-form');
+        if (!form) return;
+
+        const rows = Array.from(form.querySelectorAll('[data-batch-row]'));
+        const countInput = document.getElementById('batch-create-count');
+        const addButton = document.getElementById('batch-create-add');
+        const removeButton = document.getElementById('batch-create-remove');
+
+        function showRows(count) {
+            countInput.value = String(count);
+            rows.forEach((row, index) => {
+                row.hidden = index >= count;
+                row.disabled = index >= count;
+            });
+            addButton.disabled = count >= rows.length;
+            removeButton.disabled = count <= 1;
+        }
+
+        addButton.addEventListener('click', () => {
+            const count = Number(countInput.value);
+            if (count < rows.length) showRows(count + 1);
+        });
+
+        removeButton.addEventListener('click', () => {
+            const count = Number(countInput.value);
+            if (count > 1) showRows(count - 1);
+        });
+
+        showRows(Math.min(rows.length, Math.max(1, Number(countInput.value) || 1)));
+    })();
+</script>
