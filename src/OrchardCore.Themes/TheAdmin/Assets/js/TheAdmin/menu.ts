@@ -133,6 +133,19 @@ const applySelectedNavFromSessionStorage = () => {
     const selectedLink = Array.from(navLinks)
         .find(link => link.dataset.adminHash === selectedNavHash);
 
+    // The server matched this page to a different item than the one last clicked, so the page was reached some
+    // other way: a link on another page, a bookmark, a redirect, or the address bar. The stored selection is only
+    // worth keeping when it opens this very page (two menu items for one page); otherwise the server's is right,
+    // and becomes the one remembered.
+    const serverSelectedNavHash = getSelectedNavHashFromDom(nav);
+
+    if (serverSelectedNavHash &&
+        serverSelectedNavHash !== selectedNavHash &&
+        selectedLink?.pathname.toLowerCase() !== currentPath) {
+        persistSelectedNavHash(serverSelectedNavHash);
+        return true;
+    }
+
     if (!selectedLink) {
         return document.readyState === 'complete';
     }
