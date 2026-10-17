@@ -21,7 +21,10 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("media")
                     .Id("media")
                     .Add(S["Media Library"], S["Media Library"].PrefixPosition(), media => media
-                        .Permission(MediaPermissions.ManageMedia)
+                        // Gated on the same check as the page itself, so the entry is not offered to a
+                        // user whose only landing place would be a 404.
+                        .Permission(MediaPermissions.ManageMediaFolder)
+                        .Resource(string.Empty)
                         .Action("Index", "Admin", "OrchardCore.Media")
                         .LocalNav()
                     )
