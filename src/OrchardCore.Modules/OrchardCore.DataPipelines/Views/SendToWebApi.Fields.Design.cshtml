@@ -1,0 +1,6 @@
+@model SendToWebApiStepViewModel
+
+@if (!string.IsNullOrEmpty(Model.DisplayUrl))
+{
+    <span class="text-break"><span class="badge text-bg-secondary">@(Model.Method == DataPipelineHttpMethod.Put ? "PUT" : "POST")</span> @Model.DisplayUrl</span>
+}
