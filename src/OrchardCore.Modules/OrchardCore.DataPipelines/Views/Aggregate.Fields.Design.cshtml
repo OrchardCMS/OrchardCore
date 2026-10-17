@@ -1,0 +1,16 @@
+@model AggregateStepViewModel
+
+@if (Model.Measures.Count == 0)
+{
+    <span class="text-muted">@T["Add a value"]</span>
+}
+else
+{
+    <span class="text-break">
+        @string.Join(", ", Model.Measures.Select(measure => measure.Name))
+        @if (Model.GroupBy.Length > 0)
+        {
+            <span class="text-muted">@T["by {0}", string.Join(", ", Model.GroupBy)]</span>
+        }
+    </span>
+}

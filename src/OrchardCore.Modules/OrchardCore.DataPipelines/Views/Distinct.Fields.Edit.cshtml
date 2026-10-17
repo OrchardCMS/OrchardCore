@@ -1,0 +1,17 @@
+@model DistinctStepViewModel
+
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper">
+    <label asp-for="Fields" class="ocat-label">@T["Compare"]</label>
+    <div class="ocat-end">
+        <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every field"]">
+            @foreach (var field in Model.AvailableFields)
+            {
+                <option value="@field.Name" selected="@Model.Fields.Contains(field.Name)">@field.Name (@field.Type)</option>
+            }
+        </select>
+        <span class="hint">@T["A row is a duplicate when these fields hold the same values as a row before it. Select none to compare every field. Values are compared exactly."]</span>
+    </div>
+</div>
