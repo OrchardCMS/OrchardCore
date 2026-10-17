@@ -1,8 +1,13 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
@@ -20,19 +25,24 @@ internal sealed class DistributedShellHostedService : BackgroundService
     private const string ShellCountChangedIdKey = "SHELL_COUNT_CHANGED_ID";
     private const string ReleaseIdKeySuffix = "_RELEASE_ID";
     private const string ReloadIdKeySuffix = "_RELOAD_ID";
+    private const string OptionsIdKeySuffix = "_OPTIONS_ID";
 
     private static readonly TimeSpan s_minIdleTime = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan s_maxRetryTime = TimeSpan.FromMinutes(1);
     private static readonly TimeSpan s_maxBusyTime = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan s_defaultSynchronizationLatency = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan s_optionsRefreshMargin = TimeSpan.FromMilliseconds(100);
 
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IShellRemovalManager _shellRemovingManager;
+    private readonly ShellOptionsEvents _shellOptionsEvents;
     private readonly ILogger _logger;
 
     private readonly ConcurrentDictionary<string, ShellIdentifier> _identifiers = new();
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
+    private readonly ConcurrentDictionary<string, DateTime> _pendingOptionsRefreshes = new();
 
     private string _shellChangedId;
     private string _shellCountChangedId;
@@ -48,18 +58,21 @@ internal sealed class DistributedShellHostedService : BackgroundService
         IShellContextFactory shellContextFactory,
         IShellSettingsManager shellSettingsManager,
         IShellRemovalManager shellRemovingManager,
+        ShellOptionsEvents shellOptionsEvents,
         ILogger<DistributedShellHostedService> logger)
     {
         _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;
         _shellSettingsManager = shellSettingsManager;
         _shellRemovingManager = shellRemovingManager;
+        _shellOptionsEvents = shellOptionsEvents;
         _logger = logger;
 
         shellHost.LoadingAsync += LoadingAsync;
         shellHost.ReleasingAsync += ReleasingAsync;
         shellHost.ReloadingAsync += ReloadingAsync;
         shellHost.RemovingAsync += RemovingAsync;
+        shellOptionsEvents.UpdatedAsync += OptionsUpdatedAsync;
     }
 
     /// <summary>
@@ -93,6 +106,9 @@ internal sealed class DistributedShellHostedService : BackgroundService
                 {
                     break;
                 }
+
+                // Refresh the options of the tenants that have been updated by other instances.
+                await RefreshPendingOptionsAsync();
 
                 // If there is no default tenant, nothing to do.
                 if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext))
@@ -220,6 +236,9 @@ internal sealed class DistributedShellHostedService : BackgroundService
                     await semaphore.WaitAsync(CancellationToken.None);
                     try
                     {
+                        // Whether this tenant is created, released or reloaded, so that it will be built with up to date options.
+                        var rebuilt = tenantsToCreate.Contains(settings.Name);
+
                         // Try to retrieve the release identifier of this tenant from the distributed cache.
                         var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name), CancellationToken.None);
                         if (releaseId is not null && !tenantsToCreate.Contains(settings.Name))
@@ -233,6 +252,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
 
                                 // Keep in sync this tenant by releasing it locally.
                                 await _shellHost.ReleaseShellContextAsync(settings, eventSource: false);
+                                rebuilt = true;
                             }
                         }
 
@@ -255,6 +275,28 @@ internal sealed class DistributedShellHostedService : BackgroundService
 
                                 // Keep in sync this tenant by reloading it locally.
                                 await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
+                                rebuilt = true;
+                            }
+                        }
+
+                        // Try to retrieve the options identifier of this tenant from the distributed cache.
+                        var optionsId = await distributedCache.GetStringAsync(OptionsIdKey(settings.Name), CancellationToken.None);
+                        if (optionsId is not null)
+                        {
+                            // Check if the options identifier of this tenant has changed.
+                            var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
+                            if (identifier.OptionsId != optionsId)
+                            {
+                                // Update the local identifier.
+                                identifier.OptionsId = optionsId;
+
+                                // A rebuilt tenant uses up to date options. Otherwise, keep in sync its options once the
+                                // document identifiers that may be cached locally have expired, so that the options are
+                                // rebuilt from the updated documents.
+                                if (!rebuilt)
+                                {
+                                    _pendingOptionsRefreshes[settings.Name] = DateTime.UtcNow + GetSynchronizationLatency(settings) + s_optionsRefreshMargin;
+                                }
                             }
                         }
 
@@ -314,6 +356,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         _shellHost.ReleasingAsync -= ReleasingAsync;
         _shellHost.ReloadingAsync -= ReloadingAsync;
         _shellHost.RemovingAsync -= RemovingAsync;
+        _shellOptionsEvents.UpdatedAsync -= OptionsUpdatedAsync;
 
         if (_context is not null)
         {
@@ -395,6 +438,15 @@ internal sealed class DistributedShellHostedService : BackgroundService
                     // Initialize the reload identifier of this tenant in the local collection.
                     var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
                     identifier.ReloadId = reloadId;
+                }
+
+                // Retrieve the options identifier of this tenant from the distributed cache.
+                var optionsId = await distributedCache.GetStringAsync(OptionsIdKey(name));
+                if (optionsId is not null)
+                {
+                    // Initialize the options identifier of this tenant in the local collection.
+                    var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
+                    identifier.OptionsId = optionsId;
                 }
             }
 
@@ -574,8 +626,141 @@ internal sealed class DistributedShellHostedService : BackgroundService
         }
     }
 
+    /// <summary>
+    /// Called after the options of a tenant have been updated to update the related shell identifiers, locally and in the distributed cache.
+    /// </summary>
+    public async Task OptionsUpdatedAsync(string name)
+    {
+        if (_terminated)
+        {
+            return;
+        }
+
+        // If there is no default tenant or it is not running, nothing to do.
+        if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext) ||
+            !defaultContext.Settings.IsRunning())
+        {
+            return;
+        }
+
+        // Acquire the distributed context or create a new one if not yet built.
+        await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+
+        // If the required distributed features are not enabled, nothing to do.
+        var distributedCache = context?.DistributedCache;
+        if (distributedCache is null)
+        {
+            return;
+        }
+
+        var semaphore = _semaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
+        await semaphore.WaitAsync();
+        try
+        {
+            // Update this tenant in the local collection with a new options identifier.
+            var identifier = _identifiers.GetOrAdd(name, name => new ShellIdentifier());
+            identifier.OptionsId = IdGenerator.GenerateId();
+
+            // Update the options identifier of this tenant in the distributed cache.
+            await distributedCache.SetStringAsync(OptionsIdKey(name), identifier.OptionsId);
+
+            // Also update the global identifier specifying that a tenant has changed.
+            await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.OptionsId);
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "Unable to update the distributed cache after updating the options of the tenant '{TenantName}'.", name);
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+    }
+
+    /// <summary>
+    /// Refreshes the options of the tenants updated by other instances once they are due.
+    /// </summary>
+    private async Task RefreshPendingOptionsAsync()
+    {
+        if (_pendingOptionsRefreshes.IsEmpty)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+        foreach (var pendingRefresh in _pendingOptionsRefreshes)
+        {
+            if (pendingRefresh.Value > now || !_pendingOptionsRefreshes.TryRemove(pendingRefresh))
+            {
+                continue;
+            }
+
+            try
+            {
+                await RefreshOptionsAsync(pendingRefresh.Key);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Unable to refresh the options of the tenant '{TenantName}'.", pendingRefresh.Key);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Invalidates locally all the signal-backed options of a tenant.
+    /// </summary>
+    private async Task RefreshOptionsAsync(string name)
+    {
+        // A tenant that is not built yet or released will be built with up to date options.
+        if (!_shellHost.TryGetShellContext(name, out var shellContext) ||
+            shellContext.Released ||
+            !shellContext.Settings.IsRunning())
+        {
+            return;
+        }
+
+        var scope = await shellContext.CreateScopeAsync();
+        if (scope is null)
+        {
+            return;
+        }
+
+        // Use a shell scope, as the options are eagerly rebuilt when they are invalidated.
+        await scope.UsingServiceScopeAsync(scope =>
+        {
+            var signal = scope.ServiceProvider.GetRequiredService<ISignal>();
+
+            // Only invalidate the local options, the other instances keep in sync on their own.
+            if (signal is Signal localSignal)
+            {
+                for (var i = 0; i < OptionsUpdateSignal.AllKeySignalCount; i++)
+                {
+                    localSignal.SignalToken(OptionsUpdateSignal.AllKey);
+                }
+
+                return Task.CompletedTask;
+            }
+
+            return OptionsUpdateSignal.SignalAllAsync(signal);
+        });
+    }
+
+    /// <summary>
+    /// Gets the time during which a document identifier may be cached locally before being checked again.
+    /// </summary>
+    private static TimeSpan GetSynchronizationLatency(ShellSettings settings)
+    {
+        // The 'OrchardCore_Documents' section is deprecated and will be removed in a future major version, use 'Documents' instead.
+        var latency = settings.ShellConfiguration?
+            .GetSectionCompat("Documents", "OrchardCore_Documents")
+            .GetValue<TimeSpan?>("SynchronizationLatency");
+
+        return latency ?? s_defaultSynchronizationLatency;
+    }
+
     private static string ReleaseIdKey(string name) => $"{name}{ReleaseIdKeySuffix}";
     private static string ReloadIdKey(string name) => $"{name}{ReloadIdKeySuffix}";
+    private static string OptionsIdKey(string name) => $"{name}{OptionsIdKeySuffix}";
 
     /// <summary>
     /// Gets or creates a new distributed context if the default tenant has changed.
