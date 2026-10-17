@@ -46,6 +46,27 @@ function isBeingDeleted(path: string): boolean {
 }
 
 /**
+ * A change to the media library, described independently of what caused it.
+ *
+ * The same change can originate locally — this user copied a file — or remotely, from a media event
+ * broadcast by the server. Both are applied through {@link useFileLibraryManager}'s `applyChange`, so the
+ * rules for how the store changes live in exactly one place.
+ */
+export type MediaChange =
+  | { kind: "fileAdded"; item: IFileLibraryItemDto }
+  | { kind: "fileRemoved"; filePath: string }
+  | { kind: "filesRemoved"; filePaths: string[] }
+  | { kind: "fileMoved"; oldPath: string; item: IFileLibraryItemDto }
+  | { kind: "directoryAdded"; parentPath: string; item: IFileLibraryItemDto }
+  | { kind: "directoryRemoved"; directoryPath: string };
+
+function directoryOf(path: string): string {
+  const index = path.lastIndexOf("/");
+
+  return index >= 0 ? path.substring(0, index) : "";
+}
+
+/**
  * Invalidates the file cache for a specific directory. Exported at module scope so
  * other services (e.g. UppyFileUpload) can invalidate a folder's cache without going
  * through useFileLibraryManager().
@@ -90,13 +111,25 @@ export function useFileLibraryManager() {
             elem.targetFolder || "root",
           );
 
-          // Remove moved files from the current view.
-          const movedSet = new Set(movedNames);
-          const updated = fileItems.value.filter(f => !movedSet.has(f.name));
-          setFileItems(updated);
-          invalidateFileCache(selectedDirectory.value.directoryPath);
-          // Also invalidate target folder cache so it picks up moved files.
-          invalidateFileCache(elem.targetFolder === "root" ? "" : elem.targetFolder);
+          const sourceFolder = elem.sourceFolder === "root" ? "" : (elem.sourceFolder ?? "");
+          const targetFolder = elem.targetFolder === "root" ? "" : (elem.targetFolder ?? "");
+
+          for (const name of movedNames) {
+            const oldPath = sourceFolder ? `${sourceFolder}/${name}` : name;
+            const moved = fileItems.value.find(f => f.name === name);
+
+            applyChange({
+              kind: "fileMoved",
+              oldPath,
+              item: {
+                ...(moved ?? {} as IFileLibraryItemDto),
+                name,
+                directoryPath: targetFolder,
+                filePath: targetFolder ? `${targetFolder}/${name}` : name,
+              },
+            });
+          }
+
           emit("FileListMoved", elem);
           notify(new NotificationMessage({ summary: t.Success ?? "Success", detail: t.FilesMoved ?? "File(s) moved successfully.", severity: SeverityLevel.Success }));
         } catch (error) {
@@ -116,10 +149,7 @@ export function useFileLibraryManager() {
         try {
           const copiedFile = await fileDataService.copyMedia(elem.oldPath, elem.newPath);
 
-          // Add the copied file to the UI immediately.
-          const updated = [...fileItems.value, copiedFile];
-          setFileItems(updated);
-          invalidateFileCache(selectedDirectory.value.directoryPath);
+          applyChange({ kind: "fileAdded", item: copiedFile });
           emit("FileCopied", copiedFile);
           notify(new NotificationMessage({ summary: t.Success ?? "Success", detail: t.FileCopied ?? "File copied successfully.", severity: SeverityLevel.Success }));
         } catch (error) {
@@ -145,30 +175,8 @@ export function useFileLibraryManager() {
         // currently selected one.
         const parentPath = directory.directoryPath;
         const response = await fileDataService.createFolder(parentPath, directory.name);
-        const parentNode = findNodeByPath(hierarchicalDirectories.value, parentPath);
-        if (parentNode) {
-          const newChild: IHFileLibraryItemDto = {
-            name: response.name,
-            directoryPath: response.directoryPath,
-            filePath: "",
-            isDirectory: true,
-            selected: false,
-            hasChildren: false,
-            children: [],
-          };
-          // Insert in sorted position (case-insensitive).
-          const insertIndex = parentNode.children.findIndex(
-            c => c.name.localeCompare(newChild.name, undefined, { sensitivity: 'base' }) > 0
-          );
-          if (insertIndex === -1) {
-            parentNode.children.push(newChild);
-          } else {
-            parentNode.children.splice(insertIndex, 0, newChild);
-          }
-          parentNode.hasChildren = true;
-          setHierarchicalData({ ...hierarchicalDirectories.value });
-        }
-        setAssetsStore([...assetsStore.value, response]);
+
+        applyChange({ kind: "directoryAdded", parentPath, item: response });
         emit("DirAddReq", { selectedDirectory: { ...selectedDirectory.value, directoryPath: parentPath } as IFileLibraryItemDto, data: response });
       } catch (error) {
         notify(error);
@@ -193,12 +201,14 @@ export function useFileLibraryManager() {
       try {
         await fileDataService.moveMedia(oldPath, newPath);
 
-        // Update the file name and path in the UI immediately.
-        const updated = fileItems.value.map(f =>
-          f.filePath === oldPath ? { ...f, name: newName, filePath: newPath } : f
-        );
-        setFileItems(updated);
-        invalidateFileCache(selectedDirectory.value.directoryPath);
+        const renamed = fileItems.value.find(f => f.filePath === oldPath);
+
+        applyChange({
+          kind: "fileMoved",
+          oldPath,
+          item: { ...(renamed ?? {} as IFileLibraryItemDto), name: newName, filePath: newPath, directoryPath: directoryOf(newPath) },
+        });
+
         emit("FileRenamed", { newName: newName, newPath: newPath, oldPath: oldPath });
       } catch (error) {
         notify(error);
@@ -226,11 +236,7 @@ export function useFileLibraryManager() {
       try {
         await fileDataService.deleteMediaList(imagePaths);
 
-        // Remove deleted files from the UI immediately.
-        const deletedPaths = new Set(imagePaths);
-        const updated = fileItems.value.filter(f => !deletedPaths.has(f.filePath ?? ""));
-        setFileItems(updated);
-        invalidateFileCache(selectedDirectory.value.directoryPath);
+        applyChange({ kind: "filesRemoved", filePaths: imagePaths });
         setSelectedFiles([]);
         setSelectedAll(false);
       } catch (error) {
@@ -252,10 +258,7 @@ export function useFileLibraryManager() {
       try {
         await fileDataService.deleteMedia(file.filePath);
 
-        // Remove the file from the UI immediately.
-        const updated = fileItems.value.filter(f => f.filePath !== file.filePath);
-        setFileItems(updated);
-        invalidateFileCache(selectedDirectory.value.directoryPath);
+        applyChange({ kind: "fileRemoved", filePath: file.filePath });
         emit("FileDeleted", file);
         setSelectedFiles([]);
         setSelectedAll(false);
@@ -281,28 +284,10 @@ export function useFileLibraryManager() {
       try {
         await fileDataService.deleteFolder(directory.directoryPath);
 
-        // Navigate to parent immediately.
+        // Navigating away is local to whoever performed the deletion.
         emit("DirDelete", directory);
 
-        // Invalidate cache for the deleted folder and all descendants.
-        const deletedPrefix = directory.directoryPath + "/";
-        for (const key of fileCache.keys()) {
-          if (key === directory.directoryPath || key.startsWith(deletedPrefix)) {
-            fileCache.delete(key);
-          }
-        }
-
-        // Remove the folder from the tree in-place.
-        const parentPath = directory.directoryPath.substring(0, directory.directoryPath.lastIndexOf("/"));
-        const parentNode = findNodeByPath(hierarchicalDirectories.value, parentPath || "");
-        if (parentNode) {
-          parentNode.children = parentNode.children.filter(c => c.directoryPath !== directory.directoryPath);
-          parentNode.hasChildren = parentNode.children.length > 0;
-          setHierarchicalData({ ...hierarchicalDirectories.value });
-        }
-        setAssetsStore(assetsStore.value.filter(x =>
-          !(x.isDirectory && (x.directoryPath + "/").startsWith(directory.directoryPath + "/"))
-        ));
+        applyChange({ kind: "directoryRemoved", directoryPath: directory.directoryPath });
       } catch (error) {
         notify(error);
       } finally {
@@ -402,10 +387,134 @@ export function useFileLibraryManager() {
   };
 
   /**
-   * Invalidates the file cache for a specific directory.
+   * Applies a change to the store, and nothing else.
+   *
+   * Deliberately free of side effects: no API calls, no notifications, no event-bus emissions and no
+   * navigation. Those belong to the operation that caused the change, because they are local to the user
+   * who performed it — a remote change must not pop a success toast, clear someone else's selection, or
+   * navigate them away from the folder they are looking at.
    */
-  const invalidateFileCache = (directoryPath: string) => {
-    fileCache.delete(directoryPath);
+  const applyChange = (change: MediaChange): void => {
+    const currentDirectory = selectedDirectory.value?.directoryPath ?? "";
+
+    switch (change.kind) {
+      case "fileAdded": {
+        const directory = change.item.directoryPath ?? "";
+        invalidateFileCache(directory);
+
+        if (directory === currentDirectory) {
+          setFileItems([...fileItems.value.filter(f => f.filePath !== change.item.filePath), change.item]);
+        }
+
+        break;
+      }
+
+      case "fileRemoved": {
+        invalidateFileCache(directoryOf(change.filePath));
+
+        if (directoryOf(change.filePath) === currentDirectory) {
+          setFileItems(fileItems.value.filter(f => f.filePath !== change.filePath));
+        }
+
+        break;
+      }
+
+      case "filesRemoved": {
+        const removed = new Set(change.filePaths);
+
+        for (const filePath of change.filePaths) {
+          invalidateFileCache(directoryOf(filePath));
+        }
+
+        setFileItems(fileItems.value.filter(f => !removed.has(f.filePath ?? "")));
+
+        break;
+      }
+
+      case "fileMoved": {
+        const from = directoryOf(change.oldPath);
+        const to = change.item.directoryPath ?? "";
+
+        invalidateFileCache(from);
+        invalidateFileCache(to);
+
+        let updated = fileItems.value;
+
+        if (from === currentDirectory) {
+          updated = updated.filter(f => f.filePath !== change.oldPath);
+        }
+
+        if (to === currentDirectory) {
+          updated = [...updated.filter(f => f.filePath !== change.item.filePath), change.item];
+        }
+
+        if (updated !== fileItems.value) {
+          setFileItems(updated);
+        }
+
+        break;
+      }
+
+      case "directoryAdded": {
+        const parentNode = findNodeByPath(hierarchicalDirectories.value, change.parentPath);
+
+        if (parentNode) {
+          const newChild: IHFileLibraryItemDto = {
+            name: change.item.name,
+            directoryPath: change.item.directoryPath,
+            filePath: "",
+            isDirectory: true,
+            selected: false,
+            hasChildren: false,
+            children: [],
+          };
+
+          // Insert in sorted position (case-insensitive).
+          const insertIndex = parentNode.children.findIndex(
+            c => c.name.localeCompare(newChild.name, undefined, { sensitivity: "base" }) > 0
+          );
+
+          if (insertIndex === -1) {
+            parentNode.children.push(newChild);
+          } else {
+            parentNode.children.splice(insertIndex, 0, newChild);
+          }
+
+          parentNode.hasChildren = true;
+          setHierarchicalData({ ...hierarchicalDirectories.value });
+        }
+
+        if (!assetsStore.value.some(x => x.isDirectory && x.directoryPath === change.item.directoryPath)) {
+          setAssetsStore([...assetsStore.value, change.item]);
+        }
+
+        break;
+      }
+
+      case "directoryRemoved": {
+        const deletedPrefix = change.directoryPath + "/";
+
+        for (const key of fileCache.keys()) {
+          if (key === change.directoryPath || key.startsWith(deletedPrefix)) {
+            fileCache.delete(key);
+          }
+        }
+
+        const parentNode = findNodeByPath(hierarchicalDirectories.value, directoryOf(change.directoryPath));
+
+        if (parentNode) {
+          parentNode.children = parentNode.children.filter(c => c.directoryPath !== change.directoryPath);
+          parentNode.hasChildren = parentNode.children.length > 0;
+          setHierarchicalData({ ...hierarchicalDirectories.value });
+        }
+
+        setAssetsStore(assetsStore.value.filter(x =>
+          !(x.isDirectory && (x.directoryPath + "/").startsWith(deletedPrefix))
+        ));
+
+        break;
+      }
+    }
   };
 
   return {
@@ -419,5 +528,7 @@ export function useFileLibraryManager() {
     deleteDirectory,
     getFileLibraryStoreAsync,
     loadDirectoryFiles,
+    invalidateFileCache,
+    applyChange,
   };
 }
