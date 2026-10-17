@@ -1,0 +1,15 @@
+@model (IReadOnlyList<DataField> Fields, string Selected, bool AllowEmpty)
+
+@* The options of a field picker. A selected field the input doesn't have anymore stays selected, marked as missing. *@
+@if (Model.AllowEmpty)
+{
+    <option value="">@T["Choose a field"]</option>
+}
+@foreach (var field in Model.Fields)
+{
+    <option value="@field.Name" selected="@(field.Name == Model.Selected)">@field.Name (@field.Type)</option>
+}
+@if (!string.IsNullOrEmpty(Model.Selected) && Model.Fields.All(field => field.Name != Model.Selected))
+{
+    <option value="@Model.Selected" selected>@T["{0} (missing)", Model.Selected]</option>
+}

@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Layers.Models
+
+@model ShapeViewModel<Layer>
+
+@* The name is the label of the checkbox, so clicking it reveals the widgets of the layer. *@
+<label class="form-check-label" for="@Model.Value.Name">@Model.Value.Name</label>

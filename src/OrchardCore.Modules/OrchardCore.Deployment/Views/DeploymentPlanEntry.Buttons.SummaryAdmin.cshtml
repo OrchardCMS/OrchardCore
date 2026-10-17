@@ -1,0 +1,10 @@
+@using OrchardCore.Deployment.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<DeploymentPlanEntry>
+
+<a asp-action="Display" asp-controller="DeploymentPlan" asp-route-id="@Model.Value.DeploymentPlan.Id" class="btn btn-info btn-sm">@T["Manage Steps"]</a>
+
+<a asp-action="Edit" asp-controller="DeploymentPlan" asp-route-id="@Model.Value.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-action="Delete" asp-controller="DeploymentPlan" asp-route-id="@Model.Value.DeploymentPlan.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
