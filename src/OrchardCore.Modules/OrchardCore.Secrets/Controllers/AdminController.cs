@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -298,7 +299,7 @@ public sealed class AdminController : Controller
         }
 
         // Validate type-specific requirements
-        ValidateSecretModel(model, true);
+        ValidateSecretModel(model, null);
 
         if (ModelState.IsValid)
         {
@@ -408,7 +409,7 @@ public sealed class AdminController : Controller
         }
 
         // Validate type-specific requirements
-        ValidateSecretModel(model, false);
+        ValidateSecretModel(model, existingSecret);
 
         if (ModelState.IsValid)
         {
@@ -458,8 +459,10 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private void ValidateSecretModel(SecretEditViewModel model, bool isNew)
+    private void ValidateSecretModel(SecretEditViewModel model, ISecret existingSecret)
     {
+        var isNew = existingSecret is null;
+
         if (!_secretManager.GetStores().Any(s => !s.IsReadOnly && s.Name.Equals(model.Store, StringComparison.OrdinalIgnoreCase)))
         {
             ModelState.AddModelError(nameof(model.Store), S["Select a writable secret store."]);
@@ -475,11 +478,30 @@ public sealed class AdminController : Controller
 
                 break;
 
+            case nameof(X509Secret) when model.X509Source == X509SecretSource.Pem:
+                if (string.IsNullOrWhiteSpace(model.X509CertificatePem))
+                {
+                    ModelState.AddModelError(nameof(model.X509CertificatePem), S["The certificate is required."]);
+                    break;
+                }
+
+                var secret = CreateX509Secret(model, existingSecret as X509Secret);
+                using (var certificate = secret.GetCertificate())
+                {
+                    if (certificate is null)
+                    {
+                        ModelState.AddModelError(nameof(model.X509CertificatePem), S["The certificate could not be loaded. Provide a PEM-encoded certificate and, optionally, its unencrypted PEM-encoded private key."]);
+                    }
+                }
+
+                break;
+
             case nameof(X509Secret):
                 if (string.IsNullOrEmpty(model.X509Thumbprint))
                 {
                     ModelState.AddModelError(nameof(model.X509Thumbprint), S["The certificate thumbprint is required."]);
                 }
+
                 break;
         }
     }
@@ -497,9 +519,14 @@ public sealed class AdminController : Controller
     {
         if (secret is X509Secret x509Secret)
         {
+            model.X509Source = x509Secret.Source;
             model.X509StoreLocation = x509Secret.StoreLocation.ToString();
             model.X509StoreName = x509Secret.StoreName.ToString();
             model.X509Thumbprint = x509Secret.Thumbprint;
+
+            // The certificate is public, the private key is never returned to the view.
+            model.X509CertificatePem = x509Secret.CertificatePem;
+            model.X509HasPrivateKey = !string.IsNullOrEmpty(x509Secret.PrivateKeyPem);
         }
         // TextSecret: don't expose the value
         // RsaKeySecret: don't expose the private key
@@ -511,7 +538,7 @@ public sealed class AdminController : Controller
         {
             nameof(TextSecret) => CreateTextSecret(model, existingSecret as TextSecret),
             nameof(RsaKeySecret) => CreateRsaKeySecret(model, existingSecret as RsaKeySecret),
-            nameof(X509Secret) => CreateX509Secret(model),
+            nameof(X509Secret) => CreateX509Secret(model, existingSecret as X509Secret),
             _ => throw new InvalidOperationException($"Unknown secret type: {model.SecretType}"),
         };
     }
@@ -543,12 +570,23 @@ public sealed class AdminController : Controller
         };
     }
 
-    private static X509Secret CreateX509Secret(SecretEditViewModel model)
+    private static X509Secret CreateX509Secret(SecretEditViewModel model, X509Secret existing)
     {
-        var storeLocation = Enum.TryParse<System.Security.Cryptography.X509Certificates.StoreLocation>(
-            model.X509StoreLocation, out var loc) ? loc : System.Security.Cryptography.X509Certificates.StoreLocation.CurrentUser;
-        var storeName = Enum.TryParse<System.Security.Cryptography.X509Certificates.StoreName>(
-            model.X509StoreName, out var name) ? name : System.Security.Cryptography.X509Certificates.StoreName.My;
+        if (model.X509Source == X509SecretSource.Pem)
+        {
+            var secret = X509Secret.FromPem(model.X509CertificatePem, model.X509PrivateKeyPem);
+
+            // The private key is never displayed, so an empty value keeps the current one.
+            if (secret.PrivateKeyPem is null && existing?.Source == X509SecretSource.Pem)
+            {
+                secret.PrivateKeyPem = existing.PrivateKeyPem;
+            }
+
+            return secret;
+        }
+
+        var storeLocation = Enum.TryParse<StoreLocation>(model.X509StoreLocation, out var loc) ? loc : StoreLocation.CurrentUser;
+        var storeName = Enum.TryParse<StoreName>(model.X509StoreName, out var name) ? name : StoreName.My;
 
         return new X509Secret
         {

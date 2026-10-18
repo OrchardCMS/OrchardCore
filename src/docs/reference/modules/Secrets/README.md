@@ -584,11 +584,12 @@ The admin RSA creation page can generate a key pair on the destination, but it d
 
 **Option 2: Using X509Secret**
 
-Use an RSA-capable X.509 certificate:
+Use an RSA-capable X.509 certificate, with an `X509Secret` under the same logical name in each tenant:
 
-1. Install the public certificate on the source and the matching certificate with its private key on the destination.
-2. Create an `X509Secret` under the same logical name in each tenant, pointing to that machine's certificate store location, store name, and thumbprint.
-3. Ensure the destination application's identity can access the certificate's private key. The source needs only the public key.
+- **PEM-encoded certificate:** on the destination, create the secret with the PEM-encoded certificate and its private key. On the source, create it with the PEM-encoded certificate only. No certificate store is involved.
+- **Certificate store:** install the public certificate on the source and the matching certificate with its private key on the destination, then create the secret pointing to that machine's certificate store location, store name, and thumbprint. Ensure the destination application's identity can access the certificate's private key.
+
+In both cases, the source needs only the public key.
 
 #### Creating an Encrypted Export
 
@@ -663,7 +664,7 @@ An external encryption tool must reproduce the provider's serialization, version
 **Important Requirements:**
 - The encryption key must exist on the target with the same name
 - For `RsaKeySecret`: `IncludesPrivateKey` must be `true`
-- For `X509Secret`: The certificate must have a private key
+- For `X509Secret`: The certificate must have a private key, from its certificate store or from the PEM-encoded private key of the secret
 
 ### Multi-Tenant Migration Example
 
@@ -693,16 +694,16 @@ The module supports three built-in secret types, each designed for specific use 
 
 Both `RsaKeySecret` and `X509Secret` can be used for cryptographic operations, but they serve different deployment models:
 
-| Aspect | RsaKeySecret | X509Secret |
-|--------|--------------|------------|
-| **Storage** | Key material stored in database (encrypted) | Reference to OS certificate store |
-| **Portability** | ✅ Travels with database backup | ❌ Cert must exist on each machine |
-| **Container-friendly** | ✅ Works without mounting certs | ❌ Requires cert pre-installed |
-| **Key generation** | ✅ Generate in Admin UI | ❌ Create cert externally |
-| **Cross-platform** | ✅ Works identically everywhere | ⚠️ Enumeration varies by OS |
-| **Certificate metadata** | ❌ No issuer, expiry, subject | ✅ Full X.509 metadata |
-| **CA-issued certs** | ❌ Not applicable | ✅ Works with CA certs |
-| **Security model** | Key stored encrypted in DB | Key never leaves OS secure store |
+| Aspect | RsaKeySecret | X509Secret (certificate store) | X509Secret (PEM-encoded certificate) |
+|--------|--------------|--------------------------------|--------------------------------------|
+| **Storage** | Key material stored in the secret store (encrypted) | Reference to OS certificate store | Certificate and private key stored in the secret store (encrypted) |
+| **Portability** | ✅ Travels with database backup | ❌ Cert must exist on each machine | ✅ Travels with database backup |
+| **Container-friendly** | ✅ Works without mounting certs | ❌ Requires cert pre-installed | ✅ Works without mounting certs |
+| **Key generation** | ✅ Generate in Admin UI | ❌ Create cert externally | ❌ Create cert externally |
+| **Cross-platform** | ✅ Works identically everywhere | ⚠️ Enumeration varies by OS | ✅ Works identically everywhere |
+| **Certificate metadata** | ❌ No issuer, expiry, subject | ✅ Full X.509 metadata | ✅ Full X.509 metadata |
+| **CA-issued certs** | ❌ Not applicable | ✅ Works with CA certs | ✅ Works with CA certs |
+| **Security model** | Key stored encrypted in the secret store | Key never leaves OS secure store | Key stored encrypted in the secret store |
 
 **When to use RsaKeySecret:**
 
@@ -717,6 +718,8 @@ Both `RsaKeySecret` and `X509Secret` can be used for cryptographic operations, b
 - Azure App Service certificates uploaded via portal
 - Enterprise PKI where certificates are managed by IT
 - Scenarios requiring certificate metadata (issuer validation, expiry checking)
+
+Prefer a PEM-encoded certificate when the certificate store is not convenient, which is typically the case on Linux, in containers, and on shared hosting.
 
 ### TextSecret
 
@@ -798,16 +801,26 @@ signingKey.ImportRSAPrivateKey(Convert.FromBase64String(retrieved.PrivateKey), o
 
 ### X509Secret
 
-For referencing X.509 certificates from the operating system's certificate store. The secret stores only the certificate reference (thumbprint, location, store name) - the actual certificate remains in the OS certificate store.
+For X.509 certificates. Its `Source` defines where the certificate is loaded from:
+
+- `X509SecretSource.Store`, the default: the secret references a certificate of the operating system's certificate store. It stores only the certificate reference (thumbprint, location, store name), the actual certificate remains in the OS certificate store.
+- `X509SecretSource.Pem`: the secret contains the certificate material itself, the PEM-encoded certificate and, optionally, its PEM-encoded private key. It doesn't depend on a certificate store, so it works the same way on every platform.
 
 ```csharp
 public class X509Secret : ISecret
 {
+    public X509SecretSource Source { get; set; }      // Store or Pem
+
     public StoreLocation StoreLocation { get; set; }  // CurrentUser or LocalMachine
     public StoreName StoreName { get; set; }          // My, Root, etc.
     public string Thumbprint { get; set; }            // Certificate thumbprint
-    
-    public X509Certificate2 GetCertificate();         // Loads cert from OS store
+
+    public string CertificatePem { get; set; }        // PEM-encoded certificate, optionally followed by its chain
+    public string PrivateKeyPem { get; set; }         // Unencrypted PEM-encoded private key, optional
+
+    public static X509Secret FromPem(string certificatePem, string privateKeyPem = null);
+
+    public X509Certificate2 GetCertificate();         // Loads cert from the OS store or the PEM-encoded material
 }
 ```
 
@@ -820,13 +833,19 @@ public class X509Secret : ISecret
 - Enterprise PKI scenarios
 - Any certificate managed by IT infrastructure
 
-**How it works:**
+**How it works with a certificate store:**
 
 1. Certificate is installed in OS certificate store (manually, via Azure, or via deployment)
 2. X509Secret stores the thumbprint and store location as a "binding"
 3. At runtime, `GetCertificate()` loads the actual certificate from the OS store
 
-**Cross-platform notes:**
+**How it works with a PEM-encoded certificate:**
+
+1. The certificate and its private key are pasted in the secret editor, with the **PEM-encoded certificate** source, or provided to `X509Secret.FromPem()`. When the certificate also contains the private key, the private key is stored separately.
+2. The secret store keeps them encrypted, like any other secret value. The private key is never displayed in the admin: leave it empty when editing the secret to keep the current one.
+3. At runtime, `GetCertificate()` creates the certificate with `X509Certificate2.CreateFromPem()`. The private key is optional, but required to sign or decrypt data. It must be unencrypted, in the PKCS#8 (`PRIVATE KEY`), RSA (`RSA PRIVATE KEY`) or EC (`EC PRIVATE KEY`) format, and match the certificate.
+
+**Cross-platform notes for certificate stores:**
 
 - **Windows:** Full access to CurrentUser and LocalMachine stores; Admin UI shows available certs
 - **Linux:** Limited to CurrentUser store (~/.dotnet/corefx/cryptography); Admin UI may be empty
@@ -851,6 +870,12 @@ if (certificate != null)
     // certificate is an X509Certificate2 instance
     // Use for SSL, signing, encryption, etc.
 }
+
+// Store a PEM-encoded certificate and its private key
+var pemSecret = X509Secret.FromPem(
+    await File.ReadAllTextAsync("signing-certificate.pem"),
+    await File.ReadAllTextAsync("signing-certificate.key"));
+await _secretManager.SaveSecretAsync("OpenId.SigningCertificate", pemSecret);
 ```
 
 ## Adding Secret Support to Your Own Credentials

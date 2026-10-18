@@ -79,11 +79,11 @@ public sealed class OpenIdSecretsOptionsConfiguration : IPostConfigureOptions<Op
                 return CreateRsaSecurityKey(rsaSecret, secretName);
             }
 
-            // Fall back to X509Secret (certificate store reference)
+            // Fall back to X509Secret (certificate store reference or PEM-encoded certificate)
             var x509Secret = await _secretManager.GetSecretAsync<X509Secret>(secretName);
             if (x509Secret != null)
             {
-                return CreateX509SecurityKey(x509Secret);
+                return CreateX509SecurityKey(x509Secret, secretName);
             }
 
             _logger.LogWarning("Secret '{SecretName}' was not found or is not a supported key type (RsaKeySecret or X509Secret).", secretName);
@@ -118,14 +118,22 @@ public sealed class OpenIdSecretsOptionsConfiguration : IPostConfigureOptions<Op
         return new RsaSecurityKey(rsa);
     }
 
-    private X509SecurityKey CreateX509SecurityKey(X509Secret secret)
+    private X509SecurityKey CreateX509SecurityKey(X509Secret secret, string secretName)
     {
         var certificate = secret.GetCertificate();
         if (certificate == null)
         {
-            _logger.LogWarning(
-                "X509 certificate '{Thumbprint}' was not found in {StoreLocation}/{StoreName} store.",
-                secret.Thumbprint, secret.StoreLocation, secret.StoreName);
+            if (secret.Source == X509SecretSource.Pem)
+            {
+                _logger.LogWarning("The PEM-encoded certificate of the X509 secret '{SecretName}' could not be loaded.", secretName);
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "X509 certificate '{Thumbprint}' was not found in {StoreLocation}/{StoreName} store.",
+                    secret.Thumbprint, secret.StoreLocation, secret.StoreName);
+            }
+
             return null;
         }
 

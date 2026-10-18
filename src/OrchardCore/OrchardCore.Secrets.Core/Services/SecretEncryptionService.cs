@@ -124,7 +124,7 @@ public class SecretEncryptionService : ISecretEncryptionService
             using var cert = x509Secret.GetCertificate();
             if (cert == null)
             {
-                throw new InvalidOperationException($"Certificate for '{keyName}' was not found in the certificate store.");
+                throw new InvalidOperationException($"Certificate for '{keyName}' could not be loaded.");
             }
 
             using var rsa = cert.GetRSAPublicKey();
@@ -165,7 +165,7 @@ public class SecretEncryptionService : ISecretEncryptionService
             using var cert = x509Secret.GetCertificate();
             if (cert == null)
             {
-                throw new InvalidOperationException($"Certificate for '{keyName}' was not found in the certificate store.");
+                throw new InvalidOperationException($"Certificate for '{keyName}' could not be loaded.");
             }
 
             if (!cert.HasPrivateKey)

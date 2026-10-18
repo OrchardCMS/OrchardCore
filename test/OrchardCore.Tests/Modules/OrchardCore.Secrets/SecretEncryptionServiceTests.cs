@@ -79,6 +79,22 @@ public class SecretEncryptionServiceTests
             new SecretInfo { Name = "secret", Type = nameof(TextSecret) }));
     }
 
+    [Fact]
+    public async Task RoundTrip_PemCertificateKey_EncryptsAndDecrypts()
+    {
+        var (certificatePem, privateKeyPem) = X509SecretTests.CreateCertificatePem();
+        var manager = new Mock<ISecretManager>();
+        manager.Setup(m => m.GetSecretAsync<X509Secret>("certificate")).ReturnsAsync(X509Secret.FromPem(certificatePem, privateKeyPem));
+        var service = new SecretEncryptionService(manager.Object,
+            [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>())]);
+        var info = new SecretInfo { Name = "secret", Store = "Database", Type = nameof(TextSecret) };
+
+        var encrypted = await service.EncryptAsync(new TextSecret { Text = "safe" }, "certificate", info);
+        var decrypted = await service.DecryptAsync(encrypted, "certificate", info);
+
+        Assert.Equal("safe", Assert.IsType<TextSecret>(decrypted).Text);
+    }
+
     private static string FlipByte(string value)
     {
         var bytes = Convert.FromBase64String(value);

@@ -35,7 +35,13 @@ public class SecretEditViewModel
     public int RsaKeySize { get; set; } = 2048;
 
     // X509Secret properties
+    public X509SecretSource X509Source { get; set; }
     public string X509StoreLocation { get; set; }
     public string X509StoreName { get; set; }
     public string X509Thumbprint { get; set; }
+    public string X509CertificatePem { get; set; }
+    public string X509PrivateKeyPem { get; set; }
+
+    [BindNever]
+    public bool X509HasPrivateKey { get; set; }
 }

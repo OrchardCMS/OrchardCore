@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
@@ -367,6 +369,34 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await Assertions.Expect(page.Locator("#SecretType")).ToHaveValueAsync(type);
         await Assertions.Expect(page.Locator(field)).ToBeVisibleAsync();
         await Assertions.Expect(page.Locator("#TextValue")).ToHaveCountAsync(0);
+    }
+
+    [Fact]
+    public async Task CreatingPemCertificate_KeepsPrivateKeyHidden()
+    {
+        using var rsa = RSA.Create(2048);
+        var request = new CertificateRequest("CN=Orchard Core", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddDays(1));
+        var certificatePem = certificate.ExportCertificatePem();
+
+        var page = await CreateAdminPageAsync();
+        await OpenCreateEditorAsync(page, "X509Secret");
+        await page.Locator("#X509Source").SelectOptionAsync("Pem");
+        await Assertions.Expect(page.Locator("#X509Thumbprint")).ToBeHiddenAsync();
+        await page.Locator("#Name").FillAsync("SigningCertificate");
+        await page.Locator("#X509CertificatePem").FillAsync(certificatePem + "\n" + rsa.ExportPkcs8PrivateKeyPem());
+        await SaveAsync(page, "Secret created successfully.");
+
+        await OpenEditEditorAsync(page, "SigningCertificate");
+        await Assertions.Expect(page.Locator("#X509Source")).ToHaveValueAsync("Pem");
+        await Assertions.Expect(page.Locator("#X509CertificatePem")).ToHaveValueAsync(certificatePem + "\n");
+        await Assertions.Expect(page.Locator("#X509PrivateKeyPem")).ToHaveValueAsync(string.Empty);
+        await Assertions.Expect(page.GetByText("Leave empty to keep the current private key.")).ToBeVisibleAsync();
+
+        // Saving without a new private key keeps the current one.
+        await SaveAsync(page, "Secret updated successfully.");
+        await OpenEditEditorAsync(page, "SigningCertificate");
+        await Assertions.Expect(page.GetByText("Leave empty to keep the current private key.")).ToBeVisibleAsync();
     }
 
     public override async ValueTask DisposeAsync()
