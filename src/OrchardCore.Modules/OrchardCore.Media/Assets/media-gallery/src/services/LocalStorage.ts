@@ -10,6 +10,10 @@ const gridView: Ref<boolean> = ref(false);
 const pageSize: Ref<number> = ref(10);
 const largeThumbs: Ref<boolean> = ref(false);
 
+// When the grid (thumbnails) view is disabled site-wide (OrchardCore_Media:DisableThumbnails),
+// the list view is enforced for the lifetime of the app, overriding any persisted preference.
+let gridViewDisabled = false;
+
 export function useLocalStorage() {
   const localStorageData = computed<ILocalStorageData>({
     get() {
@@ -28,7 +32,7 @@ export function useLocalStorage() {
 
       smallThumbs.value = localStorageData.smallThumbs;
       setSelectedDirectory(localStorageData.selectedDirectory);
-      gridView.value = localStorageData.gridView;
+      gridView.value = gridViewDisabled ? false : localStorageData.gridView;
       pageSize.value = localStorageData.pageSize ?? 10;
       largeThumbs.value = localStorageData.largeThumbs ?? false;
     },
@@ -47,9 +51,14 @@ export function useLocalStorage() {
     }
   };
 
+  const disableGridView = () => {
+    gridViewDisabled = true;
+    gridView.value = false;
+  };
+
   watch(localStorageData, (data) => {
     localStorage.setItem(LS_ID, JSON.stringify(data));
   });
 
-  return { setLocalStorage, localStorageData, smallThumbs, gridView, pageSize, largeThumbs };
+  return { setLocalStorage, localStorageData, smallThumbs, gridView, pageSize, largeThumbs, disableGridView };
 }

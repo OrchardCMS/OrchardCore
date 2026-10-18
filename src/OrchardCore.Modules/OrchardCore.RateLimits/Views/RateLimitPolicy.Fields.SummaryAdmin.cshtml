@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitPolicy>
+
+@* Plain link, like the title of a content item in the Manage Content list. What the policy targets and its
+   description are in the Description zone, so they take their own row and leave the badges beside the title. *@
+<a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@Model.Value.PolicyId">@Model.Value.Name</a>

@@ -7,6 +7,7 @@
 interface CodeMirrorEditor {
     on(event: string, handler: (editor: CodeMirrorEditor) => void): void;
     save(): void;
+    toTextArea(): void;
     getValue(): string;
     setValue(value: string): void;
     setOption(key: string, value: unknown): void;

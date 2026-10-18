@@ -11,7 +11,7 @@
         @if (!string.IsNullOrEmpty(policyId))
         {
             var policy = await PolicyStore.FindByIdAsync(policyId, PolicyVersion.Current);
-            <breadcrumb-item id="Policy" action="Edit" controller="Admin" area="OrchardCore.RateLimits" route-policyId="@policyId" permission="@RateLimitsPermissions.ManageRateLimits.Name">@(policy?.Name ?? T["Rate Limit Policy"].Value)</breadcrumb-item>
+            <breadcrumb-item id="Policy" action="Edit" controller="Admin" area="OrchardCore.RateLimits" route-policyId="@policyId" permission="@RateLimitsPermissions.ManageRateLimits.Name">@(policy?.Name ?? (object)T["Rate Limit Policy"])</breadcrumb-item>
         }
     </breadcrumb>
 </zone>

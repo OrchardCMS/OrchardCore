@@ -1,0 +1,13 @@
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@{
+    var checkboxId = Html.GenerateIdFromName(Model.Value.Name);
+}
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" name="taskNames" value="@Model.Value.Name" id="@checkboxId">
+    <label class="form-check-label" for="@checkboxId">&nbsp;</label>
+</div>

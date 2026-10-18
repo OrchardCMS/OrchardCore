@@ -81,8 +81,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
             var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
             var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayModeDrivers(partTypeName, contentTypePartDefinition.DisplayMode());
-            foreach (var partDisplayDriver in partDisplayDrivers)
+
+            // Iterated by index to not allocate an enumerator for each part.
+            for (var i = 0; i < partDisplayDrivers.Count; i++)
             {
+                var partDisplayDriver = partDisplayDrivers[i];
+
                 try
                 {
                     var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
@@ -93,7 +97,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    ex.LogException(_logger, partDisplayDrivers.GetType(), nameof(BuildDisplayAsync));
+                    ex.LogException(_logger, partDisplayDriver.GetType(), nameof(BuildDisplayAsync));
                 }
             }
             var tempContext = context;
@@ -161,8 +165,11 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
             {
                 var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayModeDrivers(contentPartFieldDefinition.FieldDefinition.Name, contentPartFieldDefinition.DisplayMode());
-                foreach (var fieldDisplayDriver in fieldDisplayDrivers)
+
+                for (var i = 0; i < fieldDisplayDrivers.Count; i++)
                 {
+                    var fieldDisplayDriver = fieldDisplayDrivers[i];
+
                     try
                     {
                         var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);

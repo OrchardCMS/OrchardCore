@@ -86,9 +86,11 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
 
         if (shapeDescriptor != null)
         {
-            foreach (var ev in shapeDescriptor.CreatingAsync)
+            var creatingAsync = shapeDescriptor.CreatingAsync;
+
+            for (var i = 0; i < creatingAsync.Count; i++)
             {
-                await ev(creatingContext);
+                await creatingAsync[i](creatingContext);
             }
         }
 
@@ -122,9 +124,11 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
 
         if (shapeDescriptor != null)
         {
-            foreach (var ev in shapeDescriptor.CreatedAsync)
+            var createdAsync = shapeDescriptor.CreatedAsync;
+
+            for (var i = 0; i < createdAsync.Count; i++)
             {
-                await ev(createdContext);
+                await createdAsync[i](createdContext);
             }
         }
 

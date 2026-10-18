@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using Fluid;
@@ -25,6 +26,9 @@ namespace OrchardCore.Autoroute.Handlers;
 
 public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 {
+    // The length of int.MaxValue, the longest version.
+    private const int MaxVersionLength = 10;
+
     private readonly IAutorouteEntries _entries;
     private readonly AutorouteOptions _options;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -449,32 +453,145 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         return pattern;
     }
 
-    private async Task<string> GenerateUniqueAbsolutePathAsync(string path, string contentItemId)
+    internal async Task<string> GenerateUniqueAbsolutePathAsync(string path, string contentItemId)
     {
         var version = 1;
         var unversionedPath = path;
 
         var versionSeparatorPosition = path.LastIndexOf('-');
-        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
+        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out var parsedVersion))
         {
+            version = parsedVersion;
             unversionedPath = path[..versionSeparatorPosition];
         }
 
+        // The versions taken by other content items are read with a single query, rather than with one query per
+        // version, which made the n-th copy of a permalink run n queries.
+        var takenVersions = await GetTakenVersionsAsync(unversionedPath, contentItemId);
+
         while (true)
         {
-            // Unversioned length + separator char + version length.
-            var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
-            if (quantityCharactersToTrim > 0)
+            if (!takenVersions.Contains(version))
             {
-                unversionedPath = unversionedPath[..^quantityCharactersToTrim];
+                var versionedPath = GetVersionedPath(unversionedPath, version);
+
+                // The database has the final say, as its collation can consider two paths equal although they differ by
+                // more than their case, for instance by trailing spaces or accents. Only such a path takes another query.
+                if (await IsAbsolutePathUniqueAsync(versionedPath, contentItemId))
+                {
+                    return versionedPath;
+                }
             }
 
-            var versionedPath = $"{unversionedPath}-{version++}";
-            if (await IsAbsolutePathUniqueAsync(versionedPath, contentItemId))
+            version++;
+        }
+    }
+
+    /// <summary>
+    /// Gets the versions for which another content item already uses the path that <see cref="GetVersionedPath"/>
+    /// builds, with or without a leading or trailing slash, as <see cref="IsAbsolutePathUniqueAsync"/> checks them.
+    /// </summary>
+    private async Task<HashSet<int>> GetTakenVersionsAsync(string unversionedPath, string contentItemId)
+    {
+        // A versioned path starts with the unversioned path, shortened if needed to make room for the version, so the
+        // stem of the longest version is a prefix of all of them. When it isn't shortened, neither is any other one.
+        var shortestStem = GetVersionStem(unversionedPath, MaxVersionLength);
+        var prefix = shortestStem.Length == unversionedPath.Length
+            ? $"{shortestStem.TrimStart('/')}-"
+            : shortestStem.TrimStart('/').ToString();
+
+        // The prefix isn't escaped in the LIKE pattern. The '%' and '_' wildcards can only match more paths, which are
+        // then left out below, but '[' starts a set of characters on SQL Server, and '\' escapes the next character on
+        // PostgreSQL and MySQL, which could match fewer paths. So the prefix stops before them.
+        var specialCharacterIndex = prefix.AsSpan().IndexOfAny('[', '\\');
+        if (specialCharacterIndex > -1)
+        {
+            prefix = prefix[..specialCharacterIndex];
+        }
+
+        var slashedPrefix = "/" + prefix;
+
+        var takenVersions = new HashSet<int>();
+
+        var possibleConflicts = _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) &&
+            (o.Path.StartsWith(prefix) || o.Path.StartsWith(slashedPrefix))).ToAsyncEnumerable();
+
+        await foreach (var possibleConflict in possibleConflicts)
+        {
+            if (possibleConflict.ContentItemId != contentItemId &&
+                possibleConflict.ContainedContentItemId != contentItemId &&
+                TryGetVersion(possibleConflict.Path, unversionedPath, out var takenVersion))
             {
-                return versionedPath;
+                takenVersions.Add(takenVersion);
             }
         }
+
+        return takenVersions;
+    }
+
+    /// <summary>
+    /// Whether the path, without one leading and one trailing slash, is the one that <see cref="GetVersionedPath"/>
+    /// builds for a version, ignoring the case.
+    /// </summary>
+    private static bool TryGetVersion(string path, string unversionedPath, out int version)
+    {
+        version = 0;
+
+        if (path is null)
+        {
+            return false;
+        }
+
+        var trimmedPath = path.AsSpan();
+        if (trimmedPath.StartsWith('/'))
+        {
+            trimmedPath = trimmedPath[1..];
+        }
+
+        if (trimmedPath.EndsWith('/'))
+        {
+            trimmedPath = trimmedPath[..^1];
+        }
+
+        var versionPosition = trimmedPath.Length;
+        while (versionPosition > 0 && char.IsAsciiDigit(trimmedPath[versionPosition - 1]))
+        {
+            versionPosition--;
+        }
+
+        var versionText = trimmedPath[versionPosition..];
+
+        // A version follows the separator, and is written without leading zeros.
+        if (versionText.IsEmpty ||
+            versionPosition == 0 ||
+            trimmedPath[versionPosition - 1] != '-' ||
+            (versionText.Length > 1 && versionText[0] == '0') ||
+            !int.TryParse(versionText, NumberStyles.None, CultureInfo.InvariantCulture, out version))
+        {
+            return false;
+        }
+
+        var stem = GetVersionStem(unversionedPath, versionText.Length).TrimStart('/');
+
+        return trimmedPath[..(versionPosition - 1)].Equals(stem, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetVersionedPath(string unversionedPath, int version)
+    {
+        var versionText = version.ToString(CultureInfo.InvariantCulture);
+
+        return $"{GetVersionStem(unversionedPath, versionText.Length)}-{versionText}";
+    }
+
+    /// <summary>
+    /// Gets the start of the unversioned path that fits before a version of the given length.
+    /// </summary>
+    private static ReadOnlySpan<char> GetVersionStem(string unversionedPath, int versionLength)
+    {
+        // Unversioned length + separator char + version length.
+        var maxLength = AutoroutePart.MaxPathLength - 1 - versionLength;
+
+        return unversionedPath.AsSpan(0, Math.Min(unversionedPath.Length, maxLength));
     }
 
     private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)

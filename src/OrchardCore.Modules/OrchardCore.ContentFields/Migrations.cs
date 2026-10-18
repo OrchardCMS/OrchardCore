@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.ContentFields;
 
@@ -11,13 +12,16 @@ public sealed class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ShellDescriptor _shellDescriptor;
+    private readonly ILogger _logger;
 
     public Migrations(
         IContentDefinitionManager contentDefinitionManager,
-        ShellDescriptor shellDescriptor)
+        ShellDescriptor shellDescriptor,
+        ILogger<Migrations> logger)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _shellDescriptor = shellDescriptor;
+        _logger = logger;
     }
 
     // New installations don't need to be upgraded, but because there is no initial migration record,
@@ -27,10 +31,11 @@ public sealed class Migrations : DataMigration
         if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.ContentFields"))
         {
             await UpgradeAsync();
+            await WarnAboutLiquidTemplatesAsync();
         }
 
         // Shortcut other migration steps on new content definition schemas.
-        return 3;
+        return 4;
     }
 
     // Upgrade an existing installation.
@@ -75,31 +80,40 @@ public sealed class Migrations : DataMigration
         await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
     }
 
-    // Previously, Liquid rendering was enabled by not having Html sanitization enabled and UpdateFrom1Async disabled
-    // sanitization to ensure that HtmlFields kept Liquid rendering enabled. Since Liquid rendering is now controlled
-    // by a separate setting, disabling sanitization is no longer necessary.
-
     public async Task<int> UpdateFrom2Async()
     {
-        // To keep the same behavior as before, RenderLiquid is initialized to the opposite of SanitizeHtml.
-        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
-        foreach (var partDefinition in partDefinitions)
+        await WarnAboutLiquidTemplatesAsync();
+
+        return 4;
+    }
+
+    public async Task<int> UpdateFrom3Async()
+    {
+        await WarnAboutLiquidTemplatesAsync();
+
+        return 4;
+    }
+
+    private async Task WarnAboutLiquidTemplatesAsync()
+    {
+        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
         {
-            if (partDefinition.Fields.Any(f => f.FieldDefinition.Name == "HtmlField"))
+            foreach (var typePart in contentType.Parts)
             {
-                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
+                foreach (var field in typePart.PartDefinition.Fields.Where(
+                    field => string.Equals(field.FieldDefinition.Name, nameof(HtmlField), StringComparison.Ordinal)))
                 {
-                    foreach (var fieldDefinition in partDefinition.Fields.Where(f => f.FieldDefinition.Name == "HtmlField"))
+                    if (field.Settings[nameof(HtmlFieldSettings)]?["RenderLiquid"]?.GetValue<bool>() is true)
                     {
-                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
-                        {
-                            fieldBuilder.MergeSettings<HtmlFieldSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
-                        });
+                        _logger.LogWarning(
+                            "Content type '{ContentType}' part '{Part}' field '{Field}' has RenderLiquid enabled. Liquid syntax remains stored but is no longer executed by HtmlField. Migrate the authored source manually to LiquidField.",
+                            contentType.Name,
+                            typePart.Name,
+                            field.Name);
                     }
-                });
+                }
             }
         }
-
-        return 3;
     }
+
 }

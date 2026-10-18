@@ -1,6 +1,9 @@
+using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
@@ -45,6 +48,7 @@ public class AdminControllerTests
         var entry = Assert.Single(model.ShellSettingsEntries);
         Assert.Equal("zeta", entry.Name);
         Assert.Equal("Zeta description", entry.Description);
+        Assert.Same(entry, Assert.Single(model.List.Source.Cast<ShellSettingsEntry>()));
 
         var pager = Assert.IsAssignableFrom<IShape>((object)model.Pager);
         Assert.Equal(3, pager.Properties["TotalItemCount"]);
