@@ -16,16 +16,6 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Security"], S["Security"].PrefixPosition(), AddSecrets)
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["Security"], S["Security"].PrefixPosition(), AddSecrets)
