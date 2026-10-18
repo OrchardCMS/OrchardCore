@@ -321,7 +321,7 @@ Aggregate functions combine the values of a group of rows. They are available to
 | `MEDIAN(number)` | Returns the middle value of the group. |
 | `MIN(value)` | Returns the smallest value of the group. |
 | `MAX(value)` | Returns the largest value of the group. |
-| `COUNTD(value)` | Counts the distinct values of the group. |
+| `COUNTD(value)` | Counts the distinct values of the group. Numbers compare by value, and text compares exactly. |
 | `COUNT([value])` | Counts the rows of the group, or the rows where the value is present. |
 
 !!! note
@@ -348,6 +348,31 @@ foreach (var row in batch.Rows)
 
 `ExpressionCompiler.Compile(formula, scope, localizer)`, without a catalog, compiles a formula that calls the built-in functions only, those of `ExpressionFunctionCatalog.BuiltIn`, for code that runs without services.
 
+An aggregate formula is evaluated over the rows of a group in `ExpressionContext.Group`, which holds them all in memory. To compute it over groups of any size, compute its aggregates as the rows arrive instead: `CompiledExpression.Aggregates` lists its aggregate calls, such as the `SUM` and the `COUNT` of `SUM([Amount]) / COUNT()`, each with the `Function` it computes and the `Argument` to evaluate for every row. Compute them with `DataAggregator`, and evaluate the formula with their results in `ExpressionContext.AggregateValues`, in the same order. `CanAggregateAsRowsArrive` tells whether every call names its function: a call of an aggregate function created without one can only be computed over `Group`.
+
+```csharp
+// expression is an aggregate formula, and groupIndex the position of the field to group by.
+var context = new ExpressionContext { Now = now };
+
+async IAsyncEnumerable<object[]> Arguments(IAsyncEnumerable<object[]> rows)
+{
+    await foreach (var row in rows)
+    {
+        context.Row = row;
+
+        // The group, then the argument of each aggregate call.
+        yield return [row[groupIndex], .. expression.Aggregates.Select(aggregate => aggregate.Argument(context))];
+    }
+}
+
+var measures = expression.Aggregates.Select((aggregate, index) => new DataMeasure(aggregate.Function, index + 1)).ToArray();
+
+await foreach (var group in DataAggregator.AggregateAsync(Arguments(rows), [0], measures, spillOptions, cancellationToken))
+{
+    var value = expression.Evaluate(new ExpressionContext { Now = now, AggregateValues = group[1..] });
+}
+```
+
 `CompiledExpression.DataType` is the type of the values the formula returns, and `CompiledExpression.References` lists the fields it reads. `IExpressionFunctionCatalog.Functions` lists every function, ordered by category and name, with its signature and description, such as to show them to the people who write formulas, and `Find(name)` finds a function by name, ignoring case. The descriptions are in English; pass them through a localizer to show them.
 
 ## Data operations
@@ -360,7 +385,7 @@ A `DataSpillOptions` gives an operation the directory of its temporary files, cr
 |-----------|-------------|
 | `DataSorter.SortAsync` | Sorts rows with an external merge sort: rows are sorted in memory, written to temporary files as sorted runs when there are more than the limit allows, and the runs are merged while the rows are read. The sort is stable: rows that compare equal keep their order. `DataSorter.CreateComparer` creates the comparer of rows by fields, each ascending or descending: numbers compare by value, text ignoring case, and missing values come first. |
 | `DataDistinct.DistinctAsync` | Keeps the first row of each set of rows with equal keys, and keeps the order of the rows. The keys that don't fit in memory have their rows deduplicated from a temporary file, once the others are done. |
-| `DataAggregator.AggregateAsync` | Groups rows by the values of fields and computes a `DataMeasure` for each group, such as `new DataMeasure(DataAggregate.Sum, amountIndex)`, or `new DataMeasure(DataAggregate.Count, -1)` to count the rows. The groups come out in the order they first appear. Without group fields, every row belongs to one group, and an empty input still has one. The values of a median and of a distinct count stay in memory with their group. |
+| `DataAggregator.AggregateAsync` | Groups rows by the values of fields and computes a `DataMeasure` for each group, such as `new DataMeasure(DataAggregate.Sum, amountIndex)`, or `new DataMeasure(DataAggregate.Count, -1)` to count the rows. The groups come out in the order they first appear. Without group fields, every row belongs to one group, and an empty input still has one. Each value is the one `DataAggregations.Compute` computes over the values of the group, including when they are the `DataPartialAggregate` a data source computed per group. The values of a median and of a distinct count stay in memory with their group. |
 | `DataJoin.JoinAsync` | Joins two inputs on key fields, like a SQL join, with a `DataJoinType`: `Inner`, `Left`, `Right` or `Full`. The right input is read first: when it fits in memory, it becomes a lookup the left rows stream through (a hash join); otherwise both inputs are sorted by key in temporary files and merged. Either way, the rows come out in the same order: each left row with its matches in the order of the right input, then the right rows without a match. A row whose key has a missing value never matches. |
 
 Grouping, deduplicating and joining build their keys with `DataKeys`: numbers compare by value (`2` equals `2.0`), text compares exactly unless asked to ignore case, and two missing values are equal.
@@ -786,7 +811,7 @@ The formula `[Price] + TAX([Price])` then adds the tax to a price, and the funct
 - The `category` groups the function in the list of functions, such as one of the `ExpressionFunctions` categories: `TextCategory`, `NumberCategory`, `DateCategory`, `LogicalCategory` or `AggregateCategory`, the category of the functions `CreateAggregate` creates.
 - The `description` is in English: the list of functions passes it through the localizer.
 
-An aggregate function combines the values of a group of rows, such as in the **Group and summarize** step. It takes one argument, and receives its values for every row of the group, with a `null` for a missing value. With `requiresNumericArgument`, the formula is invalid unless the argument is a number:
+An aggregate function combines the values of a group of rows. It takes one argument. When it computes one of the aggregates of `DataAggregate`, pass it to `CreateAggregate`, as the built-in functions do, so a formula that calls it can be computed as the rows arrive. Otherwise, it receives the values of its argument for every row of the group, with a `null` for a missing value, and a formula that calls it can only be computed over the rows of the group. With `requiresNumericArgument`, the formula is invalid unless the argument is a number:
 
 ```csharp
 services.AddExpressionFunction(ExpressionFunction.CreateAggregate(

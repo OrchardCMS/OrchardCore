@@ -1,3 +1,4 @@
+using OrchardCore.DataSources.Operations;
 
 namespace OrchardCore.DataSources.Expressions;
 
@@ -66,6 +67,14 @@ public sealed class ExpressionFunction
     public Func<IReadOnlyList<object>, object> Aggregate { get; init; }
 
     /// <summary>
+    /// Gets or sets the aggregate an aggregate function computes, so a formula that calls it can be computed as the
+    /// rows arrive, such as by <see cref="DataAggregator"/>, without keeping the rows of the group: see
+    /// <see cref="CompiledExpression.Aggregates"/>. <see cref="DataAggregate.None"/> for a function that needs all the
+    /// values of the group at once.
+    /// </summary>
+    public DataAggregate AggregateFunction { get; init; }
+
+    /// <summary>
     /// Creates a function that computes a value from the values of its arguments, for one row at a time. Return a
     /// missing value (<see langword="null"/>) rather than throwing when an argument is missing or of the wrong type.
     /// </summary>
@@ -105,8 +114,53 @@ public sealed class ExpressionFunction
     }
 
     /// <summary>
+    /// Creates a function that computes an aggregate of its argument over the rows of a group, listed under the
+    /// <see cref="ExpressionFunctions.AggregateCategory"/> category. A formula that calls it can be computed as the rows
+    /// arrive.
+    /// </summary>
+    /// <param name="name">The function name, such as <c>TOTAL</c>.</param>
+    /// <param name="signature">How the function is written, such as <c>TOTAL(number)</c>.</param>
+    /// <param name="description">The English description of the function.</param>
+    /// <param name="requiresNumericArgument">Whether the argument must be a number.</param>
+    /// <param name="returnType">Infers the type of the result from the type of the argument.</param>
+    /// <param name="function">The aggregate the function computes, as <see cref="DataAggregations.Compute"/> does.</param>
+    /// <returns>The function.</returns>
+    public static ExpressionFunction CreateAggregate(
+        string name,
+        string signature,
+        string description,
+        bool requiresNumericArgument,
+        Func<IReadOnlyList<DataFieldType>, DataFieldType> returnType,
+        DataAggregate function)
+    {
+        if (function == DataAggregate.None)
+        {
+            throw new ArgumentOutOfRangeException(nameof(function), "An aggregate function computes an aggregate.");
+        }
+
+        var aggregate = CreateAggregate(name, signature, description, requiresNumericArgument, returnType, values => DataAggregations.Compute(function, values));
+
+        return new ExpressionFunction
+        {
+            Name = aggregate.Name,
+            Category = aggregate.Category,
+            Signature = aggregate.Signature,
+            Description = aggregate.Description,
+            MinArguments = aggregate.MinArguments,
+            MaxArguments = aggregate.MaxArguments,
+            IsAggregate = true,
+            RequiresNumericArgument = aggregate.RequiresNumericArgument,
+            ReturnType = aggregate.ReturnType,
+            Aggregate = aggregate.Aggregate,
+            AggregateFunction = function,
+        };
+    }
+
+    /// <summary>
     /// Creates a function that aggregates its argument over the rows of a group, listed under the
-    /// <see cref="ExpressionFunctions.AggregateCategory"/> category.
+    /// <see cref="ExpressionFunctions.AggregateCategory"/> category, that needs all the values of the group at once.
+    /// Prefer the overload that names a <see cref="DataAggregate"/> when the function computes one, so a formula that
+    /// calls it can be computed as the rows arrive.
     /// </summary>
     /// <param name="name">The function name, such as <c>PRODUCT</c>.</param>
     /// <param name="signature">How the function is written, such as <c>PRODUCT(number)</c>.</param>
