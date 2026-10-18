@@ -31,6 +31,8 @@ internal sealed class TestWorkspace : IDisposable
             AssemblyName = "Tests",
             RootNamespace = "Tests",
             ViewPrefix = viewPrefix,
+            RoslynDirectory = SdkTestInitializer.RoslynDirectory,
+            RazorCompilerPath = SdkTestInitializer.RazorCompilerPath,
         };
         foreach (var path in ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator))
         {

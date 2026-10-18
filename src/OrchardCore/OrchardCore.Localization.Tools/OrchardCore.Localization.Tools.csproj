@@ -5,8 +5,12 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <UseAppHost>false</UseAppHost>
+    <!-- The worker loads the Roslyn build of the SDK that drives the build, which may target a newer runtime. -->
+    <RollForward>Major</RollForward>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" GlobalPropertiesToRemove="GenerateLocalizationCatalog" />
+    <!-- The Roslyn assemblies are loaded from the SDK that drives the build, see SdkAssemblyResolver. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" ExcludeAssets="runtime" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Text;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -49,10 +48,15 @@ public static class LocalizationExtractor
         var compilation = CSharpCompilation.Create(options.AssemblyName, trees, references, new CSharpCompilationOptions(outputKind, allowUnsafe: options.AllowUnsafe, nullableContextOptions: nullable));
         var catalog = new LocalizationCatalog();
         var updated = RazorLocalizationExtractor.Extract(compilation, options, catalog, cancellationToken);
-        var loader = new GeneratorAssemblyLoader();
         var generators = options.Analyzers.Distinct(StringComparer.Ordinal)
-            .SelectMany(path => new AnalyzerFileReference(path, loader).GetGenerators(LanguageNames.CSharp))
-            .Where(generator => !generator.GetType().FullName!.StartsWith("Microsoft.NET.Sdk.Razor.", StringComparison.Ordinal))
+            .Where(path => !string.Equals(Path.GetFileName(path), "Microsoft.CodeAnalysis.Razor.Compiler.dll", StringComparison.OrdinalIgnoreCase))
+            .SelectMany(path =>
+            {
+                var reference = new AnalyzerFileReference(path, GeneratorAssemblyLoader.Instance);
+                reference.AnalyzerLoadFailed += (_, failure) => catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC008", "Extraction generator '" + Path.GetFileName(path) + "' could not be loaded: " + failure.Message, new SourceReference("")));
+                return reference.GetGenerators(LanguageNames.CSharp);
+            })
+            .Where(generator => !generator.GetGeneratorType().FullName!.StartsWith("Microsoft.NET.Sdk.Razor.", StringComparison.Ordinal))
             .ToArray();
         if (generators.Length > 0)
         {
@@ -86,14 +90,5 @@ public static class LocalizationExtractor
         }
 
         return catalog;
-    }
-
-    private sealed class GeneratorAssemblyLoader : IAnalyzerAssemblyLoader
-    {
-        public void AddDependencyLocation(string fullPath)
-        {
-        }
-
-        public Assembly LoadFromPath(string fullPath) => Assembly.LoadFrom(fullPath);
     }
 }
