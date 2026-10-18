@@ -177,6 +177,76 @@ public sealed class DataOperationsTests : IDisposable
         Assert.Equal([0L, null], row);
     }
 
+    // An aggregate computed as the rows arrive gives the result DataAggregations computes over all the values at once,
+    // so a group gives the same values whichever way it was aggregated.
+    [Theory]
+    [MemberData(nameof(MemoryLimits))]
+    public async Task AggregateAsync_AnyAggregate_MatchesDataAggregations(long memoryLimit)
+    {
+        // Arrange
+        object[][] rows =
+        [
+            ["a", 2L, "x", 1.5m],
+            ["a", 3L, "", null],
+            ["a", null, "x", 2m],
+            ["b", 9223372036854775807L, "y", 4m],
+            ["b", 1L, null, "not a number"],
+        ];
+        DataAggregate[] functions = [DataAggregate.Count, DataAggregate.CountDistinct, DataAggregate.Sum, DataAggregate.Average, DataAggregate.Min, DataAggregate.Max, DataAggregate.Median];
+        var measures = functions.SelectMany(function => new[] { 1, 2, 3 }.Select(index => new DataMeasure(function, index))).ToArray();
+
+        // Act
+        var groups = await DataAggregator.AggregateAsync(rows.ToAsync(), [0], measures, Options(memoryLimit), TestContext.Current.CancellationToken).ToListAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(2, groups.Count);
+
+        foreach (var group in groups)
+        {
+            var members = rows.Where(row => Equals(row[0], group[0])).ToArray();
+
+            for (var index = 0; index < measures.Length; index++)
+            {
+                var values = members.Select(row => row[measures[index].FieldIndex]).ToArray();
+                var expected = DataAggregations.Compute(measures[index].Function, values);
+
+                Assert.Equal(expected, group[index + 1]);
+                Assert.Equal(expected?.GetType(), group[index + 1]?.GetType());
+            }
+        }
+
+        AssertNoTemporaryFiles();
+    }
+
+    // The groups a data source aggregated itself merge as if their rows had been aggregated here.
+    [Fact]
+    public async Task AggregateAsync_PartialAggregates_MergeLikeDataAggregations()
+    {
+        // Arrange
+        object[][] rows =
+        [
+            ["a", new DataPartialAggregate { Count = 2, Sum = 5L, Min = 1L, Max = 4L }],
+            ["a", new DataPartialAggregate { Count = 3, Sum = 2.5m, Min = 0.5m, Max = 1m }],
+            ["b", new DataPartialAggregate { Count = 1, Sum = 7L, Min = 7L, Max = 7L }],
+        ];
+        DataAggregate[] functions = [DataAggregate.Count, DataAggregate.Sum, DataAggregate.Average, DataAggregate.Min, DataAggregate.Max];
+        var measures = functions.Select(function => new DataMeasure(function, 1)).ToArray();
+
+        // Act
+        var groups = await DataAggregator.AggregateAsync(rows.ToAsync(), [0], measures, Options(1), TestContext.Current.CancellationToken).ToListAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        foreach (var group in groups)
+        {
+            var values = rows.Where(row => Equals(row[0], group[0])).Select(row => row[1]).ToArray();
+
+            Assert.Equal(functions.Select(function => DataAggregations.Compute(function, values)), group.Skip(1));
+        }
+
+        Assert.Equal(["a", 5L, 7.5m, 1.5m, 0.5m, 4L], groups[0]);
+        AssertNoTemporaryFiles();
+    }
+
     [Theory]
     [InlineData(DataJoinType.Inner, 1L)]
     [InlineData(DataJoinType.Left, 1L)]
