@@ -29,13 +29,14 @@ function updateContentItemOrders(oldIndex, newIndex) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    var sortable = document.getElementById("ci-sortable");
+    var sortable = document.querySelector("#ci-sortable .admin-list-list");
 
     Sortable.create(sortable, {
+        draggable: ".list-group-item-action",
         handle: ".ui-sortable-handle",
         onSort: function (evt) {
-            var oldIndex = evt.oldIndex;
-            var newIndex = evt.newIndex;
+            var oldIndex = evt.oldDraggableIndex;
+            var newIndex = evt.newDraggableIndex;
             updateContentItemOrders(oldIndex, newIndex);
         }
     });

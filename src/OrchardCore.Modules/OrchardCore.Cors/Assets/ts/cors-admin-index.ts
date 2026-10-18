@@ -333,10 +333,9 @@ if (corsSettingsElement && corsFormElement && corsAdminElement && translationsEl
             <div v-if="!selectedPolicy">
                 <div class="card mb-3 text-bg-theme position-sticky action-bar">
                     <div class="card-body">
-                        <div class="row gx-3">
+                        <div class="row gx-2">
                             <div class="col">
-                                <div class="has-search">
-                                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                                <div>
                                     <input id="search-box" class="form-control" :placeholder="t.Search" type="search" autofocus />
                                 </div>
                             </div>

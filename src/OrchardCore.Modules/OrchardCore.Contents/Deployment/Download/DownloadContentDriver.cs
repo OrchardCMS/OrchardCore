@@ -28,6 +28,7 @@ public sealed class DownloadContentDriver : ContentDisplayDriver
 
         return Factory("Download_SummaryAdmin__Button__Actions", static (ContentItem item) => new ContentItemViewModel(item), contentItem)
             .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:20")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:20")
             .RenderWhen(() => _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export, contentItem));
     }
 }

@@ -856,6 +856,15 @@ var result = await _sharedLinkManager.CreateAsync(new SharedLinkRequest
 
 The recipients are user names or emails of users of the site, and require the Users feature. By default the link is emailed to them, which requires the Email feature; with `NotifyByEmail = false`, the caller delivers `result.Url` itself, which holds the token. A link opens at `/SharedLinks/{linkId}?token=...`, which calls the handler of its kind. A handler can also return the URL of an admin page about what shared a link, shown in the list of the shared links (`GetSourceUrl`), and release the resource when the link is deleted (`DeletedAsync`).
 
+`ListAsync(kind, resourceId)` lists the links to a resource, the most recent first, whether they work or not, such as to show them next to the resource, and to revoke or delete them when the resource is deleted:
+
+```csharp
+foreach (var link in await _sharedLinkManager.ListAsync("Reports.Report", report.Id))
+{
+    await _sharedLinkManager.DeleteAsync(link);
+}
+```
+
 ### Building an incremental export
 
 A module can export data incrementally to a system of its own, such as an analytics service, and leave the data, its fields and its filters to the people who design the pipelines. It provides the parts a pipeline doesn't have, and the designer does the rest:

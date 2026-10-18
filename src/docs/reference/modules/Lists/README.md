@@ -43,6 +43,11 @@ The following properties are available on the `ListPartSettings` class.
 | `EnableOrdering`        | Flag to enable drag and drop ordering of content items. |
 | `ContainedContentTypes` | The content types that may be contained by this part.   |
 
+When ordering is enabled, an unfiltered admin list showing the latest versions of more than one item uses
+the `List` layout and hides its layout selector, even when the site's default or the browser's preference is
+`Grid`. Drag a row's handle to change its order; the change is persisted immediately. Searching or filtering
+the list disables drag ordering and allows the normal admin list layout selection.
+
 ### Template
 
 The following example is used to render the items of a `ListPart` and customize the pager.  
