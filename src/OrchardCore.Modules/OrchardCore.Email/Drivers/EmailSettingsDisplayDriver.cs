@@ -18,7 +18,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IOptionsMonitor<EmailOptions> _emailOptions;
-    private readonly IEmailProviderResolver _emailProviderResolver;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IOptionsMonitor<EmailProviderOptions> _emailProviders;
 
@@ -32,14 +32,14 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         IAuthorizationService authorizationService,
         IOptionsMonitor<EmailProviderOptions> emailProviders,
         IOptionsMonitor<EmailOptions> emailOptions,
-        IEmailProviderResolver emailProviderResolver,
+        IStringLocalizerFactory stringLocalizerFactory,
         IOptionsUpdateNotifier optionsUpdateNotifier,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _emailOptions = emailOptions;
-        _emailProviderResolver = emailProviderResolver;
+        _stringLocalizerFactory = stringLocalizerFactory;
         _emailProviders = emailProviders;
         _optionsUpdateNotifier = optionsUpdateNotifier;
         S = stringLocalizer;
@@ -55,7 +55,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         return Initialize<EmailSettingsViewModel>("EmailSettings_Edit", async model =>
         {
             model.DefaultProvider = settings.DefaultProviderName ?? _emailOptions.CurrentValue.DefaultProviderName;
-            model.Providers = await GetProviderOptionsAsync();
+            model.Providers = GetProviderOptions();
         }).Location("Content:1#Providers")
         .OnGroup(SettingsGroupId);
     }
@@ -81,22 +81,10 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         return await EditAsync(site, settings, context);
     }
 
-    private async Task<SelectListItem[]> GetProviderOptionsAsync()
-    {
-        var options = new List<SelectListItem>();
-
-        foreach (var entry in _emailProviders.CurrentValue.Providers)
-        {
-            if (!entry.Value.IsEnabled)
-            {
-                continue;
-            }
-
-            var provider = await _emailProviderResolver.GetAsync(entry.Key);
-
-            options.Add(new SelectListItem(provider.DisplayName, entry.Key));
-        }
-
-        return options.OrderBy(x => x.Text).ToArray();
-    }
+    private SelectListItem[] GetProviderOptions()
+        => _emailProviders.CurrentValue.Providers
+            .Where(entry => entry.Value.IsEnabled)
+            .Select(entry => new SelectListItem(_stringLocalizerFactory.Localize(entry.Value.DisplayName), entry.Key))
+            .OrderBy(x => x.Text)
+            .ToArray();
 }

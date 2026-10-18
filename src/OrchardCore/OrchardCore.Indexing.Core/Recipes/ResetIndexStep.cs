@@ -7,12 +7,12 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
+[RecipeStep(Key)]
 public sealed class ResetIndexStep : NamedRecipeStepHandler
 {
     public const string Key = "ResetIndex";
 
     public ResetIndexStep()
-        : base(Key)
     {
     }
 

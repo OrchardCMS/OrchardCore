@@ -15,6 +15,7 @@ namespace OrchardCore.Layers.Recipes;
 /// <summary>
 /// This recipe step creates or updates a layer.
 /// </summary>
+[RecipeStep("Layers")]
 public sealed class LayerStep : NamedRecipeStepHandler
 {
     private readonly ILayerService _layerService;
@@ -30,7 +31,6 @@ public sealed class LayerStep : NamedRecipeStepHandler
         IEnumerable<IConditionFactory> factories,
         IOptions<DocumentJsonSerializerOptions> serializationOptions,
         IStringLocalizer<LayerStep> stringLocalizer)
-        : base("Layers")
     {
         _layerService = layerService;
         _conditionIdGenerator = conditionIdGenerator;

@@ -10,13 +10,13 @@ namespace OrchardCore.Shortcodes.Recipes;
 /// <summary>
 /// This recipe step creates a set of Shortcodes.
 /// </summary>
+[RecipeStep("ShortcodeTemplates")]
 public sealed class ShortcodeTemplateStep : NamedRecipeStepHandler
 {
     private readonly ShortcodeTemplatesManager _templatesManager;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
 
     public ShortcodeTemplateStep(ShortcodeTemplatesManager templatesManager, IHtmlSanitizerService htmlSanitizerService)
-        : base("ShortcodeTemplates")
     {
         _templatesManager = templatesManager;
         _htmlSanitizerService = htmlSanitizerService;

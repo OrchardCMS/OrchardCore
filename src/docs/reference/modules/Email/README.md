@@ -18,12 +18,29 @@ Enabling the `Email` feature will add a new settings page under `Settings` → `
 
 ## Adding Custom Providers
 
-The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, you can easily create an implementation of the `IEmailProvider` interface and then proceed to register it using one of the following approaches:
+The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, create an implementation of the `IEmailProvider` interface and describe it with an `[EmailProvider]` attribute, which gives its technical name and its display name:
+
+```csharp
+[EmailProvider("Custom", "My custom email provider")]
+public sealed class CustomEmailProvider : IEmailProvider
+{
+    public Task<Result> SendAsync(MailMessage message, CancellationToken cancellationToken = default)
+    {
+        // ...
+    }
+}
+```
+
+The attribute is required: a provider without it doesn't compile (`ANNO001`). The display name is localized in the context of the provider type, like `IStringLocalizer<CustomEmailProvider>` would. The provider's module must reference the [Annotype](https://github.com/sebastienros/annotype) package directly, as analyzers don't flow to referencing projects, and the attribute has to be declared on the concrete provider class itself, even when it derives from another provider.
+
+Orchard Core reads these values from the provider type, without creating the provider, through the registry that Annotype generates in the provider's project. `TypeMetadata` registers this registry the first time it reads metadata from one of the project's types, or when the module is loaded.
+
+Then register the provider using one of the following approaches:
 
 If your provider does not require any settings, you may register it using the `AddEmailProvider<>` extension. For instance:
 
 ```csharp
-services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
+services.AddEmailProvider<CustomEmailProvider>();
 ```
 
 However, if you have a complex provider like the included SMTP one, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the `AddEmailProviderOptionsConfiguration<>` extension. For instance:
@@ -51,7 +68,7 @@ public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProvider
             IsEnabled = _smtpOptions.IsEnabled
         };
 
-        options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
+        options.TryAddProvider(typeOptions);
     }
 }
 ```

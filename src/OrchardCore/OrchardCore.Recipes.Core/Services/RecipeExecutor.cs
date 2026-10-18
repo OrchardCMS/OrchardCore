@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -165,7 +166,6 @@ public class RecipeExecutor : IRecipeExecutor
 
         await shellScope.UsingAsync(async scope =>
         {
-            var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
             var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
             // Substitutes the script elements by their actual values.
@@ -178,7 +178,18 @@ public class RecipeExecutor : IRecipeExecutor
 
             await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
-            foreach (var recipeStepHandler in recipeStepHandlers)
+            // Only the handlers of this step are created, the other ones are found by their type metadata.
+            var handlerOptions = scope.ServiceProvider.GetRequiredService<IOptions<RecipeStepHandlerOptions>>().Value;
+
+            foreach (var handlerType in handlerOptions.GetHandlerTypes(recipeStep.Name))
+            {
+                var recipeStepHandler = (IRecipeStepHandler)scope.ServiceProvider.GetRequiredService(handlerType);
+
+                await recipeStepHandler.ExecuteAsync(recipeStep);
+            }
+
+            // Handlers without a step name process every step.
+            foreach (var recipeStepHandler in scope.ServiceProvider.GetServices<IRecipeStepHandler>())
             {
                 await recipeStepHandler.ExecuteAsync(recipeStep);
             }

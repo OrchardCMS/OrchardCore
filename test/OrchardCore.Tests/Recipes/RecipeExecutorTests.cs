@@ -122,6 +122,54 @@ public class RecipeExecutorTests
         });
     }
 
+    [Fact]
+    public async Task ExecuteAsync_NamedHandlers_OnlyCreatesHandlersOfExecutedStep()
+    {
+        var tracker = new HandlerTracker();
+
+        var shellContext = new ShellContext
+        {
+            Settings = new ShellSettings().AsDefaultShell().AsRunning(),
+            ServiceProvider = new ServiceCollection()
+                .AddScripting()
+                .AddSingleton<IDistributedLock, LocalLock>()
+                .AddLogging()
+                .AddSingleton(tracker)
+                .AddRecipeExecutionStep<ContentTrackingStep>()
+                .AddRecipeExecutionStep<OtherTrackingStep>()
+                .AddRecipeExecutionStep<CatchAllTrackingStep>()
+                .BuildServiceProvider(),
+        };
+
+        await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
+        {
+            var localizerMock = new Mock<IStringLocalizer<RecipeExecutor>>();
+            localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
+                .Returns((string name) => new LocalizedString(name, name));
+
+            var shellHostMock = new Mock<IShellHost>();
+            shellHostMock.Setup(h => h.GetScopeAsync(It.IsAny<ShellSettings>()))
+                .Returns(GetScopeAsync);
+
+            var recipeExecutor = new RecipeExecutor(
+                shellHostMock.Object,
+                scope.ShellContext.Settings,
+                [],
+                new Mock<ILogger<RecipeExecutor>>().Object,
+                localizerMock.Object);
+
+            // Act
+            var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe1") };
+            await recipeExecutor.ExecuteAsync(Guid.NewGuid().ToString("n"), recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
+
+            // Assert
+            // Step names are matched case-insensitively.
+            Assert.Equal(["content"], tracker.Handled[nameof(ContentTrackingStep)]);
+            Assert.DoesNotContain(nameof(OtherTrackingStep), tracker.Created);
+            Assert.Equal(["ContentDefinition", "content"], tracker.Handled[nameof(CatchAllTrackingStep)]);
+        });
+    }
+
     private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
 
     private static ShellContext CreateShellContext() => new()
@@ -184,5 +232,69 @@ public class RecipeExecutorTests
         public Task RecipeExecutingAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
 
         public Task RecipeStepExecutingAsync(RecipeExecutionContext context) => Task.CompletedTask;
+    }
+
+    internal sealed class HandlerTracker
+    {
+        public HashSet<string> Created { get; } = [];
+
+        public Dictionary<string, List<string>> Handled { get; } = [];
+
+        public void Handle(string handler, string step)
+        {
+            if (!Handled.TryGetValue(handler, out var steps))
+            {
+                Handled[handler] = steps = [];
+            }
+
+            steps.Add(step);
+        }
+    }
+
+    [RecipeStep("Content")]
+    internal sealed class ContentTrackingStep : NamedRecipeStepHandler
+    {
+        private readonly HandlerTracker _tracker;
+
+        public ContentTrackingStep(HandlerTracker tracker)
+        {
+            _tracker = tracker;
+            tracker.Created.Add(nameof(ContentTrackingStep));
+        }
+
+        protected override Task HandleAsync(RecipeExecutionContext context)
+        {
+            _tracker.Handle(nameof(ContentTrackingStep), context.Name);
+
+            return Task.CompletedTask;
+        }
+    }
+
+    [RecipeStep("Other")]
+    internal sealed class OtherTrackingStep : NamedRecipeStepHandler
+    {
+        public OtherTrackingStep(HandlerTracker tracker)
+        {
+            tracker.Created.Add(nameof(OtherTrackingStep));
+        }
+
+        protected override Task HandleAsync(RecipeExecutionContext context) => Task.CompletedTask;
+    }
+
+    internal sealed class CatchAllTrackingStep : IRecipeStepHandler
+    {
+        private readonly HandlerTracker _tracker;
+
+        public CatchAllTrackingStep(HandlerTracker tracker)
+        {
+            _tracker = tracker;
+        }
+
+        public Task ExecuteAsync(RecipeExecutionContext context)
+        {
+            _tracker.Handle(nameof(CatchAllTrackingStep), context.Name);
+
+            return Task.CompletedTask;
+        }
     }
 }

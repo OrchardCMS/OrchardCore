@@ -16,6 +16,7 @@ namespace OrchardCore.DataPipelines.Recipes;
 /// and definition as its draft, and keeps its published version; a new one is created with the definition as its draft.
 /// An imported definition is never published, as runs execute with the access of the user who publishes the pipeline.
 /// </summary>
+[RecipeStep(RecipeStepName)]
 public sealed class DataPipelinesRecipeStep : NamedRecipeStepHandler
 {
     /// <summary>
@@ -31,7 +32,6 @@ public sealed class DataPipelinesRecipeStep : NamedRecipeStepHandler
         DataPipelineManager pipelineManager,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IStringLocalizer<DataPipelinesRecipeStep> localizer)
-        : base(RecipeStepName)
     {
         _pipelineManager = pipelineManager;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;

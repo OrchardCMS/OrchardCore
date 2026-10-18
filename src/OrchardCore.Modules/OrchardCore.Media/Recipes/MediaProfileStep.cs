@@ -9,12 +9,12 @@ namespace OrchardCore.Media.Recipes;
 /// <summary>
 /// This recipe step creates or updates a media profile.
 /// </summary>
+[RecipeStep("MediaProfiles")]
 public sealed class MediaProfileStep : NamedRecipeStepHandler
 {
     private readonly MediaProfilesManager _mediaProfilesManager;
 
     public MediaProfileStep(MediaProfilesManager mediaProfilesManager)
-        : base("MediaProfiles")
     {
         _mediaProfilesManager = mediaProfilesManager;
     }

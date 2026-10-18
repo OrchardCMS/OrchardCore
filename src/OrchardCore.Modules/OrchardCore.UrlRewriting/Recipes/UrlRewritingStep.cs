@@ -9,6 +9,7 @@ namespace OrchardCore.UrlRewriting.Recipes;
 /// <summary>
 /// This recipe step creates or updates a set of URL rewrite rule.
 /// </summary>
+[RecipeStep("UrlRewriting")]
 public sealed class UrlRewritingStep : NamedRecipeStepHandler
 {
     private readonly IRewriteRulesManager _rewriteRulesManager;
@@ -18,7 +19,6 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
     public UrlRewritingStep(
         IRewriteRulesManager rewriteRulesManager,
         IStringLocalizer<UrlRewritingStep> stringLocalizer)
-        : base("UrlRewriting")
     {
         _rewriteRulesManager = rewriteRulesManager;
         S = stringLocalizer;

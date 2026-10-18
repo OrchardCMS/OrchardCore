@@ -100,8 +100,6 @@ public abstract class AzureEmailProviderBase<TOptions> : IEmailProvider
         S = stringLocalizer;
     }
 
-    public abstract LocalizedString DisplayName { get; }
-
     /// <summary>
     /// Sends the specified email message by using the configured Azure Communication Services email provider.
     /// </summary>

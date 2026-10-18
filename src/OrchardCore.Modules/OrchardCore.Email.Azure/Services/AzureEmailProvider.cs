@@ -5,6 +5,7 @@ using OrchardCore.Email.Azure.Models;
 
 namespace OrchardCore.Email.Azure.Services;
 
+[EmailProvider(TechnicalName, "Azure Communication Services")]
 public class AzureEmailProvider : AzureEmailProviderBase<AzureEmailOptions>
 {
     public const string TechnicalName = "Azure";
@@ -16,7 +17,4 @@ public class AzureEmailProvider : AzureEmailProviderBase<AzureEmailOptions>
         : base(options, logger, stringLocalizer)
     {
     }
-
-    public override LocalizedString DisplayName
-        => S["Azure Communication Services"];
 }

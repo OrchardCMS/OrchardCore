@@ -8,10 +8,10 @@ using OrchardCore.AzureAI.Deployment;
 
 namespace OrchardCore.AzureAI.Recipes;
 
+[RecipeStep(AzureAISearchIndexResetDeploymentSource.Name)]
 public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
 {
     public AzureAISearchIndexResetStep()
-        : base(AzureAISearchIndexResetDeploymentSource.Name)
     {
     }
 

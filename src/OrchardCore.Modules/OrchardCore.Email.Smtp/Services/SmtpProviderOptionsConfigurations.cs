@@ -33,7 +33,7 @@ public sealed class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailP
             IsEnabled = _smtpOptions.CurrentValue.IsEnabled,
         };
 
-        options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
+        options.TryAddProvider(typeOptions);
     }
 
     private static void ConfigureDefaultProvider(EmailProviderOptions options)
@@ -43,6 +43,6 @@ public sealed class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailP
             IsEnabled = true,
         };
 
-        options.TryAddProvider(DefaultSmtpEmailProvider.TechnicalName, typeOptions);
+        options.TryAddProvider(typeOptions);
     }
 }

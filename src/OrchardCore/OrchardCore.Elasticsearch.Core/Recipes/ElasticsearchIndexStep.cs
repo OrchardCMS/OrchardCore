@@ -11,6 +11,7 @@ namespace OrchardCore.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step creates a Elasticsearch index.
 /// </summary>
+[RecipeStep("ElasticIndexSettings")]
 public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 {
     private readonly IIndexProfileManager _indexProfileManager;
@@ -22,7 +23,6 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
         ElasticsearchIndexManager elasticIndexManager,
         ILogger<ElasticsearchIndexStep> logger
         )
-        : base("ElasticIndexSettings")
     {
         _elasticIndexManager = elasticIndexManager;
         _logger = logger;

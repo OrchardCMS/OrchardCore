@@ -35,7 +35,7 @@ public sealed class AzureEmailProviderOptionsConfigurations : IConfigureOptions<
             IsEnabled = _azureOptions.CurrentValue.IsEnabled,
         };
 
-        options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);
+        options.TryAddProvider(typeOptions);
     }
 
     private static void ConfigureDefaultProvider(EmailProviderOptions options)
@@ -45,6 +45,6 @@ public sealed class AzureEmailProviderOptionsConfigurations : IConfigureOptions<
             IsEnabled = true,
         };
 
-        options.TryAddProvider(DefaultAzureEmailProvider.TechnicalName, typeOptions);
+        options.TryAddProvider(typeOptions);
     }
 }

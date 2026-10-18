@@ -29,6 +29,9 @@ public class Module
         {
             Assembly = Assembly.Load(new AssemblyName(assemblyName));
 
+            // Makes the type metadata declared in the module readable without reflection.
+            TypeMetadata.Register(Assembly);
+
             Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>()
                 .Select(a => new Asset(a.Asset)).ToArray();
 

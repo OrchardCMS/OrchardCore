@@ -9,12 +9,12 @@ namespace OrchardCore.ContentTypes.RecipeSteps;
 /// <summary>
 /// This recipe step replaces content definition records.
 /// </summary>
+[RecipeStep("ReplaceContentDefinition")]
 public sealed class ReplaceContentDefinitionStep : NamedRecipeStepHandler
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public ReplaceContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
-        : base("ReplaceContentDefinition")
     {
         _contentDefinitionManager = contentDefinitionManager;
     }

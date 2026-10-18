@@ -9,6 +9,7 @@ namespace OrchardCore.Lucene.Recipes;
 /// <summary>
 /// This recipe step resets a Lucene index.
 /// </summary>
+[RecipeStep("lucene-index-reset")]
 public sealed class LuceneIndexResetStep : NamedRecipeStepHandler
 {
     private readonly IIndexProfileManager _indexProfileManager;
@@ -17,7 +18,6 @@ public sealed class LuceneIndexResetStep : NamedRecipeStepHandler
     public LuceneIndexResetStep(
         IIndexProfileManager indexProfileManager,
         IServiceProvider serviceProvider)
-        : base("lucene-index-reset")
     {
         _indexProfileManager = indexProfileManager;
         _serviceProvider = serviceProvider;

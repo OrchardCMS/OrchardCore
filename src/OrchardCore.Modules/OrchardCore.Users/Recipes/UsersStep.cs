@@ -7,6 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Users.Recipes;
 
+[RecipeStep("Users")]
 public sealed class UsersStep : NamedRecipeStepHandler
 {
     private readonly UserManager<IUser> _userManager;
@@ -15,7 +16,6 @@ public sealed class UsersStep : NamedRecipeStepHandler
     public UsersStep(
         UserManager<IUser> userManager,
         ISession session)
-        : base("Users")
     {
         _userManager = userManager;
         _session = session;

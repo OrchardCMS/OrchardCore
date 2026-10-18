@@ -11,6 +11,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps;
 /// <summary>
 /// This recipe step creates content definitions.
 /// </summary>
+[RecipeStep("ContentDefinition")]
 public sealed class ContentDefinitionStep : NamedRecipeStepHandler
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -20,7 +21,6 @@ public sealed class ContentDefinitionStep : NamedRecipeStepHandler
     public ContentDefinitionStep(
         IContentDefinitionManager contentDefinitionManager,
         IStringLocalizer<ContentDefinitionStep> stringLocalizer)
-         : base("ContentDefinition")
     {
         _contentDefinitionManager = contentDefinitionManager;
         S = stringLocalizer;

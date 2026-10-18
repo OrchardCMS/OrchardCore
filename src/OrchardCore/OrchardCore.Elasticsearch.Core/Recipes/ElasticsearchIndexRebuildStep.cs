@@ -10,6 +10,7 @@ namespace OrchardCore.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step rebuilds an Elasticsearch index.
 /// </summary>
+[RecipeStep("elastic-index-rebuild")]
 public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
 {
     private readonly IIndexProfileManager _indexProfileManager;
@@ -18,7 +19,6 @@ public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
     public ElasticsearchIndexRebuildStep(
         IIndexProfileManager indexProfileManager,
         IServiceProvider serviceProvider)
-        : base("elastic-index-rebuild")
     {
         _indexProfileManager = indexProfileManager;
         _serviceProvider = serviceProvider;

@@ -8,12 +8,12 @@ namespace OrchardCore.Settings.Recipes;
 /// <summary>
 /// This recipe step updates the site settings.
 /// </summary>
+[RecipeStep("Settings")]
 public sealed class SettingsStep : NamedRecipeStepHandler
 {
     private readonly ISiteService _siteService;
 
     public SettingsStep(ISiteService siteService)
-        : base("Settings")
     {
         _siteService = siteService;
     }

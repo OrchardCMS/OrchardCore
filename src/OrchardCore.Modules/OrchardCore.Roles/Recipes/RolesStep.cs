@@ -10,6 +10,7 @@ namespace OrchardCore.Roles.Recipes;
 /// <summary>
 /// This recipe step creates a set of roles.
 /// </summary>
+[RecipeStep("Roles")]
 public sealed class RolesStep : NamedRecipeStepHandler
 {
     private readonly RoleManager<IRole> _roleManager;
@@ -18,7 +19,6 @@ public sealed class RolesStep : NamedRecipeStepHandler
     public RolesStep(
         RoleManager<IRole> roleManager,
         ISystemRoleProvider systemRoleProvider)
-        : base("Roles")
     {
         _roleManager = roleManager;
         _systemRoleProvider = systemRoleProvider;

@@ -10,6 +10,7 @@ namespace OrchardCore.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step resets an Elasticsearch index.
 /// </summary>
+[RecipeStep("elastic-index-reset")]
 public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
 {
     private readonly IIndexProfileManager _indexProfileManager;
@@ -18,7 +19,6 @@ public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
     public ElasticsearchIndexResetStep(
         IIndexProfileManager indexProfileManager,
         IServiceProvider serviceProvider)
-        : base("elastic-index-reset")
     {
         _indexProfileManager = indexProfileManager;
         _serviceProvider = serviceProvider;

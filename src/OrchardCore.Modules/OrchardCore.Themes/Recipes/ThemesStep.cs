@@ -9,6 +9,7 @@ namespace OrchardCore.Themes.Recipes;
 /// <summary>
 /// This recipe step defines the site and admin current themes.
 /// </summary>
+[RecipeStep("Themes")]
 public sealed class ThemesStep : NamedRecipeStepHandler
 {
     private readonly ISiteThemeService _siteThemeService;
@@ -17,7 +18,6 @@ public sealed class ThemesStep : NamedRecipeStepHandler
     public ThemesStep(
         ISiteThemeService siteThemeService,
         IAdminThemeService adminThemeService)
-        : base("Themes")
     {
         _adminThemeService = adminThemeService;
         _siteThemeService = siteThemeService;

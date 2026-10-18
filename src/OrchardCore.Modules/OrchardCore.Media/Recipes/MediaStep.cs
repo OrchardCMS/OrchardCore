@@ -12,6 +12,7 @@ namespace OrchardCore.Media.Recipes;
 /// <summary>
 /// Imports files into the tenant's media store using relative target paths.
 /// </summary>
+[RecipeStep("media")]
 public sealed class MediaStep : NamedRecipeStepHandler
 {
     private readonly IMediaFileStore _mediaFileStore;
@@ -27,7 +28,6 @@ public sealed class MediaStep : NamedRecipeStepHandler
         IOptions<MediaOptions> options,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<MediaStep> stringLocalizer)
-        : base("media")
     {
         _mediaFileStore = mediaFileStore;
         _fileCreationService = fileCreationService;

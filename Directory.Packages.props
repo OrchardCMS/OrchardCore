@@ -7,6 +7,7 @@
     <PackageVersion Include="Acornima" Version="1.8.0" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
     <PackageVersion Include="AngleSharp" Version="1.7.3" />
+    <PackageVersion Include="Annotype" Version="0.1.0" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.104.1" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.1" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />

@@ -4,6 +4,9 @@
   
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
+    <!-- Analyzers don't flow to referencing projects, so every project references Annotype directly to enforce
+         the [RequiresMetadata] contracts it implements and to generate its type metadata registry. -->
+    <PackageReference Include="Annotype" />
   </ItemGroup>
 
   <PropertyGroup>

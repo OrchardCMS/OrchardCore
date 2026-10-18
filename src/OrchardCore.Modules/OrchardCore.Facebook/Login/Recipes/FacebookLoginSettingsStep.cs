@@ -9,12 +9,12 @@ namespace OrchardCore.Facebook.Login.Recipes;
 /// <summary>
 /// This recipe step sets general Facebook Login settings.
 /// </summary>
+[RecipeStep(nameof(FacebookLoginSettings))]
 public sealed class FacebookLoginSettingsStep : NamedRecipeStepHandler
 {
     private readonly IFacebookLoginService _loginService;
 
     public FacebookLoginSettingsStep(IFacebookLoginService loginService)
-        : base(nameof(FacebookLoginSettings))
     {
         _loginService = loginService;
     }

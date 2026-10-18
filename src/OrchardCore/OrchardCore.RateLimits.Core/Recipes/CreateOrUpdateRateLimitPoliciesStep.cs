@@ -10,6 +10,7 @@ namespace OrchardCore.RateLimits.Recipes;
 /// <summary>
 /// Imports rate-limit policies from a recipe step.
 /// </summary>
+[RecipeStep(StepKey)]
 public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
 {
     /// <summary>
@@ -29,7 +30,6 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
     public CreateOrUpdateRateLimitPoliciesStep(
         IRateLimitPolicyStore policyStore,
         IStringLocalizer<CreateOrUpdateRateLimitPoliciesStep> stringLocalizer)
-        : base(StepKey)
     {
         _policyStore = policyStore;
         S = stringLocalizer;

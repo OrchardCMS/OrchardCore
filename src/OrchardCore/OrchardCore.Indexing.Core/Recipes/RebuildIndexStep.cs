@@ -8,12 +8,12 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
+[RecipeStep(Key)]
 public sealed class RebuildIndexStep : NamedRecipeStepHandler
 {
     public const string Key = "RebuildIndex";
 
     public RebuildIndexStep()
-        : base(Key)
     {
     }
 

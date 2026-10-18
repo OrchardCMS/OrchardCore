@@ -37,6 +37,17 @@ public class EmailProviderOptions
     }
 
     /// <summary>
+    /// Adds a provider under its <see cref="EmailProviderTypeOptions.TechnicalName"/> if one does not exist.
+    /// </summary>
+    /// <param name="options">The type options of the provider.</param>
+    public EmailProviderOptions TryAddProvider(EmailProviderTypeOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        return TryAddProvider(options.TechnicalName, options);
+    }
+
+    /// <summary>
     /// Removes a provider if one exist.
     /// </summary>
     /// <param name="name">The technical name of the provider.</param>

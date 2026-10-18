@@ -8,6 +8,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Indexing.Core.Recipes;
 
+[RecipeStep(StepKey)]
 public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
 {
     public const string StepKey = "CreateOrUpdateIndexProfile";
@@ -23,7 +24,6 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
         IOptions<IndexingOptions> indexingOptions,
         IServiceProvider serviceProvider,
         IStringLocalizer<CreateOrUpdateIndexProfileStep> stringLocalizer)
-        : base(StepKey)
     {
         _indexProfileManager = indexProfileManager;
         _serviceProvider = serviceProvider;

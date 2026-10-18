@@ -10,10 +10,10 @@ namespace OrchardCore.Contents.Recipes;
 /// <summary>
 /// This recipe step creates a set of content items.
 /// </summary>
+[RecipeStep("Content")]
 public sealed class ContentStep : NamedRecipeStepHandler
 {
     public ContentStep()
-        : base("Content")
     {
     }
 

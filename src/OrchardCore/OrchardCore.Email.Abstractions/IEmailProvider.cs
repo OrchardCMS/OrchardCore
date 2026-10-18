@@ -1,15 +1,17 @@
-using Microsoft.Extensions.Localization;
+using Annotype;
 using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email;
 
+/// <summary>
+/// Sends email messages.
+/// </summary>
+/// <remarks>
+/// Every concrete implementation must declare an <see cref="EmailProviderAttribute"/>, which is enforced at compile time.
+/// </remarks>
+[RequiresMetadata(typeof(EmailProviderAttribute))]
 public interface IEmailProvider
 {
-    /// <summary>
-    /// The display name of the provider.
-    /// </summary>
-    LocalizedString DisplayName { get; }
-
     /// <summary>
     /// Send the given message via email.
     /// </summary>

@@ -9,12 +9,12 @@ namespace OrchardCore.Microsoft.Authentication.Recipes;
 /// <summary>
 /// This recipe step sets Microsoft Account settings.
 /// </summary>
+[RecipeStep(nameof(MicrosoftAccountSettings))]
 public sealed class MicrosoftAccountSettingsStep : NamedRecipeStepHandler
 {
     private readonly IMicrosoftAccountService _microsoftAccountService;
 
     public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService)
-        : base(nameof(MicrosoftAccountSettings))
     {
         _microsoftAccountService = microsoftAccountService;
     }

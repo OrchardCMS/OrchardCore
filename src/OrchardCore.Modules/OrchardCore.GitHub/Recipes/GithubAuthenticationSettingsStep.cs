@@ -10,12 +10,12 @@ namespace OrchardCore.GitHub.Recipes;
 /// <summary>
 /// This recipe step sets GitHub Account settings.
 /// </summary>
+[RecipeStep(nameof(GitHubAuthenticationSettings))]
 public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
 {
     private readonly ISiteService _siteService;
 
     public GitHubAuthenticationSettingsStep(ISiteService siteService)
-        : base(nameof(GitHubAuthenticationSettings))
     {
         _siteService = siteService;
     }

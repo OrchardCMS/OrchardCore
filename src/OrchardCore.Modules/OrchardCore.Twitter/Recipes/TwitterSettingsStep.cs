@@ -9,12 +9,12 @@ namespace OrchardCore.Twitter.Recipes;
 /// <summary>
 /// This recipe step sets Microsoft Account settings.
 /// </summary>
+[RecipeStep(nameof(TwitterSettings))]
 public sealed class TwitterSettingsStep : NamedRecipeStepHandler
 {
     private readonly ITwitterSettingsService _twitterService;
 
     public TwitterSettingsStep(ITwitterSettingsService twitterService)
-        : base(nameof(TwitterSettings))
     {
         _twitterService = twitterService;
     }

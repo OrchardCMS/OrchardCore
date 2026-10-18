@@ -70,13 +70,35 @@ These helpers allow dynamic expressions inside recipe values using a special syn
 
 ## Custom Recipes
 
-To create a new recipe step, implement the `IRecipeStepHandler` interface and its `ExecuteAsync` method:
+To create a new recipe step, extend `NamedRecipeStepHandler`, declare the name of the step with a `[RecipeStep]` attribute and implement `HandleAsync`:
 
 ```csharp
-public async Task ExecuteAsync(RecipeExecutionContext context)
+[RecipeStep("MyStep")]
+public sealed class MyStep : NamedRecipeStepHandler
+{
+    protected override Task HandleAsync(RecipeExecutionContext context)
+    {
+        // Process context.Step.
+        return Task.CompletedTask;
+    }
+}
 ```
 
-Alternatively, you can extend `NamedRecipeStepHandler` and implement the required abstract method, providing additional functionality for named steps.
+Then register it in the `Startup` class of your module:
+
+```csharp
+services.AddRecipeExecutionStep<MyStep>();
+```
+
+The step name is matched case-insensitively. The attribute is required: a `NamedRecipeStepHandler` without it doesn't compile (`ANNO001`). It must be declared on the handler class itself, and the handler can't be a private nested class (`ANNO003`). The project of the handler must reference the [Annotype](https://github.com/sebastienros/annotype) package directly, as analyzers don't flow to referencing projects.
+
+The recipe executor reads the step names from the handler types, so it only creates the handlers of the step it executes.
+
+A handler that processes several steps can implement the `IRecipeStepHandler` interface instead. It is created for every step, and its `ExecuteAsync` method has to ignore the steps it doesn't handle:
+
+```csharp
+public Task ExecuteAsync(RecipeExecutionContext context)
+```
 
 ## Built-in Recipe Steps
 

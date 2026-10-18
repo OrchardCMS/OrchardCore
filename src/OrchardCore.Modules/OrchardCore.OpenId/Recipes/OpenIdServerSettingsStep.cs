@@ -10,12 +10,12 @@ namespace OrchardCore.OpenId.Recipes;
 /// <summary>
 /// This recipe step sets general OpenID Connect settings.
 /// </summary>
+[RecipeStep(nameof(OpenIdServerSettings))]
 public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
 {
     private readonly IOpenIdServerService _serverService;
 
     public OpenIdServerSettingsStep(IOpenIdServerService serverService)
-        : base(nameof(OpenIdServerSettings))
     {
         _serverService = serverService;
     }

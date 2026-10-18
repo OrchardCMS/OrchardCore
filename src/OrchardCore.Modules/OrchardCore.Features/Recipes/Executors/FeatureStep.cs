@@ -8,12 +8,12 @@ namespace OrchardCore.Features.Recipes.Executors;
 /// <summary>
 /// This recipe step enables or disables a set of features.
 /// </summary>
+[RecipeStep("Feature")]
 public sealed class FeatureStep : NamedRecipeStepHandler
 {
     private readonly IShellFeaturesManager _shellFeaturesManager;
 
     public FeatureStep(IShellFeaturesManager shellFeaturesManager)
-        : base("Feature")
     {
         _shellFeaturesManager = shellFeaturesManager;
     }

@@ -10,12 +10,12 @@ namespace OrchardCore.Recipes.RecipeSteps;
 /// otherwise only take effect after a feature change or a manual restart — this step lets a recipe
 /// activate them immediately. Place it after the steps whose settings need to become live.
 /// </summary>
+[RecipeStep("ReloadTenant")]
 public sealed class ReloadTenantStep : NamedRecipeStepHandler
 {
     private readonly IShellReleaseManager _shellReleaseManager;
 
     public ReloadTenantStep(IShellReleaseManager shellReleaseManager)
-        : base("ReloadTenant")
     {
         _shellReleaseManager = shellReleaseManager;
     }

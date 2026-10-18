@@ -11,6 +11,7 @@ namespace OrchardCore.Queries.Recipes;
 /// <summary>
 /// This recipe step creates a set of queries.
 /// </summary>
+[RecipeStep("Queries")]
 public sealed class QueryStep : NamedRecipeStepHandler
 {
     private readonly IQueryManager _queryManager;
@@ -22,7 +23,6 @@ public sealed class QueryStep : NamedRecipeStepHandler
         IQueryManager queryManager,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IStringLocalizer<QueryStep> stringLocalizer)
-        : base("Queries")
     {
         _queryManager = queryManager;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;

@@ -9,6 +9,7 @@ namespace OrchardCore.Lucene.Recipes;
 /// <summary>
 /// This recipe step rebuilds a Lucene index.
 /// </summary>
+[RecipeStep("lucene-index-rebuild")]
 public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
 {
     private readonly IIndexProfileManager _indexProfileManager;
@@ -17,7 +18,6 @@ public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
     public LuceneIndexRebuildStep(
         IIndexProfileManager indexProfileManager,
         IServiceProvider serviceProvider)
-        : base("lucene-index-rebuild")
     {
         _indexProfileManager = indexProfileManager;
         _serviceProvider = serviceProvider;

@@ -8,6 +8,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.AzureAI.Recipes;
 
+[RecipeStep(Name)]
 public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
@@ -19,7 +20,6 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
     public AzureAISearchIndexSettingsStep(
         IIndexProfileManager indexProfileManager,
         IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer)
-        : base(Name)
     {
         _indexProfileManager = indexProfileManager;
         S = stringLocalizer;

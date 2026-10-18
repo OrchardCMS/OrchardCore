@@ -9,12 +9,12 @@ namespace OrchardCore.Tenants.Recipes;
 /// <summary>
 /// This recipe step creates a set of feature profiles.
 /// </summary>
+[RecipeStep("FeatureProfiles")]
 public sealed class FeatureProfilesStep : NamedRecipeStepHandler
 {
     private readonly FeatureProfilesManager _featureProfilesManager;
 
     public FeatureProfilesStep(FeatureProfilesManager featureProfilesManager)
-        : base("FeatureProfiles")
     {
         _featureProfilesManager = featureProfilesManager;
     }

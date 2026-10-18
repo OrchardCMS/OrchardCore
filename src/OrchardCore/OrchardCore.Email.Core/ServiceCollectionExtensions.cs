@@ -17,6 +17,23 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Registers an email provider under the technical name declared by its <see cref="EmailProviderAttribute"/>.
+    /// </summary>
+    public static IServiceCollection AddEmailProvider<T>(this IServiceCollection services)
+        where T : class, IEmailProvider
+    {
+        services.Configure<EmailProviderOptions>(options =>
+        {
+            options.TryAddProvider(new EmailProviderTypeOptions(typeof(T))
+            {
+                IsEnabled = true,
+            });
+        });
+
+        return services;
+    }
+
     public static IServiceCollection AddEmailProvider<T>(this IServiceCollection services, string name)
         where T : class, IEmailProvider
     {

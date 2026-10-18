@@ -12,6 +12,7 @@ namespace OrchardCore.Deployment.Recipes;
 /// <summary>
 /// This recipe step creates a deployment plan.
 /// </summary>
+[RecipeStep("deployment")]
 public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
 {
     private readonly IServiceProvider _serviceProvider;
@@ -25,7 +26,6 @@ public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IDeploymentPlanService deploymentPlanService,
         IStringLocalizer<DeploymentPlansRecipeStep> stringLocalizer)
-        : base("deployment")
     {
         _serviceProvider = serviceProvider;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;

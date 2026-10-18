@@ -18,7 +18,7 @@ public sealed class AdminController : Controller
     private readonly IOptionsMonitor<EmailOptions> _emailOptions;
     private readonly IOptionsMonitor<EmailProviderOptions> _providerOptions;
     private readonly IEmailService _emailService;
-    private readonly IEmailProviderResolver _emailProviderResolver;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -29,7 +29,7 @@ public sealed class AdminController : Controller
         IOptionsMonitor<EmailProviderOptions> providerOptions,
         IOptionsMonitor<EmailOptions> emailOptions,
         IEmailService emailService,
-        IEmailProviderResolver emailProviderResolver,
+        IStringLocalizerFactory stringLocalizerFactory,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -38,7 +38,7 @@ public sealed class AdminController : Controller
         _emailOptions = emailOptions;
         _providerOptions = providerOptions;
         _emailService = emailService;
-        _emailProviderResolver = emailProviderResolver;
+        _stringLocalizerFactory = stringLocalizerFactory;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -56,7 +56,7 @@ public sealed class AdminController : Controller
             Provider = _emailOptions.CurrentValue.DefaultProviderName,
         };
 
-        await PopulateModelAsync(model);
+        PopulateModel(model);
 
         return View(model);
     }
@@ -99,7 +99,7 @@ public sealed class AdminController : Controller
             }
         }
 
-        await PopulateModelAsync(model);
+        PopulateModel(model);
 
         return View(model);
     }
@@ -132,22 +132,12 @@ public sealed class AdminController : Controller
         return message;
     }
 
-    private async Task PopulateModelAsync(EmailTestViewModel model)
+    private void PopulateModel(EmailTestViewModel model)
     {
-        var options = new List<SelectListItem>();
-
-        foreach (var entry in _providerOptions.CurrentValue.Providers)
-        {
-            if (!entry.Value.IsEnabled)
-            {
-                continue;
-            }
-
-            var provider = await _emailProviderResolver.GetAsync(entry.Key);
-
-            options.Add(new SelectListItem(provider.DisplayName, entry.Key));
-        }
-
-        model.Providers = options.OrderBy(x => x.Text).ToArray();
+        model.Providers = _providerOptions.CurrentValue.Providers
+            .Where(entry => entry.Value.IsEnabled)
+            .Select(entry => new SelectListItem(_stringLocalizerFactory.Localize(entry.Value.DisplayName), entry.Key))
+            .OrderBy(x => x.Text)
+            .ToArray();
     }
 }

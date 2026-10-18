@@ -10,6 +10,7 @@ namespace OrchardCore.Lucene.Recipes;
 /// <summary>
 /// This recipe step creates a Lucene index.
 /// </summary>
+[RecipeStep("lucene-index")]
 public sealed class LuceneIndexStep : NamedRecipeStepHandler
 {
     private readonly IIndexProfileManager _indexManager;
@@ -20,7 +21,7 @@ public sealed class LuceneIndexStep : NamedRecipeStepHandler
         IIndexProfileManager indexManager,
         LuceneIndexManager luceneIndexManager,
         ILogger<LuceneIndexStep> logger
-        ) : base("lucene-index")
+        )
     {
         _luceneIndexManager = luceneIndexManager;
         _indexManager = indexManager;

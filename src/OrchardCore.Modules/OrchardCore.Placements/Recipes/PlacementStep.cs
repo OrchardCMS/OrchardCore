@@ -9,12 +9,12 @@ namespace OrchardCore.Placements.Recipes;
 /// <summary>
 /// This recipe step creates a set of placements.
 /// </summary>
+[RecipeStep("Placements")]
 public sealed class PlacementStep : NamedRecipeStepHandler
 {
     private readonly PlacementsManager _placementsManager;
 
     public PlacementStep(PlacementsManager placementsManager)
-        : base("Placements")
     {
         _placementsManager = placementsManager;
     }

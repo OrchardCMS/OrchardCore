@@ -13,6 +13,7 @@ namespace OrchardCore.AdminMenu.Recipes;
 /// <summary>
 /// This recipe step creates a set of admin menus.
 /// </summary>
+[RecipeStep("AdminMenu")]
 public sealed class AdminMenuStep : NamedRecipeStepHandler
 {
     private readonly IAdminMenuService _adminMenuService;
@@ -23,7 +24,6 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
         IAdminMenuService adminMenuService,
         IOptions<DocumentJsonSerializerOptions> serializationOptions,
         IContentDefinitionManager contentDefinitionManager)
-        : base("AdminMenu")
     {
         _adminMenuService = adminMenuService;
 

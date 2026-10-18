@@ -14,6 +14,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Recipes;
 
+[RecipeStep("WorkflowType")]
 public sealed class WorkflowTypeStep : NamedRecipeStepHandler
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -27,7 +28,6 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
         IHttpContextAccessor httpContextAccessor,
         LinkGenerator linkGenerator,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
-        : base("WorkflowType")
     {
         _workflowTypeStore = workflowTypeStore;
         _securityTokenService = securityTokenService;

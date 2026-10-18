@@ -8,6 +8,7 @@ namespace OrchardCore.Recipes.RecipeSteps;
 /// <summary>
 /// This recipe step executes a set of external recipes.
 /// </summary>
+[RecipeStep("Recipes")]
 public sealed class RecipesStep : NamedRecipeStepHandler
 {
     private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
@@ -17,7 +18,6 @@ public sealed class RecipesStep : NamedRecipeStepHandler
     public RecipesStep(
         IEnumerable<IRecipeHarvester> recipeHarvesters,
         IStringLocalizer<RecipesStep> stringLocalizer)
-        : base("Recipes")
     {
         _recipeHarvesters = recipeHarvesters;
         S = stringLocalizer;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
+using OrchardCore.Email;
 using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Azure.Services;
 
@@ -45,7 +46,8 @@ public class AzureEmailProviderBaseTests
         return new TestAzureEmailProvider(optionsMonitor, localizer);
     }
 
-    private sealed class TestAzureEmailProvider : AzureEmailProviderBase<AzureEmailOptions>
+    [EmailProvider("TestAzure", "Test Azure")]
+    internal sealed class TestAzureEmailProvider : AzureEmailProviderBase<AzureEmailOptions>
     {
         public TestAzureEmailProvider(IOptionsMonitor<AzureEmailOptions> optionsMonitor, IStringLocalizer stringLocalizer)
             : base(optionsMonitor, NullLogger.Instance, stringLocalizer)
@@ -53,8 +55,6 @@ public class AzureEmailProviderBaseTests
         }
 
         public int CreatedClientCount { get; private set; }
-
-        public override LocalizedString DisplayName => new(nameof(TestAzureEmailProvider), nameof(TestAzureEmailProvider));
 
         public EmailClient GetClient(string connectionString) => GetOrCreateEmailClient(connectionString);
 

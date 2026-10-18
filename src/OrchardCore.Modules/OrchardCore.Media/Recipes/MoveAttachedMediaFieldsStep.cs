@@ -7,6 +7,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Media.Recipes;
 
+[RecipeStep("move-attached-media-fields")]
 public sealed class MoveAttachedMediaFieldsStep : NamedRecipeStepHandler
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -15,7 +16,6 @@ public sealed class MoveAttachedMediaFieldsStep : NamedRecipeStepHandler
     public MoveAttachedMediaFieldsStep(
         IHttpContextAccessor httpContextAccessor,
         MoveAttachedMediaFieldsStepExecutor executor)
-        : base("move-attached-media-fields")
     {
         _httpContextAccessor = httpContextAccessor;
         _executor = executor;

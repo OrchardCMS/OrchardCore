@@ -6,6 +6,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.OpenId.Recipes;
 
+[RecipeStep("OpenIdScope")]
 public sealed class OpenIdScopeStep : NamedRecipeStepHandler
 {
     private readonly IOpenIdScopeManager _scopeManager;
@@ -14,7 +15,6 @@ public sealed class OpenIdScopeStep : NamedRecipeStepHandler
     /// This recipe step adds an OpenID Connect scope.
     /// </summary>
     public OpenIdScopeStep(IOpenIdScopeManager scopeManager)
-        : base("OpenIdScope")
     {
         _scopeManager = scopeManager;
     }

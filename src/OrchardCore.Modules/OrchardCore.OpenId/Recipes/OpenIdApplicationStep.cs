@@ -5,6 +5,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.OpenId.Recipes;
 
+[RecipeStep("OpenIdApplication")]
 public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
 {
     private readonly IOpenIdApplicationManager _applicationManager;
@@ -13,7 +14,6 @@ public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
     /// This recipe step adds an OpenID Connect app.
     /// </summary>
     public OpenIdApplicationStep(IOpenIdApplicationManager applicationManager)
-        : base("OpenIdApplication")
     {
         _applicationManager = applicationManager;
     }
