@@ -269,6 +269,8 @@
     <Project Path="src/OrchardCore/OrchardCore.Infrastructure/OrchardCore.Infrastructure.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Liquid.Abstractions/OrchardCore.Liquid.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Localization.Abstractions/OrchardCore.Localization.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Localization.Analyzers/OrchardCore.Localization.Analyzers.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Localization.Analyzers.CodeFixes/OrchardCore.Localization.Analyzers.CodeFixes.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Localization.Build/OrchardCore.Localization.Build.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Localization.Core/OrchardCore.Localization.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" />
