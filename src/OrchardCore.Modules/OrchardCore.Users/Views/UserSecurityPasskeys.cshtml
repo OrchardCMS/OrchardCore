@@ -25,21 +25,16 @@
               data-antiforgery-token="@tokens.RequestToken"
               data-error-message="@T["The passkey couldn't be added. Try again."]">
             <input type="hidden" name="Credential" />
-            <div class="ocat-wrapper">
-                <label for="PasskeyName" class="ocat-label">@T["Name"]</label>
-                <div class="ocat-end">
-                    <input id="PasskeyName" name="Name" class="form-control" maxlength="@RenamePasskeyViewModel.MaxNameLength" placeholder="@T["For example, my laptop"]" />
-                    <span class="hint">@T["A name that helps you recognize the device or password manager that keeps the passkey."]</span>
-                </div>
+            @* The page also renders in the site theme, which doesn't style the 'ocat-*' classes. *@
+            <label for="PasskeyName" class="form-label">@T["Name"]</label>
+            <div class="d-flex gap-2">
+                <input id="PasskeyName" name="Name" class="form-control" maxlength="@RenamePasskeyViewModel.MaxNameLength" placeholder="@T["For example, my laptop"]" aria-describedby="PasskeyNameHint" />
+                <button type="submit" class="btn btn-primary text-nowrap" data-passkey-button disabled>
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i> @T["Add a passkey"]
+                </button>
             </div>
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <button type="submit" class="btn btn-primary" data-passkey-button disabled>
-                        <i class="fa-solid fa-plus" aria-hidden="true"></i> @T["Add a passkey"]
-                    </button>
-                    <div class="text-danger mt-2 d-none" role="alert" data-passkey-error></div>
-                </div>
-            </div>
+            <div id="PasskeyNameHint" class="form-text">@T["A name that helps you recognize the device or password manager that keeps the passkey."]</div>
+            <div class="text-danger mt-2 d-none" role="alert" data-passkey-error></div>
         </form>
     </div>
 
