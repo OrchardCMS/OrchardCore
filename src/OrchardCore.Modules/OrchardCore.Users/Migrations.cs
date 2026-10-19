@@ -77,8 +77,17 @@ public sealed class Migrations : DataMigration
                 "ClaimValue")
         );
 
+        await SchemaBuilder.CreateMapIndexTableAsync<UserByPasskeyIndex>(table => table
+            .Column<string>("CredentialIdHash", column => column.WithLength(64)));
+
+        await SchemaBuilder.AlterIndexTableAsync<UserByPasskeyIndex>(table => table
+            .CreateIndex("IDX_UserByPasskeyIndex_DocumentId",
+                "DocumentId",
+                "CredentialIdHash")
+        );
+
         // Shortcut other migration steps on new content definition schemas.
-        return 13;
+        return 14;
     }
 
     // This code can be removed in a later version.
@@ -277,5 +286,19 @@ public sealed class Migrations : DataMigration
         });
 
         return 13;
+    }
+
+    public async Task<int> UpdateFrom13Async()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<UserByPasskeyIndex>(table => table
+            .Column<string>("CredentialIdHash", column => column.WithLength(64)));
+
+        await SchemaBuilder.AlterIndexTableAsync<UserByPasskeyIndex>(table => table
+            .CreateIndex("IDX_UserByPasskeyIndex_DocumentId",
+                "DocumentId",
+                "CredentialIdHash")
+        );
+
+        return 14;
     }
 }

@@ -167,3 +167,11 @@ using OrchardCore.Users;
     ],
     Category = "Security"
 )]
+
+[assembly: Feature(
+    Id = UserConstants.Features.Passkeys,
+    Name = "Passkeys",
+    Description = "Lets users sign in with a passkey, and use it as a two-factor authentication method.",
+    Dependencies = [UserConstants.Features.Users],
+    Category = "Security"
+)]

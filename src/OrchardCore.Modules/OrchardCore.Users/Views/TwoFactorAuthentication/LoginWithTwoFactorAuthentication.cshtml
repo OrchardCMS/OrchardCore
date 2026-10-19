@@ -7,9 +7,14 @@
 
 @inject IDisplayManager<TwoFactorMethod> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
 @{
     ViewLayout = "Layout__TwoFactor";
+
+    // A passkey returns a credential instead of a code the user types.
+    var usePasskey = Model.CurrentProvider == UserConstants.PasskeyTwoFactorProvider;
+    var tokens = usePasskey ? Antiforgery.GetAndStoreTokens(Context) : null;
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor authentication"])</h1></zone>
@@ -35,15 +40,27 @@
         }
 
         <div class="offset-md-3 col-md-6">
-            <form method="post" asp-action="LoginWithTwoFactorAuthentication" asp-controller="TwoFactorAuthentication" asp-route-returnUrl="@Model.ReturnUrl">
+            <form method="post" asp-action="LoginWithTwoFactorAuthentication" asp-controller="TwoFactorAuthentication" asp-route-returnUrl="@Model.ReturnUrl"
+                  data-passkey-two-factor="@usePasskey"
+                  data-options-url="@(usePasskey ? Url.Action("TwoFactorRequestOptions", "Passkey", new { area = UserConstants.Features.Users }) : null)"
+                  data-antiforgery-name="@tokens?.FormFieldName"
+                  data-antiforgery-token="@tokens?.RequestToken"
+                  data-error-message="@(usePasskey ? T["The passkey couldn't be used. Try again."] : null)">
                 <input asp-for="RememberMe" type="hidden" />
                 <input asp-for="CurrentProvider" type="hidden" />
 
-                <div class="mb-3" asp-validation-class-for="VerificationCode">
-                    <label asp-for="VerificationCode" class="form-label">@T["Verification code"]</label>
-                    <input asp-for="VerificationCode" class="form-control" autocomplete="off" />
-                    <span asp-validation-for="VerificationCode" class="text-danger"></span>
-                </div>
+                @if (usePasskey)
+                {
+                    <input asp-for="VerificationCode" type="hidden" value="" />
+                }
+                else
+                {
+                    <div class="mb-3" asp-validation-class-for="VerificationCode">
+                        <label asp-for="VerificationCode" class="form-label">@T["Verification code"]</label>
+                        <input asp-for="VerificationCode" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="VerificationCode" class="text-danger"></span>
+                    </div>
+                }
                 @if (Model.AllowRememberDevice)
                 {
                     <div class="mb-3">
@@ -54,10 +71,26 @@
                     </div>
                 }
                 <div class="mb-3">
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
+                    @if (usePasskey)
+                    {
+                        <button type="submit" class="w-100 btn btn-lg btn-primary" data-passkey-button disabled>
+                            <i class="fa-solid fa-key" aria-hidden="true"></i> @T["Use a passkey"]
+                        </button>
+                        <div class="text-danger mt-2 d-none" role="alert" data-passkey-error></div>
+                    }
+                    else
+                    {
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
+                    }
                 </div>
 
             </form>
+
+            @if (usePasskey)
+            {
+                <style asp-name="font-awesome" at="Head" version="7"></style>
+                <script asp-src="~/OrchardCore.Users/Scripts/passkeys/passkeys.min.js" debug-src="~/OrchardCore.Users/Scripts/passkeys/passkeys.js" at="Foot" type="module"></script>
+            }
 
             @if (Model.HasMultipleProviders)
             {

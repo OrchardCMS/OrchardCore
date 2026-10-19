@@ -37,6 +37,48 @@
               "type": "string",
               "description": "The path of the two-factor authentication page.",
               "default": "TwoFactor"
+            },
+            "Passkeys": {
+              "type": "object",
+              "description": "The options of the passkeys used to sign in, available when the 'Passkeys' feature is enabled.",
+              "properties": {
+                "ServerDomain": {
+                  "type": "string",
+                  "description": "The domain the passkeys are bound to, also known as the relying party ID. Defaults to the host of the request. Changing it invalidates the passkeys that were already registered."
+                },
+                "AuthenticatorTimeout": {
+                  "type": "string",
+                  "description": "How long the browser waits for the user to use their passkey, as a time span.",
+                  "default": "00:05:00"
+                },
+                "ChallengeSize": {
+                  "type": "integer",
+                  "description": "The size, in bytes, of the random challenge signed by the passkey.",
+                  "default": 32
+                },
+                "UserVerificationRequirement": {
+                  "type": "string",
+                  "description": "Whether the user must be verified with a biometric or a PIN. A passkey sign-in only counts as multi-factor when it is 'required'.",
+                  "enum": [ "required", "preferred", "discouraged" ],
+                  "default": "required"
+                },
+                "ResidentKeyRequirement": {
+                  "type": "string",
+                  "description": "Whether new passkeys must be discoverable, so that users can sign in without typing their username.",
+                  "enum": [ "required", "preferred", "discouraged" ],
+                  "default": "preferred"
+                },
+                "AttestationConveyancePreference": {
+                  "type": "string",
+                  "description": "Whether the authenticator should provide an attestation of its make and model when a passkey is registered.",
+                  "enum": [ "none", "indirect", "direct", "enterprise" ]
+                },
+                "AuthenticatorAttachment": {
+                  "type": "string",
+                  "description": "Limits new passkeys to the authenticator of the device ('platform') or to roaming authenticators such as security keys ('cross-platform'). Any authenticator is allowed when not set.",
+                  "enum": [ "platform", "cross-platform" ]
+                }
+              }
             }
           }
         },

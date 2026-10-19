@@ -47,6 +47,8 @@ public class User : Entity, IUser
 
     public IList<UserToken> UserTokens { get; set; } = [];
 
+    public IList<UserPasskey> Passkeys { get; set; } = [];
+
     public override string ToString()
     {
         return UserName;

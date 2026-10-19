@@ -16,6 +16,7 @@ The module contains the following features apart from the base feature:
 - Two-Factor Authentication Services: Provides Two-factor core services. This feature cannot be manually enabled or disable as it is enabled by dependency on demand.
 - Two-Factor Email Method: Allows users to two-factor authenticate using an email.
 - Two-Factor Authenticator App Method: Allows users to two-factor authenticate using any Authenticator App.
+- Passkeys: Allows users to log in with a passkey, and to use it as a two-factor authentication method. See [Passkeys](#passkeys).
 - User Localization: Allows ability to configure user culture per user from admin UI.
 
 ### User Display Name Shape
@@ -56,6 +57,81 @@ The action is only offered for about 10 minutes after the successful password ch
 ## Two-factor Authentication
 
 Orchard Core includes the features needed to secure your app with two-factor authentication. To use two-factor authentication, enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method". Configure the process from `Settings` → `Security` → `User Login` on the "Two-Factor Authentication" tab.
+
+## Passkeys
+
+A passkey is a WebAuthn credential that lets a user log in with the fingerprint, face or screen lock of their device, or with a security key, instead of a password. The private key never leaves the device or the password manager that keeps it, and the browser only uses it on the site it was created for, so a passkey can't be phished or reused from a data breach.
+
+Enable the **Passkeys** feature to let users:
+
+- Add, rename and remove their passkeys from the **Passkeys** page of their user menu (`/Passkeys`).
+- Log in with a passkey from the login page, with the **Log in with a passkey** button or by picking one in the autofill of the username field. The user doesn't type their username: the browser offers the passkeys it holds for the site.
+- Use a passkey as their second factor, when the **Two-Factor Authentication Services** are enabled by one of the two-factor methods.
+
+### Passkeys and two-factor authentication
+
+By default, the browser must verify the user with a biometric or a PIN before using the passkey (`UserVerificationRequirement` is `required`). Logging in with a passkey then proves both something the user has, their device, and something they are or know, so it counts as multi-factor authentication:
+
+- Users who have two-factor authentication enabled aren't asked for a second factor after logging in with a passkey.
+- Users whose role requires two-factor authentication aren't asked to set up a two-factor method when they log in with a passkey. They are still asked to when they log in with their password.
+
+When the two-factor services are enabled, passkeys are also listed as a two-factor method on the **Two-Factor Authentication** page:
+
+- Adding a passkey doesn't enable two-factor authentication. A user who has a passkey can enable it, and then confirm it's them with one of their passkeys after logging in with their password.
+- When two-factor authentication is required for the user, adding a passkey enables it, as when configuring another method.
+- Removing the last passkey removes the passkey method. It is refused when it is the only method of a user who must use two-factor authentication.
+
+When user verification isn't required, a passkey is a single factor: a user who has two-factor authentication enabled is asked for their second factor after logging in with a passkey, as after logging in with their password.
+
+### Administration
+
+Administrators who can edit a user can remove all their passkeys, for instance when a device is lost, with the **Remove passkeys** action of the user in the users list. When passkeys were the only two-factor method of the user, their two-factor authentication is disabled.
+
+### Configuration
+
+Passkeys are bound to a domain, the relying party ID, which defaults to the host of the request. The other options of the passkeys can be set in the `OrchardCore:Users:Passkeys` section of the `appsettings.json` file, here with their default values:
+
+```json
+{
+  "OrchardCore": {
+    "Users": {
+      "Passkeys": {
+        "ServerDomain": null,
+        "AuthenticatorTimeout": "00:05:00",
+        "ChallengeSize": 32,
+        "UserVerificationRequirement": "required",
+        "ResidentKeyRequirement": "preferred",
+        "AttestationConveyancePreference": null,
+        "AuthenticatorAttachment": null
+      }
+    }
+  }
+}
+```
+
+| Option | Description |
+| --- | --- |
+| `ServerDomain` | The domain the passkeys are bound to. Set it when the site is reached through several hosts, such as `www.example.com` and `example.com`, to the common registrable domain. Changing it invalidates the passkeys that were already registered. |
+| `AuthenticatorTimeout` | How long the browser waits for the user to use their passkey. |
+| `ChallengeSize` | The size, in bytes, of the random challenge the passkey signs. |
+| `UserVerificationRequirement` | `required`, `preferred` or `discouraged`. A passkey only counts as multi-factor when it is `required`. |
+| `ResidentKeyRequirement` | `required`, `preferred` or `discouraged`. Whether new passkeys must be discoverable, so that users can log in without typing their username. |
+| `AttestationConveyancePreference` | `none`, `indirect`, `direct` or `enterprise`. Whether the authenticator should provide an attestation of its make and model. |
+| `AuthenticatorAttachment` | `platform` to only allow the authenticator of the device, `cross-platform` to only allow roaming authenticators such as security keys. Any authenticator is allowed when it isn't set. |
+
+The server only accepts a passkey used from a page of the same origin (scheme, host and port) as the request. Behind a reverse proxy that terminates TLS, enable the forwarded headers so that the scheme and the host of the request are the public ones.
+
+The browser only uses a passkey on the domain it was created for, and its subdomains. Tenants that share a host, with a different URL prefix each, share the same relying party ID: the browser may offer the passkey of one tenant on the login page of another, which refuses it.
+
+Passkeys are a local login: they aren't offered when **Disable local login** is enabled in the login settings.
+
+### Rate limiting
+
+When the [Rate Limits](../RateLimits/README.md) feature is enabled, the `Passkeys/Login` route is limited to 10 requests per IP address, using the `password-authentication` policy shared with the login page.
+
+### Storage
+
+The passkeys are stored in the `Passkeys` property of the user document, which holds their public key and never a secret. The `UserByPasskeyIndex` index holds a hash of the credential identifier of each passkey, which `UserManager.FindByPasskeyIdAsync()` uses to make sure that a passkey is only registered once. The `UserStore` implements `IUserPasskeyStore<IUser>`, so the passkey methods of the ASP.NET Core Identity `UserManager<IUser>` are available whether the feature is enabled or not. The **All Users** deployment step doesn't export the passkeys, which are bound to the domain of the site.
 
 ## User Localization
 

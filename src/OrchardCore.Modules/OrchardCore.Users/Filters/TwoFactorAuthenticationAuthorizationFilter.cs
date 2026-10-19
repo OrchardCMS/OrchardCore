@@ -16,6 +16,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
         typeof(TwoFactorAuthenticationController).ControllerName(),
         typeof(AuthenticatorAppController).ControllerName(),
         typeof(SmsAuthenticatorController).ControllerName(),
+        typeof(PasskeyController).ControllerName(),
     ];
 
     private readonly UserOptions _userOptions;
@@ -55,6 +56,12 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
             {
                 return;
             }
+        }
+
+        // A user who signed in with multiple factors, for instance with a passkey, already meets the requirement.
+        if (context.HttpContext.User.HasClaim(UserConstants.AuthenticationMethodsClaimType, UserConstants.MultiFactorAuthenticationMethod))
+        {
+            return;
         }
 
         if (context.HttpContext.User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))

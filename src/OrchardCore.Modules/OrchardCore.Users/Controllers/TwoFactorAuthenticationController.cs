@@ -121,7 +121,10 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
             var rememberDevice = twoFactorSettings.AllowRememberClientTwoFactorAuthentication && model.RememberDevice;
 
-            var authenticatorCode = StripToken(model.VerificationCode);
+            // The passkey provider receives the credential as JSON, which must be kept as is.
+            var authenticatorCode = currentProvider == UserConstants.PasskeyTwoFactorProvider
+                ? model.VerificationCode
+                : StripToken(model.VerificationCode);
             var result = await SignInManager.TwoFactorSignInAsync(currentProvider, authenticatorCode, model.RememberMe, rememberDevice);
 
             if (result.Succeeded)
