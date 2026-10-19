@@ -212,6 +212,29 @@ export interface AddStepPayload {
     connectFrom?: { stepId: string; port: string } | null;
 }
 
+// The data source and data set a "Read a data source" step reads, offered by the dialog that adds one.
+export interface DesignerDataSet {
+    // The data source and the data set, such as "Contents::BlogPost".
+    value: string;
+    displayName: string;
+    description?: string | null;
+    // The localized name of the data source.
+    source: string;
+    // The group of the data set in its data source, if any.
+    group?: string | null;
+}
+
+export interface DataSetsResult {
+    dataSets: DesignerDataSet[];
+}
+
+export interface AddDataSourcePayload {
+    revision: number;
+    dataSet: string;
+    x: number;
+    y: number;
+}
+
 export interface AddStepResult {
     revision: number;
     node: DesignerNode;

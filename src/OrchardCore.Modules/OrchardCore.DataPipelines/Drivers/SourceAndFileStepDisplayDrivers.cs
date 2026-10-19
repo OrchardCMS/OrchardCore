@@ -14,8 +14,6 @@ namespace OrchardCore.DataPipelines.Drivers;
 
 public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<DataSourceStepSettings, DataSourceStepViewModel>
 {
-    private const string Separator = "::";
-
     private readonly IDataSourceManager _dataSourceManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly DataPipelineEditorContext _editorContext;
@@ -40,7 +38,7 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
 
     protected override async ValueTask EditAsync(DataPipelineStep step, DataSourceStepSettings settings, DataSourceStepViewModel model)
     {
-        model.DataSet = string.IsNullOrEmpty(settings.Source) ? null : settings.Source + Separator + settings.DataSet;
+        model.DataSet = DataSetOption.ToValue(settings.Source, settings.DataSet);
         model.Fields = settings.Fields.ToArray();
         model.Filters = settings.Filters
             .Select(filter => new DataSourceFilterRow
@@ -57,27 +55,16 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
         model.IncrementalField = settings.IncrementalField;
         model.Parameters = string.Join(System.Environment.NewLine, settings.Parameters.Select(pair => $"{pair.Key}={pair.Value}"));
 
-        var context = new DataSourceContext { User = _httpContextAccessor.HttpContext?.User };
+        var user = _httpContextAccessor.HttpContext?.User;
+        var context = new DataSourceContext { User = user };
 
-        foreach (var descriptor in _dataSourceManager.GetDataSources())
+        if (model.DataSet is not null)
         {
-            var sourceName = _localizerFactory.Localize(descriptor.DisplayName)?.Value ?? descriptor.Name;
-
-            foreach (var dataSet in await _dataSourceManager.GetDataSource(descriptor.Name).GetDataSetsAsync(context))
-            {
-                model.DataSets.Add(new DataSetOption
-                {
-                    Value = descriptor.Name + Separator + dataSet.Name,
-                    Text = dataSet.DisplayName,
-                    Description = dataSet.Description,
-                    Source = sourceName,
-                    Group = dataSet.Group,
-                });
-            }
+            model.SelectedDataSet = (await DataSetOption.ListAsync(_dataSourceManager, _localizerFactory, user)).FirstOrDefault(option => option.Value == model.DataSet);
         }
 
         model.SourceName = _localizerFactory.Localize(_dataSourceManager.GetDescriptor(settings.Source)?.DisplayName)?.Value;
-        model.DataSetName = model.DataSets.FirstOrDefault(option => option.Value == model.DataSet)?.Text ?? settings.DataSet;
+        model.DataSetName = model.SelectedDataSet?.Text ?? settings.DataSet;
 
         if (!string.IsNullOrEmpty(settings.Source) && _dataSourceManager.GetDataSource(settings.Source) is { } source)
         {
@@ -87,9 +74,7 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
 
     protected override ValueTask UpdateAsync(DataPipelineStep step, DataSourceStepSettings settings, DataSourceStepViewModel model, UpdateEditorContext context)
     {
-        var parts = (model.DataSet ?? string.Empty).Split(Separator, 2);
-        var source = parts.Length == 2 ? parts[0] : null;
-        var dataSet = parts.Length == 2 ? parts[1] : null;
+        var (source, dataSet) = DataSetOption.Parse(model.DataSet);
 
         if (source != settings.Source || dataSet != settings.DataSet)
         {
@@ -180,7 +165,7 @@ public class DataSourceStepViewModel
     public string Parameters { get; set; }
 
     [BindNever]
-    public List<DataSetOption> DataSets { get; set; } = [];
+    public DataSetOption SelectedDataSet { get; set; }
 
     [BindNever]
     public IReadOnlyList<DataField> AvailableFields { get; set; } = [];
@@ -201,19 +186,6 @@ public sealed class DataSourceFilterRow
     public string Value { get; set; }
 
     public string SecondValue { get; set; }
-}
-
-public sealed class DataSetOption
-{
-    public string Value { get; set; }
-
-    public string Text { get; set; }
-
-    public string Description { get; set; }
-
-    public string Source { get; set; }
-
-    public string Group { get; set; }
 }
 
 public sealed class CreateFileStepDisplayDriver : DataPipelineStepDisplayDriver<CreateFileStepSettings, CreateFileStepViewModel>

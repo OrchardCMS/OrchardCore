@@ -2,8 +2,10 @@ import { createApiService, type ApiService } from "@bloom/services/api-service";
 import { DesignerApiError, call, multipart, required, withQuery } from "@bloom/designer/core/api";
 import type { DesignerUrls } from "../config";
 import type {
+    AddDataSourcePayload,
     AddStepPayload,
     AddStepResult,
+    DataSetsResult,
     DesignerDefinition,
     DesignerRun,
     DesignerVersions,
@@ -32,6 +34,9 @@ export const createDesignerApi = (urls: DesignerUrls, service: ApiService = crea
         getLibrary: () => call(() => service.get<Library>(urls.library)),
         save: (payload: SavePayload) => call(() => service.post<SaveResult>(required(urls.save, "save"), payload)),
         addStep: (payload: AddStepPayload) => call(() => service.post<AddStepResult>(required(urls.addStep, "addStep"), payload)),
+        getDataSets: () => call(() => service.get<DataSetsResult>(required(urls.dataSets, "dataSets"))),
+        addDataSource: (payload: AddDataSourcePayload) =>
+            call(() => service.post<AddStepResult>(required(urls.addDataSource, "addDataSource"), payload)),
         getEditor: (stepId: string) => call(() => service.get<FormFragment>(withQuery(required(urls.editor, "editor"), { stepId }))),
         postEditor: (stepId: string, revision: number, form: FormData) =>
             call(() => service.post<EditorApplyResult>(withQuery(required(urls.editor, "editor"), { stepId, revision }), form, multipart)),

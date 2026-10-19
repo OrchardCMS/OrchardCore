@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text.Json;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -259,7 +260,7 @@ public sealed class DataPipelineStepEditorsTests
     }
 
     [Fact]
-    public async Task Editor_DataSourcePicker_ListsTheDataSetsOfEachSourceAndMarksTheChosenOne()
+    public async Task Editor_DataSource_ShowsTheChosenDataSetAndAsksTheDesignerToChangeIt()
     {
         // Arrange
         using var context = await CreateContextAsync();
@@ -273,18 +274,74 @@ public sealed class DataPipelineStepEditorsTests
         // Assert
         var picker = editor.QuerySelector("[data-dp-dataset-picker]");
         Assert.Equal("Contents::BlogPost", picker.QuerySelector($"input[type=hidden][name='{Prefix}DataSet']").GetAttribute("value"));
+        Assert.Contains("Blog Post", picker.QuerySelector("[data-dp-dataset-summary]").TextContent, StringComparison.Ordinal);
+        Assert.Contains("Content items", picker.QuerySelector("[data-dp-dataset-summary]").TextContent, StringComparison.Ordinal);
+        Assert.NotNull(picker.QuerySelector("button[data-dp-dataset-open]"));
+    }
 
-        var dialog = Assert.IsAssignableFrom<IHtmlTemplateElement>(picker.QuerySelector("template[data-dp-dataset-dialog]")).Content;
-        var cards = dialog.QuerySelectorAll("[data-dp-dataset-card]").ToList();
-        Assert.Contains(cards, card => card.GetAttribute("data-dp-category") == "Users");
+    [Fact]
+    public async Task DataSets_Get_ListsTheDataSetsWithTheirDataSource()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, []);
 
-        var blogPost = Assert.Single(cards, card => card.QuerySelector(".card-title").TextContent.Trim() == "Blog Post");
-        Assert.Null(blogPost.QuerySelector("[data-dp-dataset-choose]"));
-        Assert.NotNull(Assert.Single(cards, card => card.QuerySelector("[data-dp-dataset-choose='Contents::Article']") is not null));
+        // Act
+        using var response = await context.Client.GetAsync($"Admin/DataPipelines/{pipelineId}/Designer/DataSets", TestContext.Current.CancellationToken);
 
-        var categories = dialog.QuerySelectorAll("[data-dp-dataset-category]").Select(button => button.GetAttribute("data-dp-dataset-category")).ToList();
-        Assert.Equal(string.Empty, categories[0]);
-        Assert.Equal(categories.Count, categories.Distinct().Count());
+        // Assert
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var dataSets = json.RootElement.GetProperty("dataSets").EnumerateArray().ToList();
+
+        var blogPost = Assert.Single(dataSets, dataSet => dataSet.GetProperty("value").GetString() == "Contents::BlogPost");
+        Assert.Equal("Blog Post", blogPost.GetProperty("displayName").GetString());
+        Assert.Equal("Content items", blogPost.GetProperty("source").GetString());
+        Assert.Contains(dataSets, dataSet => dataSet.GetProperty("source").GetString() == "Users");
+    }
+
+    [Fact]
+    public async Task AddDataSource_DataSet_AddsAStepThatReadsIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, []);
+
+        // Act
+        using var response = await PostJsonAsync(context, pipelineId, "AddDataSource", new { revision = await GetRevisionAsync(context, pipelineId), dataSet = "Contents::BlogPost", x = 80, y = 40 });
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var stepId = json.RootElement.GetProperty("node").GetProperty("id").GetString();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var pipeline = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().GetAsync(pipelineId);
+            var step = pipeline.GetEditableDefinition().FindStep(stepId);
+            var settings = step.GetOrCreate<DataSourceStepSettings>();
+
+            Assert.Equal(DataSourceStep.StepName, step.Type);
+            Assert.Equal((80, 40), (step.X, step.Y));
+            Assert.Equal(("Contents", "BlogPost"), (settings.Source, settings.DataSet));
+        });
+    }
+
+    [Theory]
+    [InlineData("Contents::Missing")]
+    [InlineData("BlogPost")]
+    [InlineData(null)]
+    public async Task AddDataSource_DataSetTheUserCanNotRead_IsABadRequest(string dataSet)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, []);
+
+        // Act
+        using var response = await PostJsonAsync(context, pipelineId, "AddDataSource", new { revision = await GetRevisionAsync(context, pipelineId), dataSet, x = 0, y = 0 });
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Theory]
@@ -408,6 +465,21 @@ public sealed class DataPipelineStepEditorsTests
             Assert.NotEqual("s3cret!", settings.ProtectedPassword);
             Assert.Equal("s3cret!", scope.ServiceProvider.GetRequiredService<DataPipelineSecrets>().Unprotect(settings.ProtectedPassword));
         });
+    }
+
+    // Posts JSON to an endpoint of the designer the way it does: with the antiforgery token of its page in a header.
+    private static async Task<HttpResponseMessage> PostJsonAsync(SiteContext context, string pipelineId, string action, object body)
+    {
+        var (token, cookies) = await GetAntiforgeryAsync(context, pipelineId);
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"Admin/DataPipelines/{pipelineId}/Designer/{action}")
+        {
+            Content = JsonContent.Create(body),
+        };
+        request.Headers.Add("Cookie", cookies);
+        request.Headers.Add("RequestVerificationToken", token);
+
+        return await context.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     // Posts a step editor the way the designer does: with the antiforgery token of the designer page.
