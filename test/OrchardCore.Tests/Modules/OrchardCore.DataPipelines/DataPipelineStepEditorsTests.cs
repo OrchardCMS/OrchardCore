@@ -181,6 +181,120 @@ public sealed class DataPipelineStepEditorsTests
         Assert.DoesNotContain(operators, option => option.TextContent == option.GetAttribute("value"));
     }
 
+    [Theory]
+    [InlineData("DisplayText", DataFilterOperator.Equals, "Text", "StartsWith", "Between")]
+    [InlineData("PublishedUtc", DataFilterOperator.Equals, "DateTime", "InLastDays", "Contains")]
+    [InlineData("Published", DataFilterOperator.Equals, "Boolean", "IsNotEmpty", "GreaterThan")]
+    public async Task Editor_DataSourceFilter_ShowsTheOperatorsOfTheFieldType(string field, DataFilterOperator filterOperator, string fieldType, string shown, string hidden)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings
+        {
+            Source = "Contents",
+            DataSet = "BlogPost",
+            Filters = [new DataSourceFilter { Field = field, Operator = filterOperator }],
+        });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var row = editor.QuerySelector("[data-dp-rows] [data-dp-filter-row]");
+        Assert.Equal(fieldType, row.QuerySelector($"[data-dp-filter-field] option[value='{field}']").GetAttribute("data-dp-type"));
+
+        var shownOption = row.QuerySelector($"[data-dp-filter-operator] option[value='{shown}']");
+        Assert.False(shownOption.HasAttribute("hidden"));
+        Assert.False(shownOption.HasAttribute("disabled"));
+        Assert.Contains(fieldType, shownOption.GetAttribute("data-dp-types").Split(' '));
+
+        var hiddenOption = row.QuerySelector($"[data-dp-filter-operator] option[value='{hidden}']");
+        Assert.True(hiddenOption.HasAttribute("hidden"));
+        Assert.True(hiddenOption.HasAttribute("disabled"));
+        Assert.DoesNotContain(fieldType, hiddenOption.GetAttribute("data-dp-types").Split(' '));
+    }
+
+    [Fact]
+    public async Task Editor_DataSourceFilterWithAnOperatorThatDoesNotApply_KeepsItSelected()
+    {
+        // Arrange: a filter saved before the comparisons were limited to the type of the field.
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings
+        {
+            Source = "Contents",
+            DataSet = "BlogPost",
+            Filters = [new DataSourceFilter { Field = "PublishedUtc", Operator = DataFilterOperator.Contains, Values = ["2026"] }],
+        });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var option = editor.QuerySelector($"select[name='{Prefix}Filters[0].Operator'] option[value='Contains']");
+        Assert.True(option.HasAttribute("selected"));
+        Assert.False(option.HasAttribute("hidden"));
+        Assert.False(option.HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public async Task Editor_DataSource_LabelsTheFieldsAndTheMaximumNumberOfRows()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var labels = editor.QuerySelectorAll("label.ocat-label").Select(label => label.TextContent.Trim()).ToList();
+        Assert.Contains("Fields to read", labels);
+        Assert.Contains("Maximum number of rows", labels);
+    }
+
+    [Theory]
+    [InlineData(DataFilterOperator.IsEmpty, new string[0])]
+    [InlineData(DataFilterOperator.Equals, new[] { "2026-01-01" })]
+    [InlineData(DataFilterOperator.Between, new[] { "2026-01-01", "2026-01-31" })]
+    public async Task EditorPost_DataSourceFilter_KeepsTheValuesTheOperatorTakes(DataFilterOperator filterOperator, string[] expected)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        using var response = await PostEditorAsync(context, pipelineId, "source", new()
+        {
+            [$"{Prefix}DataSet"] = "Contents::BlogPost",
+            [$"{Prefix}MaxRows"] = "0",
+            [$"{Prefix}Filters[0].Field"] = "PublishedUtc",
+            [$"{Prefix}Filters[0].Operator"] = filterOperator.ToString(),
+            [$"{Prefix}Filters[0].Value"] = "2026-01-01",
+            [$"{Prefix}Filters[0].SecondValue"] = "2026-01-31",
+        });
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var pipeline = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().GetAsync(pipelineId);
+            var settings = pipeline.GetEditableDefinition().FindStep("source").GetOrCreate<DataSourceStepSettings>();
+            var filter = Assert.Single(settings.Filters);
+
+            Assert.Equal(filterOperator, filter.Operator);
+            Assert.Equal(expected, filter.Values);
+        });
+    }
+
     [Fact]
     public async Task Editor_SaveToMediaWithDefaultMediaOptions_WarnsOfTheRejectedFileTypes()
     {

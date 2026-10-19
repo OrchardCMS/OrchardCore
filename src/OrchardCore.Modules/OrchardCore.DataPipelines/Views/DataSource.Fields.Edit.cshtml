@@ -26,7 +26,7 @@
 @if (!string.IsNullOrEmpty(Model.DataSet))
 {
     <div class="ocat-wrapper">
-        <label asp-for="Fields" class="ocat-label">@T["Fields"]</label>
+        <label asp-for="Fields" class="ocat-label">@T["Fields to read"]</label>
         <div class="ocat-end">
             <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every field"]">
                 @foreach (var group in Model.AvailableFields.GroupBy(field => field.Group ?? string.Empty))
@@ -56,12 +56,12 @@
                 }
             </div>
             <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a filter"]</button>
-            <span class="hint">@T["Only the rows that match every filter are read. Write dates as yyyy-MM-dd; they are compared in UTC."]</span>
+            <span class="hint">@T["Only the rows that match every filter are read. Dates and times are compared in UTC. To use a placeholder, such as {0}, or a date without a time on a date and time field, which covers the whole day, write the value as text.", "{Parameter:Since}"]</span>
         </div>
     </div>
 
     <div class="ocat-limited-wrapper" asp-validation-class-for="MaxRows">
-        <label asp-for="MaxRows" class="ocat-label">@T["Most rows"]</label>
+        <label asp-for="MaxRows" class="ocat-label">@T["Maximum number of rows"]</label>
         <div class="ocat-limited">
             <input asp-for="MaxRows" type="number" min="0" class="form-control" />
             <span asp-validation-for="MaxRows"></span>

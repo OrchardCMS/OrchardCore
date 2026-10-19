@@ -106,9 +106,14 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
                 {
                     Field = filter.Field,
                     Operator = filter.Operator,
-                    Values = filter.Operator == DataFilterOperator.Between
-                        ? [filter.Value ?? string.Empty, filter.SecondValue ?? string.Empty]
-                        : string.IsNullOrEmpty(filter.Value) ? [] : [filter.Value],
+
+                    // The editor hides the values an operator doesn't take, so they are not kept.
+                    Values = filter.Operator switch
+                    {
+                        DataFilterOperator.Between => [filter.Value ?? string.Empty, filter.SecondValue ?? string.Empty],
+                        DataFilterOperator.IsEmpty or DataFilterOperator.IsNotEmpty => [],
+                        _ => string.IsNullOrEmpty(filter.Value) ? [] : [filter.Value],
+                    },
                 })
                 .ToList();
         }
@@ -127,7 +132,7 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
 
             if (settings.IncrementalField is not null && settings.MaxRows > 0)
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IncrementalField), S["A step that reads only the new rows reads all of them: set the most rows to 0."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IncrementalField), S["A step that reads only the new rows reads all of them: set the maximum number of rows to 0."]);
             }
         }
 

@@ -3,20 +3,40 @@
     // The full name, such as "DataPipelineStep.Filters[0]", so the row binds to the step's editor.
     var prefix = Html.Name($"Filters[{Model.Index}]");
     var operators = Enum.GetValues<DataFilterOperator>();
+    var fieldTypes = Enum.GetValues<DataFieldType>();
+    var fieldType = Model.Fields.FirstOrDefault(field => field.Name == Model.Filter.Field)?.Type;
 }
 
-<div class="input-group input-group-sm mb-2" data-dp-row>
-    <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
+@* data-dp-filter-row: the script of the editors shows the comparisons that apply to the type of the chosen field, and
+   the inputs of the values that the comparison takes, typed for the field. *@
+<div class="input-group input-group-sm mb-2" data-dp-row data-dp-filter-row>
+    <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]" data-dp-filter-field>
         <partial name="DataPipelineFieldOptions" model="@((Model.Fields, Model.Filter.Field, true))" />
     </select>
-    <select name="@(prefix).Operator" class="form-select" aria-label="@T["Comparison"]">
+    <select name="@(prefix).Operator" class="form-select" aria-label="@T["Comparison"]" data-dp-filter-operator>
         @foreach (var item in operators)
         {
-            <option value="@item" selected="@(item == Model.Filter.Operator)">@OperatorLabel(item)</option>
+            var selected = item == Model.Filter.Operator;
+
+            // A saved comparison that doesn't apply to its field stays visible: the step reports it as an error.
+            var hidden = fieldType is { } type && !item.AppliesTo(type) && !selected;
+
+            <option value="@item" selected="@selected" hidden="@hidden" disabled="@hidden" data-dp-types="@string.Join(' ', fieldTypes.Where(type => item.AppliesTo(type)))">@OperatorLabel(item)</option>
         }
     </select>
-    <input name="@(prefix).Value" value="@Model.Filter.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" />
-    <input name="@(prefix).SecondValue" value="@Model.Filter.SecondValue" class="form-control" aria-label="@T["Second value, for Between"]" placeholder="@T["And (Between)"]" />
+    <input name="@(prefix).Value" value="@Model.Filter.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" data-dp-filter-value />
+    <select name="@(prefix).Value" class="form-select" aria-label="@T["Value"]" hidden disabled data-dp-filter-boolean>
+        <option value="">@T["Choose a value"]</option>
+        <option value="true">@T["Yes"]</option>
+        <option value="false">@T["No"]</option>
+    </select>
+    <span class="input-group-text" hidden data-dp-filter-days>@T["days"]</span>
+    <span class="input-group-text" hidden data-dp-filter-and>@T["and"]</span>
+    <input name="@(prefix).SecondValue" value="@Model.Filter.SecondValue" class="form-control" aria-label="@T["Second value"]" placeholder="@T["Value"]" hidden data-dp-filter-second />
+    <button type="button" class="btn btn-outline-secondary" aria-pressed="false" title="@T["Write the value as text, such as {0}", "{Parameter:Since}"]" hidden data-dp-filter-text>
+        <i class="fa-solid fa-i-cursor" aria-hidden="true"></i>
+        <span class="visually-hidden">@T["Write the value as text"]</span>
+    </button>
     <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
 </div>
 
@@ -39,8 +59,8 @@
             DataFilterOperator.NotIn => T["isn't one of"].Value,
             DataFilterOperator.IsEmpty => T["is empty"].Value,
             DataFilterOperator.IsNotEmpty => T["isn't empty"].Value,
-            DataFilterOperator.InLastDays => T["is in the last days"].Value,
-            DataFilterOperator.InNextDays => T["is in the next days"].Value,
+            DataFilterOperator.InLastDays => T["is in the last"].Value,
+            DataFilterOperator.InNextDays => T["is in the next"].Value,
             _ => filterOperator.ToString(),
         };
 }

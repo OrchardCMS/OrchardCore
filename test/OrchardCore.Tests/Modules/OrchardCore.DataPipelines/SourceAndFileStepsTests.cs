@@ -269,6 +269,57 @@ public sealed class SourceAndFileStepsTests
         Assert.Contains(description.Issues, issue => issue.Message.Contains("Age", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("Name", DataFilterOperator.GreaterThan)]
+    [InlineData("Id", DataFilterOperator.Contains)]
+    [InlineData("Joined", DataFilterOperator.StartsWith)]
+    [InlineData("Id", DataFilterOperator.InLastDays)]
+    public async Task DataSource_FilterOperatorThatDoesNotApplyToTheField_ReportsError(string field, DataFilterOperator filterOperator)
+    {
+        // Arrange
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Filters = [new DataSourceFilter { Field = field, Operator = filterOperator, Values = ["1"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+
+        // Act
+        var description = await host.DescribeAsync();
+
+        // Assert
+        var issue = Assert.Single(description.Issues);
+        Assert.Equal(DataPipelineIssueSeverity.Error, issue.Severity);
+        Assert.Contains(field, issue.Message, StringComparison.Ordinal);
+        Assert.Contains(filterOperator.ToString(), issue.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("Name", DataFilterOperator.StartsWith)]
+    [InlineData("Id", DataFilterOperator.Between)]
+    [InlineData("Joined", DataFilterOperator.InLastDays)]
+    [InlineData("Joined", DataFilterOperator.IsNotEmpty)]
+    public async Task DataSource_FilterOperatorThatAppliesToTheField_ReportsNoIssue(string field, DataFilterOperator filterOperator)
+    {
+        // Arrange
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Filters = [new DataSourceFilter { Field = field, Operator = filterOperator, Values = ["1"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+
+        // Act
+        var description = await host.DescribeAsync();
+
+        // Assert
+        Assert.Empty(description.Issues);
+    }
+
     [Fact]
     public async Task DataSource_MostRowsWithFilterTheSourceIgnores_ReadsUpToMostMatchingRows()
     {

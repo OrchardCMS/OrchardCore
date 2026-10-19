@@ -317,11 +317,18 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
         foreach (var filter in settings.Filters)
         {
-            if (schema.FindField(filter.Field) is null)
+            var field = schema.FindField(filter.Field);
+
+            if (field is null)
             {
                 errors.Add(S["The data set has no field named '{0}' to filter on.", filter.Field ?? string.Empty]);
 
                 continue;
+            }
+
+            if (!filter.Operator.AppliesTo(field.Type))
+            {
+                errors.Add(S["The filter on '{0}' can't use the {1} comparison on a {2} field. Choose another comparison.", field.Name, filter.Operator, field.Type]);
             }
 
             read.Add(filter.Field);
@@ -329,7 +336,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
         if (settings.MaxRows < 0)
         {
-            errors.Add(S["The number of rows to read can't be negative."]);
+            errors.Add(S["The maximum number of rows to read can't be negative."]);
         }
 
         DataField incremental = null;
@@ -354,7 +361,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
             if (settings.MaxRows > 0)
             {
-                errors.Add(S["A step that reads only the new rows reads all of them: remove the most rows to read."]);
+                errors.Add(S["A step that reads only the new rows reads all of them: set the maximum number of rows to 0."]);
             }
         }
 
