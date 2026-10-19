@@ -1,0 +1,15 @@
+[
+  {
+    "action": "sass",
+    "name": "miniprofiler-admin",
+    "source": "Assets/scss/miniprofiler-admin.scss",
+    "tags": ["admin", "dashboard", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "miniprofiler-admin",
+    "source": "Assets/ts/miniprofiler-admin.ts",
+    "dest": "wwwroot/Scripts/miniprofiler-admin/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

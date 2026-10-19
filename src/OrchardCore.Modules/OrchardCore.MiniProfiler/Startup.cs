@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using YesSql;
 
@@ -22,6 +23,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddScoped<IShapeDisplayEvents, ShapeStep>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddMiniProfiler();
 
