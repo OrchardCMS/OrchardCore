@@ -81,3 +81,39 @@
         <span class="hint">@T["The section holding the current page is always open, whichever behavior is chosen."]</span>
     </div>
 </div>
+
+<div class="ocat-wrapper" asp-validation-class-for="ListLayout">
+    <label asp-for="ListLayout" class="ocat-label">@T["List layout"]</label>
+    <div class="ocat-end">
+        <select asp-for="ListLayout" class="form-select">
+            <option value="">@T["Use configuration default"]</option>
+            <option value="@AdminListLayout.List">@T["List"]</option>
+            <option value="@AdminListLayout.Grid">@T["Grid"]</option>
+        </select>
+        <span asp-validation-for="ListLayout"></span>
+        <span class="hint">@T["How the admin lists are rendered, e.g. the content items list. Use the configuration default to inherit {0} from appsettings.json.", "OrchardCore:Admin:List:DefaultLayout"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="ListActionsLayout">
+    <label asp-for="ListActionsLayout" class="ocat-label">@T["List actions layout"]</label>
+    <div class="ocat-end">
+        <select asp-for="ListActionsLayout" class="form-select">
+            <option value="">@T["Use configuration default"]</option>
+            <option value="@AdminListActionsLayout.Buttons">@T["Buttons"]</option>
+            <option value="@AdminListActionsLayout.Menu">@T["Menu"]</option>
+        </select>
+        <span asp-validation-for="ListActionsLayout"></span>
+        <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. Use the configuration default to inherit {0} from appsettings.json.", "OrchardCore:Admin:List:DefaultActionsLayout"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="AllowUserListLayoutSelection">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="AllowUserListLayoutSelection" class="form-check-input" type="checkbox" />
+            <label asp-for="AllowUserListLayoutSelection" class="form-check-label">@T["Let users choose the layout of a list"]</label>
+        </div>
+        <span class="hint">@T["Whether each list shows a selector with the available layouts. A user's choice is kept in a cookie, per list, and applies to that user only. The layout above stays the one every list starts from."]</span>
+    </div>
+</div>

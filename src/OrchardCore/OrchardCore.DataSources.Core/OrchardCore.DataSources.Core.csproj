@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.DataSources</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Data Sources Core</Title>
+    <Description>$(OCCMSDescription)
+
+      Core services for data sources: a typed formula language, row operations such as filters and aggregates, and the
+      CSV, JSON, JSON Lines and Excel file formats.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS DataSources</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.DataSources.Abstractions\OrchardCore.DataSources.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+  </ItemGroup>
+
+</Project>

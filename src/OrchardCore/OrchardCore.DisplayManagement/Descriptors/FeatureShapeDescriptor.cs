@@ -140,7 +140,10 @@ public sealed class ShapeDescriptorIndex : ShapeDescriptor
 
     public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
 
-    public override Func<ShapePlacementContext, PlacementInfo> Placement => CalculatePlacement;
+    private Func<ShapePlacementContext, PlacementInfo> _calculatePlacement;
+
+    // The delegate is cached, as converting the method group would allocate a delegate on each placement.
+    public override Func<ShapePlacementContext, PlacementInfo> Placement => _calculatePlacement ??= CalculatePlacement;
 
     public override IReadOnlyList<string> Wrappers => _wrappers;
 

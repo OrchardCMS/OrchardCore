@@ -14,52 +14,15 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Content"], content => content
-                    .AddClass("media")
-                    .Id("media")
-                    .Add(S["Media Library"], S["Media Library"].PrefixPosition(), media => media
-                        // Gated on the same check as the page itself, so the entry is not offered to a
-                        // user whose only landing place would be a 404.
-                        .Permission(MediaPermissions.ManageMediaFolder)
-                        .Resource(string.Empty)
-                        .Action("Index", "Admin", "OrchardCore.Media")
-                        .LocalNav()
-                    )
-                );
-
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                        .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
-                            .Action("Options", "Admin", "OrchardCore.Media")
-                            .Permission(MediaPermissions.ViewMediaOptions)
-                            .LocalNav()
-                        )
-                        .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
-                            .Action("Index", "MediaProfiles", "OrchardCore.Media")
-                            .Permission(MediaPermissions.ManageMediaProfiles)
-                            .LocalNav()
-                        )
-                        .Add(S["Media API"], S["Media API"].PrefixPosition(), api => api
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MediaApiSettings.GroupId })
-                            .Permission(MediaPermissions.ManageMediaApiSettings)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Media"], "after.15", media => media
                 .AddClass("media")
                 .Id("media")
                 .Add(S["Library"], S["Library"].PrefixPosition("1"), library => library
-                    .Permission(MediaPermissions.ManageMedia)
+                    // Gated on the same check as the page itself, so the entry is not offered to a
+                    // user whose only landing place would be a 404.
+                    .Permission(MediaPermissions.ManageMediaFolder)
+                    .Resource(string.Empty)
                     .Action("Index", "Admin", "OrchardCore.Media")
                     .LocalNav()
                 )

@@ -45,11 +45,13 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
 
         return Combine(
             Initialize<AuditTrailContentEventViewModel>("AuditTrailContentEventData_SummaryAdmin", m => BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId))
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventData:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventData:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Details:10"),
             Initialize<AuditTrailContentEventViewModel>("AuditTrailContentEventContent_SummaryAdmin", m => BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId))
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:10"),
             Initialize<AuditTrailContentEventViewModel>("AuditTrailContentEventActions_SummaryAdmin", m => BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId))
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5"),
             Initialize<AuditTrailContentEventDetailViewModel>("AuditTrailContentEventDetail_DetailAdmin", async m =>
             {
                 BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId);

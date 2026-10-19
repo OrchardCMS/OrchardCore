@@ -40,7 +40,11 @@ public static class LiquidCoreServices
         services.AddTransient<IConfigureOptions<ShapeTemplateOptions>, LiquidShapeTemplateOptionsSetup>();
 
         services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
-        services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();
+
+        // Liquid shape templates are rendered directly, not through their Razor pages like Liquid views.
+        services.AddScoped<LiquidShapeTemplateViewEngine>();
+        services.AddScoped<IShapeTemplateViewEngine>(sp => sp.GetRequiredService<LiquidShapeTemplateViewEngine>());
+
         services.AddSingleton<LiquidTagHelperFactory>();
 
         services.AddSingleton<IConfigureOptions<TemplateOptions>, TemplateOptionsConfigurations>();

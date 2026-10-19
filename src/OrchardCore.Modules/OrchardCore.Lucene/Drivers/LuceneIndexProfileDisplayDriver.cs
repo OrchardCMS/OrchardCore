@@ -34,7 +34,8 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
         }
 
         return View("LuceneIndexProfile_ActionsMenuItems_SummaryAdmin", index)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:4");
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:4")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:4");
     }
 
     public override IDisplayResult Edit(IndexProfile index, BuildEditorContext context)

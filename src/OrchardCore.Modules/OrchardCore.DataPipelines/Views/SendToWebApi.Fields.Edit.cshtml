@@ -1,0 +1,135 @@
+@model SendToWebApiStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper" asp-validation-class-for="Url">
+    <label asp-for="Url" class="ocat-label ocat-label-required">@T["URL"]</label>
+    <div class="ocat-end">
+        <input asp-for="Url" class="form-control" placeholder="https://api.example.com/files" autocomplete="off" />
+        <span asp-validation-for="Url"></span>
+        <span class="hint">@T["Each file is sent in its own request. A response other than 2xx fails the step."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Method" class="ocat-label">@T["Method"]</label>
+    <div class="ocat-end">
+        <select asp-for="Method" class="form-select">
+            <option value="@DataPipelineHttpMethod.Post">POST</option>
+            <option value="@DataPipelineHttpMethod.Put">PUT</option>
+        </select>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="BodyMode" class="ocat-label">@T["Body"]</label>
+    <div class="ocat-end">
+        <select asp-for="BodyMode" class="form-select">
+            <option value="@DataPipelineHttpBodyMode.Multipart">@T["A form with the file (multipart/form-data)"]</option>
+            <option value="@DataPipelineHttpBodyMode.Raw">@T["The content of the file"]</option>
+        </select>
+    </div>
+</div>
+
+@if (Model.BodyMode == DataPipelineHttpBodyMode.Multipart)
+{
+    <div class="ocat-wrapper">
+        <label asp-for="FormFieldName" class="ocat-label">@T["Form field"]</label>
+        <div class="ocat-end">
+            <input asp-for="FormFieldName" class="form-control" placeholder="file" />
+            <span class="hint">@T["The name of the form field that holds the file."]</span>
+        </div>
+    </div>
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="Headers">
+    <label class="ocat-label">@T["Headers"]</label>
+    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Headers")">
+        <template data-dp-template>
+            <partial name="DataPipelineHttpHeaderRow" model="@((new DataPipelineHttpHeader(), "__index__"))" />
+        </template>
+        <div data-dp-rows>
+            @for (var index = 0; index < Model.Headers.Count; index++)
+            {
+                <partial name="DataPipelineHttpHeaderRow" model="@((Model.Headers[index], index.ToString(System.Globalization.CultureInfo.InvariantCulture)))" />
+            }
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a header"]</button>
+        <span asp-validation-for="Headers"></span>
+        <span class="hint">@T["Headers are not secret: set the credentials with the authentication below."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Authentication" class="ocat-label">@T["Authentication"]</label>
+    <div class="ocat-end">
+        <select asp-for="Authentication" class="form-select">
+            <option value="@DataPipelineHttpAuthentication.None">@T["None"]</option>
+            <option value="@DataPipelineHttpAuthentication.Basic">@T["Basic (user name and password)"]</option>
+            <option value="@DataPipelineHttpAuthentication.Bearer">@T["Bearer token"]</option>
+            <option value="@DataPipelineHttpAuthentication.ApiKey">@T["API key in a header"]</option>
+        </select>
+    </div>
+</div>
+
+@if (Model.Authentication == DataPipelineHttpAuthentication.Basic)
+{
+    <div class="ocat-wrapper">
+        <label asp-for="Username" class="ocat-label ocat-label-required">@T["User name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Username" class="form-control" autocomplete="off" />
+        </div>
+    </div>
+
+    <partial name="DataPipelineSecretInput" model="@(new DataPipelineSecretInputViewModel
+    {
+        Name = nameof(Model.Password),
+        Label = T["Password"].Value,
+        HasValue = Model.HasPassword,
+        KeepHint = T["Leave empty to keep the current password."].Value,
+        RemoveName = nameof(Model.RemovePassword),
+        RemoveLabel = T["Remove the password"].Value,
+    })" />
+}
+else if (Model.Authentication == DataPipelineHttpAuthentication.Bearer)
+{
+    <partial name="DataPipelineSecretInput" model="@(new DataPipelineSecretInputViewModel
+    {
+        Name = nameof(Model.Token),
+        Label = T["Token"].Value,
+        Hint = T["Sent in the Authorization header, after Bearer."].Value,
+        HasValue = Model.HasToken,
+        KeepHint = T["Leave empty to keep the current token."].Value,
+        RemoveName = nameof(Model.RemoveToken),
+        RemoveLabel = T["Remove the token"].Value,
+    })" />
+}
+else if (Model.Authentication == DataPipelineHttpAuthentication.ApiKey)
+{
+    <div class="ocat-wrapper" asp-validation-class-for="ApiKeyHeaderName">
+        <label asp-for="ApiKeyHeaderName" class="ocat-label ocat-label-required">@T["Header"]</label>
+        <div class="ocat-end">
+            <input asp-for="ApiKeyHeaderName" class="form-control" placeholder="X-API-Key" />
+            <span asp-validation-for="ApiKeyHeaderName"></span>
+        </div>
+    </div>
+
+    <partial name="DataPipelineSecretInput" model="@(new DataPipelineSecretInputViewModel
+    {
+        Name = nameof(Model.ApiKey),
+        Label = T["API key"].Value,
+        HasValue = Model.HasApiKey,
+        KeepHint = T["Leave empty to keep the current API key."].Value,
+        RemoveName = nameof(Model.RemoveApiKey),
+        RemoveLabel = T["Remove the API key"].Value,
+    })" />
+}
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TimeoutSeconds">
+    <label asp-for="TimeoutSeconds" class="ocat-label">@T["Timeout (seconds)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="TimeoutSeconds" type="number" min="1" class="form-control" />
+        <span asp-validation-for="TimeoutSeconds"></span>
+        <span class="hint">@T["How long to wait for the answer to each request."]</span>
+    </div>
+</div>

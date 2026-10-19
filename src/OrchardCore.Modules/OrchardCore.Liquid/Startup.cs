@@ -2,6 +2,7 @@ using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,12 +15,16 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Endpoints.Scripts;
 using OrchardCore.Liquid.Filters;
+using OrchardCore.Liquid.Fields;
 using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
+using OrchardCore.Liquid.DataMigrations;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
+using OrchardCore.Liquid.Security;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Liquid;
 
@@ -33,6 +38,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+        services.AddPermissionProvider<Permissions>();
 
         services.Configure<TemplateOptions>(options =>
         {
@@ -41,6 +47,8 @@ public sealed class Startup : StartupBase
             options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
 
             options.MemberAccessStrategy.Register<LiquidPartViewModel>();
+            options.MemberAccessStrategy.Register<LiquidField>();
+            options.MemberAccessStrategy.Register<LiquidFieldViewModel>();
 
             // Used to provide a factory to return a value based on a property name that is unknown at registration time.
             options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
@@ -105,8 +113,14 @@ public sealed class LiquidPartStartup : StartupBase
             .UseDisplayDriver<LiquidPartDisplayDriver>()
             .AddHandler<LiquidPartHandler>();
 
+        services.AddContentField<LiquidField>()
+            .UseDisplayDriver<LiquidFieldDisplayDriver>()
+            .AddHandler<LiquidFieldHandler>();
+
+        services.AddScoped<IAuthorizationHandler, LiquidContentAuthorizationHandler>();
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
+        services.AddScoped<IContentFieldIndexHandler, LiquidFieldIndexHandler>();
     }
 }
 
@@ -116,6 +130,15 @@ public sealed class ShortcodesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddLiquidFilter<ShortcodeFilter>("shortcode");
+    }
+}
+
+[RequireFeatures("OrchardCore.Roles")]
+public sealed class RolesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<PermissionMigrations>();
     }
 }
 
