@@ -123,7 +123,8 @@ public static class DataAggregations
     }
 
     /// <summary>
-    /// Counts the distinct values that are present.
+    /// Counts the distinct values that are present. Values compare like the keys of groups (see <see cref="DataKeys"/>):
+    /// numbers by value, and text exactly.
     /// </summary>
     /// <param name="values">The values.</param>
     /// <returns>The count.</returns>
@@ -135,7 +136,7 @@ public static class DataAggregations
         {
             if (value is not null)
             {
-                keys.Add(DataValues.ToKey(value));
+                keys.Add(DataKeys.Build([value], [0], ignoreCase: false));
             }
         }
 

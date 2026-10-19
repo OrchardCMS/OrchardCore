@@ -61,6 +61,8 @@ It defines the following widgets:
 - Save
 - Share
 
+The `FacebookPluginPart` body is an executable Liquid template. Editing it requires the security-critical `ManageLiquidTemplates` permission. This permission is also required to edit or publish content containing this part, including widgets embedded recursively inside other content items.
+
 ## Meta Pixel
 
 This feature provides you a way to add Meta Pixel tracking to your site. Simply navigate to _Settings -> Integrations -> Meta Pixel_ settings and provide your `Pixel Identifier`.
