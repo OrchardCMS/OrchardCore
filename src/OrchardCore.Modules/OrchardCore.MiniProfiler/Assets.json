@@ -1,15 +1,15 @@
 [
   {
     "action": "sass",
-    "name": "miniprofiler-admin",
-    "source": "Assets/scss/miniprofiler-admin.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "name": "miniprofiler",
+    "source": "Assets/scss/miniprofiler.scss",
+    "tags": ["miniprofiler", "css"]
   },
   {
     "action": "parcel",
-    "name": "miniprofiler-admin",
-    "source": "Assets/ts/miniprofiler-admin.ts",
-    "dest": "wwwroot/Scripts/miniprofiler-admin/",
-    "tags": ["admin", "dashboard", "js"]
+    "name": "miniprofiler",
+    "source": "Assets/ts/miniprofiler.ts",
+    "dest": "wwwroot/Scripts/miniprofiler/",
+    "tags": ["miniprofiler", "js"]
   }
 ]

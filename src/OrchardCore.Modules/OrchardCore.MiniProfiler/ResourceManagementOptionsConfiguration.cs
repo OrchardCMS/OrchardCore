@@ -12,13 +12,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         s_manifest = new ResourceManifest();
 
         s_manifest
-            .DefineStyle("miniprofiler-admin")
-            .SetUrl("~/OrchardCore.MiniProfiler/Styles/miniprofiler-admin.min.css", "~/OrchardCore.MiniProfiler/Styles/miniprofiler-admin.css")
+            .DefineStyle("miniprofiler")
+            .SetUrl("~/OrchardCore.MiniProfiler/Styles/miniprofiler.min.css", "~/OrchardCore.MiniProfiler/Styles/miniprofiler.css")
             .SetVersion("1.0.0");
 
         s_manifest
-            .DefineScript("miniprofiler-admin")
-            .SetUrl("~/OrchardCore.MiniProfiler/Scripts/miniprofiler-admin/miniprofiler-admin.min.js", "~/OrchardCore.MiniProfiler/Scripts/miniprofiler-admin/miniprofiler-admin.js")
+            .DefineScript("miniprofiler")
+            .SetUrl("~/OrchardCore.MiniProfiler/Scripts/miniprofiler/miniprofiler.min.js", "~/OrchardCore.MiniProfiler/Scripts/miniprofiler/miniprofiler.js")
             .SetVersion("1.0.0");
     }
 

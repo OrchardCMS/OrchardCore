@@ -35,6 +35,13 @@ Click a timing in the widget to inspect the request. In addition to MiniProfiler
 - `Shape: <shape-type>` steps for shapes rendered through display management.
 - SQL custom timings from the YesSql connection used by the tenant.
 
+Click the SQL duration of a timing to open the queries view. It lists the commands of the request in the order they ran, numbered from `#1`, each with its duration, its start time from the beginning of the request, the time to its first result, and the step that ran it. Hover a badge to read more about it:
+
+- **Duplicate** marks a command whose text already ran earlier in the same request. Repeated commands often point to a missing cache, or to a query inside a loop.
+- **Error** marks a command that threw an exception.
+
+The rows between the queries tell how long the request ran without queries, and which step spent most of that time. In the timing tree and on the widget button, a red `!` marks the steps and requests that run duplicate or failing commands.
+
 Requests that do not render an Orchard layout, such as APIs and decoupled responses, are still profiled but do not receive a widget. The widget also requires the active theme or admin theme to render the `Footer` zone.
 
 ## Configure MiniProfiler

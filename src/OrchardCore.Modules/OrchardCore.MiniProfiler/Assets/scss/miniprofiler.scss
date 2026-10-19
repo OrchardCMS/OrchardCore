@@ -1,0 +1,194 @@
+// Docks the MiniProfiler widget to the middle of the right edge of admin pages, behind a toggle that tucks it away.
+.mp-results.oc-mp-docked {
+    top: 0;
+    bottom: 0;
+    height: fit-content;
+    margin: auto 0;
+
+    .oc-mp-toggle {
+        display: block;
+        width: 100%;
+        min-width: 1.5rem;
+        padding: 0 6px;
+        border: 0;
+        border-top: var(--mp-result-border);
+        border-bottom: var(--mp-result-border);
+        border-left: var(--mp-result-border);
+        border-top-left-radius: var(--mp-result-border-radius);
+        background-color: var(--mp-main-bg-color);
+        color: var(--mp-muted-color);
+        font: 16px/1.25 sans-serif;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--mp-link-color);
+        }
+    }
+
+    .mp-result:last-child .mp-button {
+        border-bottom-left-radius: var(--mp-result-border-radius);
+    }
+
+    &.oc-mp-collapsed {
+        .oc-mp-toggle {
+            padding: 12px 4px;
+            border-bottom-left-radius: var(--mp-result-border-radius);
+
+            // Keep a warning visible while the profiles that carry it are tucked away.
+            &.oc-mp-warning {
+                background-color: var(--mp-button-warning-bg-color);
+                color: var(--mp-button-warning-text-color);
+            }
+        }
+
+        .mp-result,
+        .mp-controls {
+            display: none;
+        }
+    }
+
+    // MiniProfiler opens a popup downward from its button, which leaves half the screen when the button sits in the middle.
+    // Center it on the space below the admin's top navbar instead, as narrow as its content like MiniProfiler's own layout.
+    .mp-popup {
+        position: fixed;
+        top: calc(50% + var(--oc-top-nav-height, 0px) / 2) !important;
+        transform: translateY(-50%);
+        width: min-content;
+        max-width: calc(100vw - 8rem);
+        max-height: calc(100vh - var(--oc-top-nav-height, 0px) - 2rem) !important;
+
+        .mp-timings .mp-label {
+            max-width: 32rem;
+        }
+    }
+}
+
+// Make the timing tree easier to scan: request pipeline steps stand out, shapes read as plain names, and views fade back.
+.mp-results .mp-popup {
+    .oc-mp-kind {
+        color: var(--mp-muted-color);
+        font-weight: normal;
+    }
+
+    .oc-mp-step .mp-label {
+        color: var(--mp-duration-color);
+        font-weight: 600;
+    }
+
+    .oc-mp-view .oc-mp-name {
+        opacity: 0.7;
+    }
+
+    // The red "!" next to a query count, for the steps that run duplicate or failing commands.
+    .oc-mp-flag {
+        margin-left: 3px;
+        font-weight: bold;
+        cursor: help;
+    }
+}
+
+// The queries view, which MiniProfiler shows in an overlay outside of the docked widget.
+.mp-queries.oc-mp-queries {
+    td:first-child,
+    th:first-child {
+        width: 18rem;
+        text-align: left;
+    }
+
+    td:first-child div,
+    th:first-child div {
+        margin-bottom: 0;
+        text-align: left;
+        word-break: normal;
+    }
+
+    .oc-mp-heading {
+        font-weight: bold;
+    }
+
+    .oc-mp-hint {
+        margin-top: 3px;
+        color: var(--mp-muted-color);
+        font-weight: normal;
+    }
+
+    .oc-mp-query {
+        td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        // Mark the rows of duplicate and failing commands on their edge, to find them while scrolling.
+        &.oc-mp-duplicate td:first-child,
+        &.oc-mp-errored td:first-child {
+            box-shadow: inset 3px 0 0 var(--mp-critical-color);
+        }
+    }
+
+    .oc-mp-query-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 6px;
+        margin-bottom: 8px;
+    }
+
+    .oc-mp-query-number {
+        color: var(--mp-muted-color);
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .oc-mp-call-type,
+    .oc-mp-badge {
+        padding: 2px 7px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: bold;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .oc-mp-call-type {
+        border: 1px solid var(--mp-query-border-color);
+    }
+
+    .oc-mp-badge {
+        background-color: var(--mp-button-warning-bg-color);
+        color: var(--mp-button-warning-text-color);
+        cursor: help;
+    }
+
+    .oc-mp-facts {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 4px 10px;
+        line-height: 1.35;
+    }
+
+    .oc-mp-fact-label,
+    .oc-mp-kind {
+        color: var(--mp-muted-color);
+    }
+
+    .oc-mp-fact-value {
+        font-variant-numeric: tabular-nums;
+    }
+
+    // Gap rows read as quiet dividers between the queries.
+    .mp-gap-info {
+        font-size: 11px;
+        font-style: italic;
+
+        td {
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .query {
+            word-break: normal;
+        }
+    }
+}
