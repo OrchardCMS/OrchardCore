@@ -16,7 +16,6 @@ public sealed class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisp
             var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
             model.SanitizeHtml = settings.SanitizeHtml;
-            model.RenderLiquid = settings.RenderLiquid;
             model.Hint = settings.Hint;
         }).Location("Content:20");
     }
@@ -29,7 +28,6 @@ public sealed class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisp
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         settings.SanitizeHtml = model.SanitizeHtml;
-        settings.RenderLiquid = model.RenderLiquid;
         settings.Hint = model.Hint;
 
         context.Builder.WithSettings(settings);

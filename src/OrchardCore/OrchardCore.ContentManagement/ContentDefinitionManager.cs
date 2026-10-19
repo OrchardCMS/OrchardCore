@@ -195,11 +195,12 @@ public class ContentDefinitionManager : IContentDefinitionManager
             document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
             document.ContentPartDefinitionRecords);
 
+    // The factories don't capture the document, so that a closure is not allocated when the definition is already built.
     private ContentTypeDefinition GetTypeDefinition(ContentDefinitionRecord document, string name) =>
-        _cachedTypeDefinitions.GetOrAdd(name, name => Build(
+        _cachedTypeDefinitions.GetOrAdd(name, static (name, state) => state.Manager.Build(
             name,
-            document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-            document.ContentPartDefinitionRecords));
+            state.Document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
+            state.Document.ContentPartDefinitionRecords), (Manager: this, Document: document));
 
     private ContentPartDefinition LoadPartDefinition(ContentDefinitionRecord document, string name) =>
         !_scopedPartDefinitions.TryGetValue(name, out var partDefinition)
@@ -209,9 +210,9 @@ public class ContentDefinitionManager : IContentDefinitionManager
         : partDefinition;
 
     private ContentPartDefinition GetPartDefinition(ContentDefinitionRecord document, string name) =>
-        _cachedPartDefinitions.GetOrAdd(name, name => Build(
+        _cachedPartDefinitions.GetOrAdd(name, static (name, state) => state.Manager.Build(
             name,
-            document.ContentPartDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name))));
+            state.Document.ContentPartDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name))), (Manager: this, Document: document));
 
     private static ContentTypeDefinitionRecord Acquire(
         ContentDefinitionRecord document,

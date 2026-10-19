@@ -82,7 +82,9 @@ public sealed class AdminController : Controller
         S = stringLocalizer;
     }
 
-    public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
+    public async Task<ActionResult> Index(
+        [ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult,
+        PagerParameters pagerParameters)
     {
         // Check a dummy user account to see if the current user has permission to view users.
         if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ListUsers, new User()))
@@ -117,17 +119,6 @@ public sealed class AdminController : Controller
             .ListAsync();
 
         var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
-
-        var userEntries = new List<UserEntry>();
-
-        foreach (var user in results)
-        {
-            userEntries.Add(new UserEntry
-            {
-                UserId = user.UserId,
-                Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin"),
-            });
-        }
 
         options.UserFilters =
         [
@@ -181,18 +172,27 @@ public sealed class AdminController : Controller
         // Populate options pager summary values.
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + userEntries.Count - 1;
-        options.UsersCount = userEntries.Count;
+        options.EndIndex = startIndex + results.Count - 1;
+        options.UsersCount = results.Count;
         options.TotalItemCount = count;
 
         var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the users with the configured layout (List, Grid, ...).
+        var list = new AdminListContext<User>
+        {
+            Source = results,
+            Header = header,
+            Pager = pagerShape,
+        };
+
         var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
         {
-            viewModel.Users = userEntries;
+            viewModel.Users = results.ToList();
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
+            viewModel.List = list;
         });
 
         return View(shapeViewModel);

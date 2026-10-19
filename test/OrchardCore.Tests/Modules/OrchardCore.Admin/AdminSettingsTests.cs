@@ -1,10 +1,31 @@
 using System.Text.Json;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
 public class AdminSettingsTests
 {
+    [Theory]
+    [InlineData("Buttons", AdminListActionsLayout.Buttons)]
+    [InlineData("Menu", AdminListActionsLayout.Menu)]
+    public void Deserialize_ActionsLayout_ReadsEnumByName(string value, AdminListActionsLayout expected)
+    {
+        var settings = JsonSerializer.Deserialize<AdminSettings>($$"""{ "ListActionsLayout": "{{value}}" }""", JOptions.Default);
+
+        Assert.Equal(expected, settings.ListActionsLayout);
+        var json = JsonSerializer.Serialize(settings, JOptions.Default);
+        Assert.Equal(expected, JsonSerializer.Deserialize<AdminSettings>(json, JOptions.Default).ListActionsLayout);
+    }
+
+    [Fact]
+    public void Deserialize_NoActionsChoice_InheritsConfiguration()
+    {
+        var settings = JsonSerializer.Deserialize<AdminSettings>("{}", JOptions.Default);
+
+        Assert.Null(settings.ListActionsLayout);
+    }
+
     // The default of the navigation menu behavior is the first member of its enum, not an
     // attribute or an initializer: reordering the members would silently change it.
     [Fact]

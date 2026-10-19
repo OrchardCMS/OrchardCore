@@ -48,7 +48,6 @@ public sealed class AdminController : Controller
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
-    private readonly IDisplayManager<RateLimitPolicy> _policyDisplayManager;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -62,7 +61,6 @@ public sealed class AdminController : Controller
         IShellReleaseManager shellReleaseManager,
         EndpointDataSource endpointDataSource,
         IOptions<RateLimitsOptions> rateLimitsOptions,
-        IDisplayManager<RateLimitPolicy> policyDisplayManager,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -74,7 +72,6 @@ public sealed class AdminController : Controller
         _shellReleaseManager = shellReleaseManager;
         _endpointDataSource = endpointDataSource;
         _rateLimitsOptions = rateLimitsOptions.Value;
-        _policyDisplayManager = policyDisplayManager;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -118,11 +115,8 @@ public sealed class AdminController : Controller
 
         var model = new RateLimitsIndexViewModel
         {
+            Policies = pagedPolicies,
             SearchText = searchText,
-            Policies =
-            [
-                .. await Task.WhenAll(pagedPolicies.Select(BuildPolicyEntryAsync)),
-            ],
             BuiltInRouteLimits = BuildBuiltInRouteLimits(),
             BuiltInGroupLimits = BuildBuiltInGroupLimits(),
             BulkActions =
@@ -134,6 +128,22 @@ public sealed class AdminController : Controller
             Pager = totalCount > pager.PageSize
                 ? await shapeFactory.PagerAsync(pager, totalCount, routeData)
                 : null,
+        };
+
+        // Each bulk action carries its own warning about the website restarting, so the list uses the
+        // module's own toolbar rather than the generic AdminListToolbar.
+        var toolbar = await shapeFactory.CreateAsync("RateLimitsToolbar", Arguments.From(new
+        {
+            ItemsCount = pagedPolicies.Length,
+            BulkActions = model.BulkActions,
+        }));
+
+        // The AdminList shape renders the policies with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<RateLimitPolicy>
+        {
+            Source = model.Policies,
+            Toolbar = toolbar,
+            Pager = model.Pager,
         };
 
         return View(model);
@@ -420,24 +430,6 @@ public sealed class AdminController : Controller
         }
 
         return RedirectToAction(nameof(Index));
-    }
-
-    private async Task<RateLimitPolicyEntryViewModel> BuildPolicyEntryAsync(RateLimitPolicy policy)
-    {
-        dynamic shape = await _policyDisplayManager.BuildDisplayAsync(policy, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin);
-
-        return new RateLimitPolicyEntryViewModel
-        {
-            PolicyId = policy.PolicyId,
-            ActionsMenu = shape.ActionsMenu,
-            Policy = policy,
-            Name = policy.Name,
-            Description = policy.Description,
-            TargetDescription = DescribeTarget(policy),
-            Status = policy.Status,
-            EnabledUtc = policy.EnabledUtc,
-            IsEnabled = policy.IsEnabled,
-        };
     }
 
     private async Task<RateLimitPolicyEditViewModel> CreateEditViewModelAsync(RateLimitPolicy policy)
@@ -809,17 +801,6 @@ public sealed class AdminController : Controller
         }
 
         return $"{trimmedName} (1)";
-    }
-
-    private string DescribeTarget(RateLimitPolicy policy)
-    {
-        return policy?.Scope switch
-        {
-            RateLimitPolicyScope.Global => S["Applies to every tenant request."],
-            RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, S["Matches requests starting with '{0}'."], policy.Path),
-            RateLimitPolicyScope.Group => string.Format(CultureInfo.CurrentCulture, S["Matches endpoints in the '{0}' group."], policy.GroupName),
-            _ => string.Empty,
-        };
     }
 
     private static IEnumerable<string> GetRateLimitGroups(Endpoint endpoint)
