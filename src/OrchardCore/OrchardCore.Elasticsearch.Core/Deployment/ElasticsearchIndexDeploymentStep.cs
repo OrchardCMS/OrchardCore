@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,15 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => ElasticsearchLocalizationSources.ElasticsearchSearchIndexes;
+
     public ElasticsearchIndexDeploymentStep()
     {
         Name = "ElasticIndexSettings";
-        Category = CommonLocalizationSources.Search;
-        Title = ElasticsearchLocalizationSources.ElasticsearchSearchIndexes;
     }
 
     public bool IncludeAll { get; set; } = true;

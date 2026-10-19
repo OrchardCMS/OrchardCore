@@ -61,8 +61,11 @@ Strings declared before a localizer is available, such as deployment step catego
 - Keep permission descriptions in their `*Permissions` class, and strings specific to a view in the view, with `T`.
 
 ```csharp
-Category = CommonLocalizationSources.Search;
-Title = LuceneLocalizationSources.LuceneSearchIndexes;
+[JsonIgnore] // Not inherited from the base property; LocalizationSource can't be serialized.
+public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+[JsonIgnore]
+public override LocalizationSource Title => LuceneLocalizationSources.LuceneSearchIndexes;
 ```
 
 The PO context is the class that declares the source, for example `msgctxt "OrchardCore.Localization.CommonLocalizationSources"`.

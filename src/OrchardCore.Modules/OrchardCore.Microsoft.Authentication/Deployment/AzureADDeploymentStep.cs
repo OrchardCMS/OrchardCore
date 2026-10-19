@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,9 +9,11 @@ namespace OrchardCore.Microsoft.Authentication.Deployment;
 /// </summary>
 public class AzureADDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => MicrosoftAuthenticationLocalizationSources.MicrosoftAuthentication;
+
     public AzureADDeploymentStep()
     {
         Name = "Microsoft Entra ID";
-        Category = MicrosoftAuthenticationLocalizationSources.MicrosoftAuthentication;
     }
 }

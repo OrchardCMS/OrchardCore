@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,15 @@ namespace OrchardCore.Features.Deployment;
 /// </summary>
 public class AllFeaturesDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Infrastructure;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => FeaturesLocalizationSources.AllFeatures;
+
     public AllFeaturesDeploymentStep()
     {
         Name = "AllFeatures";
-        Category = CommonLocalizationSources.Infrastructure;
-        Title = FeaturesLocalizationSources.AllFeatures;
     }
 
     public bool IgnoreDisabledFeatures { get; set; }

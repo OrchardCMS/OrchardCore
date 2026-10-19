@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,15 @@ namespace OrchardCore.Templates.Deployment;
 /// </summary>
 public class AllTemplatesDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Development;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => TemplatesLocalizationSources.AllTemplates;
+
     public AllTemplatesDeploymentStep()
     {
         Name = "AllTemplates";
-        Category = CommonLocalizationSources.Development;
-        Title = TemplatesLocalizationSources.AllTemplates;
     }
     public bool ExportAsFiles { get; set; }
 }

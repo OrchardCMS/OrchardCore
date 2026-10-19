@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -9,11 +10,15 @@ namespace OrchardCore.DataPipelines.Deployment;
 /// </summary>
 public class DataPipelinesDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Data;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => DataPipelinesLocalizationSources.DataPipelines;
+
     public DataPipelinesDeploymentStep()
     {
         Name = "DataPipelines";
-        Category = CommonLocalizationSources.Data;
-        Title = DataPipelinesLocalizationSources.DataPipelines;
     }
 
     /// <summary>

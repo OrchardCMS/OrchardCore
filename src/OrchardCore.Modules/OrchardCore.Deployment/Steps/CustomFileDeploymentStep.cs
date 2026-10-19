@@ -1,5 +1,6 @@
 using OrchardCore.Localization;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Deployment.Steps;
 
@@ -8,11 +9,15 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class CustomFileDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Deployment;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => DeploymentLocalizationSources.CustomFile;
+
     public CustomFileDeploymentStep()
     {
         Name = nameof(CustomFileDeploymentStep);
-        Category = CommonLocalizationSources.Deployment;
-        Title = DeploymentLocalizationSources.CustomFile;
     }
 
     [Required]

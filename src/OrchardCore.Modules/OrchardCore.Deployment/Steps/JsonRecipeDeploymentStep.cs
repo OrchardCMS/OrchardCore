@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Steps;
@@ -7,11 +8,15 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class JsonRecipeDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Deployment;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => DeploymentLocalizationSources.JsonRecipe;
+
     public JsonRecipeDeploymentStep()
     {
         Name = "JsonRecipe";
-        Category = CommonLocalizationSources.Deployment;
-        Title = DeploymentLocalizationSources.JsonRecipe;
     }
 
     public string Json { get; set; }

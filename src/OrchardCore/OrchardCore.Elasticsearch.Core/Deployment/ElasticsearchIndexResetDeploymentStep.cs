@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,15 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexResetDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => ElasticsearchLocalizationSources.ResetElasticsearchIndices;
+
     public ElasticsearchIndexResetDeploymentStep()
     {
         Name = "ElasticIndexReset";
-        Category = CommonLocalizationSources.Search;
-        Title = ElasticsearchLocalizationSources.ResetElasticsearchIndices;
     }
 
     public bool IncludeAll { get; set; } = true;

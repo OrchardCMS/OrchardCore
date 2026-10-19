@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -5,11 +6,15 @@ namespace OrchardCore.ContentTypes.Deployment;
 
 public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => ContentTypesLocalizationSources.ReplaceContentDefinitions;
+
     public ReplaceContentDefinitionDeploymentStep()
     {
         Name = "ReplaceContentDefinition";
-        Category = CommonLocalizationSources.ContentManagement;
-        Title = ContentTypesLocalizationSources.ReplaceContentDefinitions;
     }
 
     public bool IncludeAll { get; set; }

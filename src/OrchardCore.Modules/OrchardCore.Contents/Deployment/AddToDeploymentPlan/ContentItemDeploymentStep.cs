@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,10 +9,12 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 /// </summary>
 public class ContentItemDeploymentStep : DeploymentStep
 {
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
     public ContentItemDeploymentStep()
     {
         Name = nameof(ContentItemDeploymentStep);
-        Category = CommonLocalizationSources.ContentManagement;
     }
 
     public string ContentItemId { get; set; }
