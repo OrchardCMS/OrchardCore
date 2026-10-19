@@ -12,4 +12,7 @@ internal static class WorkflowsLocalizationSources
 {
     /// <summary>Gets the "All Workflow Types" text.</summary>
     public static readonly LocalizationSource AllWorkflowTypes = LocalizationSource.Create("All Workflow Types", typeof(WorkflowsLocalizationSources));
+
+    /// <summary>Gets the "Workflows" text.</summary>
+    public static readonly LocalizationSource Workflows = LocalizationSource.Create("Workflows", typeof(WorkflowsLocalizationSources));
 }

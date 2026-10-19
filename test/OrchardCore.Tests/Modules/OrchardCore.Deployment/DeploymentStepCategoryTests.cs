@@ -27,17 +27,17 @@ public class DeploymentStepCategoryTests
     }
 
     [Theory]
-    [InlineData(typeof(IndexProfileDeploymentStep), "Indexing", "Index Profiles", "OrchardCore.Indexing.Core.IndexingLocalizationSources")]
-    [InlineData(typeof(AllContentDeploymentStep), "Content Management", "All Content", "OrchardCore.Contents.ContentsLocalizationSources")]
-    [InlineData(typeof(DeploymentPlanDeploymentStep), "Deployment", "Deployment Plans", "OrchardCore.Deployment.DeploymentLocalizationSources")]
-    public void Create_FromFactory_SetsUntranslatedCategoryAndTitle(Type stepType, string category, string title, string titleContext)
+    [InlineData(typeof(IndexProfileDeploymentStep), "Indexing", "OrchardCore.Indexing.Core.IndexingLocalizationSources", "Index Profiles", "OrchardCore.Indexing.Core.IndexingLocalizationSources")]
+    [InlineData(typeof(AllContentDeploymentStep), "Content Management", "OrchardCore.Localization.CommonLocalizationSources", "All Content", "OrchardCore.Contents.ContentsLocalizationSources")]
+    [InlineData(typeof(DeploymentPlanDeploymentStep), "Deployment", "OrchardCore.Deployment.DeploymentLocalizationSources", "Deployment Plans", "OrchardCore.Deployment.DeploymentLocalizationSources")]
+    public void Create_FromFactory_SetsUntranslatedCategoryAndTitle(Type stepType, string category, string categoryContext, string title, string titleContext)
     {
         // Act
         var step = CreateStep(stepType);
 
         // Assert
         Assert.Equal(category, step.Category.Value);
-        Assert.Equal(typeof(CommonLocalizationSources), step.Category.Type);
+        Assert.Equal(categoryContext, step.Category.Type.FullName);
         Assert.Equal(title, step.Title.Value);
         Assert.Equal(titleContext, step.Title.Type.FullName);
     }
@@ -55,7 +55,6 @@ public class DeploymentStepCategoryTests
     }
 
     [Theory]
-    [InlineData(typeof(IndexProfileDeploymentStep), "Indexing", "Indexation")]
     [InlineData(typeof(AllContentDeploymentStep), "Content Management", "Gestion du contenu")]
     [InlineData(typeof(AllRolesDeploymentStep), "Security", "Sécurité")]
     public void LocalizeCategory_TranslationInCommonContext_ReturnsTranslation(Type stepType, string category, string translation)
@@ -71,6 +70,22 @@ public class DeploymentStepCategoryTests
 
         // Assert
         Assert.Equal(translation, localized.Value);
+    }
+
+    [Fact]
+    public void LocalizeCategory_TranslationInModuleContext_ReturnsTranslation()
+    {
+        // Arrange
+        var step = CreateStep(typeof(IndexProfileDeploymentStep));
+        var localizerFactory = CreateLocalizerFactory("fr", new CultureDictionaryRecord("Indexing", "OrchardCore.Indexing.Core.IndexingLocalizationSources", ["Indexation"]));
+
+        using var scope = CultureScope.Create("fr");
+
+        // Act
+        var localized = localizerFactory.Localize(step.Category);
+
+        // Assert
+        Assert.Equal("Indexation", localized.Value);
     }
 
     [Fact]

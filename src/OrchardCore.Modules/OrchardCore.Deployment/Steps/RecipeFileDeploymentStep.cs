@@ -11,7 +11,7 @@ public class RecipeFileDeploymentStep : DeploymentStep
     public override string Name => nameof(RecipeFileDeploymentStep);
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Deployment;
+    public override LocalizationSource Category => DeploymentLocalizationSources.Deployment;
 
     [JsonIgnore]
     public override LocalizationSource Title => DeploymentLocalizationSources.RecipeFile;

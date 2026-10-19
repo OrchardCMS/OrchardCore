@@ -12,5 +12,5 @@ public class ThemesDeploymentStep : DeploymentStep
     public override string Name => "Themes";
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Theming;
+    public override LocalizationSource Category => ThemesLocalizationSources.Theming;
 }

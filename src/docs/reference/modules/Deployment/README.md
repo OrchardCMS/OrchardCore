@@ -94,7 +94,7 @@ services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDis
 
 The step model overrides its `Name`, `Category`, and `Title` properties. The name is persisted with the plan, and the category and the title are `LocalizationSource` instances that are translated when they are shown:
 
-- The category groups the step in the list of steps that can be added to a plan. Use a category of `CommonLocalizationSources`, such as `CommonLocalizationSources.ContentManagement`, `Security`, or `Search`, so that the step is listed with the other steps of the same category and the category is translated once.
+- The category groups the step in the list of steps that can be added to a plan. Use a category of `CommonLocalizationSources` when the steps of several modules share it, such as `CommonLocalizationSources.ContentManagement`, `Security`, or `Search`, so that the step is listed with the other steps of the same category and the category is translated once. A category used only by the steps of one module, such as "Workflows", is declared in the module's class.
 - The title is the display name of the step. It is shown as the heading of the step's add and edit screens, and in their breadcrumb, so the screens do not need an `<h5>` of their own. Declare it in the class of the module's localization sources.
 
 ```csharp

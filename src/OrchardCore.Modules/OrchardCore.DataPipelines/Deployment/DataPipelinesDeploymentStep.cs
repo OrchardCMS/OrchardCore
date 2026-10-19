@@ -13,7 +13,7 @@ public class DataPipelinesDeploymentStep : DeploymentStep
     public override string Name => "DataPipelines";
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Data;
+    public override LocalizationSource Category => DataPipelinesLocalizationSources.Data;
 
     [JsonIgnore]
     public override LocalizationSource Title => DataPipelinesLocalizationSources.DataPipelines;

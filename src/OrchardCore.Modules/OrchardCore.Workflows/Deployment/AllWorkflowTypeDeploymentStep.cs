@@ -9,7 +9,7 @@ public class AllWorkflowTypeDeploymentStep : DeploymentStep
     public override string Name => "AllWorkflowType";
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Workflows;
+    public override LocalizationSource Category => WorkflowsLocalizationSources.Workflows;
 
     [JsonIgnore]
     public override LocalizationSource Title => WorkflowsLocalizationSources.AllWorkflowTypes;

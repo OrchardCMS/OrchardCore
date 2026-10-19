@@ -13,6 +13,9 @@ internal static class DeploymentLocalizationSources
     /// <summary>Gets the "Custom File" text.</summary>
     public static readonly LocalizationSource CustomFile = LocalizationSource.Create("Custom File", typeof(DeploymentLocalizationSources));
 
+    /// <summary>Gets the "Deployment" text.</summary>
+    public static readonly LocalizationSource Deployment = LocalizationSource.Create("Deployment", typeof(DeploymentLocalizationSources));
+
     /// <summary>Gets the "Deployment Plans" text.</summary>
     public static readonly LocalizationSource DeploymentPlans = LocalizationSource.Create("Deployment Plans", typeof(DeploymentLocalizationSources));
 

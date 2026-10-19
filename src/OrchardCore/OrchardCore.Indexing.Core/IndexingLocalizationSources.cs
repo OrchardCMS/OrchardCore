@@ -13,6 +13,9 @@ internal static class IndexingLocalizationSources
     /// <summary>Gets the "Index Profiles" text.</summary>
     public static readonly LocalizationSource IndexProfiles = LocalizationSource.Create("Index Profiles", typeof(IndexingLocalizationSources));
 
+    /// <summary>Gets the "Indexing" text.</summary>
+    public static readonly LocalizationSource Indexing = LocalizationSource.Create("Indexing", typeof(IndexingLocalizationSources));
+
     /// <summary>Gets the "Rebuild Indexes" text.</summary>
     public static readonly LocalizationSource RebuildIndexes = LocalizationSource.Create("Rebuild Indexes", typeof(IndexingLocalizationSources));
 

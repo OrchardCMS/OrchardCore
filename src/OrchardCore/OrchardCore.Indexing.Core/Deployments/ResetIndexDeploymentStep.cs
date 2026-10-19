@@ -10,7 +10,7 @@ public sealed class ResetIndexDeploymentStep : DeploymentStep
     public override string Name => ResetIndexStep.Key;
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Indexing;
+    public override LocalizationSource Category => IndexingLocalizationSources.Indexing;
 
     [JsonIgnore]
     public override LocalizationSource Title => IndexingLocalizationSources.ResetIndexes;

@@ -10,6 +10,9 @@ namespace OrchardCore.DataPipelines;
 /// </remarks>
 internal static class DataPipelinesLocalizationSources
 {
+    /// <summary>Gets the "Data" text.</summary>
+    public static readonly LocalizationSource Data = LocalizationSource.Create("Data", typeof(DataPipelinesLocalizationSources));
+
     /// <summary>Gets the "Data Pipelines" text.</summary>
     public static readonly LocalizationSource DataPipelines = LocalizationSource.Create("Data Pipelines", typeof(DataPipelinesLocalizationSources));
 }

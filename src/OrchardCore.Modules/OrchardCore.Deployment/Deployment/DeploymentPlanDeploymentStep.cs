@@ -11,7 +11,7 @@ public class DeploymentPlanDeploymentStep : DeploymentStep
     public override string Name => "DeploymentPlan";
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Deployment;
+    public override LocalizationSource Category => DeploymentLocalizationSources.Deployment;
 
     [JsonIgnore]
     public override LocalizationSource Title => DeploymentLocalizationSources.DeploymentPlans;

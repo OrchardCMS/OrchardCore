@@ -2,7 +2,6 @@ using AngleSharp.Html.Dom;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Deployment.Steps;
-using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.Localization;
@@ -16,19 +15,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Deployment;
 /// </summary>
 public class DeploymentStepLocalizationTests
 {
-    private const string TitleContext = "OrchardCore.Deployment.DeploymentLocalizationSources";
-    private static readonly string s_categoryContext = typeof(CommonLocalizationSources).FullName;
+    private const string StepContext = "OrchardCore.Deployment.DeploymentLocalizationSources";
 
     [Fact]
     public async Task StepTitleAndCategory_TwoTenantsAndCultures_UseTheTranslationsOfEachTenantAndCulture()
     {
         // Arrange
         using var tenantA = await CreateTenantAsync(
-            ("fr", [(TitleContext, "Custom File", "Fichier personnalisé A"), (s_categoryContext, "Deployment", "Déploiement A")]),
-            ("de", [(TitleContext, "Custom File", "Benutzerdefinierte Datei A"), (s_categoryContext, "Deployment", "Bereitstellung A")]));
+            ("fr", [(StepContext, "Custom File", "Fichier personnalisé A"), (StepContext, "Deployment", "Déploiement A")]),
+            ("de", [(StepContext, "Custom File", "Benutzerdefinierte Datei A"), (StepContext, "Deployment", "Bereitstellung A")]));
 
         using var tenantB = await CreateTenantAsync(
-            ("fr", [(TitleContext, "Custom File", "Fichier personnalisé B"), (s_categoryContext, "Deployment", "Déploiement B")]));
+            ("fr", [(StepContext, "Custom File", "Fichier personnalisé B"), (StepContext, "Deployment", "Déploiement B")]));
 
         var planA = await CreatePlanAsync(tenantA);
         var planB = await CreatePlanAsync(tenantB);

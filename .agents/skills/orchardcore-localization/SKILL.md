@@ -56,7 +56,7 @@ S.Plural(count, "{0} book", "{0} books");
 
 Strings declared before a localizer is available, such as deployment step categories and titles, are `LocalizationSource` instances translated at display time with `IStringLocalizerFactory.Localize()`. Don't declare them in the class that uses them:
 
-- Use `CommonLocalizationSources` (`OrchardCore.Abstractions`, namespace `OrchardCore.Localization`) for text that means the same thing across modules, such as `CommonLocalizationSources.ContentManagement` or `CommonLocalizationSources.Settings`. Look for an existing member before adding one.
+- Use `CommonLocalizationSources` (`OrchardCore.Abstractions`, namespace `OrchardCore.Localization`) for text that several projects use with the same meaning, such as `CommonLocalizationSources.ContentManagement`, or that is general to every module, such as `CommonLocalizationSources.Settings`. Look for an existing member before adding one. Add a member only when another project uses the text too; a module name or a category used by one project goes in that project's class.
 - Declare the other strings in an `internal static class {Area}LocalizationSources` at the root of the module, for example `LuceneLocalizationSources`, with `LocalizationSource.Create("...", typeof({Area}LocalizationSources))`, which extraction tools can find.
 - Keep permission descriptions in their `*Permissions` class, and strings specific to a view in the view, with `T`.
 

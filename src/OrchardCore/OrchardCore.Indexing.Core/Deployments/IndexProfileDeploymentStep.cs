@@ -10,7 +10,7 @@ public sealed class IndexProfileDeploymentStep : DeploymentStep
     public override string Name => CreateOrUpdateIndexProfileStep.StepKey;
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Indexing;
+    public override LocalizationSource Category => IndexingLocalizationSources.Indexing;
 
     [JsonIgnore]
     public override LocalizationSource Title => IndexingLocalizationSources.IndexProfiles;

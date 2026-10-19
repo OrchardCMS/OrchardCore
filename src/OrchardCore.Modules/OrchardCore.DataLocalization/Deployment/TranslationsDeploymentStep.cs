@@ -12,7 +12,7 @@ public class TranslationsDeploymentStep : DeploymentStep
     public override string Name => "Translations";
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Internationalization;
+    public override LocalizationSource Category => DataLocalizationLocalizationSources.Internationalization;
 
     /// <summary>
     /// Gets or sets whether to include all cultures or selected cultures.

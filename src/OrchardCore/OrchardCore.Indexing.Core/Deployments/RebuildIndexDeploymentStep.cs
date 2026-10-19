@@ -10,7 +10,7 @@ public sealed class RebuildIndexDeploymentStep : DeploymentStep
     public override string Name => RebuildIndexStep.Key;
 
     [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Indexing;
+    public override LocalizationSource Category => IndexingLocalizationSources.Indexing;
 
     [JsonIgnore]
     public override LocalizationSource Title => IndexingLocalizationSources.RebuildIndexes;

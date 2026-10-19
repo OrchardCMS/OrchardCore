@@ -217,7 +217,7 @@ With string localization, no formatting is applied when no arguments are supplie
 
 Because a source is immutable and doesn't depend on a tenant or a culture, it can be declared once and reused wherever the same text has the same meaning. A shared source is translated once, with a single PO entry, and an existing source can be found before a new one is created.
 
-- `CommonLocalizationSources`, in `OrchardCore.Abstractions`, declares the text that is reused across modules, such as `CommonLocalizationSources.ContentManagement` or `CommonLocalizationSources.Settings`. The categories of the deployment steps use it. Its PO context is `OrchardCore.Localization.CommonLocalizationSources`.
+- `CommonLocalizationSources`, in `OrchardCore.Abstractions`, declares the text that is used by several modules, such as `CommonLocalizationSources.ContentManagement`, or that is general to every module, such as `CommonLocalizationSources.Settings`. A source used by a single project, even a general word such as the name of the module, belongs in that project. Its PO context is `OrchardCore.Localization.CommonLocalizationSources`.
 - A module declares its other sources in an internal static class at its root, named after the module, for example `LuceneLocalizationSources` in `OrchardCore.Lucene`. Its PO context is the full name of that class.
 
 ```csharp
