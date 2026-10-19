@@ -279,6 +279,33 @@ public sealed class SharedLinkTests
     }
 
     [Fact]
+    public async Task ListLinks_KindAndResource_ListsOnlyTheLinksOfThatResource()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var now = DateTime.UtcNow;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
+
+            await session.SaveAsync(new SharedLink { LinkId = "first", Kind = "Reports.Report", ResourceId = "sales", CreatedUtc = now.AddMinutes(-2), ExpiresUtc = now.AddDays(1) }, cancellationToken: TestContext.Current.CancellationToken);
+            await session.SaveAsync(new SharedLink { LinkId = "second", Kind = "Reports.Report", ResourceId = "sales", CreatedUtc = now.AddMinutes(-1), ExpiresUtc = now.AddDays(1), RevokedUtc = now }, cancellationToken: TestContext.Current.CancellationToken);
+            await session.SaveAsync(new SharedLink { LinkId = "other-resource", Kind = "Reports.Report", ResourceId = "orders", CreatedUtc = now, ExpiresUtc = now.AddDays(1) }, cancellationToken: TestContext.Current.CancellationToken);
+            await session.SaveAsync(new SharedLink { LinkId = "other-kind", Kind = "Test", ResourceId = "sales", CreatedUtc = now, ExpiresUtc = now.AddDays(1) }, cancellationToken: TestContext.Current.CancellationToken);
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            // Act
+            var links = await scope.ServiceProvider.GetRequiredService<ISharedLinkManager>().ListAsync("Reports.Report", "sales", TestContext.Current.CancellationToken);
+
+            // Assert: the revoked link is listed too, the most recent first.
+            Assert.Equal(["second", "first"], links.Select(link => link.LinkId));
+        });
+    }
+
+    [Fact]
     public async Task ShareDownloadLink_Files_SharesEachFileWithTheRecipients()
     {
         // Arrange
@@ -451,5 +478,7 @@ public sealed class SharedLinkTests
         public Task DeleteAsync(SharedLink link, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
         public Task<(IReadOnlyList<SharedLink> Links, int Count)> ListAsync(string search, int skip, int take, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<SharedLink>> ListAsync(string kind, string resourceId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
     }
 }

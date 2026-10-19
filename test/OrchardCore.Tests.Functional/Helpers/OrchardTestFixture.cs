@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Playwright;
 
 namespace OrchardCore.Tests.Functional.Helpers;
@@ -14,6 +15,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
     private readonly bool _isMvc;
     private readonly string _instanceId;
+    private readonly Action<WebApplicationBuilder> _configure;
 
     private OrchardTestServer _server;
     private IPlaywright _playwright;
@@ -23,10 +25,17 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
 
-    public OrchardTestFixture(bool isMvc = false, string instanceId = null)
+    /// <summary>
+    /// Creates an isolated application and browser fixture.
+    /// </summary>
+    /// <param name="isMvc">Whether to start the MVC application instead of the CMS.</param>
+    /// <param name="instanceId">The fixture's application data and database isolation identifier.</param>
+    /// <param name="configure">Optional CMS host customization applied before startup.</param>
+    public OrchardTestFixture(bool isMvc = false, string instanceId = null, Action<WebApplicationBuilder> configure = null)
     {
         _isMvc = isMvc;
         _instanceId = instanceId;
+        _configure = configure;
     }
 
     private static string ProjectRoot =>
@@ -54,7 +63,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         {
             _server = _isMvc
                 ? await OrchardTestServer.StartMvcAsync(AppDir, AppDataPath)
-                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath, _instanceId);
+                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath, _instanceId, _configure);
 
             BaseUrl = _server.ServerAddress;
         }

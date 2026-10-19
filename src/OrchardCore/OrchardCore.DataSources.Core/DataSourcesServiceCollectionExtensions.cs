@@ -52,7 +52,7 @@ public static class DataSourcesServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="function">The function, created with <see cref="ExpressionFunction.CreateScalar"/> or
-    /// <see cref="ExpressionFunction.CreateAggregate"/>.</param>
+    /// <c>ExpressionFunction.CreateAggregate</c>.</param>
     /// <returns>The service collection.</returns>
     public static IServiceCollection AddExpressionFunction(this IServiceCollection services, ExpressionFunction function)
     {

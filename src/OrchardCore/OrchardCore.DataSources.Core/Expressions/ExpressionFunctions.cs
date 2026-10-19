@@ -158,15 +158,15 @@ public static partial class ExpressionFunctions
 
     private static void AddAggregateFunctions(List<ExpressionFunction> functions)
     {
-        functions.Add(Aggregated("SUM", "SUM(number)", "Adds the values of the group.", true, types => types.Count == 1 && types[0] == DataFieldType.Integer ? DataFieldType.Integer : DataFieldType.Decimal, DataAggregations.Sum));
-        functions.Add(Aggregated("AVG", "AVG(number)", "Averages the values of the group.", true, Returns(DataFieldType.Decimal), DataAggregations.Average));
-        functions.Add(Aggregated("AVERAGE", "AVERAGE(number)", "Same as AVG.", true, Returns(DataFieldType.Decimal), DataAggregations.Average));
-        functions.Add(Aggregated("MEDIAN", "MEDIAN(number)", "Returns the middle value of the group.", true, Returns(DataFieldType.Decimal), DataAggregations.Median));
-        functions.Add(Aggregated("MIN", "MIN(value)", "Returns the smallest value of the group.", false, types => types.Count == 1 ? types[0] : DataFieldType.Text, DataAggregations.Min));
-        functions.Add(Aggregated("MAX", "MAX(value)", "Returns the largest value of the group.", false, types => types.Count == 1 ? types[0] : DataFieldType.Text, DataAggregations.Max));
-        functions.Add(Aggregated("COUNTD", "COUNTD(value)", "Counts the distinct values of the group.", false, Returns(DataFieldType.Integer), values => DataAggregations.CountDistinct(values)));
+        functions.Add(Aggregated("SUM", "SUM(number)", "Adds the values of the group.", true, types => types.Count == 1 && types[0] == DataFieldType.Integer ? DataFieldType.Integer : DataFieldType.Decimal, DataAggregate.Sum));
+        functions.Add(Aggregated("AVG", "AVG(number)", "Averages the values of the group.", true, Returns(DataFieldType.Decimal), DataAggregate.Average));
+        functions.Add(Aggregated("AVERAGE", "AVERAGE(number)", "Same as AVG.", true, Returns(DataFieldType.Decimal), DataAggregate.Average));
+        functions.Add(Aggregated("MEDIAN", "MEDIAN(number)", "Returns the middle value of the group.", true, Returns(DataFieldType.Decimal), DataAggregate.Median));
+        functions.Add(Aggregated("MIN", "MIN(value)", "Returns the smallest value of the group.", false, types => types.Count == 1 ? types[0] : DataFieldType.Text, DataAggregate.Min));
+        functions.Add(Aggregated("MAX", "MAX(value)", "Returns the largest value of the group.", false, types => types.Count == 1 ? types[0] : DataFieldType.Text, DataAggregate.Max));
+        functions.Add(Aggregated("COUNTD", "COUNTD(value)", "Counts the distinct values of the group.", false, Returns(DataFieldType.Integer), DataAggregate.CountDistinct));
 
-        var count = Aggregated("COUNT", "COUNT([value])", "Counts the rows of the group, or the rows where the value is present.", false, Returns(DataFieldType.Integer), values => DataAggregations.Count(values));
+        var count = Aggregated("COUNT", "COUNT([value])", "Counts the rows of the group, or the rows where the value is present.", false, Returns(DataFieldType.Integer), DataAggregate.Count);
 
         functions.Add(new ExpressionFunction
         {
@@ -179,6 +179,7 @@ public static partial class ExpressionFunctions
             IsAggregate = true,
             ReturnType = count.ReturnType,
             Aggregate = count.Aggregate,
+            AggregateFunction = count.AggregateFunction,
         });
     }
 
@@ -201,9 +202,9 @@ public static partial class ExpressionFunctions
         string description,
         bool requiresNumericArgument,
         Func<IReadOnlyList<DataFieldType>, DataFieldType> returnType,
-        Func<IReadOnlyList<object>, object> aggregate)
+        DataAggregate function)
     {
-        return ExpressionFunction.CreateAggregate(name, signature, description, requiresNumericArgument, returnType, aggregate);
+        return ExpressionFunction.CreateAggregate(name, signature, description, requiresNumericArgument, returnType, function);
     }
 
     private static Func<IReadOnlyList<DataFieldType>, DataFieldType> Returns(DataFieldType dataType)

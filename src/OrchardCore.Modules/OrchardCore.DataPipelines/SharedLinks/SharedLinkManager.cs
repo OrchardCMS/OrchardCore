@@ -58,6 +58,11 @@ public sealed class SharedLinkManager : ISharedLinkManager
         ArgumentException.ThrowIfNullOrEmpty(request.Kind);
         ArgumentException.ThrowIfNullOrEmpty(request.ResourceId);
 
+        if (request.ResourceId.Length > SharedLinkIndex.MaxResourceIdLength)
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), S["The identifier of a shared resource has {0} characters at most.", SharedLinkIndex.MaxResourceIdLength]);
+        }
+
         if (request.Lifetime <= TimeSpan.Zero)
         {
             throw new ArgumentOutOfRangeException(nameof(request), S["A link works for a positive duration."]);
@@ -197,6 +202,21 @@ public sealed class SharedLinkManager : ISharedLinkManager
         await LoadUsesAsync(links);
 
         return (links, count);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<SharedLink>> ListAsync(string kind, string resourceId, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(kind);
+        ArgumentException.ThrowIfNullOrEmpty(resourceId);
+
+        var links = (await _session.Query<SharedLink, SharedLinkIndex>(index => index.Kind == kind && index.ResourceId == resourceId)
+            .OrderByDescending(index => index.CreatedUtc)
+            .ListAsync(cancellationToken)).ToList();
+
+        await LoadUsesAsync(links);
+
+        return links;
     }
 
     /// <summary>

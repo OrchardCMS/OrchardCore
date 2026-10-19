@@ -202,6 +202,70 @@ public sealed class RecordDataSourceTests
         Assert.NotSame(field.References, copy.References);
     }
 
+    [Fact]
+    public async Task AggregateAsync_DataSetThatAggregates_ReturnsItsGroups()
+    {
+        // Arrange
+        var query = new DataAggregateQuery
+        {
+            DataSet = "IndexedTickets",
+            Groups = [new DataAggregateGroup { Field = "State" }],
+            Measures = [new DataAggregateMeasure { Function = DataAggregate.Count }],
+            Context = Context(canRead: true),
+        };
+
+        // Act
+        var groups = await new TicketsSource().AggregateAsync(query, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal([["Open", 2L], ["Closed", 1L]], groups);
+    }
+
+    [Fact]
+    public async Task AggregateAsync_DataSetThatDoesNotAggregate_ReturnsNull()
+    {
+        // Arrange
+        var query = new DataAggregateQuery
+        {
+            DataSet = "Tickets",
+            Measures = [new DataAggregateMeasure { Function = DataAggregate.Count }],
+            Context = Context(canRead: true),
+        };
+
+        // Act & Assert
+        Assert.Null(await new TicketsSource().AggregateAsync(query, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task AggregateAsync_UserWhoCannotRead_ReturnsNull()
+    {
+        // Arrange
+        var query = new DataAggregateQuery
+        {
+            DataSet = "IndexedTickets",
+            Measures = [new DataAggregateMeasure { Function = DataAggregate.Count }],
+            Context = Context(canRead: false),
+        };
+
+        // Act & Assert
+        Assert.Null(await new TicketsSource().AggregateAsync(query, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetDataSetsAsync_FieldsWithReferences_ListTheDataSetsTheyReference()
+    {
+        // Act
+        var dataSets = await new TicketsSource().GetDataSetsAsync(Context(canRead: true), TestContext.Current.CancellationToken);
+        var schema = await new TicketsSource().GetSchemaAsync("Assignments", Context(canRead: true), TestContext.Current.CancellationToken);
+
+        // Assert: the two fields that reference tickets list the tickets once.
+        var assignments = Assert.Single(dataSets, dataSet => dataSet.Name == "Assignments");
+        var reference = Assert.Single(assignments.References);
+        Assert.Equal(("Tickets", "Tickets", "Id"), (reference.Source, reference.DataSet, reference.Field));
+        Assert.Single(schema.DataSet.References);
+        Assert.Empty(Assert.Single(dataSets, dataSet => dataSet.Name == "Tickets").References);
+    }
+
     private static DataSourceContext Context(bool canRead)
     {
         var context = new DataSourceContext();
@@ -226,13 +290,18 @@ public sealed class RecordDataSourceTests
 
         public static LocalizationSource Description { get; } = new("Tickets");
 
-        protected override IEnumerable<IRecordDataSet> DataSets { get; } = [new TicketsDataSet()];
+        protected override IEnumerable<IRecordDataSet> DataSets { get; } = [new TicketsDataSet(), new IndexedTicketsDataSet(), new AssignmentsDataSet()];
     }
 
-    private sealed class TicketsDataSet : RecordDataSet<Ticket>
+    private class TicketsDataSet : RecordDataSet<Ticket>
     {
         public TicketsDataSet()
-            : base(new DataSetDescriptor("Tickets", "Tickets"))
+            : this("Tickets")
+        {
+        }
+
+        protected TicketsDataSet(string name)
+            : base(new DataSetDescriptor(name, name))
         {
             AddField("Id", "Ticket", DataFieldType.Text, ticket => ticket.Id).IsKeyFilterable = true;
             AddField("State", "State", DataFieldType.Text, ticket => ticket.State);
@@ -255,6 +324,53 @@ public sealed class RecordDataSourceTests
 
                 yield return ticket;
             }
+        }
+    }
+
+    // Counts the tickets of each state itself, the way a data set over an index would with a GROUP BY.
+    private sealed class IndexedTicketsDataSet : TicketsDataSet, IAggregateRecordDataSet
+    {
+        public IndexedTicketsDataSet()
+            : base("IndexedTickets")
+        {
+        }
+
+        public Task<IReadOnlyList<object[]>> AggregateAsync(DataAggregateQuery query, CancellationToken cancellationToken = default)
+        {
+            if (query.Groups is not [{ Field: "State", Boundaries: null }] || query.Measures is not [{ Function: DataAggregate.Count, Field: null }])
+            {
+                return Task.FromResult<IReadOnlyList<object[]>>(null);
+            }
+
+            return Task.FromResult<IReadOnlyList<object[]>>(_tickets
+                .GroupBy(ticket => ticket.State)
+                .Select(group => new object[] { group.Key.ToString(), (long)group.Count() })
+                .ToList());
+        }
+    }
+
+    private sealed record Assignment(string TicketId, string PreviousTicketId, string Agent);
+
+    private sealed class AssignmentsDataSet : RecordDataSet<Assignment>
+    {
+        public AssignmentsDataSet()
+            : base(new DataSetDescriptor("Assignments", "Assignments"))
+        {
+            AddField("TicketId", "Ticket", DataFieldType.Text, assignment => assignment.TicketId).References.Add(new DataFieldReference("Tickets", "Tickets", "Id"));
+            AddField("PreviousTicketId", "Previous ticket", DataFieldType.Text, assignment => assignment.PreviousTicketId).References.Add(new DataFieldReference("Tickets", "Tickets", "Id"));
+            AddField("Agent", "Agent", DataFieldType.Text, assignment => assignment.Agent);
+        }
+
+        public override Task<bool> CanReadAsync(DataSourceContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(context.Properties.TryGetValue("CanRead", out var canRead) && canRead is true);
+        }
+
+        protected override async IAsyncEnumerable<Assignment> LoadAsync(DataSourceQuery query, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            await Task.Yield();
+
+            yield return new Assignment("T1", null, "Ada");
         }
     }
 }
