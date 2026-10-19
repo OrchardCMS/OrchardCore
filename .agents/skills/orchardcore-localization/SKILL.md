@@ -52,7 +52,22 @@ S.Plural(count, "{0} book", "{0} books");
 // IHtmlLocalizer: H.Plural(count, "{0} book", "{0} books")
 ```
 
-### Step 3: Provide PO translations
+### Step 3: Reuse shared sources for strings declared without a localizer
+
+Strings declared before a localizer is available, such as deployment step categories and titles, are `LocalizationSource` instances translated at display time with `IStringLocalizerFactory.Localize()`. Don't declare them in the class that uses them:
+
+- Use `CommonLocalizationSources` (`OrchardCore.Abstractions`, namespace `OrchardCore.Localization`) for text that means the same thing across modules, such as `CommonLocalizationSources.ContentManagement` or `CommonLocalizationSources.Settings`. Look for an existing member before adding one.
+- Declare the other strings in an `internal static class {Area}LocalizationSources` at the root of the module, for example `LuceneLocalizationSources`, with `LocalizationSource.Create("...", typeof({Area}LocalizationSources))`, which extraction tools can find.
+- Keep permission descriptions in their `*Permissions` class, and strings specific to a view in the view, with `T`.
+
+```csharp
+Category = CommonLocalizationSources.Search;
+Title = LuceneLocalizationSources.LuceneSearchIndexes;
+```
+
+The PO context is the class that declares the source, for example `msgctxt "OrchardCore.Localization.CommonLocalizationSources"`.
+
+### Step 4: Provide PO translations
 
 PO files are discovered (in order) from each module's `Localization/`, a global `/Localization`, the tenant's `App_Data/Sites/{tenant}/Localization`, and culture folders. A PO entry:
 

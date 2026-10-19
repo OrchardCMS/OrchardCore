@@ -8,11 +8,9 @@ namespace OrchardCore.Layers.Deployment;
 /// </summary>
 public class AllLayersDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllLayersDeploymentStep>("Content");
-
     public AllLayersDeploymentStep()
     {
         Name = "AllLayers";
-        Category = s_category;
+        Category = CommonLocalizationSources.Content;
     }
 }

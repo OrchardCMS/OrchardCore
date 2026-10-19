@@ -8,11 +8,9 @@ namespace OrchardCore.Roles.Deployment;
 /// </summary>
 public class AllRolesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllRolesDeploymentStep>("Security");
-
     public AllRolesDeploymentStep()
     {
         Name = "AllRoles";
-        Category = s_category;
+        Category = CommonLocalizationSources.Security;
     }
 }

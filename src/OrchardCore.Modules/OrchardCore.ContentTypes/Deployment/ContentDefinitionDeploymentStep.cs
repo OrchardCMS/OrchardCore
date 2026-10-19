@@ -8,14 +8,11 @@ namespace OrchardCore.ContentTypes.Deployment;
 /// </summary>
 public class ContentDefinitionDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentDefinitionDeploymentStep>("Content Management");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<ContentDefinitionDeploymentStep>("Update Content Definitions");
-
     public ContentDefinitionDeploymentStep()
     {
         Name = "ContentDefinition";
-        Category = s_category;
-        Title = s_title;
+        Category = CommonLocalizationSources.ContentManagement;
+        Title = ContentTypesLocalizationSources.UpdateContentDefinitions;
     }
 
     public bool IncludeAll { get; set; }

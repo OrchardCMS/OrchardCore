@@ -8,14 +8,11 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexRebuildDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<ElasticsearchIndexRebuildDeploymentStep>("Search");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<ElasticsearchIndexRebuildDeploymentStep>("Rebuild Elasticsearch Indices");
-
     public ElasticsearchIndexRebuildDeploymentStep()
     {
         Name = "ElasticIndexRebuild";
-        Category = s_category;
-        Title = s_title;
+        Category = CommonLocalizationSources.Search;
+        Title = ElasticsearchLocalizationSources.RebuildElasticsearchIndices;
     }
 
     public bool IncludeAll { get; set; } = true;

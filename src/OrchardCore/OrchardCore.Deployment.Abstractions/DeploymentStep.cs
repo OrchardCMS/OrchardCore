@@ -13,7 +13,8 @@ public abstract class DeploymentStep
 
     /// <summary>
     /// The category of the step, used to group the steps of the picker. Set it in the step's parameterless
-    /// constructor with <c>LocalizationSource.Create&lt;MyDeploymentStep&gt;("...")</c>.
+    /// constructor with a source of <see cref="CommonLocalizationSources"/>, such as
+    /// <see cref="CommonLocalizationSources.ContentManagement"/>.
     /// </summary>
     /// <remarks>
     /// The category is translated at display time using its source type as the context. It is never persisted:
@@ -23,8 +24,8 @@ public abstract class DeploymentStep
     public LocalizationSource Category { get; set; } = s_emptyCategory;
 
     /// <summary>
-    /// The title of the step, shown as the heading of its screens. Set it in the step's parameterless constructor
-    /// with <c>LocalizationSource.Create&lt;MyDeploymentStep&gt;("...")</c>, alongside <see cref="Category"/>.
+    /// The title of the step, shown as the heading of its screens. Set it in the step's parameterless constructor,
+    /// alongside <see cref="Category"/>, with a source declared in the module's class of localization sources.
     /// </summary>
     /// <remarks>
     /// The title is translated at display time using its source type as the context. It is never persisted,

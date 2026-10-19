@@ -8,12 +8,10 @@ namespace OrchardCore.DataLocalization.Deployment;
 /// </summary>
 public class TranslationsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<TranslationsDeploymentStep>("Internationalization");
-
     public TranslationsDeploymentStep()
     {
         Name = "Translations";
-        Category = s_category;
+        Category = CommonLocalizationSources.Internationalization;
     }
 
     /// <summary>

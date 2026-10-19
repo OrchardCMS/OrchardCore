@@ -8,14 +8,11 @@ namespace OrchardCore.Features.Deployment;
 /// </summary>
 public class AllFeaturesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllFeaturesDeploymentStep>("Infrastructure");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<AllFeaturesDeploymentStep>("All Features");
-
     public AllFeaturesDeploymentStep()
     {
         Name = "AllFeatures";
-        Category = s_category;
-        Title = s_title;
+        Category = CommonLocalizationSources.Infrastructure;
+        Title = FeaturesLocalizationSources.AllFeatures;
     }
 
     public bool IgnoreDisabledFeatures { get; set; }

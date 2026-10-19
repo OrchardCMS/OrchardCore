@@ -5,11 +5,9 @@ namespace OrchardCore.Shortcodes.Deployment;
 
 public class AllShortcodeTemplatesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllShortcodeTemplatesDeploymentStep>("Content");
-
     public AllShortcodeTemplatesDeploymentStep()
     {
         Name = "AllShortcodeTemplates";
-        Category = s_category;
+        Category = CommonLocalizationSources.Content;
     }
 }

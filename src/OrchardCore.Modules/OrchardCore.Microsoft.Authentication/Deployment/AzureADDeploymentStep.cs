@@ -8,11 +8,9 @@ namespace OrchardCore.Microsoft.Authentication.Deployment;
 /// </summary>
 public class AzureADDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AzureADDeploymentStep>("Microsoft Authentication");
-
     public AzureADDeploymentStep()
     {
         Name = "Microsoft Entra ID";
-        Category = s_category;
+        Category = MicrosoftAuthenticationLocalizationSources.MicrosoftAuthentication;
     }
 }

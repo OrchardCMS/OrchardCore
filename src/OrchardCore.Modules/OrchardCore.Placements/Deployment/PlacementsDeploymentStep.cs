@@ -8,11 +8,9 @@ namespace OrchardCore.Placements.Deployment;
 /// </summary>
 public class PlacementsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<PlacementsDeploymentStep>("Development");
-
     public PlacementsDeploymentStep()
     {
         Name = "Placements";
-        Category = s_category;
+        Category = CommonLocalizationSources.Development;
     }
 }

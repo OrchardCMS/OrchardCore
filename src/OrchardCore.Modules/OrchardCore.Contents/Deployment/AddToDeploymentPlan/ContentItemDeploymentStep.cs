@@ -8,12 +8,10 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 /// </summary>
 public class ContentItemDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentItemDeploymentStep>("Content Management");
-
     public ContentItemDeploymentStep()
     {
         Name = nameof(ContentItemDeploymentStep);
-        Category = s_category;
+        Category = CommonLocalizationSources.ContentManagement;
     }
 
     public string ContentItemId { get; set; }

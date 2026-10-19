@@ -8,11 +8,9 @@ namespace OrchardCore.Facebook.Deployment;
 /// </summary>
 public class FacebookLoginDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<FacebookLoginDeploymentStep>("Meta");
-
     public FacebookLoginDeploymentStep()
     {
         Name = "Facebook Login";
-        Category = s_category;
+        Category = FacebookLocalizationSources.Meta;
     }
 }
