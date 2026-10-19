@@ -10,16 +10,13 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class QueryBasedContentDeploymentStep : DeploymentStep
 {
+    public override string Name => "QueryBasedContentDeploymentStep";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     [JsonIgnore]
     public override LocalizationSource Title => QueriesLocalizationSources.QueriedContentItems;
-
-    public QueryBasedContentDeploymentStep()
-    {
-        Name = "QueryBasedContentDeploymentStep";
-    }
 
     [Required]
     public string QueryName { get; set; }

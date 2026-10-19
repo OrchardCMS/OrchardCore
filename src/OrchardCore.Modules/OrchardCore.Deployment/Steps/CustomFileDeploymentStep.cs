@@ -9,16 +9,13 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class CustomFileDeploymentStep : DeploymentStep
 {
+    public override string Name => nameof(CustomFileDeploymentStep);
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Deployment;
 
     [JsonIgnore]
     public override LocalizationSource Title => DeploymentLocalizationSources.CustomFile;
-
-    public CustomFileDeploymentStep()
-    {
-        Name = nameof(CustomFileDeploymentStep);
-    }
 
     [Required]
     public string FileName { get; set; }

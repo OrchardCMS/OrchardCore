@@ -9,16 +9,13 @@ namespace OrchardCore.ContentTypes.Deployment;
 /// </summary>
 public class ContentDefinitionDeploymentStep : DeploymentStep
 {
+    public override string Name => "ContentDefinition";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     [JsonIgnore]
     public override LocalizationSource Title => ContentTypesLocalizationSources.UpdateContentDefinitions;
-
-    public ContentDefinitionDeploymentStep()
-    {
-        Name = "ContentDefinition";
-    }
 
     public bool IncludeAll { get; set; }
 

@@ -9,11 +9,8 @@ namespace OrchardCore.Roles.Deployment;
 /// </summary>
 public class AllRolesDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllRoles";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Security;
-
-    public AllRolesDeploymentStep()
-    {
-        Name = "AllRoles";
-    }
 }

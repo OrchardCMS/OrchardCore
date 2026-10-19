@@ -8,16 +8,13 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class RecipeFileDeploymentStep : DeploymentStep
 {
+    public override string Name => nameof(RecipeFileDeploymentStep);
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Deployment;
 
     [JsonIgnore]
     public override LocalizationSource Title => DeploymentLocalizationSources.RecipeFile;
-
-    public RecipeFileDeploymentStep()
-    {
-        Name = nameof(RecipeFileDeploymentStep);
-    }
 
     public string RecipeName { get; set; }
 

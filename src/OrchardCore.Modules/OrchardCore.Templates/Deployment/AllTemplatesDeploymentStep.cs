@@ -9,15 +9,13 @@ namespace OrchardCore.Templates.Deployment;
 /// </summary>
 public class AllTemplatesDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllTemplates";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Development;
 
     [JsonIgnore]
     public override LocalizationSource Title => TemplatesLocalizationSources.AllTemplates;
 
-    public AllTemplatesDeploymentStep()
-    {
-        Name = "AllTemplates";
-    }
     public bool ExportAsFiles { get; set; }
 }

@@ -9,11 +9,8 @@ namespace OrchardCore.Media.Deployment;
 /// </summary>
 public class AllMediaProfilesDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllMediaProfiles";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
-
-    public AllMediaProfilesDeploymentStep()
-    {
-        Name = "AllMediaProfiles";
-    }
 }

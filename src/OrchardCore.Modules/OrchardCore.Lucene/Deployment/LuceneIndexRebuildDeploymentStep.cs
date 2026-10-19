@@ -9,16 +9,13 @@ namespace OrchardCore.Lucene.Deployment;
 /// </summary>
 public class LuceneIndexRebuildDeploymentStep : DeploymentStep
 {
+    public override string Name => "LuceneIndexRebuild";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Search;
 
     [JsonIgnore]
     public override LocalizationSource Title => LuceneLocalizationSources.RebuildLuceneSearchIndices;
-
-    public LuceneIndexRebuildDeploymentStep()
-    {
-        Name = "LuceneIndexRebuild";
-    }
 
     public bool IncludeAll { get; set; } = true;
 

@@ -9,16 +9,13 @@ namespace OrchardCore.Contents.Deployment;
 /// </summary>
 public class AllContentDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllContent";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     [JsonIgnore]
     public override LocalizationSource Title => ContentsLocalizationSources.AllContent;
-
-    public AllContentDeploymentStep()
-    {
-        Name = "AllContent";
-    }
 
     public bool ExportAsSetupRecipe { get; set; }
 }

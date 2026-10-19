@@ -10,16 +10,13 @@ namespace OrchardCore.DataPipelines.Deployment;
 /// </summary>
 public class DataPipelinesDeploymentStep : DeploymentStep
 {
+    public override string Name => "DataPipelines";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Data;
 
     [JsonIgnore]
     public override LocalizationSource Title => DataPipelinesLocalizationSources.DataPipelines;
-
-    public DataPipelinesDeploymentStep()
-    {
-        Name = "DataPipelines";
-    }
 
     /// <summary>
     /// Gets or sets a value indicating whether every pipeline is exported, including the ones created later.

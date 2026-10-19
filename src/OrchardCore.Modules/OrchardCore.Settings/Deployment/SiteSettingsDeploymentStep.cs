@@ -9,16 +9,13 @@ namespace OrchardCore.Settings.Deployment;
 /// </summary>
 public class SiteSettingsDeploymentStep : DeploymentStep
 {
+    public override string Name => nameof(SiteSettings);
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Configuration;
 
     [JsonIgnore]
     public override LocalizationSource Title => SettingsLocalizationSources.SiteSettings;
-
-    public SiteSettingsDeploymentStep()
-    {
-        Name = nameof(SiteSettings);
-    }
 
     public string[] Settings { get; set; }
 }

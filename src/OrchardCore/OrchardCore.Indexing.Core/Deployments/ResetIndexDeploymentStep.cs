@@ -7,16 +7,13 @@ namespace OrchardCore.Indexing.Core.Deployments;
 
 public sealed class ResetIndexDeploymentStep : DeploymentStep
 {
+    public override string Name => ResetIndexStep.Key;
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Indexing;
 
     [JsonIgnore]
     public override LocalizationSource Title => IndexingLocalizationSources.ResetIndexes;
-
-    public ResetIndexDeploymentStep()
-    {
-        Name = ResetIndexStep.Key;
-    }
 
     public bool IncludeAll { get; set; }
 

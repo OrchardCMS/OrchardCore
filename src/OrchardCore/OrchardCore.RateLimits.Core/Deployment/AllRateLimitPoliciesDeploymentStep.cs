@@ -13,11 +13,8 @@ public sealed class AllRateLimitPoliciesDeploymentStep : DeploymentStep
     /// <summary>
     /// Initializes a new instance of the <see cref="AllRateLimitPoliciesDeploymentStep"/> class.
     /// </summary>
+    public override string Name => CreateOrUpdateRateLimitPoliciesStep.StepKey;
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Security;
-
-    public AllRateLimitPoliciesDeploymentStep()
-    {
-        Name = CreateOrUpdateRateLimitPoliciesStep.StepKey;
-    }
 }

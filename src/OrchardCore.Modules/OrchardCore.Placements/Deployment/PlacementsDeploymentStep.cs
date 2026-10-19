@@ -9,11 +9,8 @@ namespace OrchardCore.Placements.Deployment;
 /// </summary>
 public class PlacementsDeploymentStep : DeploymentStep
 {
+    public override string Name => "Placements";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Development;
-
-    public PlacementsDeploymentStep()
-    {
-        Name = "Placements";
-    }
 }

@@ -9,13 +9,10 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 /// </summary>
 public class ContentItemDeploymentStep : DeploymentStep
 {
+    public override string Name => nameof(ContentItemDeploymentStep);
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
-
-    public ContentItemDeploymentStep()
-    {
-        Name = nameof(ContentItemDeploymentStep);
-    }
 
     public string ContentItemId { get; set; }
 }

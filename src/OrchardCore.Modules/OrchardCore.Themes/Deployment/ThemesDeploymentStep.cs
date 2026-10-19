@@ -9,11 +9,8 @@ namespace OrchardCore.Themes.Deployment;
 /// </summary>
 public class ThemesDeploymentStep : DeploymentStep
 {
+    public override string Name => "Themes";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Theming;
-
-    public ThemesDeploymentStep()
-    {
-        Name = "Themes";
-    }
 }

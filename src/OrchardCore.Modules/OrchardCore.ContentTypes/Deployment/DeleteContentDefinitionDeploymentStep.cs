@@ -9,13 +9,10 @@ namespace OrchardCore.ContentTypes.Deployment;
 /// </summary>
 public class DeleteContentDefinitionDeploymentStep : DeploymentStep
 {
+    public override string Name => "DeleteContentDefinition";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
-
-    public DeleteContentDefinitionDeploymentStep()
-    {
-        Name = "DeleteContentDefinition";
-    }
 
     public string[] ContentTypes { get; set; } = [];
 

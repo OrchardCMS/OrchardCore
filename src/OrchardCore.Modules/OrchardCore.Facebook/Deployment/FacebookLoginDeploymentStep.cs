@@ -9,11 +9,8 @@ namespace OrchardCore.Facebook.Deployment;
 /// </summary>
 public class FacebookLoginDeploymentStep : DeploymentStep
 {
+    public override string Name => "Facebook Login";
+
     [JsonIgnore]
     public override LocalizationSource Category => FacebookLocalizationSources.Meta;
-
-    public FacebookLoginDeploymentStep()
-    {
-        Name = "Facebook Login";
-    }
 }

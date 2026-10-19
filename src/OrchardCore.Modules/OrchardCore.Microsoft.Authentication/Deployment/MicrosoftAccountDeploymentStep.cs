@@ -6,11 +6,8 @@ namespace OrchardCore.Microsoft.Authentication.Deployment;
 
 public sealed class MicrosoftAccountDeploymentStep : DeploymentStep
 {
+    public override string Name => "MicrosoftAccount";
+
     [JsonIgnore]
     public override LocalizationSource Category => MicrosoftAuthenticationLocalizationSources.MicrosoftAuthentication;
-
-    public MicrosoftAccountDeploymentStep()
-    {
-        Name = "MicrosoftAccount";
-    }
 }

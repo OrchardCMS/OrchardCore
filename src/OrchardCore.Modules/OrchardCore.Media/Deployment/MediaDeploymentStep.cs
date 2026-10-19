@@ -9,16 +9,13 @@ namespace OrchardCore.Media.Deployment;
 /// </summary>
 public class MediaDeploymentStep : DeploymentStep
 {
+    public override string Name => "Media";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     [JsonIgnore]
     public override LocalizationSource Title => MediaLocalizationSources.Media;
-
-    public MediaDeploymentStep()
-    {
-        Name = "Media";
-    }
 
     public bool IncludeAll { get; set; } = true;
 

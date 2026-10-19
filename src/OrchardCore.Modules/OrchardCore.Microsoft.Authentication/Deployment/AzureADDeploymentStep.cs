@@ -9,11 +9,8 @@ namespace OrchardCore.Microsoft.Authentication.Deployment;
 /// </summary>
 public class AzureADDeploymentStep : DeploymentStep
 {
+    public override string Name => "Microsoft Entra ID";
+
     [JsonIgnore]
     public override LocalizationSource Category => MicrosoftAuthenticationLocalizationSources.MicrosoftAuthentication;
-
-    public AzureADDeploymentStep()
-    {
-        Name = "Microsoft Entra ID";
-    }
 }

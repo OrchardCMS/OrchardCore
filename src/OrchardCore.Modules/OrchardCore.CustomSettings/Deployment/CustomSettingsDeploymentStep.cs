@@ -6,16 +6,13 @@ namespace OrchardCore.CustomSettings.Deployment;
 
 public class CustomSettingsDeploymentStep : DeploymentStep
 {
+    public override string Name => "CustomSettings";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Settings;
 
     [JsonIgnore]
     public override LocalizationSource Title => CustomSettingsLocalizationSources.CustomSettings;
-
-    public CustomSettingsDeploymentStep()
-    {
-        Name = "CustomSettings";
-    }
 
     public bool IncludeAll { get; set; } = true;
 

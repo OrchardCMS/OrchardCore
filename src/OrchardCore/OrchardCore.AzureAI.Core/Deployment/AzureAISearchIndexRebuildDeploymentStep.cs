@@ -6,16 +6,13 @@ namespace OrchardCore.AzureAI.Deployment;
 
 public class AzureAISearchIndexRebuildDeploymentStep : DeploymentStep
 {
+    public override string Name => "AzureAISearchIndexRebuild";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Search;
 
     [JsonIgnore]
     public override LocalizationSource Title => AzureAILocalizationSources.RebuildAzureAISearchIndices;
-
-    public AzureAISearchIndexRebuildDeploymentStep()
-    {
-        Name = "AzureAISearchIndexRebuild";
-    }
 
     public bool IncludeAll { get; set; }
 

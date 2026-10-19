@@ -9,11 +9,8 @@ namespace OrchardCore.Users.Deployment;
 /// </summary>
 public class AllUsersDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllUsers";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Security;
-
-    public AllUsersDeploymentStep()
-    {
-        Name = "AllUsers";
-    }
 }

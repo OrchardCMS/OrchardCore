@@ -9,11 +9,8 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class AllQueriesDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllQueries";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
-
-    public AllQueriesDeploymentStep()
-    {
-        Name = "AllQueries";
-    }
 }

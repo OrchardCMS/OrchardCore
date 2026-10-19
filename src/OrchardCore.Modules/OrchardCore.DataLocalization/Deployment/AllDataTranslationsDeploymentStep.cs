@@ -6,11 +6,8 @@ namespace OrchardCore.DataLocalization.Deployment;
 
 public class AllDataTranslationsDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllDataTranslations";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Internationalization;
-
-    public AllDataTranslationsDeploymentStep()
-    {
-        Name = "AllDataTranslations";
-    }
 }

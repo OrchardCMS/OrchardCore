@@ -6,11 +6,8 @@ namespace OrchardCore.Sitemaps.Deployment;
 
 public sealed class AllSitemapsDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllSitemaps";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
-
-    public AllSitemapsDeploymentStep()
-    {
-        Name = "AllSitemaps";
-    }
 }

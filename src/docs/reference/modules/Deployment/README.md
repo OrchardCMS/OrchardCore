@@ -92,7 +92,7 @@ A module can provide a custom deployment step by implementing an `IDeploymentSou
 services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDisplayDriver>();
 ```
 
-The step model sets its `Name` in its parameterless constructor, and overrides its `Category` and `Title` properties to return `LocalizationSource` instances that are translated when they are shown:
+The step model overrides its `Name`, `Category`, and `Title` properties. The name is persisted with the plan, and the category and the title are `LocalizationSource` instances that are translated when they are shown:
 
 - The category groups the step in the list of steps that can be added to a plan. Use a category of `CommonLocalizationSources`, such as `CommonLocalizationSources.ContentManagement`, `Security`, or `Search`, so that the step is listed with the other steps of the same category and the category is translated once.
 - The title is the display name of the step. It is shown as the heading of the step's add and edit screens, and in their breadcrumb, so the screens do not need an `<h5>` of their own. Declare it in the class of the module's localization sources.
@@ -117,16 +117,13 @@ namespace MyModule.Deployment;
 
 public sealed class MyDeploymentStep : DeploymentStep
 {
+    public override string Name => "MyStep";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     [JsonIgnore]
     public override LocalizationSource Title => MyModuleLocalizationSources.ExportMyData;
-
-    public MyDeploymentStep()
-    {
-        Name = "MyStep";
-    }
 }
 ```
 

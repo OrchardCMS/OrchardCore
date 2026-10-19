@@ -7,16 +7,13 @@ namespace OrchardCore.Indexing.Core.Deployments;
 
 public sealed class RebuildIndexDeploymentStep : DeploymentStep
 {
+    public override string Name => RebuildIndexStep.Key;
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Indexing;
 
     [JsonIgnore]
     public override LocalizationSource Title => IndexingLocalizationSources.RebuildIndexes;
-
-    public RebuildIndexDeploymentStep()
-    {
-        Name = RebuildIndexStep.Key;
-    }
 
     public bool IncludeAll { get; set; }
 

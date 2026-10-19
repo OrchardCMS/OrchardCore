@@ -9,16 +9,13 @@ namespace OrchardCore.Features.Deployment;
 /// </summary>
 public class AllFeaturesDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllFeatures";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Infrastructure;
 
     [JsonIgnore]
     public override LocalizationSource Title => FeaturesLocalizationSources.AllFeatures;
-
-    public AllFeaturesDeploymentStep()
-    {
-        Name = "AllFeatures";
-    }
 
     public bool IgnoreDisabledFeatures { get; set; }
 }

@@ -9,11 +9,8 @@ namespace OrchardCore.OpenId.Deployment;
 /// </summary>
 public class OpenIdValidationDeploymentStep : DeploymentStep
 {
+    public override string Name => "OpenID Validation";
+
     [JsonIgnore]
     public override LocalizationSource Category => OpenIdLocalizationSources.OpenIdConnect;
-
-    public OpenIdValidationDeploymentStep()
-    {
-        Name = "OpenID Validation";
-    }
 }

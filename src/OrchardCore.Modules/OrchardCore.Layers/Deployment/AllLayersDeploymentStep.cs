@@ -9,11 +9,8 @@ namespace OrchardCore.Layers.Deployment;
 /// </summary>
 public class AllLayersDeploymentStep : DeploymentStep
 {
+    public override string Name => "AllLayers";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Content;
-
-    public AllLayersDeploymentStep()
-    {
-        Name = "AllLayers";
-    }
 }

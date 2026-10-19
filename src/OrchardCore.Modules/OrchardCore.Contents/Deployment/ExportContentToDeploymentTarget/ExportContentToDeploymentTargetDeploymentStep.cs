@@ -9,14 +9,11 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 /// </summary>
 public class ExportContentToDeploymentTargetDeploymentStep : DeploymentStep
 {
+    public override string Name => nameof(ExportContentToDeploymentTargetDeploymentStep);
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     [JsonIgnore]
     public override LocalizationSource Title => ContentsLocalizationSources.ExportContentToDeploymentTarget;
-
-    public ExportContentToDeploymentTargetDeploymentStep()
-    {
-        Name = nameof(ExportContentToDeploymentTargetDeploymentStep);
-    }
 }

@@ -7,16 +7,13 @@ namespace OrchardCore.Indexing.Core.Deployments;
 
 public sealed class IndexProfileDeploymentStep : DeploymentStep
 {
+    public override string Name => CreateOrUpdateIndexProfileStep.StepKey;
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Indexing;
 
     [JsonIgnore]
     public override LocalizationSource Title => IndexingLocalizationSources.IndexProfiles;
-
-    public IndexProfileDeploymentStep()
-    {
-        Name = CreateOrUpdateIndexProfileStep.StepKey;
-    }
 
     public bool IncludeAll { get; set; }
 

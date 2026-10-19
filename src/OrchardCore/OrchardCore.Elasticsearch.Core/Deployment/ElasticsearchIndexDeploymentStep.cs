@@ -9,16 +9,13 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexDeploymentStep : DeploymentStep
 {
+    public override string Name => "ElasticIndexSettings";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Search;
 
     [JsonIgnore]
     public override LocalizationSource Title => ElasticsearchLocalizationSources.ElasticsearchSearchIndexes;
-
-    public ElasticsearchIndexDeploymentStep()
-    {
-        Name = "ElasticIndexSettings";
-    }
 
     public bool IncludeAll { get; set; } = true;
 

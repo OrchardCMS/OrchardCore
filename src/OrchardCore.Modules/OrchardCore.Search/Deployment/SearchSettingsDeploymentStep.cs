@@ -9,14 +9,11 @@ namespace OrchardCore.Search.Deployment;
 /// </summary>
 public class SearchSettingsDeploymentStep : DeploymentStep
 {
+    public override string Name => "SearchSettings";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Search;
 
     [JsonIgnore]
     public override LocalizationSource Title => SearchLocalizationSources.SearchSettings;
-
-    public SearchSettingsDeploymentStep()
-    {
-        Name = "SearchSettings";
-    }
 }

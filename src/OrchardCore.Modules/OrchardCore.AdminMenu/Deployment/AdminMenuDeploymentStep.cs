@@ -9,14 +9,11 @@ namespace OrchardCore.AdminMenu.Deployment;
 /// </summary>
 public class AdminMenuDeploymentStep : DeploymentStep
 {
+    public override string Name => "AdminMenu";
+
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     [JsonIgnore]
     public override LocalizationSource Title => AdminMenuLocalizationSources.AdminMenus;
-
-    public AdminMenuDeploymentStep()
-    {
-        Name = "AdminMenu";
-    }
 }
