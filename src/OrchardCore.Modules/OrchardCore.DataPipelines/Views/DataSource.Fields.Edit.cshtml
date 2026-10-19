@@ -3,23 +3,109 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="data-pipelines-editors" at="Foot"></script>
 
+@{
+    var selectedDataSet = Model.DataSets.FirstOrDefault(option => option.Value == Model.DataSet);
+    var dataSetId = Html.IdFor(model => model.DataSet);
+}
+
 <div class="ocat-wrapper" asp-validation-class-for="DataSet">
-    <label asp-for="DataSet" class="ocat-label ocat-label-required">@T["Data set"]</label>
-    <div class="ocat-end">
-        <select asp-for="DataSet" data-dp-select data-live-search="true" data-width="100%">
-            <option value="">@T["Choose a data set"]</option>
-            @foreach (var group in Model.DataSets.GroupBy(option => option.Group))
+    <label for="@(dataSetId)_Choose" class="ocat-label ocat-label-required">@T["Data set"]</label>
+    <div class="ocat-end" data-dp-dataset-picker>
+        <input type="hidden" asp-for="DataSet" data-dp-dataset-input />
+        <div class="d-flex align-items-center gap-2 border rounded p-2">
+            @if (string.IsNullOrEmpty(Model.DataSet))
             {
-                <optgroup label="@group.Key">
-                    @foreach (var option in group)
-                    {
-                        <option value="@option.Value" selected="@(option.Value == Model.DataSet)">@option.Text</option>
-                    }
-                </optgroup>
+                <span class="flex-grow-1 text-muted" data-dp-dataset-summary>@T["No data set is chosen."]</span>
             }
-        </select>
+            else
+            {
+                <i class="fa-solid fa-table fa-fw text-primary" aria-hidden="true"></i>
+                <div class="flex-grow-1 text-truncate" data-dp-dataset-summary>
+                    <div class="fw-semibold text-truncate">@(selectedDataSet?.Text ?? Model.DataSetName)</div>
+                    <div class="small text-muted text-truncate">@(selectedDataSet?.Source ?? Model.SourceName)@(string.IsNullOrEmpty(selectedDataSet?.Description) ? null : " · " + selectedDataSet.Description)</div>
+                </div>
+            }
+            <button type="button" id="@(dataSetId)_Choose" class="btn btn-sm @(string.IsNullOrEmpty(Model.DataSet) ? "btn-primary" : "btn-outline-secondary") text-nowrap" data-dp-dataset-open>
+                @(string.IsNullOrEmpty(Model.DataSet) ? T["Choose a data set"] : T["Change"])
+            </button>
+        </div>
         <span asp-validation-for="DataSet"></span>
-        <span class="hint">@T["The data is read with the access of the user who publishes the pipeline."]</span>
+        <span class="hint">@T["The data is read with the access of the user who publishes the pipeline. Choosing another data set clears the fields and the filters."]</span>
+
+        @* The dialog the script of the editors opens over the page to choose the data set. *@
+        <template data-dp-dataset-dialog>
+            <div class="modal fade" tabindex="-1" aria-labelledby="@(dataSetId)_DialogTitle" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="@(dataSetId)_DialogTitle">@T["Choose a data set"]</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <input type="search" class="form-control mb-3" placeholder="@T["Filter"]" aria-label="@T["Filter the data sets"]" data-dp-dataset-filter />
+                                    <nav class="nav nav-pills flex-nowrap flex-md-column overflow-auto gap-1" aria-label="@T["Data sources"]">
+                                        <button type="button" class="nav-link text-start text-nowrap d-flex align-items-center gap-2 active" aria-pressed="true" data-dp-dataset-category="">
+                                            <span class="flex-grow-1">@T["All"]</span>
+                                            <span class="badge rounded-pill" data-dp-dataset-count></span>
+                                        </button>
+                                        @foreach (var source in Model.DataSets.Select(option => option.Source).Distinct())
+                                        {
+                                            <button type="button" class="nav-link text-start text-nowrap d-flex align-items-center gap-2" aria-pressed="false" data-dp-dataset-category="@source">
+                                                <span class="flex-grow-1">@source</span>
+                                                <span class="badge rounded-pill" data-dp-dataset-count></span>
+                                            </button>
+                                        }
+                                    </nav>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
+                                        @foreach (var option in Model.DataSets)
+                                        {
+                                            var selected = option.Value == Model.DataSet;
+
+                                            <div class="col" data-dp-dataset-card data-dp-category="@option.Source" data-dp-search-text="@(string.Join(' ', option.Text, option.Value, option.Description, option.Group, option.Source).ToLowerInvariant())">
+                                                <div class="card h-100 @(selected ? "border-primary" : null)">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title d-flex align-items-baseline gap-2 mb-1">
+                                                            <i class="fa-solid fa-table fa-fw text-primary" aria-hidden="true"></i>
+                                                            <span>@option.Text</span>
+                                                        </h6>
+                                                        @if (!string.IsNullOrEmpty(option.Description))
+                                                        {
+                                                            <p class="card-text small text-body-secondary mb-0">@option.Description</p>
+                                                        }
+                                                    </div>
+                                                    <div class="card-footer d-flex align-items-center gap-2">
+                                                        <div class="d-flex flex-wrap gap-1 me-auto">
+                                                            <span class="badge text-bg-light">@option.Source</span>
+                                                            @if (!string.IsNullOrEmpty(option.Group))
+                                                            {
+                                                                <span class="badge text-bg-light">@option.Group</span>
+                                                            }
+                                                        </div>
+                                                        @if (selected)
+                                                        {
+                                                            <span class="small text-muted">@T["Chosen"]</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="button" class="btn btn-primary btn-sm" data-dp-dataset-choose="@option.Value">@T["Choose"]</button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <p class="text-muted small py-3 text-center mb-0" hidden data-dp-dataset-empty>@T["No data set matches the filter."]</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 </div>
 

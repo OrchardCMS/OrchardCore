@@ -24,7 +24,7 @@
             <option value="@item" selected="@selected" hidden="@hidden" disabled="@hidden" data-dp-types="@string.Join(' ', fieldTypes.Where(type => item.AppliesTo(type)))">@OperatorLabel(item)</option>
         }
     </select>
-    <input name="@(prefix).Value" value="@Model.Filter.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" data-dp-filter-value />
+    <input name="@(prefix).Value" value="@Model.Filter.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" data-dp-filter-value data-dp-value-placeholder="@T["Value"]" data-dp-list-placeholder="@T["Values, separated by commas"]" />
     <select name="@(prefix).Value" class="form-select" aria-label="@T["Value"]" hidden disabled data-dp-filter-boolean>
         <option value="">@T["Choose a value"]</option>
         <option value="true">@T["Yes"]</option>

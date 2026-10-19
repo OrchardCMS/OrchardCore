@@ -16,7 +16,12 @@
 // - Filter rows: a <div data-dp-filter-row> shows only the comparisons of its [data-dp-filter-operator] whose
 //   data-dp-types has the data-dp-type of the field chosen in its [data-dp-filter-field]. It shows the inputs of the
 //   values the comparison takes, typed for the field: a number, a date, a date and time, or a yes/no select. A value the
-//   typed input can't hold, such as a placeholder, is written as text, which [data-dp-filter-text] switches.
+//   typed input can't hold, such as a placeholder, is written as text, which [data-dp-filter-text] switches. The
+//   comparisons that take a list, "is one of" and "isn't one of", take values separated by commas, as text.
+// - Choosing a data set: [data-dp-dataset-open] opens the Bootstrap dialog of the <template data-dp-dataset-dialog> of
+//   its [data-dp-dataset-picker] over the page. Its [data-dp-dataset-filter] and [data-dp-dataset-category] buttons
+//   filter its [data-dp-dataset-card] cards, and [data-dp-dataset-choose="value"] sets the [data-dp-dataset-input] of
+//   the picker, raises its "change" event, so the designer applies it, and closes the dialog.
 (function () {
     const lastFormulas = new WeakMap();
     const selectSelector = "select[data-dp-select]";
@@ -49,7 +54,9 @@
         const count = operator === "IsEmpty" || operator === "IsNotEmpty" ? 0 : operator === "Between" ? 2 : 1;
         let kind = "text";
 
-        if (operator === "InLastDays" || operator === "InNextDays") {
+        if (operator === "In" || operator === "NotIn") {
+            kind = "list";
+        } else if (operator === "InLastDays" || operator === "InNextDays") {
             kind = "days";
         } else if (fieldType === "Integer" || fieldType === "Decimal") {
             kind = "number";
@@ -95,7 +102,7 @@
         const booleanValue = row.querySelector("[data-dp-filter-boolean]");
         const second = row.querySelector("[data-dp-filter-second]");
         const current = booleanValue.disabled ? value.value : booleanValue.value;
-        const typed = kind !== "text";
+        const typed = kind !== "text" && kind !== "list";
 
         // A value the typed input can't hold, such as {Parameter:Since}, stays as text.
         if (typed && count > 0 && (!fits(kind, current) || (count === 2 && !fits(kind, second.value)))) {
@@ -117,7 +124,9 @@
         value.disabled = useBoolean;
         second.hidden = count !== 2;
 
-        const type = textMode || kind === "text" || kind === "boolean" ? "text" : kind === "days" ? "number" : kind;
+        const type = !typed || textMode || kind === "boolean" ? "text" : kind === "days" ? "number" : kind;
+
+        value.placeholder = (kind === "list" ? value.dataset.dpListPlaceholder : value.dataset.dpValuePlaceholder) ?? value.placeholder;
 
         [value, second].forEach((input) => {
             input.type = type;
@@ -162,6 +171,104 @@
 
         updateFilterRow(row, false);
     };
+
+    // The dialog that chooses a data set, by its picker.
+    const dataSetDialogs = new WeakMap();
+
+    // Shows the cards of the chosen source that have every term of the filter, and counts the cards of each source
+    // that have them.
+    const filterDataSets = (dialog) => {
+        const terms = (dialog.querySelector("[data-dp-dataset-filter]")?.value ?? "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+        const category = dialog.querySelector("[data-dp-dataset-category].active")?.dataset.dpDatasetCategory ?? "";
+        const counts = new Map();
+        let visible = 0;
+
+        dialog.querySelectorAll("[data-dp-dataset-card]").forEach((card) => {
+            const text = card.dataset.dpSearchText ?? "";
+            const match = terms.every((term) => text.includes(term));
+            const source = card.dataset.dpCategory ?? "";
+
+            if (match) {
+                counts.set("", (counts.get("") ?? 0) + 1);
+                counts.set(source, (counts.get(source) ?? 0) + 1);
+            }
+
+            card.hidden = !match || (category !== "" && source !== category);
+            visible += card.hidden ? 0 : 1;
+        });
+
+        dialog.querySelectorAll("[data-dp-dataset-category]").forEach((button) => {
+            const count = button.querySelector("[data-dp-dataset-count]");
+            const active = button.classList.contains("active");
+
+            if (count) {
+                count.textContent = String(counts.get(button.dataset.dpDatasetCategory) ?? 0);
+                count.classList.toggle("text-bg-light", active);
+                count.classList.toggle("text-bg-secondary", !active);
+            }
+        });
+
+        const empty = dialog.querySelector("[data-dp-dataset-empty]");
+
+        if (empty) {
+            empty.hidden = visible > 0;
+        }
+    };
+
+    // Opens the dialog over the page, outside the editor, so that its events don't change the form.
+    const openDataSetDialog = (picker) => {
+        const template = picker.querySelector(":scope > template[data-dp-dataset-dialog]");
+        const dialog = template?.content.firstElementChild?.cloneNode(true);
+
+        if (!dialog) {
+            return;
+        }
+
+        dataSetDialogs.set(dialog, picker);
+        document.body.appendChild(dialog);
+        filterDataSets(dialog);
+
+        const modal = window.bootstrap?.Modal.getOrCreateInstance(dialog);
+
+        dialog.addEventListener("shown.bs.modal", () => dialog.querySelector("[data-dp-dataset-filter]")?.focus());
+        dialog.addEventListener("hide.bs.modal", () => {
+            if (dialog.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+        });
+        dialog.addEventListener("hidden.bs.modal", () => {
+            modal?.dispose();
+            dialog.remove();
+        });
+        modal?.show();
+    };
+
+    // Sets the data set, which the designer applies, and closes the dialog.
+    const chooseDataSet = (dialog, value) => {
+        const picker = dataSetDialogs.get(dialog);
+        const input = picker?.querySelector("[data-dp-dataset-input]");
+
+        if (input && picker.isConnected) {
+            input.value = value;
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+
+        const modal = window.bootstrap?.Modal.getInstance(dialog);
+
+        if (modal) {
+            modal.hide();
+        } else {
+            dialog.remove();
+        }
+    };
+
+    document.addEventListener("input", (event) => {
+        const filter = event.target.closest?.("[data-dp-dataset-filter]");
+
+        if (filter) {
+            filterDataSets(filter.closest(".modal"));
+        }
+    });
 
     const initFilterRows = (node) => {
         const rows = node.matches(filterRowSelector) ? [node] : node.querySelectorAll(filterRowSelector);
@@ -352,6 +459,37 @@
 
             renumber(list);
             notifyChange(list);
+
+            return;
+        }
+
+        const openDataSet = event.target.closest("[data-dp-dataset-open]");
+
+        if (openDataSet) {
+            event.preventDefault();
+            openDataSetDialog(openDataSet.closest("[data-dp-dataset-picker]"));
+
+            return;
+        }
+
+        const category = event.target.closest("[data-dp-dataset-category]");
+
+        if (category) {
+            const dialog = category.closest(".modal");
+
+            dialog.querySelectorAll("[data-dp-dataset-category]").forEach((button) => {
+                button.classList.toggle("active", button === category);
+                button.setAttribute("aria-pressed", String(button === category));
+            });
+            filterDataSets(dialog);
+
+            return;
+        }
+
+        const choose = event.target.closest("[data-dp-dataset-choose]");
+
+        if (choose) {
+            chooseDataSet(choose.closest(".modal"), choose.dataset.dpDatasetChoose);
 
             return;
         }

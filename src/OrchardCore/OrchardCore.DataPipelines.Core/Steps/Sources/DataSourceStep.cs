@@ -123,7 +123,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
         foreach (var filter in settings.Filters)
         {
             var field = schema.FindField(filter.Field);
-            var values = filter.Values.Select(value => DataPipelineTemplate.Render(value, context.Run, now)).ToArray();
+            var values = filter.Values.SelectMany(value => RenderValues(filter.Operator, value, context.Run, now)).ToArray();
             var predicate = DataFilterPredicates.Build(filter.Operator, field.Type, values, today);
 
             if (predicate is null)
@@ -366,6 +366,17 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
         }
 
         return new Plan(fields.ToArray(), settings.Fields.Count == 0 ? [] : read, incremental);
+    }
+
+    // A placeholder in a list of values, such as {Parameter:Regions} for "is one of", can give several values,
+    // separated by commas.
+    private static List<string> RenderValues(DataFilterOperator filterOperator, string value, DataPipelineRunContext run, DateTime now)
+    {
+        var rendered = DataPipelineTemplate.Render(value, run, now);
+
+        return filterOperator is DataFilterOperator.In or DataFilterOperator.NotIn && rendered != value
+            ? DataFilterValueList.Parse(rendered)
+            : [rendered];
     }
 
     // Keeps every tick of a date, so the next run doesn't read the last row again.

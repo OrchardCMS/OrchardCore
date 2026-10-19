@@ -258,6 +258,35 @@ public sealed class DataPipelineStepEditorsTests
         Assert.Contains("Maximum number of rows", labels);
     }
 
+    [Fact]
+    public async Task Editor_DataSourcePicker_ListsTheDataSetsOfEachSourceAndMarksTheChosenOne()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var picker = editor.QuerySelector("[data-dp-dataset-picker]");
+        Assert.Equal("Contents::BlogPost", picker.QuerySelector($"input[type=hidden][name='{Prefix}DataSet']").GetAttribute("value"));
+
+        var dialog = Assert.IsAssignableFrom<IHtmlTemplateElement>(picker.QuerySelector("template[data-dp-dataset-dialog]")).Content;
+        var cards = dialog.QuerySelectorAll("[data-dp-dataset-card]").ToList();
+        Assert.Contains(cards, card => card.GetAttribute("data-dp-category") == "Users");
+
+        var blogPost = Assert.Single(cards, card => card.QuerySelector(".card-title").TextContent.Trim() == "Blog Post");
+        Assert.Null(blogPost.QuerySelector("[data-dp-dataset-choose]"));
+        Assert.NotNull(Assert.Single(cards, card => card.QuerySelector("[data-dp-dataset-choose='Contents::Article']") is not null));
+
+        var categories = dialog.QuerySelectorAll("[data-dp-dataset-category]").Select(button => button.GetAttribute("data-dp-dataset-category")).ToList();
+        Assert.Equal(string.Empty, categories[0]);
+        Assert.Equal(categories.Count, categories.Distinct().Count());
+    }
+
     [Theory]
     [InlineData(DataFilterOperator.IsEmpty, new string[0])]
     [InlineData(DataFilterOperator.Equals, new[] { "2026-01-01" })]
@@ -293,6 +322,43 @@ public sealed class DataPipelineStepEditorsTests
             Assert.Equal(filterOperator, filter.Operator);
             Assert.Equal(expected, filter.Values);
         });
+    }
+
+    [Theory]
+    [InlineData(DataFilterOperator.In)]
+    [InlineData(DataFilterOperator.NotIn)]
+    public async Task EditorPost_DataSourceFilterWithAList_SavesEachValueAndShowsThemBack(DataFilterOperator filterOperator)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        using var response = await PostEditorAsync(context, pipelineId, "source", new()
+        {
+            [$"{Prefix}DataSet"] = "Contents::BlogPost",
+            [$"{Prefix}MaxRows"] = "0",
+            [$"{Prefix}Filters[0].Field"] = "DisplayText",
+            [$"{Prefix}Filters[0].Operator"] = filterOperator.ToString(),
+            [$"{Prefix}Filters[0].Value"] = "Man must explore, \"Smith, John\" ,",
+        });
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var pipeline = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().GetAsync(pipelineId);
+            var settings = pipeline.GetEditableDefinition().FindStep("source").GetOrCreate<DataSourceStepSettings>();
+
+            Assert.Equal(["Man must explore", "Smith, John"], Assert.Single(settings.Filters).Values);
+        });
+
+        var value = editor.QuerySelector($"input[name='{Prefix}Filters[0].Value']");
+        Assert.Equal("Man must explore, \"Smith, John\"", value.GetAttribute("value"));
     }
 
     [Fact]

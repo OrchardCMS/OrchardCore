@@ -17,6 +17,7 @@ const operators: Record<string, string> = {
     StartsWith: "Text",
     GreaterThan: "Integer Decimal Date DateTime",
     Between: "Integer Decimal Date DateTime",
+    In: "Text Integer Decimal Boolean Date DateTime",
     IsEmpty: "Text Integer Decimal Boolean Date DateTime",
     InLastDays: "Date DateTime",
 };
@@ -30,7 +31,7 @@ const renderRow = (field: string, operator: string, value = "", second = "") => 
     <select name="Filters[0].Operator" data-dp-filter-operator>
         ${Object.entries(operators).map(([name, types]) => `<option value="${name}" data-dp-types="${types}" ${name === operator ? "selected" : ""}>${name}</option>`).join("")}
     </select>
-    <input name="Filters[0].Value" value="${value}" data-dp-filter-value />
+    <input name="Filters[0].Value" value="${value}" placeholder="Value" data-dp-filter-value data-dp-value-placeholder="Value" data-dp-list-placeholder="Values, separated by commas" />
     <select name="Filters[0].Value" hidden disabled data-dp-filter-boolean>
         <option value="">Choose a value</option>
         <option value="true">Yes</option>
@@ -85,7 +86,7 @@ describe("filter rows", () => {
     it("operators_TextField_ShowsTheOperatorsOfText", async () => {
         const row = await addRow("Title", "Equals");
 
-        expect(visibleOperators(row.operator)).toEqual(["Equals", "Contains", "StartsWith", "IsEmpty"]);
+        expect(visibleOperators(row.operator)).toEqual(["Equals", "Contains", "StartsWith", "In", "IsEmpty"]);
     });
 
     it("operators_FieldChangesToANumber_HidesTheTextOperatorsAndChoosesOneThatApplies", async () => {
@@ -93,7 +94,7 @@ describe("filter rows", () => {
 
         choose(row.field, "Count");
 
-        expect(visibleOperators(row.operator)).toEqual(["Equals", "GreaterThan", "Between", "IsEmpty"]);
+        expect(visibleOperators(row.operator)).toEqual(["Equals", "GreaterThan", "Between", "In", "IsEmpty"]);
         expect(row.operator.value).toBe("Equals");
         expect(row.operator.selectedOptions[0].disabled).toBe(false);
     });
@@ -182,6 +183,28 @@ describe("filter rows", () => {
 
         expect(row.value.type).toBe("text");
         expect(row.second.type).toBe("text");
+    });
+
+    it.each([["Day"], ["Count"], ["Published"], ["Title"]])("values_IsOneOfOnA%sField_TakesAListAsText", async (field) => {
+        const row = await addRow(field, "In", "2026-01-01, {Parameter:Day}");
+
+        expect(row.value.type).toBe("text");
+        expect(row.value.value).toBe("2026-01-01, {Parameter:Day}");
+        expect(row.value.placeholder).toBe("Values, separated by commas");
+        expect(row.value.disabled).toBe(false);
+        expect(row.booleanValue.disabled).toBe(true);
+        expect(row.second.hidden).toBe(true);
+        expect(row.toggle.hidden).toBe(true);
+    });
+
+    it("values_IsOneOfThenEquals_ShowsTheTypedInputAgain", async () => {
+        const row = await addRow("Count", "In", "1, 2");
+
+        choose(row.operator, "Equals");
+
+        expect(row.value.placeholder).toBe("Value");
+        expect(row.value.type).toBe("text");
+        expect(row.toggle.getAttribute("aria-pressed")).toBe("true");
     });
 
     it("toggle_TextModeOn_WritesTheValueAsText", async () => {

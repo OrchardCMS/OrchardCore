@@ -365,6 +365,51 @@ public sealed class SourceAndFileStepsTests
         Assert.Equal("2026-03-01", Assert.Single(source.Queries).Parameters["Since"]);
     }
 
+    [Theory]
+    [InlineData(DataFilterOperator.In, new[] { "Ada", "Cy" })]
+    [InlineData(DataFilterOperator.NotIn, new[] { "Bob" })]
+    public async Task DataSource_ListPlaceholder_GivesEachValueOfTheParameter(DataFilterOperator filterOperator, string[] expected)
+    {
+        // Arrange
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Fields = ["Name"],
+            Filters = [new DataSourceFilter { Field = "Name", Operator = filterOperator, Values = ["{Parameter:Names}"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+        host.Run.Parameters["Names"] = "Ada, Cy";
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(expected, host.Output().Rows.Select(row => (string)row[0]));
+    }
+
+    [Fact]
+    public async Task DataSource_ListValueWithAComma_IsOneValue()
+    {
+        // Arrange: a value saved from the editor's "Ada, \"Bob, Jr\"" keeps its comma.
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Fields = ["Name"],
+            Filters = [new DataSourceFilter { Field = "Name", Operator = DataFilterOperator.In, Values = ["Ada", "Bob, Jr"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal([["Ada"]], host.Output().Rows);
+    }
+
     [Fact]
     public void Render_ParameterPlaceholder_UsesTheParameterOrNothing()
     {

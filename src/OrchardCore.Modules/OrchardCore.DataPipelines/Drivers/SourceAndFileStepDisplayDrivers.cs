@@ -47,8 +47,10 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
             {
                 Field = filter.Field,
                 Operator = filter.Operator,
-                Value = filter.Values.Count > 0 ? filter.Values[0] : null,
-                SecondValue = filter.Values.Count > 1 ? filter.Values[1] : null,
+                Value = IsList(filter.Operator)
+                    ? DataFilterValueList.Format(filter.Values)
+                    : filter.Values.Count > 0 ? filter.Values[0] : null,
+                SecondValue = !IsList(filter.Operator) && filter.Values.Count > 1 ? filter.Values[1] : null,
             })
             .ToList();
         model.MaxRows = settings.MaxRows;
@@ -59,7 +61,7 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
 
         foreach (var descriptor in _dataSourceManager.GetDataSources())
         {
-            var group = _localizerFactory.Localize(descriptor.DisplayName)?.Value ?? descriptor.Name;
+            var sourceName = _localizerFactory.Localize(descriptor.DisplayName)?.Value ?? descriptor.Name;
 
             foreach (var dataSet in await _dataSourceManager.GetDataSource(descriptor.Name).GetDataSetsAsync(context))
             {
@@ -67,7 +69,9 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
                 {
                     Value = descriptor.Name + Separator + dataSet.Name,
                     Text = dataSet.DisplayName,
-                    Group = group,
+                    Description = dataSet.Description,
+                    Source = sourceName,
+                    Group = dataSet.Group,
                 });
             }
         }
@@ -112,6 +116,7 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
                     {
                         DataFilterOperator.Between => [filter.Value ?? string.Empty, filter.SecondValue ?? string.Empty],
                         DataFilterOperator.IsEmpty or DataFilterOperator.IsNotEmpty => [],
+                        DataFilterOperator.In or DataFilterOperator.NotIn => DataFilterValueList.Parse(filter.Value),
                         _ => string.IsNullOrEmpty(filter.Value) ? [] : [filter.Value],
                     },
                 })
@@ -138,6 +143,9 @@ public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<
 
         return ValueTask.CompletedTask;
     }
+
+    private static bool IsList(DataFilterOperator filterOperator)
+        => filterOperator is DataFilterOperator.In or DataFilterOperator.NotIn;
 
     private static Dictionary<string, string> ParseParameters(string text)
     {
@@ -200,6 +208,10 @@ public sealed class DataSetOption
     public string Value { get; set; }
 
     public string Text { get; set; }
+
+    public string Description { get; set; }
+
+    public string Source { get; set; }
 
     public string Group { get; set; }
 }
