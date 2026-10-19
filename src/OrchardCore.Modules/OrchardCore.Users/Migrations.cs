@@ -1,9 +1,12 @@
+using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using YesSql;
@@ -87,7 +90,7 @@ public sealed class Migrations : DataMigration
         );
 
         // Shortcut other migration steps on new content definition schemas.
-        return 14;
+        return 15;
     }
 
     // This code can be removed in a later version.
@@ -300,5 +303,33 @@ public sealed class Migrations : DataMigration
         );
 
         return 14;
+    }
+
+    // The theme of the security pages was a two-factor authentication setting, before passkeys were managed from the same page.
+    public static int UpdateFrom14()
+    {
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+
+            var site = await siteService.LoadSiteSettingsAsync();
+
+            if (site.Properties["TwoFactorLoginSettings"] is not JsonObject twoFactorLoginSettings ||
+                !twoFactorLoginSettings.TryGetPropertyValue(nameof(UserSecuritySettings.UseSiteTheme), out var useSiteTheme))
+            {
+                return;
+            }
+
+            site.Put(new UserSecuritySettings
+            {
+                UseSiteTheme = useSiteTheme?.GetValue<bool>() ?? false,
+            });
+
+            twoFactorLoginSettings.Remove(nameof(UserSecuritySettings.UseSiteTheme));
+
+            await siteService.UpdateSiteSettingsAsync(site);
+        });
+
+        return 15;
     }
 }

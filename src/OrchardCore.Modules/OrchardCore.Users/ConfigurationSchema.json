@@ -35,8 +35,13 @@
             },
             "TwoFactorAuthenticationPath": {
               "type": "string",
-              "description": "The path of the two-factor authentication page.",
+              "description": "The path of the former two-factor authentication page, which redirects to the Security page.",
               "default": "TwoFactor"
+            },
+            "SecurityPath": {
+              "type": "string",
+              "description": "The path of the page where users manage their two-factor authentication and their passkeys.",
+              "default": "Security"
             },
             "Passkeys": {
               "type": "object",

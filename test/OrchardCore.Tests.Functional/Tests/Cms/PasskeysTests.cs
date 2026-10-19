@@ -3,9 +3,9 @@ using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-// Covers OrchardCore.Users' passkeys.ts, which runs the WebAuthn ceremonies in the browser and must serialize
-// the credentials in the shape the ASP.NET Core Identity passkey handler expects. A virtual authenticator of
-// Chromium answers the prompts, as the fingerprint or face check of a device would.
+// Covers the Passkeys section of the Security page and OrchardCore.Users' passkeys.ts, which runs the WebAuthn
+// ceremonies in the browser and must serialize the credentials in the shape the ASP.NET Core Identity passkey handler
+// expects. A virtual authenticator of Chromium answers the prompts, as the fingerprint or face check of a device would.
 //
 // WebAuthn doesn't accept an IP address as the domain of a passkey, so the test browses the server with 'localhost'
 // rather than the '127.0.0.1' address it listens on.
@@ -38,7 +38,7 @@ public sealed class PasskeysTests : CmsTestBase<BlogFixture>, IClassFixture<Blog
         await page.LoginAsync(baseUrl);
         await page.EnableFeatureAsync(baseUrl, "OrchardCore.Users.Passkeys");
 
-        await page.GotoAndAssertOkAsync($"{baseUrl}/Passkeys");
+        await page.GotoAndAssertOkAsync($"{baseUrl}/Security");
         await page.Locator("#PasskeyName").FillAsync("Virtual authenticator");
         await page.Locator("[data-passkey-register] [data-passkey-button]").ClickAsync();
 
@@ -52,7 +52,7 @@ public sealed class PasskeysTests : CmsTestBase<BlogFixture>, IClassFixture<Blog
         await page.GotoAsync($"{baseUrl}/login");
         await page.WaitForURLAsync(url => !url.Contains("/login", StringComparison.OrdinalIgnoreCase));
 
-        await page.GotoAndAssertOkAsync($"{baseUrl}/Passkeys");
+        await page.GotoAndAssertOkAsync($"{baseUrl}/Security");
         await Assertions.Expect(passkey).ToContainTextAsync("Last used");
 
         // Log off again, and log in with the button this time, in a browser that doesn't offer passkeys in the autofill.
@@ -65,7 +65,7 @@ public sealed class PasskeysTests : CmsTestBase<BlogFixture>, IClassFixture<Blog
         await passkeyButton.ClickAsync();
 
         await page.WaitForURLAsync(url => !url.Contains("/login", StringComparison.OrdinalIgnoreCase));
-        await page.GotoAndAssertOkAsync($"{baseUrl}/Passkeys");
+        await page.GotoAndAssertOkAsync($"{baseUrl}/Security");
         await Assertions.Expect(passkey).ToBeVisibleAsync();
 
         Assert.Empty(consoleErrors);

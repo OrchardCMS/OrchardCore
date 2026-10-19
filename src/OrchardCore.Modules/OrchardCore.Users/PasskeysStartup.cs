@@ -53,7 +53,7 @@ public sealed class PasskeysStartup : StartupBase
             });
 
         services.AddDisplayDriver<LoginForm, PasskeyLoginFormDisplayDriver>();
-        services.AddDisplayDriver<UserMenu, PasskeyUserMenuDisplayDriver>();
+        services.AddDisplayDriver<UserSecurity, PasskeyUserSecurityDisplayDriver>();
         services.AddDisplayDriver<User, UserPasskeyDisplayDriver>();
     }
 

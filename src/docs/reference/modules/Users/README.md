@@ -13,6 +13,7 @@ The module contains the following features apart from the base feature:
 - User Time Zone: Provides a way to set the time zone per user.
 - Custom User Settings: See [its own documentation page](CustomUserSettings/README.md).
 - [Users Authentication Ticket Store](./TicketStore.md): Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.
+- User Security: Provides the [Security page](#security-page), where users manage their two-factor authentication and their passkeys. This feature is enabled by dependency by the two-factor and passkey features.
 - Two-Factor Authentication Services: Provides Two-factor core services. This feature cannot be manually enabled or disable as it is enabled by dependency on demand.
 - Two-Factor Email Method: Allows users to two-factor authenticate using an email.
 - Two-Factor Authenticator App Method: Allows users to two-factor authenticate using any Authenticator App.
@@ -54,6 +55,19 @@ When **Users must verify their email address** is enabled in the User Registrati
 
 The action is only offered for about 10 minutes after the successful password check, in the same browser. A short-lived cookie remembers which user passed the check; it doesn't sign the user in. A user can request a new email at most once a minute. When the [Rate Limits](../RateLimits/README.md) feature is enabled, the `ResendEmailConfirmation` route is also limited to 2 requests per minute per IP address, using the `email-confirmation` policy.
 
+## Security Page
+
+The **User Security** feature provides the **Security** page (`/Security`), linked from the **Security** item of the user menu, where users manage their security settings. Each feature adds its own section to the page:
+
+- **Two-Factor Authentication**, when the **Two-Factor Authentication Services** are enabled by one of the two-factor methods: whether two-factor authentication is enabled, the preferred method, the methods, and the recovery codes.
+- **Passkeys**, when the **Passkeys** feature is enabled: the passkeys of the user.
+
+The page is the `UserSecurity` shape, built by the display drivers of the `UserSecurity` model, so a module can add its own section with a `DisplayDriver<UserSecurity>`.
+
+The `/TwoFactor` path, and its custom value set in `TwoFactorAuthenticationPath`, redirects to the Two-Factor Authentication section, and `/Passkeys` redirects to the Passkeys section.
+
+By default, the Security page and the pages it links to, such as the setup of an authenticator app or the recovery codes, use the admin theme. To use the site theme instead, select **Use site theme for the security pages** in `Settings` → `Security` → `User Login`, on the **Security Page** tab.
+
 ## Two-factor Authentication
 
 Orchard Core includes the features needed to secure your app with two-factor authentication. To use two-factor authentication, enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method". Configure the process from `Settings` → `Security` → `User Login` on the "Two-Factor Authentication" tab.
@@ -64,7 +78,7 @@ A passkey is a WebAuthn credential that lets a user log in with the fingerprint,
 
 Enable the **Passkeys** feature to let users:
 
-- Add, rename and remove their passkeys from the **Passkeys** page of their user menu (`/Passkeys`).
+- Add, rename and remove their passkeys from the Passkeys section of the [Security page](#security-page).
 - Log in with a passkey from the login page, with the **Log in with a passkey** button or by picking one in the autofill of the username field. The user doesn't type their username: the browser offers the passkeys it holds for the site.
 - Use a passkey as their second factor, when the **Two-Factor Authentication Services** are enabled by one of the two-factor methods.
 
@@ -75,7 +89,7 @@ By default, the browser must verify the user with a biometric or a PIN before us
 - Users who have two-factor authentication enabled aren't asked for a second factor after logging in with a passkey.
 - Users whose role requires two-factor authentication aren't asked to set up a two-factor method when they log in with a passkey. They are still asked to when they log in with their password.
 
-When the two-factor services are enabled, passkeys are also listed as a two-factor method on the **Two-Factor Authentication** page:
+When the two-factor services are enabled, passkeys are also listed as a two-factor method in the Two-Factor Authentication section of the Security page:
 
 - Adding a passkey doesn't enable two-factor authentication. A user who has a passkey can enable it, and then confirm it's them with one of their passkeys after logging in with their password.
 - When two-factor authentication is required for the user, adding a passkey enables it, as when configuring another method.
@@ -156,11 +170,14 @@ If you want to specify custom paths to access the authentication related urls, y
       "ChangePasswordUrl": "ChangePassword",
       "ChangePasswordConfirmationUrl": "ChangePasswordConfirmation",
       "ExternalLoginsUrl": "ExternalLogins",
+      "SecurityPath": "Security",
       "TwoFactorAuthenticationPath": "TwoFactor"
     }
   }
 }
 ```
+
+`TwoFactorAuthenticationPath` is the path of the former two-factor authentication page, which redirects to the Security page.
 
 ## Audit Trail Integration
 
@@ -380,7 +397,9 @@ User module settings can be configured using the `Settings` recipe step:
       "TwoFactorLoginSettings": {
         "RequireTwoFactorAuthentication": false,
         "AllowRememberClientTwoFactorAuthentication": true,
-        "NumberOfRecoveryCodesToGenerate": 5,
+        "NumberOfRecoveryCodesToGenerate": 5
+      },
+      "UserSecuritySettings": {
         "UseSiteTheme": false
       },
       "RoleLoginSettings": {

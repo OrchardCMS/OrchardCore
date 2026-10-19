@@ -51,5 +51,7 @@ public static class UserConstants
         public const string ResetPassword = "OrchardCore.Users.ResetPassword";
 
         public const string Passkeys = "OrchardCore.Users.Passkeys";
+
+        public const string UserSecurity = "OrchardCore.Users.Security";
     }
 }

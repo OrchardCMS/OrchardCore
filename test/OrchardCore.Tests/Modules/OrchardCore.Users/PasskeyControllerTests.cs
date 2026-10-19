@@ -31,7 +31,7 @@ public class PasskeyControllerTests
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-        Assert.EndsWith("/Passkeys", response.Headers.Location.ToString());
+        Assert.EndsWith("/Security#passkeys", response.Headers.Location.ToString());
 
         var passkeys = await GetPasskeysAsync(context);
         var passkey = Assert.Single(passkeys);
@@ -157,7 +157,7 @@ public class PasskeyControllerTests
         await LoginWithPasswordAsync(client);
         await RegisterPasskeyAsync(client, authenticator, "My laptop");
 
-        var page = await client.GetStringAsync("Passkeys", TestContext.Current.CancellationToken);
+        var page = await client.GetStringAsync("Security", TestContext.Current.CancellationToken);
         var token = AntiForgeryHelper.ExtractAntiForgeryToken(page);
 
         // Act
@@ -220,6 +220,42 @@ public class PasskeyControllerTests
     }
 
     [Fact]
+    public async Task Security_WithTwoFactorAndPasskeys_ShowsBothSections()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
+        var client = CreateClient(context, out _);
+
+        await LoginWithPasswordAsync(client);
+
+        // Act
+        var page = await client.GetStringAsync("Security", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Contains("id=\"two-factor\"", page);
+        Assert.Contains("id=\"passkeys\"", page);
+    }
+
+    [Theory]
+    [InlineData("TwoFactor", "/Security#two-factor")]
+    [InlineData("Passkeys", "/Security#passkeys")]
+    public async Task FormerPage_WhenRequested_RedirectsToSecuritySection(string path, string expectedLocation)
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
+        var client = CreateClient(context, out _);
+
+        await LoginWithPasswordAsync(client);
+
+        // Act
+        var response = await client.GetAsync(path, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal($"/{context.TenantName}{expectedLocation}", response.Headers.Location.ToString());
+    }
+
+    [Fact]
     public async Task Login_RateLimitExceeded_ReturnsTooManyRequests()
     {
         // Arrange
@@ -254,7 +290,7 @@ public class PasskeyControllerTests
 
     private static async Task<HttpResponseMessage> RegisterPasskeyAsync(HttpClient client, TestPasskeyAuthenticator authenticator, string name)
     {
-        var page = await client.GetStringAsync("Passkeys", TestContext.Current.CancellationToken);
+        var page = await client.GetStringAsync("Security", TestContext.Current.CancellationToken);
         var token = AntiForgeryHelper.ExtractAntiForgeryToken(page);
 
         var options = await PostAsync(client, "OrchardCore.Users/Passkey/CreationOptions", token, []);

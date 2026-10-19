@@ -66,34 +66,9 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index()
-    {
-        var user = await UserManager.GetUserAsync(User);
-
-        if (user is not User u)
-        {
-            return UserNotFound();
-        }
-
-        var model = new PasskeysViewModel
-        {
-            IsTwoFactorMethod = IsTwoFactorMethod,
-            IsTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user),
-            Passkeys = u.Passkeys
-                .OrderBy(passkey => passkey.CreatedUtc)
-                .Select(passkey => new PasskeyEntryViewModel
-                {
-                    Id = Base64Url.EncodeToString(passkey.CredentialId),
-                    Name = passkey.Name,
-                    CreatedUtc = passkey.CreatedUtc,
-                    LastUsedUtc = passkey.LastUsedUtc,
-                    IsBackedUp = passkey.IsBackedUp,
-                })
-                .ToList(),
-        };
-
-        return View(model);
-    }
+    // The passkeys are managed from a section of the Security page.
+    public IActionResult Index()
+        => RedirectToPasskeys();
 
     [HttpPost]
     public async Task<IActionResult> CreationOptions()
@@ -122,7 +97,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         {
             await Notifier.ErrorAsync(H["The passkey couldn't be added."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToPasskeys();
         }
 
         var result = await _passkeyService.PerformAttestationAsync(model.Credential);
@@ -136,7 +111,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
 
             await Notifier.ErrorAsync(H["The passkey couldn't be added. It may already be registered."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToPasskeys();
         }
 
         // The options were created for the current user, make sure the credential was created for them too.
@@ -144,7 +119,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         {
             await Notifier.ErrorAsync(H["The passkey couldn't be added."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToPasskeys();
         }
 
         var passkeys = await UserManager.GetPasskeysAsync(user);
@@ -159,7 +134,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         {
             await Notifier.ErrorAsync(H["The passkey couldn't be added."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToPasskeys();
         }
 
         await Notifier.SuccessAsync(H["The passkey was added."]);
@@ -175,7 +150,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
             return await RedirectToTwoFactorAsync(user);
         }
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToPasskeys();
     }
 
     [HttpPost]
@@ -194,7 +169,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         {
             await Notifier.ErrorAsync(H["The passkey couldn't be renamed."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToPasskeys();
         }
 
         passkey.Name = model.Name.Trim();
@@ -202,7 +177,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         await UserManager.AddOrUpdatePasskeyAsync(user, passkey);
         await Notifier.SuccessAsync(H["The passkey was renamed."]);
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToPasskeys();
     }
 
     [HttpPost]
@@ -221,7 +196,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         {
             await Notifier.ErrorAsync(H["The passkey couldn't be removed."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToPasskeys();
         }
 
         async Task RemovePasskeyAsync()
@@ -241,7 +216,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
 
         await RemovePasskeyAsync();
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToPasskeys();
     }
 
     [HttpPost]
@@ -371,6 +346,9 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
 
         return await LoggedInActionResultAsync(user, returnUrl);
     }
+
+    private IActionResult RedirectToPasskeys()
+        => RedirectToSecurity("passkeys");
 
     private bool IsTwoFactorMethod
         => TwoFactorOptions.Providers.Contains(UserConstants.PasskeyTwoFactorProvider);

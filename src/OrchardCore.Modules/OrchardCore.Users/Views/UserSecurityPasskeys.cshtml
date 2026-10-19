@@ -1,24 +1,10 @@
 @model PasskeysViewModel
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
-    RenderTitleSegments(T["Passkeys"]);
-    ViewLayout = "Layout__TwoFactor";
-
     var tokens = Antiforgery.GetAndStoreTokens(Context);
 }
-<style asp-name="font-awesome" at="Head" version="7"></style>
 
-@if (Model.IsTwoFactorMethod)
-{
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@T["Passkeys"]</li>
-        </ol>
-    </nav>
-}
-
-<div class="card text-bg-theme">
+<div class="card text-bg-theme" id="passkeys">
     <div class="card-header">@T["Passkeys"]</div>
 
     <div class="card-body">
@@ -33,7 +19,7 @@
             @T["This browser doesn't support passkeys."]
         </div>
 
-        <form asp-action="Create" method="post" class="no-multisubmit" data-passkey-register
+        <form asp-action="Create" asp-controller="Passkey" method="post" class="no-multisubmit" data-passkey-register
               data-options-url="@Url.Action("CreationOptions", "Passkey", new { area = UserConstants.Features.Users })"
               data-antiforgery-name="@tokens.FormFieldName"
               data-antiforgery-token="@tokens.RequestToken"
@@ -85,14 +71,14 @@
                                 }
                             </small>
                         </div>
-                        <form asp-action="Delete" method="post" class="no-multisubmit" data-passkey-confirm="@T["Are you sure you want to remove this passkey? You won't be able to log in with it anymore."]">
+                        <form asp-action="Delete" asp-controller="Passkey" method="post" class="no-multisubmit" data-passkey-confirm="@T["Are you sure you want to remove this passkey? You won't be able to log in with it anymore."]">
                             <input type="hidden" name="Id" value="@passkey.Id" />
                             <button type="submit" class="btn btn-sm btn-danger">@T["Remove"]</button>
                         </form>
                     </div>
                     <details class="mt-2">
                         <summary class="small">@T["Rename"]</summary>
-                        <form asp-action="Rename" method="post" class="mt-2 no-multisubmit">
+                        <form asp-action="Rename" asp-controller="Passkey" method="post" class="mt-2 no-multisubmit">
                             <input type="hidden" name="Id" value="@passkey.Id" />
                             <div class="input-group">
                                 <input name="Name" class="form-control" value="@passkey.Name" maxlength="@RenamePasskeyViewModel.MaxNameLength" required aria-label="@T["Name"]" />

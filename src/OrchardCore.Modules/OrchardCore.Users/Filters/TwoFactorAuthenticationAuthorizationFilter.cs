@@ -17,6 +17,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
         typeof(AuthenticatorAppController).ControllerName(),
         typeof(SmsAuthenticatorController).ControllerName(),
         typeof(PasskeyController).ControllerName(),
+        typeof(SecurityController).ControllerName(),
     ];
 
     private readonly UserOptions _userOptions;
@@ -40,6 +41,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
         if ((context.HttpContext?.User.Identity?.IsAuthenticated ?? false) == false ||
             context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase) ||
             context.HttpContext.Request.Path.Equals("/" + _userOptions.TwoFactorAuthenticationPath, StringComparison.OrdinalIgnoreCase) ||
+            context.HttpContext.Request.Path.Equals("/" + _userOptions.SecurityPath, StringComparison.OrdinalIgnoreCase) ||
             context.HttpContext.Request.Path.Equals("/TwoFactor-Authenticator/", StringComparison.OrdinalIgnoreCase))
         {
             return;
@@ -75,7 +77,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
 
             if (await _twoFactorHandlerCoordinator.IsRequiredAsync(user))
             {
-                context.Result = new RedirectResult("~/" + _userOptions.TwoFactorAuthenticationPath);
+                context.Result = new RedirectResult("~/" + _userOptions.SecurityPath);
             }
         }
     }

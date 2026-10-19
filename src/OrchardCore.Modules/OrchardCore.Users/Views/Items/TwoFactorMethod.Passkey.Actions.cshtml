@@ -2,11 +2,12 @@
 
 @model TwoFactorMethod
 
+@* The passkeys are managed from their own section of the Security page. *@
 @if (Model.IsEnabled)
 {
-    <a asp-action="Index" asp-controller="Passkey" class="btn btn-sm btn-primary">@T["Manage"]</a>
+    <a href="#passkeys" class="btn btn-sm btn-primary">@T["Manage"]</a>
 }
 else
 {
-    <a asp-action="Index" asp-controller="Passkey" class="btn btn-sm btn-success">@T["Add"]</a>
+    <a href="#passkeys" class="btn btn-sm btn-success">@T["Add"]</a>
 }

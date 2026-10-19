@@ -1,16 +1,4 @@
-@using Microsoft.AspNetCore.Http.Features
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.Extensions.Options
-@using OrchardCore.Users.Events;
-@using OrchardCore.Users.Models
-
 @model TwoFactorAuthenticationViewModel
-@inject ITwoFactorAuthenticationHandlerCoordinator TwoFactorAuthenticationHandlerCoordinator
-@{
-    RenderTitleSegments(T["Two-Factor Authentication"]);
-    ViewLayout = "Layout__TwoFactor";
-}
-<style asp-name="font-awesome" at="Head" version="7"></style>
 
 @if (Model.AuthenticationMethods.Count == 0)
 {
@@ -22,14 +10,16 @@
     return;
 }
 
-@if (User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
+@* A user who logged in with multiple factors, for instance with a passkey, isn't asked to enable it. *@
+@if (User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType) &&
+    !User.HasClaim(UserConstants.AuthenticationMethodsClaimType, UserConstants.MultiFactorAuthenticationMethod))
 {
     <div class="alert alert-danger text-center py-3">
         @T["Two-factor authentication must be enabled before proceeding."]
     </div>
 }
 
-<div class="card text-bg-theme">
+<div class="card text-bg-theme" id="two-factor">
 
     <div class="card-header">
         <div class="d-flex justify-content-between">
@@ -37,7 +27,7 @@
 
             @if (Model.IsTwoFaEnabled && Model.CanDisableTwoFactor)
             {
-                <a asp-action="DisableTwoFactorAuthentication" class="btn btn-sm btn-warning">@T["Disable two-factor authentication"]</a>
+                <a asp-action="DisableTwoFactorAuthentication" asp-controller="TwoFactorAuthentication" class="btn btn-sm btn-warning">@T["Disable two-factor authentication"]</a>
             }
             else if (Model.IsTwoFaEnabled)
             {
@@ -45,7 +35,7 @@
             }
             else if (!Model.IsTwoFaEnabled && Model.ValidTwoFactorProviders.Count > 0)
             {
-                <form method="post" asp-action="EnableTwoFactorAuthentication">
+                <form method="post" asp-action="EnableTwoFactorAuthentication" asp-controller="TwoFactorAuthentication">
                     <button type="submit" class="btn btn-sm btn-success">@T["Enable"]</button>
                 </form>
             }
@@ -85,7 +75,7 @@
             {
                 <div class="mb-3">
                     <p class="mb-1">@T["The current device has been saved during the two-factor authentication process."]</p>
-                    <form method="post" asp-action="ForgetTwoFactorClient">
+                    <form method="post" asp-action="ForgetTwoFactorClient" asp-controller="TwoFactorAuthentication">
                         <button type="submit" class="btn btn-sm btn-primary">@T["Forget this device"]</button>
                     </form>
                 </div>
@@ -94,7 +84,7 @@
 
         @if (Model.ValidTwoFactorProviders.Count > 1)
         {
-            <form method="post">
+            <form method="post" asp-action="Index" asp-controller="TwoFactorAuthentication">
                 <div class="ocat-wrapper">
                     <label asp-for="PreferredProvider" class="ocat-label">@T["Preferred Two-Factor Method"]</label>
                     <div class="ocat-end">
@@ -164,7 +154,7 @@
                 </div>
 
                 <div class="col-auto d-flex align-items-center">
-                    <a asp-action="GenerateRecoveryCodes" class="btn btn-sm btn-warning">@T["Reset codes"]</a>
+                    <a asp-action="GenerateRecoveryCodes" asp-controller="TwoFactorAuthentication" class="btn btn-sm btn-warning">@T["Reset codes"]</a>
                 </div>
             </div>
         </div>
