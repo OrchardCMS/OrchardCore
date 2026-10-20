@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Playwright;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
@@ -24,7 +25,7 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Apis.GraphQL");
         await CreateQueryAsync(page, prefix);
 
-        await CreateRoleAndUserAsync(page, prefix, "ExecuteGraphQL");
+        await CreateRoleAndUserAsync(page, prefix, GraphQLPermissions.ExecuteGraphQL.Name);
 
         await using var errorResponse = await ExecuteQueryAsync(page, prefix);
         var content = await errorResponse.TextAsync();
