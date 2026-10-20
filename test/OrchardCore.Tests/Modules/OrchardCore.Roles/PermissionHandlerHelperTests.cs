@@ -124,14 +124,17 @@ public class PermissionHandlerHelperTests
 
     private static RolesPermissionsHandler CreatePermissionHandler(params Role[] roles)
     {
-        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        var lookupNormalizer = new UpperInvariantLookupNormalizer();
+        var roleStore = new Mock<IRoleStore<IRole>>();
 
         foreach (var role in roles)
         {
-            roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
+            roleStore
+                .Setup(m => m.FindByNameAsync(lookupNormalizer.NormalizeName(role.RoleName), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(role);
         }
 
         var permissionGrantingService = new DefaultPermissionGrantingService();
-        return new RolesPermissionsHandler(roleManager.Object, permissionGrantingService);
+        return new RolesPermissionsHandler(roleStore.Object, lookupNormalizer, permissionGrantingService);
     }
 }

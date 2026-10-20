@@ -1,4 +1,5 @@
 using OrchardCore.ContentManagement;
+using OrchardCore.Layers.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 
@@ -12,4 +13,9 @@ public class WidgetWrapper : ShapeViewModel
 
     public ContentItem Widget { get; set; }
     public IShape Content { get; set; }
+
+    /// <summary>
+    /// Gets or sets the layer metadata of the widget, when already known by the code that renders it.
+    /// </summary>
+    public LayerMetadata LayerMetadata { get; set; }
 }

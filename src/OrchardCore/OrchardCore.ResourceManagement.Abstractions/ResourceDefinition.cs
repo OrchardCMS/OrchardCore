@@ -32,6 +32,12 @@ public class ResourceDefinition
     public string Name { get; private set; }
     public string Type { get; private set; }
     public string Version { get; private set; }
+
+    /// <summary>
+    /// Gets the parsed <see cref="Version"/>, or <see langword="null"/> if the resource has no version.
+    /// </summary>
+    public Version ParsedVersion { get; private set; }
+
     public bool? AppendVersion { get; private set; }
     public string Url { get; private set; }
     public string UrlDebug { get; private set; }
@@ -126,12 +132,13 @@ public class ResourceDefinition
     /// <param name="version">The version to set, in the form of. <code>major.minor[.build[.revision]]</code></param>
     public ResourceDefinition SetVersion(string version)
     {
-        if (!System.Version.TryParse(version, out _))
+        if (!System.Version.TryParse(version, out var parsedVersion))
         {
             throw new FormatException("The resource version should be in the form of major.minor[.build[.revision]].");
         }
 
         Version = version;
+        ParsedVersion = parsedVersion;
 
         return this;
     }

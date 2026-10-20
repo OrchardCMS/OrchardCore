@@ -55,8 +55,9 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
         var cacheKey = await GetCacheKey(context);
 
-        context = await GetCachedContextAsync(cacheKey);
-        if (context == null)
+        // The cached context is only used to know whether the entry is still known, so it doesn't need to be deserialized.
+        var cachedContext = await GetCachedStringAsync(GetCacheContextCacheKey(cacheKey));
+        if (cachedContext == null)
         {
             // We don't know the context, so we must treat this as a cache miss
             return null;
@@ -190,16 +191,4 @@ public class DefaultDynamicCacheService : IDynamicCacheService
         return null;
     }
 
-    private async Task<CacheContext> GetCachedContextAsync(string cacheKey)
-    {
-        var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheKey));
-
-        if (cachedValue == null)
-        {
-            return null;
-        }
-
-        var esiModel = JConvert.DeserializeObject<CacheContextModel>(cachedValue);
-        return esiModel.ToCacheContext();
-    }
 }

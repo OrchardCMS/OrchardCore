@@ -2,7 +2,12 @@
 @using OrchardCore.Layers.Models
 
 @{
-    Model.Widget.TryGet<LayerMetadata>(out var layerMetadata);
+    var layerMetadata = Model.LayerMetadata;
+
+    if (layerMetadata == null)
+    {
+        Model.Widget.TryGet<LayerMetadata>(out layerMetadata);
+    }
 }
 
 <div class="widget-container">

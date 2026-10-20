@@ -190,9 +190,7 @@ public class ResourceManager : IResourceManager
         {
             var resourceDefinition = definitions[i];
 
-            var version = resourceDefinition.Version != null
-                ? new Version(resourceDefinition.Version)
-                : null;
+            var version = resourceDefinition.ParsedVersion;
 
             if (lower != null)
             {
@@ -203,7 +201,7 @@ public class ResourceManager : IResourceManager
             }
 
             // Use the highest version of all matches. Resources that don't specify a version have the lowest priority.
-            if (resource?.Version is null || new Version(resource.Version) < version)
+            if (resource?.ParsedVersion is null || resource.ParsedVersion < version)
             {
                 resource = resourceDefinition;
             }
