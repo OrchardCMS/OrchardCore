@@ -28,10 +28,10 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await UserHelper.CreateUserAsync(page, prefix, UserName, "graphql-query-runner@test.com", Password, RoleName);
         await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
 
-        var response = await ExecuteQueryAsync(page, prefix);
-        var content = await response.TextAsync();
+        await using var errorResponse = await ExecuteQueryAsync(page, prefix);
+        var content = await errorResponse.TextAsync();
 
-        Assert.True(response.Status == 401, content);
+        Assert.True(errorResponse.Status == 401, content);
         using (var result = JsonDocument.Parse(content))
         {
             Assert.Equal(
@@ -44,10 +44,10 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await SetRolePermissionAsync(page, prefix, RoleName, $"ExecuteApi_{QueryName}");
         await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
 
-        response = await ExecuteQueryAsync(page, prefix);
-        content = await response.TextAsync();
+        await using var successResponse = await ExecuteQueryAsync(page, prefix);
+        content = await successResponse.TextAsync();
 
-        Assert.True(response.Status == 200, content);
+        Assert.True(successResponse.Status == 200, content);
         using (var result = JsonDocument.Parse(content))
         {
             var item = Assert.Single(result.RootElement.GetProperty("data").GetProperty("permissionTestQuery").EnumerateArray());
