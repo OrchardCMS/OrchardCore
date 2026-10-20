@@ -7,9 +7,10 @@
 }
 else
 {
-    @* The default top-left position covers the admin menu. Dock the widget to the middle of the right edge instead,
-       behind a toggle that tucks it away, and follow the admin's light and dark themes. *@
-    @MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext, new RenderOptions { Position = RenderPosition.Right })
+    @* The default top-left position covers the admin menu. Dock the widget to the middle of the edge where lines end
+       instead, the right one or the left one in a right-to-left language, behind a toggle that tucks it away, and
+       follow the admin's light and dark themes. *@
+    @MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext, new RenderOptions { Position = Orchard.IsRightToLeft() ? RenderPosition.Left : RenderPosition.Right })
 
     <button type="button" id="oc-mp-toggle" class="oc-mp-toggle" data-hide-label="@T["Hide MiniProfiler"]" data-show-label="@T["Show MiniProfiler"]" hidden></button>
 }

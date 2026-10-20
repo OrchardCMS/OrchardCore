@@ -32,8 +32,12 @@ const isCollapsed = () => {
 const setCollapsed = (container: HTMLElement, toggle: HTMLButtonElement, collapsed: boolean) => {
     const label = (collapsed ? toggle.dataset.showLabel : toggle.dataset.hideLabel) ?? "";
 
+    // The arrow points to the edge that the widget tucks into, or away from it to bring the widget back.
+    const towardsEdge = container.classList.contains("mp-left") ? "‹" : "›";
+    const awayFromEdge = towardsEdge === "‹" ? "›" : "‹";
+
     container.classList.toggle("oc-mp-collapsed", collapsed);
-    toggle.textContent = collapsed ? "‹" : "›";
+    toggle.textContent = collapsed ? awayFromEdge : towardsEdge;
     toggle.title = label;
     toggle.setAttribute("aria-label", label);
     toggle.setAttribute("aria-expanded", String(!collapsed));

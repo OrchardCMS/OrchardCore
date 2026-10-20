@@ -1,9 +1,19 @@
-// Docks the MiniProfiler widget to the middle of the right edge of admin pages, behind a toggle that tucks it away.
+// MiniProfiler lays its widget and queries out from left to right, like the SQL and the numbers they show, whatever
+// the direction of the page around them.
+.mp-results,
+.mp-overlay {
+    direction: ltr;
+}
+
+// Docks the MiniProfiler widget to the middle of the end edge of admin pages, behind a toggle that tucks it away.
 .mp-results.oc-mp-docked {
     top: 0;
     bottom: 0;
     height: fit-content;
     margin: auto 0;
+
+    // Lift the widget off the page, so that it does not blend into what lies behind it.
+    box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.3);
 
     .oc-mp-toggle {
         display: block;
@@ -13,8 +23,6 @@
         border: 0;
         border-top: var(--mp-result-border);
         border-bottom: var(--mp-result-border);
-        border-left: var(--mp-result-border);
-        border-top-left-radius: var(--mp-result-border-radius);
         background-color: var(--mp-main-bg-color);
         color: var(--mp-muted-color);
         font: 16px/1.25 sans-serif;
@@ -27,14 +35,9 @@
         }
     }
 
-    .mp-result:last-child .mp-button {
-        border-bottom-left-radius: var(--mp-result-border-radius);
-    }
-
     &.oc-mp-collapsed {
         .oc-mp-toggle {
             padding: 12px 4px;
-            border-bottom-left-radius: var(--mp-result-border-radius);
 
             // Keep a warning visible while the profiles that carry it are tucked away.
             &.oc-mp-warning {
@@ -46,6 +49,25 @@
         .mp-result,
         .mp-controls {
             display: none;
+        }
+    }
+
+    // Round and border the side that faces the page: the left one when docked to the right edge, and the other way
+    // around in right-to-left languages.
+    @each $edge, $side in (right: left, left: right) {
+        &.mp-#{$edge} {
+            border-top-#{$side}-radius: var(--mp-result-border-radius);
+            border-bottom-#{$side}-radius: var(--mp-result-border-radius);
+
+            .oc-mp-toggle {
+                border-#{$side}: var(--mp-result-border);
+                border-top-#{$side}-radius: var(--mp-result-border-radius);
+            }
+
+            .mp-result:last-child .mp-button,
+            &.oc-mp-collapsed .oc-mp-toggle {
+                border-bottom-#{$side}-radius: var(--mp-result-border-radius);
+            }
         }
     }
 

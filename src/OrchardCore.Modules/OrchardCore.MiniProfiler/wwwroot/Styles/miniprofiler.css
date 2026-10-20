@@ -1,8 +1,14 @@
+.mp-results,
+.mp-overlay {
+  direction: ltr;
+}
+
 .mp-results.oc-mp-docked {
   top: 0;
   bottom: 0;
   height: fit-content;
   margin: auto 0;
+  box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.3);
 }
 .mp-results.oc-mp-docked .oc-mp-toggle {
   display: block;
@@ -12,8 +18,6 @@
   border: 0;
   border-top: var(--mp-result-border);
   border-bottom: var(--mp-result-border);
-  border-left: var(--mp-result-border);
-  border-top-left-radius: var(--mp-result-border-radius);
   background-color: var(--mp-main-bg-color);
   color: var(--mp-muted-color);
   font: 16px/1.25 sans-serif;
@@ -23,12 +27,8 @@
 .mp-results.oc-mp-docked .oc-mp-toggle:hover, .mp-results.oc-mp-docked .oc-mp-toggle:focus-visible {
   color: var(--mp-link-color);
 }
-.mp-results.oc-mp-docked .mp-result:last-child .mp-button {
-  border-bottom-left-radius: var(--mp-result-border-radius);
-}
 .mp-results.oc-mp-docked.oc-mp-collapsed .oc-mp-toggle {
   padding: 12px 4px;
-  border-bottom-left-radius: var(--mp-result-border-radius);
 }
 .mp-results.oc-mp-docked.oc-mp-collapsed .oc-mp-toggle.oc-mp-warning {
   background-color: var(--mp-button-warning-bg-color);
@@ -37,6 +37,28 @@
 .mp-results.oc-mp-docked.oc-mp-collapsed .mp-result,
 .mp-results.oc-mp-docked.oc-mp-collapsed .mp-controls {
   display: none;
+}
+.mp-results.oc-mp-docked.mp-right {
+  border-top-left-radius: var(--mp-result-border-radius);
+  border-bottom-left-radius: var(--mp-result-border-radius);
+}
+.mp-results.oc-mp-docked.mp-right .oc-mp-toggle {
+  border-left: var(--mp-result-border);
+  border-top-left-radius: var(--mp-result-border-radius);
+}
+.mp-results.oc-mp-docked.mp-right .mp-result:last-child .mp-button, .mp-results.oc-mp-docked.mp-right.oc-mp-collapsed .oc-mp-toggle {
+  border-bottom-left-radius: var(--mp-result-border-radius);
+}
+.mp-results.oc-mp-docked.mp-left {
+  border-top-right-radius: var(--mp-result-border-radius);
+  border-bottom-right-radius: var(--mp-result-border-radius);
+}
+.mp-results.oc-mp-docked.mp-left .oc-mp-toggle {
+  border-right: var(--mp-result-border);
+  border-top-right-radius: var(--mp-result-border-radius);
+}
+.mp-results.oc-mp-docked.mp-left .mp-result:last-child .mp-button, .mp-results.oc-mp-docked.mp-left.oc-mp-collapsed .oc-mp-toggle {
+  border-bottom-right-radius: var(--mp-result-border-radius);
 }
 .mp-results.oc-mp-docked .mp-popup {
   position: fixed;
