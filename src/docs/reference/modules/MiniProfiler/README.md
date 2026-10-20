@@ -28,19 +28,19 @@ The module adds the widget to the `Footer` zone for MVC view and Razor Page resu
 
 The Administrator role receives both permissions by default. Grant either permission to another role from **Security → Roles** only when its members are allowed to inspect profiling data. The backend widget does not require a separate application option; it appears when the user has the backend permission.
 
-On front end pages, the widget uses Mini Profiler's default position, the top left corner. In the admin, it is docked to the middle of the edge where lines end, the right one or the left one in a right-to-left language, so that it stays clear of the menu and the top navbar, and its toggle hides or shows the profiles. The browser remembers whether the widget is collapsed, and the widget follows the admin's light or dark theme.
+On front end pages, the widget uses Mini Profiler's default position: the top-left corner. In the admin, it is docked to the middle of the edge where lines end, the right one or the left one in a right-to-left language, so that it stays clear of the menu and the top navbar, and its toggle hides or shows the profiles. The browser remembers whether the widget is collapsed, and the widget follows the admin's light or dark theme.
 
 Click a timing in the widget to inspect the request. In addition to MiniProfiler's request, MVC, and view timings, Orchard Core contributes:
 
 - `Shape: <shape-type>` steps for shapes rendered through display management.
 - SQL custom timings from the YesSql connection used by the tenant.
 
-Click the SQL duration of a timing to open the queries view. It lists the commands of the request in the order they ran, numbered from `#1`, each with its duration, its start time from the beginning of the request, the time to its first result, and the step that ran it. Hover a badge to read more about it:
+Click the SQL duration of a timing to open the queries view. It lists the commands of the request in the order they ran, numbered from `#1`, each with its duration, its start time from the beginning of the request, the time to its first result, and the step that ran it. Hover over a badge to read more about it:
 
-- **Duplicate** marks a command whose text already ran earlier in the same request. Repeated commands often point to a missing cache, or to a query inside a loop.
+- **Duplicate** marks a command whose text already ran earlier in the same request. Repeated commands often point to a missing cache or to a query inside a loop.
 - **Error** marks a command that threw an exception.
 
-The rows between the queries tell how long the request ran without queries, and which step spent most of that time. In the timing tree and on the widget button, a red `!` marks the steps and requests that run duplicate or failing commands.
+The rows between the queries show how long the request ran without queries and which step spent most of that time. In the timing tree and on the widget button, a red `!` marks the steps and requests that run duplicate or failing commands.
 
 Requests that do not render an Orchard layout, such as APIs and decoupled responses, are still profiled but do not receive a widget. The widget also requires the active theme or admin theme to render the `Footer` zone.
 
