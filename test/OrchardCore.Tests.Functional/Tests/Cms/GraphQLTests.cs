@@ -28,10 +28,10 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         await CreateRoleAndUserAsync(page, prefix, GraphQLPermissions.ExecuteGraphQL.Name);
 
-        await using var errorResponse = await ExecuteQueryAsync(page, prefix);
-        var content = await errorResponse.TextAsync();
+        var response = await ExecuteQueryAsync(page, prefix);
+        var content = await response.TextAsync();
 
-        Assert.True(errorResponse.Status == (int)HttpStatusCode.Unauthorized, content);
+        Assert.True(response.Status == (int)HttpStatusCode.Unauthorized, content);
         using (var result = JsonDocument.Parse(content))
         {
             Assert.Equal(
@@ -41,10 +41,10 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         await AddPermissionToRoleAsync(page, prefix, $"ExecuteApi_{QueryName}");
 
-        await using var successResponse = await ExecuteQueryAsync(page, prefix);
-        content = await successResponse.TextAsync();
+        response = await ExecuteQueryAsync(page, prefix);
+        content = await response.TextAsync();
 
-        Assert.True(successResponse.Status == (int)HttpStatusCode.OK, content);
+        Assert.True(response.Status == (int)HttpStatusCode.OK, content);
         using (var result = JsonDocument.Parse(content))
         {
             var item = Assert.Single(result.RootElement.GetProperty("data").GetProperty("permissionTestQuery").EnumerateArray());
@@ -65,17 +65,17 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await CreateRoleAndUserAsync(page, prefix);
 
         var query = "{ blogPost { displayText } }";
-        await using var errorResponse = await ExecuteQueryAsync(page, prefix, query);
-        var content = await errorResponse.TextAsync();
+        var response = await ExecuteQueryAsync(page, prefix, query);
+        var content = await response.TextAsync();
 
-        Assert.True(errorResponse.Status == (int)HttpStatusCode.Unauthorized, content);
+        Assert.True(response.Status == (int)HttpStatusCode.Unauthorized, content);
 
         await AddPermissionToRoleAsync(page, prefix, GraphQLPermissions.ExecuteGraphQL.Name);
 
-        await using var successResponse = await ExecuteQueryAsync(page, prefix, query);
-        content = await successResponse.TextAsync();
+        response = await ExecuteQueryAsync(page, prefix, query);
+        content = await response.TextAsync();
 
-        Assert.True(successResponse.Status == (int)HttpStatusCode.OK, content);
+        Assert.True(response.Status == (int)HttpStatusCode.OK, content);
         using (var result = JsonDocument.Parse(content))
         {
             var item = Assert.Single(result.RootElement.GetProperty("data").GetProperty("blogPost").EnumerateArray());
