@@ -131,7 +131,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
         await _tagcache.TagAsync(cacheKey, context.Tags.ToArray());
     }
 
-    private async Task<string> GetCacheKey(CacheContext context)
+    private async ValueTask<string> GetCacheKey(CacheContext context)
     {
         if (context.Contexts.Count == 0)
         {
@@ -155,7 +155,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
         return "cachecontext-" + cacheKey;
     }
 
-    private async Task<string> GetCachedStringAsync(string cacheKey)
+    private async ValueTask<string> GetCachedStringAsync(string cacheKey)
     {
         if (_localCache is not null && _localCache.TryGetValue(cacheKey, out var content))
         {
