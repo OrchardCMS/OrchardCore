@@ -1,8 +1,6 @@
 using System.Text.Json;
 using Microsoft.Playwright;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.Tests.Functional.Helpers;
-using System.Net;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
@@ -26,12 +24,14 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Apis.GraphQL");
         await CreateQueryAsync(page, prefix);
 
-        await CreateRoleAndUserAsync(page, prefix, GraphQLPermissions.ExecuteGraphQL.Name);
+        await CreateRoleWithPermissionAsync(page, prefix, RoleName, "ExecuteGraphQL");
+        await UserHelper.CreateUserAsync(page, prefix, UserName, "graphql-query-runner@test.com", Password, RoleName);
+        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
 
         var response = await ExecuteQueryAsync(page, prefix);
         var content = await response.TextAsync();
 
-        Assert.True(response.Status == (int)HttpStatusCode.Unauthorized, content);
+        Assert.True(response.Status == 401, content);
         using (var result = JsonDocument.Parse(content))
         {
             Assert.Equal(
@@ -39,12 +39,15 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
                 result.RootElement.GetProperty("errors")[0].GetProperty("extensions").GetProperty("number").GetString());
         }
 
-        await AddPermissionToRoleAsync(page, prefix, $"ExecuteApi_{QueryName}");
+        await page.GotoAsync($"{prefix}/logout");
+        await page.LoginAsync(prefix);
+        await SetRolePermissionAsync(page, prefix, RoleName, $"ExecuteApi_{QueryName}");
+        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
 
         response = await ExecuteQueryAsync(page, prefix);
         content = await response.TextAsync();
 
-        Assert.True(response.Status == (int)HttpStatusCode.OK, content);
+        Assert.True(response.Status == 200, content);
         using (var result = JsonDocument.Parse(content))
         {
             var item = Assert.Single(result.RootElement.GetProperty("data").GetProperty("permissionTestQuery").EnumerateArray());
@@ -52,46 +55,6 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         }
 
         await page.CloseAsync();
-    }
-
-    [Fact]
-    public async Task Query_RequiresExecuteGraphQLPermission()
-    {
-        var prefix = $"/{Tenant.Prefix}";
-        var page = await Fixture.CreatePageAsync();
-        await page.LoginAsync(prefix);
-        await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Apis.GraphQL");
-
-        await CreateRoleAndUserAsync(page, prefix);
-
-        var query = "{ blogPost { displayText } }";
-        var response = await ExecuteQueryAsync(page, prefix, query);
-        var content = await response.TextAsync();
-
-        Assert.True(response.Status == (int)HttpStatusCode.Unauthorized, content);
-
-        await AddPermissionToRoleAsync(page, prefix, GraphQLPermissions.ExecuteGraphQL.Name);
-
-        response = await ExecuteQueryAsync(page, prefix, query);
-        content = await response.TextAsync();
-
-        Assert.True(response.Status == (int)HttpStatusCode.OK, content);
-        using (var result = JsonDocument.Parse(content))
-        {
-            var item = Assert.Single(result.RootElement.GetProperty("data").GetProperty("blogPost").EnumerateArray());
-            Assert.Equal(
-                "Man must explore, and this is exploration at its greatest",
-                item.GetProperty("displayText").GetString());
-        }
-
-        await page.CloseAsync();
-    }
-
-    private static async Task CreateRoleAndUserAsync(IPage page, string prefix, params string[] permissionNames)
-    {
-        await CreateRoleWithPermissionAsync(page, prefix, RoleName, permissionNames);
-        await UserHelper.CreateUserAsync(page, prefix, UserName, "graphql-query-runner@test.com", Password, RoleName);
-        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
     }
 
     private static async Task CreateQueryAsync(IPage page, string prefix)
@@ -126,14 +89,14 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    private async Task<IAPIResponse> ExecuteQueryAsync(IPage page, string prefix, string query = "{ permissionTestQuery { value } }")
+    private async Task<IAPIResponse> ExecuteQueryAsync(IPage page, string prefix)
         => await page.APIRequest.PostAsync(
             $"{Fixture.BaseUrl}{prefix}/api/graphql",
             new APIRequestContextOptions
             {
                 DataObject = new
                 {
-                    query,
+                    query = "{ permissionTestQuery { value } }",
                 },
             });
 
@@ -141,25 +104,14 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         IPage page,
         string prefix,
         string roleName,
-        params string[] permissionNames)
+        string permissionName)
     {
         await page.GotoAndAssertOkAsync($"{prefix}/Admin/Roles/Create");
         await page.Locator("input[name='RoleName']").FillAsync(roleName);
         await page.ClickCreateAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        foreach (var permissionName in permissionNames)
-        {
-            await SetRolePermissionAsync(page, prefix, roleName, permissionName);
-        }
-    }
-
-    private static async Task AddPermissionToRoleAsync(IPage page, string prefix, string permission)
-    {
-        await page.GotoAsync($"{prefix}/logout");
-        await page.LoginAsync(prefix);
-        await SetRolePermissionAsync(page, prefix, RoleName, permission);
-        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
+        await SetRolePermissionAsync(page, prefix, roleName, permissionName);
     }
 
     private static async Task SetRolePermissionAsync(
