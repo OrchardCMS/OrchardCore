@@ -7,12 +7,6 @@ public sealed class Permissions : IPermissionProvider
 {
     private readonly IIndexProfileStore _indexStore;
 
-    [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.ManageLuceneIndexes'.")]
-    public static readonly Permission ManageLuceneIndexes = LuceneSearchPermissions.ManageLuceneIndexes;
-
-    [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.QueryLuceneApi'.")]
-    public static readonly Permission QueryLuceneApi = LuceneSearchPermissions.QueryLuceneApi;
-
     public Permissions(IIndexProfileStore indexStore)
     {
         _indexStore = indexStore;

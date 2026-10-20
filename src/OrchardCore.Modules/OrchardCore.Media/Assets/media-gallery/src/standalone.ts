@@ -58,7 +58,7 @@ async function loadTranslations(apiBaseUrl: string): Promise<string> {
   return "{}";
 }
 
-function mount(config: IMediaRuntimeConfig, translations: string, signalrEnabled: boolean): void {
+function mount(config: IMediaRuntimeConfig, translations: string, source: IStandaloneConfigSource): void {
   const container = document.getElementById("media-gallery");
   if (!container) {
     throw new Error('Standalone host is missing a <div id="media-gallery"> mount point.');
@@ -75,9 +75,10 @@ function mount(config: IMediaRuntimeConfig, translations: string, signalrEnabled
         translations,
         uploadFilesUrl: `${config.apiBaseUrl}api/media/Upload`,
         maxUploadChunkSize: 0,
+        maxFileSize: source.maxFileSize ?? 0,
         allowMultipleSelection: true,
         // Real-time updates need the SignalR CORS surface on the Orchard origin; opt in via config.
-        signalrEnabled: signalrEnabled ? "true" : "false",
+        signalrEnabled: source.signalrEnabled ? "true" : "false",
       }),
   });
 
@@ -92,7 +93,7 @@ async function bootstrap(): Promise<void> {
     const config = resolveStandaloneConfig(source);
     setRuntimeConfig(config);
     const translations = await loadTranslations(config.apiBaseUrl);
-    mount(config, translations, Boolean(source.signalrEnabled));
+    mount(config, translations, source);
   } catch (err) {
     console.error("[media-gallery] standalone bootstrap failed", err);
     const container = document.getElementById("media-gallery");

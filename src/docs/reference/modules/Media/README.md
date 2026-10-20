@@ -405,11 +405,34 @@ The following configuration values are used by default and can be customized:
       // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
       "MaxUploadChunkSize": 104857600,
       // The lifetime of temporary files created during upload. Defaults to 1 hour.
-      "TemporaryFileLifetime": "01:00:00"
+      "TemporaryFileLifetime": "01:00:00",
+      // Disables the thumbnails (grid) view in the media gallery, e.g. for security or performance
+      // reasons. When enabled, the gallery always uses the list view and hides the grid/list toggle.
+      "DisableThumbnails": false
     }
   }
 }
 ```
+
+`MaxFileSize` is the maximum size of an individual upload, in bytes. The admin media library
+and media field editors pass the tenant's configured value to the uploader, including galleries
+opened by media fields and HTML/Markdown editors. Files larger than a positive limit are rejected
+locally with a validation notification without starting an upload; files exactly at the limit
+pass this client-side size check. This applies to regular and resumable gallery uploads.
+Existing file-extension restrictions still apply, and server-side validation remains authoritative.
+
+For a standalone media gallery, set the optional numeric `maxFileSize` property in its
+`config.json` to the same byte limit as the tenant's `Media:MaxFileSize`, for example:
+
+```json
+{
+  "orchardBaseUrl": "https://cms.example.com/",
+  "maxFileSize": 30000000
+}
+```
+
+Keep this value aligned with the tenant configuration. An absent or nonpositive `maxFileSize`
+disables only the client-side size limit; it does not bypass server-side validation.
 
 ### Media storage location
 

@@ -64,6 +64,8 @@ import { resolvePickerFilePath } from "../services/MediaPath";
 const props = defineProps<{
   fieldId?: string;
   allowedExtensions: string;
+  /** Maximum upload size in bytes. */
+  maxFileSize?: number;
   allowMultiple?: boolean;
   /** Enables real-time media updates (MediaHub) inside the embedded gallery. */
   signalrEnabled?: boolean;
@@ -73,6 +75,8 @@ const props = defineProps<{
   basePath: string;
   /** Upload endpoint URL */
   uploadFilesUrl: string;
+  /** Disables the thumbnails (grid) view in the library browser (OrchardCore_Media:DisableThumbnails). */
+  disableThumbnails?: boolean;
   /** When true, opens the modal immediately on mount (programmatic use). */
   autoOpen?: boolean;
   /** Called with selected items when confirmed (programmatic use). */
@@ -156,8 +160,10 @@ async function onOpened() {
       basePath: props.basePath,
       uploadFilesUrl: props.uploadFilesUrl,
       allowedExtensions: props.allowedExtensions,
+      maxFileSize: props.maxFileSize,
       allowMultiple: allowMultipleSelection.value,
       signalrEnabled: props.signalrEnabled === true,
+      disableThumbnails: props.disableThumbnails ?? false,
       onSelectionChange: (count: number) => {
         selectedCount.value = count;
       },
