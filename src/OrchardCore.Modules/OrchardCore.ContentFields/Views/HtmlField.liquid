@@ -1,0 +1,5 @@
+{% assign name = Model.PartFieldDefinition.PartDefinition.Name | append: "-" | append: Model.PartFieldDefinition.Name | html_class %}
+
+<div class="field field-type-htmlfield field-name-{{ name }}">
+    {{ Model.Html | raw }}
+</div>

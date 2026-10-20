@@ -1,5 +1,3 @@
-using System.Buffers;
-using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -24,7 +22,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
     private readonly CacheOptions _cacheOptions;
     private readonly ILogger _logger;
 
-    private readonly Dictionary<string, string> _localCache = [];
+    private Dictionary<string, string> _localCache;
     private ITagCache _tagcache;
 
     public DefaultDynamicCacheService(
@@ -77,7 +75,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
         var cacheKey = await GetCacheKey(context);
 
-        _localCache[cacheKey] = value;
+        (_localCache ??= [])[cacheKey] = value;
         var esi = JConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
 
         await Task.WhenAll(
@@ -99,8 +97,6 @@ public class DefaultDynamicCacheService : IDynamicCacheService
             return;
         }
 
-        var bytes = Encoding.UTF8.GetBytes(value);
-
         var options = new DistributedCacheEntryOptions
         {
             AbsoluteExpiration = context.ExpiresOn,
@@ -116,7 +112,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
         try
         {
-            await _dynamicCache.SetAsync(cacheKey, bytes, options);
+            await _dynamicCache.SetStringAsync(cacheKey, value, options);
         }
         catch (Exception e)
         {
@@ -137,17 +133,21 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
     private async Task<string> GetCacheKey(CacheContext context)
     {
-        var cacheEntries = context.Contexts.Count > 0
-            ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
-            : [];
-
-        if (!cacheEntries.Any())
+        if (context.Contexts.Count == 0)
         {
             return context.CacheId;
         }
 
-        var key = context.CacheId + "/" + cacheEntries.GetContextHash();
-        return key;
+        var cacheEntries = await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts);
+
+        var hash = cacheEntries.GetContextHash();
+
+        if (hash.Length == 0)
+        {
+            return context.CacheId;
+        }
+
+        return string.Concat(context.CacheId, "/", hash);
     }
 
     private static string GetCacheContextCacheKey(string cacheKey)
@@ -157,7 +157,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
     private async Task<string> GetCachedStringAsync(string cacheKey)
     {
-        if (_localCache.TryGetValue(cacheKey, out var content))
+        if (_localCache is not null && _localCache.TryGetValue(cacheKey, out var content))
         {
             return content;
         }
@@ -170,13 +170,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
         try
         {
-            var bytes = await _dynamicCache.GetAsync(cacheKey);
-            if (bytes == null)
-            {
-                return null;
-            }
-
-            return Encoding.UTF8.GetString(bytes);
+            return await _dynamicCache.GetStringAsync(cacheKey);
         }
         catch (Exception e)
         {

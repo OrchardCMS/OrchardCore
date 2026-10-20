@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
+using OrchardCore.Security;
 
 namespace OrchardCore.Security.Permissions;
 
@@ -120,6 +121,15 @@ public class Permission
     /// Gets a value indicating whether the permission is security critical.
     /// </summary>
     public bool IsSecurityCritical { get; }
+
+    private PermissionRequirement _requirement;
+
+    /// <summary>
+    /// Gets the authorization requirement of this permission. The same instance is reused for all the authorization
+    /// checks of the permission, which are made for each displayed content item, so it is not allocated and hashed
+    /// by the authorization handler context on each of them.
+    /// </summary>
+    internal PermissionRequirement Requirement => _requirement ??= new PermissionRequirement(this);
 
     /// <summary>
     /// Converts a <see cref="Permission"/> to a <see cref="Claim"/>.

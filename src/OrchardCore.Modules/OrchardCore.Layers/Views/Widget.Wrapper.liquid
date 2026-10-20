@@ -1,0 +1,9 @@
+
+
+<div class="widget-container">
+{% if Model.LayerMetadata.RenderTitle %}    <div class="widget-container-title">
+        <h2>{{ Model.Widget.DisplayText }}</h2>
+    </div>
+{% endif %}
+    {{ Model.Content | shape_render }}
+</div>

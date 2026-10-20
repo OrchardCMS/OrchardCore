@@ -107,9 +107,10 @@ public static class ContentExtensions
             return new ContentField();
         }
 
-        // Deserializing a 'JsonNode' first writes it to a buffer that is then parsed. The relaxed encoder avoids
-        // escaping and un-escaping all the characters like '<', '>' or '&' that HTML contents are made of.
-        return (ContentElement)elementData.Deserialize(contentElementType, JOptions.UnsafeRelaxedJsonEscaping);
+        // The properties are set directly from the nodes when possible, otherwise the node is deserialized, which
+        // first writes it to a buffer that is then parsed. The relaxed encoder then avoids escaping and un-escaping
+        // all the characters like '<', '>' or '&' that HTML contents are made of.
+        return (ContentElement)ContentElementBinder.Bind(contentElementType, elementData, JOptions.UnsafeRelaxedJsonEscaping);
     }
 
     /// <summary>

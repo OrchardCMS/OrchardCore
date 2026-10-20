@@ -22,7 +22,7 @@ public class FeaturesCacheContextProvider : ICacheContextProvider
 
     public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
     {
-        if (contexts.Any(ctx => string.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
+        if (contexts.ContainsContext("features"))
         {
             // Add a hash of the enabled features.
             var hash = await FeatureHash.GetFeatureHashAsync();

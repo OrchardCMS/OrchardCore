@@ -32,11 +32,14 @@ public sealed class Startup : StartupBase
         services.Configure<TemplateOptions>(o =>
         {
             o.MemberAccessStrategy.Register<WidgetWrapper>();
+            o.MemberAccessStrategy.Register<LayerMetadata>();
         });
 
+        // The filter is resolved from the container instead of being activated by reflection on each request.
+        services.AddTransient<LayerFilter>();
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add<LayerFilter>();
+            options.Filters.AddService<LayerFilter>();
         });
 
         services.AddSiteDisplayDriver<LayerSiteSettingsDisplayDriver>();
