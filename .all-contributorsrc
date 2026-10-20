@@ -3709,6 +3709,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Raf-Hs",
+      "name": "Rafael Hernández Silva",
+      "avatar_url": "https://avatars.githubusercontent.com/u/81477606?v=4",
+      "profile": "https://www.raftel-software.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
