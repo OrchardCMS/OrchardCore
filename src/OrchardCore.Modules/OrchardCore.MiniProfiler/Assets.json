@@ -1,0 +1,15 @@
+[
+  {
+    "action": "sass",
+    "name": "miniprofiler",
+    "source": "Assets/scss/miniprofiler.scss",
+    "tags": ["miniprofiler", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "miniprofiler",
+    "source": "Assets/ts/miniprofiler.ts",
+    "dest": "wwwroot/Scripts/miniprofiler/",
+    "tags": ["miniprofiler", "js"]
+  }
+]
