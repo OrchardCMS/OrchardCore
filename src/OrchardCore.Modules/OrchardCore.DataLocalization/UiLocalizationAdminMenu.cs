@@ -60,17 +60,6 @@ public sealed class UiLocalizationAdminMenu : AdminNavigationProvider
             return;
         }
 
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder.Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Localization"], localization => localization
-                        .Add(S["UI Translations"], S["UI Translations"].PrefixPosition(), translations => translations
-                            .Action("Index", "UiTranslations", new { area = "OrchardCore.DataLocalization" })
-                            .LocalNav()))));
-            return;
-        }
-
         builder.Add(S["Settings"], settings => settings
             .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
                 .Add(S["UI Translations"], S["UI Translations"].PrefixPosition(), translations => translations
