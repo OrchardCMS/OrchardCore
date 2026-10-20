@@ -1,0 +1,10 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayHtmlFieldViewModel
+@using OrchardCore.Mvc.Utilities
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-htmlfield field-name-@name">
+    @Html.Raw(Model.Html)
+</div>
