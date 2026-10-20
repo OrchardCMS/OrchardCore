@@ -1,0 +1,203 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Users.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: contentItemType.Name
+#: GraphQL/UserType.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.GraphQL.UserType"
+msgid "Custom user settings of {0}."
+msgstr ""
+
+#: GraphQL/UserType.cs
+msgctxt "OrchardCore.Users.GraphQL.UserType"
+msgid "Represents a user."
+msgstr ""
+
+#: GraphQL/UserType.cs
+msgctxt "OrchardCore.Users.GraphQL.UserType"
+msgid "The email of the user."
+msgstr ""
+
+#: GraphQL/UserType.cs
+msgctxt "OrchardCore.Users.GraphQL.UserType"
+msgid "The id of the user."
+msgstr ""
+
+#: GraphQL/UserType.cs
+msgctxt "OrchardCore.Users.GraphQL.UserType"
+msgid "The name of the user."
+msgstr ""
+
+#: GraphQL/UserType.cs
+msgctxt "OrchardCore.Users.GraphQL.UserType"
+msgid "The phone number of the user."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A password is required."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A token is required."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A user name is required."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "A username or email address is required."
+msgstr ""
+
+#. Format arguments: {0}: user.Email
+#: Services/UserService.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Email '{0}' is already used."
+msgstr ""
+
+#. Format arguments: {0}: user.Email
+#: Services/UserService.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Email '{0}' is invalid."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Incorrect password."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Local login is disabled."
+msgstr ""
+
+#. Format arguments: {0}: _identityOptions.Password.RequiredLength
+#: Services/UserService.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must be at least {0} characters."
+msgstr ""
+
+#. Format arguments: {0}: _identityOptions.Password.RequiredUniqueChars
+#: Services/UserService.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must contain at least {0} unique characters."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one digit character ('0'-'9')."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one lowercase character ('a'-'z')."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one non letter or digit character."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Passwords must have at least one uppercase character ('A'-'Z')."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The reset token is invalid. Please request a new token."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified user is not allowed to sign in using password authentication."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified user is not allowed to sign in."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The specified username/password couple is invalid."
+msgstr ""
+
+#: Services/UserService.cs
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "The user is locked out."
+msgstr ""
+
+#. Format arguments: {0}: error.Code
+#: Services/UserService.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "Unexpected error: '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: user.UserName
+#: Services/UserService.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "User name '{0}' is already used."
+msgstr ""
+
+#. Format arguments: {0}: user.UserName
+#: Services/UserService.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Services.UserService"
+msgid "User name '{0}' is invalid, can only contain letters or digits."
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Assign any role to users"
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Delete any user"
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Disable two-factor authentication for any user"
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Edit any user"
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Edit own user information"
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "List all users"
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Manage security settings and all users"
+msgstr ""
+
+#: UsersPermissions.cs
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "View user profiles"
+msgstr ""

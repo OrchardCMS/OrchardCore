@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.AzureAI.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AzureAISearchPermissions.cs
+msgctxt "OrchardCore.AzureAI.AzureAISearchPermissions"
+msgid "Manage Azure AI Search Settings"
+msgstr ""
+
+#: ServiceCollectionExtensions.cs
+msgctxt "OrchardCore.AzureAI.Core.ServiceCollectionExtensions.AzureAISearchLocalizationMarker"
+msgid "Azure AI Search"
+msgstr ""
+
+#: Deployment/AzureAISearchIndexDeploymentStep.cs
+msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexDeploymentStep"
+msgid "Azure AI Search Indexes"
+msgstr ""
+
+#: Deployment/AzureAISearchIndexDeploymentStep.cs
+msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexDeploymentStep"
+msgid "Search"
+msgstr ""
+
+#: Deployment/AzureAISearchIndexRebuildDeploymentStep.cs
+msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexRebuildDeploymentStep"
+msgid "Rebuild Azure AI Search Indices"
+msgstr ""
+
+#: Deployment/AzureAISearchIndexRebuildDeploymentStep.cs
+msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexRebuildDeploymentStep"
+msgid "Search"
+msgstr ""
+
+#: Deployment/AzureAISearchIndexResetDeploymentStep.cs
+msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexResetDeploymentStep"
+msgid "Reset Azure AI Search Indices"
+msgstr ""
+
+#: Deployment/AzureAISearchIndexResetDeploymentStep.cs
+msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexResetDeploymentStep"
+msgid "Search"
+msgstr ""
+
+#: Handlers/AzureAISearchIndexHandler.cs
+msgctxt "OrchardCore.AzureAI.Handlers.AzureAISearchIndexHandler"
+msgid "The index name contains forbidden characters."
+msgstr ""
+
+#: Handlers/AzureAISearchIndexProfileHandler.cs
+msgctxt "OrchardCore.AzureAI.Handlers.AzureAISearchIndexProfileHandler"
+msgid "At least one mapping field is required."
+msgstr ""
+
+#: Handlers/AzureAISearchIndexProfileHandler.cs
+msgctxt "OrchardCore.AzureAI.Handlers.AzureAISearchIndexProfileHandler"
+msgid "Invalid index name. Must start with a letter and be 1–128 characters long. Only letters, numbers, and underscores are allowed. Names cannot begin with 'azureSearch'."
+msgstr ""

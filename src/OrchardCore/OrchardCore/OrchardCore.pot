@@ -1,0 +1,69 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Shell/Removing/ShellRemovalManager.cs
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
+msgid "Failed to acquire a lock before executing the host handlers."
+msgstr ""
+
+#: Shell/Removing/ShellRemovalManager.cs
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
+msgid "Failed to acquire a lock before executing the tenant handlers."
+msgstr ""
+
+#: Shell/Removing/ShellRemovalManager.cs
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
+msgid "Failed to create a 'ShellContext' before removing the tenant."
+msgstr ""
+
+#. Format arguments: {0}: type
+#: Shell/Removing/ShellRemovalManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
+msgid "Failed to execute the host handler '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: type
+#: Shell/Removing/ShellRemovalManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
+msgid "Failed to execute the tenant handler '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: shellSettings.Name
+#: Shell/Removing/ShellRemovalManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
+msgid "The tenant '{0}' should be 'Disabled' or 'Uninitialized'."
+msgstr ""
+
+#. Format arguments: {0}: ShellSettings.DefaultShellName
+#: Shell/Removing/ShellRemovalManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
+msgid "The tenant should not be the '{0}' tenant."
+msgstr ""
+
+#: Shell/Removing/ShellSettingsRemovingHandler.cs
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellSettingsRemovingHandler"
+msgid "Failed to remove the shell settings."
+msgstr ""
+
+#. Format arguments: {0}: shellAppDataFolder
+#: Shell/Removing/ShellSiteFolderRemovingHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellSiteFolderRemovingHandler"
+msgid "Failed to remove the site folder '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: shellWebRootFolder
+#: Shell/Removing/ShellWebRootRemovingHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Shell.Removing.ShellWebRootRemovingHandler"
+msgid "Failed to remove the web root folder '{0}'."
+msgstr ""

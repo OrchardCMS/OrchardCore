@@ -16,85 +16,152 @@ public sealed class LocalizationBuildCollection;
 [Collection("Localization builds")]
 public sealed class BuildIntegrationTests
 {
+    private const string Update = "-p:UpdateLocalizationCatalogs=true";
+
     [Fact]
-    public async Task Build_CatalogLifecycle_PreservesResourcesAndInvalidatesInputs()
+    public async Task Build_WithoutTemplate_EmbedsNothingAndRunsNoExtraction()
     {
         using var workspace = new TestWorkspace();
         var project = CopyFixture(workspace);
-        var catalog = Path.Combine(workspace.DirectoryPath, "obj/Debug/net10.0/Localization/RazorModule.pot");
-        await BuildAsync(project);
+
+        var output = await BuildAsync(project);
+
+        Assert.DoesNotContain("Localization catalog", output);
+        Assert.False(File.Exists(Path.Combine(workspace.DirectoryPath, "RazorModule.pot")));
+        Assert.False(HasResource(Path.Combine(workspace.DirectoryPath, "bin/Debug/net10.0/RazorModule.dll"), "RazorModule.Localization.pot"));
+    }
+
+    [Fact]
+    public async Task Update_TemplateLifecycle_WritesNextToProjectAndBuildEmbedsIt()
+    {
+        using var workspace = new TestWorkspace();
+        var project = CopyFixture(workspace);
+        var template = Path.Combine(workspace.DirectoryPath, "RazorModule.pot");
+        var stamp = Path.Combine(workspace.DirectoryPath, "obj/Debug/net10.0/Localization/RazorModule.pot.stamp.json");
         var assembly = Path.Combine(workspace.DirectoryPath, "bin/Debug/net10.0/RazorModule.dll");
-        var text = await File.ReadAllTextAsync(catalog, TestContext.Current.CancellationToken);
-        Assert.Equal(text, ReadResource(assembly, "RazorModule.Localization.pot"));
+
+        Assert.Contains("3 messages in RazorModule.pot", await BuildAsync(project, Update));
+        var text = await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken);
         Assert.Contains("Fixture.Messages", text);
         Assert.Contains("RazorModule.Views.Index", text);
         Assert.Contains("RazorModule.Views.Nested", text);
+        Assert.Contains("#: Messages.cs\n", text);
+        Assert.DoesNotContain("#: Messages.cs:", text);
+        Assert.Equal(text, ReadResource(assembly, "RazorModule.Localization.pot"));
         AssertNoToolingReferences(assembly);
+        Assert.True(File.Exists(stamp));
 
-        var timestamp = File.GetLastWriteTimeUtc(catalog);
-        Assert.Contains("up to date", await BuildAsync(project));
-        Assert.Equal(timestamp, File.GetLastWriteTimeUtc(catalog));
+        var timestamp = File.GetLastWriteTimeUtc(template);
+        Assert.Contains("up to date", await BuildAsync(project, Update));
+        Assert.Equal(timestamp, File.GetLastWriteTimeUtc(template));
         await File.AppendAllTextAsync(Path.Combine(workspace.DirectoryPath, "Messages.cs"), "\n// A comment-only edit.\n", TestContext.Current.CancellationToken);
-        Assert.Contains("3 messages", await BuildAsync(project));
-        Assert.Equal(timestamp, File.GetLastWriteTimeUtc(catalog));
+        Assert.Contains("3 messages", await BuildAsync(project, Update));
+        Assert.Equal(timestamp, File.GetLastWriteTimeUtc(template));
 
         workspace.Write("Added.cs", "using Microsoft.Extensions.Localization; public class Added { public string Get(IStringLocalizer<Added> words) => words[\"Added message\"]; }");
-        await BuildAsync(project);
-        Assert.Contains("Added message", await File.ReadAllTextAsync(catalog, TestContext.Current.CancellationToken));
+        await BuildAsync(project, Update);
+        Assert.Contains("Added message", await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken));
         File.Delete(Path.Combine(workspace.DirectoryPath, "Added.cs"));
-        await BuildAsync(project);
-        Assert.DoesNotContain("Added message", await File.ReadAllTextAsync(catalog, TestContext.Current.CancellationToken));
+        Assert.Contains("3 messages", await RequireSuccessAsync("msbuild", project, "-restore", "-t:UpdateLocalizationCatalog", "--tl:off", "--nologo", "-v:minimal"));
+        Assert.Equal(text, await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken));
 
-        var requestTimestamp = File.GetLastWriteTimeUtc(catalog + ".request");
-        var designTime = await RunDotnetAsync("msbuild", project, "-t:OrchardCoreGenerateLocalizationCatalog", "-p:DesignTimeBuild=true", "--nologo", "-v:quiet");
+        // A build without the update embeds the checked-in template as it is, even when the sources changed.
+        workspace.Write("Added.cs", "using Microsoft.Extensions.Localization; public class Added { public string Get(IStringLocalizer<Added> words) => words[\"Not extracted yet\"]; }");
+        Assert.DoesNotContain("Localization catalog", await BuildAsync(project));
+        Assert.Equal(text, ReadResource(assembly, "RazorModule.Localization.pot"));
+
+        var designTime = await RunDotnetAsync("msbuild", project, "-t:UpdateLocalizationCatalog", "-p:DesignTimeBuild=true", "--nologo", "-v:quiet");
         Assert.Equal(0, designTime.ExitCode);
-        Assert.Equal(requestTimestamp, File.GetLastWriteTimeUtc(catalog + ".request"));
+        Assert.Equal(text, await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken));
+
         await RequireSuccessAsync("clean", project, "--tl:off", "--nologo", "-v:quiet");
-        Assert.False(File.Exists(catalog));
+        Assert.True(File.Exists(template));
+        Assert.False(File.Exists(stamp));
         await BuildAsync(project);
         Assert.Equal(text, ReadResource(assembly, "RazorModule.Localization.pot"));
     }
 
     [Fact]
-    public async Task Build_CatalogCollection_IsOptionalAndCopiesCachedCatalogs()
+    public async Task Update_NoMessages_RemovesTemplateAndBuildEmbedsNothing()
+    {
+        using var workspace = new TestWorkspace();
+        var project = CopyFixture(workspace);
+        var template = Path.Combine(workspace.DirectoryPath, "RazorModule.pot");
+        await BuildAsync(project, Update);
+        Assert.True(File.Exists(template));
+
+        workspace.Write("Messages.cs", "namespace Fixture; public class Messages { }");
+        foreach (var view in Directory.GetFiles(Path.Combine(workspace.DirectoryPath, "Views")))
+        {
+            File.WriteAllText(view, "<p>Nothing to translate</p>");
+        }
+
+        Assert.Contains("removed", await BuildAsync(project, Update));
+        Assert.False(File.Exists(template));
+        Assert.Contains("up to date", await BuildAsync(project, Update));
+        Assert.False(HasResource(Path.Combine(workspace.DirectoryPath, "bin/Debug/net10.0/RazorModule.dll"), "RazorModule.Localization.pot"));
+    }
+
+    [Fact]
+    public async Task Update_Configurations_ProduceTheSameTemplate()
+    {
+        using var workspace = new TestWorkspace();
+        var project = CopyFixture(workspace);
+        workspace.Write("Conditional.cs", """
+            using Microsoft.Extensions.Localization;
+            public class Conditional
+            {
+                public string Get(IStringLocalizer<Conditional> words)
+                {
+            #if DEBUG
+                    return words["Debug only message"];
+            #else
+                    return words["Release only message"];
+            #endif
+                }
+            }
+            """);
+        var template = Path.Combine(workspace.DirectoryPath, "RazorModule.pot");
+
+        await BuildAsync(project, Update);
+        var debug = await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken);
+        await BuildAsync(project, Update, "-c", "Release");
+        var release = await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken);
+
+        Assert.Equal(debug, release);
+        Assert.DoesNotContain("Debug only message", debug);
+        Assert.Contains("Release only message", debug);
+    }
+
+    [Fact]
+    public async Task Build_CatalogCollection_CopiesCheckedInTemplates()
     {
         using var workspace = new TestWorkspace();
         var project = CopyFixture(workspace);
         var output = Path.Combine(workspace.DirectoryPath, "exported templates");
-        var catalog = Path.Combine(workspace.DirectoryPath, "obj/Debug/net10.0/Localization/RazorModule.pot");
+        var template = Path.Combine(workspace.DirectoryPath, "RazorModule.pot");
         var exported = Path.Combine(output, "net10.0/RazorModule.pot");
         var property = "-p:LocalizationCatalogOutputPath=" + output;
-        await BuildAsync(project);
+        await BuildAsync(project, property);
         Assert.False(Directory.Exists(output));
 
-        Assert.Contains("up to date", await BuildAsync(project, property));
-        Assert.Equal(await File.ReadAllTextAsync(catalog, TestContext.Current.CancellationToken), await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
+        await BuildAsync(project, Update);
+        Assert.DoesNotContain("Localization catalog", await BuildAsync(project, property));
+        Assert.Equal(await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken), await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
         Assert.Single(Directory.GetFiles(output, "*", SearchOption.AllDirectories));
         var timestamp = File.GetLastWriteTimeUtc(exported);
         await BuildAsync(project, property);
         Assert.Equal(timestamp, File.GetLastWriteTimeUtc(exported));
 
-        File.Delete(exported);
-        await BuildAsync(project, property);
-        Assert.True(File.Exists(exported));
-        workspace.Write("Added.cs", "using Microsoft.Extensions.Localization; public class Added { public string Get(IStringLocalizer<Added> words) => words[\"Exported message\"]; }");
-        await BuildAsync(project, property);
-        Assert.Contains("Exported message", await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
-
-        await RequireSuccessAsync("clean", project, "--tl:off", "--nologo", "-v:quiet", property);
-        Assert.True(File.Exists(exported));
         Directory.Delete(output, true);
         await BuildAsync(project, property, "-p:GenerateLocalizationCatalog=false");
         Assert.False(Directory.Exists(output));
-        await RequireSuccessAsync("msbuild", project, "-t:OrchardCoreGenerateLocalizationCatalog", "-p:DesignTimeBuild=true", property, "--nologo", "-v:quiet");
-        Assert.False(Directory.Exists(output));
-
-        await BuildAsync(project, "-p:LocalizationCatalogOutputPath=exported templates", "-p:LocalizationCatalogPath=" + Path.Combine(workspace.DirectoryPath, "custom/template.pot"));
+        await BuildAsync(project, "-p:LocalizationCatalogOutputPath=exported templates");
         Assert.True(File.Exists(exported));
     }
 
     [Fact]
-    public async Task Build_CatalogCollection_IncludesReferencedProjects()
+    public async Task Update_ReferencedProjects_UpdatesAndEmbedsEveryTemplate()
     {
         using var application = new TestWorkspace();
         using var module = new TestWorkspace();
@@ -104,47 +171,45 @@ public sealed class BuildIntegrationTests
         definition.Root!.Element("PropertyGroup")!.Add(new XElement("AssemblyName", "Application"));
         definition.Root.Add(new XElement("ItemGroup", new XElement("ProjectReference", new XAttribute("Include", reference))));
         definition.Save(project);
-        var output = Path.Combine(application.DirectoryPath, "templates");
-        await BuildAsync(project, "-p:LocalizationCatalogOutputPath=" + output);
 
-        foreach (var assemblyName in new[] { "Application", "RazorModule" })
+        await BuildAsync(project, Update);
+
+        foreach (var (workspace, assemblyName) in new[] { (application, "Application"), (module, "RazorModule") })
         {
-            var exported = Path.Combine(output, "net10.0", assemblyName + ".pot");
+            var template = Path.Combine(workspace.DirectoryPath, assemblyName + ".pot");
             var assembly = Path.Combine(application.DirectoryPath, "bin/Debug/net10.0", assemblyName + ".dll");
-            Assert.Equal(ReadResource(assembly, assemblyName + ".Localization.pot"), await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
+            Assert.Equal(await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken), ReadResource(assembly, assemblyName + ".Localization.pot"));
         }
-
-        Assert.Equal(2, Directory.GetFiles(output, "*.pot", SearchOption.AllDirectories).Length);
     }
 
     [Fact]
-    public async Task Build_CachedWarningsAndStrictMode_ReplaysDiagnosticsAndFailsStrictBuild()
+    public async Task Update_CachedWarningsAndStrictMode_ReplaysDiagnosticsAndFailsStrictUpdate()
     {
         using var workspace = new TestWorkspace();
         var project = CopyFixture(workspace);
         workspace.Write("Dynamic.cs", "using Microsoft.Extensions.Localization; public class Dynamic { public string Get(IStringLocalizer<Dynamic> words, string key) => words[key]; }");
-        Assert.Contains("OCLOC001", await BuildAsync(project));
-        var cached = await BuildAsync(project);
+        Assert.Contains("OCLOC001", await BuildAsync(project, Update));
+        var cached = await BuildAsync(project, Update);
         Assert.Contains("up to date", cached);
         Assert.Contains("OCLOC001", cached);
-        var strict = await RunDotnetAsync("build", project, "--tl:off", "--nologo", "-v:minimal", "-p:LocalizationStrict=true");
+        Assert.DoesNotContain("OCLOC001", await BuildAsync(project));
+        var strict = await RunDotnetAsync("build", project, "--tl:off", "--nologo", "-v:minimal", Update, "-p:LocalizationStrict=true");
         Assert.NotEqual(0, strict.ExitCode);
         Assert.Contains("OCLOC001", strict.Output);
     }
 
     [Fact]
-    public async Task Build_SeparateProjectsInParallel_ProducesIndependentCatalogs()
+    public async Task Update_SeparateProjectsInParallel_ProducesIndependentTemplates()
     {
         using var first = new TestWorkspace();
         using var second = new TestWorkspace();
         var projects = new[] { CopyFixture(first), CopyFixture(second) };
-        await Task.WhenAll(projects.Select(BuildAsync));
-        var relative = "obj/Debug/net10.0/Localization/RazorModule.pot";
-        Assert.Equal(await File.ReadAllTextAsync(Path.Combine(first.DirectoryPath, relative), TestContext.Current.CancellationToken), await File.ReadAllTextAsync(Path.Combine(second.DirectoryPath, relative), TestContext.Current.CancellationToken));
+        await Task.WhenAll(projects.Select(project => BuildAsync(project, Update)));
+        Assert.Equal(await File.ReadAllTextAsync(Path.Combine(first.DirectoryPath, "RazorModule.pot"), TestContext.Current.CancellationToken), await File.ReadAllTextAsync(Path.Combine(second.DirectoryPath, "RazorModule.pot"), TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task Pack_MultiTargetConsumer_EmbedsCatalogsWithoutRuntimeTooling()
+    public async Task Pack_MultiTargetConsumer_UpdatesOneTemplateAndEmbedsItWithoutRuntimeTooling()
     {
         using var workspace = new TestWorkspace();
         var packageProject = Path.Combine(TestWorkspace.RepositoryRoot, "src/OrchardCore/OrchardCore.Localization.Build/OrchardCore.Localization.Build.csproj");
@@ -154,6 +219,7 @@ public sealed class BuildIntegrationTests
         using (var archive = ZipFile.OpenRead(Directory.GetFiles(feed, "*.nupkg").Single()))
         {
             Assert.Contains(archive.Entries, entry => entry.FullName == "build/OrchardCore.Localization.Build.targets");
+            Assert.Contains(archive.Entries, entry => entry.FullName == "buildMultiTargeting/OrchardCore.Localization.Build.targets");
             Assert.Contains(archive.Entries, entry => entry.FullName == "tools/any/OrchardCore.Localization.Tools.dll");
             Assert.DoesNotContain(archive.Entries, entry => entry.FullName.StartsWith("lib/", StringComparison.Ordinal));
             using var reader = new StreamReader(archive.Entries.Single(entry => entry.FullName.EndsWith(".nuspec", StringComparison.Ordinal)).Open());
@@ -180,17 +246,22 @@ public sealed class BuildIntegrationTests
             </Project>
             """);
         workspace.Write("Consumer/Messages.cs", "using Microsoft.Extensions.Localization; public class Messages { public string Get(IStringLocalizer<Messages> words) => words[\"Packaged message\"]; }");
-        var output = Path.Combine(workspace.DirectoryPath, "templates");
-        await BuildAsync(consumer, "-p:LocalizationCatalogOutputPath=" + output);
+        var template = Path.Combine(workspace.DirectoryPath, "Consumer/Consumer.pot");
+
+        // The target of a multi-targeting project updates the template from its first target framework.
+        var output = await RequireSuccessAsync("msbuild", consumer, "-restore", "-t:UpdateLocalizationCatalog", "--tl:off", "--nologo", "-v:minimal");
+        Assert.Equal(1, output.Split("messages in Consumer.pot").Length - 1);
+        var text = await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken);
+        Assert.Contains("Packaged message", text);
+        Assert.Contains("up to date", await BuildAsync(consumer, Update));
+
+        await BuildAsync(consumer);
         foreach (var framework in new[] { "netstandard2.0", "net10.0" })
         {
             var assembly = Path.Combine(workspace.DirectoryPath, "Consumer/bin/Debug", framework, "Consumer.dll");
-            Assert.Contains("Packaged message", ReadResource(assembly, "Consumer.Localization.pot"));
-            var exported = Path.Combine(output, framework, "Consumer.pot");
-            Assert.Equal(ReadResource(assembly, "Consumer.Localization.pot"), await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
+            Assert.Equal(text, ReadResource(assembly, "Consumer.Localization.pot"));
             AssertNoToolingReferences(assembly);
         }
-        Assert.Equal(2, Directory.GetFiles(output, "*", SearchOption.AllDirectories).Length);
 
         var publish = Path.Combine(workspace.DirectoryPath, "publish");
         await RequireSuccessAsync("publish", consumer, "--tl:off", "--nologo", "-f", "net10.0", "-c", "Debug", "-o", publish, "-v:quiet");
@@ -256,6 +327,15 @@ public sealed class BuildIntegrationTests
         }
 
         return (process.ExitCode, await output + await error);
+    }
+
+    private static bool HasResource(string path, string name)
+    {
+        using var stream = File.OpenRead(path);
+        using var pe = new PEReader(stream);
+        var metadata = pe.GetMetadataReader();
+
+        return metadata.ManifestResources.Select(metadata.GetManifestResource).Any(resource => metadata.GetString(resource.Name) == name);
     }
 
     private static string ReadResource(string path, string name)

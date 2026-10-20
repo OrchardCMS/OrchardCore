@@ -1,6 +1,11 @@
 <Project>
   <PropertyGroup>
+    <!-- Embeds the project's checked-in translation template, <AssemblyName>.pot, and enables its update. -->
     <GenerateLocalizationCatalog Condition="'$(GenerateLocalizationCatalog)' == ''">true</GenerateLocalizationCatalog>
+    <!-- Extracts the localizable strings during the build and rewrites the template, instead of only embedding it. -->
+    <UpdateLocalizationCatalogs Condition="'$(UpdateLocalizationCatalogs)' == ''">false</UpdateLocalizationCatalogs>
+    <!-- Writes the line of each source reference in the template, which changes with every edit of the file. -->
+    <LocalizationCatalogLineNumbers Condition="'$(LocalizationCatalogLineNumbers)' == ''">false</LocalizationCatalogLineNumbers>
     <LocalizationStrict Condition="'$(LocalizationStrict)' == ''">false</LocalizationStrict>
     <_LocalizationToolsProject>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/OrchardCore.Localization.Tools.csproj</_LocalizationToolsProject>
     <_LocalizationToolsDirectory>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/</_LocalizationToolsDirectory>

@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Lucene.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: LuceneSearchPermissions.cs
+msgctxt "OrchardCore.Lucene.LuceneSearchPermissions"
+msgid "Manage Lucene Indexes"
+msgstr ""
+
+#: LuceneSearchPermissions.cs
+msgctxt "OrchardCore.Lucene.LuceneSearchPermissions"
+msgid "Query Lucene Api"
+msgstr ""
+
+#: ServiceCollectionExtensions.cs
+msgctxt "OrchardCore.Lucene.ServiceCollectionExtensions.LuceneLocalizationMarker"
+msgid "Lucene"
+msgstr ""

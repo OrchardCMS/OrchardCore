@@ -6,7 +6,21 @@ namespace OrchardCore.Localization.Tools;
 public sealed class BuildRequest
 {
     public required ExtractionOptions Options { get; init; }
+
+    /// <summary>
+    /// Gets the path of the template to write, next to the project it describes.
+    /// </summary>
     public required string OutputPath { get; init; }
+
+    /// <summary>
+    /// Gets the path of the cache entry that lets an unchanged extraction be skipped.
+    /// </summary>
+    public required string StampPath { get; init; }
+
+    /// <summary>
+    /// Gets whether the source references of the template carry line numbers.
+    /// </summary>
+    public bool LineNumbers { get; init; }
 
     /// <summary>
     /// Reads a single property of a request without materializing it, so the process can be bound to the SDK's
@@ -105,10 +119,14 @@ public sealed class BuildRequest
             }
         }
 
+        var outputPath = Path.GetFullPath(properties["OutputPath"], projectDirectory);
+
         return new BuildRequest
         {
             Options = options,
-            OutputPath = Path.GetFullPath(properties["OutputPath"], projectDirectory),
+            OutputPath = outputPath,
+            StampPath = properties.TryGetValue("StampPath", out var stampPath) && stampPath.Length > 0 ? Path.GetFullPath(stampPath, projectDirectory) : outputPath + ".stamp.json",
+            LineNumbers = string.Equals(properties.GetValueOrDefault("LineNumbers"), "true", StringComparison.OrdinalIgnoreCase),
         };
     }
 

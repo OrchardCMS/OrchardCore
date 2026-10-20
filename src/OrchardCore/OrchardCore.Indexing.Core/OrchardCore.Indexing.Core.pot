@@ -1,0 +1,125 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Indexing.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Deployments/IndexProfileDeploymentStep.cs
+msgctxt "OrchardCore.Indexing.Core.Deployments.IndexProfileDeploymentStep"
+msgid "Index Profiles"
+msgstr ""
+
+#: Deployments/IndexProfileDeploymentStep.cs
+msgctxt "OrchardCore.Indexing.Core.Deployments.IndexProfileDeploymentStep"
+msgid "Indexing"
+msgstr ""
+
+#: Deployments/RebuildIndexDeploymentStep.cs
+msgctxt "OrchardCore.Indexing.Core.Deployments.RebuildIndexDeploymentStep"
+msgid "Indexing"
+msgstr ""
+
+#: Deployments/RebuildIndexDeploymentStep.cs
+msgctxt "OrchardCore.Indexing.Core.Deployments.RebuildIndexDeploymentStep"
+msgid "Rebuild Indexes"
+msgstr ""
+
+#: Deployments/ResetIndexDeploymentStep.cs
+msgctxt "OrchardCore.Indexing.Core.Deployments.ResetIndexDeploymentStep"
+msgid "Indexing"
+msgstr ""
+
+#: Deployments/ResetIndexDeploymentStep.cs
+msgctxt "OrchardCore.Indexing.Core.Deployments.ResetIndexDeploymentStep"
+msgid "Reset Indexes"
+msgstr ""
+
+#: Handlers/ContentIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.ContentIndexProfileHandler"
+msgid "At least one content type must be selected."
+msgstr ""
+
+#: Handlers/DefaultIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "Index name is required."
+msgstr ""
+
+#: Handlers/DefaultIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "Index profile-source is required."
+msgstr ""
+
+#: Handlers/DefaultIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "Index type is required."
+msgstr ""
+
+#: Handlers/DefaultIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "The index full name is required."
+msgstr ""
+
+#. Format arguments: {0}: context.Model.ProviderName
+#: Handlers/DefaultIndexProfileHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "The index full name is required. Unable to find a index name provider that with the provider name '{0}'."
+msgstr ""
+
+#: Handlers/DefaultIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "The index name cannot be longer than 255 characters."
+msgstr ""
+
+#: Handlers/DefaultIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "The index name is required."
+msgstr ""
+
+#: Handlers/DefaultIndexProfileHandler.cs
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "There is already another index with the same name."
+msgstr ""
+
+#. Format arguments: {0}: context.Model.ProviderName; {1}: context.Model.Type
+#: Handlers/DefaultIndexProfileHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
+msgid "Unable to find a provider named '{0}' with the type '{1}'."
+msgstr ""
+
+#: IndexingPermissions.cs
+msgctxt "OrchardCore.Indexing.Core.IndexingPermissions"
+msgid "Manage Indexes"
+msgstr ""
+
+#: IndexingPermissions.cs
+msgctxt "OrchardCore.Indexing.Core.IndexingPermissions"
+msgid "Query any index"
+msgstr ""
+
+#: Recipes/CreateOrUpdateIndexProfileStep.cs
+msgctxt "OrchardCore.Indexing.Core.Recipes.CreateOrUpdateIndexProfileStep"
+msgid "Could not find provider value. The index will not be imported"
+msgstr ""
+
+#: Recipes/CreateOrUpdateIndexProfileStep.cs
+msgctxt "OrchardCore.Indexing.Core.Recipes.CreateOrUpdateIndexProfileStep"
+msgid "Could not find type value. The index will not be imported"
+msgstr ""
+
+#. Format arguments: {0}: indexProfile.IndexName; {1}: providerName
+#: Recipes/CreateOrUpdateIndexProfileStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Core.Recipes.CreateOrUpdateIndexProfileStep"
+msgid "Unable to create the index '{0}' for the provider '{1}'."
+msgstr ""
+
+#. Format arguments: {0}: providerName; {1}: type
+#: Recipes/CreateOrUpdateIndexProfileStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Core.Recipes.CreateOrUpdateIndexProfileStep"
+msgid "Unable to find a provider named '{0}' with the type '{1}'."
+msgstr ""

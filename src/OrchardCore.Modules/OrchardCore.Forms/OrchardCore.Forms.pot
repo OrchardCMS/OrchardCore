@@ -1,0 +1,838 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Forms\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Activities/HttpRedirectToFormLocationTask.cs
+msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/HttpRedirectToFormLocationTask.cs
+msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
+msgid "Failed"
+msgstr ""
+
+#: Activities/HttpRedirectToFormLocationTask.cs
+msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
+msgid "HTTP"
+msgstr ""
+
+#: Activities/HttpRedirectToFormLocationTask.cs
+msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
+msgid "Http Redirect To Form Location Task"
+msgstr ""
+
+#: Drivers/FormInputElementPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementPartDisplayDriver"
+msgid "A Name contains invalid characters."
+msgstr ""
+
+#: Drivers/FormInputElementPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementPartDisplayDriver"
+msgid "A value is required for Name."
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Always visible"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Conditionally hide"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Conditionally show"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Contains"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Does not contain"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Empty"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Ends with"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Greater than"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Is"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Is not"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Less than"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Not empty"
+msgstr ""
+
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Starts with"
+msgstr ""
+
+#: Drivers/SelectPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.SelectPartDisplayDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Drivers/TextAreaPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.TextAreaPartDisplayDriver"
+msgid "The Rows field should be greater than or equal 1."
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "(Optional) The value to assign to the select field."
+msgstr ""
+
+#. Format arguments: {0}: "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"
+#: Services/FormsJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "A JSON representation of the allowed values, e.g. {0}"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Add an option"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Cancel"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Default value"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Default?"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Edit Data"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Enter a value"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Enter the text"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "OK"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Option Text"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Options"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Remove element from list"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Set as default"
+msgstr ""
+
+#: Services/FormsJSLocalizer.cs
+msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
+msgid "Value"
+msgstr ""
+
+#: Views/FormInputElementVisibility.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.FormInputElementVisibility.Edit"
+msgid "Action"
+msgstr ""
+
+#: Views/FormInputElementVisibility.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.FormInputElementVisibility.Edit"
+msgid "The action to take when the condition is met."
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.Key; {1}: Model.Activity.ErrorMessage
+#: Views/Items/AddModelValidationErrorTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Design"
+msgid "<em>{0}</em>: <em>{1}</em>"
+msgstr ""
+
+#: Views/Items/AddModelValidationErrorTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Design"
+msgid "Add Form Validation Error"
+msgstr ""
+
+#: Views/Items/AddModelValidationErrorTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Edit"
+msgid "Error Message"
+msgstr ""
+
+#: Views/Items/AddModelValidationErrorTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Edit"
+msgid "Key"
+msgstr ""
+
+#: Views/Items/AddModelValidationErrorTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Edit"
+msgid "The name of the form field that has an invalid value."
+msgstr ""
+
+#: Views/Items/AddModelValidationErrorTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Edit"
+msgid "The validation error message to display."
+msgstr ""
+
+#: Views/Items/AddModelValidationErrorTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Thumbnail"
+msgid "Add Form Validation Error"
+msgstr ""
+
+#: Views/Items/AddModelValidationErrorTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.AddModelValidationErrorTask.Fields.Thumbnail"
+msgid "Adds a validation error to the model state."
+msgstr ""
+
+#: Views/Items/BindModelStateTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.BindModelStateTask.Fields.Design"
+msgid "Bind Form Model State"
+msgstr ""
+
+#: Views/Items/BindModelStateTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.BindModelStateTask.Fields.Thumbnail"
+msgid "Bind Form to Model State"
+msgstr ""
+
+#: Views/Items/BindModelStateTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.BindModelStateTask.Fields.Thumbnail"
+msgid "Binds submitted form fields to the model state."
+msgstr ""
+
+#: Views/Items/ButtonPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ButtonPart.Fields.Edit"
+msgid "Button"
+msgstr ""
+
+#: Views/Items/ButtonPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ButtonPart.Fields.Edit"
+msgid "Reset"
+msgstr ""
+
+#: Views/Items/ButtonPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ButtonPart.Fields.Edit"
+msgid "Submit"
+msgstr ""
+
+#: Views/Items/ButtonPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ButtonPart.Fields.Edit"
+msgid "Text"
+msgstr ""
+
+#: Views/Items/ButtonPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ButtonPart.Fields.Edit"
+msgid "The button type."
+msgstr ""
+
+#: Views/Items/ButtonPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ButtonPart.Fields.Edit"
+msgid "The text to display on the button."
+msgstr ""
+
+#: Views/Items/ButtonPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ButtonPart.Fields.Edit"
+msgid "Type"
+msgstr ""
+
+#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
+msgid "Label Text"
+msgstr ""
+
+#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
+msgid "Label option"
+msgstr ""
+
+#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
+msgid "Screen Readers"
+msgstr ""
+
+#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
+msgid "Standard"
+msgstr ""
+
+#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
+msgid "The text to display in the label."
+msgstr ""
+
+#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
+msgid "The type of label to create for this field."
+msgstr ""
+
+#: Views/Items/FormElementPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementPart.Fields.Edit"
+msgid "ID"
+msgstr ""
+
+#: Views/Items/FormElementPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementPart.Fields.Edit"
+msgid "The ID to render on this form element."
+msgstr ""
+
+#: Views/Items/FormElementValidationPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementValidationPart.Fields.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/Items/FormElementValidationPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementValidationPart.Fields.Edit"
+msgid "Standard"
+msgstr ""
+
+#: Views/Items/FormElementValidationPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementValidationPart.Fields.Edit"
+msgid "The type of validation to create for this field."
+msgstr ""
+
+#: Views/Items/FormElementValidationPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormElementValidationPart.Fields.Edit"
+msgid "Validation option"
+msgstr ""
+
+#: Views/Items/FormInputElementPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormInputElementPart.Fields.Edit"
+msgid "HTML Name"
+msgstr ""
+
+#: Views/Items/FormInputElementPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormInputElementPart.Fields.Edit"
+msgid "The valid characters for the HTML input name attribute are letters (a-z, A-Z), digits (0-9), hyphen (-), underscore (_), period (.), and square brackets ([ ])."
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "Action"
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "Anti Forgery Token"
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "Check in order to store the current form location. This stored location can later be used to return the user to their initial location."
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "Check to generate an Anti Forgery Token in the form."
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "EncType"
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "Method"
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "Save Form Location"
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "The HTTP method to use when submitting the form."
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "The URL to submit the form to."
+msgstr ""
+
+#: Views/Items/FormPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.FormPart.Fields.Edit"
+msgid "The enctype to use when submitting the form using POST method."
+msgstr ""
+
+#: Views/Items/HttpRedirectToFormLocationTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.HttpRedirectToFormLocationTask.Fields.Design"
+msgid "HTTP Redirect To Form Location"
+msgstr ""
+
+#: Views/Items/HttpRedirectToFormLocationTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.HttpRedirectToFormLocationTask.Fields.Edit"
+msgid "Form Location Key"
+msgstr ""
+
+#: Views/Items/HttpRedirectToFormLocationTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.HttpRedirectToFormLocationTask.Fields.Edit"
+msgid "This key name should be equal to the 'Form Location Key' of the HTTP request event. Leave blank if the workflow only handles a single form."
+msgstr ""
+
+#: Views/Items/HttpRedirectToFormLocationTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.HttpRedirectToFormLocationTask.Fields.Thumbnail"
+msgid "HTTP Redirect To Form Location"
+msgstr ""
+
+#: Views/Items/HttpRedirectToFormLocationTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.HttpRedirectToFormLocationTask.Fields.Thumbnail"
+msgid "Redirect the user agent to the original location of the form."
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Checkbox"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Color"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Date"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "DateTime"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Default Value"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Email"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "File"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Hidden"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Image"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Local DateTime"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Month"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Number"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Password"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Phone"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Placeholder Text"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Range"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Reset"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Search"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Submit"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Text"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "The button type."
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "The default value for this field."
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "The text to display when the field has no value."
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Time"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Type"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Url"
+msgstr ""
+
+#: Views/Items/InputPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
+msgid "Week"
+msgstr ""
+
+#: Views/Items/LabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.LabelPart.Fields.Edit"
+msgid "For"
+msgstr ""
+
+#: Views/Items/LabelPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.LabelPart.Fields.Edit"
+msgid "The ID of the form element to associate with this label."
+msgstr ""
+
+#: Views/Items/SelectPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.SelectPart.Fields.Edit"
+msgid "Checkbox"
+msgstr ""
+
+#: Views/Items/SelectPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.SelectPart.Fields.Edit"
+msgid "Dropdown"
+msgstr ""
+
+#: Views/Items/SelectPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.SelectPart.Fields.Edit"
+msgid "Editor"
+msgstr ""
+
+#: Views/Items/SelectPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.SelectPart.Fields.Edit"
+msgid "Options"
+msgstr ""
+
+#: Views/Items/SelectPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.SelectPart.Fields.Edit"
+msgid "Radio"
+msgstr ""
+
+#: Views/Items/SelectPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.SelectPart.Fields.Edit"
+msgid "The editor style to use for this field."
+msgstr ""
+
+#: Views/Items/TextAreaPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.TextAreaPart.Fields.Edit"
+msgid "Default Value"
+msgstr ""
+
+#: Views/Items/TextAreaPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.TextAreaPart.Fields.Edit"
+msgid "Placeholder Text"
+msgstr ""
+
+#: Views/Items/TextAreaPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.TextAreaPart.Fields.Edit"
+msgid "Rows"
+msgstr ""
+
+#: Views/Items/TextAreaPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.TextAreaPart.Fields.Edit"
+msgid "The default value for this textarea."
+msgstr ""
+
+#: Views/Items/TextAreaPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.TextAreaPart.Fields.Edit"
+msgid "The number of rows to use for this textarea."
+msgstr ""
+
+#: Views/Items/TextAreaPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.TextAreaPart.Fields.Edit"
+msgid "The text to display when the textarea has no value."
+msgstr ""
+
+#: Views/Items/ValidateAntiforgeryTokenTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateAntiforgeryTokenTask.Fields.Design"
+msgid "Validate Antiforgery Token"
+msgstr ""
+
+#: Views/Items/ValidateAntiforgeryTokenTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateAntiforgeryTokenTask.Fields.Thumbnail"
+msgid "Validate Antiforgery Token"
+msgstr ""
+
+#: Views/Items/ValidateAntiforgeryTokenTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateAntiforgeryTokenTask.Fields.Thumbnail"
+msgid "Validates the antiforgery token for the current HTTP context in which the workflow executes."
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.FieldName
+#: Views/Items/ValidateFormFieldTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Design"
+msgid "Validate <em>{0}</em>"
+msgstr ""
+
+#: Views/Items/ValidateFormFieldTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Design"
+msgid "Validate Form Field"
+msgstr ""
+
+#: Views/Items/ValidateFormFieldTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Edit"
+msgid "Error Message"
+msgstr ""
+
+#: Views/Items/ValidateFormFieldTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Edit"
+msgid "Field Name"
+msgstr ""
+
+#: Views/Items/ValidateFormFieldTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Edit"
+msgid "The name of the form field to validate."
+msgstr ""
+
+#: Views/Items/ValidateFormFieldTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Edit"
+msgid "The validation error message to display."
+msgstr ""
+
+#: Views/Items/ValidateFormFieldTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Thumbnail"
+msgid "Validate Form Field"
+msgstr ""
+
+#: Views/Items/ValidateFormFieldTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormFieldTask.Fields.Thumbnail"
+msgid "Validates a specific form field."
+msgstr ""
+
+#: Views/Items/ValidateFormTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormTask.Fields.Design"
+msgid "Validate Form"
+msgstr ""
+
+#: Views/Items/ValidateFormTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormTask.Fields.Thumbnail"
+msgid "Checks whether the submitted form contains any validation errors."
+msgstr ""
+
+#: Views/Items/ValidateFormTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidateFormTask.Fields.Thumbnail"
+msgid "Validate Form"
+msgstr ""
+
+#: Views/Items/ValidationPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidationPart.Fields.Edit"
+msgid "For"
+msgstr ""
+
+#: Views/Items/ValidationPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidationPart.Fields.Edit"
+msgid "The field name that this validation is for."
+msgstr ""
+
+#: Views/Items/ValidationSummaryPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidationSummaryPart.Fields.Edit"
+msgid "Show Model Only Error"
+msgstr ""
+
+#: Views/Items/ValidationSummaryPart.Fields.Edit.cshtml
+msgctxt "OrchardCore.Forms.Views.Items.ValidationSummaryPart.Fields.Edit"
+msgid "When checked, model level errors will be visible otherwise all errors will be visible."
+msgstr ""
+
+#: Workflows/Activities/AddModelValidationErrorTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.AddModelValidationErrorTask"
+msgid "Add Model Validation Error Task"
+msgstr ""
+
+#: Workflows/Activities/AddModelValidationErrorTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.AddModelValidationErrorTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/AddModelValidationErrorTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.AddModelValidationErrorTask"
+msgid "Validation"
+msgstr ""
+
+#: Workflows/Activities/BindModelStateTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
+msgid "Bind Model State Task"
+msgstr ""
+
+#: Workflows/Activities/BindModelStateTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/BindModelStateTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
+msgid "Validation"
+msgstr ""
+
+#: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
+msgid "Invalid"
+msgstr ""
+
+#: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
+msgid "Valid"
+msgstr ""
+
+#: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
+msgid "Validate Antiforgery Token Task"
+msgstr ""
+
+#: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
+msgid "Validation"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormFieldTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormFieldTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
+msgid "Invalid"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormFieldTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
+msgid "Valid"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormFieldTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
+msgid "Validate Form Field Task"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormFieldTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
+msgid "Validation"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormTask"
+msgid "Invalid"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormTask"
+msgid "Valid"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormTask"
+msgid "Validate Form Task"
+msgstr ""
+
+#: Workflows/Activities/ValidateFormTask.cs
+msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormTask"
+msgid "Validation"
+msgstr ""

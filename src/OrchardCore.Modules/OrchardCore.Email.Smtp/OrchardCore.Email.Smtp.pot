@@ -1,0 +1,248 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Email.Smtp\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Drivers/SmtpSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
+msgid "The Default Sender is a required field."
+msgstr ""
+
+#: Drivers/SmtpSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
+msgid "The Default Sender is invalid."
+msgstr ""
+
+#: Drivers/SmtpSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
+msgid "The pickup directory location is invalid."
+msgstr ""
+
+#. Format arguments: {0}: "Host name"
+#: Drivers/SmtpSettingsDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
+msgid "The {0} field is required."
+msgstr ""
+
+#: Services/DefaultSmtpEmailProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.DefaultSmtpEmailProvider"
+msgid "Simple Mail Transfer Protocol (Default SMTP)"
+msgstr ""
+
+#: Services/SmtpEmailProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpEmailProvider"
+msgid "Simple Mail Transfer Protocol (SMTP)"
+msgstr ""
+
+#. Format arguments: {0}: ex.Message
+#: Services/SmtpEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpEmailProviderBase"
+msgid "An error occurred while sending an email: '{0}'"
+msgstr ""
+
+#. Format arguments: {0}: senderAddress
+#: Services/SmtpEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpEmailProviderBase"
+msgid "Invalid email address for the sender: '{0}'."
+msgstr ""
+
+#: Services/SmtpEmailProviderBase.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpEmailProviderBase"
+msgid "The SMTP Email Provider is disabled."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Auto Select Encryption method"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Check to let the system select the encryption method based on port."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Connect to server using SSL/TSL secure connection"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Connect to server using insecure connection and upgrade to secure using SSL/TLS"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Connect to server using insecure connection."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Delivery method"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Enable SMTP Provider"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Encryption method to use"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Host name"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Ignore Invalid SSL Certificate"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Ignores SSL certificate check if it's invalid."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Network"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Network delivery options"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Password"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Pickup directory location"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Port number"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Proxy host name"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Proxy port number"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Require credentials"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "SSL/TLS"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "STARTTLS"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Sender email address"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Specified pickup directory"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Specified pickup directory delivery options"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The SMTP server port, usually 25."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The default email address to use as a sender, unless the email sender is set."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The delivery method used when sending email. Use Network in production. The other options can be useful when developing and testing."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The encryption method used when connecting to mail server."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The password for authentication."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The proxy port is optional."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The proxy server is optional."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "The username for authentication."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Use <code>/</code> for the tenant's default pickup folder or a subfolder such as <code>/Outbound</code>. The configured base path defaults to <code>{{ AppData }}\\Sites\\{{ ShellSettings.Name }}\\Emails</code>, is expanded from configuration only, and mail stays sandboxed under that folder."
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "Use Windows authentication"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "User name"
+msgstr ""
+
+#: Views/SmtpSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
+msgid "When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."
+msgstr ""

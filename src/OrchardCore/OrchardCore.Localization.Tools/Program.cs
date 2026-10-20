@@ -53,13 +53,12 @@ internal static class Program
 
         var request = BuildRequest.Read(requestPath);
         var fingerprint = GetFingerprint(request, requestPath, cancellation.Token);
-        var stampPath = request.OutputPath + ".stamp.json";
         BuildStamp? stamp = null;
-        if (File.Exists(stampPath) && File.Exists(request.OutputPath))
+        if (File.Exists(request.StampPath))
         {
             try
             {
-                stamp = JsonSerializer.Deserialize<BuildStamp>(await File.ReadAllTextAsync(stampPath, cancellation.Token));
+                stamp = JsonSerializer.Deserialize<BuildStamp>(await File.ReadAllTextAsync(request.StampPath, cancellation.Token));
             }
             catch (JsonException)
             {
@@ -67,7 +66,9 @@ internal static class Program
             }
         }
 
-        if (stamp is not null && stamp.Fingerprint == fingerprint && stamp.CatalogHash == HashFile(request.OutputPath))
+        // The catalog hash is empty when the project has no message and therefore no template.
+        var catalogHash = File.Exists(request.OutputPath) ? HashFile(request.OutputPath) : "";
+        if (stamp is not null && stamp.Fingerprint == fingerprint && stamp.CatalogHash == catalogHash)
         {
             Report(stamp.Diagnostics);
             Console.WriteLine("Localization catalog is up to date.");
@@ -81,10 +82,25 @@ internal static class Program
             return 1;
         }
 
-        await PotWriter.WriteIfChangedAsync(request.OutputPath, PotWriter.Write(catalog, request.Options.AssemblyName), cancellation.Token);
-        stamp = new BuildStamp(fingerprint, HashFile(request.OutputPath), catalog.Diagnostics.ToArray());
-        await PotWriter.WriteIfChangedAsync(stampPath, JsonSerializer.Serialize(stamp), cancellation.Token);
-        Console.WriteLine("Localization catalog: " + catalog.Messages.Count.ToString(CultureInfo.InvariantCulture) + " messages, extracted with " + SdkAssemblyResolver.Describe() + ".");
+        if (catalog.Messages.Count == 0)
+        {
+            if (File.Exists(request.OutputPath))
+            {
+                File.Delete(request.OutputPath);
+                Console.WriteLine("Localization catalog removed: no message to extract.");
+            }
+
+            catalogHash = "";
+        }
+        else
+        {
+            await PotWriter.WriteIfChangedAsync(request.OutputPath, PotWriter.Write(catalog, request.Options.AssemblyName, request.LineNumbers), cancellation.Token);
+            catalogHash = HashFile(request.OutputPath);
+            Console.WriteLine("Localization catalog: " + catalog.Messages.Count.ToString(CultureInfo.InvariantCulture) + " messages in " + Path.GetFileName(request.OutputPath) + ", extracted with " + SdkAssemblyResolver.Describe() + ".");
+        }
+
+        stamp = new BuildStamp(fingerprint, catalogHash, catalog.Diagnostics.ToArray());
+        await PotWriter.WriteIfChangedAsync(request.StampPath, JsonSerializer.Serialize(stamp), cancellation.Token);
         return 0;
     }
 

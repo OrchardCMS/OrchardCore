@@ -1,0 +1,102 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Https\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "HTTPS"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "Security"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Https.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Https.DeploymentStartup"
+msgid "Exports the Https settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Https.DeploymentStartup"
+msgid "Https settings"
+msgstr ""
+
+#: Drivers/HttpsSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Https.Drivers.HttpsSettingsDisplayDriver"
+msgid "For safety, changing HTTPS-only settings over HTTP has been prevented."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Https.Permissions"
+msgid "Manage HTTPS"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Determines whether HTTP Strict Transport Security (HSTS) headers are disabled by default, enabled explicitly, or follow the current environment."
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Disabled"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "From environment — enabled in Production, disabled otherwise"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "HSTS mode"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS Permanent"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Require HTTPS for all requests"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "SSL Port"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "The SSL Port Number, leave empty to let the middleware try to determinate it."
+msgstr ""
+
+#: Views/HttpsSettings.Edit.cshtml
+msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
+msgid "Use HSTS with caution, as browsers may stop connecting over HTTP after receiving the header if HTTPS later becomes unavailable."
+msgstr ""

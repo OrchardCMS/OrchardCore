@@ -1,0 +1,420 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Layers\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Design"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Widgets"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Layers.AdminMenu"
+msgid "Zones"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "Layer deleted successfully."
+msgstr ""
+
+#. Format arguments: {0}: widget.ContentItem.ContentItemId; {1}: widget.ContentItem.ContentType
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The Widget content item with id {0} has no matching {1} content type definition."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The layer couldn't be deleted: you must remove any associated widgets first."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The layer name already exists."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Layers.Controllers.AdminController"
+msgid "The layer name is required."
+msgstr ""
+
+#: Controllers/LayerRuleController.cs
+msgctxt "OrchardCore.Layers.Controllers.LayerRuleController"
+msgid "Condition added successfully."
+msgstr ""
+
+#: Controllers/LayerRuleController.cs
+msgctxt "OrchardCore.Layers.Controllers.LayerRuleController"
+msgid "Condition deleted successfully."
+msgstr ""
+
+#: Controllers/LayerRuleController.cs
+msgctxt "OrchardCore.Layers.Controllers.LayerRuleController"
+msgid "Condition updated successfully."
+msgstr ""
+
+#: Controllers/LayerRuleController.cs
+msgctxt "OrchardCore.Layers.Controllers.LayerRuleController"
+msgid "The condition has validation errors."
+msgstr ""
+
+#: Deployment/AllLayersDeploymentStep.cs
+msgctxt "OrchardCore.Layers.Deployment.AllLayersDeploymentStep"
+msgid "Content"
+msgstr ""
+
+#: Drivers/LayerMetadataWelder.cs
+msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
+msgid "Layer is missing field."
+msgstr ""
+
+#: Drivers/LayerMetadataWelder.cs
+msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
+msgid "Title is required field."
+msgstr ""
+
+#: Drivers/LayerMetadataWelder.cs
+msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
+msgid "Zone is missing"
+msgstr ""
+
+#: GraphQL/LayerQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerQueryObjectType"
+msgid "The description of the layer."
+msgstr ""
+
+#: GraphQL/LayerQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerQueryObjectType"
+msgid "The name of the layer."
+msgstr ""
+
+#: GraphQL/LayerQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerQueryObjectType"
+msgid "The rule that activates the layer."
+msgstr ""
+
+#: GraphQL/LayerQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerQueryObjectType"
+msgid "The widgets for this layer."
+msgstr ""
+
+#: GraphQL/LayerQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerQueryObjectType"
+msgid "publication status of the widgets"
+msgstr ""
+
+#: GraphQL/LayerWidgetQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerWidgetQueryObjectType"
+msgid "A widget on this layer."
+msgstr ""
+
+#: GraphQL/LayerWidgetQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerWidgetQueryObjectType"
+msgid "The name of the widget's zone."
+msgstr ""
+
+#: GraphQL/LayerWidgetQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerWidgetQueryObjectType"
+msgid "The position of the widget in the zone."
+msgstr ""
+
+#: GraphQL/LayerWidgetQueryObjectType.cs
+msgctxt "OrchardCore.Layers.GraphQL.LayerWidgetQueryObjectType"
+msgid "Whether to render the widget's title."
+msgstr ""
+
+#: GraphQL/SiteLayersQuery.cs
+msgctxt "OrchardCore.Layers.GraphQL.SiteLayersQuery"
+msgid "Site layers define the rules and zone placement for widgets."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Layers.Permissions"
+msgid "Manage layers"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", unknownTypes)
+#: Recipes/LayerStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Layers.Recipes.LayerStep"
+msgid "No changes have been made. The following types of conditions cannot be added: {0}. Please ensure that the related features are enabled to add these types of conditions."
+msgstr ""
+
+#. Format arguments: {0}: layer.Name
+#: Recipes/LayerStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Layers.Recipes.LayerStep"
+msgid "The layer '{0}' is required."
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Create Layer"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Description"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Widgets and Layers"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Description"
+msgstr ""
+
+#. Format arguments: {0}: Model.Name
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Edit Layer - {0}"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Error updating rule order"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Widgets and Layers"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Add"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Add Widget"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Layers"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "No layers found."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "No widgets found."
+msgstr ""
+
+#. Format arguments: {0}: Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Please <a href=\"{0}\">create a layer</a> before adding Widgets"
+msgstr ""
+
+#. Format arguments: {0}: Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Please <a href=\"{0}\">define the available zones</a> before adding Widgets"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "See documentation"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Select a layer to reveal its associated widgets."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Widget successfully moved. <a href=\"javascript:document.getElementById('undo-form').submit();\"><strong>Undo</strong></a>."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Widgets and Layers"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Index"
+msgid "Zones"
+msgstr ""
+
+#: Views/Items/AllLayersDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Edit"
+msgid "All Layers"
+msgstr ""
+
+#: Views/Items/AllLayersDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Summary"
+msgid "Adds all layers to the plan."
+msgstr ""
+
+#: Views/Items/AllLayersDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Summary"
+msgid "All Layers"
+msgstr ""
+
+#: Views/Items/AllLayersDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Thumbnail"
+msgid "All Layers"
+msgstr ""
+
+#: Views/Items/AllLayersDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Thumbnail"
+msgid "Exports all layers."
+msgstr ""
+
+#: Views/Layer.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Layers.Views.Layer.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/Layer.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Layers.Views.Layer.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/LayerMetadata.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "If checked, the title will be rendered with the widget."
+msgstr ""
+
+#: Views/LayerMetadata.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "Render title"
+msgstr ""
+
+#: Views/LayerMetadata.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "Select a layer"
+msgstr ""
+
+#: Views/LayerMetadata.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "The layer"
+msgstr ""
+
+#: Views/LayerMetadata.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "The layer controls the visibility of this widget."
+msgstr ""
+
+#: Views/LayerMetadata.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
+msgid "Title"
+msgstr ""
+
+#: Views/LayerRule/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/LayerRule/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/LayerRule/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
+msgid "Create Rule"
+msgstr ""
+
+#. Format arguments: {0}: Model.Name
+#: Views/LayerRule/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
+msgid "Edit Layer - {0}"
+msgstr ""
+
+#: Views/LayerRule/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
+msgid "Widgets and Layers"
+msgstr ""
+
+#. Format arguments: {0}: Model.Name
+#: Views/LayerRule/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
+msgid "Edit Layer - {0}"
+msgstr ""
+
+#: Views/LayerRule/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
+msgid "Edit Rule"
+msgstr ""
+
+#: Views/LayerRule/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/LayerRule/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
+msgid "Widgets and Layers"
+msgstr ""
+
+#. Format arguments: {0}: Url.Action("Index", "Admin", new { area = "OrchardCore.Layers" })
+#: Views/LayerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.LayerSettings.Edit"
+msgid "A comma separated list of values, representing the available zones for <a href=\"{0}\">widgets</a>. Note that you'll need to render these zones in the layout template, as they do not automatically render."
+msgstr ""
+
+#: Views/LayerSettings.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerSettings.Edit"
+msgid "Available zones for Layers"
+msgstr ""

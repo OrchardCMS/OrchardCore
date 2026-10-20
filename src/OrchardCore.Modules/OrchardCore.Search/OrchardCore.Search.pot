@@ -1,0 +1,134 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Search\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Search.AdminMenu"
+msgid "Search"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Search.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Search.AdminMenu"
+msgid "Site Search"
+msgstr ""
+
+#: Deployment/SearchSettingsDeploymentStep.cs
+msgctxt "OrchardCore.Search.Deployment.SearchSettingsDeploymentStep"
+msgid "Search"
+msgstr ""
+
+#: Deployment/SearchSettingsDeploymentStep.cs
+msgctxt "OrchardCore.Search.Deployment.SearchSettingsDeploymentStep"
+msgid "Search Settings"
+msgstr ""
+
+#: Controllers/SearchController.cs
+msgctxt "OrchardCore.Search.SearchController"
+msgid "No default search index has been configured."
+msgstr ""
+
+#. Format arguments: {0}: indexProfile.ProviderName
+#: Controllers/SearchController.cs
+#, csharp-format
+msgctxt "OrchardCore.Search.SearchController"
+msgid "No search service provider found for {0} provider."
+msgstr ""
+
+#: Views/Items/SearchSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Summary"
+msgid "Adds search settings to the plan."
+msgstr ""
+
+#: Views/Items/SearchSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Summary"
+msgid "Search Settings"
+msgstr ""
+
+#: Views/Items/SearchSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports search settings."
+msgstr ""
+
+#: Views/Items/SearchSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Search.Views.Items.SearchSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Search Settings"
+msgstr ""
+
+#: Views/Search-Form.cshtml
+msgctxt "OrchardCore.Search.Views.Search-Form"
+msgid "Enter your search term(s)"
+msgstr ""
+
+#: Views/Search-Form.cshtml
+msgctxt "OrchardCore.Search.Views.Search-Form"
+msgid "Search"
+msgstr ""
+
+#: Views/Search-Results.cshtml
+msgctxt "OrchardCore.Search.Views.Search-Results"
+msgid "There are no such results."
+msgstr ""
+
+#: Views/SearchFormPart.cshtml
+msgctxt "OrchardCore.Search.Views.SearchFormPart"
+msgid "Search"
+msgstr ""
+
+#: Views/SearchFormPart.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchFormPart.Edit"
+msgid "Index Name"
+msgstr ""
+
+#: Views/SearchFormPart.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchFormPart.Edit"
+msgid "Leave it empty to use the default index."
+msgstr ""
+
+#: Views/SearchFormPart.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchFormPart.Edit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/SearchFormPart.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchFormPart.Edit"
+msgid "The placeholder text to use in the search bar."
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "Default search index"
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "No available indexes. Add at least one index to search."
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "Select a default index"
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "The default index to use for the search page."
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "The placeholder text to use in the search bar."
+msgstr ""

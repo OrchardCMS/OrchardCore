@@ -1,0 +1,539 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.DataPipelines.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "A connection refers to a step that doesn't exist."
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "A connection uses an input or output this step doesn't have."
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "A step can't be connected to itself."
+msgstr ""
+
+#. Format arguments: {0}: port.DisplayName
+#: Services/DataPipelineAnalyzer.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "Connect the '{0}' input of this step."
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "Nothing uses the output of this step. Connect it to a next step, or remove it."
+msgstr ""
+
+#. Format arguments: {0}: port.DisplayName
+#: Services/DataPipelineAnalyzer.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "The '{0}' input of this step accepts one connection only."
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "The pipeline has no steps. Add a source to read data from."
+msgstr ""
+
+#. Format arguments: {0}: step.Type ?? string.Empty
+#: Services/DataPipelineAnalyzer.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "The step type '{0}' is not available. The feature that provides it may be disabled."
+msgstr ""
+
+#. Format arguments: {0}: ex.Message
+#: Services/DataPipelineAnalyzer.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "This step couldn't be checked: {0}"
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "This step expects files, but it is connected to rows. Add a step that creates a file first."
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "This step expects rows, but it is connected to files."
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "This step is part of a loop. The data of a step can't flow back into it."
+msgstr ""
+
+#: Services/DataPipelineAnalyzer.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineAnalyzer"
+msgid "Two steps have the same identifier."
+msgstr ""
+
+#. Format arguments: {0}: name; {1}: sourceType
+#: Steps/Transforms/AggregateStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "'{0}' can't be computed on a field of type {1}."
+msgstr ""
+
+#: Steps/Transforms/AggregateStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "Add a value to compute, such as the number of rows."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Transforms/AggregateStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "Choose the field of '{0}'."
+msgstr ""
+
+#: Steps/Transforms/AggregateStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "Enter the name of each computed value."
+msgstr ""
+
+#: Steps/Transforms/AggregateStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "Group and summarize"
+msgstr ""
+
+#: Steps/Transforms/AggregateStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "Groups rows and computes counts, sums, averages, minimums and maximums."
+msgstr ""
+
+#: Steps/Transforms/AggregateStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "Summary"
+msgstr ""
+
+#. Format arguments: {0}: measure.Field, name ?? string.Empty
+#: Steps/Transforms/AggregateStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "The input has no field named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Transforms/AggregateStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
+msgid "Two fields are named '{0}'."
+msgstr ""
+
+#: Steps/Transforms/CalculatedFieldsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CalculatedFieldsStep"
+msgid "Add a calculated field."
+msgstr ""
+
+#: Steps/Transforms/CalculatedFieldsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CalculatedFieldsStep"
+msgid "Add calculated fields"
+msgstr ""
+
+#: Steps/Transforms/CalculatedFieldsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CalculatedFieldsStep"
+msgid "Adds fields computed by formulas."
+msgstr ""
+
+#: Steps/Transforms/CalculatedFieldsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CalculatedFieldsStep"
+msgid "Calculated"
+msgstr ""
+
+#: Steps/Transforms/CalculatedFieldsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CalculatedFieldsStep"
+msgid "Enter the name of each calculated field."
+msgstr ""
+
+#. Format arguments: {0}: calculation.Name; {1}: error
+#: Steps/Transforms/CalculatedFieldsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.CalculatedFieldsStep"
+msgid "The field '{0}' couldn't be calculated for a row: {1}"
+msgstr ""
+
+#. Format arguments: {0}: name; {1}: error
+#: Steps/Transforms/CalculatedFieldsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.CalculatedFieldsStep"
+msgid "The formula of '{0}' is invalid: {1}"
+msgstr ""
+
+#: Steps/Transforms/ConvertTimeZoneStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
+msgid "Choose a time zone."
+msgstr ""
+
+#: Steps/Transforms/ConvertTimeZoneStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
+msgid "Convert time zone"
+msgstr ""
+
+#: Steps/Transforms/ConvertTimeZoneStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
+msgid "Converts dates and times from UTC to a time zone, or from a time zone to UTC."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Transforms/ConvertTimeZoneStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
+msgid "The field '{0}' isn't a date and time, so it has no time zone."
+msgstr ""
+
+#: Steps/Transforms/ConvertTimeZoneStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
+msgid "The input has no date and time field to convert."
+msgstr ""
+
+#. Format arguments: {0}: name ?? string.Empty
+#: Steps/Transforms/ConvertTimeZoneStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
+msgid "The input has no field named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: settings.TimeZoneId, settings.TimeZoneId ?? string.Empty
+#: Steps/Transforms/ConvertTimeZoneStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
+msgid "There is no time zone named '{0}'."
+msgstr ""
+
+#: Steps/Files/CreateFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
+msgid "Choose the format of the file."
+msgstr ""
+
+#: Steps/Files/CreateFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
+msgid "Create a file"
+msgstr ""
+
+#. Format arguments: {0}: file.FileName; {1}: count
+#: Steps/Files/CreateFileStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
+msgid "Created the file '{0}' with {1} rows."
+msgstr ""
+
+#: Steps/Files/CreateFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
+msgid "Rows"
+msgstr ""
+
+#. Format arguments: {0}: settings.Format ?? string.Empty
+#: Steps/Files/CreateFileStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
+msgid "The file format '{0}' is not available."
+msgstr ""
+
+#: Steps/Files/CreateFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
+msgid "The rows of the input have no fields, so the file will be empty."
+msgstr ""
+
+#: Steps/Files/CreateFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
+msgid "Writes the rows to a CSV, JSON or Excel file."
+msgstr ""
+
+#: Steps/DataPipelineFormulas.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataPipelineFormulas"
+msgid "A formula of a step reads one row at a time, so it can't use an aggregate function such as SUM. Use a Group and summarize step instead."
+msgstr ""
+
+#: Steps/DataPipelineFormulas.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataPipelineFormulas"
+msgid "Enter a formula."
+msgstr ""
+
+#: Steps/Sources/DataSourceStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "A step that reads only the new rows reads all of them: remove the most rows to read."
+msgstr ""
+
+#: Steps/Sources/DataSourceStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "Choose the data source and the data set to read."
+msgstr ""
+
+#: Steps/Sources/DataSourceStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "Read a data source"
+msgstr ""
+
+#: Steps/Sources/DataSourceStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "Reads content items, users, query results or any other data set."
+msgstr ""
+
+#. Format arguments: {0}: incremental.Name; {1}: DataValues.ToText(after)
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "Reads the rows whose '{0}' is after {1}."
+msgstr ""
+
+#. Format arguments: {0}: settings.DataSet
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The data set '{0}' doesn't exist, or the user the pipeline runs for may not read it."
+msgstr ""
+
+#. Format arguments: {0}: filter.Field ?? string.Empty
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The data set has no field named '{0}' to filter on."
+msgstr ""
+
+#. Format arguments: {0}: settings.IncrementalField
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The data set has no field named '{0}' to read the new rows by."
+msgstr ""
+
+#. Format arguments: {0}: name ?? string.Empty
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The data set has no field named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: settings.Source
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The data source '{0}' is not available. The feature that provides it may be disabled."
+msgstr ""
+
+#. Format arguments: {0}: incremental.Name
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The new rows are read by a number or a date, and '{0}' is neither."
+msgstr ""
+
+#: Steps/Sources/DataSourceStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The number of rows to read can't be negative."
+msgstr ""
+
+#: Steps/Transforms/DistinctStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DistinctStep"
+msgid "Keeps the first row of each set of equal values."
+msgstr ""
+
+#: Steps/Transforms/DistinctStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DistinctStep"
+msgid "Remove duplicates"
+msgstr ""
+
+#. Format arguments: {0}: name ?? string.Empty
+#: Steps/Transforms/DistinctStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DistinctStep"
+msgid "The input has no field named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: error
+#: Steps/Transforms/FilterStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "A row couldn't be checked, and doesn't match: {0}"
+msgstr ""
+
+#: Steps/Transforms/FilterStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "Enter the condition the rows must match."
+msgstr ""
+
+#: Steps/Transforms/FilterStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "Filter rows"
+msgstr ""
+
+#: Steps/Transforms/FilterStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "Keeps the rows that match a condition."
+msgstr ""
+
+#: Steps/Transforms/FilterStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "Matched"
+msgstr ""
+
+#. Format arguments: {0}: compileError, error
+#: Steps/Transforms/FilterStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "The condition is invalid: {0}"
+msgstr ""
+
+#: Steps/Transforms/FilterStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "The condition must be true or false, such as [Amount] > 100."
+msgstr ""
+
+#: Steps/Transforms/FilterStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.FilterStep"
+msgid "Unmatched"
+msgstr ""
+
+#: Steps/Transforms/JoinStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
+msgid "Choose the fields that match the rows of both inputs."
+msgstr ""
+
+#: Steps/Transforms/JoinStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
+msgid "Combines the rows of two inputs that share key values."
+msgstr ""
+
+#: Steps/Transforms/JoinStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
+msgid "Join"
+msgstr ""
+
+#: Steps/Transforms/JoinStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
+msgid "Left"
+msgstr ""
+
+#: Steps/Transforms/JoinStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
+msgid "Right"
+msgstr ""
+
+#. Format arguments: {0}: key.LeftField ?? string.Empty
+#: Steps/Transforms/JoinStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
+msgid "The left input has no field named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: key.RightField ?? string.Empty
+#: Steps/Transforms/JoinStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
+msgid "The right input has no field named '{0}'."
+msgstr ""
+
+#: Steps/Transforms/LimitStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.LimitStep"
+msgid "Enter the number of rows to keep."
+msgstr ""
+
+#: Steps/Transforms/LimitStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.LimitStep"
+msgid "Keep first rows"
+msgstr ""
+
+#: Steps/Transforms/LimitStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.LimitStep"
+msgid "Keeps a number of rows, optionally after skipping some."
+msgstr ""
+
+#: Steps/Transforms/LimitStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.LimitStep"
+msgid "The number of rows to skip can't be negative."
+msgstr ""
+
+#: Steps/Transforms/SelectFieldsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SelectFieldsStep"
+msgid "Keeps, orders, renames and converts fields."
+msgstr ""
+
+#: Steps/Transforms/SelectFieldsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SelectFieldsStep"
+msgid "Select fields"
+msgstr ""
+
+#. Format arguments: {0}: selected.Field ?? string.Empty
+#: Steps/Transforms/SelectFieldsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SelectFieldsStep"
+msgid "The input has no field named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Transforms/SelectFieldsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SelectFieldsStep"
+msgid "Two selected fields are named '{0}'."
+msgstr ""
+
+#: Steps/Transforms/SortStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SortStep"
+msgid "Choose the fields to sort by."
+msgstr ""
+
+#: Steps/Transforms/SortStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SortStep"
+msgid "Sort rows"
+msgstr ""
+
+#: Steps/Transforms/SortStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SortStep"
+msgid "Sorts the rows by one or more fields."
+msgstr ""
+
+#. Format arguments: {0}: key.Field ?? string.Empty
+#: Steps/Transforms/SortStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SortStep"
+msgid "The input has no field named '{0}'."
+msgstr ""
+
+#: Steps/Transforms/UnionStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.UnionStep"
+msgid "Appends the rows of several steps."
+msgstr ""
+
+#: Steps/Transforms/UnionStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.UnionStep"
+msgid "Combine rows"
+msgstr ""
+
+#: Steps/Transforms/UnionStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.UnionStep"
+msgid "Rows"
+msgstr ""
+
+#: Steps/Files/ZipFilesStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ZipFilesStep"
+msgid "Compresses files into one zip archive."
+msgstr ""
+
+#: Steps/Files/ZipFilesStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ZipFilesStep"
+msgid "Files"
+msgstr ""
+
+#: Steps/Files/ZipFilesStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ZipFilesStep"
+msgid "Zip files"
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: archive.FileName
+#: Steps/Files/ZipFilesStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ZipFilesStep"
+msgid "Zipped {0} files into '{1}'."
+msgstr ""

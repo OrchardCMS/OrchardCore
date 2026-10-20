@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.MiniProfiler\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Permissions.cs
+msgctxt "OrchardCore.MiniProfiler.Permissions"
+msgid "View Mini Profiler widget on back end pages"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.MiniProfiler.Permissions"
+msgid "View Mini Profiler widget on front end pages"
+msgstr ""

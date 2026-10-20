@@ -1,0 +1,231 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.DataPipelines.Sftp\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Drivers/UploadToSftpStepDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.Drivers.UploadToSftpStepDisplayDriver"
+msgid "Enter a SHA-256 fingerprint, such as SHA256:ohD8VZEXGWo6Ez8GSEJQ9WpafgLFsOfLOtGGQCQo6Og."
+msgstr ""
+
+#: Drivers/UploadToSftpStepDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.Drivers.UploadToSftpStepDisplayDriver"
+msgid "The port must be between 1 and 65535."
+msgstr ""
+
+#: Drivers/UploadToSftpStepDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.Drivers.UploadToSftpStepDisplayDriver"
+msgid "The timeout must be at least one second."
+msgstr ""
+
+#. Format arguments: {0}: host; {1}: DataPipelineRemotePaths.Redact(ex.Message, password, privateKey, passphrase)
+#: Steps/UploadToSftpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "Could not upload to the SFTP server '{0}': {1}"
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "Enter a password or a private key."
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "Enter the host of the SFTP server."
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "Enter the user name."
+msgstr ""
+
+#. Format arguments: {0}: host; {1}: presented
+#: Steps/UploadToSftpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The SFTP server '{0}' presented the host key SHA256:{1}, which doesn't match the expected fingerprint. The connection was refused."
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The credentials can't be read on this site, such as when its data protection keys changed: enter them again."
+msgstr ""
+
+#. Format arguments: {0}: remotePath; {1}: host
+#: Steps/UploadToSftpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The file '{0}' already exists on the SFTP server '{1}', and the step doesn't overwrite files."
+msgstr ""
+
+#. Format arguments: {0}: settings.Host
+#: Steps/UploadToSftpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The host '{0}' isn't a valid host name or IP address."
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The host key fingerprint must be a SHA-256 fingerprint, such as SHA256:ohD8VZEXGWo6Ez8GSEJQ9WpafgLFsOfLOtGGQCQo6Og."
+msgstr ""
+
+#. Format arguments: {0}: host; {1}: presented
+#: Steps/UploadToSftpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The host key of the SFTP server '{0}' isn't verified. To verify it, set its fingerprint: SHA256:{1}"
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The host key of the server isn't verified: enter its SHA-256 fingerprint to make sure the files go to the right server."
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The port must be between 1 and 65535."
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "The timeout must be at least one second."
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "Upload to an SFTP server"
+msgstr ""
+
+#. Format arguments: {0}: fileName; {1}: DataPipelineRemotePaths.ToDisplayUrl("sftp", host, settings.Port, remotePath)
+#: Steps/UploadToSftpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "Uploaded '{0}' to {1}"
+msgstr ""
+
+#: Steps/UploadToSftpStep.cs
+msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
+msgid "Uploads files to a folder of an SFTP server, over SSH."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Design"
+msgid "Host key not verified"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Authenticate with a password, a private key, or both when the server asks for both."
+msgstr ""
+
+#. Format arguments: {0}: "{PipelineName}"; {1}: "{RunId}"; {2}: "{Date:format}"
+#: Views/UploadToSftp.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Created when it doesn't exist. Empty for the home folder of the user. Placeholders: {0}, {1}, and {2}."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Host"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Host key fingerprint"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Leave empty to keep the current passphrase."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Leave empty to keep the current password."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Leave empty to keep the current private key."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Otherwise the step fails when a file with the same name exists."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Passphrase"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Password"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Port"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Private key"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Remote folder"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Remove the passphrase"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Remove the password"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Remove the private key"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Replace existing files"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "The SHA-256 fingerprint of the server's host key, as shown by ssh-keyscan or by the run history. The step refuses to connect to a server with another key. When it is empty, the server isn't verified."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "The content of the key file, in PEM or OpenSSH format, starting with -----BEGIN."
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "Timeout (seconds)"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "User name"
+msgstr ""
+
+#: Views/UploadToSftp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Sftp.Views.UploadToSftp.Fields.Edit"
+msgid "When the private key is encrypted."
+msgstr ""

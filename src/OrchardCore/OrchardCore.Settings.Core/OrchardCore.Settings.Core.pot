@@ -1,0 +1,27 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Settings.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Deployment/SiteSettingsPropertyDeploymentStep.cs
+msgctxt "OrchardCore.Settings.Deployment.SiteSettingsPropertyDeploymentStep"
+msgid "Configuration"
+msgstr ""
+
+#: SettingsPermissions.cs
+msgctxt "OrchardCore.Settings.SettingsPermissions"
+msgid "Manage debugging settings"
+msgstr ""
+
+#: SettingsPermissions.cs
+msgctxt "OrchardCore.Settings.SettingsPermissions"
+msgid "Manage general settings"
+msgstr ""
+
+#: SettingsPermissions.cs
+msgctxt "OrchardCore.Settings.SettingsPermissions"
+msgid "Manage settings"
+msgstr ""

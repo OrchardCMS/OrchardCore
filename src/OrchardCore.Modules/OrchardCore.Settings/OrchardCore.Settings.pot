@@ -1,0 +1,328 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Settings\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Settings.AdminMenu"
+msgid "Debugging"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Settings.AdminMenu"
+msgid "General"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Settings.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Settings.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Settings.Controllers.AdminController"
+msgid "Site settings updated successfully."
+msgstr ""
+
+#: Deployment/SiteSettingsDeploymentStep.cs
+msgctxt "OrchardCore.Settings.Deployment.SiteSettingsDeploymentStep"
+msgid "Configuration"
+msgstr ""
+
+#: Deployment/SiteSettingsDeploymentStep.cs
+msgctxt "OrchardCore.Settings.Deployment.SiteSettingsDeploymentStep"
+msgid "Site Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Settings.DeploymentStartup"
+msgid "Debugging settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Settings.DeploymentStartup"
+msgid "Exports the debugging settings."
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Enter at least one page size when page size selection is allowed."
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "The Base url must be a fully qualified URL."
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "The page size must be greater than zero."
+msgstr ""
+
+#. Format arguments: {0}: site.MaxPageSize
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "The page size must be less than or equal to {0}."
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "The page size options must be a comma-separated list of positive numbers."
+msgstr ""
+
+#. Format arguments: {0}: site.MaxPageSize
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "The page size options must be less than or equal to {0}."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Settings.Views.Admin.Index"
+msgid "Settings"
+msgstr ""
+
+#: Views/DebugSettings.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.DebugSettings.Edit"
+msgid "Wrap rendered shapes in HTML comments to help identify the template or binding that produced each fragment."
+msgstr ""
+
+#: Views/DebugSettings.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.DebugSettings.Edit"
+msgid "Write shape debug information"
+msgstr ""
+
+#: Views/Items/SiteSettingsDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Items.SiteSettingsDeploymentStep.Fields.Edit"
+msgid "The site settings to add as part of the plan."
+msgstr ""
+
+#: Views/Items/SiteSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Settings.Views.Items.SiteSettingsDeploymentStep.Fields.Summary"
+msgid "No settings selected."
+msgstr ""
+
+#: Views/Items/SiteSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Settings.Views.Items.SiteSettingsDeploymentStep.Fields.Summary"
+msgid "Site Settings"
+msgstr ""
+
+#: Views/Items/SiteSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Settings.Views.Items.SiteSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports the current site settings."
+msgstr ""
+
+#: Views/Items/SiteSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Settings.Views.Items.SiteSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Site Settings"
+msgstr ""
+
+#: Views/Settings-Cache.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
+msgid "Cache Mode"
+msgstr ""
+
+#: Views/Settings-Cache.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
+msgid "Determines whether caches are enabled or disabled."
+msgstr ""
+
+#: Views/Settings-Cache.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
+msgid "Disabled"
+msgstr ""
+
+#: Views/Settings-Cache.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/Settings-Cache.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
+msgid "Enabled with cache debug mode"
+msgstr ""
+
+#: Views/Settings-Cache.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
+msgid "From environment — enabled in Production, disabled otherwise"
+msgstr ""
+
+#: Views/Settings-Cache.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
+msgid "Settings for dynamic caches"
+msgstr ""
+
+#: Views/Settings-Reload.Wrapper.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Reload.Wrapper"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "A base CDN URL prefixed to the local scripts and stylesheets. It is disabled if the value is empty or if the Resource Debug Mode is enabled, e.g. <em>https://cdn.mysite.com</em>"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Determines whether scripts and stylesheets load in their debuggable or minified form."
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Disabled — use minified version of resources"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Enabled — use debuggable version of resources"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "From environment — disabled in Production, enabled otherwise"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Resource Debug Mode"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Settings for scripts and stylesheets"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Site CDN (Content Delivery Network) base url"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Use framework CDN (Content Delivery Network)"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Use resources cache busting"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"
+msgstr ""
+
+#: Views/Settings-Resources.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
+msgid "Whether cache busting (append a version) is used for scripts and stylesheets"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "A comma-separated list of the page size values users can select from, for example 10, 25, 50, 100."
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Allow users to change the page size on listing pages"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Base url"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Default Time Zone"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Enter the fully qualified base URL of the web site."
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Local to server"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Page size"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Page size options"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Page size selection"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Page title format"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Site name"
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "The default format of page titles."
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "The default page size."
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "The site name."
+msgstr ""
+
+#. Format arguments: {0}: Model.MaxPageSize
+#: Views/Settings-Site.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "Values cannot exceed the maximum page size of {0}."
+msgstr ""
+
+#: Views/Settings-Site.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
+msgid "When enabled, a selector is shown on listing pages so users can choose how many items are displayed per page."
+msgstr ""
+
+#: Views/Shared/DisplayTemplates/RemovableCulture.cshtml
+msgctxt "OrchardCore.Settings.Views.Shared.DisplayTemplates.RemovableCulture"
+msgid "Delete"
+msgstr ""
+
+#: Views/SiteSettings.SaveButton.cshtml
+msgctxt "OrchardCore.Settings.Views.SiteSettings.SaveButton"
+msgid "Cancel"
+msgstr ""
+
+#: Views/SiteSettings.SaveButton.cshtml
+msgctxt "OrchardCore.Settings.Views.SiteSettings.SaveButton"
+msgid "Save"
+msgstr ""

@@ -1,0 +1,673 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Deployment\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Deployments"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "JSON Import"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Package Import"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Plans"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Controllers/DeploymentPlanController.cs
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "A deployment plan with the same name already exists."
+msgstr ""
+
+#: Controllers/DeploymentPlanController.cs
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/DeploymentPlanController.cs
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "Deployment plan deleted successfully."
+msgstr ""
+
+#: Controllers/DeploymentPlanController.cs
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "Deployment plan updated successfully."
+msgstr ""
+
+#: Controllers/DeploymentPlanController.cs
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "Deployment plans successfully deleted."
+msgstr ""
+
+#: Controllers/DeploymentPlanController.cs
+msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
+msgid "The name is mandatory."
+msgstr ""
+
+#: Controllers/ImportController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "Deployment package imported."
+msgstr ""
+
+#: Controllers/ImportController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "Only zip or json files are supported."
+msgstr ""
+
+#: Controllers/ImportController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "Please add a file to import."
+msgstr ""
+
+#: Controllers/ImportController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "Recipe imported successfully!"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', e.StepResult.Errors)
+#: Controllers/ImportController.cs
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "The import failed with the following errors: {0}"
+msgstr ""
+
+#: Controllers/ImportController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "The recipe is written in an incorrect JSON format."
+msgstr ""
+
+#: Controllers/ImportController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "Unexpected error occurred while importing the deployment package."
+msgstr ""
+
+#: Controllers/ImportController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "Unexpected error occurred while importing the recipe."
+msgstr ""
+
+#: Controllers/StepController.cs
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "Deployment plan step added successfully."
+msgstr ""
+
+#: Controllers/StepController.cs
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "Deployment plan step updated successfully."
+msgstr ""
+
+#: Controllers/StepController.cs
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "Deployment step deleted successfully."
+msgstr ""
+
+#: Controllers/StepController.cs
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "The deployment plan step has validation errors."
+msgstr ""
+
+#: Deployment/DeploymentPlanDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Deployment.DeploymentPlanDeploymentStep"
+msgid "Deployment"
+msgstr ""
+
+#: Deployment/DeploymentPlanDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Deployment.DeploymentPlanDeploymentStep"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Services/FileDownloadDeploymentTargetProvider.cs
+msgctxt "OrchardCore.Deployment.FileDownloadDeploymentTargetProvider"
+msgid "Download a deployment plan locally."
+msgstr ""
+
+#: Services/FileDownloadDeploymentTargetProvider.cs
+msgctxt "OrchardCore.Deployment.FileDownloadDeploymentTargetProvider"
+msgid "File Download"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", unknownTypes)
+#: Recipes/DeploymentPlansRecipeStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
+msgid "No changes have been made. The following types of deployment plans cannot be added: {0}. Please ensure that the related features are enabled to add these types of deployment plans."
+msgstr ""
+
+#: Steps/CustomFileDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStep"
+msgid "Custom File"
+msgstr ""
+
+#: Steps/CustomFileDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStep"
+msgid "Deployment"
+msgstr ""
+
+#: Steps/JsonRecipeDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStep"
+msgid "Deployment"
+msgstr ""
+
+#: Steps/JsonRecipeDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStep"
+msgid "JSON Recipe"
+msgstr ""
+
+#: Steps/JsonRecipeDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
+msgid "Invalid JSON supplied"
+msgstr ""
+
+#: Steps/JsonRecipeDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
+msgid "The recipe must have a name property"
+msgstr ""
+
+#: Steps/RecipeFileDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStep"
+msgid "Deployment"
+msgstr ""
+
+#: Steps/RecipeFileDeploymentStep.cs
+msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStep"
+msgid "Recipe File"
+msgstr ""
+
+#: Views/DeploymentPlan/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/DeploymentPlan/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/DeploymentPlan/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Create Deployment Plan"
+msgstr ""
+
+#: Views/DeploymentPlan/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/DeploymentPlan/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "<strong>Nothing here!</strong> There are no steps on this plan for the moment."
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Add Step"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "All"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Available Steps"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Available Targets"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Cancel"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Deployment Plan"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Error updating step order"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Execute"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Filter"
+msgstr ""
+
+#: Views/DeploymentPlan/Display.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
+msgid "Select"
+msgstr ""
+
+#: Views/DeploymentPlan/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/DeploymentPlan/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/DeploymentPlan/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Edit Deployment Plan"
+msgstr ""
+
+#: Views/DeploymentPlan/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/DeploymentPlan/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/DeploymentPlan/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "<strong>Nothing here!</strong> There are no deployment plans at the moment."
+msgstr ""
+
+#: Views/DeploymentPlan/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/DeploymentPlan/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Add Deployment Plan"
+msgstr ""
+
+#: Views/DeploymentPlan/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/DeploymentPlan/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/DeploymentPlan/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/DeploymentPlan/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/DeploymentPlanEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/DeploymentPlanEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/DeploymentPlanEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Buttons.SummaryAdmin"
+msgid "Manage Steps"
+msgstr ""
+
+#: Views/DeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
+msgid "Delete"
+msgstr ""
+
+#: Views/DeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
+msgid "Edit"
+msgstr ""
+
+#: Views/DeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Thumbnail"
+msgid "Add"
+msgstr ""
+
+#: Views/Import/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.Import.Index"
+msgid "Import"
+msgstr ""
+
+#: Views/Import/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.Import.Index"
+msgid "Import Deployment Package"
+msgstr ""
+
+#: Views/Import/Index.cshtml
+msgctxt "OrchardCore.Deployment.Views.Import.Index"
+msgid "Select a file"
+msgstr ""
+
+#: Views/Import/Json.cshtml
+msgctxt "OrchardCore.Deployment.Views.Import.Json"
+msgid "Import"
+msgstr ""
+
+#: Views/Import/Json.cshtml
+msgctxt "OrchardCore.Deployment.Views.Import.Json"
+msgid "JSON"
+msgstr ""
+
+#: Views/Import/Json.cshtml
+msgctxt "OrchardCore.Deployment.Views.Import.Json"
+msgid "JSON Import"
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "File Content"
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "File Name"
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "The content of the file."
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "The custom file to add as part of the plan."
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Edit"
+msgid "The filename as it will be added in the archive."
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Summary"
+msgid "Custom File"
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Thumbnail"
+msgid "Custom File"
+msgstr ""
+
+#: Views/Items/CustomFileDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.CustomFileDeploymentStep.Fields.Thumbnail"
+msgid "Exports a custom file and its content."
+msgstr ""
+
+#: Views/Items/DeploymentPlanDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Edit"
+msgid "Include all deployment plans."
+msgstr ""
+
+#: Views/Items/DeploymentPlanDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Edit"
+msgid "The deployment plans to add as part of the plan."
+msgstr ""
+
+#: Views/Items/DeploymentPlanDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr ""
+
+#: Views/Items/DeploymentPlanDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Summary"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/Items/DeploymentPlanDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Summary"
+msgid "No deployment plan selected."
+msgstr ""
+
+#: Views/Items/DeploymentPlanDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Thumbnail"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/Items/DeploymentPlanDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.DeploymentPlanDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified deployment plans."
+msgstr ""
+
+#: Views/Items/JsonRecipeDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.JsonRecipeDeploymentStep.Fields.Edit"
+msgid "Recipe"
+msgstr ""
+
+#: Views/Items/JsonRecipeDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.JsonRecipeDeploymentStep.Fields.Edit"
+msgid "The json recipe."
+msgstr ""
+
+#: Views/Items/JsonRecipeDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.JsonRecipeDeploymentStep.Fields.Summary"
+msgid "JSON Recipe"
+msgstr ""
+
+#: Views/Items/JsonRecipeDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.JsonRecipeDeploymentStep.Fields.Thumbnail"
+msgid "Exports a JSON Recipe."
+msgstr ""
+
+#: Views/Items/JsonRecipeDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.JsonRecipeDeploymentStep.Fields.Thumbnail"
+msgid "JSON Recipe"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Author"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Categories"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Check if the recipe is for setup."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Recipe Name"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Setup recipe"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Tags"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe author."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe categories (comma separated values)."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe description."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe display name."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe file to add as part of the plan."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe name."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe tags (comma separated values)."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe version."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "The recipe web site."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "Version"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
+msgid "WebSite"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Summary"
+msgid "Recipe File"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Thumbnail"
+msgid "Exports a recipe file."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Thumbnail"
+msgid "Recipe File"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Name
+#: Views/Items/UnknownDeploymentStep.Fields.Summary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Views.Items.UnknownDeploymentStep.Fields.Summary"
+msgid "Step: {0}"
+msgstr ""
+
+#: Views/Items/UnknownDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.UnknownDeploymentStep.Fields.Summary"
+msgid "This deployment step is unavailable because the feature that provides it has been disabled or removed."
+msgstr ""
+
+#: Views/Step/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Step/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/Step/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Deployment Plan"
+msgstr ""
+
+#: Views/Step/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/Step/Create.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Create"
+msgid "Step"
+msgstr ""
+
+#: Views/Step/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Step/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Delete"
+msgstr ""
+
+#: Views/Step/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Deployment Plan"
+msgstr ""
+
+#: Views/Step/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Deployment Plans"
+msgstr ""
+
+#: Views/Step/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Step/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Step.Edit"
+msgid "Step"
+msgstr ""

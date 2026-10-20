@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Workflows.Abstractions\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Aborted"
+msgstr ""
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Executing"
+msgstr ""
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Faulted"
+msgstr ""
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Finished"
+msgstr ""
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Halted"
+msgstr ""
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Idle"
+msgstr ""
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Resuming"
+msgstr ""
+
+#: Helpers/ActivityExtensions.cs
+msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
+msgid "Starting"
+msgstr ""
+
+#: WorkflowsPermissions.cs
+msgctxt "OrchardCore.Workflows.WorkflowsPermissions"
+msgid "Execute workflows"
+msgstr ""
+
+#: WorkflowsPermissions.cs
+msgctxt "OrchardCore.Workflows.WorkflowsPermissions"
+msgid "Manage workflow settings"
+msgstr ""
+
+#: WorkflowsPermissions.cs
+msgctxt "OrchardCore.Workflows.WorkflowsPermissions"
+msgid "Manage workflows"
+msgstr ""
