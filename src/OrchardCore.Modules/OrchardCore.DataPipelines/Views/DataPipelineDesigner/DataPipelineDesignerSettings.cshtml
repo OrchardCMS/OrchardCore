@@ -1,0 +1,27 @@
+@model DataPipelineSettingsViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Description">
+    <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <span class="hint">@T["What the pipeline does, shown in the list of pipelines."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IsEnabled" />
+            <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+            <span class="hint dashed">@T["A disabled pipeline doesn't run, whether it is started by a user or a workflow."]</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Workflows.Models
+@using OrchardCore.Workflows.ViewModels
+
+@model ShapeViewModel<WorkflowEntry>
+
+@{
+    var statusCss = Model.Value.Workflow.Status switch
+    {
+        WorkflowStatus.Aborted => "warning",
+        WorkflowStatus.Finished => "success",
+        WorkflowStatus.Executing or WorkflowStatus.Halted or WorkflowStatus.Resuming or WorkflowStatus.Starting => "info",
+        WorkflowStatus.Faulted => "danger",
+        _ => "secondary",
+    };
+}
+
+<span class="badge ta-badge fw-normal text-bg-@statusCss" data-bs-toggle="tooltip" title="@T["Status"]">@T.GetLocalizedStatus(Model.Value.Workflow.Status)</span>

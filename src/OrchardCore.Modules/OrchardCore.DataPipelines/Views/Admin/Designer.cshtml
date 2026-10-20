@@ -1,0 +1,15 @@
+@model DataPipelineDesignerViewModel
+
+@* The designer's toolbar shows the pipeline's name and links back to the list, so the page has no heading of its
+   own, which leaves the height to the canvas. *@
+@{
+    Title.AddSegment(Html.Raw(Html.Encode(Model.Pipeline.Name ?? string.Empty)));
+}
+
+@* The designer reads the antiforgery token from this form for its POST requests. *@
+<form id="data-pipeline-designer-antiforgery" class="d-none">@Html.AntiForgeryToken()</form>
+
+<div id="data-pipeline-designer" data-config="@Model.ConfigJson"></div>
+
+<style asp-name="data-pipelines-designer"></style>
+<script asp-name="data-pipelines-designer" at="Foot"></script>

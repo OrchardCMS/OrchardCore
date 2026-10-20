@@ -176,6 +176,15 @@ public class MenuShapes : ShapeTableProvider
                         settings.SanitizeHtml,
                         sanitizer);
                 }
+                else if (menuContentItem.TryGet<LinkMenuItemPart>(out var linkMenuItemPart))
+                {
+                    var sanitizer = displaying.ServiceProvider.GetRequiredService<IHtmlSanitizerService>();
+
+                    if (!IsSafeUrl(linkMenuItemPart.Url, sanitizer))
+                    {
+                        menuItem.Properties["ContentItem"] = CreateSafeLinkContentItem(menuContentItem);
+                    }
+                }
 
                 // Get cached alternates and add them efficiently
                 var cachedAlternates = MenuItemAlternatesFactory.GetMenuItemLinkAlternates(
@@ -236,6 +245,14 @@ public class MenuShapes : ShapeTableProvider
         sanitizedPart.Apply();
 
         return sanitizedContentItem;
+    }
+
+    internal static ContentItem CreateSafeLinkContentItem(ContentItem contentItem)
+    {
+        var renderedContentItem = contentItem.Clone();
+        renderedContentItem.Alter<LinkMenuItemPart>(part => part.Url = string.Empty);
+
+        return renderedContentItem;
     }
 
     private static async Task<bool> ShouldCreateAsync(
