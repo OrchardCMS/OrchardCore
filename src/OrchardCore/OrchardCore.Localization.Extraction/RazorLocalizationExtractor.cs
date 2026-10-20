@@ -5,15 +5,22 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.NET.Sdk.Razor.SourceGenerators;
 
 namespace OrchardCore.Localization.Extraction;
 
 public sealed class RazorLocalizationExtractor
 {
+    private const string RazorSourceGeneratorTypeName = "Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator";
+
     public static Compilation Extract(Compilation compilation, ExtractionOptions options, LocalizationCatalog catalog, CancellationToken cancellationToken = default)
     {
         if (options.RazorFiles.Count == 0)
+        {
+            return compilation;
+        }
+
+        var generator = LoadGenerator(options, catalog);
+        if (generator is null)
         {
             return compilation;
         }
@@ -29,7 +36,7 @@ public sealed class RazorLocalizationExtractor
             parseOptions = parseOptions.WithFeatures([new KeyValuePair<string, string>("InterceptorsNamespaces", options.InterceptorsNamespaces)]);
         }
         GeneratorDriver driver = CSharpGeneratorDriver.Create(
-            [new RazorSourceGenerator().AsSourceGenerator()],
+            [generator],
             files,
             parseOptions,
             new RazorOptionsProvider(options));
@@ -66,6 +73,30 @@ public sealed class RazorLocalizationExtractor
         }
 
         return updated;
+    }
+
+    /// <summary>
+    /// Loads the Razor source generator from the SDK's compiler assembly. The assembly is not referenced at compile
+    /// time because each SDK ships its own build against its own Roslyn version.
+    /// </summary>
+    private static ISourceGenerator? LoadGenerator(ExtractionOptions options, LocalizationCatalog catalog)
+    {
+        var path = options.RazorCompilerPath;
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
+        {
+            catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC006", "The Razor compiler was not found at '" + path + "'. Razor files are compiled with the Microsoft.CodeAnalysis.Razor.Compiler assembly of the .NET SDK; set LocalizationRazorCompilerPath to its location.", new SourceReference(""), true));
+            return null;
+        }
+
+        var reference = new AnalyzerFileReference(Path.GetFullPath(path), GeneratorAssemblyLoader.Instance);
+        reference.AnalyzerLoadFailed += (_, failure) => catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC006", "The Razor compiler could not be loaded from '" + path + "': " + failure.Message + (failure.Exception is null ? "" : " " + failure.Exception.Message), new SourceReference(""), true));
+        var generator = reference.GetGenerators(LanguageNames.CSharp).FirstOrDefault(candidate => candidate.GetGeneratorType().FullName == RazorSourceGeneratorTypeName);
+        if (generator is null && !catalog.Diagnostics.Any(diagnostic => diagnostic.IsError))
+        {
+            catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC006", "The Razor source generator was not found in '" + path + "'.", new SourceReference(""), true));
+        }
+
+        return generator;
     }
 
     private sealed class RazorText : AdditionalText

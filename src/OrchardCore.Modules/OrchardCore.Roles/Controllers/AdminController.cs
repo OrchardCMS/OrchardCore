@@ -10,6 +10,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -99,6 +101,12 @@ public sealed class AdminController : Controller
 
             model.RoleEntries.Add(entry);
         }
+
+        // The AdminList shape renders the roles with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<RoleEntry>
+        {
+            Source = model.RoleEntries,
+        };
 
         return View(model);
     }

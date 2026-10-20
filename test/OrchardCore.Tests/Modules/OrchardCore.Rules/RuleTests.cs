@@ -260,6 +260,48 @@ public class RuleTests
         Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("const allowed = isAsyncAllowedAsync(); allowed")));
     }
 
+    [Fact]
+    public async Task Evaluate_JavascriptCondition_StopsWhenTheRequestIsAborted()
+    {
+        var rule = new Rule
+        {
+            Conditions =
+            [
+                new JavascriptCondition
+                {
+                    Script = "reached(); true",
+                }
+            ],
+        };
+
+        var reached = false;
+
+        var services = CreateRuleServiceCollection()
+            .AddRuleCondition<JavascriptCondition, JavascriptConditionEvaluator>()
+            .AddSingleton<IGlobalMethodProvider>(new ReachedMethodProvider(() => reached = true))
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine();
+
+        using var requestAborted = new CancellationTokenSource();
+        requestAborted.Cancel();
+
+        var context = new DefaultHttpContext
+        {
+            RequestAborted = requestAborted.Token,
+        };
+
+        services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor { HttpContext = context });
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var ruleService = serviceProvider.GetRequiredService<IRuleService>();
+
+        // The client is gone, so nothing will read what the rule decides; the script must not run.
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => ruleService.EvaluateAsync(rule).AsTask());
+        Assert.False(reached);
+    }
+
     private static Rule CreateJavascriptRule(string script)
         => new()
         {
@@ -308,6 +350,25 @@ public class RuleTests
         services.AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>();
 
         return services;
+    }
+
+    private sealed class ReachedMethodProvider : IGlobalMethodProvider
+    {
+        private readonly Action _reached;
+
+        public ReachedMethodProvider(Action reached)
+        {
+            _reached = reached;
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "reached",
+                Method = serviceProvider => _reached,
+            };
+        }
     }
 
     private sealed class AsyncBooleanMethodProvider : IGlobalMethodProvider

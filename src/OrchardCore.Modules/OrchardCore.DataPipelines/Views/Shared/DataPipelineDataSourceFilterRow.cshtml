@@ -1,0 +1,46 @@
+@model (IReadOnlyList<DataField> Fields, DataSourceFilterRow Filter, string Index)
+@{
+    // The full name, such as "DataPipelineStep.Filters[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Filters[{Model.Index}]");
+    var operators = Enum.GetValues<DataFilterOperator>();
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
+        <partial name="DataPipelineFieldOptions" model="@((Model.Fields, Model.Filter.Field, true))" />
+    </select>
+    <select name="@(prefix).Operator" class="form-select" aria-label="@T["Comparison"]">
+        @foreach (var item in operators)
+        {
+            <option value="@item" selected="@(item == Model.Filter.Operator)">@OperatorLabel(item)</option>
+        }
+    </select>
+    <input name="@(prefix).Value" value="@Model.Filter.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" />
+    <input name="@(prefix).SecondValue" value="@Model.Filter.SecondValue" class="form-control" aria-label="@T["Second value, for Between"]" placeholder="@T["And (Between)"]" />
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>
+
+@functions {
+    private string OperatorLabel(DataFilterOperator filterOperator)
+        => filterOperator switch
+        {
+            DataFilterOperator.Equals => T["equals"].Value,
+            DataFilterOperator.NotEquals => T["doesn't equal"].Value,
+            DataFilterOperator.Contains => T["contains"].Value,
+            DataFilterOperator.NotContains => T["doesn't contain"].Value,
+            DataFilterOperator.StartsWith => T["starts with"].Value,
+            DataFilterOperator.EndsWith => T["ends with"].Value,
+            DataFilterOperator.GreaterThan => T["is greater than"].Value,
+            DataFilterOperator.GreaterThanOrEqual => T["is greater than or equal to"].Value,
+            DataFilterOperator.LessThan => T["is less than"].Value,
+            DataFilterOperator.LessThanOrEqual => T["is less than or equal to"].Value,
+            DataFilterOperator.Between => T["is between"].Value,
+            DataFilterOperator.In => T["is one of"].Value,
+            DataFilterOperator.NotIn => T["isn't one of"].Value,
+            DataFilterOperator.IsEmpty => T["is empty"].Value,
+            DataFilterOperator.IsNotEmpty => T["isn't empty"].Value,
+            DataFilterOperator.InLastDays => T["is in the last days"].Value,
+            DataFilterOperator.InNextDays => T["is in the next days"].Value,
+            _ => filterOperator.ToString(),
+        };
+}

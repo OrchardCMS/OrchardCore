@@ -52,6 +52,28 @@ The dynamic `New` property exposed by `IShapeFactory` is shorthand for the same
 operation. Both `await New.Car()` and `await New.CarAsync()` create a shape with
 the type `Car`.
 
+### Render a shape outside of a view
+
+Shape templates render as partial views of the current view. An endpoint that
+returns the markup of a shape as data, such as in a JSON response, has no view:
+the first template of the request would render as a main page, wrapped in the
+theme layout. Use `IShapeHtmlRenderer` there. It renders a shape, or one zone of
+a shape, in a view context without output, and returns the HTML as a string:
+
+```csharp
+// The whole shape.
+var html = await _shapeHtmlRenderer.RenderAsync(shape);
+
+// Only the 'Content' zone, where the display drivers placed their shapes,
+// without the template of the shape itself.
+var content = await _shapeHtmlRenderer.RenderZoneAsync(shape, "Content");
+```
+
+`RenderZoneAsync` returns an empty string when the shape has no zones, or when
+the zone is empty. Both methods take an optional `CancellationToken`, such as
+`HttpContext.RequestAborted`; it is checked before rendering starts, since a
+shape can't be stopped once it renders.
+
 The [Display Management](../../reference/modules/DisplayManagement/README.md)
 reference also describes the `<shape>` tag helper and the equivalent Liquid
 filters.

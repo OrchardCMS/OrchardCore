@@ -7,6 +7,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Models;
@@ -54,7 +56,9 @@ public sealed class MediaProfilesController : Controller
     }
 
     [Admin("MediaProfiles", "MediaProfiles.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
@@ -91,6 +95,7 @@ public sealed class MediaProfilesController : Controller
         var model = new MediaProfileIndexViewModel
         {
             MediaProfiles = mediaProfiles.Select(x => new MediaProfileEntry { Name = x.Key, MediaProfile = x.Value }).ToList(),
+            Options = options,
             Pager = pagerShape,
         };
 
@@ -98,6 +103,13 @@ public sealed class MediaProfilesController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<MediaProfileEntry>
+        {
+            Source = model.MediaProfiles,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }
@@ -354,7 +366,6 @@ public sealed class MediaProfilesController : Controller
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Min"], Value = ((int)ResizeMode.Min).ToString() });
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Stretch"], Value = ((int)ResizeMode.Stretch).ToString() });
-
 
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Default"], Value = ((int)Format.Undefined).ToString() });
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Gif"], Value = ((int)Format.Gif).ToString() });

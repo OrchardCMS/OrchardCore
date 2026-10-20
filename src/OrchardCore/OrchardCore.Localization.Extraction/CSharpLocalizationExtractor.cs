@@ -126,7 +126,7 @@ public sealed class CSharpLocalizationExtractor
         return new LocalizationCall(receiver, key ?? forms!, plural, forms, GetFormatArguments(invocation.Arguments, method.Name == "Plural"));
     }
 
-    private static IReadOnlyList<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
+    private static List<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
     {
         var descriptions = new List<string?>();
         if (plural)

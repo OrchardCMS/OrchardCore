@@ -8,6 +8,24 @@ public sealed class BuildRequest
     public required ExtractionOptions Options { get; init; }
     public required string OutputPath { get; init; }
 
+    /// <summary>
+    /// Reads a single property of a request without materializing it, so the process can be bound to the SDK's
+    /// compiler before any compiler type is loaded.
+    /// </summary>
+    public static string ReadProperty(string path, string name)
+    {
+        var prefix = "Property|" + name + "|";
+        foreach (var line in File.ReadLines(path, Encoding.UTF8))
+        {
+            if (line.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return Decode(line.Substring(prefix.Length));
+            }
+        }
+
+        return "";
+    }
+
     public static BuildRequest Read(string path)
     {
         var properties = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -40,6 +58,8 @@ public sealed class BuildRequest
             ViewPrefix = properties.GetValueOrDefault("ViewPrefix", ""),
             LanguageVersion = properties.GetValueOrDefault("LanguageVersion", "14.0"),
             InterceptorsNamespaces = properties.GetValueOrDefault("InterceptorsNamespaces", ""),
+            RoslynDirectory = properties.GetValueOrDefault("RoslynDirectory", ""),
+            RazorCompilerPath = properties.GetValueOrDefault("RazorCompilerPath", ""),
             RazorLanguageVersion = properties.GetValueOrDefault("RazorLanguageVersion", "10.0"),
             RazorConfiguration = properties.GetValueOrDefault("RazorConfiguration", "MVC-3.0"),
             Nullable = properties.GetValueOrDefault("Nullable", "disable"),

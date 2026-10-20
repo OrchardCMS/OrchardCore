@@ -48,6 +48,7 @@ const extendDefaultButtonsWithShortcode = () => {
 
 interface TrumbowygEditorOptions {
     element: HTMLTextAreaElement;
+    editorValue?: string;
     languageCode: string;
     isRtl: boolean;
     languageDirection: string;
@@ -56,7 +57,7 @@ interface TrumbowygEditorOptions {
 }
 
 const initTrumbowygEditor = (options: TrumbowygEditorOptions) => {
-    const { element, languageCode, isRtl, languageDirection, customOptions, extendDefaultButtons } = options;
+    const { element, editorValue, languageCode, isRtl, languageDirection, customOptions, extendDefaultButtons } = options;
 
     if (isRtl) {
         ensureRtlLanguageClone(languageCode, languageDirection);
@@ -70,11 +71,25 @@ const initTrumbowygEditor = (options: TrumbowygEditorOptions) => {
         extendDefaultButtonsWithShortcode();
     }
 
+    const originalValue = element.value;
+    let editorChanged = false;
+
+    if (editorValue !== undefined) {
+        element.value = editorValue;
+    }
+
     jQuery(element)
         .trumbowyg(settings)
         .on("tbwchange", () => {
+            editorChanged = true;
             document.dispatchEvent(new CustomEvent("contentpreview:render"));
         });
+
+    element.closest("form")?.addEventListener("submit", () => {
+        if (!editorChanged) {
+            element.value = originalValue;
+        }
+    });
 };
 
 export default initTrumbowygEditor;

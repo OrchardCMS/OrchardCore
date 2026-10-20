@@ -15,8 +15,15 @@
       <_LocalizationRazorLanguageVersion Condition="'$(_LocalizationRazorLanguageVersion)' == ''">10.0</_LocalizationRazorLanguageVersion>
       <_LocalizationRazorConfiguration Condition="'$(RazorConfiguration)' != ''">$(RazorConfiguration)</_LocalizationRazorConfiguration>
       <_LocalizationRazorConfiguration Condition="'$(_LocalizationRazorConfiguration)' == ''">MVC-3.0</_LocalizationRazorConfiguration>
+      <!-- The worker binds to the Roslyn and Razor compiler of the SDK driving this build, so that it compiles the sources exactly as the build does. -->
+      <LocalizationRoslynDirectory Condition="'$(LocalizationRoslynDirectory)' == '' and '$(NetCoreRoot)' != '' and '$(NETCoreSdkVersion)' != '' and Exists('$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Roslyn/bincore')">$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Roslyn/bincore/</LocalizationRoslynDirectory>
+      <LocalizationRoslynDirectory Condition="'$(LocalizationRoslynDirectory)' == '' and Exists('$(RoslynTargetsPath)/bincore')">$(RoslynTargetsPath)/bincore/</LocalizationRoslynDirectory>
+      <LocalizationRazorCompilerPath Condition="'$(LocalizationRazorCompilerPath)' == ''">@(Analyzer->WithMetadataValue('Filename', 'Microsoft.CodeAnalysis.Razor.Compiler')->Distinct())</LocalizationRazorCompilerPath>
+      <LocalizationRazorCompilerPath Condition="'$(LocalizationRazorCompilerPath)' == '' and '$(RazorSdkDirectoryRoot)' != '' and Exists('$(RazorSdkDirectoryRoot)source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll')">$(RazorSdkDirectoryRoot)source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll</LocalizationRazorCompilerPath>
+      <LocalizationRazorCompilerPath Condition="'$(LocalizationRazorCompilerPath)' == '' and '$(NetCoreRoot)' != '' and '$(NETCoreSdkVersion)' != '' and Exists('$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll')">$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll</LocalizationRazorCompilerPath>
     </PropertyGroup>
     <Error Code="OCLOC009" Condition="!Exists('$(LocalizationToolPath)')" Text="Localization worker not found: $(LocalizationToolPath). Build the tooling or reference OrchardCore.Localization.Build." />
+    <Error Code="OCLOC009" Condition="'$(LocalizationRoslynDirectory)' == ''" Text="The Roslyn compiler of the .NET SDK was not found. Set LocalizationRoslynDirectory to the directory containing Microsoft.CodeAnalysis.dll." />
     <ItemGroup>
       <_LocalizationSource Include="@(Compile)" />
       <_LocalizationRazor Include="@(RazorGenerate)" />
@@ -46,6 +53,8 @@
       <_LocalizationProperty Include="ViewPrefix" Value="$(LocalizationViewPrefix)" />
       <_LocalizationProperty Include="LanguageVersion" Value="$(LangVersion)" />
       <_LocalizationProperty Include="InterceptorsNamespaces" Value="$(InterceptorsNamespaces)" />
+      <_LocalizationProperty Include="RoslynDirectory" Value="$(LocalizationRoslynDirectory)" />
+      <_LocalizationProperty Include="RazorCompilerPath" Value="$(LocalizationRazorCompilerPath)" />
       <_LocalizationProperty Include="RazorLanguageVersion" Value="$(_LocalizationRazorLanguageVersion)" />
       <_LocalizationProperty Include="RazorConfiguration" Value="$(_LocalizationRazorConfiguration)" />
       <_LocalizationProperty Include="Nullable" Value="$(Nullable)" />
