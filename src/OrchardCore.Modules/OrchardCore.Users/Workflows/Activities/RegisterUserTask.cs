@@ -138,7 +138,9 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
             {
                 foreach (var item in errors)
                 {
+#pragma warning disable OCLOC104 // The errors are the identity errors, which are declared and extracted where they are described.
                     updater.ModelState.TryAddModelError(item.Key, S[item.Value]);
+#pragma warning restore OCLOC104
                 }
             }
             return null;

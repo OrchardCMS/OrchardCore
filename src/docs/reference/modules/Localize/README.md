@@ -215,13 +215,14 @@ With string localization, no formatting is applied when no arguments are supplie
 
 ### Analyzer rules
 
-`OrchardCore.Abstractions` ships Roslyn analyzers that check `LocalizationSource` declarations while you write them, so that every source can be extracted to translation templates and translated through PO files. They apply to `LocalizationSource.Create(...)`, `LocalizationSource.Create<T>(...)`, and the `LocalizationSource` constructors, in every project referencing the package. Members and types marked with `[SkipLocalizationExtraction]` are not analyzed.
+`OrchardCore.Abstractions` ships Roslyn analyzers that check localizer calls and `LocalizationSource` declarations while you write them, so that every string can be extracted to translation templates and translated through PO files. They apply to the indexers of `IStringLocalizer`, `IHtmlLocalizer` and `IViewLocalizer`, to `GetString`, `GetHtml` and `Plural`, and to `LocalizationSource.Create(...)`, `LocalizationSource.Create<T>(...)` and the `LocalizationSource` constructors, in every project referencing the package. Members and types marked with `[SkipLocalizationExtraction]` are not analyzed, and neither are Razor views, which compile through a source generator: the extraction reports their dynamic keys instead.
 
 | Rule | Severity | Reported when |
 | --- | --- | --- |
 | `OCLOC101` | Warning | A constant value is declared without a context, for example `LocalizationSource.Create("Manage widgets")`. Such a source is not extracted, and only a context-free PO entry translates it. The code fix declares the containing type as the context, with `Create<T>(value)`, or with `Create(value, typeof(T))` when the containing type is static. |
 | `OCLOC102` | Info | The context is neither the declaring type nor one of its containing types, for example `LocalizationSource.Create<OtherMessages>("Manage widgets")` declared in `MyPermissions`. Sharing another type's context is legitimate when the strings belong together; the rule only points out the difference. |
 | `OCLOC103` | Warning | The value is not a compile-time constant, for example `LocalizationSource.Create<MyPermissions>(name)`, so it cannot be extracted. Pass a constant, or mark a member that forwards values declared elsewhere with `[SkipLocalizationExtraction]`. |
+| `OCLOC104` | Warning | A localizer key is not a compile-time constant, for example `S[message]`, `S.GetString(name)`, `S.Plural(count, singular, plural)` with a variable form, or `S.Plural(count, forms)` with forms that are not an inline array of constants, so it cannot be extracted. Pass a constant. For a key that is dynamic by design, because its values are declared and extracted where they originate, such as the outcomes a workflow designer enters, disable the rule around the call with `#pragma warning disable OCLOC104` and say where the values come from. |
 
 A context-free declaration whose value is not a constant, or whose type is a runtime `Type`, is not reported: it forwards a value that is declared, and extracted, elsewhere, like the `Permission` constructors taking a `string` description do.
 
