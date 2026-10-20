@@ -11,8 +11,4 @@
     <_LocalizationToolsDirectory>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/</_LocalizationToolsDirectory>
     <LocalizationToolPath Condition="'$(LocalizationToolPath)' == '' and !Exists('$(_LocalizationToolsProject)')">$(MSBuildThisFileDirectory)../tools/any/OrchardCore.Localization.Tools.dll</LocalizationToolPath>
   </PropertyGroup>
-  <ItemGroup Condition="'$(GenerateLocalizationCatalog)' == 'true' and Exists('$(_LocalizationToolsProject)')">
-    <!-- Builds the worker first. It is not a compile reference, so the target frameworks need not match. -->
-    <ProjectReference Include="$(_LocalizationToolsProject)" ReferenceOutputAssembly="false" PrivateAssets="all" SkipGetTargetFrameworkProperties="true" AdditionalProperties="GenerateLocalizationCatalog=false" />
-  </ItemGroup>
 </Project>
