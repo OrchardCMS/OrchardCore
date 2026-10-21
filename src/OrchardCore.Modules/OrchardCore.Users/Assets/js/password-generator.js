@@ -3,12 +3,31 @@ window.passwordManager = function () {
         uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
         lowers: 'abcdefghijklmnopqrstuvwxyz',
         digits: '0123456789',
-        symbols: '!#$%&()*+,-./:;<=>\'?@@[]^_`{|}~'
+        symbols: '!#$%&()*+,-./:;<=>\'?@[]^_`{|}~'
     };
 
-    const getRandomChar = (str) => str.charAt(Math.floor(Math.random() * str.length));
+    // Returns a uniformly distributed integer in [0, max) from a cryptographically secure source.
+    const getRandomInt = (max) => {
+        const limit = Math.floor(0x100000000 / max) * max;
+        const buffer = new Uint32Array(1);
+        do {
+            crypto.getRandomValues(buffer);
+        } while (buffer[0] >= limit);
 
-    const shuffle = (str) => str.sort(function () { return 0.5 - Math.random() });
+        return buffer[0] % max;
+    };
+
+    const getRandomChar = (str) => str.charAt(getRandomInt(str.length));
+
+    // Fisher-Yates shuffle.
+    const shuffle = (arr) => {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = getRandomInt(i + 1);
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+
+        return arr;
+    };
 
     const meetUniqueRule = (str, requiredUniqueChars) => {
         let uniqueCharacters = str.filter((item, i, ar) => ar.indexOf(item) === i);
@@ -20,7 +39,7 @@ window.passwordManager = function () {
 
     const generatePassword = (requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars) => {
         let password = [];
-        requiredUniqueChars = requiredUniqueChars | 1;
+        requiredUniqueChars = requiredUniqueChars || 1;
 
         if (requireUppercase) {
             // At least one uppercase
