@@ -1,4 +1,5 @@
 import observeAndInit from "@orchardcore/bloom/helpers/observeAndInit";
+import generatePassword from "@orchardcore/bloom/helpers/passwordGenerator";
 
 const toggleIcon = (element: Element) => {
     if (element.classList.contains("fa-eye")) {
@@ -29,32 +30,21 @@ const initPasswordGeneratorWrapper = (element: HTMLElement) => {
     }
 
     generate.addEventListener("click", () => {
-        const requiredPasswordLength = parseInt(generate.getAttribute("data-password-length") ?? "0", 10);
-        const requireUppercase = generate.getAttribute("data-password-requireUppercase") === "true";
-        const requireLowercase = generate.getAttribute("data-password-requireLowercase") === "true";
-        const requireDigit = generate.getAttribute("data-password-requireDigit") === "true";
-        const requireNonAlphanumeric = generate.getAttribute("data-password-requireNonAlphanumeric") === "true";
-        // NOTE: RequiredUniqueChars is actually a count (e.g. "4"), never the literal string "true" -
-        // this comparison is always false, a pre-existing bug in the original inline script kept
-        // as-is here (unrelated to this extraction; the actual no-op is in password-generator.js's
-        // `requiredUniqueChars | 1` coercion, a file outside this pass's scope).
-        const requiredUniqueChars = generate.getAttribute("data-password-requiredUniqueChars") === "true";
-
-        const newPassword = passwordManager.generatePassword(
-            requiredPasswordLength,
-            requireUppercase,
-            requireLowercase,
-            requireDigit,
-            requireNonAlphanumeric,
-            requiredUniqueChars,
-        );
+        const newPassword = generatePassword({
+            length: parseInt(generate.getAttribute("data-password-length") ?? "0", 10) || 0,
+            requireUppercase: generate.getAttribute("data-password-requireUppercase") === "true",
+            requireLowercase: generate.getAttribute("data-password-requireLowercase") === "true",
+            requireDigit: generate.getAttribute("data-password-requireDigit") === "true",
+            requireNonAlphanumeric: generate.getAttribute("data-password-requireNonAlphanumeric") === "true",
+            requiredUniqueChars: parseInt(generate.getAttribute("data-password-requiredUniqueChars") ?? "1", 10) || 1,
+        });
 
         password.value = newPassword;
         passwordConfirmation.value = newPassword;
     });
 
     copy.addEventListener("click", () => {
-        passwordManager.copyPassword(password.value);
+        navigator.clipboard.writeText(password.value);
     });
 
     const togglePasswordFieldState = () => {

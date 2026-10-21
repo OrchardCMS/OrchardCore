@@ -1,3 +1,5 @@
+// Deprecated: the user editor now uses the generatePassword helper from @orchardcore/bloom/helpers/passwordGenerator.
+// This script is kept for backward compatibility and will be removed in a future major version.
 window.passwordManager = function () {
     const allowed = {
         uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
