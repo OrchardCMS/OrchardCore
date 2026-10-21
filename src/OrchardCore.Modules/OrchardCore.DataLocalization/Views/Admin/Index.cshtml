@@ -25,7 +25,13 @@
     </div>
 }
 
-<div id="translation-editor"
+<style at="Head">
+    #translation-editor[v-cloak] {
+        display: none;
+    }
+</style>
+
+<div id="translation-editor" v-cloak
      data-current-culture="@Model.CurrentCulture"
      data-is-read-only="@Model.IsReadOnly.ToString().ToLowerInvariant()"
      data-save-url="@Url.Action("Save", "Admin", new { area = "OrchardCore.DataLocalization" })"
