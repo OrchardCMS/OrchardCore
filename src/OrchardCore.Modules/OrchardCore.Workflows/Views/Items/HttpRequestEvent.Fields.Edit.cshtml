@@ -14,7 +14,7 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label asp-for="Url" class="ocat-label">@T["URL"]</label>
+    <label for="workflow-url-text" class="ocat-label">@T["URL"]</label>
     <div class="ocat-end">
         @{
             var antiforgeryTokenSet = antiforgery.GetTokens(Context);
@@ -40,7 +40,7 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label asp-for="TokenLifeSpan" class="ocat-label">@T["Token Life Span"]</label>
+    <label for="token-lifespan" class="ocat-label">@T["Token Life Span"]</label>
     <div class="ocat-end">
         <input type="number" asp-for="TokenLifeSpan" id="token-lifespan" class="form-control" />
         <span class="hint"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>

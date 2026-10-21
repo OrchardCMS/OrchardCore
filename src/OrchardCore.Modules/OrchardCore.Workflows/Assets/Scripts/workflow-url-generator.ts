@@ -15,13 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             headers,
         })
-            .then((response) => response.text())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Failed to generate the workflow URL (HTTP ${response.status}).`);
+                }
+
+                return response.text();
+            })
             .then((url) => {
                 const urlInput = document.getElementById('workflow-url-text') as HTMLInputElement | null;
                 if (urlInput) {
                     urlInput.value = url;
                 }
-            });
+            })
+            .catch((error) => console.error(error));
     };
 
     document.getElementById('generate-url-button')?.addEventListener('click', () => {
