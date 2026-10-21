@@ -107,15 +107,27 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
 
         async IAsyncEnumerable<TApplication> ExecuteAsync()
         {
-            for (var offset = 0; ; offset += 1_000)
+            const int PageSize = 1_000;
+
+            for (var offset = 0; ; offset += PageSize)
             {
-                await foreach (var application in Store.ListAsync(1_000, offset, cancellationToken))
+                var count = 0;
+
+                await foreach (var application in Store.ListAsync(PageSize, offset, cancellationToken))
                 {
+                    count++;
+
                     var roles = await GetRolesAsync(application, cancellationToken);
                     if (roles.Contains(role, StringComparer.OrdinalIgnoreCase))
                     {
                         yield return application;
                     }
+                }
+
+                // Stop once the store returns a partial (or empty) page.
+                if (count < PageSize)
+                {
+                    yield break;
                 }
             }
         }
