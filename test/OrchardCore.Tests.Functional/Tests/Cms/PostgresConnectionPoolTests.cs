@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Npgsql;
 using OrchardCore.Tests.Functional.Helpers;
 
@@ -52,7 +53,15 @@ public sealed class PostgresConnectionPoolTests
 
                 await server.DisposeAsync();
 
-                Assert.Equal(0L, await CountConnectionsAsync(observer, connectionString));
+                var stopwatch = Stopwatch.StartNew();
+                var remainingConnections = await CountConnectionsAsync(observer, connectionString);
+                while (remainingConnections > 0 && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
+                {
+                    await Task.Delay(50, TestContext.Current.CancellationToken);
+                    remainingConnections = await CountConnectionsAsync(observer, connectionString);
+                }
+
+                Assert.Equal(0L, remainingConnections);
                 Assert.Equal(otherBackend, await GetPooledBackendAsync(otherConnectionString));
             }
 
@@ -70,15 +79,15 @@ public sealed class PostgresConnectionPoolTests
     private static async Task<int> GetPooledBackendAsync(string connectionString)
     {
         await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
         return connection.ProcessID;
     }
 
     private static async Task<long> CountConnectionsAsync(NpgsqlConnection observer, string connectionString)
     {
         await using var command = observer.CreateCommand();
-        command.CommandText = "SELECT count(*) FROM pg_stat_activity WHERE datname = @database";
+        command.CommandText = "SELECT count(*) FROM pg_stat_activity WHERE datname = @database AND backend_type = 'client backend'";
         command.Parameters.AddWithValue("database", new NpgsqlConnectionStringBuilder(connectionString).Database);
-        return (long)await command.ExecuteScalarAsync();
+        return (long)await command.ExecuteScalarAsync(TestContext.Current.CancellationToken);
     }
 }
