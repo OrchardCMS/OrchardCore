@@ -77,6 +77,6 @@ public class NotifyFilterTests
         return httpContext;
     }
 
-    private static SetCookieHeaderValue GetNotifySetCookie(HttpContext httpContext)
+    private static SetCookieHeaderValue GetNotifySetCookie(DefaultHttpContext httpContext)
         => SetCookieHeaderValue.Parse(Assert.Single(httpContext.Response.Headers.SetCookie, cookie => cookie.StartsWith($"{NotifyFilter.CookiePrefix}=", StringComparison.Ordinal)));
 }
