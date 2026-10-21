@@ -11,6 +11,9 @@ public class SiteSettings : DocumentEntity, ISite
     private static readonly object s_missing = new();
     private readonly ConcurrentDictionary<string, object> _cache = new();
 
+    private Uri _baseUri;
+    private Uri _cdnBaseUri;
+
     public string Calendar { get; set; }
     public int MaxPagedCount { get; set; }
     public int MaxPageSize { get; set; }
@@ -30,18 +33,15 @@ public class SiteSettings : DocumentEntity, ISite
 
     public string BaseUrl
     {
-        get => BaseUri?.AbsoluteUri;
-        set => BaseUri = string.IsNullOrWhiteSpace(value) ? null : new Uri(value, UriKind.Absolute);
+        get => _baseUri?.AbsoluteUri;
+        set => _baseUri = string.IsNullOrWhiteSpace(value) ? null : new Uri(value, UriKind.Absolute);
     }
 
     public string CdnBaseUrl
     {
-        get => CdnBaseUri?.AbsoluteUri;
-        set => CdnBaseUri = string.IsNullOrWhiteSpace(value) ? null : new Uri(value, UriKind.Absolute);
+        get => _cdnBaseUri?.AbsoluteUri;
+        set => _cdnBaseUri = string.IsNullOrWhiteSpace(value) ? null : new Uri(value, UriKind.Absolute);
     }
-    
-    public Uri BaseUri { get; set; }
-    public Uri CdnBaseUri { get; set; }
 
     public T As<T>() where T : new()
         => GetOrCreate<T>();
