@@ -76,9 +76,9 @@
         @if (editorShapes.Any())
         {
             <div class="ocat-wrapper">
-                <label for="field-editor-select" class="ocat-label">@T["What type of editor should be used?"]</label>
+                <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="Editor" class="form-select" id="field-editor-select">
+                    <select asp-for="Editor" class="form-select">
                         @foreach (var editorShape in editorShapes)
                         {
                             var shape = await Factory.CreateAsync(editorShape);
@@ -97,9 +97,9 @@
         @if (displayShapes.Any())
         {
             <div class="ocat-wrapper">
-                <label for="field-display-select" class="ocat-label">@T["What type of display mode should be used?"]</label>
+                <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="DisplayMode" class="form-select" id="field-display-select">
+                    <select asp-for="DisplayMode" class="form-select">
                         @foreach (var displayShape in displayShapes)
                         {
                             var shape = await Factory.CreateAsync(displayShape);
