@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
@@ -10,7 +11,11 @@ namespace OrchardCore.FileStorage;
 /// </summary>
 public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
 {
+    private const UnixFileMode OwnerOnly = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute;
+
     private readonly string _rootPath;
+    private readonly bool _isSharedSystemTempPath;
+    private bool _rootVerified;
 
     public DefaultTempDirectoryProvider(
         IOptions<TempDirectoryOptions> options,
@@ -21,6 +26,7 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
         if (string.IsNullOrWhiteSpace(basePath))
         {
             basePath = Path.GetTempPath();
+            _isSharedSystemTempPath = true;
         }
 
         // Scope temporary files per tenant so that tenants can neither collide with nor observe each other's files.
@@ -70,12 +76,47 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
         if (OperatingSystem.IsWindows())
         {
             Directory.CreateDirectory(_rootPath);
+
+            return;
         }
-        else
+
+        Directory.CreateDirectory(_rootPath, OwnerOnly);
+
+        if (_isSharedSystemTempPath && !_rootVerified)
         {
-            Directory.CreateDirectory(
-                _rootPath,
-                UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+            EnsureRootIsPrivate();
+            _rootVerified = true;
+        }
+    }
+
+    // On Unix the system temporary directory (usually '/tmp') is writable by every local user, and the tenant root
+    // has a predictable name. 'Directory.CreateDirectory' does nothing when the path already exists, so another user
+    // could create it first and then read, replace or redirect the files written to it, such as the recipes of an
+    // imported deployment package. Make sure the root is a real directory that only the current user can access.
+    [UnsupportedOSPlatform("windows")]
+    private void EnsureRootIsPrivate()
+    {
+        var directory = new DirectoryInfo(_rootPath);
+
+        if (directory.LinkTarget is not null)
+        {
+            throw new InvalidOperationException(
+                $"The temporary directory '{_rootPath}' is a symbolic link. Remove it, or configure a private " +
+                "location with the 'OrchardCore:TempDirectory:Path' setting.");
+        }
+
+        try
+        {
+            // Changing the mode of a directory requires owning it, so this fails when it was created by another
+            // user, and removes any access a pre-existing directory may have granted to other users.
+            File.SetUnixFileMode(_rootPath, OwnerOnly);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            throw new InvalidOperationException(
+                $"The temporary directory '{_rootPath}' is owned by another user. Remove it, or configure a private " +
+                "location with the 'OrchardCore:TempDirectory:Path' setting.",
+                ex);
         }
     }
 }

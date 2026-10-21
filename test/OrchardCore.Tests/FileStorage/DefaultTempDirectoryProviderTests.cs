@@ -68,6 +68,65 @@ public sealed class DefaultTempDirectoryProviderTests : IDisposable
     }
 
     [Fact]
+    public void GetRootDirectory_InSystemTempPath_RestrictsExistingDirectoryToOwner()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.Skip("Unix file permissions are not supported on Windows.");
+        }
+
+        var tenantName = Guid.NewGuid().ToString("N");
+        var expectedRoot = Path.Combine(Path.GetTempPath(), tenantName);
+
+        try
+        {
+            Directory.CreateDirectory(expectedRoot);
+            File.SetUnixFileMode(expectedRoot, (UnixFileMode)0b111_111_111);
+
+            var root = new DefaultTempDirectoryProvider(
+                Options.Create(new TempDirectoryOptions { Path = null }),
+                new ShellSettings { Name = tenantName }).GetRootDirectory();
+
+            Assert.Equal(expectedRoot, root);
+            Assert.Equal(
+                UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute,
+                File.GetUnixFileMode(root));
+        }
+        finally
+        {
+            Directory.Delete(expectedRoot, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void GetRootDirectory_InSystemTempPath_WhenRootIsSymbolicLink_Throws()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.Skip("Unix file permissions are not supported on Windows.");
+        }
+
+        var tenantName = Guid.NewGuid().ToString("N");
+        var linkPath = Path.Combine(Path.GetTempPath(), tenantName);
+        var target = Directory.CreateDirectory(Path.Combine(_basePath, "Target")).FullName;
+
+        try
+        {
+            Directory.CreateSymbolicLink(linkPath, target);
+
+            var store = new DefaultTempDirectoryProvider(
+                Options.Create(new TempDirectoryOptions { Path = null }),
+                new ShellSettings { Name = tenantName });
+
+            Assert.Throws<InvalidOperationException>(store.GetRootDirectory);
+        }
+        finally
+        {
+            File.Delete(linkPath);
+        }
+    }
+
+    [Fact]
     public void GetTempFileName_ReturnsUniquePathsUnderRoot_WithoutCreatingFile()
     {
         var store = CreateStore();
