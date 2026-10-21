@@ -124,8 +124,9 @@ public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManag
                     }
                 }
 
-                // Stop once the store returns a partial (or empty) page.
-                if (count < PageSize)
+                // Stop once the store returns an empty page. A partial page is not used as the end
+                // signal because a custom store may cap the page size below the requested count.
+                if (count == 0)
                 {
                     yield break;
                 }

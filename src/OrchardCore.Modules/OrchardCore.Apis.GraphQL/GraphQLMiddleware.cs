@@ -169,6 +169,7 @@ public sealed class GraphQLMiddleware
             }));
             options.Listeners.Add(dataLoaderDocumentListener);
             options.RequestServices = context.RequestServices;
+            options.CancellationToken = context.RequestAborted;
         });
 
         context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
