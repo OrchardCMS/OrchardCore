@@ -1,3 +1,6 @@
+using System.Runtime.Versioning;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 
@@ -70,11 +73,19 @@ public sealed class DefaultTempDirectoryProviderTests : IDisposable
     [Fact]
     public void GetRootDirectory_InSystemTempPath_RestrictsExistingDirectoryToOwner()
     {
-        if (OperatingSystem.IsWindows())
+        if (!OperatingSystem.IsWindows())
         {
-            Assert.Skip("Unix file permissions are not supported on Windows.");
+            AssertRestrictsExistingDirectoryToOwner();
+
+            return;
         }
 
+        Assert.Skip("Unix file permissions are not supported on Windows.");
+    }
+
+    [UnsupportedOSPlatform("windows")]
+    private static void AssertRestrictsExistingDirectoryToOwner()
+    {
         var tenantName = Guid.NewGuid().ToString("N");
         var expectedRoot = Path.Combine(Path.GetTempPath(), tenantName);
 
@@ -91,6 +102,53 @@ public sealed class DefaultTempDirectoryProviderTests : IDisposable
             Assert.Equal(
                 UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute,
                 File.GetUnixFileMode(root));
+        }
+        finally
+        {
+            Directory.Delete(expectedRoot, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void GetRootDirectory_InSystemTempPath_OnWindows_RestrictsExistingDirectoryAccess()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            AssertRestrictsExistingDirectoryAccess();
+
+            return;
+        }
+
+        Assert.Skip("Access control lists are only supported on Windows.");
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static void AssertRestrictsExistingDirectoryAccess()
+    {
+        var tenantName = Guid.NewGuid().ToString("N");
+        var expectedRoot = Path.Combine(Path.GetTempPath(), tenantName);
+        var everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, domainSid: null);
+
+        try
+        {
+            var existing = Directory.CreateDirectory(expectedRoot);
+            var security = existing.GetAccessControl();
+            security.AddAccessRule(new FileSystemAccessRule(everyone, FileSystemRights.FullControl, AccessControlType.Allow));
+            existing.SetAccessControl(security);
+
+            var root = new DefaultTempDirectoryProvider(
+                Options.Create(new TempDirectoryOptions { Path = null }),
+                new ShellSettings { Name = tenantName }).GetRootDirectory();
+
+            var rootSecurity = new DirectoryInfo(root).GetAccessControl();
+            var rules = rootSecurity.GetAccessRules(includeExplicit: true, includeInherited: true, typeof(SecurityIdentifier))
+                .Cast<FileSystemAccessRule>()
+                .ToArray();
+
+            Assert.Equal(expectedRoot, root);
+            Assert.True(rootSecurity.AreAccessRulesProtected);
+            Assert.DoesNotContain(rules, rule => rule.IdentityReference == everyone);
+            Assert.Contains(rules, rule => rule.IdentityReference == WindowsIdentity.GetCurrent().User);
         }
         finally
         {
