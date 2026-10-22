@@ -5,7 +5,7 @@ export interface AdminPreferences {
     leftSidebarCompact: boolean;
     isCompactExplicit: boolean;
     actionGroups?: Record<string, string>;
-    actionBarCollapsed?: boolean;
+    [key: string]: unknown;
 }
 
 let isCompactExplicit = false;
@@ -49,7 +49,7 @@ const setAdminPreferences = (adminPreferences: object | null) => {
 
 // Snapshots the current UI state and writes it to storage.
 // Merges into the stored preferences, since they also hold the selected menu item,
-// the collapsed menu groups, the action bar state and the action groups.
+// the collapsed menu groups and the action groups.
 const persistAdminPreferences = () => {
     setTimeout(() => {
         const adminPreferences = getAdminPreferences();

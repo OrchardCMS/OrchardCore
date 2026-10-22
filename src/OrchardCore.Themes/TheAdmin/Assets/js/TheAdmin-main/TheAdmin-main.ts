@@ -4,16 +4,13 @@
 // That is why we use a MutationObserver instead of document.Ready().
 import { getAdminPreferences, setCompactExplicit, AdminPreferences } from '../adminPreferences';
 import { applyActionGroupStateToNode } from '../TheAdmin/actionGroup';
-import { applyActionBarCollapseStateToNode } from '../TheAdmin/actionBarCollapseLoader';
 import { applyNavStateFromPreferences, applySelectedNavFromSessionStorage } from '../TheAdmin/sidebar';
 
 const userPreferencesLoader = () => {
     const adminPreferences = getAdminPreferences() as AdminPreferences;
-    const shouldApplyActionBarState = adminPreferences?.actionBarCollapsed === false;
     const shouldApplyActionGroupState = !!adminPreferences?.actionGroups && Object.keys(adminPreferences.actionGroups).length > 0;
 
     let bodyInitialized = false;
-    let actionBarStateApplied = !shouldApplyActionBarState;
     let actionGroupStateApplied = !shouldApplyActionGroupState;
     let selectedNavApplied = false;
     let navGroupsApplied = false;
@@ -38,20 +35,12 @@ const userPreferencesLoader = () => {
     };
 
     const applyStateToNode = (node: Node) => {
-        if (shouldApplyActionBarState) {
-            applyActionBarCollapseStateToNode(node, adminPreferences);
-        }
-
         if (shouldApplyActionGroupState) {
             applyActionGroupStateToNode(node, adminPreferences);
         }
     };
 
     const isDone = () => {
-        if (!actionBarStateApplied && document.readyState === 'complete') {
-            actionBarStateApplied = true;
-        }
-
         if (!actionGroupStateApplied && document.readyState === 'complete') {
             actionGroupStateApplied = true;
         }
@@ -64,7 +53,7 @@ const userPreferencesLoader = () => {
             selectedNavApplied = applySelectedNavFromSessionStorage();
         }
 
-        return bodyInitialized && actionBarStateApplied && actionGroupStateApplied && navGroupsApplied && selectedNavApplied;
+        return bodyInitialized && actionGroupStateApplied && navGroupsApplied && selectedNavApplied;
     };
 
     const tryApplyGlobalState = () => {
