@@ -30,7 +30,11 @@ public class DataLocalizationPermissions
     // rather than the default null a forward reference would read from a static field
     // initializer that hasn't run yet.
     private static readonly PermissionTemplate s_manageTranslationsForCulture =
-        new("ManageTranslations_{0}", "Manage {0} translations", "Data Localization", ManageTranslations);
+        new(
+            "ManageTranslations_{0}",
+            LocalizationSource.Create<DataLocalizationPermissions>("Manage {0} translations"),
+            "Data Localization",
+            ManageTranslations);
 
     /// <summary>
     /// Creates a dynamic permission for managing translations in a specific culture.

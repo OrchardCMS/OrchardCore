@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Services;
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.CustomSettings;
@@ -8,7 +9,7 @@ public sealed class Permissions : IPermissionProvider
 {
     private static readonly PermissionTemplate s_manageCustomSettings = new(
         "ManageCustomSettings_{0}",
-        "Manage Custom Settings - {0}", 
+        LocalizationSource.Create<Permissions>("Manage Custom Settings - {0}"), 
         new Permission("ManageResourceSettings"));
 
     private readonly CustomSettingsService _customSettingsService;

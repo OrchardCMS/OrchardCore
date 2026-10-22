@@ -1,4 +1,6 @@
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 
@@ -148,7 +150,11 @@ public static class ContentTypePermissionsHelper
         string description,
         Permission impliedBy,
         params PermissionTemplate[] impliedByTemplates) =>
-        new(nameBase + "_{0}", description, "{1} Content Type - {0}", impliedBy)
+        new(
+            nameBase + "_{0}",
+            LocalizationSource.Create(description, typeof(ContentTypePermissionsHelper)),
+            "{1} Content Type - {0}",
+            impliedBy)
         {
             ImpliedByTemplates = impliedByTemplates,
         };

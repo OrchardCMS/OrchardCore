@@ -20,7 +20,7 @@ public static class QueryPermissions
 
     private static readonly PermissionTemplate s_executeApi = new(
         "ExecuteApi_{0}",
-        "Execute Api - {0}", 
+        LocalizationSource.Create("Execute Api - {0}", typeof(QueryPermissions)), 
         ManageQueries,
         ExecuteApiAll);
 

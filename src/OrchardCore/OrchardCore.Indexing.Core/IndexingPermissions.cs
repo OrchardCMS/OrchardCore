@@ -12,7 +12,7 @@ public static class IndexingPermissions
     public static readonly Permission ManageIndexes = new("ManageIndexes", LocalizationSource.Create("Manage Indexes", typeof(IndexingPermissions)));
 
     private static readonly PermissionTemplate s_indexPermissionTemplate =
-        new("QueryIndex_{0}", "Query '{0}' Index", ManageIndexes, QuerySearchIndex);
+        new("QueryIndex_{0}", LocalizationSource.Create("Query '{0}' Index", typeof(IndexingPermissions)), ManageIndexes, QuerySearchIndex);
 
     private static readonly ConcurrentDictionary<string, Permission> s_permissions = [];
 

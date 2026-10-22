@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Localization;
 using OrchardCore.Media.Services;
 using OrchardCore.Security.Permissions;
 
@@ -11,7 +12,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 {
     private static readonly PermissionTemplate s_viewMediaTemplate = new(
         "ViewMediaContent_{0}",
-        "View media content in folder '{0}'",
+        LocalizationSource.Create<SecureMediaPermissions>("View media content in folder '{0}'"),
         MediaPermissions.ViewMedia);
 
     private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByFolder = new();

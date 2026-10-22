@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Collections.Concurrent;
 using OrchardCore.Modules;
 using OrchardCore.Security;
@@ -12,7 +13,7 @@ public static class LuceneIndexPermissionHelper
 
     private static readonly PermissionTemplate s_indexPermissionTemplate = new(
         "QueryLucene{0}Index",
-        "Query Lucene {0} Index", 
+        LocalizationSource.Create("Query Lucene {0} Index", typeof(LuceneIndexPermissionHelper)), 
         LuceneSearchPermissions.ManageLuceneIndexes);
 
     private static readonly ConcurrentDictionary<string, Permission> s_permissions = [];

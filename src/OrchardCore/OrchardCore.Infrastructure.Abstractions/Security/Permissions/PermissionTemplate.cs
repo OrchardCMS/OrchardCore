@@ -18,13 +18,8 @@ public sealed record PermissionTemplate
         Category = category;
         ImpliedBy = impliedBy ?? [];
     }
-    
-    public PermissionTemplate(string name, string description = null, string category = null, params Permission[] impliedBy)
-        : this(name, description is null ? null : LocalizationSource.Create(description), category, impliedBy)
-    {
-    }
 
-    public PermissionTemplate(string name, string description, params Permission[] impliedBy)
+    public PermissionTemplate(string name, LocalizationSource description, params Permission[] impliedBy)
         : this(name, description, category: null, impliedBy)
     {
     }
