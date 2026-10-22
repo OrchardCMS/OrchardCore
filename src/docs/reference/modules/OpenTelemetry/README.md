@@ -188,14 +188,6 @@ The rendering of shapes is traced too: the `OrchardCore.DisplayManagement` activ
 }
 ```
 
-This video shows how to find what a page spends its time on with these traces and metrics in the Aspire dashboard: reading the shape spans of a request, comparing the time of a shape with the time of its children, and filtering the rendering durations by shape type.
-
-<video controls preload="metadata" width="100%" poster="videos/finding-slow-shapes.jpg">
-    <source src="videos/finding-slow-shapes.mp4" type="video/mp4">
-    <track kind="captions" src="videos/finding-slow-shapes.vtt" srclang="en" label="English">
-    Your browser does not support embedded videos. <a href="videos/finding-slow-shapes.mp4">Download the video</a>.
-</video>
-
 To find the slow parts of a site:
 
 1. Find the slowest shape types with the `orchardcore.display.shape.duration` histogram, filtered by shape type.
