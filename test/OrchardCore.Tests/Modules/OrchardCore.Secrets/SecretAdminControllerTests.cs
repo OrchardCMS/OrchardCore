@@ -35,7 +35,9 @@ public class SecretAdminControllerTests
         _manager.Setup(m => m.GetSecretInfosAsync()).ReturnsAsync(
             [new SecretInfo { Name = "secret", Store = "AzureKeyVault", Type = nameof(TextSecret), Description = "description" }]);
         _manager.Setup(m => m.GetSecretAsync<ISecret>("secret", "AzureKeyVault")).ReturnsAsync(new TextSecret { Text = "old" });
-        _controller = new AdminController(_manager.Object, [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>())],
+        _controller = new AdminController(_manager.Object,
+            [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>()),
+                new X509SecretTypeProvider(Mock.Of<IStringLocalizer<X509SecretTypeProvider>>())],
             authorization.Object, Mock.Of<INotifier>(), Mock.Of<IShapeFactory>(), Options.Create(new PagerOptions()),
             _localizer.Object, Mock.Of<IHtmlLocalizer<AdminController>>())
         {
@@ -102,5 +104,91 @@ public class SecretAdminControllerTests
         Assert.IsType<ViewResult>(result);
         Assert.False(_controller.ModelState.IsValid);
         _manager.Verify(m => m.GetSecretAsync<ISecret>(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Create_CombinedPemCertificate_StoresPrivateKeySeparately()
+    {
+        var (certificatePem, privateKeyPem) = X509SecretTests.CreateCertificatePem();
+
+        var result = await _controller.CreatePost(new SecretEditViewModel
+        {
+            Name = "certificate",
+            Store = "Database",
+            SecretType = nameof(X509Secret),
+            X509Source = X509SecretSource.Pem,
+            X509CertificatePem = certificatePem + privateKeyPem,
+        });
+
+        Assert.IsType<RedirectToActionResult>(result);
+        _manager.Verify(m => m.SaveSecretAsync("certificate", It.Is<ISecret>(secret =>
+            ((X509Secret)secret).Source == X509SecretSource.Pem &&
+            !((X509Secret)secret).CertificatePem.Contains("PRIVATE KEY") &&
+            ((X509Secret)secret).PrivateKeyPem == privateKeyPem), "Database", It.IsAny<SecretSaveOptions>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Create_InvalidPemCertificate_IsRejected()
+    {
+        _localizer.Setup(s => s[It.IsAny<string>()]).Returns((string key) => new LocalizedString(key, key));
+        var (certificatePem, _) = X509SecretTests.CreateCertificatePem();
+        var (_, otherPrivateKeyPem) = X509SecretTests.CreateCertificatePem();
+
+        var result = await _controller.CreatePost(new SecretEditViewModel
+        {
+            Name = "certificate",
+            Store = "Database",
+            SecretType = nameof(X509Secret),
+            X509Source = X509SecretSource.Pem,
+            X509CertificatePem = certificatePem,
+            X509PrivateKeyPem = otherPrivateKeyPem,
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.True(_controller.ModelState.ContainsKey(nameof(SecretEditViewModel.X509CertificatePem)));
+        _manager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Edit_PemCertificate_NeverDisplaysPrivateKey()
+    {
+        var (certificatePem, privateKeyPem) = X509SecretTests.CreateCertificatePem();
+        SetupPemSecret(X509Secret.FromPem(certificatePem, privateKeyPem));
+
+        var result = Assert.IsType<ViewResult>(await _controller.Edit("certificate", "Database"));
+
+        var model = Assert.IsType<SecretEditViewModel>(result.Model);
+        Assert.Equal(X509SecretSource.Pem, model.X509Source);
+        Assert.Equal(certificatePem, model.X509CertificatePem);
+        Assert.True(model.X509HasPrivateKey);
+        Assert.Null(model.X509PrivateKeyPem);
+    }
+
+    [Fact]
+    public async Task Edit_PemCertificateWithoutNewPrivateKey_KeepsCurrentPrivateKey()
+    {
+        var (certificatePem, privateKeyPem) = X509SecretTests.CreateCertificatePem();
+        SetupPemSecret(X509Secret.FromPem(certificatePem, privateKeyPem));
+
+        var result = await _controller.EditPost(new SecretEditViewModel
+        {
+            Name = "certificate",
+            Store = "Database",
+            SecretType = nameof(X509Secret),
+            X509Source = X509SecretSource.Pem,
+            X509CertificatePem = certificatePem,
+        }, "certificate", "Database");
+
+        Assert.IsType<RedirectToActionResult>(result);
+        _manager.Verify(m => m.SaveSecretAsync("certificate", It.Is<ISecret>(secret =>
+            ((X509Secret)secret).CertificatePem == certificatePem &&
+            ((X509Secret)secret).PrivateKeyPem == privateKeyPem), "Database", It.IsAny<SecretSaveOptions>()), Times.Once);
+    }
+
+    private void SetupPemSecret(X509Secret secret)
+    {
+        _manager.Setup(m => m.GetSecretInfosAsync()).ReturnsAsync(
+            [new SecretInfo { Name = "certificate", Store = "Database", Type = nameof(X509Secret) }]);
+        _manager.Setup(m => m.GetSecretAsync<ISecret>("certificate", "Database")).ReturnsAsync(secret);
     }
 }

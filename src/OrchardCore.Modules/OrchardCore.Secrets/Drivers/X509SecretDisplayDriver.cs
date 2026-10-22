@@ -78,6 +78,9 @@ public sealed class X509SecretDisplayDriver : DisplayDriver<ISecret, X509Secret>
             return Edit(secret, context);
         }
 
+        secret.Source = X509SecretSource.Store;
+        secret.CertificatePem = null;
+        secret.PrivateKeyPem = null;
         secret.StoreLocation = candidate.StoreLocation;
         secret.StoreName = candidate.StoreName;
         secret.Thumbprint = candidate.Thumbprint;

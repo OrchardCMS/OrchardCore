@@ -13,5 +13,5 @@ public sealed class X509SecretTypeProvider : SecretTypeProvider<X509Secret>
 
     public override string DisplayName => S["X.509 Certificate"];
 
-    public override string Description => S["References an X.509 certificate from the operating system's certificate store."];
+    public override string Description => S["An X.509 certificate, referenced from the operating system's certificate store or stored as PEM-encoded certificate material."];
 }

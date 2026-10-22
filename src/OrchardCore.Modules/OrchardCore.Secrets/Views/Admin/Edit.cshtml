@@ -106,36 +106,89 @@
     }
     else if (Model.SecretType == nameof(X509Secret))
     {
-        <div class="ocat-wrapper" asp-validation-class-for="X509StoreLocation">
-            <label asp-for="X509StoreLocation" class="ocat-label">@T["Store location"]</label>
+        <div class="ocat-wrapper" asp-validation-class-for="X509Source">
+            <label asp-for="X509Source" class="ocat-label">@T["Source"]</label>
             <div class="ocat-end">
-                <select asp-for="X509StoreLocation" class="form-select">
-                    <option value="CurrentUser">@T["Current user"]</option>
-                    <option value="LocalMachine">@T["Local machine"]</option>
+                <select asp-for="X509Source" class="form-select">
+                    <option value="@X509SecretSource.Store">@T["Certificate store"]</option>
+                    <option value="@X509SecretSource.Pem">@T["PEM-encoded certificate"]</option>
                 </select>
-                <span asp-validation-for="X509StoreLocation"></span>
+                <span asp-validation-for="X509Source"></span>
+                <span class="hint">@T["Reference a certificate of the operating system's certificate store, or store the certificate itself in this secret, which doesn't depend on a certificate store."]</span>
             </div>
         </div>
-        <div class="ocat-wrapper" asp-validation-class-for="X509StoreName">
-            <label asp-for="X509StoreName" class="ocat-label">@T["Store name"]</label>
-            <div class="ocat-end">
-                <select asp-for="X509StoreName" class="form-select">
-                    <option value="My">@T["Personal (My)"]</option>
-                    <option value="Root">@T["Trusted root certification authorities (Root)"]</option>
-                    <option value="CA">@T["Intermediate certification authorities (CA)"]</option>
-                    <option value="TrustedPeople">@T["Trusted people"]</option>
-                </select>
-                <span asp-validation-for="X509StoreName"></span>
+
+        <div id="x509-pem-group" class="@(Model.X509Source == X509SecretSource.Pem ? null : "d-none")">
+            <div class="ocat-wrapper" asp-validation-class-for="X509CertificatePem">
+                <label asp-for="X509CertificatePem" class="ocat-label ocat-label-required">@T["Certificate"]</label>
+                <div class="ocat-end">
+                    <textarea asp-for="X509CertificatePem" class="form-control font-monospace" rows="8" spellcheck="false" placeholder="-----BEGIN CERTIFICATE-----"></textarea>
+                    <span asp-validation-for="X509CertificatePem"></span>
+                    <span class="hint">@T["The PEM-encoded certificate, optionally followed by the certificates of its chain. A private key pasted along with it is stored separately and never displayed."]</span>
+                </div>
+            </div>
+            <div class="ocat-wrapper" asp-validation-class-for="X509PrivateKeyPem">
+                <label asp-for="X509PrivateKeyPem" class="ocat-label">@T["Private key"]</label>
+                <div class="ocat-end">
+                    <textarea asp-for="X509PrivateKeyPem" class="form-control font-monospace" rows="8" spellcheck="false" autocomplete="off" placeholder="@(Model.X509HasPrivateKey ? T["Enter a new private key to replace the current one"] : "-----BEGIN PRIVATE KEY-----")"></textarea>
+                    <span asp-validation-for="X509PrivateKeyPem"></span>
+                    @if (Model.X509HasPrivateKey)
+                    {
+                        <span class="hint">@T["Leave empty to keep the current private key. Stored private keys are never displayed."]</span>
+                    }
+                    else
+                    {
+                        <span class="hint">@T["Optional. The unencrypted PEM-encoded private key of the certificate, required to sign or decrypt data."]</span>
+                    }
+                </div>
             </div>
         </div>
-        <div class="ocat-wrapper" asp-validation-class-for="X509Thumbprint">
-            <label asp-for="X509Thumbprint" class="ocat-label ocat-label-required">@T["Thumbprint"]</label>
-            <div class="ocat-end">
-                <input asp-for="X509Thumbprint" class="form-control" placeholder="@T["Certificate thumbprint (SHA-1)"]" />
-                <span asp-validation-for="X509Thumbprint"></span>
-                <span class="hint">@T["The SHA-1 thumbprint of the certificate to use."]</span>
+
+        <div id="x509-store-group" class="@(Model.X509Source == X509SecretSource.Store ? null : "d-none")">
+            <div class="ocat-wrapper" asp-validation-class-for="X509StoreLocation">
+                <label asp-for="X509StoreLocation" class="ocat-label">@T["Store location"]</label>
+                <div class="ocat-end">
+                    <select asp-for="X509StoreLocation" class="form-select">
+                        <option value="CurrentUser">@T["Current user"]</option>
+                        <option value="LocalMachine">@T["Local machine"]</option>
+                    </select>
+                    <span asp-validation-for="X509StoreLocation"></span>
+                </div>
+            </div>
+            <div class="ocat-wrapper" asp-validation-class-for="X509StoreName">
+                <label asp-for="X509StoreName" class="ocat-label">@T["Store name"]</label>
+                <div class="ocat-end">
+                    <select asp-for="X509StoreName" class="form-select">
+                        <option value="My">@T["Personal (My)"]</option>
+                        <option value="Root">@T["Trusted root certification authorities (Root)"]</option>
+                        <option value="CA">@T["Intermediate certification authorities (CA)"]</option>
+                        <option value="TrustedPeople">@T["Trusted people"]</option>
+                    </select>
+                    <span asp-validation-for="X509StoreName"></span>
+                </div>
+            </div>
+            <div class="ocat-wrapper" asp-validation-class-for="X509Thumbprint">
+                <label asp-for="X509Thumbprint" class="ocat-label ocat-label-required">@T["Thumbprint"]</label>
+                <div class="ocat-end">
+                    <input asp-for="X509Thumbprint" class="form-control" placeholder="@T["Certificate thumbprint (SHA-1)"]" />
+                    <span asp-validation-for="X509Thumbprint"></span>
+                    <span class="hint">@T["The SHA-1 thumbprint of the certificate to use."]</span>
+                </div>
             </div>
         </div>
+
+        <script at="Foot">
+            document.addEventListener('DOMContentLoaded', () => {
+                const source = document.getElementById('@Html.IdFor(m => m.X509Source)');
+                const toggleGroups = () => {
+                    const isPem = source.value === '@X509SecretSource.Pem';
+                    document.getElementById('x509-pem-group').classList.toggle('d-none', !isPem);
+                    document.getElementById('x509-store-group').classList.toggle('d-none', isPem);
+                };
+
+                source.addEventListener('change', toggleGroups);
+            });
+        </script>
     }
 
     <div class="ocat-wrapper" asp-validation-class-for="Description">

@@ -104,5 +104,5 @@ public sealed class AzureAISearchSecretMigrationDisplayDriver : DisplayDriver<Se
         => !string.IsNullOrWhiteSpace(settings.ApiKey) && string.IsNullOrWhiteSpace(settings.ApiKeySecretName);
 
     private Task<bool> AuthorizeAsync()
-        => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchPermissions.ManageAzureAISearchISettings);
+        => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchPermissions.ManageAzureAISearchSettings);
 }
