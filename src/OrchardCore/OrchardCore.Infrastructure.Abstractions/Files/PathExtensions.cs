@@ -140,12 +140,12 @@ public static class PathExtensions
         => Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
     /// <summary>
-    /// Returns <see langword="true"/> if the <paramref name="path"/> is outside of <paramref
-    /// name="basePath"/>.
+    /// Returns <see langword="true"/> if the <paramref name="path"/> is outside of <paramref name="basePath"/>. If the
+    /// <paramref name="path"/> is relative, it's first combined with the <paramref name="basePath"/>.
     /// </summary>
     public static bool IsOutsideOfBasePath(string basePath, string path)
     {
-        var absolutePath = Path.IsPathFullyQualified(path) ? path : ResolvePath(path);
+        var absolutePath = Path.IsPathFullyQualified(path) ? path : ResolvePath(Combine(basePath, path));
         return Path.GetRelativePath(basePath, absolutePath).StartsWith(ParentDirectoryToken);
     }
 }
