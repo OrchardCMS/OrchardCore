@@ -39,22 +39,19 @@ public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
         }
 
         // Use "Path.GetFullPath" to resolve path segments like ".." and prevent more elaborate path traversal attacks.
-        var fullname =  Path.GetFullPath(subpath, Folder);
-        fullname = Path.GetFullPath(new Uri(fullname).LocalPath);
-
-        var directory = new DirectoryInfo(Path.GetDirectoryName(fullname));
-
+        var fullname = Path.GetFullPath(subpath, Folder);
         if (Path.GetRelativePath(Folder, fullname).StartsWith(".."))
         {
             throw new InvalidOperationException(PathMustBeRelative);
         }
 
+        var directory = new DirectoryInfo(Path.GetDirectoryName(fullname));
         if (!directory.Exists)
         {
             directory.Create();
         }
 
-        using var fs = File.Create(fullname, 4 * 1024, FileOptions.None);
+        await using var fs = File.Create(fullname, 4 * 1024, FileOptions.None);
         await stream.CopyToAsync(fs);
     }
 
