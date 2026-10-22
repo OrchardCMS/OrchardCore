@@ -33,13 +33,13 @@ public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
 
     public async Task SetFileAsync(string subpath, Stream stream)
     {
-        if (subpath.StartsWith('/'))
+        if (subpath.StartsWith('/') || Path.IsPathFullyQualified(subpath))
         {
             throw new InvalidOperationException(VirtualPathRequired);
         }
 
         var fullname = PathExtensions.ResolvePath(PathExtensions.Combine(Folder, subpath));
-        if (Path.GetRelativePath(Folder, fullname).StartsWith(".."))
+        if (PathExtensions.IsOutsideOfBasePath(Folder, fullname))
         {
             throw new InvalidOperationException(PathMustBeRelative);
         }

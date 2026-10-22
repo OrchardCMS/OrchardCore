@@ -134,8 +134,18 @@ public static class PathExtensions
     /// Gets the full path of a unique file in the system's temporary directory.
     /// </summary>
     /// <remarks>
-    /// The generated file name does not contains an extension.
+    /// The generated file name does not contain an extension.
     /// </remarks>
     public static string GetTempFileName()
         => Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+    /// <summary>
+    /// Returns <see langword="true"/> if the <paramref name="path"/> is outside of <paramref
+    /// name="basePath"/>.
+    /// </summary>
+    public static bool IsOutsideOfBasePath(string basePath, string path)
+    {
+        var absolutePath = Path.IsPathFullyQualified(path) ? path : ResolvePath(path);
+        return Path.GetRelativePath(basePath, absolutePath).StartsWith(ParentDirectoryToken);
+    }
 }
