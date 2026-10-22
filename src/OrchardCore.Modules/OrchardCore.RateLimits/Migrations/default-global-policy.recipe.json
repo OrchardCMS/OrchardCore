@@ -6,6 +6,7 @@
         {
           "PolicyId": "[js: uuid()]",
           "Name": "Default Global Policy",
+          "Description": "Limits how many requests each signed-in user, or each IP address for anonymous visitors, can send per minute. Anonymous visitors who share an IP address, such as an office behind a single gateway, share this limit, so raise it if many of them browse the site at the same time.",
           "OwnerId": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "IsEnabled": true,
@@ -16,7 +17,7 @@
               "Source": "FixedWindow",
               "Properties": {
                 "FixedWindowRateLimiterData": {
-                  "PermitLimit": 150,
+                  "PermitLimit": 1000,
                   "WindowSeconds": 60,
                   "QueueLimit": 0
                 }
