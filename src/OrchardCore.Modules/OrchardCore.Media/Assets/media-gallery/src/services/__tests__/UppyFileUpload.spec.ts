@@ -8,6 +8,7 @@ const {
   mockGetFile,
   mockSetFileMeta,
   mockSetMeta,
+  mockSetFileState,
   mockUpload,
   mockClear,
   mockAddFiles,
@@ -24,6 +25,7 @@ const {
   const mockGetFile = vi.fn();
   const mockSetFileMeta = vi.fn();
   const mockSetMeta = vi.fn();
+  const mockSetFileState = vi.fn();
   const mockUpload = vi.fn(() => Promise.resolve());
   const mockClear = vi.fn();
   const mockAddFiles = vi.fn();
@@ -47,6 +49,7 @@ const {
     getFile: mockGetFile,
     setFileMeta: mockSetFileMeta,
     setMeta: mockSetMeta,
+    setFileState: mockSetFileState,
     upload: mockUpload,
     clear: mockClear,
     addFiles: mockAddFiles,
@@ -64,6 +67,7 @@ const {
     mockGetFile,
     mockSetFileMeta,
     mockSetMeta,
+    mockSetFileState,
     mockUpload,
     mockClear,
     mockAddFiles,
@@ -562,14 +566,16 @@ describe("UppyFileUpload", () => {
     });
 
     describe("files-added handler", () => {
-      it("should set meta with destinationPath in XHR mode", async () => {
+      it("should pin each file's XHR upload endpoint to the folder selected at add time", async () => {
         const wrapper = await mountWithFileUpload(xhrModel);
 
         await emitUppyEventAsync("files-added", [
           { id: "f1", name: "newfile.jpg" },
         ]);
 
-        expect(mockSetMeta).toHaveBeenCalledWith({ destinationPath: "/Images" });
+        expect(mockSetFileState).toHaveBeenCalledWith("f1", {
+          xhrUpload: { endpoint: expect.stringContaining("path=%2FImages") },
+        });
         wrapper.unmount();
       });
 
@@ -1190,6 +1196,45 @@ describe("UppyFileUpload", () => {
         wrapper.unmount();
       });
 
+      it("should NOT add a completed file to fileItems if the user switched folders mid-upload (issue #14317)", async () => {
+        globals.setFileItems([]);
+        globals.setAssetsStore([]);
+
+        // File added while /Images is selected (see beforeEach) -> destination pinned to /Images.
+        const wrapper = await mountWithFileUpload(tusModel);
+        await emitUppyEventAsync("files-added", [{ id: "f1", name: "photo.jpg" }]);
+
+        // User switches to /Docs before the upload finishes.
+        globals.setSelectedDirectory({
+          name: "Docs",
+          directoryPath: "/Docs",
+          filePath: "/Docs",
+          isDirectory: true,
+        });
+
+        // Server confirms the file was uploaded to its original destination, /Images.
+        global.fetch = vi.fn().mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({
+            name: "photo.jpg",
+            directoryPath: "/Images",
+            filePath: "/Images/photo.jpg",
+            size: 999,
+          }),
+        });
+
+        await emitUppyEventAsync("upload-success",
+          { id: "f1", name: "photo.jpg" },
+          { uploadURL: "http://localhost/tus/xyz" },
+        );
+
+        // The currently-visible folder (/Docs) must NOT gain a file that was never
+        // uploaded there — that's the bug: it would show until a refresh silently
+        // removed it again.
+        expect(globals.fileItems.value.some((f) => f.filePath === "/Images/photo.jpg")).toBe(false);
+        wrapper.unmount();
+      });
+
       it("should skip when file is null", async () => {
         const wrapper = await mountWithFileUpload(tusModel);
 
@@ -1452,6 +1497,56 @@ describe("UppyFileUpload", () => {
         expect(placeholder?.mime).toBe("image/jpeg");
         expect(successData).toEqual({ name: "uploaded.jpg" });
         expect(fileInput.value).toBe("");
+
+        wrapper.unmount();
+      });
+
+      it("should NOT add a completed file to fileItems if the user switched folders mid-upload (issue #14317)", async () => {
+        globals.setFileItems([]);
+        globals.setAssetsStore([]);
+
+        const wrapper = await mountWithFileUpload(xhrModel);
+
+        // File added while /Images is selected (see beforeEach).
+        await emitUppyEventAsync("files-added", [{ id: "f1", name: "photo.jpg" }]);
+
+        // User switches to /Docs before the upload completes.
+        globals.setSelectedDirectory({
+          name: "Docs",
+          directoryPath: "/Docs",
+          filePath: "/Docs",
+          isDirectory: true,
+        });
+
+        // Server confirms the file landed in its original destination, /Images.
+        emitUppyEvent("complete", {
+          successful: [
+            {
+              name: "photo.jpg",
+              response: {
+                body: {
+                  files: [
+                    {
+                      name: "photo.jpg",
+                      directoryPath: "/Images",
+                      filePath: "/Images/photo.jpg",
+                      size: 999,
+                      lastModifiedUtc: "2024-11-01T00:00:00Z",
+                      url: "/media/Images/photo.jpg",
+                      mime: "image/jpeg",
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          failed: [],
+        });
+
+        // The currently-visible folder (/Docs) must NOT gain a file that was never
+        // uploaded there — that's the bug: it would show until a refresh silently
+        // removed it again.
+        expect(globals.fileItems.value.some((f) => f.filePath === "/Images/photo.jpg")).toBe(false);
 
         wrapper.unmount();
       });

@@ -1,29 +1,31 @@
 using System.IO.Pipelines;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services;
 
 /// <summary>
-/// Default <see cref="ITusTempStore"/> implementation that stores partial upload
-/// data on disk. The base path is configurable via <see cref="MediaOptions.TusTempPath"/>
-/// (defaults to <c>Path.GetTempPath()/TusUploads</c>).
-/// Configure this to a shared filesystem path for multi-instance deployments.
+/// Default <see cref="ITusTempStore"/> implementation that stores partial upload data on disk, under a
+/// <c>TusUploads</c> sub-directory of the tenant-scoped <see cref="ITempDirectoryProvider"/> location. It therefore
+/// follows the globally configured <c>OrchardCore:TempDirectory:Path</c>; point that at a shared filesystem
+/// path (for example a mounted Azure Files or AWS EFS share) for multi-instance deployments.
 /// </summary>
 public sealed class DiskTusTempStore : ITusTempStore
 {
+    private const string s_tusTempSubdirectory = "TusUploads";
+
     private readonly string _tempDirectory;
     private readonly ILogger _logger;
 
     public DiskTusTempStore(
-        IOptions<MediaOptions> mediaOptions,
-        ShellSettings shellSettings,
+        ITempDirectoryProvider tempDirectoryProvider,
         ILogger<DiskTusTempStore> logger)
     {
         _logger = logger;
-        _tempDirectory = Path.Combine(mediaOptions.Value.TusTempPath, shellSettings.TenantId);
+
+        // The directory is created on demand by EnsureTempDirectory.
+        _tempDirectory = Path.Combine(tempDirectoryProvider.GetRootDirectory(), s_tusTempSubdirectory);
     }
 
     public Task CreateFileAsync(string fileId, CancellationToken cancellationToken)

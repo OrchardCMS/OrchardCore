@@ -34,21 +34,25 @@ You may configure the Default SMTP provider by the configuration provider using 
 
 ```json
 {
-  "OrchardCore_Email_Smtp": {
-    "DefaultSender": "site@example.com",
-    "DeliveryMethod": "Network",
-    "PickupDirectoryLocation": "",
-    "Host": "localhost",
-    "Port": 25,
-    // Uncomment if SMTP server runs through a proxy server
-    //"ProxyHost": "proxy.domain.com",
-    //"ProxyPort": 5050,
-    "EncryptionMethod": "SslTls",
-    "AutoSelectEncryption": false,
-    "UseDefaultCredentials": false,
-    "RequireCredentials": true,
-    "Username": "",
-    "Password": ""
+  "OrchardCore": {
+    "Email": {
+      "Smtp": {
+        "DefaultSender": "site@example.com",
+        "DeliveryMethod": "Network",
+        "PickupDirectoryLocation": "",
+        "Host": "localhost",
+        "Port": 25,
+        // Uncomment if SMTP server runs through a proxy server
+        //"ProxyHost": "proxy.domain.com",
+        //"ProxyPort": 5050,
+        "EncryptionMethod": "SslTls",
+        "AutoSelectEncryption": false,
+        "UseDefaultCredentials": false,
+        "RequireCredentials": true,
+        "Username": "",
+        "Password": ""
+      }
+    }
   }
 }
 ```
@@ -57,23 +61,31 @@ or
 
 ```json
 {
-  "OrchardCore_Email_Smtp": {
-    "DefaultSender": "site@example.com",
-    "DeliveryMethod": "SpecifiedPickupDirectory",
-    "PickupDirectoryLocation": "/"
+  "OrchardCore": {
+    "Email": {
+      "Smtp": {
+        "DefaultSender": "site@example.com",
+        "DeliveryMethod": "SpecifiedPickupDirectory",
+        "PickupDirectoryLocation": "/"
+      }
+    }
   }
 }
 ```
 
-To move the pickup directory outside the default tenant folder, set `PickupDirectoryLocationBase` in `appsettings.json` or by environment variable:
+To move the pickup directory outside the default tenant folder, set `PickupDirectoryLocationBase` in `appsettings.json` or by environment variable (`OrchardCore__Email__Smtp__PickupDirectoryLocationBase`):
 
 ```json
 {
-  "OrchardCore_Email_Smtp": {
-    "DefaultSender": "site@example.com",
-    "DeliveryMethod": "SpecifiedPickupDirectory",
-    "PickupDirectoryLocationBase": "{{ AppData }}\\Drops\\{{ ShellSettings.Name }}",
-    "PickupDirectoryLocation": "/Outbound"
+  "OrchardCore": {
+    "Email": {
+      "Smtp": {
+        "DefaultSender": "site@example.com",
+        "DeliveryMethod": "SpecifiedPickupDirectory",
+        "PickupDirectoryLocationBase": "{{ AppData }}\\Drops\\{{ ShellSettings.Name }}",
+        "PickupDirectoryLocation": "/Outbound"
+      }
+    }
   }
 }
 ```

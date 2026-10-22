@@ -36,7 +36,8 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
     {
         _logger.LogDebug("Configuring BlobOptions in BlobOptionsSetup");
 
-        _configuration.Bind("OrchardCore_DataProtection_Azure", options);
+        // The 'OrchardCore_DataProtection_Azure' section is deprecated and will be removed in a future major version, use 'DataProtection:Azure' instead.
+        _configuration.GetSectionCompat("DataProtection:Azure", "OrchardCore_DataProtection_Azure").Bind(options);
         ConfigureContainerName(options);
         ConfigureBlobName(options);
     }

@@ -1,0 +1,294 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Localization;
+using OrchardCore.DataPipelines.Models;
+using OrchardCore.DataPipelines.Services;
+using OrchardCore.DataPipelines.Steps;
+using OrchardCore.DataPipelines.ViewModels;
+using OrchardCore.DataSources;
+using OrchardCore.DataSources.Files;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Mvc.ModelBinding;
+
+namespace OrchardCore.DataPipelines.Drivers;
+
+public sealed class DataSourceStepDisplayDriver : DataPipelineStepDisplayDriver<DataSourceStepSettings, DataSourceStepViewModel>
+{
+    private readonly IDataSourceManager _dataSourceManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly DataPipelineEditorContext _editorContext;
+    private readonly IStringLocalizerFactory _localizerFactory;
+    private readonly IStringLocalizer S;
+
+    public DataSourceStepDisplayDriver(
+        IDataSourceManager dataSourceManager,
+        IHttpContextAccessor httpContextAccessor,
+        DataPipelineEditorContext editorContext,
+        IStringLocalizerFactory localizerFactory,
+        IStringLocalizer<DataSourceStepDisplayDriver> localizer)
+    {
+        _dataSourceManager = dataSourceManager;
+        _httpContextAccessor = httpContextAccessor;
+        _editorContext = editorContext;
+        _localizerFactory = localizerFactory;
+        S = localizer;
+    }
+
+    protected override string StepName => DataSourceStep.StepName;
+
+    protected override async ValueTask EditAsync(DataPipelineStep step, DataSourceStepSettings settings, DataSourceStepViewModel model)
+    {
+        model.DataSet = DataSetOption.ToValue(settings.Source, settings.DataSet);
+        model.Fields = settings.Fields.ToArray();
+        model.Filters = settings.Filters
+            .Select(filter => new DataSourceFilterRow
+            {
+                Field = filter.Field,
+                Operator = filter.Operator,
+                Value = IsList(filter.Operator)
+                    ? DataFilterValueList.Format(filter.Values)
+                    : filter.Values.Count > 0 ? filter.Values[0] : null,
+                SecondValue = !IsList(filter.Operator) && filter.Values.Count > 1 ? filter.Values[1] : null,
+            })
+            .ToList();
+        model.MaxRows = settings.MaxRows;
+        model.IncrementalField = settings.IncrementalField;
+        model.Parameters = string.Join(System.Environment.NewLine, settings.Parameters.Select(pair => $"{pair.Key}={pair.Value}"));
+
+        var user = _httpContextAccessor.HttpContext?.User;
+        var context = new DataSourceContext { User = user };
+
+        if (model.DataSet is not null)
+        {
+            model.SelectedDataSet = (await DataSetOption.ListAsync(_dataSourceManager, _localizerFactory, user)).FirstOrDefault(option => option.Value == model.DataSet);
+        }
+
+        model.SourceName = _localizerFactory.Localize(_dataSourceManager.GetDescriptor(settings.Source)?.DisplayName)?.Value;
+        model.DataSetName = model.SelectedDataSet?.Text ?? settings.DataSet;
+
+        if (!string.IsNullOrEmpty(settings.Source) && _dataSourceManager.GetDataSource(settings.Source) is { } source)
+        {
+            model.AvailableFields = (await source.GetSchemaAsync(settings.DataSet, context))?.Fields.ToArray() ?? [];
+        }
+    }
+
+    protected override ValueTask UpdateAsync(DataPipelineStep step, DataSourceStepSettings settings, DataSourceStepViewModel model, UpdateEditorContext context)
+    {
+        var (source, dataSet) = DataSetOption.Parse(model.DataSet);
+
+        if (source != settings.Source || dataSet != settings.DataSet)
+        {
+            // Another data set has other fields: start over, and render the editor again with its fields.
+            settings.Source = source;
+            settings.DataSet = dataSet;
+            settings.Fields = [];
+            settings.Filters = [];
+            settings.IncrementalField = null;
+            _editorContext.ReloadEditor = true;
+        }
+        else
+        {
+            settings.Fields = (model.Fields ?? []).Where(name => !string.IsNullOrEmpty(name)).ToList();
+            settings.Filters = (model.Filters ?? [])
+                .Where(filter => !string.IsNullOrEmpty(filter?.Field))
+                .Select(filter => new DataSourceFilter
+                {
+                    Field = filter.Field,
+                    Operator = filter.Operator,
+
+                    // The editor hides the values an operator doesn't take, so they are not kept.
+                    Values = filter.Operator switch
+                    {
+                        DataFilterOperator.Between => [filter.Value ?? string.Empty, filter.SecondValue ?? string.Empty],
+                        DataFilterOperator.IsEmpty or DataFilterOperator.IsNotEmpty => [],
+                        DataFilterOperator.In or DataFilterOperator.NotIn => DataFilterValueList.Parse(filter.Value),
+                        _ => string.IsNullOrEmpty(filter.Value) ? [] : [filter.Value],
+                    },
+                })
+                .ToList();
+        }
+
+        if (model.MaxRows < 0)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.MaxRows), S["The number of rows can't be negative."]);
+        }
+
+        settings.MaxRows = Math.Max(0, model.MaxRows);
+        settings.Parameters = ParseParameters(model.Parameters);
+
+        if (source == settings.Source && dataSet == settings.DataSet)
+        {
+            settings.IncrementalField = string.IsNullOrWhiteSpace(model.IncrementalField) ? null : model.IncrementalField;
+
+            if (settings.IncrementalField is not null && settings.MaxRows > 0)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IncrementalField), S["A step that reads only the new rows reads all of them: set the maximum number of rows to 0."]);
+            }
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    private static bool IsList(DataFilterOperator filterOperator)
+        => filterOperator is DataFilterOperator.In or DataFilterOperator.NotIn;
+
+    private static Dictionary<string, string> ParseParameters(string text)
+    {
+        var parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var line in (text ?? string.Empty).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var index = line.IndexOf('=', StringComparison.Ordinal);
+
+            if (index > 0)
+            {
+                parameters[line[..index].Trim()] = line[(index + 1)..].Trim();
+            }
+        }
+
+        return parameters;
+    }
+}
+
+public class DataSourceStepViewModel
+{
+    public string DataSet { get; set; }
+
+    public string[] Fields { get; set; } = [];
+
+    public List<DataSourceFilterRow> Filters { get; set; } = [];
+
+    public int MaxRows { get; set; }
+
+    public string IncrementalField { get; set; }
+
+    public string Parameters { get; set; }
+
+    [BindNever]
+    public DataSetOption SelectedDataSet { get; set; }
+
+    [BindNever]
+    public IReadOnlyList<DataField> AvailableFields { get; set; } = [];
+
+    [BindNever]
+    public string SourceName { get; set; }
+
+    [BindNever]
+    public string DataSetName { get; set; }
+}
+
+public sealed class DataSourceFilterRow
+{
+    public string Field { get; set; }
+
+    public DataFilterOperator Operator { get; set; }
+
+    public string Value { get; set; }
+
+    public string SecondValue { get; set; }
+}
+
+public sealed class CreateFileStepDisplayDriver : DataPipelineStepDisplayDriver<CreateFileStepSettings, CreateFileStepViewModel>
+{
+    private readonly IDataFileFormatManager _formatManager;
+    private readonly DataPipelineEditorContext _editorContext;
+    private readonly IStringLocalizerFactory _localizerFactory;
+    private readonly IStringLocalizer S;
+
+    public CreateFileStepDisplayDriver(
+        IDataFileFormatManager formatManager,
+        DataPipelineEditorContext editorContext,
+        IStringLocalizerFactory localizerFactory,
+        IStringLocalizer<CreateFileStepDisplayDriver> localizer)
+    {
+        _formatManager = formatManager;
+        _editorContext = editorContext;
+        _localizerFactory = localizerFactory;
+        S = localizer;
+    }
+
+    protected override string StepName => CreateFileStep.StepName;
+
+    protected override ValueTask EditAsync(DataPipelineStep step, CreateFileStepSettings settings, CreateFileStepViewModel model)
+    {
+        model.Format = settings.Format;
+        model.FileName = settings.FileName;
+        model.IncludeHeader = settings.IncludeHeader;
+        model.UseDisplayNames = settings.UseDisplayNames;
+        model.Delimiter = settings.Delimiter;
+        model.SheetName = settings.SheetName;
+        model.Indented = settings.Indented;
+        model.Formats = DataFileFormatOption.List(_formatManager, _localizerFactory);
+        model.FormatName = model.Formats.FirstOrDefault(format => string.Equals(format.Name, settings.Format, StringComparison.OrdinalIgnoreCase))?.DisplayName ?? settings.Format;
+
+        return ValueTask.CompletedTask;
+    }
+
+    protected override ValueTask UpdateAsync(DataPipelineStep step, CreateFileStepSettings settings, CreateFileStepViewModel model, UpdateEditorContext context)
+    {
+        if (_formatManager.GetDescriptor(model.Format) is null)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Format), S["Choose the format of the file."]);
+        }
+
+        // The editor shows the options of the format.
+        _editorContext.ReloadEditor |= settings.Format != model.Format;
+
+        settings.Format = model.Format;
+        settings.FileName = model.FileName?.Trim();
+        settings.IncludeHeader = model.IncludeHeader;
+        settings.UseDisplayNames = model.UseDisplayNames;
+        settings.Delimiter = string.IsNullOrEmpty(model.Delimiter) ? "," : model.Delimiter;
+        settings.SheetName = string.IsNullOrWhiteSpace(model.SheetName) ? null : model.SheetName.Trim();
+        settings.Indented = model.Indented;
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public class CreateFileStepViewModel
+{
+    public string Format { get; set; }
+
+    public string FileName { get; set; }
+
+    public bool IncludeHeader { get; set; }
+
+    public bool UseDisplayNames { get; set; }
+
+    public string Delimiter { get; set; }
+
+    public string SheetName { get; set; }
+
+    public bool Indented { get; set; }
+
+    [BindNever]
+    public IReadOnlyList<DataFileFormatOption> Formats { get; set; } = [];
+
+    [BindNever]
+    public string FormatName { get; set; }
+}
+
+public sealed class ZipFilesStepDisplayDriver : DataPipelineStepDisplayDriver<ZipFilesStepSettings, ZipFilesStepViewModel>
+{
+    protected override string StepName => ZipFilesStep.StepName;
+
+    protected override ValueTask EditAsync(DataPipelineStep step, ZipFilesStepSettings settings, ZipFilesStepViewModel model)
+    {
+        model.FileName = settings.FileName;
+
+        return ValueTask.CompletedTask;
+    }
+
+    protected override ValueTask UpdateAsync(DataPipelineStep step, ZipFilesStepSettings settings, ZipFilesStepViewModel model, UpdateEditorContext context)
+    {
+        settings.FileName = model.FileName?.Trim();
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public class ZipFilesStepViewModel
+{
+    public string FileName { get; set; }
+}

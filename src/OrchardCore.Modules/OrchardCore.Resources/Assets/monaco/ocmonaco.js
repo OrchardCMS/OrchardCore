@@ -1,1 +1,0 @@
-require.config({ paths: { 'vs': window.location.origin + document.currentScript.dataset.tenantPrefix + '/OrchardCore.Resources/Scripts/monaco/vs' } });

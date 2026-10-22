@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -57,13 +58,20 @@ public static class GetMediaItemsEndpoint
             return httpContext.ApiNotFoundProblem();
         }
 
-        var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(options.Value, extensions, false);
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
+        var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(
+            options.Value,
+            extensions,
+            canUploadRestrictedMedia);
+        var filterByExtensions = !string.IsNullOrWhiteSpace(extensions);
 
         var allowed = new List<FileStoreEntryDto>();
 
         await foreach (var entry in mediaFileStore.GetFilesAsync(path))
         {
-            if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
+            if (!filterByExtensions || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
             {
                 allowed.Add(MediaEndpointHelpers.CreateFileResult(entry, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
             }

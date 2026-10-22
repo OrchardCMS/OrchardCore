@@ -16,16 +16,18 @@ The scanner is wired through Orchard Core's file event handling abstractions, so
 
 ### Configuration
 
-Configure the ClamAV connection in application configuration. The settings key remains `OrchardCore_Antivirus_ClamAV` for compatibility:
+Configure the ClamAV connection in application configuration, under the `OrchardCore:Antivirus:ClamAV` section:
 
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Antivirus_ClamAV": {
-      "Host": "localhost",
-      "Port": 3310,
-      "ConnectTimeoutSeconds": 5,
-      "TransferTimeoutSeconds": 30
+    "Antivirus": {
+      "ClamAV": {
+        "Host": "localhost",
+        "Port": 3310,
+        "ConnectTimeoutSeconds": 5,
+        "TransferTimeoutSeconds": 30
+      }
     }
   }
 }
@@ -34,10 +36,10 @@ Configure the ClamAV connection in application configuration. The settings key r
 The same settings can be provided with environment variables:
 
 ```text
-OrchardCore__Antivirus_ClamAV__Host=localhost
-OrchardCore__Antivirus_ClamAV__Port=3310
-OrchardCore__Antivirus_ClamAV__ConnectTimeoutSeconds=5
-OrchardCore__Antivirus_ClamAV__TransferTimeoutSeconds=30
+OrchardCore__Antivirus__ClamAV__Host=localhost
+OrchardCore__Antivirus__ClamAV__Port=3310
+OrchardCore__Antivirus__ClamAV__ConnectTimeoutSeconds=5
+OrchardCore__Antivirus__ClamAV__TransferTimeoutSeconds=30
 ```
 
 ### Usage

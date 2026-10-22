@@ -6,7 +6,12 @@
     var hasSelectedParts = Model.PartSelections.Any(x => x.IsSelected);
     string localizedTypeName = D[Model.Type.DisplayName, "Content Types"];
 }
-<zone Name="Title"><h1>@T["Add Parts To \"{0}\"", localizedTypeName]</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesAddParts" title="@T["Add Parts"]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.Type.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -46,16 +51,4 @@
     </div>
 </form>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const addSelectedPartsButton = document.getElementById('add-selected-parts-button');
-        const partSelectionCheckboxes = document.querySelectorAll('input[type="checkbox"][name$=".IsSelected"]');
-
-        const updateAddSelectedPartsButton = () => {
-            addSelectedPartsButton.hidden = !Array.from(partSelectionCheckboxes).some((checkbox) => checkbox.checked);
-        };
-
-        partSelectionCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', updateAddSelectedPartsButton));
-        updateAddSelectedPartsButton();
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/add-parts-to.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/add-parts-to.js" at="Foot" type="module"></script>

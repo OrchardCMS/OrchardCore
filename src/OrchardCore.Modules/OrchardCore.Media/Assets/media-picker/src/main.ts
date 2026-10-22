@@ -11,12 +11,12 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { createVfm } from "vue-final-modal";
 import PrimeVue from "primevue/config";
-import Aura from "@primevue/themes/aura";
 import MediaFieldBasic from "./components/MediaFieldBasic.vue";
 import MediaFieldAttached from "./components/MediaFieldAttached.vue";
 import MediaFieldGallery from "./components/MediaFieldGallery.vue";
 import MediaPickerModal from "./components/MediaPickerModal.vue";
 import { setTranslations } from "@bloom/helpers/localizations";
+import observeAndInit from "@bloom/helpers/observeAndInit";
 import type { IMediaFieldConfig, IMediaFieldPath } from "./interfaces/MediaFieldTypes";
 import type { IAttachedFieldConfig } from "./components/MediaFieldAttached.vue";
 import type { IMediaFieldItem } from "./interfaces/MediaFieldTypes";
@@ -48,14 +48,17 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
     allowMediaText: dataset.allowMediaText === "true",
     allowAnchors: dataset.allowAnchors === "true",
     allowedExtensions: dataset.allowedExtensions || "",
+    maxFileSize: dataset.maxFileSize ? Number(dataset.maxFileSize) : undefined,
     mediaItemUrl: dataset.mediaItemUrl || "",
     mediaItemsUrl: dataset.mediaItemsUrl || "",
-    mediaAppTranslations: dataset.mediaAppTranslations || "",
+    mediaAppTranslations: dataset.mediaGalleryTranslations || dataset.mediaAppTranslations || "",
     basePath: dataset.basePath || "",
     uploadFilesUrl: dataset.uploadFilesUrl || "",
     tusEnabled: dataset.tusEnabled === "true",
     tusEndpointUrl: dataset.tusEndpointUrl || "",
     tusFileInfoUrl: dataset.tusFileInfoUrl || "",
+    signalrEnabled: dataset.signalrEnabled === "true",
+    disableThumbnails: dataset.disableThumbnails === "true",
   };
 }
 
@@ -113,9 +116,6 @@ function readAttachedConfig(el: HTMLElement): IAttachedFieldConfig {
     maxUploadChunkSize: dataset.maxUploadChunkSize
       ? parseInt(dataset.maxUploadChunkSize, 10)
       : undefined,
-    maxFileSize: dataset.maxFileSize
-      ? parseInt(dataset.maxFileSize, 10)
-      : undefined,
     debugEnabled: dataset.debugEnabled === "true" || import.meta.env.DEV,
     tusEnabled: dataset.tusEnabled === "true",
     tusEndpointUrl: dataset.tusEndpointUrl || "",
@@ -138,17 +138,7 @@ function createFieldApp(rootComponent: any, rootProps: Record<string, unknown>) 
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   app.use(PrimeVue as any, {
-    theme: {
-      preset: Aura,
-      options: {
-        prefix: "p",
-        darkModeSelector: '[data-bs-theme="dark"]',
-        cssLayer: {
-          name: "primevue",
-          order: "theme, base, primevue, utilities",
-        },
-      },
-    },
+    unstyled: true,
   });
   app.use(vfm);
 
@@ -168,6 +158,7 @@ export function mountMediaField(el: HTMLElement) {
 
   const app = createFieldApp(MediaFieldBasic, { config, inputName });
   app.mount(el);
+  el.dataset.mediaFieldMounted = "true";
 
   return app;
 }
@@ -185,6 +176,7 @@ export function mountAttachedMediaField(el: HTMLElement) {
 
   const app = createFieldApp(MediaFieldAttached, { config, inputName });
   app.mount(el);
+  el.dataset.mediaFieldMounted = "true";
 
   return app;
 }
@@ -202,6 +194,7 @@ export function mountGalleryMediaField(el: HTMLElement) {
 
   const app = createFieldApp(MediaFieldGallery, { config, inputName });
   app.mount(el);
+  el.dataset.mediaFieldMounted = "true";
 
   return app;
 }
@@ -216,6 +209,7 @@ export function openMediaPicker(
   uploadFilesUrl: string,
   allowedExtensions = "",
   allowMultiple = true,
+  maxFileSize = Number(document.querySelector<HTMLElement>("[data-media-picker-config]")?.dataset.maxFileSize ?? 0),
 ): Promise<IMediaFieldItem[]> {
   return new Promise((resolve) => {
     const host = document.createElement("div");
@@ -223,12 +217,19 @@ export function openMediaPicker(
 
     let settled = false;
 
+    // The editor plugins pass no display options; the site-wide DisableThumbnails option is
+    // read from the picker config element the host page renders.
+    const pickerConfigEl = document.querySelector<HTMLElement>("[data-media-picker-config]");
+    const disableThumbnails = pickerConfigEl?.dataset.disableThumbnails === "true";
+
     const app = createFieldApp(MediaPickerModal, {
       mediaAppTranslations,
       basePath,
       uploadFilesUrl,
       allowedExtensions,
+      maxFileSize,
       allowMultiple,
+      disableThumbnails,
       autoOpen: true,
       onResolve: (items: IMediaFieldItem[]) => {
         if (settled) return;
@@ -254,40 +255,42 @@ const mountFns: Record<string, (el: HTMLElement) => void> = {
 };
 
 // Configure silent OIDC auth for the media fields when the Media API is in bearer mode. The mode
-// (and base path) are read from any field element on the page — it is a site-wide setting, so all
-// fields share it. This must run before the fields mount and start calling the API. No-op in
-// cookie mode. The configured state is shared with the media-gallery app the picker mounts.
-function configureFieldAuth() {
-  const el = document.querySelector<HTMLElement>("[data-media-field-type]");
-  if (el?.dataset.apiAuthScheme === "Bearer") {
+// (and base path) are read from the first field element mounted on the page — it is a site-wide
+// setting, so all fields share it. This must run before the fields mount and start calling the API.
+// No-op in cookie mode. The configured state is shared with the media-gallery app the picker mounts.
+let fieldAuthConfigured = false;
+
+function configureFieldAuth(el: HTMLElement) {
+  if (fieldAuthConfigured) return;
+  fieldAuthConfigured = true;
+  if (el.dataset.apiAuthScheme === "Bearer") {
     configureMediaAuth({ basePath: el.dataset.basePath || "/" });
   }
 }
 
-function autoMount() {
-  document.querySelectorAll<HTMLElement>("[data-media-field-type]").forEach((el) => {
-    // Skip already-mounted elements
-    if (el.dataset.mediaFieldMounted) return;
-    const type = el.dataset.mediaFieldType || "";
-    const fn = mountFns[type];
-    if (fn) {
-      fn(el);
-      el.dataset.mediaFieldMounted = "true";
-    }
-  });
+function autoMountField(el: HTMLElement) {
+  // Skip already-mounted elements
+  if (el.dataset.mediaFieldMounted) return;
+  const type = el.dataset.mediaFieldType || "";
+  const fn = mountFns[type];
+  if (fn) {
+    configureFieldAuth(el);
+    fn(el);
+  }
 }
 
-// Auto-mount when the module loads (DOM is ready for module scripts)
-configureFieldAuth();
-autoMount();
+// Mount the fields already in the DOM, and keep mounting the ones added later, e.g. by the Flow and
+// Bag part editors which fetch widget editors via AJAX. A module script is only evaluated once per
+// page, so re-inserting its <script> tag along with such an editor doesn't run this code again.
+observeAndInit("[data-media-field-type]", autoMountField);
 
-// Register openMediaPicker on the config element so that picker-api.ts (bundled
+// Register openMediaPicker on the config elements so that picker-api.ts (bundled
 // into Parcel/Webpack builds for trumbowyg/MDE) can call it directly without
-// needing to dynamically import this module by URL.
-const configEl = document.querySelector<HTMLElement>("[data-media-picker-config]");
-if (configEl) {
+// needing to dynamically import this module by URL. Config elements can also be
+// added later along with the editors fetched by the Flow and Bag part editors.
+observeAndInit("[data-media-picker-config]", (configEl) => {
   (configEl as { __openMediaPicker?: typeof openMediaPicker }).__openMediaPicker = openMediaPicker;
-}
+});
 
 // Also export for manual mounting and dev mode
 /* v8 ignore next 5 -- DEV-only code, import.meta.env.DEV is a compile-time constant */

@@ -1,0 +1,119 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Documents": {
+          "type": "object",
+          "description": "Configures how the documents managed by the document managers (e.g. site settings, content definitions) are cached and synchronized, shared by all document types.",
+          "properties": {
+            "CheckConcurrency": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether to check for concurrent updates when a document is saved, failing the update if the stored document was changed in the meantime."
+            },
+            "CheckConsistency": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether to check, after a document is cached, that it is still the last stored one, and to invalidate the cache otherwise."
+            },
+            "SynchronizationLatency": {
+              "type": "string",
+              "default": "00:00:01",
+              "description": "When using a distributed cache, how long the identifier of a cached document is kept locally before being checked against the distributed cache again, in the 'hh:mm:ss' format."
+            },
+            "FailoverRetryLatency": {
+              "type": "string",
+              "default": "00:00:30",
+              "description": "When the distributed cache fails, how long to wait before trying to use it again, in the 'hh:mm:ss' format."
+            },
+            "CompressThreshold": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 10000,
+              "description": "The size in bytes from which a serialized document is compressed before being stored in the distributed cache."
+            },
+            "LockTimeout": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 10000,
+              "description": "The timeout in milliseconds to acquire the lock used by an atomic update of a volatile document."
+            },
+            "LockExpiration": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 10000,
+              "description": "The expiration in milliseconds of the lock used by an atomic update of a volatile document."
+            },
+            "AbsoluteExpiration": {
+              "type": "string",
+              "description": "The absolute date and time at which cached documents expire, e.g. '2030-01-01T00:00:00Z'."
+            },
+            "AbsoluteExpirationRelativeToNow": {
+              "type": "string",
+              "description": "The time, relative to now, after which cached documents expire, in the 'd.hh:mm:ss' format."
+            },
+            "SlidingExpiration": {
+              "type": "string",
+              "description": "How long a cached document can be inactive before it expires, in the 'd.hh:mm:ss' format."
+            }
+          }
+        },
+        "Shells": {
+          "type": "object",
+          "description": "Configures where the tenants settings and configuration are stored.",
+          "properties": {
+            "Database": {
+              "type": "object",
+              "description": "Configures the Database Shells Configuration provider, which stores the tenants settings and configuration in a database. Enabled with 'AddDatabaseShellsConfiguration()'. Read from the application configuration only, not per tenant. See https://docs.orchardcore.net/en/latest/reference/modules/Shells/.",
+              "properties": {
+                "DatabaseProvider": {
+                  "type": "string",
+                  "enum": [
+                    "Sqlite",
+                    "SqlConnection",
+                    "MySql",
+                    "Postgres"
+                  ],
+                  "description": "The database provider: 'Sqlite', 'SqlConnection' (SQL Server), 'MySql' or 'Postgres'. Required."
+                },
+                "ConnectionString": {
+                  "type": "string",
+                  "description": "The database connection string. The database must exist before it is used by the provider."
+                },
+                "TablePrefix": {
+                  "type": "string",
+                  "description": "The prefix of the database tables."
+                },
+                "Schema": {
+                  "type": "string",
+                  "description": "The database schema of the tables."
+                },
+                "MigrateFromFiles": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to migrate the existing tenants settings and configuration from the 'App_Data' folder to the database when they are not found in the database."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Documents": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Documents' section is deprecated. Use 'OrchardCore:Documents' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Documents' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Shells_Database": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Shells_Database' section is deprecated. Use 'OrchardCore:Shells:Database' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Shells:Database' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

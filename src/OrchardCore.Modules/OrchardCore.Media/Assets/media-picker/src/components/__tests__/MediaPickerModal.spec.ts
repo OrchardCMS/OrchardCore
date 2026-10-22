@@ -15,7 +15,7 @@ vi.mock("vue-final-modal", () => ({
   VueFinalModal: {
     name: "VueFinalModal",
     template: "<div><slot /></div>",
-    props: ["modelValue", "contentClass"],
+    props: ["modelValue", "contentClass", "focusTrap"],
     emits: ["update:modelValue", "opened", "closed"],
   },
   createVfm: () => ({ install: vi.fn() }),
@@ -72,6 +72,18 @@ async function getModalProps(wrapper: VueWrapper) {
 }
 
 describe("MediaPickerModal", () => {
+  it("passes the configured upload size to the gallery mount", async () => {
+    const wrapper = createWrapper({ maxFileSize: 1234567 });
+    setContainerRef(wrapper);
+    wrapper.findComponent({ name: "VueFinalModal" }).vm.$emit("opened");
+    await flushPromises();
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      expect.objectContaining({ maxFileSize: 1234567 }),
+    );
+    wrapper.unmount();
+  });
+
   beforeEach(() => {
     setupTranslations();
     vi.clearAllMocks();
@@ -81,6 +93,14 @@ describe("MediaPickerModal", () => {
     const wrapper = createWrapper();
     const modal = wrapper.findComponent({ name: "VueFinalModal" });
     expect(modal.props("modelValue")).toBe(false);
+  });
+
+  it("disables the vfm focus trap so nested gallery dialogs keep keyboard focus", () => {
+    // The gallery's rename/move/copy dialogs teleport to <body>; an active trap
+    // on this modal would recapture focus and make their inputs un-typeable.
+    const wrapper = createWrapper();
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    expect(modal.props("focusTrap")).toBe(false);
   });
 
   it("opens via exposed open() method", async () => {
@@ -101,6 +121,24 @@ describe("MediaPickerModal", () => {
     // Loading is set in open(), and mountMediaAppAsPicker is only called
     // in onOpened. Verify that onOpened hasn't fired yet.
     expect(mockMountMediaAppAsPicker).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [true, true],
+    [undefined, false],
+  ])("forwards signalrEnabled=%s to mountMediaAppAsPicker as %s", async (propValue, expected) => {
+    const wrapper = createWrapper(propValue === undefined ? {} : { signalrEnabled: propValue });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+    wrapper.findComponent({ name: "VueFinalModal" }).vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ signalrEnabled: expected }),
+    );
   });
 
   it("shows error when media-gallery import fails", async () => {
@@ -245,6 +283,38 @@ describe("MediaPickerModal", () => {
     expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
     const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
     expect(callArgs.allowedExtensions).toBe(".jpg,.png");
+  });
+
+  it("passes disableThumbnails to media picker mount config", async () => {
+    const wrapper = createWrapper({ disableThumbnails: true });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.disableThumbnails).toBe(true);
+  });
+
+  it("defaults disableThumbnails to false in the mount config", async () => {
+    const wrapper = createWrapper();
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.disableThumbnails).toBe(false);
   });
 
   it("onSelectionChange callback updates selectedCount", async () => {

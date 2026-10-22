@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Features.Models
+
+@model ShapeViewModel<FeatureEntry>
+
+@{
+    var descriptor = Model.Value.Feature.Descriptor;
+}
+
+@* A feature has no page of its own, so the name is plain text followed by the id used in recipes. *@
+<span class="fw-semibold">@descriptor.Name</span> <code>@descriptor.Id</code>

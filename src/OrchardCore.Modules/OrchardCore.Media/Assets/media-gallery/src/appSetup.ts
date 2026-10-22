@@ -42,6 +42,7 @@ export function configureMediaApp(app: VueApp) {
         },
       },
     },
+    unstyled: true,
   });
   app.use(vfm);
   app.use(router);

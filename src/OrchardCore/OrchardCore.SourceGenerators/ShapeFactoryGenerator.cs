@@ -83,7 +83,14 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             return null;
         }
 
-        return new InvocationInfo(location, modelType, invocationKind.Value, GetStateType(invocationKind.Value, logicalParameters));
+        var stateTypes = GetStateTypes(invocationKind.Value, logicalParameters);
+
+        if (stateTypes.Any(ContainsTypeParameter))
+        {
+            return null;
+        }
+
+        return new InvocationInfo(location, modelType, invocationKind.Value, stateTypes);
     }
 
     private static INamedTypeSymbol? GetAttributedModelType(GeneratorAttributeSyntaxContext context)
@@ -111,11 +118,30 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         return methodSymbol.Parameters;
     }
 
-    private static ITypeSymbol? GetStateType(InvocationKind invocationKind, ImmutableArray<IParameterSymbol> logicalParameters)
-        => (invocationKind is InvocationKind.ActionWithState or InvocationKind.FuncWithState) &&
-            logicalParameters.Length >= 3
-                ? logicalParameters[2].Type
-                : null;
+    private static ImmutableArray<ITypeSymbol> GetStateTypes(InvocationKind invocationKind, ImmutableArray<IParameterSymbol> logicalParameters)
+    {
+        if (logicalParameters.IsDefaultOrEmpty)
+        {
+            return [];
+        }
+
+        if (invocationKind is InvocationKind.ActionWithState or InvocationKind.FuncWithState)
+        {
+            return logicalParameters.Length >= 3 ? [logicalParameters[2].Type] : [];
+        }
+
+        if (invocationKind is InvocationKind.DisplayDriverActionWithoutShapeType or InvocationKind.DisplayDriverFuncWithoutShapeType)
+        {
+            return logicalParameters.Length > 1 ? [.. logicalParameters.Skip(1).Select(static parameter => parameter.Type)] : [];
+        }
+
+        if (invocationKind is InvocationKind.DisplayDriverActionWithShapeType or InvocationKind.DisplayDriverFuncWithShapeType)
+        {
+            return logicalParameters.Length > 2 ? [.. logicalParameters.Skip(2).Select(static parameter => parameter.Type)] : [];
+        }
+
+        return [];
+    }
 
     private static InvocationKind? GetInvocationKind(IMethodSymbol targetMethod, ImmutableArray<IParameterSymbol> logicalParameters, INamedTypeSymbol modelType)
     {
@@ -199,40 +225,82 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             return InvocationKind.DisplayDriverWithoutShapeType;
         }
 
-        if (logicalParameters.Length == 1)
+        var hasShapeType = logicalParameters[0].Type.SpecialType == SpecialType.System_String;
+
+        if (hasShapeType && logicalParameters.Length == 1)
         {
-            if (logicalParameters[0].Type.SpecialType == SpecialType.System_String)
-            {
-                return InvocationKind.DisplayDriverWithoutInitialize;
-            }
-
-            if (IsAction(logicalParameters[0].Type, modelType))
-            {
-                return InvocationKind.DisplayDriverActionWithoutShapeType;
-            }
-
-            if (IsFunc(logicalParameters[0].Type, modelType, null))
-            {
-                return InvocationKind.DisplayDriverFuncWithoutShapeType;
-            }
-
-            return null;
+            return InvocationKind.DisplayDriverWithoutInitialize;
         }
 
-        if (logicalParameters.Length == 2 && logicalParameters[0].Type.SpecialType == SpecialType.System_String)
-        {
-            if (IsAction(logicalParameters[1].Type, modelType))
-            {
-                return InvocationKind.DisplayDriverActionWithShapeType;
-            }
+        var initializerIndex = hasShapeType ? 1 : 0;
+        ImmutableArray<IParameterSymbol> stateParameters = [.. logicalParameters.Skip(initializerIndex + 1)];
 
-            if (IsFunc(logicalParameters[1].Type, modelType, null))
-            {
-                return InvocationKind.DisplayDriverFuncWithShapeType;
-            }
+        if (IsActionWithStates(logicalParameters[initializerIndex].Type, modelType, stateParameters))
+        {
+            return hasShapeType
+                ? InvocationKind.DisplayDriverActionWithShapeType
+                : InvocationKind.DisplayDriverActionWithoutShapeType;
+        }
+
+        if (IsFuncWithStates(logicalParameters[initializerIndex].Type, modelType, stateParameters))
+        {
+            return hasShapeType
+                ? InvocationKind.DisplayDriverFuncWithShapeType
+                : InvocationKind.DisplayDriverFuncWithoutShapeType;
         }
 
         return null;
+    }
+
+    private static bool IsActionWithStates(
+        ITypeSymbol typeSymbol,
+        INamedTypeSymbol modelType,
+        ImmutableArray<IParameterSymbol> stateParameters)
+    {
+        if (typeSymbol is not INamedTypeSymbol namedType ||
+            namedType.ContainingNamespace?.ToDisplayString() != "System" ||
+            namedType.Name != "Action" ||
+            namedType.TypeArguments.Length != stateParameters.Length + 1 ||
+            !SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[0], modelType))
+        {
+            return false;
+        }
+
+        for (var i = 0; i < stateParameters.Length; i++)
+        {
+            if (!SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[i + 1], stateParameters[i].Type))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool IsFuncWithStates(
+        ITypeSymbol typeSymbol,
+        INamedTypeSymbol modelType,
+        ImmutableArray<IParameterSymbol> stateParameters)
+    {
+        if (typeSymbol is not INamedTypeSymbol namedType ||
+            namedType.ContainingNamespace?.ToDisplayString() != "System" ||
+            namedType.Name != "Func" ||
+            namedType.TypeArguments.Length != stateParameters.Length + 2 ||
+            !SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[0], modelType) ||
+            namedType.TypeArguments[namedType.TypeArguments.Length - 1].ToDisplayString() != ValueTaskFullName)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < stateParameters.Length; i++)
+        {
+            if (!SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[i + 1], stateParameters[i].Type))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static bool IsAction(ITypeSymbol typeSymbol, INamedTypeSymbol modelType, ITypeSymbol? stateType = null)
@@ -268,9 +336,14 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[1], stateType) &&
             namedType.TypeArguments[2].ToDisplayString() == ValueTaskFullName;
     }
-
     private static bool ImplementsIShape(INamedTypeSymbol typeSymbol)
         => typeSymbol.AllInterfaces.Any(i => i.ToDisplayString() == IShapeFullName);
+
+    private static bool ContainsTypeParameter(ITypeSymbol typeSymbol)
+        => typeSymbol is ITypeParameterSymbol ||
+            typeSymbol is IArrayTypeSymbol arrayType && ContainsTypeParameter(arrayType.ElementType) ||
+            typeSymbol is IPointerTypeSymbol pointerType && ContainsTypeParameter(pointerType.PointedAtType) ||
+            typeSymbol is INamedTypeSymbol namedType && namedType.TypeArguments.Any(ContainsTypeParameter);
 
     private static bool HasGenerateShapeAttribute(INamedTypeSymbol typeSymbol)
         => typeSymbol.GetAttributes().Any(attribute => attribute.AttributeClass?.ToDisplayString() == GenerateShapeAttributeFullName);
@@ -657,6 +730,145 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         return false;
     }
 
+    private static bool IsDisplayDriverAction(InvocationKind kind)
+        => kind is InvocationKind.DisplayDriverActionWithoutShapeType or InvocationKind.DisplayDriverActionWithShapeType;
+
+    private static bool IsDisplayDriverFunc(InvocationKind kind)
+        => kind is InvocationKind.DisplayDriverFuncWithoutShapeType or InvocationKind.DisplayDriverFuncWithShapeType;
+
+    private static bool HasDisplayDriverShapeType(InvocationKind kind)
+        => kind is InvocationKind.DisplayDriverActionWithShapeType or InvocationKind.DisplayDriverFuncWithShapeType;
+
+    private static string GetDisplayDriverDelegateType(InvocationInfo invocation, string modelTypeName)
+    {
+        var sb = new StringBuilder();
+        sb.Append(IsDisplayDriverFunc(invocation.Kind) ? "global::System.Func<" : "global::System.Action<");
+        sb.Append(modelTypeName);
+
+        foreach (var stateType in invocation.StateTypes)
+        {
+            sb.Append(", ");
+            sb.Append(stateType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+        }
+
+        if (IsDisplayDriverFunc(invocation.Kind))
+        {
+            sb.Append(", ");
+            sb.Append(ValueTaskFullName);
+        }
+
+        sb.Append('>');
+
+        return sb.ToString();
+    }
+
+    private static string GetDisplayDriverInterceptParameters(InvocationInfo invocation, string modelTypeName)
+    {
+        var sb = new StringBuilder();
+
+        if (HasDisplayDriverShapeType(invocation.Kind))
+        {
+            sb.Append("string shapeType, ");
+        }
+
+        sb.Append(GetDisplayDriverDelegateType(invocation, modelTypeName));
+        sb.Append(IsDisplayDriverFunc(invocation.Kind) ? " initializeAsync" : " initialize");
+
+        for (var i = 0; i < invocation.StateTypes.Length; i++)
+        {
+            sb.Append(", ");
+            sb.Append(invocation.StateTypes[i].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+            sb.Append(" state");
+            sb.Append(i + 1);
+        }
+
+        return sb.ToString();
+    }
+
+    private static string GetDisplayDriverInitializerStateExpression(InvocationInfo invocation)
+    {
+        if (invocation.StateTypes.IsDefaultOrEmpty)
+        {
+            return IsDisplayDriverFunc(invocation.Kind) ? "initializeAsync" : "initialize";
+        }
+
+        var sb = new StringBuilder();
+        sb.Append('(');
+        sb.Append(IsDisplayDriverFunc(invocation.Kind) ? "initializeAsync" : "initialize");
+
+        for (var i = 0; i < invocation.StateTypes.Length; i++)
+        {
+            sb.Append(", state");
+            sb.Append(i + 1);
+        }
+
+        sb.Append(')');
+
+        return sb.ToString();
+    }
+
+    private static string GetDisplayDriverStateArguments(InvocationInfo invocation)
+    {
+        if (invocation.StateTypes.IsDefaultOrEmpty)
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder();
+
+        for (var i = 0; i < invocation.StateTypes.Length; i++)
+        {
+            sb.Append(", state");
+            sb.Append(i + 1);
+        }
+
+        return sb.ToString();
+    }
+
+    private static void AppendDisplayDriverInitializerBody(StringBuilder sb, InvocationInfo invocation, string modelTypeName)
+    {
+        if (invocation.StateTypes.IsDefaultOrEmpty)
+        {
+            if (IsDisplayDriverAction(invocation.Kind))
+            {
+                sb.AppendLine($"                    state?.Invoke(({modelTypeName})shape);");
+                sb.AppendLine("                    return global::System.Threading.Tasks.ValueTask.CompletedTask;");
+            }
+            else
+            {
+                sb.AppendLine($"                    return state?.Invoke(({modelTypeName})shape) ?? global::System.Threading.Tasks.ValueTask.CompletedTask;");
+            }
+
+            return;
+        }
+
+        sb.AppendLine($"                    var {GetDisplayDriverInitializerStateExpression(invocation)} = state;");
+
+        if (IsDisplayDriverAction(invocation.Kind))
+        {
+            sb.AppendLine($"                    initialize?.Invoke(({modelTypeName})shape{GetDisplayDriverStateArguments(invocation)});");
+            sb.AppendLine("                    return global::System.Threading.Tasks.ValueTask.CompletedTask;");
+        }
+        else
+        {
+            sb.AppendLine($"                    return initializeAsync?.Invoke(({modelTypeName})shape{GetDisplayDriverStateArguments(invocation)}) ?? global::System.Threading.Tasks.ValueTask.CompletedTask;");
+        }
+    }
+
+    private static void GenerateDisplayDriverTypedInterceptor(StringBuilder sb, InvocationInfo invocation, string generatedTypeName, string modelTypeName)
+    {
+        sb.AppendLine($"        public static global::OrchardCore.DisplayManagement.Views.ShapeResult InterceptInitialize(this global::OrchardCore.DisplayManagement.Handlers.DisplayDriverBase driver, {GetDisplayDriverInterceptParameters(invocation, modelTypeName)})");
+        sb.AppendLine("            => driver.Factory(");
+        sb.AppendLine($"                {(HasDisplayDriverShapeType(invocation.Kind) ? "shapeType" : $"\"{invocation.ModelType.Name}\"")},");
+        sb.AppendLine($"                static (context, builderState) => global::System.Threading.Tasks.ValueTask.FromResult<global::OrchardCore.DisplayManagement.IShape>((global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}()),");
+        sb.AppendLine("                (object?)null,");
+        sb.AppendLine("                static (shape, state) =>");
+        sb.AppendLine("                {");
+        AppendDisplayDriverInitializerBody(sb, invocation, modelTypeName);
+        sb.AppendLine("                },");
+        sb.AppendLine($"                {GetDisplayDriverInitializerStateExpression(invocation)});");
+    }
+
     private static void GenerateInterceptor(StringBuilder sb, InvocationInfo invocation)
     {
         var interceptorClassName = $"Interceptor_{GetStableId(invocation.Location.Data)}";
@@ -713,7 +925,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                 break;
 
             case InvocationKind.ActionWithState:
-                var actionStateType = invocation.StateType!.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                var actionStateType = invocation.StateTypes[0].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
                 sb.AppendLine($"        public static global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> InterceptCreateAsync(this global::OrchardCore.DisplayManagement.IShapeFactory factory, string shapeType, global::System.Action<{modelTypeName}, {actionStateType}> initialize, {actionStateType} state)");
                 sb.AppendLine("            => factory.CreateAsync(");
                 sb.AppendLine("                shapeType,");
@@ -771,7 +983,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                 break;
 
             case InvocationKind.FuncWithState:
-                var funcStateType = invocation.StateType!.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                var funcStateType = invocation.StateTypes[0].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
                 sb.AppendLine($"        public static global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> InterceptCreateAsync(this global::OrchardCore.DisplayManagement.IShapeFactory factory, string shapeType, global::System.Func<{modelTypeName}, {funcStateType}, global::System.Threading.Tasks.ValueTask> initializeAsync, {funcStateType} state)");
                 sb.AppendLine("            => factory.CreateAsync(");
                 sb.AppendLine("                shapeType,");
@@ -793,49 +1005,19 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                 break;
 
             case InvocationKind.DisplayDriverActionWithoutShapeType:
-                sb.AppendLine($"        public static global::OrchardCore.DisplayManagement.Views.ShapeResult InterceptInitialize(this global::OrchardCore.DisplayManagement.Handlers.DisplayDriverBase driver, global::System.Action<{modelTypeName}> initialize)");
-                sb.AppendLine($"            => driver.Factory(\"{invocation.ModelType.Name}\",");
-                sb.AppendLine($"                static _ => global::System.Threading.Tasks.ValueTask.FromResult<global::OrchardCore.DisplayManagement.IShape>((global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}()),");
-                sb.AppendLine($"                shape => InterceptInitialize(({modelTypeName})shape, initialize));");
-                sb.AppendLine();
-                sb.AppendLine($"        private static global::System.Threading.Tasks.Task InterceptInitialize({modelTypeName} shape, global::System.Action<{modelTypeName}> initialize)");
-                sb.AppendLine("        {");
-                sb.AppendLine("            initialize?.Invoke(shape);");
-                sb.AppendLine("            return global::System.Threading.Tasks.Task.CompletedTask;");
-                sb.AppendLine("        }");
+                GenerateDisplayDriverTypedInterceptor(sb, invocation, generatedTypeName, modelTypeName);
                 break;
 
             case InvocationKind.DisplayDriverActionWithShapeType:
-                sb.AppendLine($"        public static global::OrchardCore.DisplayManagement.Views.ShapeResult InterceptInitialize(this global::OrchardCore.DisplayManagement.Handlers.DisplayDriverBase driver, string shapeType, global::System.Action<{modelTypeName}> initialize)");
-                sb.AppendLine("            => driver.Factory(shapeType,");
-                sb.AppendLine($"                static _ => global::System.Threading.Tasks.ValueTask.FromResult<global::OrchardCore.DisplayManagement.IShape>((global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}()),");
-                sb.AppendLine($"                shape => InterceptInitialize(({modelTypeName})shape, initialize));");
-                sb.AppendLine();
-                sb.AppendLine($"        private static global::System.Threading.Tasks.Task InterceptInitialize({modelTypeName} shape, global::System.Action<{modelTypeName}> initialize)");
-                sb.AppendLine("        {");
-                sb.AppendLine("            initialize?.Invoke(shape);");
-                sb.AppendLine("            return global::System.Threading.Tasks.Task.CompletedTask;");
-                sb.AppendLine("        }");
+                GenerateDisplayDriverTypedInterceptor(sb, invocation, generatedTypeName, modelTypeName);
                 break;
 
             case InvocationKind.DisplayDriverFuncWithoutShapeType:
-                sb.AppendLine($"        public static global::OrchardCore.DisplayManagement.Views.ShapeResult InterceptInitialize(this global::OrchardCore.DisplayManagement.Handlers.DisplayDriverBase driver, global::System.Func<{modelTypeName}, global::System.Threading.Tasks.ValueTask> initializeAsync)");
-                sb.AppendLine($"            => driver.Factory(\"{invocation.ModelType.Name}\",");
-                sb.AppendLine($"                static _ => global::System.Threading.Tasks.ValueTask.FromResult<global::OrchardCore.DisplayManagement.IShape>((global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}()),");
-                sb.AppendLine($"                shape => InterceptInitialize(({modelTypeName})shape, initializeAsync));");
-                sb.AppendLine();
-                sb.AppendLine($"        private static global::System.Threading.Tasks.Task InterceptInitialize({modelTypeName} shape, global::System.Func<{modelTypeName}, global::System.Threading.Tasks.ValueTask> initializeAsync)");
-                sb.AppendLine("            => initializeAsync?.Invoke(shape).AsTask() ?? global::System.Threading.Tasks.Task.CompletedTask;");
+                GenerateDisplayDriverTypedInterceptor(sb, invocation, generatedTypeName, modelTypeName);
                 break;
 
             case InvocationKind.DisplayDriverFuncWithShapeType:
-                sb.AppendLine($"        public static global::OrchardCore.DisplayManagement.Views.ShapeResult InterceptInitialize(this global::OrchardCore.DisplayManagement.Handlers.DisplayDriverBase driver, string shapeType, global::System.Func<{modelTypeName}, global::System.Threading.Tasks.ValueTask> initializeAsync)");
-                sb.AppendLine("            => driver.Factory(shapeType,");
-                sb.AppendLine($"                static _ => global::System.Threading.Tasks.ValueTask.FromResult<global::OrchardCore.DisplayManagement.IShape>((global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}()),");
-                sb.AppendLine($"                shape => InterceptInitialize(({modelTypeName})shape, initializeAsync));");
-                sb.AppendLine();
-                sb.AppendLine($"        private static global::System.Threading.Tasks.Task InterceptInitialize({modelTypeName} shape, global::System.Func<{modelTypeName}, global::System.Threading.Tasks.ValueTask> initializeAsync)");
-                sb.AppendLine("            => initializeAsync?.Invoke(shape).AsTask() ?? global::System.Threading.Tasks.Task.CompletedTask;");
+                GenerateDisplayDriverTypedInterceptor(sb, invocation, generatedTypeName, modelTypeName);
                 break;
         }
 
@@ -856,18 +1038,18 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
 
     private sealed class InvocationInfo
     {
-        public InvocationInfo(InterceptableLocation location, INamedTypeSymbol modelType, InvocationKind kind, ITypeSymbol? stateType)
+        public InvocationInfo(InterceptableLocation location, INamedTypeSymbol modelType, InvocationKind kind, ImmutableArray<ITypeSymbol> stateTypes)
         {
             Location = location;
             ModelType = modelType;
             Kind = kind;
-            StateType = stateType;
+            StateTypes = stateTypes;
         }
 
         public InterceptableLocation Location { get; }
         public INamedTypeSymbol ModelType { get; }
         public InvocationKind Kind { get; }
-        public ITypeSymbol? StateType { get; }
+        public ImmutableArray<ITypeSymbol> StateTypes { get; }
     }
 
     private sealed class InvocationInfoComparer : IEqualityComparer<InvocationInfo>

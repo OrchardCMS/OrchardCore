@@ -16,6 +16,7 @@ using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Media.AmazonS3.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 using OrchardCore.Media.Services;
 using OrchardCore.Modules;
@@ -42,7 +43,7 @@ public sealed class Startup : Modules.StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -104,6 +105,7 @@ public sealed class Startup : Modules.StartupBase
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
                 var clock = serviceProvider.GetRequiredService<IClock>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
                 var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
@@ -127,6 +129,7 @@ public sealed class Startup : Modules.StartupBase
                     mediaOptions.CdnBaseUrl,
                     mediaEventHandlers,
                     mediaCreatingEventHandlers,
+                    fileSizeHelper,
                     logger);
             }));
 
@@ -158,7 +161,7 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
     {
         services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 

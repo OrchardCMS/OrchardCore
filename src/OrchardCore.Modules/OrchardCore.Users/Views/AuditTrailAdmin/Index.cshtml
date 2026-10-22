@@ -5,7 +5,9 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Audit Trail User Event Settings"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="UsersAuditTrail" title="@T["Audit Trail User Event Settings"]" />
+</zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit">
     @if (Model.UserSnapshotProperties.Length > 0)
@@ -21,7 +23,7 @@
                     {
                         Text = redactor == nameof(RemoveRedactor)
                             ? string.Empty
-                            : (redactor == nameof(NullRedactor) ? T["Store"].Value : redactor),
+                            : (redactor == nameof(NullRedactor) ? T.GetString("Store") : redactor),
                         Value = redactor,
                         Selected = redactor == value,
                     })

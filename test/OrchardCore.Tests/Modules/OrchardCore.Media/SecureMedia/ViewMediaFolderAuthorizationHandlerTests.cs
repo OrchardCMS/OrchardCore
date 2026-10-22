@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.FileStorage;
@@ -444,6 +445,32 @@ public class ViewMediaFolderAuthorizationHandlerTests
         Assert.False(context.HasSucceeded);
     }
 
+    [Fact]
+    public void BuildingTheAuthorizationService_DoesNotBuildTheContentManager()
+    {
+        // Arrange: a content manager that cannot be built while the authorization service is being built, as when one of its content
+        // handlers depends on a service that itself depends on IAuthorizationService (a circular dependency otherwise).
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddAuthorizationCore();
+        services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
+        services.AddSingleton(Mock.Of<IHttpContextAccessor>());
+        services.AddSingleton(Mock.Of<IMediaFileStore>());
+        services.AddSingleton(Mock.Of<IUserAssetFolderNameProvider>());
+        services.AddSingleton(Options.Create(new MediaOptions { AssetsUsersFolder = UsersFolder }));
+        services.AddSingleton<AttachedMediaFieldFileService>();
+        services.AddScoped<IContentManager>(_ => throw new InvalidOperationException("The content manager must not be built with the authorization service."));
+
+        using var serviceProvider = services.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
+
+        // Act
+        var authorizationService = scope.ServiceProvider.GetRequiredService<IAuthorizationService>();
+
+        // Assert
+        Assert.NotNull(authorizationService);
+    }
+
     private static ViewMediaFolderAuthorizationHandler CreateHandler(bool withSecureMediaPermissions = false)
     {
         var defaultHttpContext = new DefaultHttpContext();
@@ -509,6 +536,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
         {
             AssetsUsersFolder = UsersFolder,
             AllowedFileExtensions = [".png"],
+            RestrictedFileExtensions = [".svg"],
         });
 
         var mockUserAssetFolderNameProvider = new Mock<IUserAssetFolderNameProvider>();
@@ -520,7 +548,8 @@ public class ViewMediaFolderAuthorizationHandlerTests
         var attachedMediaFieldFileService = new AttachedMediaFieldFileService(
             mockMediaFileStore.Object,
             httpContextAccessor,
-            mockUserAssetFolderNameProvider.Object);
+            mockUserAssetFolderNameProvider.Object,
+            NullLogger<AttachedMediaFieldFileService>.Instance);
 
         // Create an IAuthorizationService mock that mimics how OC is granting permissions. 
         var mockAuthorizationService = new Mock<IAuthorizationService>();
@@ -539,6 +568,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
         var services = new ServiceCollection();
         services.AddTransient(sp => mockAuthorizationService.Object);
+        services.AddSingleton(mockContentManager.Object);
 
         if (withSecureMediaPermissions)
         {
@@ -565,8 +595,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
             attachedMediaFieldFileService,
             mockMediaFileStore.Object,
             mockMediaOptions.Object,
-            mockUserAssetFolderNameProvider.Object,
-            mockContentManager.Object
+            mockUserAssetFolderNameProvider.Object
         );
     }
 
@@ -580,4 +609,3 @@ public class ViewMediaFolderAuthorizationHandlerTests
         await Task.CompletedTask;
     }
 }
-

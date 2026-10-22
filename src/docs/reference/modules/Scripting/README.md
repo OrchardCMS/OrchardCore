@@ -26,12 +26,28 @@ var globalMethods = _scriptingManager.GlobalMethodProviders.SelectMany(x => x.Ge
 // Create scope for the engine
 var scope = engine.CreateScope(globalMethods, serviceProvider, null, null);
 
-// Evaluate the given script
-var date = engine.Evaluate("js: new Date().toISOString()");
+try
+{
+    // Evaluate the given script. The engine is already the JavaScript one, so the
+    // script is passed without the `js:` prefix, which only a directive carries.
+    var date = engine.Evaluate(scope, "new Date().toISOString()");
+}
+finally
+{
+    // A scope may hold resources the engine wants back. IScriptingScope is a marker interface, so the
+    // capability is discovered rather than required.
+    (scope as IDisposable)?.Dispose();
+}
 ```
 
 The `js:` prefix is used to describe in which language the code is written. Any module can provide
 a new scripting engine by implementing the `IScriptingEngine` interface.
+
+Release the scope when the evaluations that use it are done, and not before. The JavaScript engine reuses
+its engines between evaluations and only learns that an evaluation is over when its scope is disposed, so a
+scope that is never disposed simply keeps its engine to itself — correct, but it gives up the reuse. Dispose
+it in a `finally`, because a script that throws has still left its declarations behind. Using
+`IScriptingManager.Evaluate()` instead of talking to an engine directly does all of this for you.
 
 ### Customizing the scripting environment
 
@@ -74,8 +90,30 @@ Three things are worth knowing about how that instance is used:
 - **One `Jint.Options` instance is shared by every engine of the tenant.** Configure only settings that make sense for the whole tenant, since the same options serve recipe execution, workflow scripts and layer rules alike. Use the constraint helpers shown above (`MaxStatements`, `TimeoutInterval`, `LimitMemory`, `CancellationToken`): each of them registers a *factory*, so every engine gets its own counter and its own deadline and the shared instance stays safe for concurrent requests. Registering a constraint *instance* — `options.Constraint(new MyConstraint())` — shares that instance, and with it its per-execution state, across every concurrently running engine of the tenant. Derive from `Jint.Constraint` and register it with the factory overload, `options.Constraint(() => new MyConstraint())`, instead.
 - **A limit spelled as a saturated or absent value registers nothing.** `MaxStatements(int.MaxValue)`, `LimitMemory(long.MaxValue)` and `TimeoutInterval(TimeSpan.MaxValue)` produce exactly the same engine as never calling the method, and additionally remove any limit of that kind set earlier. The same is true of `MaxStatements()` with no argument: its parameter defaults to `0`, and only a positive budget registers a constraint, so that call reads like it turns a statement limit on while leaving the statement count unlimited. Always pass the budget you mean, and omit the call rather than passing a maximum value.
 - **Do not register an `IObjectConverter` that handles `Delegate`.** Global methods are `Delegate` values, and converters are consulted before Jint's own delegate wrapping, so such a converter would change the shape of the globals that are created on demand while leaving the eagerly created ones alone.
+- **Do not use `Engine.Advanced.HostDefined` on an engine the scripting engine created.** A global that is created on demand is built long after its engine was, so the services it belongs to have to travel with the engine, and that slot is where they travel. It is reachable, because `JavaScriptScope.Engine` is public. Writing to it replaces the services and the next global to be created is built from whatever was put there instead. A scope built around an engine of your own is the exception: it claims the slot only if nothing else has, so an engine you are already using it on keeps what you put there, and the registered globals on that engine fail with a message saying so rather than silently taking your value.
 
-No execution constraints are configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one.
+No execution *budget* is configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one of the limits above.
+
+A workflow script stopped by one of these limits, or cancelled, faults the workflow at the activity that was running it, so the workflow does not carry on as though the script had returned a value. A script that throws an error or returns a value of the wrong type still evaluates to the default value of the expression, and the error is logged.
+
+One protection is on by default, because no budget substitutes for it: `Constraints.StackOverflowGuard`. An unbounded recursion — `function f() { return 1 + f(); }`, but equally a getter, a constructor or a `valueOf` that re-enters itself — overflows the native stack, and a native stack overflow is not an exception. It cannot be caught, it is not logged, and the whole process is killed rather than the one request. A budget does not help, because a budget is only reached by a script that survives long enough to spend it, and the overflow arrives in milliseconds: with `MaxStatements(10_000)` and `TimeoutInterval(TimeSpan.FromSeconds(5))` both set, that script still ends the process. With the guard on, it raises an ordinary `RangeError` that the script itself can catch, only the request that ran it fails, and the engine is still usable. Deep structures a script can build without recursing at all do not end the process either: a property access on a very long prototype chain simply resolves, and one through a very long chain of proxies, or `new` on a function made by a very long `.bind()` chain, either completes normally or, when the stack runs low, raises an error the script can catch. The same holds for a call through a long chain of functions wrapped by a `ShadowRealm`, and an `eval` that keeps evaluating itself (`var s = 'eval(s)'; eval(s)`) raises a `RangeError` like any other unbounded recursion. How deep a structure has to be before the error is raised depends on the size of the stack, so the same script may complete on one server and raise the error on another; on neither does it end the process.
+
+The guard measures the remaining stack at every entry into a script function, which Jint's own benchmarks put at 1.7–2.3% on deeply recursive code and unmeasurable on ordinary calls. An application that has weighed that against its own scripts can turn it off:
+
+```csharp
+services.Configure<Jint.Options>(options =>
+{
+    options.Constraints.StackOverflowGuard = false;
+});
+```
+
+One constraint *is* registered, and it bounds nothing until asked to. `IScriptingManager.EvaluateAsync()` and `IScriptingEngine.EvaluateAsync()` take a `CancellationToken`, and Jint's own `EvaluateAsync` observes a token only while awaiting promise settlement — the script is interpreted to completion first. Forwarding the token there therefore bounded an evaluation that awaits something and nothing at all for one that does not, which is the case that matters. `AddJavaScriptEngine()` registers a `Jint.Constraints.OperationDeadlineConstraint` factory, and `JavaScriptEngine.EvaluateAsync()` arms that engine's instance with the token for the duration of the call. Three things follow:
+
+- **Cancelling the token stops the script**, not only the promise settlement. It surfaces as `OperationCanceledException` carrying the token — the type the rest of a .NET call stack already filters on — rather than as a scripting error.
+- **A token cancelled before the call is observed before the script starts.** One cancelled while the script is running is observed on the engine's amortized constraint cadence, so a runaway script stops within a bounded number of statements rather than at the exact statement cancellation arrived. That cadence is why the interpreter keeps its tight-loop fast path, and it is the same cadence the built-in `CancellationToken()` and `TimeoutInterval()` constraints are checked on.
+- **No time budget is introduced.** The constraint is armed with `Timeout.InfiniteTimeSpan`, its cancellation-only shape. How long a script may run stays a policy for the site to set with the helpers above. A disarmed `OperationDeadlineConstraint` — every synchronous evaluation, and every asynchronous one whose token cannot be cancelled — reads two fields and takes no timestamp.
+
+The built-in `CancellationToken()` helper cannot serve this: it takes the token when the options are configured, and one `Jint.Options` instance serves every engine of the tenant for the tenant's lifetime, while the token belongs to a single evaluation.
 
 ### Global methods are created on demand
 
@@ -86,6 +124,79 @@ Three kinds of method are created eagerly instead, so a factory backing one of t
 - Methods passed directly to `IScriptingEngine.CreateScope()` rather than registered through DI, such as a recipe's `variables()` or a workflow's `workflow()`. These also take precedence over a registered global of the same name.
 - A name contributed by more than one registered provider, because which provider wins depends on the order the methods are set in.
 - A method carrying an asynchronous variant whose `<name>Async` global is also claimed by a method literally named `<name>Async`.
+
+### Engines are reused between evaluations
+
+A tenant keeps a small number of idle Jint engines and hands one to each scope instead of building an
+engine per evaluated expression. When a scope is disposed, the engine's global bindings are put back exactly
+as they were when it was built, and the engine becomes available to the next evaluation of the same tenant.
+
+What the reset undoes, so that no evaluation can observe the one before it:
+
+- the variables, functions and `globalThis` properties the script declared, and any global it overwrote;
+- top-level `let`, `const` and `class` declarations, which is what lets the same script run twice on one
+  engine;
+- the methods that were installed for that scope only, such as a recipe's `variables()` or a workflow's
+  `workflow()`;
+- the registered globals, which go back to their not-yet-created state, so the next evaluation builds them
+  from *its own* service provider — this is what keeps a request's services from reaching the next request;
+- the interop wrapper caches, so a property a script set on a wrapped CLR object does not reappear the next
+  time that object is wrapped;
+- any promise that was still pending, including one waiting on a CLR `Task`. It is dropped rather than
+  resumed, so a task that completes after the evaluation ended cannot write into the next one's globals.
+
+The services of the evaluation are detached as well. They travel on the engine, in the
+`Engine.Advanced.HostDefined` slot described above, which the reset does not cover, so the slot is cleared
+when the engine goes back to the pool, and a registered global read on an engine whose scope has ended
+fails instead of being built from a finished request's services.
+
+Execution constraints are unaffected: Jint rewinds a statement counter and a timeout deadline at the start
+of every evaluation, on a reused engine exactly as on a new one.
+
+!!! warning
+    **The reset is not an isolation boundary.** It reverts the global bindings; it does not revert what a
+    script did to the built-in prototypes (`Object.prototype.x = 1`, a frozen intrinsic), to
+    `Symbol.for`, or to an object graph reachable from a global it left in place. Engines are only ever
+    reused within one tenant, whose scripts are authored by its administrators and already run at a single
+    trust level — this is the same trust level as before, not a wider one. Do not use it to run scripts that
+    distrust each other.
+
+One thing to watch when writing a caller or a global method: **the value an evaluation returns must not
+depend on the engine still being in the state that produced it.** Results are converted to CLR values, which
+detaches objects, arrays and dates, but a script that returns a *function* hands back a delegate bound to the
+engine. Invoking it after the scope was disposed runs it against whatever that engine has since been reset —
+or re-rented — to.
+
+#### Sizing the pool
+
+```csharp
+services.Configure<JavaScriptEngineOptions>(options => options.EnginePoolSize = 16);
+```
+
+The default is `8`, and `0` turns reuse off and builds a new engine for every evaluation.
+
+This is **not** a concurrency limit. An evaluation that starts while every pooled engine is in use builds
+its own and lets it go afterwards, exactly as every evaluation did before pooling existed, so the value can
+never make an evaluation wait or fail. What it bounds is how many engines can hold *retained state*.
+
+A reused engine remembers the last object each member access and each call in the scripts it has run
+resolved against, which is part of what makes the next run of the same script fast. So a pooled engine can
+hold one such object per site in those scripts — a request's `HttpContext`, a workflow execution context, or
+the services of a finished request: a call such as `uuid()` remembers the function it called, and that
+function was built from the services of the request that called it. Detaching the services when the engine
+is returned stops a new global being built from them; it does not reach into a call that already holds one.
+
+The pool therefore lets go of that remembered state once it is a minute old: when the engine is returned
+after that, or, if the engine is sitting unused in the pool by then, from a background check that runs only
+while some idle engine still holds such state. A finished request's services, and the scoped services
+resolved from them, are reachable from a pooled engine for at most about two minutes. The cost is that the
+next run of each script on that engine is as slow as a first run, minus building the engine — at most once
+a minute per engine, which is why it is not done every time an engine is returned.
+
+Raise the pool size for a tenant that evaluates scripts on many concurrent requests — JavaScript layer rules
+are the usual case, because the rules evaluator holds its scope for the whole request rather than for one
+expression. Set it to `0` for a tenant whose global methods project large object graphs into script and must
+not have them outlive the request at all.
 
 ### Methods
 
@@ -178,7 +289,7 @@ var plainText = decrypt(encryptedValue);
 |------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `variables(): string`                                      | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"`                   |
 | `parameters(): string`                                     | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/README.md#recipe-parameters)                                |
-| `configuration(key: String, defaultValue: String): string` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
+| `configuration(key: String, defaultValue: String): string` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
 
 #### Workflows (`OrchardCore.Workflows.Http`)
 

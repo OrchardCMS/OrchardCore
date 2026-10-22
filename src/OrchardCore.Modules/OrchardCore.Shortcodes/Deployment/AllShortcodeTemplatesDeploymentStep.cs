@@ -1,18 +1,15 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Shortcodes.Deployment;
 
 public class AllShortcodeTemplatesDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllShortcodeTemplatesDeploymentStep>("Content");
+
     public AllShortcodeTemplatesDeploymentStep()
     {
         Name = "AllShortcodeTemplates";
-    }
-
-    public AllShortcodeTemplatesDeploymentStep(IStringLocalizer<AllShortcodeTemplatesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content"];
+        Category = s_category;
     }
 }

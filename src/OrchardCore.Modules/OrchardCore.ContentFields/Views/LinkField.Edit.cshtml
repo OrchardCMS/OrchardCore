@@ -28,7 +28,7 @@
 
                 @if (!string.IsNullOrWhiteSpace(settings.Hint))
                 {
-                    <span class="hint">@settings.Hint</span>
+                    @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
                 }
             </div>
             @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
@@ -44,7 +44,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(settings.HintLinkText))
                     {
-                        <span class="hint">@settings.HintLinkText</span>
+                        @await DisplayAsync(await New.Hint_Admin(Hint: settings.HintLinkText))
                     }
                 </div>
             }

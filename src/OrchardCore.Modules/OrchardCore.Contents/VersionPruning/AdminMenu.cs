@@ -22,22 +22,6 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Content Version Pruning"], S["Content Version Pruning"], pruning => pruning
-                            .Action("Index", "Admin", s_routeValues)
-                            .Permission(ContentVersionPruningPermissions.ManageContentVersionPruningSettings)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Content Version Pruning"], S["Content Version Pruning"].PrefixPosition(), pruning => pruning

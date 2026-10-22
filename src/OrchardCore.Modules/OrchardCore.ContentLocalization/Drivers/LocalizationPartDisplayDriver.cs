@@ -32,8 +32,10 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
     public override IDisplayResult Display(LocalizationPart part, BuildPartDisplayContext context)
     {
         return Combine(
-            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:11"),
-            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdminLinks", model => BuildViewModelAsync(model, part)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+            Initialize<LocalizationPartViewModel, LocalizationPartDisplayDriver, LocalizationPart>("LocalizationPart_SummaryAdmin", static (model, driver, part) => driver.BuildViewModelAsync(model, part), this, part).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:11")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Status:11"),
+            Initialize<LocalizationPartViewModel, LocalizationPartDisplayDriver, LocalizationPart>("LocalizationPart_SummaryAdminLinks", static (model, driver, part) => driver.BuildViewModelAsync(model, part), this, part).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5")
         );
     }
 

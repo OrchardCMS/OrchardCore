@@ -19,6 +19,6 @@ public abstract class UserEvent : UserActivity, IEvent
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

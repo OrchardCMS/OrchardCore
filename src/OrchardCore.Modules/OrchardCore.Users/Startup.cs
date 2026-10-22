@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -21,6 +22,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
@@ -57,6 +59,10 @@ public sealed class Startup : StartupBase
 {
     private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
     private static readonly string s_emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+
+    // Long enough to read the confirmation notice and request a new email again once the resend cooldown is over.
+    private static readonly TimeSpan s_emailConfirmationCookieLifetime = TimeSpan.FromMinutes(10);
+
     private readonly string _tenantName;
 
     private UserOptions _userOptions;
@@ -75,7 +81,9 @@ public sealed class Startup : StartupBase
         services.Configure<UserOptions>(userOptions =>
         {
             var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
-            configuration.GetSection("OrchardCore_Users").Bind(userOptions);
+
+            // The 'OrchardCore_Users' section is deprecated and will be removed in a future major version, use 'Users' instead.
+            configuration.GetSectionCompat("Users", "OrchardCore_Users").Bind(userOptions);
         });
 
         // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
@@ -94,6 +102,17 @@ public sealed class Startup : StartupBase
         // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+
+        // A short-lived cookie that identifies a user who passed the password check but hasn't confirmed their email yet,
+        // so that they can request a new confirmation email. Like the 'Identity.TwoFactorUserId' cookie, it doesn't sign the user in.
+        services.AddAuthentication()
+            .AddCookie(UserConstants.EmailConfirmationAuthenticationScheme, options =>
+            {
+                options.Cookie.Name = "orchemail_" + HttpUtility.UrlEncode(_tenantName);
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.ExpireTimeSpan = s_emailConfirmationCookieLifetime;
+                options.SlidingExpiration = false;
+            });
 
         services.AddUsers();
 
@@ -165,6 +184,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
         services.AddScoped<ILoginFormEvent, DisabledUserLoginFormEvent>();
+
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -237,6 +257,17 @@ public sealed class Startup : StartupBase
             }
         );
 
+        routes.MapAreaControllerRoute(
+            name: RateLimitRouteNames.ResendEmailConfirmation,
+            areaName: UserConstants.Features.Users,
+            pattern: "ResendEmailConfirmation",
+            defaults: new
+            {
+                controller = s_emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ResendEmailConfirmation),
+            }
+        );
+
         builder.UseAuthorization();
     }
 
@@ -248,7 +279,10 @@ public sealed class RateLimitsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
+        {
+            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResendEmailConfirmation, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.EmailConfirmation, 2, TimeSpan.FromMinutes(1)));
+        });
     }
 }
 
@@ -266,6 +300,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
         services.AddDisplayDriver<UserMenu, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
+        services.AddSignalOptionsChangeTokenSource<ExternalLoginOptions>();
         services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
     }
 
@@ -485,6 +520,7 @@ public sealed class RegistrationStartup : StartupBase
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddSignalOptionsChangeTokenSource<RegistrationOptions>();
 
         services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
         services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();

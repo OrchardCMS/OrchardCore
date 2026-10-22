@@ -17,7 +17,7 @@
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" />
+                <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" data-autoroute-disabled-toggle />
                 <label class="form-check-label" asp-for="Disabled">@T["Disabled"]</label>
                 <span class="hint dashed">@T["Check to disable autoroute for this content item."]</span>
             </div>
@@ -25,7 +25,7 @@
     </div>
 }
 
-<div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : string.Empty)">
+<div class="autoroute-disabled" data-autoroute-disabled-for="@Html.IdFor(m => m.Disabled)" style="@(Model.Disabled ? "display: none" : string.Empty)">
     <div class="ocat-wrapper" asp-validation-class-for="Path">
         <label asp-for="Path" class="ocat-label ocat-label-required">@T["Permalink"]</label>
         <div class="ocat-end">
@@ -118,17 +118,4 @@
     }
 </div>
 
-@if (Model.Settings.AllowDisabled)
-{
-    <script at="Foot">
-        var disabledElement = document.getElementById('@Html.IdFor(i => i.Disabled)');
-        if (disabledElement) {
-            disabledElement.addEventListener('change', function (e) {
-                var checked = e.target.checked;
-                document.querySelectorAll('.autoroute-disabled').forEach(function (element) {
-                    element.style.display = checked ? 'none' : '';
-                });
-            });
-        }
-    </script>
-}
+<script asp-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part.min.js" debug-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part.js" at="Foot" type="module"></script>

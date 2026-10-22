@@ -148,6 +148,25 @@ public sealed class AdminMenu : INavigationProvider
 !!! note
     We suggest to use the `PrefixPosition` extension method for the second parameter (`position`) if you want to keep an alphabetical sort when the strings will be translated in other languages.
 
+### Positioning menu items
+
+The second parameter of `Add(...)` is the **position**, the same position mechanism used everywhere in Orchard Core (for example, [shape placement](../../reference/modules/Placement/README.md#position-ordering-rules)). Menu items — at every level of the tree — are sorted by it. The full ordering, from first to last, is:
+
+```
+start  <  before  <  numbers  <  after  <  free-text (PrefixPosition)  <  end
+```
+
+- **Numeric positions** (`"1"`, `"2.5"`, `"10"`) are compared numerically and give you precise, explicit placement. Use them for top-level items and for pinning a specific item to a known slot.
+- **`before` / `after`** are anchors *within* the numeric range: `before` sorts ahead of all numbers, `after` sorts after all numbers. They both support sub-ordering, e.g. `"after.50"` then `"after.100"`.
+- **`PrefixPosition()`** produces a **non-numeric** value that alphabetizes an item against its siblings (surviving translation). Because it is not a number, it sorts **after `after`**. This is exactly what you want for leaf items in a shared submenu (they line up alphabetically after any pinned, numbered items), which is why the guide uses it above.
+- **`start` / `end`** are true terminals: `start` sorts before *everything* (including `before`), and `end` sorts after *everything* (including `PrefixPosition()` values). They also support sub-ordering (`"end.50"` before `"end.100"`).
+
+!!! warning "`after` is not the last position; `end` is"
+    Because `PrefixPosition()` values sort after `after`, an item positioned with `"after"` (or `"after.100"`) is **not** guaranteed to be last — any sibling using `PrefixPosition()` will come after it. If you need an item to be genuinely first or last regardless of its siblings, use `start` / `end` instead of `before` / `after`. For this reason the built-in **Settings** and **Tools** top-level menus use `"end.100"` and `"end.50"`, so custom top-level items added with `PrefixPosition()` appear *before* them.
+
+!!! tip
+    For a **top-level** menu item you almost always want a deterministic slot, so prefer a numeric or `end`/`start` position over `PrefixPosition()`. Reserve `PrefixPosition()` for the leaf items inside a submenu, where alphabetical ordering is the goal.
+
 Then you have to register this service in the `Startup.cs` file of the module.
 
 At the top of the `Startup.cs` file, add this `using` statement:

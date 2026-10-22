@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Shortcodes.ViewModels
+
+@model ShapeViewModel<ShortcodeTemplateEntry>
+
+@if (!string.IsNullOrWhiteSpace(Model.Value.ShortcodeTemplate?.Hint))
+{
+    <div class="admin-list-secondary">@Model.Value.ShortcodeTemplate.Hint</div>
+}

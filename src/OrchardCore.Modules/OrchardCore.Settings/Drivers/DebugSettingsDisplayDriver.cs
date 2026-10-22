@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers;
@@ -14,7 +15,7 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
     protected override string SettingsGroupId
         => GroupId;
@@ -22,11 +23,11 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
     public DebugSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellReleaseManager shellReleaseManager)
+        IOptionsUpdateNotifier optionsUpdateNotifier)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, DebugSettings settings, BuildEditorContext context)
@@ -37,8 +38,6 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         return Initialize<DebugSettingsViewModel>("DebugSettings_Edit", model =>
         {
@@ -62,7 +61,7 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
 
         if (settings.WriteShapeDebugInformation != model.WriteShapeDebugInformation)
         {
-            _shellReleaseManager.RequestRelease();
+            _optionsUpdateNotifier.RequestUpdate<ShapeRenderingOptions>();
         }
 
         settings.WriteShapeDebugInformation = model.WriteShapeDebugInformation;

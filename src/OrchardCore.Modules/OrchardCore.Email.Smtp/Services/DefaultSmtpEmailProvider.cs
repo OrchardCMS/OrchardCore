@@ -4,16 +4,16 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public class DefaultSmtpEmailProvider : SmtpEmailProviderBase
+public class DefaultSmtpEmailProvider : SmtpEmailProviderBase<DefaultSmtpOptions>
 {
     public const string TechnicalName = "DefaultSMTP";
 
     public DefaultSmtpEmailProvider(
-        IOptions<DefaultSmtpOptions> options,
+        IOptionsMonitor<DefaultSmtpOptions> options,
         IEmailAddressValidator emailAddressValidator,
         ILogger<DefaultSmtpEmailProvider> logger,
         IStringLocalizer<DefaultSmtpEmailProvider> stringLocalizer)
-        : base(options.Value, emailAddressValidator, logger, stringLocalizer)
+        : base(options, emailAddressValidator, logger, stringLocalizer)
     {
     }
 

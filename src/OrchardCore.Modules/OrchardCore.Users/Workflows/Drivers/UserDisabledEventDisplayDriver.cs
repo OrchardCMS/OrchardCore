@@ -11,8 +11,8 @@ public sealed class UserDisabledEventDisplayDriver : ActivityDisplayDriver<UserD
     public override Task<IDisplayResult> DisplayAsync(UserDisabledEvent activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape("UserDisabledEvent_Fields_Thumbnail", new UserDisabledEventViewModel(activity)).Location("Thumbnail", "Content"),
-            Factory("UserDisabledEvent_Fields_Design", ctx =>
+            Factory("UserDisabledEvent_Fields_Thumbnail", static (UserDisabledEvent a) => new UserDisabledEventViewModel(a), activity).Location("Thumbnail", "Content"),
+            Factory("UserDisabledEvent_Fields_Design", static (ctx, activity) =>
             {
                 var shape = new UserDisabledEventViewModel
                 {
@@ -20,7 +20,7 @@ public sealed class UserDisabledEventDisplayDriver : ActivityDisplayDriver<UserD
                 };
 
                 return shape;
-            }).Location("Design", "Content")
+            }, activity).Location("Design", "Content")
         );
     }
 }

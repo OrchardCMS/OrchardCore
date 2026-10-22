@@ -5,7 +5,7 @@ You can join by using the online webclient or install Microsoft Teams.
 
 ## Steering committee meeting
 
-On Tuesday at [12:00 PST](https://www.google.com/search?q=12%3A00+pst).  
+On Tuesday at [10:00 PST](https://www.google.com/search?q=10%3A00+pst).  
 During this meeting we discuss about:
 
 - Progress: What commits have been made during the past week on the dev branch.

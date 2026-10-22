@@ -44,12 +44,12 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
 
     public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
     {
-        return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(fieldDisplayContext), model =>
+        return Initialize<DisplayContentPickerFieldViewModel, ContentPickerField, BuildFieldDisplayContext> (GetDisplayShapeType(fieldDisplayContext), static (model, field, fieldDisplayContext) =>
         {
             model.Field = field;
             model.Part = fieldDisplayContext.ContentPart;
             model.PartFieldDefinition = fieldDisplayContext.PartFieldDefinition;
-        })
+        }, field, fieldDisplayContext)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }

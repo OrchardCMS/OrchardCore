@@ -3,12 +3,14 @@ using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
 using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email.Azure.Services;
 
-public abstract class AzureEmailProviderBase : IEmailProvider
+public abstract class AzureEmailProviderBase<TOptions> : IEmailProvider
+    where TOptions : AzureEmailOptions
 {
     // Common supported file extensions and their corresponding MIME types for email attachments
     // using Azure Communication Services Email.
@@ -79,19 +81,21 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         { ".zip", "application/zip" },
     };
 
-    private readonly AzureEmailOptions _providerOptions;
+    private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly ILogger _logger;
+    private readonly Lock _emailClientLock = new();
 
     private EmailClient _emailClient;
+    private string _emailClientConnectionString;
 
     protected readonly IStringLocalizer S;
 
     public AzureEmailProviderBase(
-        AzureEmailOptions options,
+        IOptionsMonitor<TOptions> optionsMonitor,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
-        _providerOptions = options;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -108,13 +112,15 @@ public abstract class AzureEmailProviderBase : IEmailProvider
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (!_providerOptions.IsEnabled)
+        var providerOptions = _optionsMonitor.CurrentValue;
+
+        if (!providerOptions.IsEnabled)
         {
             return Result.Failed(S["The Azure Email Provider is disabled."]);
         }
 
         var senderAddress = string.IsNullOrWhiteSpace(message.From)
-            ? _providerOptions.DefaultSender
+            ? providerOptions.DefaultSender
             : message.From;
 
         if (_logger.IsEnabled(LogLevel.Debug))
@@ -155,9 +161,8 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         try
         {
-            _emailClient ??= new EmailClient(_providerOptions.ConnectionString);
-
-            var result = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage, cancellationToken);
+            var emailClient = GetOrCreateEmailClient(providerOptions.ConnectionString);
+            var result = await emailClient.SendAsync(WaitUntil.Completed, emailMessage, cancellationToken);
 
             if (result.HasValue)
             {
@@ -172,6 +177,23 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
             // IMPORTANT: Do not expose ex.Message as it could contain the connection string in a raw format!
             return Result.Failed(S["An error occurred while sending an email."]);
+        }
+    }
+
+    protected virtual EmailClient CreateEmailClient(string connectionString) => new(connectionString);
+
+    protected EmailClient GetOrCreateEmailClient(string connectionString)
+    {
+        lock (_emailClientLock)
+        {
+            if (!string.Equals(_emailClientConnectionString, connectionString, StringComparison.Ordinal))
+            {
+                // Recreate the client so it uses the latest connection string after options change.
+                _emailClient = CreateEmailClient(connectionString);
+                _emailClientConnectionString = connectionString;
+            }
+
+            return _emailClient;
         }
     }
 

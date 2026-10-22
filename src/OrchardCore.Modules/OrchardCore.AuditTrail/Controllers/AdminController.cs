@@ -9,6 +9,7 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using YesSql.Filters.Query;
@@ -76,7 +77,7 @@ public sealed class AdminController : Controller
             options.FilterResult.TryAddOrReplace(new CorrelationIdFilterNode(options.CorrelationId));
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         // With the options populated we filter the query, allowing the filters to alter the options.
         var result = await _auditTrailAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options);
@@ -89,29 +90,30 @@ public sealed class AdminController : Controller
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
         var pagerShape = await _shapeFactory.PagerAsync(pager, result.TotalCount, options.RouteValues);
-        var items = new List<IShape>();
-
-        foreach (var auditTrailEvent in result.Events)
-        {
-            items.Add(
-                await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
-            );
-        }
 
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + items.Count - 1;
-        options.EventsCount = items.Count;
+        options.EndIndex = startIndex + result.Events.Count() - 1;
+        options.EventsCount = result.Events.Count();
         options.TotalItemCount = result.TotalCount;
 
         var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the events with the configured layout (List, Grid, ...).
+        var list = new AdminListContext<AuditTrailEvent>
+        {
+            Source = result.Events,
+            Header = header,
+            Pager = pagerShape,
+        };
+
         var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>("AuditTrailAdminList", viewModel =>
         {
-            viewModel.Events = items;
+            viewModel.Events = result.Events.ToList();
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
+            viewModel.List = list;
         });
 
         return View(shapeViewModel);
@@ -150,7 +152,6 @@ public sealed class AdminController : Controller
         {
             return NotFound();
         }
-
 
         var shape = await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "DetailAdmin");
 

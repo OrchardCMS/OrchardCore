@@ -1,4 +1,8 @@
 {
   "name": "@orchardcore/deployment",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "check": "vue-tsc --noEmit"
+  }
 }

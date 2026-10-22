@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Authentication": {
+          "type": "object",
+          "properties": {
+            "MicrosoftAccount": {
+              "type": "object",
+              "description": "Settings of the Microsoft Account authentication feature. These values override the ones configured in the admin settings, and they are only applied when the 'ConfigureMicrosoftAccountSettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/Microsoft.Authentication/.",
+              "properties": {
+                "AppId": {
+                  "type": "string",
+                  "description": "The application (client) ID of the app registration."
+                },
+                "AppSecret": {
+                  "type": "string",
+                  "description": "The client secret of the app registration. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+                },
+                "CallbackPath": {
+                  "type": "string",
+                  "description": "The request path within the application's base path where the user agent is returned after signing in with a Microsoft Account. It must start with '/'. When not set, '/signin-microsoft' is used."
+                },
+                "SaveTokens": {
+                  "type": "boolean",
+                  "description": "Whether the access and refresh tokens are stored in the authentication properties after a successful sign-in."
+                }
+              }
+            },
+            "AzureAD": {
+              "type": "object",
+              "description": "Settings of the Microsoft Entra ID (Azure Active Directory) authentication feature. These values override the ones configured in the admin settings, and they are only applied when the 'ConfigureAzureADSettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/Microsoft.Authentication/.",
+              "properties": {
+                "DisplayName": {
+                  "type": "string",
+                  "description": "The text displayed on the login screen for the Microsoft Entra ID login button."
+                },
+                "AppId": {
+                  "type": "string",
+                  "description": "The application (client) ID of the app registration in the Azure portal."
+                },
+                "TenantId": {
+                  "type": "string",
+                  "description": "The directory (tenant) ID of the app registration in the Azure portal, or 'organizations' or 'common' for a multi-tenant app registration."
+                },
+                "CallbackPath": {
+                  "type": "string",
+                  "description": "The request path within the application's base path where the user agent is returned after signing in with Microsoft Entra ID. It must start with '/'. When not set, '/signin-oidc' is used."
+                },
+                "SaveTokens": {
+                  "type": "boolean",
+                  "description": "Whether the access and refresh tokens are stored in the authentication properties after a successful sign-in."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Microsoft_Authentication_MicrosoftAccount' section is deprecated. Use 'OrchardCore:Authentication:MicrosoftAccount' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Authentication:MicrosoftAccount' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Microsoft_Authentication_AzureAD": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Microsoft_Authentication_AzureAD' section is deprecated. Use 'OrchardCore:Authentication:AzureAD' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Authentication:AzureAD' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

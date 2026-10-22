@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
@@ -10,10 +11,14 @@ namespace OrchardCore.Menu.Drivers;
 public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriver<MenuItemPermissionPart>
 {
     private readonly IPermissionService _permissionService;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
-    public MenuItemPermissionPartDisplayDriver(IPermissionService permissionService)
+    public MenuItemPermissionPartDisplayDriver(
+        IPermissionService permissionService,
+        IStringLocalizerFactory stringLocalizerFactory)
     {
         _permissionService = permissionService;
+        _stringLocalizerFactory = stringLocalizerFactory;
     }
 
     public override IDisplayResult Edit(MenuItemPermissionPart part, BuildPartEditorContext context)
@@ -26,7 +31,7 @@ public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriv
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description,
+                    DisplayText = _stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
 
             var permissions = await _permissionService.GetPermissionsAsync();
@@ -35,7 +40,7 @@ public sealed class MenuItemPermissionPartDisplayDriver : ContentPartDisplayDriv
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description,
+                    DisplayText = _stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
         });
     }

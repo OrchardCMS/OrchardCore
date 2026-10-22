@@ -11,11 +11,11 @@ namespace OrchardCore.AzureAI.Drivers;
 
 internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<IndexProfile>
 {
-    private readonly AzureAISearchDefaultOptions _azureAIOptions;
+    private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _azureAIOptions;
 
-    public AzureAISearchIndexProfileDisplayDriver(IOptions<AzureAISearchDefaultOptions> azureAIOptions)
+    public AzureAISearchIndexProfileDisplayDriver(IOptionsMonitor<AzureAISearchDefaultOptions> azureAIOptions)
     {
-        _azureAIOptions = azureAIOptions.Value;
+        _azureAIOptions = azureAIOptions;
     }
 
     public override IDisplayResult Edit(IndexProfile indexProfile, BuildEditorContext context)
@@ -24,6 +24,8 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
         {
             return null;
         }
+
+        var azureAIOptions = _azureAIOptions.CurrentValue;
 
         var data = Initialize<AzureAISettingsIndexProfileViewModel>("AzureAISearchIndexProfile_Edit", model =>
         {
@@ -34,13 +36,13 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
                 model.AnalyzerName = metadata.AnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
             }
 
-            model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
+            model.Analyzers = azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
         }).Location("Content:5");
 
         var queryData = Initialize<AzureAISearchDefaultQueryViewModel>("AzureAISearchQuerySettings_Edit", model =>
         {
             model.QueryAnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
-            model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
+            model.Analyzers = azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
 
             string[] defaultSearchFields = null;
 

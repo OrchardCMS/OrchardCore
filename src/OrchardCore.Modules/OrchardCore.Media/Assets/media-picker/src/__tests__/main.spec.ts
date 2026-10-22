@@ -32,7 +32,7 @@ vi.mock("@media-gallery", () => ({
 vi.mock("../components/MediaFieldBasic.vue", () => ({
   default: {
     name: "MediaFieldBasic",
-    template: "<div class='stub-basic'></div>",
+    template: "<div class='stub-basic' :data-max-file-size='config?.maxFileSize' :data-media-app-translations='config?.mediaAppTranslations' :data-signalr-enabled='config?.signalrEnabled' :data-disable-thumbnails='config?.disableThumbnails'></div>",
     props: ["config", "inputName"],
   },
 }));
@@ -40,7 +40,7 @@ vi.mock("../components/MediaFieldBasic.vue", () => ({
 vi.mock("../components/MediaFieldAttached.vue", () => ({
   default: {
     name: "MediaFieldAttached",
-    template: "<div class='stub-attached'></div>",
+    template: "<div class='stub-attached' :data-max-file-size='config?.maxFileSize'></div>",
     props: ["config", "inputName"],
   },
   // The interface re-export is only a type; we don't need a runtime value.
@@ -49,16 +49,22 @@ vi.mock("../components/MediaFieldAttached.vue", () => ({
 vi.mock("../components/MediaFieldGallery.vue", () => ({
   default: {
     name: "MediaFieldGallery",
-    template: "<div class='stub-gallery'></div>",
+    template: "<div class='stub-gallery' :data-max-file-size='config?.maxFileSize'></div>",
     props: ["config", "inputName"],
   },
 }));
 
-// Stub PrimeVue and its theme so createFieldApp doesn't blow up
+// Stub PrimeVue so createFieldApp doesn't blow up
 vi.mock("primevue/config", () => ({
   default: { install: vi.fn() },
 }));
-vi.mock("@primevue/themes/aura", () => ({ default: {} }));
+
+vi.mock("../components/MediaPickerModal.vue", () => ({
+  default: {
+    template: "<button :data-programmatic-size='maxFileSize' @click='onResolve([])'></button>",
+    props: ["maxFileSize", "onResolve"],
+  },
+}));
 
 // Stub FontAwesome so library.add / FontAwesomeIcon don't fail
 vi.mock("@fortawesome/fontawesome-svg-core", () => ({
@@ -92,9 +98,50 @@ function createMountEl(
   return el;
 }
 
+// The MutationObserver callbacks run asynchronously.
+function flushMutations(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+// observeAndInit keeps its registry and observer on window so they're shared across bundles;
+// reset them so each fresh import of main.ts starts from a clean state.
+function resetObserveAndInit() {
+  window.__orchardCoreObserveAndInit?.observer?.disconnect();
+  delete window.__orchardCoreObserveAndInit;
+}
+
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 describe("main.ts", () => {
+  it.each(["basic", "attached", "gallery"])("reads the exact byte limit for %s fields", (type) => {
+    const el = createMountEl(type, { maxFileSize: "1234567" });
+    const mount = type === "basic" ? main.mountMediaField
+      : type === "attached" ? main.mountAttachedMediaField : main.mountGalleryMediaField;
+    const app = mount(el);
+    expect(el.firstElementChild?.getAttribute("data-max-file-size")).toBe("1234567");
+    app.unmount();
+  });
+
+  it("passes the byte limit to a programmatically opened picker", async () => {
+    const result = main.openMediaPicker("{}", "/", "/api/media/Upload", ".jpg", true, 1234567);
+    const button = document.querySelector<HTMLButtonElement>("[data-programmatic-size]")!;
+    expect(button.dataset.programmaticSize).toBe("1234567");
+    button.click();
+    expect(await result).toEqual([]);
+  });
+
+  it("uses the rendered tenant limit for existing five-argument editor callers", async () => {
+    const config = document.createElement("div");
+    config.dataset.mediaPickerConfig = "";
+    config.dataset.maxFileSize = "1234567";
+    document.body.appendChild(config);
+    const result = main.openMediaPicker("{}", "/", "/api/media/Upload", "", true);
+    const button = document.querySelector<HTMLButtonElement>("[data-programmatic-size]")!;
+    expect(button.dataset.programmaticSize).toBe("1234567");
+    button.click();
+    expect(await result).toEqual([]);
+  });
+
   // We use dynamic import + vi.resetModules so the top-level autoMount()
   // runs against a clean DOM for every test.
   let main: typeof import("../main");
@@ -102,6 +149,7 @@ describe("main.ts", () => {
   beforeEach(async () => {
     document.body.innerHTML = "";
     mockSetTranslations.mockClear();
+    resetObserveAndInit();
     vi.resetModules();
     main = await import("../main");
   });
@@ -128,6 +176,7 @@ describe("main.ts", () => {
         allowMediaText: "true",
         allowAnchors: "true",
         allowedExtensions: ".jpg,.png",
+        mediaGalleryTranslations: '{"Rename":"Umbenennen"}',
         basePath: "/media",
         uploadFilesUrl: "/api/upload",
       });
@@ -135,6 +184,19 @@ describe("main.ts", () => {
       // Mounting should succeed and call setTranslations
       main.mountMediaField(el);
       expect(mockSetTranslations).toHaveBeenCalled();
+    });
+
+    it("reads media-gallery translations from the rendered data attribute", () => {
+      const el = createMountEl("basic", {
+        mediaGalleryTranslations: '{"Rename":"Umbenennen","PagerFirstButton":"Erste"}',
+      });
+
+      const app = main.mountMediaField(el);
+
+      expect(app).toBeDefined();
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-media-app-translations")).toBe(
+        '{"Rename":"Umbenennen","PagerFirstButton":"Erste"}'
+      );
     });
 
     it("reads translations with defaults when data-translations is absent", () => {
@@ -244,6 +306,29 @@ describe("main.ts", () => {
       });
       expect(() => main.mountMediaField(elFalse)).not.toThrow();
     });
+
+    it("parses data-signalr-enabled into config.signalrEnabled", () => {
+      const elOn = createMountEl("basic", { signalrEnabled: "true" });
+      main.mountMediaField(elOn);
+      expect(elOn.querySelector(".stub-basic")?.getAttribute("data-signalr-enabled")).toBe("true");
+
+      // Absent attribute must default to disabled.
+      const elOff = createMountEl("basic");
+      main.mountMediaField(elOff);
+      expect(elOff.querySelector(".stub-basic")?.getAttribute("data-signalr-enabled")).toBe("false");
+    });
+
+    it("parses data-disable-thumbnails", () => {
+      const el = createMountEl("basic", { disableThumbnails: "true" });
+      main.mountMediaField(el);
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-disable-thumbnails")).toBe("true");
+    });
+
+    it("defaults disableThumbnails to false when the attribute is absent", () => {
+      const el = createMountEl("basic");
+      main.mountMediaField(el);
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-disable-thumbnails")).toBe("false");
+    });
   });
 
   // ── readTranslations (tested indirectly via mount) ──────────────────────
@@ -349,6 +434,49 @@ describe("main.ts", () => {
 
       // Should not be marked as mounted
       expect(el.dataset.mediaFieldMounted).toBeUndefined();
+    });
+
+    // The Flow and Bag part editors fetch widget editors via AJAX and insert them after the
+    // module has been evaluated, which only happens once per page.
+    it("mounts fields inserted after the module loaded", async () => {
+      const container = document.createElement("div");
+      container.innerHTML = `
+        <div data-media-field-type="basic" data-input-name="A" data-paths="[]"></div>
+        <div data-media-field-type="gallery" data-input-name="B" data-paths="[]"></div>`;
+      document.body.appendChild(container);
+
+      await flushMutations();
+
+      const [basicEl, galleryEl] = Array.from(container.querySelectorAll<HTMLElement>("[data-media-field-type]"));
+      expect(basicEl.dataset.mediaFieldMounted).toBe("true");
+      expect(basicEl.querySelector(".stub-basic")).not.toBeNull();
+      expect(galleryEl.dataset.mediaFieldMounted).toBe("true");
+      expect(galleryEl.querySelector(".stub-gallery")).not.toBeNull();
+    });
+
+    it("mounts a field directly inserted after the module loaded only once", async () => {
+      const el = createMountEl("basic");
+
+      await flushMutations();
+
+      expect(el.dataset.mediaFieldMounted).toBe("true");
+      expect(el.querySelectorAll(".stub-basic")).toHaveLength(1);
+
+      // Moving the element (e.g. reordering widgets) must not mount it again.
+      document.body.appendChild(el);
+      await flushMutations();
+
+      expect(el.querySelectorAll(".stub-basic")).toHaveLength(1);
+    });
+
+    it("registers openMediaPicker on config elements inserted after the module loaded", async () => {
+      const config = document.createElement("div") as HTMLElement & { __openMediaPicker?: unknown };
+      config.dataset.mediaPickerConfig = "";
+      document.body.appendChild(config);
+
+      await flushMutations();
+
+      expect(config.__openMediaPicker).toBe(main.openMediaPicker);
     });
   });
 });

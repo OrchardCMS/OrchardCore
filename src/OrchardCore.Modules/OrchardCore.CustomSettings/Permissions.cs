@@ -6,10 +6,7 @@ namespace OrchardCore.CustomSettings;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private static readonly PermissionTemplate s_manageCustomSettings = new(
-        "ManageCustomSettings_{0}",
-        "Manage Custom Settings - {0}",
-        new Permission("ManageResourceSettings"));
+    private static readonly Permission s_manageCustomSettings = new("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
 
     private readonly CustomSettingsService _customSettingsService;
 
@@ -34,7 +31,13 @@ public sealed class Permissions : IPermissionProvider
         => string.Format(s_manageCustomSettings.Name, name);
 
     public static Permission CreatePermissionForType(ContentTypeDefinition type)
-        => s_manageCustomSettings.CreateDynamicPermission(type.Name, type.DisplayName);
+    {
+        return new Permission(
+                CreatePermissionName(type.Name),
+                string.Format(s_manageCustomSettings.Description.Value, type.DisplayName),
+                s_manageCustomSettings.ImpliedBy
+            );
+    }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         => [];

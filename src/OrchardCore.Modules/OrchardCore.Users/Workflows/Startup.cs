@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.Drivers;
@@ -19,7 +20,9 @@ public sealed class Startup : StartupBase
         services.AddActivity<UserDisabledEvent, UserDisabledEventDisplayDriver>();
         services.AddActivity<UserUpdatedEvent, UserUpdatedEventDisplayDriver>();
         services.AddActivity<UserLoggedInEvent, UserLoggedInEventDisplayDriver>();
+        services.AddActivity<UserLoggedOutEvent, UserLoggedOutEventDisplayDriver>();
         services.AddScoped<IUserEventHandler, UserEventHandler>();
+        services.AddScoped<ILogoutFormEvent, LogoutFormEventHandler>();
         services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplayDriver>();
         services.AddActivity<ValidateUserTask, ValidateUserTaskDisplayDriver>();
         services.AddActivity<UserConfirmedEvent, UserConfirmedEventDisplayDriver>();

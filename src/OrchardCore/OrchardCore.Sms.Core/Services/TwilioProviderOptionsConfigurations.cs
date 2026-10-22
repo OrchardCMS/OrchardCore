@@ -6,20 +6,17 @@ namespace OrchardCore.Sms.Services;
 
 public sealed class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProviderOptions>
 {
-    private readonly ISiteService _siteService;
+    private readonly IOptionsMonitor<TwilioOptions> _twilioOptions;
 
-    public TwilioProviderOptionsConfigurations(ISiteService siteService)
+    public TwilioProviderOptionsConfigurations(IOptionsMonitor<TwilioOptions> twilioOptions)
     {
-        _siteService = siteService;
+        _twilioOptions = twilioOptions;
     }
 
     public void Configure(SmsProviderOptions options)
     {
         var typeOptions = new SmsProviderTypeOptions(typeof(TwilioSmsProvider));
-
-        var settings = _siteService.GetSettings<TwilioSettings>();
-
-        typeOptions.IsEnabled = settings.IsEnabled;
+        typeOptions.IsEnabled = _twilioOptions.CurrentValue.IsEnabled;
 
         options.TryAddProvider(TwilioSmsProvider.TechnicalName, typeOptions);
     }

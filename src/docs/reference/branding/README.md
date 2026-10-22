@@ -87,3 +87,9 @@ A printable 3D model of the Orchard Core symbol logo is available below.
 # Fonts
 
 We use the [Open Sans font family](https://fonts.google.com/specimen/Open+Sans). You can find all the font files in [the `assets/fonts` folder](https://github.com/OrchardCMS/OrchardCore/tree/main/src/docs/reference/branding/assets/fonts) of this documentation page. Be sure to adhere to [the font's license](assets/fonts/LICENSE.txt).
+
+# Screensaver
+
+Displays a bouncing (DVD-style) Orchard Core logo, with the logo being encoded into the file, i.e. it is self-contained and offline-compatible. Double-clicking anywhere displays a dialog to set up (or remove) a countdown in the middle of the screen.
+
+- [Orchard Core Screensaver with Countdown](assets/orchard-core-screensaver.html)

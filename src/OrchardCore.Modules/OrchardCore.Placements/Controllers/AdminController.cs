@@ -11,9 +11,12 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 using OrchardCore.Placements.Services;
+using OrchardCore.Placements.Models;
 using OrchardCore.Placements.ViewModels;
 using OrchardCore.Routing;
 
@@ -56,18 +59,20 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Placements", "Placements.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 
-        var shapeList = shapeTypes.Select(entry => new ShapePlacementViewModel
+        var shapeList = shapeTypes.Select(entry => new ShapePlacement
         {
             ShapeType = entry.Key,
         }).ToList();
@@ -104,6 +109,13 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the placements with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<ShapePlacement>
+        {
+            Source = shapeList,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

@@ -11,8 +11,8 @@ public sealed class UserDeletedEventDisplayDriver : ActivityDisplayDriver<UserDe
     public override Task<IDisplayResult> DisplayAsync(UserDeletedEvent activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape("UserDeletedEvent_Fields_Thumbnail", new UserDeletedEventViewModel(activity)).Location("Thumbnail", "Content"),
-            Factory("UserDeletedEvent_Fields_Design", ctx =>
+            Factory("UserDeletedEvent_Fields_Thumbnail", static (UserDeletedEvent a) => new UserDeletedEventViewModel(a), activity).Location("Thumbnail", "Content"),
+            Factory("UserDeletedEvent_Fields_Design", static (ctx, activity) =>
             {
                 var shape = new UserDeletedEventViewModel
                 {
@@ -20,7 +20,7 @@ public sealed class UserDeletedEventDisplayDriver : ActivityDisplayDriver<UserDe
                 };
 
                 return shape;
-            }).Location("Design", "Content")
+            }, activity).Location("Design", "Content")
         );
     }
 }

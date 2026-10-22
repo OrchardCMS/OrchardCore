@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -7,6 +9,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
 using Microsoft.Extensions.Options;
+using Moq;
 
 namespace OrchardCore.Tests.DisplayManagement;
 
@@ -44,7 +47,7 @@ public class DefaultDisplayManagerTests
 
         serviceCollection.AddSingleton(_defaultShapeTable);
         serviceCollection.AddSingleton(_additionalBindings);
-        serviceCollection.AddSingleton<IOptions<ShapeRenderingOptions>>(Options.Create(_shapeRenderingOptions));
+        serviceCollection.AddSingleton(Mock.Of<IOptionsMonitor<ShapeRenderingOptions>>(x => x.CurrentValue == _shapeRenderingOptions));
         serviceCollection.AddWebEncoders();
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -109,6 +112,85 @@ public class DefaultDisplayManagerTests
 
         var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
         Assert.Equal("Hi there!", result.ToString());
+    }
+
+    [Fact]
+    public async Task RenderShape_DiagnosticsListened_RecordsActivityAndMetrics()
+    {
+        var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+        // A shape type only rendered by this test, as the listeners also observe the shapes rendered by other tests.
+        const string shapeType = "DiagnosticsFoo";
+
+        var shape = new Shape();
+        shape.Metadata.Type = shapeType;
+
+        var descriptor = new ShapeDescriptor
+        {
+            ShapeType = shapeType,
+        };
+        descriptor.Bindings[shapeType] = new ShapeBinding
+        {
+            BindingName = shapeType,
+            BindingSource = "Views/DiagnosticsFoo.cshtml",
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
+        };
+        AddShapeDescriptor(descriptor);
+
+        var activities = new List<Activity>();
+        using var activityListener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == DisplayManagementDiagnostics.ActivitySourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity =>
+            {
+                if (activity.GetTagItem("orchardcore.shape.type") as string == shapeType)
+                {
+                    lock (activities)
+                    {
+                        activities.Add(activity);
+                    }
+                }
+            },
+        };
+        ActivitySource.AddActivityListener(activityListener);
+
+        long renderedShapes = 0;
+        var durations = new List<double>();
+        using var meterListener = new MeterListener
+        {
+            InstrumentPublished = (instrument, listener) =>
+            {
+                if (instrument.Meter.Name == DisplayManagementDiagnostics.MeterName)
+                {
+                    listener.EnableMeasurementEvents(instrument);
+                }
+            },
+        };
+        meterListener.SetMeasurementEventCallback<long>((instrument, value, tags, state) => Interlocked.Add(ref renderedShapes, value));
+        meterListener.SetMeasurementEventCallback<double>((instrument, value, tags, state) =>
+        {
+            foreach (var tag in tags)
+            {
+                if (tag.Key == "orchardcore.shape.type" && tag.Value as string == shapeType)
+                {
+                    lock (durations)
+                    {
+                        durations.Add(value);
+                    }
+                }
+            }
+        });
+        meterListener.Start();
+
+        var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+        Assert.Equal("Hi there!", result.ToString());
+        var activity = Assert.Single(activities);
+        Assert.Equal($"Render shape {shapeType}", activity.DisplayName);
+        Assert.Equal("Views/DiagnosticsFoo.cshtml", activity.GetTagItem("orchardcore.shape.binding"));
+        Assert.True(Interlocked.Read(ref renderedShapes) >= 1);
+        Assert.True(Assert.Single(durations) >= 0);
     }
 
     [Fact]

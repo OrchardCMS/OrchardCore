@@ -81,8 +81,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
             var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
             var partDisplayDrivers = _contentPartDisplayDriverResolver.GetDisplayModeDrivers(partTypeName, contentTypePartDefinition.DisplayMode());
-            foreach (var partDisplayDriver in partDisplayDrivers)
+
+            // Iterated by index to not allocate an enumerator for each part.
+            for (var i = 0; i < partDisplayDrivers.Count; i++)
             {
+                var partDisplayDriver = partDisplayDrivers[i];
+
                 try
                 {
                     var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
@@ -93,7 +97,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    ex.LogException(_logger, partDisplayDrivers.GetType(), nameof(BuildDisplayAsync));
+                    ex.LogException(_logger, partDisplayDriver.GetType(), nameof(BuildDisplayAsync));
                 }
             }
             var tempContext = context;
@@ -105,16 +109,17 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             {
                 var shapeType = context.DisplayType != OrchardCoreConstants.DisplayType.Detail ? "ContentPart_" + context.DisplayType : "ContentPart";
 
-                var shapeResult = new ShapeResult(
+                var shapeResult = ShapeResult.Create(
                     shapeType,
-                    ctx => ctx.ShapeFactory.CreateAsync(
-                        shapeType,
+                    static (ctx, buildShapeType) => ctx.ShapeFactory.CreateAsync(
+                        buildShapeType,
                         static shapeContext =>
                             ValueTask.FromResult<IShape>(
                                 new ZoneHolding<IShapeFactory>(
                                     static factory => factory.CreateAsync("Zone"),
                                     shapeContext.ShapeFactory)),
-                        ctx));
+                        ctx),
+                    shapeType);
 
                 shapeResult.Differentiator(partName);
                 shapeResult.Name(partName);
@@ -160,8 +165,11 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
             {
                 var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetDisplayModeDrivers(contentPartFieldDefinition.FieldDefinition.Name, contentPartFieldDefinition.DisplayMode());
-                foreach (var fieldDisplayDriver in fieldDisplayDrivers)
+
+                for (var i = 0; i < fieldDisplayDrivers.Count; i++)
                 {
+                    var fieldDisplayDriver = fieldDisplayDrivers[i];
+
                     try
                     {
                         var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
@@ -375,7 +383,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partName = typePartDefinition.Name;
         var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
 
-        var typePartShapeResult = new ShapeResult(shapeType, _ => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()));
+        var typePartShapeResult = ShapeResult.Create(shapeType, static (_, _) => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()), shapeType);
         typePartShapeResult.Differentiator($"{contentType}-{partName}");
         typePartShapeResult.Name(partName);
         typePartShapeResult.Location($"Parts:{partPosition}");

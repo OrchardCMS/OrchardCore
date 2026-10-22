@@ -18,7 +18,7 @@ public sealed class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
     public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
         return View("ToggleTheme", model)
-            .RenderWhen(async () => await _siteThemeService.GetSiteThemeNameAsync() == "TheTheme")
+            .RenderWhen(static async (siteThemeService) => await siteThemeService.GetSiteThemeNameAsync() == "TheTheme", _siteThemeService)
             .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10");
     }
 }

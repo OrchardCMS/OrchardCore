@@ -161,6 +161,7 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-recipe-creator` | Create setup recipes | Provisioning a tenant: features, themes, content, roles, settings |
 | `orchardcore-asset-manager` | Build/manage frontend assets | Modifying SCSS, JS, TS, Vue or troubleshooting the asset pipeline |
 | `orchardcore-admin-edit-views` | Build admin edit views | Creating/updating `*.Edit.cshtml` with `ocat-*` classes |
+| `orchardcore-admin-index-views` | Build admin index (list) pages | Any admin page listing items: the `AdminList` shape, `<admin-list>` columns, `SummaryAdmin`/`SummaryAdminGrid` rows, column providers, row actions |
 | `orchardcore-data-migration` | Write data migrations | Altering content definitions, index tables, patching content items |
 | `orchardcore-display-management` | Control rendering | placement.json, drivers, shapes, zones, alternates, editor layouts |
 | `orchardcore-workflow-activity` | Custom workflow activities | New workflow task/event, outcomes, activity editor, input/output |
@@ -171,8 +172,13 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-docs-writer` | Author docs | MkDocs pages, module README, nav, admonitions, redirects |
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
 | `orchardcore-nswag-regenerate` | Regenerate NSwag API clients | Updating `Services/OpenApiClient.cs`/`OpenApiClient.ts`, noisy NSwag regeneration diffs |
+| `orchardcore-video-producer` | Produce narrated videos | Feature walkthroughs, module overviews, PR demos, videos in the docs |
 
 These skills provide step-by-step guidance, code templates, and references for common tasks.
+
+## Videos
+
+Every video of Orchard Core (documentation, pull requests, walkthroughs) follows one specification: 1920x1080 at 30 fps, the Orchard Core logo, colors and Open Sans font on a dark background, recordings at 1536x864 in a green frame, the `en-US-AndrewMultilingualNeural` voice, WebVTT captions, and an H.264 encode under 10 MB. Always produce videos with the `orchardcore-video-producer` skill, and don't change its specification for a single video. Narration describes the current behavior, with no "new", "now", or version wording, so videos stay accurate. In the docs, keep a video in a `videos/` folder next to its page.
 
 ## Frontend Assets
 
@@ -242,6 +248,12 @@ For detailed patterns including Content Parts, Content Part Drivers, Content Fie
 - Private fields: `_camelCase`
 - Local variables: `camelCase`
 - Constants: `PascalCase`
+
+### Configuration Sections
+
+- Name configuration sections without the redundant `OrchardCore_` prefix, and group them by service with a nested section per provider, e.g. `_shellConfiguration.GetSection("Email:Smtp")` for the `OrchardCore:Email:Smtp` section, next to `OrchardCore:Email:Azure`.
+- When renaming a section that has been released, keep supporting its legacy name by binding `GetSectionCompat("New:Name", "OrchardCore_Legacy")`, with a `// The 'OrchardCore_Legacy' section is deprecated and will be removed in a future major version, use 'New:Name' instead.` comment above it. The values of the new section win, and its arrays replace the legacy ones. Don't bind the two sections one after the other, as arrays would be appended.
+- Describe the sections read by a project in a `ConfigurationSchema.json` file at the project root, which is packed with a `JsonSchemaSegment` to provide IntelliSense in `appsettings.json` files.
 
 ### Async Conventions
 
@@ -610,3 +622,25 @@ Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to 
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
 - Using `ocat-limited-wrapper` for text inputs, selects, paths, IDs, or other non-number fields unless the user explicitly requests compact width
 - Mixing `ocat-end` and `ocat-end-offset` in the same row; choose exactly one based on whether the row has a left-column label
+
+## Admin Index View Conventions
+
+Every admin page that lists items (an index page, e.g. the content items, users, queries or workflows) renders them through the shared `AdminList` shape, following the `orchardcore-admin-index-views` skill in `.agents/skills/`. Read that skill before creating or changing an admin listing, so every list renders the same way, in the `List` and `Grid` layouts the site and the user choose.
+
+### Required patterns
+
+| Layer | Required pattern |
+|---|---|
+| Controller | Query the raw items and pass them in an `AdminListContext<TModel>` (`Source`, `Pager`, `Header` or `BulkActions`, ...). Never build the list shape or the row shapes. |
+| View | Render the list with `<admin-list name="..." context="Model.List">` inside the page form, declaring the grid columns with `<admin-list-grid>` and `<admin-list-column>`. Import the tag helpers in the module's `_ViewImports.cshtml` with `@addTagHelper *, OrchardCore.Admin.Abstractions`. |
+| Row display driver | Place every shape for both display types: `.Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1")` for the `List` layout and `.Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Name:1")` for the column of the `Grid` layout. Register it in the feature owning the list. |
+| Row template | `{Model}.SummaryAdmin.cshtml` renders the zones of the row, and its actions with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`. |
+| Other modules | Add or change the columns of a list with an `IAdminListColumnsProvider` registered with `services.AddAdminListColumnsProvider<T>(listName)`, and fill them from their display driver with a `SummaryAdminGrid` location. |
+| Tests | Add the page to `_lists` in `AdminListLayoutTests`, which renders every list as a grid and fails on a column that renders nothing. |
+
+### Avoid
+
+- A hand-written `<ul class="list-group">`, `<table>`, item count, select-all checkbox, bulk-action dropdown, empty state or pager for an admin listing
+- Building row shapes in the controller, or passing prebuilt rows to the list
+- A shape location without a display type, e.g. `.Location("Tags:5")`, or only a `SummaryAdmin` one: the shape is missing from its grid column
+- A layout or actions layout of your own: the layouts are `List` and `Grid`, the actions layouts `Buttons` and `Menu`; customize them with templates and alternates such as `AdminList-{Name}.cshtml` and `AdminListCell-{Name}-{Column}.cshtml`

@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.BackgroundTasks;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageBackgroundTasks = new("ManageBackgroundTasks", "Manage background tasks");
+    public static readonly Permission ManageBackgroundTasks = new("ManageBackgroundTasks", LocalizationSource.Create<Permissions>("Manage background tasks"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

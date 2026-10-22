@@ -30,7 +30,7 @@ public class OpenIdApplicationSettings
 
 internal static class OpenIdApplicationExtensions
 {
-    internal static readonly string[] _separator = [" ", ","];
+    internal static readonly string[] s_separator = [" ", ","];
 
     public static async Task UpdateDescriptorFromSettings(this IOpenIdApplicationManager _applicationManager, OpenIdApplicationSettings model, object application = null)
     {
@@ -236,7 +236,7 @@ internal static class OpenIdApplicationExtensions
 
         descriptor.PostLogoutRedirectUris.Clear();
         foreach (var uri in
-            (from uri in model.PostLogoutRedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
+            (from uri in model.PostLogoutRedirectUris?.Split(s_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
              select new Uri(uri, UriKind.Absolute)))
         {
             descriptor.PostLogoutRedirectUris.Add(uri);
@@ -244,7 +244,7 @@ internal static class OpenIdApplicationExtensions
 
         descriptor.RedirectUris.Clear();
         foreach (var uri in
-           (from uri in model.RedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
+           (from uri in model.RedirectUris?.Split(s_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
             select new Uri(uri, UriKind.Absolute)))
         {
             descriptor.RedirectUris.Add(uri);

@@ -14,7 +14,9 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Deployment.Core.Services;
+using OrchardCore.FileStorage;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Json;
@@ -48,6 +50,7 @@ public sealed class WorkflowTypeController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
     private readonly JsonSerializerOptions _documentJsonSerializerOptions;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -67,6 +70,7 @@ public sealed class WorkflowTypeController : Controller
         IStringLocalizer<WorkflowTypeController> stringLocalizer,
         IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
         IUpdateModelAccessor updateModelAccessor,
+        ITempDirectoryProvider tempDirectoryProvider,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
         _pagerOptions = pagerOptions.Value;
@@ -80,20 +84,23 @@ public sealed class WorkflowTypeController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _tempDirectoryProvider = tempDirectoryProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
         _documentJsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
     [Admin("Workflows/Types", "WorkflowTypes")]
-    public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        WorkflowTypeIndexOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         options ??= new WorkflowTypeIndexOptions();
 
@@ -158,6 +165,13 @@ public sealed class WorkflowTypeController : Controller
         [
             new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
         ];
+
+        // The AdminList shape renders the types with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<WorkflowTypeEntry>
+        {
+            Source = model.WorkflowTypes,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }
@@ -509,6 +523,11 @@ public sealed class WorkflowTypeController : Controller
         await _workflowTypeStore.SaveAsync(workflowType);
         await _notifier.SuccessAsync(H["Workflow has been saved."]);
 
+        if (workflowType.IsMissingStartActivity())
+        {
+            await _notifier.WarningAsync(H["This workflow has no startup task, so it will never run. Select an event and mark it as the startup task."]);
+        }
+
         return RedirectToAction(nameof(Edit), new
         {
             id = model.Id,
@@ -573,7 +592,7 @@ public sealed class WorkflowTypeController : Controller
 
     private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
     {
-        using var fileBuilder = new TemporaryFileBuilder();
+        using var fileBuilder = new TemporaryFileBuilder(_tempDirectoryProvider.GetRootDirectory());
         var archiveFileName = fileBuilder.Folder + ".zip";
         var recipeDescriptor = new RecipeDescriptor();
         var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);

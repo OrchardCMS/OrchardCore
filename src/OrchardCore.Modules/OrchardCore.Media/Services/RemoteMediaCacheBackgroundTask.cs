@@ -68,7 +68,8 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
                     continue;
                 }
 
-                var path = Path.GetRelativePath(_cachePath, directoryInfo.FullName);
+                // Cached names are escaped for the local file system, unescape to get the media path.
+                var path = MediaCachePathEscaper.Unescape(Path.GetRelativePath(_cachePath, directoryInfo.FullName));
 
                 // Check if the remote directory doesn't exist.
                 var entry = await _mediaFileStore.GetDirectoryInfoAsync(path);
@@ -89,7 +90,8 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
                     continue;
                 }
 
-                var path = Path.GetRelativePath(_cachePath, fileInfo.FullName);
+                // Cached names are escaped for the local file system, unescape to get the media path.
+                var path = MediaCachePathEscaper.Unescape(Path.GetRelativePath(_cachePath, fileInfo.FullName));
 
                 // Check if the remote media doesn't exist or was updated.
                 var entry = await _mediaFileStore.GetFileInfoAsync(path);

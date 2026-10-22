@@ -8,7 +8,6 @@ on:
       - 'src/docs/**/*'
     branches: [ main, release/** ]
   pull_request:
-    branches: [ main, release/** ]
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}-frontend_unit_tests
@@ -17,7 +16,7 @@ concurrency:
 jobs:
   vitest:
     name: Run Vitest unit tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -28,6 +27,12 @@ jobs:
         npm install -g corepack
         corepack enable
         yarn --no-check-resolutions
+    - name: Run vitest unit tests (bloom)
+      working-directory: .scripts/bloom
+      run: yarn vitest run
+    - name: Run vitest unit tests (data-pipelines-designer)
+      working-directory: src/OrchardCore.Modules/OrchardCore.DataPipelines/Assets/designer
+      run: yarn vitest run
     - name: Run vitest unit tests (media-gallery)
       working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery
       run: yarn vitest run
@@ -40,6 +45,8 @@ jobs:
       with:
         name: vitest-results
         path: |
+          .scripts/bloom/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.DataPipelines/Assets/designer/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker/testing/vitest-results.xml
         retention-days: 30

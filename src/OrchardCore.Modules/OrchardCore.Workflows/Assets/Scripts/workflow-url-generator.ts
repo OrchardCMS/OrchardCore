@@ -1,30 +1,34 @@
-///<reference path="../Lib/jquery/typings.d.ts" />
-
-$(() => {
+document.addEventListener('DOMContentLoaded', () => {
     const generateWorkflowUrl = function () {
-        const workflowTypeId: string = $('[data-workflow-type-id]').data('workflow-type-id');
-        const activityId: string = $('[data-activity-id]').data('activity-id');
-        var tokenLifeSpan = $('#token-lifespan').val();
-        const generateUrl: string = $('[data-generate-url]').data('generate-url') + `?workflowTypeId=${workflowTypeId}&activityId=${activityId}&tokenLifeSpan=${tokenLifeSpan}`;
-        const antiforgeryHeaderName: string = $('[data-antiforgery-header-name]').data('antiforgery-header-name');
-        const antiforgeryToken: string = $('[data-antiforgery-token]').data('antiforgery-token');
-        const headers: any = {};
+        const workflowTypeId = document.querySelector<HTMLElement>('[data-workflow-type-id]')?.dataset.workflowTypeId;
+        const activityId = document.querySelector<HTMLElement>('[data-activity-id]')?.dataset.activityId;
+        const tokenLifeSpan = document.querySelector<HTMLInputElement>('#token-lifespan')?.value;
+        const generateUrlBase = document.querySelector<HTMLElement>('[data-generate-url]')?.dataset.generateUrl;
+        const generateUrl = `${generateUrlBase}?workflowTypeId=${workflowTypeId}&activityId=${activityId}&tokenLifeSpan=${tokenLifeSpan}`;
+        const antiforgeryHeaderName = document.querySelector<HTMLElement>('[data-antiforgery-header-name]')?.dataset.antiforgeryHeaderName ?? '';
+        const antiforgeryToken = document.querySelector<HTMLElement>('[data-antiforgery-token]')?.dataset.antiforgeryToken ?? '';
+        const headers: Record<string, string> = {};
 
         headers[antiforgeryHeaderName] = antiforgeryToken;
 
-        $.post({
-            url: generateUrl,
-            headers: headers
-        }).done(url => {
-            $('#workflow-url-text').val(url);
-        });
+        fetch(generateUrl, {
+            method: 'POST',
+            headers,
+        })
+            .then((response) => response.text())
+            .then((url) => {
+                const urlInput = document.getElementById('workflow-url-text') as HTMLInputElement | null;
+                if (urlInput) {
+                    urlInput.value = url;
+                }
+            });
     };
 
-    $('#generate-url-button').on('click', e => {
+    document.getElementById('generate-url-button')?.addEventListener('click', () => {
         generateWorkflowUrl();
     });
 
-    if ($('#workflow-url-text').val() == '') {
+    if ((document.getElementById('workflow-url-text') as HTMLInputElement | null)?.value == '') {
         generateWorkflowUrl();
     }
 });

@@ -16,7 +16,6 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".png",
         ".gif",
         ".ico",
-        ".svg",
         ".webp",
 
         // Documents
@@ -50,6 +49,12 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".webm",
     ];
 
+    private static readonly string[] s_defaultRestrictedFileExtensions = [
+        ".css",
+        ".js",
+        ".svg",
+    ];
+
     private const int DefaultMaxBrowserCacheDays = 30;
     private const int DefaultSecureFilesMaxBrowserCacheDays = 0;
     private const int DefaultMaxCacheDays = 365;
@@ -78,7 +83,8 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 
     public void Configure(MediaOptions options)
     {
-        var section = _shellConfiguration.GetSection("OrchardCore_Media");
+        // The 'OrchardCore_Media' section is deprecated and will be removed in a future major version, use 'Media' instead.
+        var section = _shellConfiguration.GetSectionCompat("Media", "OrchardCore_Media");
 
         // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
         // rather than letting Configure merge the default array with the appsettings value.
@@ -87,6 +93,10 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 
         options.AllowedFileExtensions = new HashSet<string>(
             section.GetSection("AllowedFileExtensions").Get<string[]>() ?? s_defaultAllowedFileExtensions,
+            StringComparer.OrdinalIgnoreCase);
+
+        options.RestrictedFileExtensions = new HashSet<string>(
+            section.GetSection("RestrictedFileExtensions").Get<string[]>() ?? s_defaultRestrictedFileExtensions,
             StringComparer.OrdinalIgnoreCase);
 
         options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
@@ -102,11 +112,11 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
         options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), s_defaultTemporaryFileLifeTime);
-        options.TusTempPath = section.GetValue(nameof(options.TusTempPath), Path.Combine(Path.GetTempPath(), "TusUploads"));
+        options.DisableThumbnails = section.GetValue(nameof(options.DisableThumbnails), false);
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 
-        // Use the same cache control header as ImageSharp does for resized images.
+        // Use the same cache control header as the one used for resized images.
         var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(options.MaxBrowserCacheDays).TotalSeconds.ToString();
         // Secure files are not cached at all.
         var secureCacheControl = options.MaxSecureFilesBrowserCacheDays == 0

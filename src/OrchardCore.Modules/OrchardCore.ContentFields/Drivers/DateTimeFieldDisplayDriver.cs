@@ -28,13 +28,13 @@ public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateT
 
     public override IDisplayResult Display(DateTimeField field, BuildFieldDisplayContext context)
     {
-        return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
+        return Initialize<DisplayDateTimeFieldViewModel, DateTimeField, BuildFieldDisplayContext, ILocalClock>(GetDisplayShapeType(context), static async (model, field, context, localClock) =>
         {
-            model.LocalDateTime = field.Value == null ? null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+            model.LocalDateTime = field.Value == null ? null : (await localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
-        })
+        }, field, context, _localClock)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }

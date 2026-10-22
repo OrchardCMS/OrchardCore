@@ -1,5 +1,6 @@
 using Acornima.Ast;
 using Jint;
+using Jint.Constraints;
 using Jint.Native;
 using Jint.Runtime.Descriptors;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,6 +10,37 @@ using JintOptions = Jint.Options;
 
 namespace OrchardCore.Scripting.JavaScript;
 
+/// <summary>
+/// Evaluates JavaScript with Jint.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Engines are reused between evaluations. A scope returns its engine to a pool when it is disposed, after
+/// the engine's global bindings have been reset to the state they were captured in when it was built, so a
+/// later evaluation starts from the same global surface a brand-new engine would have given it. Reuse also
+/// keeps the engine's warm-up caches, which is where most of the saving comes from: the parsed form of a
+/// script is already shared through <see cref="IMemoryCache"/>, but the interpreter state Jint builds while
+/// running it is per engine and used to be thrown away after a single evaluation. That state remembers the
+/// objects its call sites last saw, including a finished request's services, so the pool discards it once it
+/// is a minute old and lets each script build it again on its next run.
+/// </para>
+/// <para>
+/// <b>Reuse is confined to one tenant.</b> This service is registered per tenant, so the pool is too, and an
+/// engine can only ever be handed to another evaluation of the tenant it was built for. That matters because
+/// resetting the global bindings is not an isolation boundary: it does not undo what a script did to the
+/// built-in prototypes, to <c>Symbol.for</c>, or to an object graph reachable from a global it left in
+/// place. Scripts within a tenant are authored by its administrators and already run at one trust level —
+/// this is the same trust level as before, not a wider one — but two tenants must never share an engine, and
+/// nothing here lets them.
+/// </para>
+/// <para>
+/// One consequence is worth knowing when writing a global method or a caller. The value an evaluation
+/// returns must not depend on the engine still being in the state that produced it. <see cref="Evaluate"/>
+/// converts its result to CLR values, which detaches objects, arrays and dates, but a script that returns a
+/// <em>function</em> hands back a delegate bound to the engine. Invoking it after the scope has been
+/// disposed runs it against whatever the engine has been reset — or re-rented — to.
+/// </para>
+/// </remarks>
 public sealed class JavaScriptEngine : IScriptingEngine
 {
     private static readonly MemoryCacheEntryOptions ScriptCacheEntryOptions = new MemoryCacheEntryOptions()
@@ -23,34 +55,82 @@ public sealed class JavaScriptEngine : IScriptingEngine
     private readonly JintOptions _jintOptions;
     private readonly Dictionary<string, LazyGlobalMethod> _lazyGlobals;
 
+    // Null when engine reuse is turned off, in which case every scope gets an engine of its own.
+    private readonly JavaScriptEnginePool _pool;
+
     public JavaScriptEngine(
         IMemoryCache memoryCache,
         IOptions<JintOptions> jintOptions,
         IEnumerable<IGlobalMethodProvider> globalMethodProviders)
+        : this(memoryCache, jintOptions, globalMethodProviders, engineOptions: null)
+    {
+    }
+
+    public JavaScriptEngine(
+        IMemoryCache memoryCache,
+        IOptions<JintOptions> jintOptions,
+        IEnumerable<IGlobalMethodProvider> globalMethodProviders,
+        IOptions<JavaScriptEngineOptions> engineOptions)
     {
         _memoryCache = memoryCache;
         _jintOptions = jintOptions.Value;
         _jintOptions.ExperimentalFeatures |= ExperimentalFeature.TaskInterop;
         _lazyGlobals = RegisterLazyGlobals(_jintOptions, globalMethodProviders);
+
+        var engineOptionsValue = engineOptions?.Value;
+        var poolSize = engineOptionsValue?.EnginePoolSize ?? JavaScriptEngineOptions.DefaultEnginePoolSize;
+
+        // This instance is resolved once per tenant, so the pool it holds is per tenant as well. Engines
+        // must never be shared across tenants and this is the only thing that keeps them from being.
+        _pool = poolSize > 0
+            ? new JavaScriptEnginePool(_jintOptions, poolSize, engineOptionsValue?.TimeProvider ?? TimeProvider.System)
+            : null;
     }
 
     public string Prefix => "js";
 
     /// <summary>
-    /// Creates a scope backed by a new engine.
+    /// Creates a scope backed by an engine, either reused from the tenant's pool or newly built.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The globals of the registered <see cref="IGlobalMethodProvider"/> instances are installed on every
     /// engine as lazy properties, whether or not <paramref name="methods"/> contains them. A lazy property
     /// only builds its delegate when a script actually reads the name, so the ones a script does not use
     /// cost nothing. Methods that are not registered by a provider, such as the ones a caller adds for a
     /// single evaluation, are installed eagerly and take precedence over a registered global of the same name.
+    /// </para>
+    /// <para>
+    /// <b>Dispose the returned scope</b> when the evaluations that use it are done, and not before — an
+    /// engine is single-threaded, and disposing releases it to the next evaluation. Disposing is what makes
+    /// the engine reusable; a scope that is never disposed still behaves correctly, its engine is simply
+    /// collected instead of reused.
+    /// </para>
     /// </remarks>
     public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
     {
-        var engine = new Engine(_jintOptions);
+        var pool = _pool;
 
-        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals);
+        if (pool is null)
+        {
+            return new JavaScriptScope(new Engine(_jintOptions), serviceProvider, methods, _lazyGlobals, ownsEngine: true, pool: null, rental: null);
+        }
+
+        var rental = pool.Rent();
+
+        try
+        {
+            return new JavaScriptScope(rental.Engine, serviceProvider, methods, _lazyGlobals, ownsEngine: true, pool, rental);
+        }
+        catch
+        {
+            // Building the eagerly installed globals is the only thing that can fail here, and it fails
+            // having already installed some of them. Hand the engine back so that the reset removes them,
+            // rather than leaking a half-configured engine that no scope owns.
+            pool.Return(rental);
+
+            throw;
+        }
     }
 
     public object Evaluate(IScriptingScope scope, string script)
@@ -62,13 +142,73 @@ public sealed class JavaScriptEngine : IScriptingEngine
         return result;
     }
 
+    /// <summary>
+    /// Evaluates a script, observing <paramref name="cancellationToken"/> for the whole evaluation.
+    /// </summary>
+    /// <remarks>
+    /// Jint's own <c>EvaluateAsync</c> observes the token only while awaiting promise settlement — the
+    /// script is interpreted to completion first — so forwarding it there bounds an evaluation that awaits
+    /// something and nothing at all for one that does not. A script that never yields is the case that
+    /// matters, and it was the case the token did not cover.
+    /// <para>
+    /// The interpreter is bounded instead by the engine's <see cref="OperationDeadlineConstraint"/>, armed
+    /// here with the token and disarmed in the <see langword="finally"/>. It is armed with
+    /// <see cref="Timeout.InfiniteTimeSpan"/>, which is that constraint's cancellation-only shape: no time
+    /// budget is introduced, because how long a script may run is a policy for the site to set through
+    /// <c>IOptions&lt;Jint.Options&gt;</c> and not for this method to invent.
+    /// </para>
+    /// <para>
+    /// Cancellation surfaces as <see cref="OperationCanceledException"/> carrying the token, the type the
+    /// rest of a .NET call stack already filters on, rather than as a scripting error. A token cancelled
+    /// before the call is observed before the script starts; one cancelled while the script is running is
+    /// observed on the engine's amortized constraint cadence, so a runaway script is stopped within a
+    /// bounded number of statements rather than at the exact statement the cancellation arrived. That
+    /// cadence is what keeps the interpreter's tight-loop lane armed, and it is the same one the built-in
+    /// <c>CancellationToken</c> and <c>TimeoutInterval</c> constraints are checked on.
+    /// </para>
+    /// </remarks>
     public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
     {
+        // A token that is already cancelled means the work should not start, and saying so here is what
+        // makes that deterministic: the constraint below is amortized, so it is consulted on a statement
+        // cadence rather than at every statement, and a script small enough to finish inside that cadence
+        // would otherwise run to completion.
+        cancellationToken.ThrowIfCancellationRequested();
+
         var jsScope = GetJavaScriptScope(scope);
+        var preparedScript = PrepareScript(script);
 
-        var result = await jsScope.Engine.EvaluateAsync(PrepareScript(script), cancellationToken);
+        // Find() walks the engine's constraints, so it is only worth asking when there is a token that can
+        // actually be cancelled. CancellationToken.None never can, which is what every caller in this
+        // repository passes today.
+        var deadline = cancellationToken.CanBeCanceled
+            ? jsScope.Engine.Constraints.Find<OperationDeadlineConstraint>()
+            : null;
 
-        return result.ToObject();
+        if (deadline is null)
+        {
+            // Either there is nothing to observe, or a site has replaced the constraints this module
+            // registers. Neither is a reason to fail the evaluation; it behaves as it did before.
+            var unbounded = await jsScope.Engine.EvaluateAsync(preparedScript, cancellationToken);
+
+            return unbounded.ToObject();
+        }
+
+        deadline.Begin(Timeout.InfiniteTimeSpan, cancellationToken);
+
+        try
+        {
+            var result = await jsScope.Engine.EvaluateAsync(preparedScript, cancellationToken);
+
+            return result.ToObject();
+        }
+        finally
+        {
+            // Awaited rather than returned, so the constraint is disarmed once the evaluation has actually
+            // finished rather than once its Task exists. An engine that outlives this call - a scope held
+            // for a whole request - must not carry a finished evaluation's token into the next one.
+            deadline.End();
+        }
     }
 
     private Prepared<Script> PrepareScript(string script)
@@ -154,15 +294,22 @@ public sealed class JavaScriptEngine : IScriptingEngine
     private static JsValue CreateGlobal(Engine engine, string name, Func<IServiceProvider, Delegate> factory)
     {
         // The factory captures the services it is given, so the delegate has to be built with the services
-        // of the scope that owns this engine, and cannot be shared between engines.
-        if (!JavaScriptScope.TryGetServiceProvider(engine, out var serviceProvider))
+        // of the scope that owns this engine, and cannot be shared between engines. The scope records them
+        // in the engine's [[HostDefined]] slot, which Jint reserves for the host and which no part of the
+        // engine reads. A scope created without services records that instead, and its globals are built
+        // without services, as the methods of that scope that are set eagerly are.
+        var hostDefined = engine.Advanced.HostDefined;
+        var serviceProvider = hostDefined as IServiceProvider;
+
+        if (serviceProvider is null && !ReferenceEquals(hostDefined, JavaScriptScope.NoServices))
         {
             // The lazy property stores whatever this returns and never runs again, so returning a value here
             // would leave the global permanently undefined and fail as 'x is not a function' somewhere else.
-            // Reaching this means an engine was built from these options without a scope, which is a defect
-            // in the caller rather than a state a script should have to cope with.
+            // Reaching this means an engine was built from these options without a scope, or that the slot
+            // already held something of the caller's own when the scope was built - either way a defect in
+            // the caller rather than a state a script should have to cope with.
             throw new InvalidOperationException(
-                $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}.");
+                $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}, and must not have their {nameof(Engine)}.{nameof(Engine.Advanced)}.{nameof(Engine.AdvancedOperations.HostDefined)} slot used for anything else.");
         }
 
         // This is only equivalent to what Engine.SetValue(string, Delegate) installs while no IObjectConverter

@@ -13,7 +13,6 @@ dist-standalone
 dist-ssr
 *.local
 coverage
-testing
 
 # Editor directories and files
 !.vscode/*
