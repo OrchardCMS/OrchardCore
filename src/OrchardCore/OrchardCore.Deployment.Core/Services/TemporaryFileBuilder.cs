@@ -38,8 +38,7 @@ public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
             throw new InvalidOperationException(VirtualPathRequired);
         }
 
-        // Use "Path.GetFullPath" to resolve path segments like ".." and prevent more elaborate path traversal attacks.
-        var fullname = Path.GetFullPath(subpath, Folder);
+        var fullname = PathExtensions.ResolvePath(PathExtensions.Combine(Folder, subpath));
         if (Path.GetRelativePath(Folder, fullname).StartsWith(".."))
         {
             throw new InvalidOperationException(PathMustBeRelative);
