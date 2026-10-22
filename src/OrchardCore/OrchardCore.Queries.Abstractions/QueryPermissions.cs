@@ -18,17 +18,17 @@ public static class QueryPermissions
     /// </summary>
     public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", LocalizationSource.Create("Execute Api - All queries", typeof(QueryPermissions)), [ManageQueries]);
 
-    private static readonly Permission s_executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", [ManageQueries, ExecuteApiAll]);
+    private static readonly PermissionTemplate s_executeApi = new(
+        "ExecuteApi_{0}",
+        "Execute Api - {0}", 
+        ManageQueries,
+        ExecuteApiAll);
 
     /// <summary>
     /// Creates the permission required to execute a named query through an API.
     /// </summary>
     /// <param name="name">The query name.</param>
     /// <returns>The permission required to execute the query.</returns>
-    public static Permission CreatePermissionForQuery(string name)
-        => new(
-            string.Format(s_executeApi.Name, name),
-            string.Format(s_executeApi.Description.Value, name),
-            s_executeApi.ImpliedBy
-        );
+    public static Permission CreatePermissionForQuery(string name) =>
+        s_executeApi.CreateDynamicPermission(name);
 }
