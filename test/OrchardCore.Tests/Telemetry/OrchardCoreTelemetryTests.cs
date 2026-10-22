@@ -59,7 +59,10 @@ public class OrchardCoreTelemetryTests
         Assert.Contains(tenantActivities, activity =>
             activity.OperationName == "Execute recipe step feature" &&
             activity.GetTagItem(OrchardCoreTelemetryConstants.Attributes.RecipeStepName) as string == "feature");
-        Assert.All(tenantActivities, activity => Assert.NotEqual(ActivityStatusCode.Error, activity.Status));
+        // Database commands may fail on purpose, e.g. a probe caught by YesSql: only the internal operations must succeed.
+        Assert.All(
+            tenantActivities.Where(activity => activity.Kind == ActivityKind.Internal),
+            activity => Assert.NotEqual(ActivityStatusCode.Error, activity.Status));
 
         Assert.Contains((OrchardCoreTelemetryConstants.Instruments.TenantContainerDuration, context.TenantName), measurements);
         Assert.Contains((OrchardCoreTelemetryConstants.Instruments.TenantActivationDuration, context.TenantName), measurements);

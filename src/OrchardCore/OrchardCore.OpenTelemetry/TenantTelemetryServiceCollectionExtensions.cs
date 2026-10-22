@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Telemetry;
 
@@ -17,6 +18,14 @@ internal static class TenantTelemetryServiceCollectionExtensions
 
         services.AddSingleton<IStartupFilter, TenantTelemetryStartupFilter>();
         services.AddOptions<OrchardCoreOpenTelemetryOptions>().BindConfiguration(OrchardCoreOpenTelemetryOptions.ConfigurationSectionName);
+
+        // The options of the telemetry emitted by Orchard Core itself, read by the tenants.
+        services
+            .AddOptions<OrchardCoreTelemetryOptions>()
+            .Configure<IOptions<OrchardCoreOpenTelemetryOptions>>((options, openTelemetryOptions) =>
+            {
+                options.IncludeDatabaseQueryText = openTelemetryOptions.Value.Tracing.IncludeDatabaseQueryText;
+            });
 
         return services;
     }

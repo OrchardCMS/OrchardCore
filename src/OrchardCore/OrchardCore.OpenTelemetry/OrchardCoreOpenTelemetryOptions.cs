@@ -72,6 +72,12 @@ public sealed class OpenTelemetryTracingOptions
     public string[] Sources { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets whether the spans of the database operations include their SQL text, in 'db.query.text'.
+    /// The commands run by YesSql are parameterized, so their text holds no values. Defaults to <see langword="true"/>.
+    /// </summary>
+    public bool IncludeDatabaseQueryText { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets whether the traces of the client libraries used by Orchard Core modules are collected: the
     /// Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to <see langword="true"/>.
     /// </summary>

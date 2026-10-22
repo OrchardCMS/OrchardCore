@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
   </ItemGroup>
 
   <ItemGroup>
