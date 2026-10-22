@@ -573,9 +573,11 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task GetShapeTable_FeaturesEnabledAcrossTenants_PreservesTemplateBindings(bool secondFeatureFirst)
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task GetShapeTable_FeaturesEnabledAcrossTenants_PreservesTemplateBindings(bool secondFeatureFirst, bool providerOnlyTenantFirst)
     {
         // Unique feature IDs isolate each case from the process-wide descriptor cache.
         var moduleId = $"MultiFeatureModule-{Guid.NewGuid():N}";
@@ -603,13 +605,31 @@ public class DefaultShapeTableManagerTests : IDisposable
         var fileProviderAccessor = Mock.Of<IShapeTemplateFileProviderAccessor>(accessor => accessor.FileProvider == fileProvider.Object);
         var viewEngine = Mock.Of<IShapeTemplateViewEngine>(engine => engine.TemplateFileExtensions == new[] { ".cshtml" });
 
+        if (providerOnlyTenantFirst)
+        {
+            var providerOnlyTable = await BuildTenantShapeTableAsync([secondFeature], includeTemplateBindings: false);
+            Assert.Contains($"{secondFeature.Id}Shape", providerOnlyTable.Descriptors.Keys);
+            Assert.DoesNotContain("SharedTemplate", providerOnlyTable.Bindings.Keys);
+        }
+
         IFeatureInfo[][] tenantFeatures = secondFeatureFirst
             ? [[secondFeature], [firstFeature], [firstFeature, secondFeature]]
             : [[firstFeature], [firstFeature, secondFeature], [secondFeature]];
 
+        var cachedTemplateFeatures = new HashSet<IFeatureInfo>();
+        var templateDiscoveries = 0;
+
         foreach (var enabledFeatures in tenantFeatures)
         {
             var table = await BuildTenantShapeTableAsync(enabledFeatures);
+
+            if (enabledFeatures.Any(feature => !cachedTemplateFeatures.Contains(feature)))
+            {
+                templateDiscoveries++;
+            }
+
+            cachedTemplateFeatures.UnionWith(enabledFeatures);
+            fileProvider.Verify(provider => provider.GetDirectoryContents($"{module.SubPath}/Views"), Times.Exactly(templateDiscoveries));
 
             if (enabledFeatures.Contains(secondFeature))
             {
@@ -621,7 +641,7 @@ public class DefaultShapeTableManagerTests : IDisposable
             Assert.Equal($"{module.SubPath}/Views/SharedTemplate.cshtml", binding.BindingSource);
         }
 
-        async Task<ShapeTable> BuildTenantShapeTableAsync(IFeatureInfo[] enabledFeatures)
+        async Task<ShapeTable> BuildTenantShapeTableAsync(IFeatureInfo[] enabledFeatures, bool includeTemplateBindings = true)
         {
             var shellFeaturesManager = new Mock<IShellFeaturesManager>();
             shellFeaturesManager.Setup(manager => manager.GetEnabledFeaturesAsync())
@@ -637,12 +657,15 @@ public class DefaultShapeTableManagerTests : IDisposable
             services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             services.AddKeyedSingleton<IDictionary<string, Task<ShapeTable>>>(nameof(DefaultShapeTableManager),
                 new ConcurrentDictionary<string, Task<ShapeTable>>());
-            services.AddSingleton<IShapeTableProvider>(new ShapeTemplateBindingStrategy(
-                [new BasicShapeTemplateHarvester()],
-                shellFeaturesManager.Object,
-                [viewEngine],
-                fileProviderAccessor,
-                NullLogger<ShapeTemplateBindingStrategy>.Instance));
+            if (includeTemplateBindings)
+            {
+                services.AddSingleton<IShapeTableProvider>(new ShapeTemplateBindingStrategy(
+                    [new BasicShapeTemplateHarvester()],
+                    shellFeaturesManager.Object,
+                    [viewEngine],
+                    fileProviderAccessor,
+                    NullLogger<ShapeTemplateBindingStrategy>.Instance));
+            }
 
             if (enabledFeatures.Contains(secondFeature))
             {
