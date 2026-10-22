@@ -36,7 +36,7 @@ public sealed class LoginFormDisplayDriver : DisplayDriver<LoginForm>
             sp => sp.Password,
             sp => sp.RememberMe);
 
-        var loginSettings = _siteService.GetSettings<LoginSettings>();
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
 
         model.UserName = viewModel.UserName;
         model.Password = viewModel.Password;
