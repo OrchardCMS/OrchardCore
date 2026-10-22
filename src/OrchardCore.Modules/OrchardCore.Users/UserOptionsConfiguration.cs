@@ -11,6 +11,8 @@ public sealed class UserOptionsConfiguration : IConfigureOptions<ResourceManagem
     {
         s_manifest = new ResourceManifest();
 
+        // The 'password-generator' script is deprecated and will be removed in a future major version,
+        // use the generatePassword helper from '@orchardcore/bloom/helpers/passwordGenerator' instead.
         s_manifest
             .DefineScript("password-generator")
             .SetUrl("~/OrchardCore.Users/Scripts/password-generator.min.js", "~/OrchardCore.Users/Scripts/password-generator.js")
