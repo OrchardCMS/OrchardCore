@@ -59,7 +59,7 @@ public class SmtpOptionsConfigurationTests
             pickupDirectoryLocation: "/Outbound",
             shellConfigurationValues: new Dictionary<string, string>
             {
-                ["OrchardCore_Email_Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Drops\{{ ShellSettings.Name }}",
+                ["Email:Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Drops\{{ ShellSettings.Name }}",
             });
 
         var options = new SmtpOptions();
@@ -69,6 +69,57 @@ public class SmtpOptionsConfigurationTests
         var expectedBasePath = Path.GetFullPath(Path.Combine(appDataPath, "Drops", shellSettings.Name));
         Assert.Equal(expectedBasePath, options.PickupDirectoryLocationBase);
         Assert.Equal(Path.Combine(expectedBasePath, "Outbound"), options.PickupDirectoryLocation);
+    }
+
+    [Theory]
+    [InlineData("OrchardCore_Email_Smtp:PickupDirectoryLocationBase")]
+    [InlineData("OrchardCore_Email:PickupDirectoryLocationBase")]
+    public void Configure_LegacySection_UsesConfiguredPickupDirectoryLocationBase(string key)
+    {
+        var appDataPath = GetRootedPath("App", "App_Data");
+        var shellSettings = new ShellSettings
+        {
+            Name = "TenantA",
+        };
+        var sut = CreateSut(
+            appDataPath,
+            shellSettings,
+            pickupDirectoryLocation: "/",
+            shellConfigurationValues: new Dictionary<string, string>
+            {
+                [key] = @"{{ AppData }}\Legacy",
+            });
+
+        var options = new SmtpOptions();
+
+        sut.Configure(options);
+
+        Assert.Equal(Path.GetFullPath(Path.Combine(appDataPath, "Legacy")), options.PickupDirectoryLocationBase);
+    }
+
+    [Fact]
+    public void Configure_BothSections_SectionPickupDirectoryLocationBaseWins()
+    {
+        var appDataPath = GetRootedPath("App", "App_Data");
+        var shellSettings = new ShellSettings
+        {
+            Name = "TenantA",
+        };
+        var sut = CreateSut(
+            appDataPath,
+            shellSettings,
+            pickupDirectoryLocation: "/",
+            shellConfigurationValues: new Dictionary<string, string>
+            {
+                ["OrchardCore_Email_Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Legacy",
+                ["Email:Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Current",
+            });
+
+        var options = new SmtpOptions();
+
+        sut.Configure(options);
+
+        Assert.Equal(Path.GetFullPath(Path.Combine(appDataPath, "Current")), options.PickupDirectoryLocationBase);
     }
 
     [Theory]

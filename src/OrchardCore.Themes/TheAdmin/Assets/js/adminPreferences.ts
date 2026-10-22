@@ -31,7 +31,7 @@ const getAdminPreferences = (): AdminPreferences => {
     }
 };
 
-const setAdminPreferences = (adminPreferences: AdminPreferences) => {
+const setAdminPreferences = (adminPreferences: object | null) => {
     if (adminPreferences == null) {
         console.error('Error setting admin preferences, argument is null');
         return;
@@ -48,7 +48,8 @@ const setAdminPreferences = (adminPreferences: AdminPreferences) => {
 };
 
 // Snapshots the current UI state and writes it to storage.
-// Called whenever the user changes a persistent preference (sidebar, action bar, action groups).
+// Merges into the stored preferences, since they also hold the selected menu item,
+// the collapsed menu groups, the action bar state and the action groups.
 const persistAdminPreferences = () => {
     setTimeout(() => {
         const adminPreferences = getAdminPreferences();

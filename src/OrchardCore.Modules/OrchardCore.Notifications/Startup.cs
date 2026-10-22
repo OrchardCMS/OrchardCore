@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -8,6 +9,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation.Core;
+using OrchardCore.Notifications;
 using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Drivers;
 using OrchardCore.Notifications.Endpoints.Management;
@@ -62,12 +64,14 @@ public sealed class Startup : StartupBase
             return new DefaultNotificationAdminListFilterParser(parser);
         });
 
-        services.Configure<NotificationOptions>(_shellConfiguration.GetSection("OrchardCore_Notifications"));
+        // The 'OrchardCore_Notifications' section is deprecated and will be removed in a future major version, use 'Notifications' instead.
+        services.Configure<NotificationOptions>(_shellConfiguration.GetSectionCompat("Notifications", "OrchardCore_Notifications"));
 
         services.AddResourceConfiguration<NotificationOptionsConfiguration>();
         services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();
         services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
+
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

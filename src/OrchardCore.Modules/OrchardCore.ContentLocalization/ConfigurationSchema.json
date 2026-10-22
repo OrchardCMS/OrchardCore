@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "ContentLocalization": {
+          "type": "object",
+          "description": "Configures the content localization features. See https://docs.orchardcore.net/en/latest/reference/modules/ContentLocalization/.",
+          "properties": {
+            "CulturePickerOptions": {
+              "type": "object",
+              "description": "Configures the 'Content Culture Picker' feature. The values can also be defined per tenant under 'OrchardCore:{TenantName}:ContentLocalization:CulturePickerOptions'.",
+              "properties": {
+                "CookieLifeTime": {
+                  "type": "integer",
+                  "description": "The lifetime in days of the cookie used to remember the culture selected with the culture picker.",
+                  "default": 14,
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_ContentLocalization_CulturePickerOptions": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_ContentLocalization_CulturePickerOptions' section is deprecated. Use 'OrchardCore:ContentLocalization:CulturePickerOptions' instead.",
+          "description": "Deprecated. Use 'OrchardCore:ContentLocalization:CulturePickerOptions' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

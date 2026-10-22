@@ -5,7 +5,7 @@
 import { getAdminPreferences, setCompactExplicit, AdminPreferences } from '../adminPreferences';
 import { applyActionGroupStateToNode } from '../TheAdmin/actionGroup';
 import { applyActionBarCollapseStateToNode } from '../TheAdmin/actionBarCollapseLoader';
-import { applySelectedNavFromSessionStorage } from '../TheAdmin/sidebar';
+import { applyNavStateFromPreferences, applySelectedNavFromSessionStorage } from '../TheAdmin/sidebar';
 
 const userPreferencesLoader = () => {
     const adminPreferences = getAdminPreferences() as AdminPreferences;
@@ -16,6 +16,7 @@ const userPreferencesLoader = () => {
     let actionBarStateApplied = !shouldApplyActionBarState;
     let actionGroupStateApplied = !shouldApplyActionGroupState;
     let selectedNavApplied = false;
+    let navGroupsApplied = false;
 
     const tryInitializeBody = () => {
         if (bodyInitialized || !document.body) {
@@ -55,11 +56,15 @@ const userPreferencesLoader = () => {
             actionGroupStateApplied = true;
         }
 
+        if (!navGroupsApplied) {
+            navGroupsApplied = applyNavStateFromPreferences();
+        }
+
         if (!selectedNavApplied) {
             selectedNavApplied = applySelectedNavFromSessionStorage();
         }
 
-        return bodyInitialized && actionBarStateApplied && actionGroupStateApplied && selectedNavApplied;
+        return bodyInitialized && actionBarStateApplied && actionGroupStateApplied && navGroupsApplied && selectedNavApplied;
     };
 
     const tryApplyGlobalState = () => {

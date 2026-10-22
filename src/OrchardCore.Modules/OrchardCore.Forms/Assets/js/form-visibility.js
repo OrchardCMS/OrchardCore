@@ -80,8 +80,7 @@ window.formVisibilityGroups = function () {
             return;
         }
 
-        const app = new Vue({
-            el: config.appElementSelector,
+        const app = Vue.createApp({
             data() {
                 return {
                     groups: config.groupOptions || [],
@@ -107,7 +106,6 @@ window.formVisibilityGroups = function () {
                     };
 
                     this.groups.push(newGroup);
-                    this.$set(this.groups, this.groups.length - 1, newGroup);
                 },
 
                 addRule(groupIndex) {
@@ -118,7 +116,7 @@ window.formVisibilityGroups = function () {
                         caseSensitive: this.caseSensitive
                     };
 
-                    this.$set(this.groups[groupIndex].rules, this.groups[groupIndex].rules.length, newRule);
+                    this.groups[groupIndex].rules.push(newRule);
                 },
 
                 removeGroup(groupIndex) {
@@ -298,9 +296,11 @@ window.formVisibilityGroups = function () {
                     });
                 });
                 observer.observe(this.$el, { childList: true, subtree: true });
-            }, template: config.template
+            },
+            template: config.template
         });
-        return app;
+
+        return app.mount(config.appElementSelector);
     };
 
     return {

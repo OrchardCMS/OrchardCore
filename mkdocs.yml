@@ -166,6 +166,7 @@ nav:
         - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
         - Gulp pipeline: guides/gulp-pipeline/README.md
       - Lucene Query Syntax: guides/lucene-query-syntax/README.md
+      - Upgrading the .NET SDK Version: guides/upgrading-sdk-version/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
@@ -243,6 +244,9 @@ nav:
                   - Lucene: reference/modules/Lucene/README.md
                   - SQL Indexing: reference/modules/SQLIndexing/README.md
                   - Queries: reference/modules/Queries/README.md
+              - Data Sources and Pipelines:
+                  - Data Sources: reference/modules/DataSources/README.md
+                  - Data Pipelines: reference/modules/DataPipelines/README.md
               - Shortcodes: reference/modules/Shortcodes/README.md
               - Sitemaps: reference/modules/Sitemaps/README.md
               - SMS: reference/modules/Sms/README.md

@@ -1,0 +1,10 @@
+@model CalculatedFieldsStepViewModel
+
+@if (Model.Fields.Count == 0)
+{
+    <span class="text-muted">@T["Add a calculated field"]</span>
+}
+else
+{
+    <span class="text-break">@string.Join(", ", Model.Fields.Select(field => field.Name))</span>
+}

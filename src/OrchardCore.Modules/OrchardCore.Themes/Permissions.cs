@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Themes;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ApplyTheme = new("ApplyTheme", "Apply a Theme");
+    public static readonly Permission ApplyTheme = new("ApplyTheme", LocalizationSource.Create<Permissions>("Apply a Theme"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

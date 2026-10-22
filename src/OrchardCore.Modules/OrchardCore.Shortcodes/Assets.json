@@ -17,5 +17,26 @@
     "name": "shortcodes-templates",
     "source": "Assets/js/shortcode-templates.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "shortcodes-admin-list",
+    "source": "Assets/ts/shortcodes-admin-list.ts",
+    "dest": "wwwroot/Scripts/shortcodes-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "shortcode-template-editor",
+    "source": "Assets/ts/shortcode-template-editor.ts",
+    "dest": "wwwroot/Scripts/shortcode-template-editor/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "shortcodes-modal",
+    "source": "Assets/ts/shortcodes-modal.ts",
+    "dest": "wwwroot/Scripts/shortcodes-modal/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Microsoft.Playwright;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Tests.Functional.Helpers;
+using System.Net;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
@@ -24,14 +26,12 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Apis.GraphQL");
         await CreateQueryAsync(page, prefix);
 
-        await CreateRoleWithPermissionAsync(page, prefix, RoleName, "ExecuteGraphQL");
-        await UserHelper.CreateUserAsync(page, prefix, UserName, "graphql-query-runner@test.com", Password, RoleName);
-        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
+        await CreateRoleAndUserAsync(page, prefix, GraphQLPermissions.ExecuteGraphQL.Name);
 
         var response = await ExecuteQueryAsync(page, prefix);
         var content = await response.TextAsync();
 
-        Assert.True(response.Status == 401, content);
+        Assert.True(response.Status == (int)HttpStatusCode.Unauthorized, content);
         using (var result = JsonDocument.Parse(content))
         {
             Assert.Equal(
@@ -39,15 +39,12 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
                 result.RootElement.GetProperty("errors")[0].GetProperty("extensions").GetProperty("number").GetString());
         }
 
-        await page.GotoAsync($"{prefix}/logout");
-        await page.LoginAsync(prefix);
-        await SetRolePermissionAsync(page, prefix, RoleName, $"ExecuteApi_{QueryName}");
-        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
+        await AddPermissionToRoleAsync(page, prefix, $"ExecuteApi_{QueryName}");
 
         response = await ExecuteQueryAsync(page, prefix);
         content = await response.TextAsync();
 
-        Assert.True(response.Status == 200, content);
+        Assert.True(response.Status == (int)HttpStatusCode.OK, content);
         using (var result = JsonDocument.Parse(content))
         {
             var item = Assert.Single(result.RootElement.GetProperty("data").GetProperty("permissionTestQuery").EnumerateArray());
@@ -55,6 +52,46 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         }
 
         await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task Query_RequiresExecuteGraphQLPermission()
+    {
+        var prefix = $"/{Tenant.Prefix}";
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync(prefix);
+        await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Apis.GraphQL");
+
+        await CreateRoleAndUserAsync(page, prefix);
+
+        var query = "{ blogPost { displayText } }";
+        var response = await ExecuteQueryAsync(page, prefix, query);
+        var content = await response.TextAsync();
+
+        Assert.True(response.Status == (int)HttpStatusCode.Unauthorized, content);
+
+        await AddPermissionToRoleAsync(page, prefix, GraphQLPermissions.ExecuteGraphQL.Name);
+
+        response = await ExecuteQueryAsync(page, prefix, query);
+        content = await response.TextAsync();
+
+        Assert.True(response.Status == (int)HttpStatusCode.OK, content);
+        using (var result = JsonDocument.Parse(content))
+        {
+            var item = Assert.Single(result.RootElement.GetProperty("data").GetProperty("blogPost").EnumerateArray());
+            Assert.Equal(
+                "Man must explore, and this is exploration at its greatest",
+                item.GetProperty("displayText").GetString());
+        }
+
+        await page.CloseAsync();
+    }
+
+    private static async Task CreateRoleAndUserAsync(IPage page, string prefix, params string[] permissionNames)
+    {
+        await CreateRoleWithPermissionAsync(page, prefix, RoleName, permissionNames);
+        await UserHelper.CreateUserAsync(page, prefix, UserName, "graphql-query-runner@test.com", Password, RoleName);
+        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
     }
 
     private static async Task CreateQueryAsync(IPage page, string prefix)
@@ -65,33 +102,38 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.GotoAndAssertOkAsync(createUrl);
         await page.GetByRole(AriaRole.Textbox, new() { Name = "Name", Exact = true }).FillAsync(QueryName);
 
-        await page.WaitForFunctionAsync(
-            "() => window.monaco?.editor?.getModels().length > 0 && document.querySelector('.CodeMirror')?.CodeMirror");
-        await page.EvaluateAsync(
-            """
-            values => {
-                monaco.editor.getModels()[0].setValue(values.schema);
-                document.querySelector(".CodeMirror").CodeMirror.setValue(values.query);
-            }
-            """,
-            new
-            {
-                schema = """{ "type": "object", "properties": { "Value": { "type": "string" } } }""",
-                query = "SELECT 'Allowed' AS Value",
-            });
+        // Drives both editors via real keyboard input (click + type) rather than reaching into
+        // window.monaco/CodeMirror internals directly. That reach-in pattern broke once this
+        // branch's ES-module refactor converted Query.Fields.Edit.cshtml's Schema field from the
+        // old inline `require(['vs/editor/editor.main'], ...)` AMD bootstrap (which exposed a bare
+        // `window.monaco` global) to the shared monaco-json-settings-editor bloom component, which
+        // only exposes `window.__orchardCoreMonacoReady` (a Promise) - `window.monaco` is never a
+        // global on this branch anymore, so the old wait/eval pattern could time out or silently
+        // target the wrong (non-existent) API depending on load timing. Typing through the visible
+        // editor surface, as MonacoLiquidIntelliSenseTests.cs already does for the same reason,
+        // works regardless of what internals the editor happens to expose.
+        var schemaEditor = page.Locator(".monaco-json-settings-editor-container .monaco-editor");
+        await Assertions.Expect(schemaEditor).ToBeVisibleAsync();
+        await schemaEditor.ClickAsync();
+        await page.Keyboard.TypeAsync("""{ "type": "object", "properties": { "Value": { "type": "string" } } }""");
+
+        var queryEditor = page.Locator(".codemirror-query-editor").Locator("xpath=following-sibling::div[contains(@class, 'CodeMirror')]");
+        await Assertions.Expect(queryEditor).ToBeVisibleAsync();
+        await queryEditor.ClickAsync();
+        await page.Keyboard.TypeAsync("SELECT 'Allowed' AS Value");
 
         await page.ClickSaveAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    private async Task<IAPIResponse> ExecuteQueryAsync(IPage page, string prefix)
+    private async Task<IAPIResponse> ExecuteQueryAsync(IPage page, string prefix, string query = "{ permissionTestQuery { value } }")
         => await page.APIRequest.PostAsync(
             $"{Fixture.BaseUrl}{prefix}/api/graphql",
             new APIRequestContextOptions
             {
                 DataObject = new
                 {
-                    query = "{ permissionTestQuery { value } }",
+                    query,
                 },
             });
 
@@ -99,14 +141,25 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         IPage page,
         string prefix,
         string roleName,
-        string permissionName)
+        params string[] permissionNames)
     {
         await page.GotoAndAssertOkAsync($"{prefix}/Admin/Roles/Create");
         await page.Locator("input[name='RoleName']").FillAsync(roleName);
         await page.ClickCreateAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        await SetRolePermissionAsync(page, prefix, roleName, permissionName);
+        foreach (var permissionName in permissionNames)
+        {
+            await SetRolePermissionAsync(page, prefix, roleName, permissionName);
+        }
+    }
+
+    private static async Task AddPermissionToRoleAsync(IPage page, string prefix, string permission)
+    {
+        await page.GotoAsync($"{prefix}/logout");
+        await page.LoginAsync(prefix);
+        await SetRolePermissionAsync(page, prefix, RoleName, permission);
+        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
     }
 
     private static async Task SetRolePermissionAsync(

@@ -1,0 +1,44 @@
+@{
+    // The trail is rendered in the Breadcrumbs zone, which the layout renders right above the Title zone this shape is
+    // rendered in. The trail then sits above the title, and stays above the content when the admin shows titles in the
+    // fixed height top bar, which has no room for it. A trail rendered without a heading does not carry the title, so
+    // it stays where it is.
+    string heading = Model.Heading;
+    string title = Model.Title;
+    bool showTrail = Model.ShowTrail;
+    var inBreadcrumbsZone = !string.IsNullOrEmpty(heading);
+
+    TagBuilder nav = null;
+
+    if (showTrail)
+    {
+        var list = new TagBuilder("ol");
+        list.AddCssClass("breadcrumb");
+
+        foreach (var item in Model)
+        {
+            list.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+
+        nav = Tag(Model, "nav");
+        nav.Attributes["aria-label"] = T["Breadcrumb"].Value;
+        nav.InnerHtml.AppendHtml(list);
+    }
+}
+
+@if (inBreadcrumbsZone && nav is not null)
+{
+    <zone Name="Breadcrumbs">@nav</zone>
+}
+else
+{
+    @nav
+}
+@if (!string.IsNullOrEmpty(heading) && !string.IsNullOrEmpty(title))
+{
+    TagBuilder titleTag = new(heading);
+    titleTag.AddCssClass("oc-breadcrumb-title");
+    titleTag.InnerHtml.Append(title);
+
+    @titleTag
+}

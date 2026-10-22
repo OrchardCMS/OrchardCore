@@ -1,6 +1,6 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
-@inject IDataLocalizer D
 @inject IOptions<MediaOptions> MediaOptions
+@inject IDataLocalizer D
 @inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
 @{
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
@@ -36,7 +36,7 @@
     <div class="ocat-end" id="@fieldId" data-for="@Html.IdFor(m => m.Paths)">
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
-            <div class="hint mt-lg-2">@settings.Hint</div>
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
         }
 
         <div id="@fieldId"
@@ -48,6 +48,7 @@
              data-allow-media-text="@(settings.AllowMediaText ? "true" : "false")"
              data-allow-anchors="@(settings.AllowAnchors ? "true" : "false")"
              data-allowed-extensions="@allowedExtensionsAttribute"
+             data-max-file-size="@MediaOptions.Value.MaxFileSize"
              data-media-item-url="@Url.Content("~/api/media/GetMediaItem")"
              data-media-items-url="@Url.Content("~/api/media/GetMediaFieldItems")"
              data-media-gallery-translations="@mediaAppTranslationsJson"
@@ -58,6 +59,7 @@
              data-tus-endpoint-url="@Url.Content("~/api/media/tus")"
              data-tus-file-info-url="@Url.Content("~/api/media/TusFileInfo")"
              data-signalr-enabled="@(signalrEnabled ? "true" : "false")"
+             data-disable-thumbnails="@(MediaOptions.Value.DisableThumbnails ? "true" : "false")"
              data-translations="@translationsJson">
         </div>
 

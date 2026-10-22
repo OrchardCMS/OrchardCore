@@ -1,17 +1,15 @@
-@model OrchardCore.Lists.ViewModels.ListPartViewModel
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@{
-    var enableOrdering =
-        Model.EnableOrdering &&
-        Model.ContentItems.Count() > 1 &&
-        Model.ListPartFilterViewModel.Status == ContentsStatus.Latest && string.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
+@using OrchardCore.Admin
+@using OrchardCore.Lists
 
+@model OrchardCore.Lists.ViewModels.ListPartViewModel
+
+@{
+    var enableOrdering = Model.IsOrdering;
 
     if (enableOrdering)
     {
-        <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="Sortable, jQuery"></script>
+        <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="Sortable"></script>
     }
-  
 }
 @if (!Model.ContainedContentTypeDefinitions.Any())
 {
@@ -21,26 +19,21 @@
 }
 else
 {
-
     @if (Model.ContentItems.Any())
     {
-        <ul class="list-group" id="ci-sortable">
-            @foreach (var contentItem in Model.ContentItems)
-            {
-                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-                contentItemSummary.Checkbox = null;
+        <div id="ci-sortable">
+            <admin-list name="ListPartContents" context="Model.List">
+                <admin-list-list item-css-class="list-group-item list-group-item-action" />
+                <admin-list-grid>
+                    <admin-list-column name="Title" title="@T["Title"]" position="10" />
+                    <admin-list-column name="Type" title="@T["Type"]" position="20" width="auto" />
+                    <admin-list-column name="Status" title="@T["Status"]" position="30" width="auto" />
+                    <admin-list-column name="Modified" title="@T["Last modified"]" position="40" width="auto" />
+                    <admin-list-column type="Actions" title="@T["Actions"]" />
+                </admin-list-grid>
+            </admin-list>
+        </div>
 
-                if (enableOrdering)
-                {
-                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
-                }
-                <li class="list-group-item list-group-item-action">
-                    @await DisplayAsync(contentItemSummary)
-                </li>
-            }
-        </ul>
-
-        @await DisplayAsync(Model.Pager)
         @if (enableOrdering)
         {
             <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />

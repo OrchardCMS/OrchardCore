@@ -43,7 +43,7 @@ public sealed class Startup : Modules.StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -161,7 +161,7 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
     {
         services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 

@@ -47,6 +47,12 @@ This ensures user names are rendered consistently while making use of OrchardCor
 !!! note
     You may add additional HTML attributes, such as `title`, to show a tooltip for the username badge.
 
+## Email Confirmation
+
+When **Users must verify their email address** is enabled in the User Registration settings (`UsersMustValidateEmail` in recipes), users can't sign in until they confirm their email address. If a user signs in with a valid user name and password before confirming their email, they're taken to a page that explains that their email must be confirmed, with a **Send confirmation email** action that sends a new confirmation link. This lets users recover when the original email was lost or its link expired.
+
+The action is only offered for about 10 minutes after the successful password check, in the same browser. A short-lived cookie remembers which user passed the check; it doesn't sign the user in. A user can request a new email at most once a minute. When the [Rate Limits](../RateLimits/README.md) feature is enabled, the `ResendEmailConfirmation` route is also limited to 2 requests per minute per IP address, using the `email-confirmation` policy.
+
 ## Two-factor Authentication
 
 Orchard Core includes the features needed to secure your app with two-factor authentication. To use two-factor authentication, enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method". Configure the process from `Settings` → `Security` → `User Login` on the "Two-Factor Authentication" tab.
@@ -66,17 +72,18 @@ The **User Time Zone** editor uses the shared `ITimeZoneSelectListProvider` serv
 If you want to specify custom paths to access the authentication related urls, you can change them by using this option in the `appsettings.json`:
 
 ``` json
+{
   "OrchardCore": {
-    "OrchardCore_Users": {
+    "Users": {
       "LoginPath": "Login",
       "LogoffPath": "Users/LogOff",
       "ChangePasswordUrl": "ChangePassword",
       "ChangePasswordConfirmationUrl": "ChangePasswordConfirmation",
       "ExternalLoginsUrl": "ExternalLogins",
-      "ExternalLoginsUrl": "ExternalLogins",
       "TwoFactorAuthenticationPath": "TwoFactor"
     }
   }
+}
 ```
 
 ## Audit Trail Integration

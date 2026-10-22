@@ -41,12 +41,14 @@ The Azure Shells Configuration is configured via the `appsettings.json` section 
 ``` json
 {
   "OrchardCore": {
-    "OrchardCore_Shells_Azure": {
-      "ConnectionString": "", // Set to your Azure Storage account connection string.
-      "ContainerName": "hostcontainer", // Set to the Azure Blob container name.
-      "BasePath": "some/base/path", // Optionally, set to a subdirectory inside your container.
-      "MigrateFromFiles": true, // Optionally, enable to migrate existing App_Data files to Blob automatically.
-      "UseHierarchicalNamespace": true // Optional. Force Gen2/HNS behavior when account auto-detection is unavailable.
+    "Shells": {
+      "Azure": {
+        "ConnectionString": "", // Set to your Azure Storage account connection string.
+        "ContainerName": "hostcontainer", // Set to the Azure Blob container name.
+        "BasePath": "some/base/path", // Optionally, set to a subdirectory inside your container.
+        "MigrateFromFiles": true, // Optionally, enable to migrate existing App_Data files to Blob automatically.
+        "UseHierarchicalNamespace": true // Optional. Force Gen2/HNS behavior when account auto-detection is unavailable.
+      }
     }
   }
 }
@@ -88,12 +90,14 @@ The Database Shells Configuration is configured via the `appsettings.json` secti
 ``` json
 {
   "OrchardCore": {
-    "OrchardCore_Shells_Database": {
-      "DatabaseProvider": "SqlConnection", // Set to a supported database provider.
-      "ConnectionString": "", // Set to the database connection string.
-      "TablePrefix": "", // Optionally, configure a table prefix.
-      "MigrateFromFiles": true // Optionally, enable to migrate existing App_Data files to Database automatically.
-    },
+    "Shells": {
+      "Database": {
+        "DatabaseProvider": "SqlConnection", // Set to a supported database provider.
+        "ConnectionString": "", // Set to the database connection string.
+        "TablePrefix": "", // Optionally, configure a table prefix.
+        "MigrateFromFiles": true // Optionally, enable to migrate existing App_Data files to Database automatically.
+      }
+    }
   }
 }
 ```

@@ -14,16 +14,19 @@ using OpenIddict.Server.DataProtection;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.ViewModels;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
@@ -64,6 +67,7 @@ public sealed class ClientStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ClientAdminMenu>();
+        services.AddScoped<IJSLocalizer, OpenIdJSLocalizer>();
 
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
@@ -276,6 +280,11 @@ public sealed class ManagementStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ManagementAdminMenu>();
+
+        // Build the rows of the applications and scopes admin lists.
+        services.AddDisplayDriver<OpenIdApplicationEntry, OpenIdApplicationDisplayDriver>();
+        services.AddDisplayDriver<OpenIdScopeEntry, OpenIdScopeDisplayDriver>();
+
     }
 }
 

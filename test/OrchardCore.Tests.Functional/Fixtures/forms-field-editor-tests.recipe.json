@@ -1,0 +1,114 @@
+{
+  "name": "FormsFieldEditorTests",
+  "displayName": "FormsFieldEditorTests",
+  "description": "Testing OrchardCore.Forms' SelectPart editor (select-part-editor.ts, migrated to Vue 3 in PR #19774) on the Flow/Bag 'Add Widget' AJAX injection flow - the same double-instance-init bug class PR #19442 had to fix for other views.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Flows",
+        "OrchardCore.Forms",
+        "OrchardCore.Title",
+        "OrchardCore.Widgets",
+
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheAdmin"
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "FormsFieldEditorTestPage",
+          "DisplayName": "Forms Field Editor Test Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "FormsFieldEditorTestWidget",
+          "DisplayName": "Forms Field Editor Test Widget",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "SelectPart",
+              "Name": "SelectPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -263,27 +263,31 @@ The Elasticsearch module connection configuration can be set globally in the `ap
 
 ```json
 {
-  "OrchardCore_Elasticsearch": {
-    "ConnectionType": "SingleNodeConnectionPool",
-    "Url": "http://localhost",
-    "Ports": [
-      9200
-    ],
-    "AuthenticationType":"Basic", // Supported values are:'Basic', 'ApiKey', 'Base64ApiKey' or 'KeyIdAndKey'
-    "ApiKey": "", // Required when using ApiKey authentication type
-    "Base64ApiKey": "", // Required when using Base64ApiKey authentication type
-    "CloudId": "The cloud id", // Required when using CloudConnectionPool connection type
-    "Username": "admin", // Required  using Basic authentication types
-    "Password": "admin", // Required  using Basic authentication types
-    "KeyId": "The key id", // Required  using KeyIdAndKey authentication types
-    "Key": "The key", // Required  using KeyIdAndKey authentication types
-    "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-    "EnableDebugMode": false,
-    "EnableHttpCompression": true,
-    "IndexPrefix": "",
-    "Analyzers": {
-      "standard": {
-        "type": "standard"
+  "OrchardCore": {
+    "Search": {
+      "Elasticsearch": {
+        "ConnectionType": "SingleNodeConnectionPool",
+        "Url": "http://localhost",
+        "Ports": [
+          9200
+        ],
+        "AuthenticationType":"Basic", // Supported values are:'Basic', 'ApiKey', 'Base64ApiKey' or 'KeyIdAndKey'
+        "ApiKey": "", // Required when using ApiKey authentication type
+        "Base64ApiKey": "", // Required when using Base64ApiKey authentication type
+        "CloudId": "The cloud id", // Required when using CloudConnectionPool connection type
+        "Username": "admin", // Required  using Basic authentication types
+        "Password": "admin", // Required  using Basic authentication types
+        "KeyId": "The key id", // Required  using KeyIdAndKey authentication types
+        "Key": "The key", // Required  using KeyIdAndKey authentication types
+        "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+        "EnableDebugMode": false,
+        "EnableHttpCompression": true,
+        "IndexPrefix": "",
+        "Analyzers": {
+          "standard": {
+            "type": "standard"
+          }
+        }
       }
     }
   }
@@ -346,13 +350,17 @@ As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/refe
 
 ```json
 {
-  "OrchardCore_Elasticsearch": {
-    "Analyzers": {
-      "standard": {
-        "type": "standard"
-      },
-      "stop": {
-        "type": "stop"
+  "OrchardCore": {
+    "Search": {
+      "Elasticsearch": {
+        "Analyzers": {
+          "standard": {
+            "type": "standard"
+          },
+          "stop": {
+            "type": "stop"
+          }
+        }
       }
     }
   }
@@ -363,30 +371,34 @@ At the same time, you may define custom analyzers using the [appsettings.json](.
 
 ```json
 {
-  "OrchardCore_Elasticsearch": {
-    "Analyzers": {
-      "standard": {
-        "type": "standard"
-      },
-      "stop": {
-        "type": "stop",
-        "stopwords": [
-          "a",
-          "the",
-          "and",
-          "or"
-        ]
-      },
-      "english_analyzer": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "stop"
-        ],
-        "char_filter": [
-          "html_strip"
-        ]
+  "OrchardCore": {
+    "Search": {
+      "Elasticsearch": {
+        "Analyzers": {
+          "standard": {
+            "type": "standard"
+          },
+          "stop": {
+            "type": "stop",
+            "stopwords": [
+              "a",
+              "the",
+              "and",
+              "or"
+            ]
+          },
+          "english_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "lowercase",
+              "stop"
+            ],
+            "char_filter": [
+              "html_strip"
+            ]
+          }
+        }
       }
     }
   }
@@ -401,20 +413,24 @@ For instance, to create a token filter named `english_stop`, you can include the
 
 ```json
 {
-  "OrchardCore_Elasticsearch": {
-    "TokenFilters": {
-      "english_stop": {
-        "type": "stop",
-        "stopwords": "_english_"
-      }
-    },
-    "Analyzers": {
-      "my_new_analyzer": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "english_stop"
-        ]
+  "OrchardCore": {
+    "Search": {
+      "Elasticsearch": {
+        "TokenFilters": {
+          "english_stop": {
+            "type": "stop",
+            "stopwords": "_english_"
+          }
+        },
+        "Analyzers": {
+          "my_new_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "english_stop"
+            ]
+          }
+        }
       }
     }
   }

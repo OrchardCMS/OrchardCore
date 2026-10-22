@@ -1,6 +1,10 @@
 @model OrchardCore.Workflows.ViewModels.WorkflowTypePropertiesViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Workflow"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="WorkflowTypesEditProperties" title="@T["Edit Workflow"]">
+        <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="EditProperties" method="post" class="no-multisubmit">

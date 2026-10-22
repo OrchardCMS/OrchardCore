@@ -9,6 +9,4 @@ namespace OrchardCore.DisplayManagement;
 /// which avoids both interceptors and runtime proxy generation for that model.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-public sealed class GenerateShapeAttribute : Attribute
-{
-}
+public sealed class GenerateShapeAttribute : Attribute;

@@ -174,7 +174,7 @@ The following JavaScript functions are available by default to any HTTP activity
 | `absoluteUrl`            | Returns the absolute URL for the relative path argument.                                                                                                                                                    | `absoluteUrl(relativePath: String): String`                                                                                         |
 | `readBody`               | Returns the raw HTTP request body.                                                                                                                                                                          | `readBody(): String`                                                                                                                |
 | `requestForm`            | Returns the value(s) of the form field name passed in as an argument.                                                                                                                                       | `requestForm(): String`<br/>`requestForm(name: String): String` or `Array`                                                          |
-| `deserializeRequestData` | Deserializes the request data automatically for requests that send JSON or form data. Returns the entire request data as a JSON object. Replaces deprecated queryStringAsJson and requestFormAsJson methods | `deserializeRequestData(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
+| `deserializeRequestData` | Deserializes the request data automatically for requests that send JSON or form data. Returns the entire request data as a JSON object. For a query string or form data, a field with one value is a string and a field with several values is an array of strings. Replaces deprecated queryStringAsJson and requestFormAsJson methods | `deserializeRequestData(): { "field1": "field1-value", "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
 ### Liquid Expressions
 
@@ -470,13 +470,15 @@ Workflow trimming settings can be configured using the `Settings` recipe step:
 
 Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Settings → Workflow Trimming. Without trimming, workflow instances remain in the database indefinitely.
 
-By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore_Workflows` configuration from e.g. an `appsettings` file:
+By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore:Workflows` configuration from e.g. an `appsettings` file:
 
 ```json
 {
-  "OrchardCore_Workflows": {
-    "Trimming": {
-      "BatchSize": 1000
+  "OrchardCore": {
+    "Workflows": {
+      "Trimming": {
+        "BatchSize": 1000
+      }
     }
   }
 }

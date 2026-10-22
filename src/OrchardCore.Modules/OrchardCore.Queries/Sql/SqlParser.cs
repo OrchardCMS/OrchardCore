@@ -23,7 +23,11 @@ public class SqlParser
     private static readonly Cyqwel.Dialects.SqlDialect ParserDialect = SqlDialectBuilder
         .Create("orchard")
         .BasedOn(SqlDialects.Generic)
-        .ConfigureParser(static options => options with { SupportsParameterDefaults = true })
+        .ConfigureParser(static options => options with
+        {
+            SupportsParameterDefaults = true,
+            CurrentTimestampSyntax = Cyqwel.Parsing.SqlCurrentTimestampSyntax.None,
+        })
         .Build();
 
     internal static IReadOnlyList<string> Validate(string sql)

@@ -50,14 +50,14 @@ public static class DockerHelper
         // Redis
         if (
             string.IsNullOrEmpty(
-                System.Environment.GetEnvironmentVariable("OrchardCore__OrchardCore_Redis__Configuration")
+                System.Environment.GetEnvironmentVariable("OrchardCore__Redis__Configuration")
             )
         )
         {
             RemoveContainer(_redisContainerName);
             RunDocker($"run -d --name {_redisContainerName} -p 6379:6379 redis:7");
             System.Environment.SetEnvironmentVariable(
-                "OrchardCore__OrchardCore_Redis__Configuration",
+                "OrchardCore__Redis__Configuration",
                 "localhost:6379"
             );
             Log($"Started Docker container '{_redisContainerName}' (Redis).");
@@ -67,7 +67,7 @@ public static class DockerHelper
         if (
             string.IsNullOrEmpty(
                 System.Environment.GetEnvironmentVariable(
-                    "OrchardCore__OrchardCore_Media_Azure__ConnectionString"
+                    "OrchardCore__Media__Azure__ConnectionString"
                 )
             )
         )
@@ -77,11 +77,11 @@ public static class DockerHelper
                 $"run -d --name {_azuriteContainerName} -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose --skipApiVersionCheck"
             );
             System.Environment.SetEnvironmentVariable(
-                "OrchardCore__OrchardCore_Media_Azure__ConnectionString",
+                "OrchardCore__Media__Azure__ConnectionString",
                 _azuriteConnectionString
             );
             System.Environment.SetEnvironmentVariable(
-                "OrchardCore__OrchardCore_Media_Azure__ContainerName",
+                "OrchardCore__Media__Azure__ContainerName",
                 "oc-media-tests"
             );
             Log($"Started Docker container '{_azuriteContainerName}' (Azurite).");

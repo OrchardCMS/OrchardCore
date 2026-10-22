@@ -10,7 +10,14 @@ public sealed class PositionWrapper : IHtmlContent, IPositioned, IShape
     private readonly IHtmlContent _value;
     public string Position { get; set; }
 
-    public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
+    private ShapeMetadata _metadata;
+
+    // Allocated on first use, as the metadata of a wrapped content is rarely used.
+    public ShapeMetadata Metadata
+    {
+        get => _metadata ??= new ShapeMetadata();
+        set => _metadata = value;
+    }
 
     public string Id { get; set; }
 

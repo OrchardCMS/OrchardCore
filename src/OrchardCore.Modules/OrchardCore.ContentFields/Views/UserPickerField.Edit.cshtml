@@ -15,56 +15,23 @@
     var vueElementId = $"UserPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+    var translations = Orchard.GetJSLocalizations("content-fields-multiselect-picker");
+    var translationsJson = Json.Serialize(translations).ToString();
 }
 
-<script asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-userpicker.js" at="Foot" depends-on="vuejs:2,vue-multiselect:2,vue-draggable:2,sortable"></script>
-<style asp-name="vue-multiselect" version="2" at="Foot"></style>
+<script asp-name="vue-draggable" at="Foot"></script>
+<style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
     <label asp-for="UserIds" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
-        <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-content-type="@contentTypeName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple">
-
-            <ul class="mb-1 list-group w-lg-75 w-xxl-50 user-picker-default__list" v-show="arrayOfUsers.length" v-cloak>
-                <draggable v-model="arrayOfUsers">
-                    <li v-for="(user, i) in arrayOfUsers"
-                        class="cursor-move list-group-item user-picker-default__list-item d-flex align-items-start justify-content-between"
-                        :key="user.id">
-                        <div class="align-items-center align-self-center"><span>{{ user.displayText }}</span> <span v-show="!user.isEnabled" class="text-muted small">(@T["Not enabled"])</span></div>
-
-                        <div class="btn-group btn-group-sm align-items-center" role="group">
-                            <button v-on:click="remove(user)" type="button" class="btn btn-secondary user-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
-                        </div>
-                    </li>
-                </draggable>
-            </ul>
-
-            <div class="w-lg-75 w-xxl-50">
-                <input asp-for="UserIds" type="hidden" v-model="selectedIds" />
-                <vue-multiselect v-model="value" :options="options" track-by="id"
-                                 label="displayText" placeholder="@(string.IsNullOrEmpty(settings.Placeholder) ? T["Type to search"] : settings.Placeholder)"
-                                 @@search-change="asyncFind" @@select="onSelect"
-                                 :searchable="true" :close-on-select="true" :reset-after="true"
-                                 :show-labels="true" :hide-selected="@multiple"
-                                 :disabled="isDisabled"
-                                 select-label="@T["Select"]" deselect-label="@T["Remove"]">
-                    <template slot="option" slot-scope="props">
-                        <div v-cloak><span>{{ props.option.displayText }}</span><span class="small ms-2" v-show="!props.option.isEnabled">(@T["Not enabled"])</span></div>
-                    </template>
-                    <template slot="noResult">
-                        @T["No result found"]
-                    </template>
-                </vue-multiselect>
-                @if (!string.IsNullOrEmpty(settings.Hint))
-                {
-                    <span class="hint">@settings.Hint</span>
-                }
-            </div>
-
+        <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-content-type="@contentTypeName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple" data-translations="@translationsJson" data-placeholder="@settings.Placeholder" data-selected-ids-input-id="@Html.IdFor(x => x.UserIds)" data-selected-ids-input-name="@Html.NameFor(x => x.UserIds)">
         </div>
-
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
         <span asp-validation-for="UserIds"></span>
-
     </div>
 </div>
-<script at="Foot" depends-on="vue-multiselect-userpicker">initVueMultiselectUserPicker(document.querySelector("#@vueElementId"))</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="vuejs, vue-multiselect, vue-draggable" type="module"></script>

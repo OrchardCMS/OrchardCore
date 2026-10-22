@@ -27,7 +27,8 @@ internal sealed class MediaBlobImageCacheOptionsConfiguration : BlobStorageOptio
         options.RemoveContainer = rawOptions.RemoveContainer;
     }
 
+    // The 'OrchardCore_Media_Azure_ImageSharp_Cache' section is deprecated and will be removed in a future major version, use 'Media:Azure:ImageCache' instead.
     protected override MediaBlobImageCacheOptions GetRawOptions()
-        => _shellConfiguration.GetSection("OrchardCore_Media_Azure_Image_Cache")
+        => _shellConfiguration.GetSectionCompat("Media:Azure:ImageCache", "OrchardCore_Media_Azure_ImageSharp_Cache")
         .Get<MediaBlobImageCacheOptions>();
 }

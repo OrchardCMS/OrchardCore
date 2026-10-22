@@ -1,6 +1,10 @@
 @model EditSitemapViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Sitemap"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="SitemapsEdit" title="@T["Edit Sitemap"]">
+        <breadcrumb-item id="Sitemaps" action="List" controller="Admin" area="OrchardCore.Sitemaps" permission="@SitemapsPermissions.ManageSitemaps.Name">@T["Sitemaps"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))
 {

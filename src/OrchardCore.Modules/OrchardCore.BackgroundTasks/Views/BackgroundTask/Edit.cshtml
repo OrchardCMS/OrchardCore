@@ -1,10 +1,14 @@
 @model BackgroundTaskViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Task Settings"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="BackgroundTasksEdit" title="@T["Edit Task Settings"]">
+        <breadcrumb-item id="BackgroundTasks" action="Index" controller="BackgroundTask" area="OrchardCore.BackgroundTasks" permission="@Permissions.ManageBackgroundTasks.Name">@T["Background Tasks"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    <input asp-for="DefaultSchedule" class="form-control" type="hidden" />
+    <input asp-for="DefaultSchedule" class="form-control background-task-default-schedule" type="hidden" />
 
     <ul class="nav nav-tabs">
         <li class="nav-item pe-md-2">
@@ -36,7 +40,7 @@
                 <label asp-for="Schedule" class="ocat-label">@T["Schedule"]</label>
                 <div class="ocat-end">
                     <div class="input-group mb-3">
-                        <input asp-for="Schedule" class="form-control" />
+                        <input asp-for="Schedule" class="form-control background-task-schedule" />
                         <button type="button" id="use-default-schedule" class="btn btn-outline-danger">@T["Reset Schedule"]</button>
                     </div>
                     <span class="hint">@T["The task schedule as a cron expression."]</span>
@@ -61,7 +65,7 @@
             <div class="ocat-wrapper" asp-validation-class-for="LockTimeout">
                 <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
                 <div class="ocat-end">
-                    <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
+                    <input asp-for="LockTimeout" type="number" min="0" class="form-control">
                     <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."]</span>
                     <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
                 </div>
@@ -70,7 +74,7 @@
             <div class="ocat-wrapper" asp-validation-class-for="LockExpiration">
                 <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
                 <div class="ocat-end">
-                    <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
+                    <input asp-for="LockExpiration" type="number" min="0" class="form-control">
                     <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."]</span>
                     <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
                 </div>
@@ -86,10 +90,4 @@
     </div>
 </form>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('use-default-schedule').addEventListener('click', function (e) {
-            document.getElementById('@Html.IdFor(x => x.Schedule)').value = document.getElementById('@Html.IdFor(x => x.DefaultSchedule)').value;
-        });
-    })
-</script>
+<script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-edit.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-edit.js" at="Foot" type="module"></script>

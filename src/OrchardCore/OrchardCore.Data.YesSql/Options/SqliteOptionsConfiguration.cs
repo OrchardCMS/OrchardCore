@@ -15,8 +15,7 @@ public sealed class SqliteOptionsConfiguration : IConfigureOptions<SqliteOptions
 
     public void Configure(SqliteOptions options)
     {
-        var section = _shellConfiguration.GetSection("OrchardCore_Data_Sqlite");
-
-        section.Bind(options);
+        // The 'OrchardCore_Data_Sqlite' section is deprecated and will be removed in a future major version, use 'Data:Sqlite' instead.
+        _shellConfiguration.GetSectionCompat("Data:Sqlite", "OrchardCore_Data_Sqlite").Bind(options);
     }
 }

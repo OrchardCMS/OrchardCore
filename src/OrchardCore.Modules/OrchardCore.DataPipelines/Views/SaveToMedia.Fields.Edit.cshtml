@@ -1,0 +1,30 @@
+@model SaveToMediaStepViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="Folder" class="ocat-label">@T["Folder"]</label>
+    <div class="ocat-end">
+        <input asp-for="Folder" class="form-control" placeholder="exports" />
+        <span class="hint">@T["The folder of the media library the files are saved to; empty for the root. The user who publishes the pipeline must be allowed to manage its media."]</span>
+    </div>
+</div>
+
+@if (Model.RejectedExtensions.Count > 0)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning mb-0" role="alert" data-dp-rejected-extensions>
+                @T["The media library doesn't accept {0} files, so a run fails when it saves one. Create files in a format it accepts, such as an Excel workbook, or add the extensions to its allowed file extensions (the OrchardCore:Media:AllowedFileExtensions setting).", string.Join(", ", Model.RejectedExtensions)]
+            </div>
+        </div>
+    </div>
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="Overwrite" />
+            <label class="form-check-label" asp-for="Overwrite">@T["Replace a file with the same name"]</label>
+            <span class="hint dashed">@T["Otherwise the file is saved under a name with a number appended."]</span>
+        </div>
+    </div>
+</div>

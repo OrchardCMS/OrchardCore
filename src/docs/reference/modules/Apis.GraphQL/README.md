@@ -114,14 +114,16 @@ Configuration is done via the standard shell configuration, as follows.
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Apis_GraphQL": {
-      "ExposeExceptions": true,
-      "MaxDepth": 50, 
-      "MaxComplexity": 100, 
-      "FieldImpact": 2.0,
-      "DefaultNumberOfResults": 100,
-      "MaxNumberOfResults": 1000,
-      "MaxNumberOfResultsValidationMode": "Default"
+    "Apis": {
+      "GraphQL": {
+        "ExposeExceptions": true,
+        "MaxDepth": 50, 
+        "MaxComplexity": 100, 
+        "FieldImpact": 2.0,
+        "DefaultNumberOfResults": 100,
+        "MaxNumberOfResults": 1000,
+        "MaxNumberOfResultsValidationMode": "Default"
+      }
     }
   }
 }
@@ -144,7 +146,7 @@ Specify the validation behaviour if the max number of results is exceeded in a p
 * Enabled - a graphql validation error will be raised
 * Disabled - Info will be logged and only the max number of results will be returned
 
-*MaxDepth (int?, Default: 20)*
+*MaxDepth (int?, Default: 100)*
 
 Enforces the total maximum nesting across all queries in a request.
 

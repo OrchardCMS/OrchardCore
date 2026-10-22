@@ -42,6 +42,8 @@ export interface IMediaFieldConfig {
   allowMediaText: boolean;
   allowAnchors: boolean;
   allowedExtensions: string;
+  /** Maximum upload size in bytes; nonpositive or absent means no client-side size limit. */
+  maxFileSize?: number;
   mediaItemUrl: string;
   mediaItemsUrl?: string;
   /** JSON-serialized translations for the media-gallery picker */
@@ -58,4 +60,6 @@ export interface IMediaFieldConfig {
   tusFileInfoUrl?: string;
   /** Whether MediaHub (SignalR) real-time updates are enabled for the picker */
   signalrEnabled?: boolean;
+  /** Disables the thumbnails (grid) view in the field gallery and the picker's library browser */
+  disableThumbnails?: boolean;
 }
