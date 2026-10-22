@@ -48,7 +48,7 @@
     <div class="ocat-wrapper azure-ai-api-key-wrapper@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" asp-validation-class-for="ApiKey" id="@apiKeyWrapperHtmlId">
         <label asp-for="ApiKey" class="ocat-label">@T["Api Key"]</label>
         <div class="ocat-end">
-        <input type="text" asp-for="ApiKey" class="form-control" placeholder="@(Model.ApiKeyExists ? T["API key stored. Leave blank for current key or enter a new one"] : T["Provide an authentication key"])" />
+        <secret-input asp-for="ApiKey" secret-name="@AzureAISearchConstants.SecretNames.ApiKey" placeholder="@T["Provide an authentication key"].Value" />
         <span asp-validation-for="ApiKey"></span>
         </div>
     </div>
