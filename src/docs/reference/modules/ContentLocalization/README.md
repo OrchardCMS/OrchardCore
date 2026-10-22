@@ -27,6 +27,8 @@ The `ContentCulturePicker` selects the url to redirect using the following rules
 
 By default, the `ContentCulturePicker` sets a cookie for the `CookieRequestCultureProvider`. This can be disabled in the  `Settings/Localization/Content Culture Picker` settings page.
 
+The cookie is `HttpOnly`, as it is only read on the server, and it is marked as `Secure` when the request is served over HTTPS.
+
 The `ContentRequestCultureProvider` can set the cookie based on the ContentItem that matches the current url. This setting can be edited in the  `Settings/Localization/Content Culture` settings page.
 
 #### Recipe Step
