@@ -50,6 +50,37 @@ Instead, the telemetry of every tenant is tagged with its name, so that it can b
 
 The `OrchardCore.AspireHost` project of the repository runs `OrchardCore.Cms.Web` with the [Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/overview), which shows its traces, metrics and structured logs. Set it as the startup project and run it, or run `dotnet run --project src/OrchardCore.AspireHost`, then open the dashboard from the link the host prints. The host configures the OTLP endpoint of the application, so nothing else is needed. It also starts a ClamAV container for the antivirus feature, which requires Docker or another container runtime.
 
+### Sending it to Grafana
+
+Grafana receives the three signals over OTLP, and stores the traces in Tempo, the metrics in Prometheus or Mimir, and the logs in Loki.
+
+To try it locally, the `grafana/otel-lgtm` image runs an OpenTelemetry Collector with Grafana, Tempo, Prometheus and Loki:
+
+```bash
+docker run --rm -d -p 3000:3000 -p 4317:4317 -p 4318:4318 --name lgtm grafana/otel-lgtm
+```
+
+Then run the application with `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317`, open Grafana at `http://localhost:3000`, and use its Explore page.
+
+With Grafana Cloud, the telemetry is sent over HTTP to the OTLP endpoint of the stack, shown in its OpenTelemetry configuration in the Grafana Cloud portal, with the instance ID of the stack and an access token encoded in Base64 as `{instance ID}:{token}`:
+
+```bash
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-{region}.grafana.net/otlp
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic%20{Base64 credentials}
+```
+
+Prometheus and Mimir store the metrics with their names and attributes converted: dots become underscores, and the unit is added as a suffix, so `orchardcore.shape.render.duration` becomes `orchardcore_shape_render_duration_seconds`, with an `orchardcore_shape_type` label, and the `service.name` and `service.instance.id` resource attributes become the `job` and `instance` labels. For instance:
+
+| Question | Query |
+| --- | --- |
+| Which shapes are the slowest? | `topk(10, histogram_quantile(0.95, sum by (le, orchardcore_shape_type) (rate(orchardcore_shape_render_duration_seconds_bucket[5m]))))` |
+| Which routes run the most database operations? | `topk(10, histogram_quantile(0.95, sum by (le, http_route) (rate(orchardcore_request_db_operations_bucket[5m]))))` |
+| How fast does each tenant respond? | `histogram_quantile(0.95, sum by (le, orchardcore_tenant_name) (rate(http_server_request_duration_seconds_bucket[5m])))` |
+| How much memory does each instance use? | `sum by (instance) (dotnet_process_memory_working_set_bytes)` |
+
+In Tempo, a TraceQL query such as `{ span.orchardcore.tenant.name = "Default" && duration > 500ms }` finds the slow requests of a tenant, and `{ name =~ "Render shape.*" }` the slow shapes.
+
 ## Configuration
 
 The options are read from the `OrchardCore:OpenTelemetry` section of the application configuration:
@@ -65,7 +96,8 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
         "Enabled": true,
         "SamplingRatio": 0.25,
         "Sources": [ "MyCompany.MyModule" ],
-        "IncludeDatabaseQueryText": true
+        "IncludeDatabaseQueryText": true,
+        "SlowShapeThreshold": "00:00:00.050"
       },
       "Metrics": {
         "Enabled": true,
@@ -93,6 +125,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
 | `Tracing:IncludeClientLibraries` | Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to `true`. See [Client libraries](#client-libraries). |
+| `Tracing:SlowShapeThreshold` | The duration from which the rendering of a shape is traced with its own span. Defaults to `00:00:00.050` (50 milliseconds), `00:00:00` traces every shape. |
 | `Tracing:IncludeDatabaseQueryText` | Whether the spans of the database operations include their SQL text, in `db.query.text`. Defaults to `true`. The commands run by YesSql are parameterized, so their text holds no values. |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
@@ -121,8 +154,11 @@ The spans of Orchard Core come from the `OrchardCore` activity source:
 | `Run background task {task}` | Internal | `orchardcore.tenant.name`, `orchardcore.background_task.name` |
 | `Execute recipe {recipe}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name` |
 | `Execute recipe step {step}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name`, `orchardcore.recipe.step.name` |
+| `Render shape {type}` | Internal | `orchardcore.tenant.name`, `orchardcore.shape.type`, `orchardcore.shape.binding` (the alternate that rendered it), `orchardcore.shape.binding.source` (e.g. the path of its template) |
 
 Each database command run through YesSql is traced too, whatever the database provider (SQLite, SQL Server, PostgreSQL, MySQL), with a `Client` span named after its operation and table, e.g. `SELECT ContentItemIndex`, and the `db.system.name`, `db.namespace`, `db.operation.name`, `db.collection.name`, `db.query.text` and `orchardcore.tenant.name` attributes. Its duration is the one of the execution, until the first results are available.
+
+A `Render shape` span is only emitted for a shape whose rendering took longer than `Tracing:SlowShapeThreshold`. It's created once the rendering is known to be slow, so it's a child of the request rather than of the shape that rendered it.
 
 A failed operation has the `Error` status, the `error.type` attribute and an `exception` event. A background task run is the root of its own trace.
 
@@ -143,6 +179,8 @@ The metrics of Orchard Core come from the `OrchardCore` meter:
 | `orchardcore.tenant.activation.duration` | Histogram | `s` | `orchardcore.tenant.name`, `error.type` | Duration of activating a tenant. |
 | `orchardcore.tenant.releases` | Counter | `{release}` | `orchardcore.tenant.name`, `orchardcore.tenant.release.reason` | Number of times a tenant was released: `reload`, `release` or `remove`. |
 | `orchardcore.background_task.duration` | Histogram | `s` | `orchardcore.tenant.name`, `orchardcore.background_task.name`, `error.type` | Duration of running a background task. |
+| `orchardcore.shape.render.duration` | Histogram | `s` | `orchardcore.tenant.name`, `orchardcore.shape.type` | Duration of rendering a shape, including the shapes it renders. |
+| `orchardcore.shape.cache.lookups` | Counter | `{lookup}` | `orchardcore.tenant.name`, `orchardcore.shape.type`, `orchardcore.shape.cache.result` | Number of lookups of the content of a cached shape: `hit` or `miss`. Only recorded when the Dynamic Cache feature is enabled. |
 | `db.client.operation.duration` | Histogram | `s` | `db.system.name`, `db.operation.name`, `orchardcore.tenant.name`, `error.type` | Duration of a database command, as defined by the OpenTelemetry semantic conventions. |
 | `orchardcore.request.db.operations` | Histogram | `{operation}` | `orchardcore.tenant.name`, `http.route` | Number of database operations run by an HTTP request. A route running many of them reveals an N+1 query pattern. |
 | `orchardcore.request.db.duration` | Histogram | `s` | `orchardcore.tenant.name`, `http.route` | Total duration of the database operations run by an HTTP request. |

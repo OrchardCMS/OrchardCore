@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -9,6 +11,7 @@ using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.DisplayManagement.Implementation;
 
@@ -24,6 +27,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly IOptionsMonitor<ShapeRenderingOptions> _shapeRenderingOptions;
+    private TimeSpan? _slowShapeThreshold;
 
     public DefaultHtmlDisplay(
         IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
@@ -89,6 +93,9 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
         ShapeBinding actualBinding = null;
         List<ShapeBinding> wrapperBindings = null;
+
+        // The rendering of the shape is only measured while anything listens.
+        var startTimestamp = ShapeTelemetry.IsEnabled ? Stopwatch.GetTimestamp() : 0;
 
         try
         {
@@ -189,6 +196,11 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         finally
         {
             await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
+
+            if (startTimestamp != 0)
+            {
+                ShapeTelemetry.Record(shapeMetadata, actualBinding, startTimestamp, GetSlowShapeThreshold());
+            }
         }
 
         if (_shapeRenderingOptions.CurrentValue.WriteShapeDebugInformation)
@@ -197,6 +209,12 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         }
 
         return shapeMetadata.ChildContent;
+    }
+
+    private TimeSpan GetSlowShapeThreshold()
+    {
+        return _slowShapeThreshold ??= _serviceProvider.GetService<IOptions<OrchardCoreTelemetryOptions>>()?.Value.SlowShapeThreshold
+            ?? new OrchardCoreTelemetryOptions().SlowShapeThreshold;
     }
 
     private static IHtmlContent AddShapeDebugInformation(IHtmlContent childContent, string shapeType, ShapeBinding actualBinding, List<ShapeBinding> wrapperBindings)

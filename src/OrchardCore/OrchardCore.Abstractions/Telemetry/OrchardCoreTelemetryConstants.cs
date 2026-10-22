@@ -94,6 +94,26 @@ public static class OrchardCoreTelemetryConstants
         /// The route of an HTTP request, as defined by the OpenTelemetry semantic conventions.
         /// </summary>
         public const string HttpRoute = "http.route";
+
+        /// <summary>
+        /// The type of a shape, e.g. 'Content' or 'MenuItem'.
+        /// </summary>
+        public const string ShapeType = "orchardcore.shape.type";
+
+        /// <summary>
+        /// The name of the binding that rendered a shape, i.e. the alternate that was used, e.g. 'Content__BlogPost'.
+        /// </summary>
+        public const string ShapeBinding = "orchardcore.shape.binding";
+
+        /// <summary>
+        /// The source of the binding that rendered a shape, e.g. the path of its template.
+        /// </summary>
+        public const string ShapeBindingSource = "orchardcore.shape.binding.source";
+
+        /// <summary>
+        /// Whether the content of a shape was found in its cache: 'hit' or 'miss'.
+        /// </summary>
+        public const string ShapeCacheResult = "orchardcore.shape.cache.result";
     }
 
     /// <summary>
@@ -140,6 +160,16 @@ public static class OrchardCoreTelemetryConstants
         /// The total duration, in seconds, of the database operations run by an HTTP request.
         /// </summary>
         public const string RequestDbDuration = "orchardcore.request.db.duration";
+
+        /// <summary>
+        /// The duration, in seconds, of rendering a shape, including the shapes it renders.
+        /// </summary>
+        public const string ShapeRenderDuration = "orchardcore.shape.render.duration";
+
+        /// <summary>
+        /// The number of lookups of the content of a cached shape, by result.
+        /// </summary>
+        public const string ShapeCacheLookups = "orchardcore.shape.cache.lookups";
 
         /// <summary>
         /// The number of tenants by state.
