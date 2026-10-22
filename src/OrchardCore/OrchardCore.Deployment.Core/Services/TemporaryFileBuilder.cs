@@ -2,6 +2,9 @@ namespace OrchardCore.Deployment.Core.Services;
 
 public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
 {
+    public const string VirtualPathRequired = "A virtual path is required.";
+    public const string PathMustBeRelative = "Path must be relative to the base directory.";
+    
     private readonly bool _deleteOnDispose;
 
     public TemporaryFileBuilder(bool deleteOnDispose = true)
@@ -32,12 +35,19 @@ public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
     {
         if (subpath.StartsWith('/'))
         {
-            throw new InvalidOperationException("A virtual path is required");
+            throw new InvalidOperationException(VirtualPathRequired);
         }
 
-        var fullname = PathExtensions.Combine(Folder, subpath);
+        // Use "Path.GetFullPath" to resolve path segments like ".." and prevent more elaborate path traversal attacks.
+        var fullname =  Path.GetFullPath(subpath, Folder);
+        fullname = Path.GetFullPath(new Uri(fullname).LocalPath);
 
-        var directory = new FileInfo(fullname).Directory;
+        var directory = new DirectoryInfo(Path.GetDirectoryName(fullname));
+
+        if (Path.GetRelativePath(Folder, fullname).StartsWith(".."))
+        {
+            throw new InvalidOperationException(PathMustBeRelative);
+        }
 
         if (!directory.Exists)
         {
