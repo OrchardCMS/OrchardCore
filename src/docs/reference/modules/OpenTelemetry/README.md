@@ -195,6 +195,10 @@ The rendering of shapes is traced too: the `OrchardCore.DisplayManagement` activ
 }
 ```
 
+This video shows how to read these traces and metrics in the Aspire dashboard.
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/r6aAa3TrLus" title="OpenTelemetry in Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 To find the slow parts of a site:
 
 1. Find the slowest shape types with the `orchardcore.display.shape.duration` histogram, filtered by shape type.
