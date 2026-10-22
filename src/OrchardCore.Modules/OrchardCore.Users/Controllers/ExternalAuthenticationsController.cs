@@ -387,7 +387,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _loginFormEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
-            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
 
             if (!signInResult.Succeeded)
             {

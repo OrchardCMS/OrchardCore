@@ -19,4 +19,9 @@ public static class FacebookConstants
         public const string Core = "OrchardCore.Facebook";
         public const string Pixel = "OrchardCore.Facebook.Pixel";
     }
+
+    public static class SecretNames
+    {
+        public const string AppSecret = "Facebook.AppSecret";
+    }
 }

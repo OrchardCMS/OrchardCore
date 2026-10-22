@@ -37,7 +37,7 @@ public sealed class ConcurrencyRateLimiterSource : RateLimiterSourceBase<Concurr
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, ConcurrencyRateLimiterData model)
     {
         return RateLimitPartition.GetConcurrencyLimiter(
-            partitionKey: $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetRemoteIpAddress(context)}",
+            partitionKey: $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetClientPartitionKey(context)}",
             factory: _ => new ConcurrencyLimiterOptions
             {
                 PermitLimit = model.PermitLimit,

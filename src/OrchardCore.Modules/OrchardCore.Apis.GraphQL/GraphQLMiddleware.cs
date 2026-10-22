@@ -104,12 +104,12 @@ public sealed class GraphQLMiddleware
                     {
                         request = new GraphQLNamedQueryRequest
                         {
-                            Query = await sr.ReadToEndAsync(),
+                            Query = await sr.ReadToEndAsync(context.RequestAborted),
                         };
                     }
                     else
                     {
-                        request = _graphQLTextSerializer.Deserialize<GraphQLNamedQueryRequest>(await sr.ReadToEndAsync());
+                        request = _graphQLTextSerializer.Deserialize<GraphQLNamedQueryRequest>(await sr.ReadToEndAsync(context.RequestAborted));
                     }
                 }
                 else
@@ -127,7 +127,7 @@ public sealed class GraphQLMiddleware
                 throw new InvalidOperationException("Unable to create a graphqlrequest from this request");
             }
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException || !context.RequestAborted.IsCancellationRequested)
         {
             await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
             _logger.LogError(e, "An error occurred while processing the GraphQL query.");
@@ -169,6 +169,7 @@ public sealed class GraphQLMiddleware
             }));
             options.Listeners.Add(dataLoaderDocumentListener);
             options.RequestServices = context.RequestServices;
+            options.CancellationToken = context.RequestAborted;
         });
 
         context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
@@ -179,7 +180,7 @@ public sealed class GraphQLMiddleware
 
         context.Response.ContentType = MediaTypeNames.Application.Json;
 
-        await _serializer.WriteAsync(context.Response.Body, result);
+        await _serializer.WriteAsync(context.Response.Body, result, context.RequestAborted);
     }
 
     private GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)

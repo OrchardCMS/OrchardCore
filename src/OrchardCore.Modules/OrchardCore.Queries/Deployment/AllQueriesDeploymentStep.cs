@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,8 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class AllQueriesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllQueriesDeploymentStep>("Content Management");
+    public override string Name => "AllQueries";
 
-    public AllQueriesDeploymentStep()
-    {
-        Name = "AllQueries";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 }
