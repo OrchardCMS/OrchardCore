@@ -9,6 +9,7 @@ public class RunningShellTable : IRunningShellTable
     private ImmutableDictionary<string, ShellSettings> _shellsByHostAndPrefix = ImmutableDictionary<string, ShellSettings>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
     private ShellSettings _default;
     private bool _hasStarMapping;
+    private readonly Lock _lock = new();
 
     public void Add(ShellSettings settings)
     {
@@ -27,7 +28,7 @@ public class RunningShellTable : IRunningShellTable
             settingsByHostAndPrefix.TryAdd(hostAndPrefix, settings);
         }
 
-        lock (this)
+        lock (_lock)
         {
             _shellsByHostAndPrefix = _shellsByHostAndPrefix.SetItems(settingsByHostAndPrefix);
         }
@@ -40,7 +41,7 @@ public class RunningShellTable : IRunningShellTable
             .Select(kv => kv.Key)
             .ToArray();
 
-        lock (this)
+        lock (_lock)
         {
             _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
         }
