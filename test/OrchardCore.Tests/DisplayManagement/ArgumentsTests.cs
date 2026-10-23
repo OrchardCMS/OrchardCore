@@ -93,7 +93,7 @@ public partial class ArgumentsTests
         Assert.Equal(3, result.Named.Count);
         Assert.Equal("Test", result.Named["Name"]);
         Assert.Equal(42, result.Named["Value"]);
-        Assert.Equal(true, result.Named["IsActive"]);
+        Assert.True((bool)result.Named["IsActive"]);
 
         // Verify it's using generated INamedEnumerable (not reflection)
         Assert.IsAssignableFrom<INamedEnumerable<object>>(model);
