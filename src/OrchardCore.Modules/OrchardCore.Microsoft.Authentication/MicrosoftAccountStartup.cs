@@ -13,6 +13,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Microsoft.Authentication;
@@ -44,5 +45,15 @@ public sealed class MicrosoftAccountDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<MicrosoftAccountDeploymentSource, MicrosoftAccountDeploymentStep, MicrosoftAccountDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Secrets")]
+[Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
+public sealed class MicrosoftAccountSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, MicrosoftAccountSecretMigrationDisplayDriver>();
     }
 }

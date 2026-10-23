@@ -33,7 +33,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="BaseUrl">
     <label asp-for="BaseUrl" class="ocat-label">@T["Base url"]</label>
     <div class="ocat-end">
-        <input asp-for="BaseUrl" class="form-control" />
+        <input asp-for="BaseUrl" class="form-control" type="url" />
         <span asp-validation-for="BaseUrl"></span>
         <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
     </div>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Secrets;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Services;
@@ -21,6 +22,7 @@ public class TwitterOptionsConfiguration :
     private readonly ITwitterSettingsService _twitterService;
     private readonly ITwitterSigninService _twitterSigninService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ShellSettings _shellSettings;
     private readonly string _tenantPrefix;
     private readonly ILogger _logger;
@@ -29,6 +31,7 @@ public class TwitterOptionsConfiguration :
         ITwitterSettingsService twitterService,
         ITwitterSigninService twitterSigninService,
         IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IHttpContextAccessor httpContextAccessor,
         ShellSettings shellSettings,
         ILogger<TwitterOptionsConfiguration> logger)
@@ -36,6 +39,7 @@ public class TwitterOptionsConfiguration :
         _twitterService = twitterService;
         _twitterSigninService = twitterSigninService;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         _shellSettings = shellSettings;
 
         var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
@@ -57,7 +61,7 @@ public class TwitterOptionsConfiguration :
         }
 
         if (string.IsNullOrWhiteSpace(settings.Item1.ConsumerKey) ||
-            string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret))
+            (string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecretSecretName) && string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret)))
         {
             _logger.LogWarning("The X (Twitter) login provider is enabled but not configured.");
 
@@ -85,14 +89,13 @@ public class TwitterOptionsConfiguration :
         }
 
         options.ConsumerKey = settings.Item1.ConsumerKey;
-        try
-        {
-            options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter).Unprotect(settings.Item1.ConsumerSecret);
-        }
-        catch
-        {
-            _logger.LogError("The X (Twitter) Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
-        }
+        options.ConsumerSecret = _serviceProvider.GetSecretValueAsync(
+            settings.Item1.ConsumerSecretSecretName,
+            settings.Item1.ConsumerSecret,
+            _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (settings.Item2.CallbackPath.HasValue)
         {

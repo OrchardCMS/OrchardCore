@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -5,15 +6,13 @@ namespace OrchardCore.AzureAI.Deployment;
 
 public class AzureAISearchIndexRebuildDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AzureAISearchIndexRebuildDeploymentStep>("Search");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<AzureAISearchIndexRebuildDeploymentStep>("Rebuild Azure AI Search Indices");
+    public override string Name => "AzureAISearchIndexRebuild";
 
-    public AzureAISearchIndexRebuildDeploymentStep()
-    {
-        Name = "AzureAISearchIndexRebuild";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => AzureAILocalizationSources.RebuildAzureAISearchIndices;
 
     public bool IncludeAll { get; set; }
 

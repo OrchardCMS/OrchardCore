@@ -143,11 +143,10 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper collapse" asp-validation-class-for="ClientSecret">
+    <div class="ocat-wrapper collapse openid-client-secret" asp-validation-class-for="ClientSecret">
         <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
         <div class="ocat-end">
-            <input asp-for="ClientSecret" class="form-control openid-client-secret" type="password" autocomplete="new-password" placeholder="@(Model.HasClientSecret ? T["A client secret is securely stored. Provide a new one to replace it."]: T["Set a client secret for your new account."])" />
-            <span asp-validation-for="ClientSecret"></span>
+            <secret-input asp-for="ClientSecret" secret-name="@OpenIdConstants.SecretNames.ClientSecret" />
             <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
         </div>
     </div>

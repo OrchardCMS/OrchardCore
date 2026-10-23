@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,15 +9,13 @@ namespace OrchardCore.Media.Deployment;
 /// </summary>
 public class MediaDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<MediaDeploymentStep>("Content Management");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<MediaDeploymentStep>("Media");
+    public override string Name => "Media";
 
-    public MediaDeploymentStep()
-    {
-        Name = "Media";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => MediaLocalizationSources.Media;
 
     public bool IncludeAll { get; set; } = true;
 

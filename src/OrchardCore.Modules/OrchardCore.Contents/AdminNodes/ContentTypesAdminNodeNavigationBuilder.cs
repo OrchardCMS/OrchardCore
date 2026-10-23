@@ -62,7 +62,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
                 itemBuilder.Permission(
-                    ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ViewContent.Name], ctd));
+                    ContentTypePermissionsHelper.CreateDynamicPermissionOf(CommonPermissions.ViewContent, ctd));
 
                 GetIconClasses(ctd, node).ToList().ForEach(c => itemBuilder.AddClass(c));
             });

@@ -25,7 +25,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="ConnectionString">
         <label asp-for="ConnectionString" class="ocat-label">@T["Connection String"]</label>
         <div class="ocat-end">
-            <input type="password" asp-for="ConnectionString" class="form-control" placeholder="@T["Azure connection string"]" autocomplete="off" />
+            <secret-input asp-for="ConnectionString" secret-name="@AzureEmailConstants.SecretNames.ConnectionString" placeholder="@T["Azure connection string"].Value" />
             <span asp-validation-for="ConnectionString"></span>
         </div>
     </div>
