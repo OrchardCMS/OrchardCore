@@ -357,6 +357,9 @@ describe("FolderComponent", () => {
   });
 
   it("handle drag and drop", async () => {
+    const { notify } = await import("@bloom/services/notifications/notifier");
+    (notify as ReturnType<typeof vi.fn>).mockClear();
+
     setSelectedDirectory({ name: "Test Directory", filePath: "/test/directory", directoryPath: "/test/directory", isDirectory: true });
 
     const wrapper = mount(FolderComponent, {
@@ -390,8 +393,17 @@ describe("FolderComponent", () => {
     ];
 
     await wrapper.find(".folder").trigger("dragover");
+    expect(wrapper.find(".folderhovered").exists()).toBe(true);
+
     await wrapper.find(".folder").trigger("drop", { folder: { directoryPath: "/" } as IFileLibraryItemDto, dataTransfer: createMockDataTransfer("drop", fileList, "/") });
+    expect(wrapper.find(".folderhovered").exists()).toBe(false);
+
+    // Moving from "/" to another folder is allowed, so no same-folder error is shown.
+    expect(notify).not.toHaveBeenCalled();
+
+    await wrapper.find(".folder").trigger("dragover");
     await wrapper.find(".folder").trigger("dragleave");
+    expect(wrapper.find(".folderhovered").exists()).toBe(false);
   });
 
   it('should emit "DirAddReq" event', async () => {
@@ -600,6 +612,9 @@ describe("FolderComponentActions", () => {
   });
 
   it("handleDrop to root folder normalizes targetFolder to 'root'", async () => {
+    const { notify } = await import("@bloom/services/notifications/notifier");
+    (notify as ReturnType<typeof vi.fn>).mockClear();
+
     setSelectedDirectory({ name: "", filePath: "/", directoryPath: "/", isDirectory: true });
 
     const wrapper = mount(FolderComponent, {
@@ -629,8 +644,15 @@ describe("FolderComponentActions", () => {
       dataTransfer: createMockDataTransfer("drop", files as any, "/Other"),
     });
 
-    // Should not error — the target is normalized to 'root' and source is '/Other'
-    // The confirm modal should be shown (no same-folder error)
+    // The target is normalized to 'root' and the source is '/Other', so no same-folder error is shown.
+    expect(notify).not.toHaveBeenCalled();
+
+    // Dropping files that come from the root onto the root is a same-folder move.
+    await wrapper.find(".folder").trigger("drop", {
+      dataTransfer: createMockDataTransfer("drop", files as any, "root"),
+    });
+
+    expect(notify).toHaveBeenCalledTimes(1);
   });
 });
 

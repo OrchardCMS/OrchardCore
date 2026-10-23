@@ -95,7 +95,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
         foreach (var user in users)
         {
-            var result = await _notificationService.SendAsync(user, message);
+            var result = await _notificationService.SendAsync(user, message, workflowContext.CancellationToken);
             totalSent += result.SuccessfulCount;
         }
 

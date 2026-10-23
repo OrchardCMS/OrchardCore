@@ -73,7 +73,7 @@ public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsAp
             EventSourceUrl = string.IsNullOrWhiteSpace(eventSourceUrl) ? null : eventSourceUrl,
             ActionSource = ActionSource,
             EventId = string.IsNullOrWhiteSpace(eventId) ? null : eventId,
-        });
+        }, workflowContext.CancellationToken);
 
         workflowContext.LastResult = result;
 
