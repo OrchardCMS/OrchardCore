@@ -16,3 +16,7 @@ $width-sizes: (25, 50, 75);
 .unset {
     all: unset;
 }
+
+[v-cloak] {
+    display: none;
+}
