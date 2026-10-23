@@ -95,15 +95,15 @@
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="ListActionsLayout">
-    <label asp-for="ListActionsLayout" class="ocat-label">@T["Actions layout"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="ActionsLayout">
+    <label asp-for="ActionsLayout" class="ocat-label">@T["Actions layout"]</label>
     <div class="ocat-end">
-        <select asp-for="ListActionsLayout" class="form-select">
+        <select asp-for="ActionsLayout" class="form-select">
             <option value="">@T["Use configuration default"]</option>
             <option value="@AdminListActionsLayout.Buttons">@T["Buttons"]</option>
             <option value="@AdminListActionsLayout.Menu">@T["Menu"]</option>
         </select>
-        <span asp-validation-for="ListActionsLayout"></span>
+        <span asp-validation-for="ActionsLayout"></span>
         <span class="hint">@T["How the actions of each list row and the secondary actions of the bottom action bar of edit pages are displayed: as buttons, or in a single compact menu. On small screens the secondary actions of the bottom action bar are always in a menu. Use the configuration default to inherit {0} from appsettings.json.", "OrchardCore:Admin:List:DefaultActionsLayout"]</span>
     </div>
 </div>

@@ -541,7 +541,7 @@ Most lists share their first and last columns, so `AdminListColumns` declares th
 
 ### Row actions
 
-The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → Actions layout**. `AdminSettings.ListActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
+The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → Actions layout**. `AdminSettings.ActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
 
 | Layout    | Description                                                                                                   |
 | --------- | ------------------------------------------------------------------------------------------------------------- |
