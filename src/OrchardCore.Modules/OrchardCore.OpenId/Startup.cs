@@ -33,6 +33,8 @@ using OrchardCore.OpenId.ViewModels;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
+using OrchardCore.OpenId.Secrets.Drivers;
+using OrchardCore.OpenId.Secrets.Services;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
@@ -43,6 +45,7 @@ using OrchardCore.Secrets;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
+using OpenIdSecretsMigrations = OrchardCore.OpenId.Secrets.Migrations;
 
 namespace OrchardCore.OpenId;
 
@@ -213,6 +216,17 @@ public sealed class ServerStartup : StartupBase
 
             return configuration;
         }
+    }
+}
+
+[Feature(OpenIdConstants.Features.Secrets)]
+public sealed class ServerSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<OpenIdServerSettings, OpenIdSecretSettingsDisplayDriver>();
+        services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>, OpenIdSecretsOptionsConfiguration>();
+        services.AddDataMigration<OpenIdSecretsMigrations>();
     }
 }
 
