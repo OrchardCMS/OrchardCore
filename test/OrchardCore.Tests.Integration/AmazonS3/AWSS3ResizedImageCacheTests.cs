@@ -156,7 +156,9 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     public async Task Clear_EmptyCache_Succeeds()
     {
         // ClearAsync on an empty bucket must not throw.
-        await _cache.ClearAsync();
+        var exception = await Record.ExceptionAsync(() => _cache.ClearAsync());
+
+        Assert.Null(exception);
     }
 
     [DockerFact]
