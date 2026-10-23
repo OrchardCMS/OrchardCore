@@ -38,6 +38,7 @@ public class Permission
     /// <remarks>
     /// The permission name must be unique across the system.
     /// </remarks>
+    [Obsolete($"Use the overload with {nameof(LocalizationSource)} instead.")]
     public Permission(string name, string description, bool isSecurityCritical = false)
         : this(name, description is null ? null : LocalizationSource.Create(description), isSecurityCritical)
     {
@@ -68,6 +69,7 @@ public class Permission
     /// <remarks>
     /// The permission name must be unique across the system.
     /// </remarks>
+    [Obsolete($"Use the overload with {nameof(LocalizationSource)} instead.")]
     public Permission(string name, string description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
     {
         ImpliedBy = impliedBy;
