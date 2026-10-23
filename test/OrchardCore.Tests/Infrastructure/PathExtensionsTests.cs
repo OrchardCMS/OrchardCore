@@ -3,12 +3,10 @@ namespace OrchardCore.Infrastructure.Tests;
 public class PathExtensionsTests
 {
     [Theory]
-    [InlineData("../naive/path/traversal", true)]
-    [InlineData("more/elaborate/../../../path/traversal", true)]
-    [InlineData("safe-location", false)]
-    [InlineData("safe/location/", false)]
-    [InlineData("safe/location/with/../navigation/for/some/reason/..", false)]
-    public void IsOutsideOfBasePath_ShouldDetectPathTraversal(string path, bool isOutside)
+    [InlineData("safe-location")]
+    [InlineData("safe/location/")]
+    [InlineData("safe/location/with/../navigation/for/some/reason/..")]
+    public void IsOutsideOfBasePath_ValidateSafePath(string path)
     {
         // This test should work on all operating systems, that use Windows or Linux style paths.
         
@@ -17,13 +15,24 @@ public class PathExtensionsTests
         
         // Act
         var absolutePath = PathExtensions.ResolvePath(PathExtensions.Combine(basePath, path));
+        var windowsAbsolutePath = OperatingSystem.IsWindows()
+            ? PathExtensions.ResolvePath(PathExtensions.Combine(basePath, path.Replace('/', '\\')))
+            : path;
 
         // Assert
-        Assert.Equal(isOutside, PathExtensions.IsOutsideOfBasePath(basePath, absolutePath));
+        Assert.False(
+            PathExtensions.IsOutsideOfBasePath(basePath, absolutePath),
+            absolutePath);
+        Assert.False(
+            PathExtensions.IsOutsideOfBasePath(basePath, windowsAbsolutePath),
+            absolutePath);
     }
     
-    [Fact]
-    public void IsOutsideOfBasePath_Linux_ShouldDetectPathTraversal()
+    [Theory]
+    [InlineData("/root/.config/my-secret")]
+    [InlineData("../naive/path/traversal")]
+    [InlineData("more/elaborate/../../../path/traversal")]
+    public void IsOutsideOfBasePath_Linux_ShouldDetectPathTraversal(string path)
     {
         // This test is only for Linux.
         if (!OperatingSystem.IsLinux())
@@ -35,10 +44,12 @@ public class PathExtensionsTests
         var basePath = PathExtensions.GetTempFileName();
         
         // Act
-        var absolutePath = PathExtensions.ResolvePath(PathExtensions.Combine(basePath, "/root/.config/my-secret"));
+        var absolutePath = PathExtensions.ResolvePath(PathExtensions.Combine(basePath, path));
 
         // Assert
-        Assert.True(PathExtensions.IsOutsideOfBasePath(basePath, absolutePath));
+        Assert.True(
+            PathExtensions.IsOutsideOfBasePath(basePath, absolutePath),
+            absolutePath);
     }
     
     [Theory]
@@ -60,6 +71,8 @@ public class PathExtensionsTests
         var absolutePath = PathExtensions.ResolvePath(PathExtensions.Combine(basePath, path));
 
         // Assert
-        Assert.True(PathExtensions.IsOutsideOfBasePath(basePath, absolutePath));
+        Assert.True(
+            PathExtensions.IsOutsideOfBasePath(basePath, absolutePath),
+            absolutePath);
     }
 }
