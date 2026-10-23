@@ -18,14 +18,12 @@ public class PathExtensionsTests
         var windowsAbsolutePath = OperatingSystem.IsWindows()
             ? PathExtensions.ResolvePath(PathExtensions.Combine(basePath, path.Replace('/', '\\')))
             : path;
+        var isOutside = PathExtensions.IsOutsideOfBasePath(basePath, absolutePath);
+        var windowsIsOutside = PathExtensions.IsOutsideOfBasePath(basePath, windowsAbsolutePath);
 
         // Assert
-        Assert.False(
-            PathExtensions.IsOutsideOfBasePath(basePath, absolutePath),
-            absolutePath);
-        Assert.False(
-            PathExtensions.IsOutsideOfBasePath(basePath, windowsAbsolutePath),
-            absolutePath);
+        Assert.False(isOutside, absolutePath);
+        Assert.False(windowsIsOutside, absolutePath);
     }
     
     [Theory]
@@ -45,11 +43,10 @@ public class PathExtensionsTests
         
         // Act
         var absolutePath = PathExtensions.ResolvePath(PathExtensions.Combine(basePath, path));
+        var isOutside = PathExtensions.IsOutsideOfBasePath(basePath, absolutePath);
 
         // Assert
-        Assert.True(
-            PathExtensions.IsOutsideOfBasePath(basePath, absolutePath),
-            absolutePath);
+        Assert.True(isOutside, absolutePath);
     }
     
     [Theory]
@@ -69,10 +66,9 @@ public class PathExtensionsTests
         
         // Act
         var absolutePath = PathExtensions.ResolvePath(PathExtensions.Combine(basePath, path));
+        var isOutside = PathExtensions.IsOutsideOfBasePath(basePath, absolutePath);
 
         // Assert
-        Assert.True(
-            PathExtensions.IsOutsideOfBasePath(basePath, absolutePath),
-            absolutePath);
+        Assert.True(isOutside, absolutePath);
     }
 }
