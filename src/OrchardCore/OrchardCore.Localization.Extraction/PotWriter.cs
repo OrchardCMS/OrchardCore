@@ -48,7 +48,7 @@ public static class PotWriter
                     output.Append('{').Append(index.ToString(CultureInfo.InvariantCulture)).Append('}');
                     if (message.FormatArguments.TryGetValue(index, out var descriptions) && descriptions.Count > 0)
                     {
-                        output.Append(": ").AppendJoin(", ", descriptions.Select(description => description.Replace('\r', ' ').Replace('\n', ' ').Trim()));
+                        output.Append(": ").AppendJoin(", ", descriptions.Select(LocalizationCatalog.NormalizeWhitespace));
                     }
                     else if (index == 0 && message.Plural is not null)
                     {
