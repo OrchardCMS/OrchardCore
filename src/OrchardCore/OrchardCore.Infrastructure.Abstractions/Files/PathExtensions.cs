@@ -62,6 +62,12 @@ public static class PathExtensions
     /// </summary>
     public static string ResolvePath(string path)
     {
+        // Normalize paths on Windows (or any other hypothetical system where "/" isn't the path separator character).
+        if (Path.DirectorySeparatorChar != '/')
+        {
+            path = path.Replace('/', Path.DirectorySeparatorChar);
+        }
+        
         var pathSegment = new StringSegment(path);
         if (path[0] == PathSeparators[0] || path[0] == PathSeparators[1])
         {
@@ -123,7 +129,7 @@ public static class PathExtensions
         for (var i = 0; i < pathSegments.Count; i++)
         {
             var segment = pathSegments[i];
-            builder.Append('/');
+            builder.Append(Path.DirectorySeparatorChar);
             builder.Append(segment.Buffer, segment.Offset, segment.Length);
         }
 
