@@ -372,6 +372,10 @@ body[data-actions-layout=menu] .action-bar-bottom:not(.action-bar-ready) .action
   padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 1rem);
 }
 
+html:has(.action-bar-bottom) {
+  scroll-padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 0.5rem);
+}
+
 /*
  Admin lists rendered by the AdminList shape.
 

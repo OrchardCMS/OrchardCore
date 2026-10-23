@@ -115,3 +115,8 @@ body[data-actions-layout="menu"] .action-bar-bottom:not(.action-bar-ready) .acti
 .ta-content:has(.action-bar-bottom) {
     padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 1rem);
 }
+
+// Keeps the elements that are focused or scrolled into view, e.g. with the keyboard, above the bar.
+html:has(.action-bar-bottom) {
+    scroll-padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 0.5rem);
+}

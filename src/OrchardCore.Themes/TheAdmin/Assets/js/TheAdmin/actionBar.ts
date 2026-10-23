@@ -92,7 +92,8 @@ const initActionBar = (bar: HTMLElement) => {
 
     // Lets the content reserve the space covered by the fixed bar.
     const updateHeight = () => {
-        const bar = observedBars.filter(b => b.isConnected && b.offsetParent !== null).pop();
+        // offsetParent is always null for fixed elements, so the rendered ones are those with a box.
+        const bar = observedBars.filter(b => b.isConnected && b.getClientRects().length > 0).pop();
 
         if (bar) {
             document.documentElement.style.setProperty('--oc-action-bar-bottom-height', bar.offsetHeight + 'px');
