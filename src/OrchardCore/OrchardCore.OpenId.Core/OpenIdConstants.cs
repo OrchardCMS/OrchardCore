@@ -18,6 +18,12 @@ public static class OpenIdConstants
         public const string Client = "OrchardCore.OpenId.Client";
         public const string Core = "OrchardCore.OpenId";
         public const string Management = "OrchardCore.OpenId.Management";
+
+        /// <summary>
+        /// The optional feature that loads OpenID Connect server keys from secrets.
+        /// </summary>
+        public const string Secrets = "OrchardCore.OpenId.Secrets";
+
         public const string Server = "OrchardCore.OpenId.Server";
         public const string Validation = "OrchardCore.OpenId.Validation";
     }

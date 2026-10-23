@@ -1504,7 +1504,7 @@ The following settings render their credential with the [secret input](#adding-s
 
 ### OpenID Connect Secrets (`OrchardCore.OpenId.Secrets`)
 
-This feature allows you to store OpenID Connect signing and encryption keys as secrets instead of using auto-generated certificates.
+This optional feature is included in the `OrchardCore.OpenId` module and allows you to store OpenID Connect signing and encryption keys as secrets instead of using auto-generated certificates. It must be enabled explicitly; enabling the OpenID Connect server and Secrets features alone does not activate it. No separate OpenID Connect Secrets package is required.
 
 **Prerequisites:**
 
