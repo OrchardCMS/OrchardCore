@@ -8,7 +8,7 @@ public class PathExtensionsTests
     [InlineData("safe-location", false)]
     [InlineData("safe/location/", false)]
     [InlineData("safe/location/with/../navigation/for/some/reason/..", false)]
-    public void IsOutsideOfBasePath_ShouldMatchExpectation(string path, bool isOutside)
+    public void IsOutsideOfBasePath_ShouldDetectPathTraversal(string path, bool isOutside)
     {
         // This test should work on all operating systems, that use Windows or Linux style paths.
         
@@ -23,7 +23,7 @@ public class PathExtensionsTests
     }
     
     [Fact]
-    public void IsOutsideOfBasePath_Linux_ShouldMatchExpectation()
+    public void IsOutsideOfBasePath_Linux_ShouldDetectPathTraversal()
     {
         // This test is only for Linux.
         if (!OperatingSystem.IsLinux())
@@ -45,7 +45,7 @@ public class PathExtensionsTests
     [InlineData("C:\\windows\\system32\\drivers\\etc\\hosts")]
     [InlineData("..\\naive\\path\\traversal")]
     [InlineData("more\\elaborate\\..\\..\\..\\path\\traversal")]
-    public void IsOutsideOfBasePath_Windows_ShouldMatchExpectation(string path)
+    public void IsOutsideOfBasePath_Windows_ShouldDetectPathTraversal(string path)
     {
         // This test is only for Windows paths.
         if (!OperatingSystem.IsWindows())
