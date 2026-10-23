@@ -1318,6 +1318,36 @@ msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.DefaultTags.SummaryAdmin"
 msgid "Name"
 msgstr ""
 
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Encryption Key Secret"
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "RSA Keys from Secrets"
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Select an RSA key or X.509 certificate secret to use for encrypting access tokens."
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Select an RSA key or X.509 certificate secret to use for signing JWT tokens."
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Signing Key Secret"
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Use RSA keys stored in Secrets instead of managed certificates. When set, these take precedence over the certificate store options."
+msgstr ""
+
 #: Views/OpenIdServerSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
 msgid "A certificate must be added to your server to set up the OpenID Connect module."
