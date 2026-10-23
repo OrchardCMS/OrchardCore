@@ -47,7 +47,7 @@ public static class TenantLocalizationTestHelper
     /// Writes a PO file for a culture in the folder of the tenant, <c>App_Data/Sites/{tenant}/Localization/{culture}.po</c>.
     /// </summary>
     /// <remarks>
-    /// The translations of a culture are loaded on the first request in that culture, so write the file before that request.
+    /// Write the files before enabling localization, because tenant activation can load and cache translations.
     /// </remarks>
     public static Task WritePoFileAsync(SiteContext context, string culture, params (string Context, string Text, string Translation)[] entries)
         => context.UsingTenantScopeAsync(async scope =>

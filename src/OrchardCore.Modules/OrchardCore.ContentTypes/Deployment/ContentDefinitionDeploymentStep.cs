@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,15 +9,13 @@ namespace OrchardCore.ContentTypes.Deployment;
 /// </summary>
 public class ContentDefinitionDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentDefinitionDeploymentStep>("Content Management");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<ContentDefinitionDeploymentStep>("Update Content Definitions");
+    public override string Name => "ContentDefinition";
 
-    public ContentDefinitionDeploymentStep()
-    {
-        Name = "ContentDefinition";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => ContentTypesLocalizationSources.UpdateContentDefinitions;
 
     public bool IncludeAll { get; set; }
 

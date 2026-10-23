@@ -228,6 +228,36 @@ A context-free declaration whose value is not a constant, or whose type is a run
 
 The analyzers run in the IDE and in every build, and `dotnet build -warnaserror` turns their warnings into errors. Suppress a rule locally with `#pragma warning disable OCLOC101`, or configure its severity in `.editorconfig`, for example `dotnet_diagnostic.OCLOC102.severity = none`.
 
+### Sharing `LocalizationSource` instances
+
+Because a source is immutable and doesn't depend on a tenant or a culture, it can be declared once and reused wherever the same text has the same meaning. A shared source is translated once, with a single PO entry, and an existing source can be found before a new one is created.
+
+- `CommonLocalizationSources`, in `OrchardCore.Abstractions`, declares the text that is used by several modules, such as `CommonLocalizationSources.ContentManagement`, or that is general to every module, such as `CommonLocalizationSources.Settings`. A source used by a single project, even a general word such as the name of the module, belongs in that project. Its PO context is `OrchardCore.Localization.CommonLocalizationSources`.
+- A module declares its other sources in an internal static class at its root, named after the module, for example `LuceneLocalizationSources` in `OrchardCore.Lucene`. Its PO context is the full name of that class.
+
+```csharp
+using OrchardCore.Localization;
+
+namespace MyModule;
+
+internal static class MyModuleLocalizationSources
+{
+    public static readonly LocalizationSource ExportMyData = LocalizationSource.Create("Export My Data", typeof(MyModuleLocalizationSources));
+}
+```
+
+```po
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content Management"
+msgstr "Gestion du contenu"
+
+msgctxt "MyModule.MyModuleLocalizationSources"
+msgid "Export My Data"
+msgstr "Exporter mes données"
+```
+
+Permission descriptions stay in the `*Permissions` class that declares the permissions. Text that is shown by a single view stays in the view, and is localized with `T`.
+
 ## Pluralization
 
 This module also provides support for pluralization.

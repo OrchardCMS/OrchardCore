@@ -1,2 +1,38 @@
+@using OrchardCore.Admin
 @using StackExchange.Profiling
-@MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext)
+
+@if (!AdminAttribute.IsApplied(ViewContext.HttpContext))
+{
+    @MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext)
+}
+else
+{
+    @* The default top-left position covers the admin menu. Dock the widget to the middle of the edge where lines end
+       instead, the right one or the left one in a right-to-left language, behind a toggle that tucks it away, and
+       follow the admin's light and dark themes. *@
+    @MiniProfiler.Current.RenderIncludes(ViewContext.HttpContext, new RenderOptions { Position = Orchard.IsRightToLeft() ? RenderPosition.Left : RenderPosition.Right })
+
+    <button type="button" id="oc-mp-toggle" class="oc-mp-toggle" data-hide-label="@T["Hide MiniProfiler"]" data-show-label="@T["Show MiniProfiler"]" hidden></button>
+}
+
+@* The texts of the timing tree and the queries view. The placeholders are passed as arguments, so that the script receives them as they are. *@
+<div id="oc-mp-labels" hidden
+     data-query="@T["Query"]"
+     data-order-hint="@T["In the order they ran"]"
+     data-duration="@T["Duration"]"
+     data-started-at="@T["Started at"]"
+     data-first-result="@T["First result"]"
+     data-step="@T["Step"]"
+     data-duplicate="@T["Duplicate"]"
+     data-duplicate-of="@T["The same command already ran as query #{0} during this request.", "{0}"]"
+     data-duplicate-hint="@T["Running a command again often points to a missing cache or to a query inside a loop."]"
+     data-error="@T["Error"]"
+     data-error-hint="@T["This command threw an exception."]"
+     data-gap="@T["{0} ms without queries", "{0}"]"
+     data-gap-reason="@T["Mostly in {0} ({1} ms)", "{0}", "{1}"]"
+     data-timing-duplicates="@T["This step runs a command that already ran during this request."]"
+     data-timing-errors="@T["This step runs a command that threw an exception."]"
+     data-warnings="@T["Some commands of this request ran more than once, or threw an exception."]"></div>
+
+<style asp-name="miniprofiler"></style>
+<script asp-name="miniprofiler" at="Foot"></script>

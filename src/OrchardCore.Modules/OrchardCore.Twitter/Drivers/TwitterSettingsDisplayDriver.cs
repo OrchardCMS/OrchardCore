@@ -1,12 +1,11 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.ViewModels;
@@ -17,22 +16,22 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public TwitterSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
-        ILogger<TwitterSettingsDisplayDriver> logger)
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
     }
 
     protected override string SettingsGroupId
@@ -50,43 +49,9 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
         return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
         {
             model.APIKey = settings.ConsumerKey;
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                    model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The API secret key could not be decrypted. It may have been encrypted using a different key.");
-                    model.APISecretKey = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.APISecretKey = string.Empty;
-            }
+            model.ConsumerSecret = SecretInputViewModel.Create(settings.ConsumerSecret, settings.ConsumerSecretSecretName);
             model.AccessToken = settings.AccessToken;
-            if (!string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                    model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The access token secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.AccessTokenSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.AccessTokenSecret = string.Empty;
-            }
+            model.AccessTokenSecret = SecretInputViewModel.Create(settings.AccessTokenSecret, settings.AccessTokenSecretSecretName);
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
     }
@@ -102,16 +67,42 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
         var model = new TwitterSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+
+        var consumerSecret = await model.ConsumerSecret.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            protector,
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.ConsumerSecret)}")
+        {
+            ProtectedValue = settings.ConsumerSecret,
+            SecretName = settings.ConsumerSecretSecretName,
+        });
+
+        if (consumerSecret.Succeeded)
+        {
+            settings.ConsumerSecret = consumerSecret.ProtectedValue;
+            settings.ConsumerSecretSecretName = consumerSecret.SecretName;
+        }
+
+        var accessTokenSecret = await model.AccessTokenSecret.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            protector,
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.AccessTokenSecret)}")
+        {
+            ProtectedValue = settings.AccessTokenSecret,
+            SecretName = settings.AccessTokenSecretSecretName,
+        });
+
+        if (accessTokenSecret.Succeeded)
+        {
+            settings.AccessTokenSecret = accessTokenSecret.ProtectedValue;
+            settings.AccessTokenSecretSecretName = accessTokenSecret.SecretName;
+        }
+
         settings.ConsumerKey = model.APIKey;
         settings.AccessToken = model.AccessToken;
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-
-            settings.ConsumerSecret = protector.Protect(model.APISecretKey);
-            settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-        }
 
         _shellReleaseManager.RequestRelease();
 

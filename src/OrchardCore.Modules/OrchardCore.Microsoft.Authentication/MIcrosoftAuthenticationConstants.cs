@@ -7,4 +7,9 @@ public static class MicrosoftAuthenticationConstants
         public const string MicrosoftAccount = "OrchardCore.Microsoft.Authentication.MicrosoftAccount";
         public const string AAD = "OrchardCore.Microsoft.Authentication.AzureAD";
     }
+
+    public static class SecretNames
+    {
+        public const string AppSecret = "MicrosoftAccount.AppSecret";
+    }
 }

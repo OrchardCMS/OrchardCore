@@ -31,4 +31,11 @@ public static class OpenIdConstants
     {
         public const string Roles = "Roles";
     }
+
+    public static class SecretNames
+    {
+        public const string ClientSecret = "OpenIdClient.ClientSecret";
+        public const string SigningCertificate = "OpenId.SigningCertificate";
+        public const string EncryptionCertificate = "OpenId.EncryptionCertificate";
+    }
 }

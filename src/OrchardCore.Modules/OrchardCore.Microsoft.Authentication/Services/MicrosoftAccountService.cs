@@ -37,6 +37,7 @@ public class MicrosoftAccountService : IMicrosoftAccountService
         {
             aspect.AppId = settings.AppId;
             aspect.AppSecret = settings.AppSecret;
+            aspect.AppSecretSecretName = settings.AppSecretSecretName;
             aspect.CallbackPath = settings.CallbackPath;
         });
 
@@ -52,7 +53,7 @@ public class MicrosoftAccountService : IMicrosoftAccountService
             yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
         }
 
-        if (string.IsNullOrWhiteSpace(settings.AppSecret))
+        if (string.IsNullOrWhiteSpace(settings.AppSecretSecretName) && string.IsNullOrWhiteSpace(settings.AppSecret))
         {
             yield return new ValidationResult(S["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
         }

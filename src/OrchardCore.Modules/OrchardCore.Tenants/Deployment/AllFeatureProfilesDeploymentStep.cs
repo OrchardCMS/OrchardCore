@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -5,11 +6,8 @@ namespace OrchardCore.Tenants.Deployment;
 
 public class AllFeatureProfilesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllFeatureProfilesDeploymentStep>("Infrastructure");
+    public override string Name => "AllFeatureProfiles";
 
-    public AllFeatureProfilesDeploymentStep()
-    {
-        Name = "AllFeatureProfiles";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Infrastructure;
 }
