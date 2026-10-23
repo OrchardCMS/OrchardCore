@@ -65,8 +65,8 @@ public class PermissionHandlerHelperTests
     {
         // Arrange
         var level2 = new Permission("Implicit2");
-        var level1 = new Permission("Implicit1", "Foo", new[] { level2 });
-        var required = new Permission("Required", "Foo", new[] { level1 });
+        var level1 = PermissionHelpers.Create("Implicit1", "Foo", level2);
+        var required = PermissionHelpers.Create("Required", "Foo", level1);
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required);
 
