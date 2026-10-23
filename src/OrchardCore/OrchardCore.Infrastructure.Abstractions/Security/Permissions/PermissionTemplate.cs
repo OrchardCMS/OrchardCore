@@ -29,7 +29,7 @@ public sealed record PermissionTemplate
 
     public Permission CreateDynamicPermission(string nameValue, string descriptionValue) => new(
         string.Format(Name, nameValue),
-        string.Format(Description.Value, descriptionValue ?? nameValue),
+        LocalizationSource.Create(string.Format(Description.Value, descriptionValue ?? nameValue), Description.Type),
         [.. ImpliedBy, .. ImpliedByTemplates.Select(template => template.CreateDynamicPermission(nameValue, descriptionValue))],
         IsSecurityCritical)
     {
