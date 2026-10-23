@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,13 +9,11 @@ namespace OrchardCore.Search.Deployment;
 /// </summary>
 public class SearchSettingsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<SearchSettingsDeploymentStep>("Search");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<SearchSettingsDeploymentStep>("Search Settings");
+    public override string Name => "SearchSettings";
 
-    public SearchSettingsDeploymentStep()
-    {
-        Name = "SearchSettings";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => SearchLocalizationSources.SearchSettings;
 }

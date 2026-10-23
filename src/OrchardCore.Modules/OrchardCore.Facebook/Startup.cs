@@ -13,6 +13,7 @@ using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
@@ -40,5 +41,14 @@ public sealed class Startup : StartupBase
         {
             options.Filters.Add<FBInitFilter>();
         });
+    }
+}
+
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, FacebookSecretMigrationDisplayDriver>();
     }
 }

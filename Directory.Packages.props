@@ -11,10 +11,12 @@
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.1" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
+    <PackageVersion Include="Azure.Core" Version="1.63.0" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.4" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="Azure.Search.Documents" Version="12.0.0" />
+    <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.11.0" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.29.2" />
     <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.27.1" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
@@ -143,5 +145,8 @@
   <ItemGroup>
     <!-- Transitive Packages -->
     <PackageVersion Include="MessagePack" Version="3.1.10" />
+    <!-- Pinned to versions that are not affected by known vulnerabilities (NU1902, NU1903). -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.13" />
   </ItemGroup>
 </Project>

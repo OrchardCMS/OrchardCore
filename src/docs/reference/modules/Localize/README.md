@@ -213,6 +213,36 @@ With string localization, no formatting is applied when no arguments are supplie
 !!! warning
     Use HTML localization only for trusted translation markup. It does not encode the translation itself. For plain labels, permission descriptions, attributes, and other text, use string localization and retain the rendering layer's encoding.
 
+### Sharing `LocalizationSource` instances
+
+Because a source is immutable and doesn't depend on a tenant or a culture, it can be declared once and reused wherever the same text has the same meaning. A shared source is translated once, with a single PO entry, and an existing source can be found before a new one is created.
+
+- `CommonLocalizationSources`, in `OrchardCore.Abstractions`, declares the text that is used by several modules, such as `CommonLocalizationSources.ContentManagement`, or that is general to every module, such as `CommonLocalizationSources.Settings`. A source used by a single project, even a general word such as the name of the module, belongs in that project. Its PO context is `OrchardCore.Localization.CommonLocalizationSources`.
+- A module declares its other sources in an internal static class at its root, named after the module, for example `LuceneLocalizationSources` in `OrchardCore.Lucene`. Its PO context is the full name of that class.
+
+```csharp
+using OrchardCore.Localization;
+
+namespace MyModule;
+
+internal static class MyModuleLocalizationSources
+{
+    public static readonly LocalizationSource ExportMyData = LocalizationSource.Create("Export My Data", typeof(MyModuleLocalizationSources));
+}
+```
+
+```po
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content Management"
+msgstr "Gestion du contenu"
+
+msgctxt "MyModule.MyModuleLocalizationSources"
+msgid "Export My Data"
+msgstr "Exporter mes données"
+```
+
+Permission descriptions stay in the `*Permissions` class that declares the permissions. Text that is shown by a single view stays in the view, and is localized with `T`.
+
 ### Analyzer rules
 
 `OrchardCore.Abstractions` ships Roslyn analyzers that check localizer calls and `LocalizationSource` declarations while you write them, so that every string can be extracted to translation templates and translated through PO files. They apply to the indexers of `IStringLocalizer`, `IHtmlLocalizer` and `IViewLocalizer`, to `GetString`, `GetHtml` and `Plural`, and to `LocalizationSource.Create(...)`, `LocalizationSource.Create<T>(...)` and the `LocalizationSource` constructors, in every project referencing the package. Members and types marked with `[SkipLocalizationExtraction]` are not analyzed, and neither are Razor views, which compile through a source generator: the extraction reports their dynamic keys instead.

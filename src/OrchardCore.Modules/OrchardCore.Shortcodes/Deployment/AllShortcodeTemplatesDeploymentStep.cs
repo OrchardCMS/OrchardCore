@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -5,11 +6,8 @@ namespace OrchardCore.Shortcodes.Deployment;
 
 public class AllShortcodeTemplatesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllShortcodeTemplatesDeploymentStep>("Content");
+    public override string Name => "AllShortcodeTemplates";
 
-    public AllShortcodeTemplatesDeploymentStep()
-    {
-        Name = "AllShortcodeTemplates";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Content;
 }

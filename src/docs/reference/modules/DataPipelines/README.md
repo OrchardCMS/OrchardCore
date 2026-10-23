@@ -57,8 +57,9 @@ The **Tools** > **Data Pipelines** menu has two pages:
 
 The designer has:
 
+- an **Add a data source** button in its toolbar, which opens a dialog of the data sets the user may read, with their descriptions, filtered by name or description and by data source. Choosing one adds a **Read a data source** step that reads it, in a free spot of the canvas. A pipeline can read several data sets, such as to join them;
 - a **toolbox** that lists the available steps by category (Source, Transform, File, Destination), with a search box. Drag a step to the canvas, or click it to add it;
-- the **canvas**, which shows the steps and their connections. Drag from an output port to an input port to connect two steps. Clicking an unconnected output port opens a searchable list of the steps that can receive its data (rows or files), and adds the chosen step after it, already connected. An empty pipeline offers its first source. The canvas can be zoomed and fitted to the steps, and changes can be undone and redone (`Ctrl+Z`, `Ctrl+Y`);
+- the **canvas**, which shows the steps and their connections. Drag from an output port to an input port to connect two steps. Clicking an unconnected output port opens a searchable list of the steps that can receive its data (rows or files), and adds the chosen step after it, already connected. An empty pipeline offers its first source. Adding a **Read a data source** step from the toolbox, or from an empty pipeline, opens the dialog of the data sets first, and adds the step once a data set is chosen. The canvas can be zoomed and fitted to the steps, and changes can be undone and redone (`Ctrl+Z`, `Ctrl+Y`);
 - the **step panel**, which opens when a step is selected, over the canvas or pinned below it, with three tabs:
     - **Settings**: the editor of the step, including an optional title shown on the canvas instead of the name of the step. Changes are applied as they are made;
     - **Data**: a preview of the first rows the step produces, see [Previews](#previews);
@@ -96,10 +97,23 @@ The **Data** tab runs the pipeline up to the selected step, with the draft's set
 
 | Step | Ports | Settings |
 |------|-------|----------|
-| **Read a data source** (`DataSource`) | Out: rows | The **data set** to read, from any [data source](../DataSources/README.md), such as a content type, the users, or a saved query. The **fields** to read, in order (none reads every field). **Filters** that the rows must all match, with the [operators](../DataSources/README.md#filter-operators) of data sources; dates are written `yyyy-MM-dd` and compared in UTC. The **most rows** to read (0 reads every row). The **parameters** of a data set that takes them, such as a saved query, one `name=value` per line. Parameter and filter values can use [placeholders](#file-names-and-texts), such as `{Parameter:Since}`. **Read only new rows**, by a number or date field: see [Incremental runs](#incremental-runs). |
+| **Read a data source** (`DataSource`) | Out: rows | The **data set** to read, from any [data source](../DataSources/README.md), such as a content type, the users, or a saved query, chosen when the step is added; **Change** opens the same dialog. Choosing another data set clears the fields and the filters. The **fields to read**, in order (none reads every field). **Filters** that the rows must all match, with the [operators](../DataSources/README.md#filter-operators) of data sources that apply to the type of the field: see [Filtering the rows of a data source](#filtering-the-rows-of-a-data-source). The **maximum number of rows** to read (0 reads every row). The **parameters** of a data set that takes them, such as a saved query, one `name=value` per line. Parameter and filter values can use [placeholders](#file-names-and-texts), such as `{Parameter:Since}`. **Read only new rows**, by a number or date field: see [Incremental runs](#incremental-runs). |
 | **Read a media file** (`ReadMediaFile`) | Out: rows | The path of a CSV, Excel, JSON or JSON Lines **file** of the media library, and its **format** (inferred from the extension by default). Whether the first row holds the names of the columns (CSV, Excel), the CSV **delimiter**, and the **worksheet** of a workbook (the first one by default). Available when the Media feature is enabled. |
 
 The **Read a data source** step reads the data with the access of the user the run is for: a data set this user may not read is reported as missing. **Read a media file** requires this user to be allowed to manage the media of the file's folder.
+
+#### Filtering the rows of a data source
+
+Each filter of the **Read a data source** step compares a field with a value. The editor shows only the comparisons that apply to the type of the field, and the step reports a comparison that doesn't apply as an error, such as one saved before the type of the field changed:
+
+| Field type | Comparisons |
+|------------|-------------|
+| Text | equals, doesn't equal, contains, doesn't contain, starts with, ends with, is one of, isn't one of, is empty, isn't empty. |
+| Integer, Decimal | equals, doesn't equal, is greater than (or equal to), is less than (or equal to), is between, is one of, isn't one of, is empty, isn't empty. |
+| Date, DateTime | The comparisons of numbers, and is in the last or the next N days, counting today. |
+| Boolean | equals, doesn't equal, is one of, isn't one of, is empty, isn't empty. |
+
+The editor shows the inputs of the values that the comparison takes: two values for **is between**, whose empty bound is open, none for **is empty** and **isn't empty**, a number of days for **is in the last** and **is in the next**, and a list for **is one of** and **isn't one of**. A list separates its values with commas, such as `Paris, London`, and a value that holds a comma is written in double quotes, such as `"Smith, John"`. A placeholder in a list, such as `{Parameter:Regions}`, gives each value of the parameter, separated by commas. The inputs are typed for the field: a number, a date, a date and time, or yes or no. The text button next to the value writes it as text instead, for a [placeholder](#file-names-and-texts), such as `{Parameter:Since}`, or for a date without a time on a date and time field, which covers the whole day. A saved value that the typed input can't hold is shown as text. Dates are stored as `yyyy-MM-dd`, dates and times as `yyyy-MM-ddTHH:mm`, and they are compared in UTC.
 
 ### Transforms
 

@@ -233,6 +233,12 @@ alter that table. The startup application has the highest override priority,
 followed by the active theme and its base themes, then modules in dependency
 order.
 
+Descriptors are cached across tenants by provider type and feature.
+`ShapeTableBuilder.ExcludedFeatureIds` identifies features already cached for
+the current provider type, not features described by other providers. Module
+templates are associated with each enabled feature of the module, so their
+availability does not depend on tenant activation order.
+
 For normal customization, add a template to the active theme rather than working
 with the shape table directly.
 

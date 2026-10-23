@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,15 +9,13 @@ namespace OrchardCore.Settings.Deployment;
 /// </summary>
 public class SiteSettingsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<SiteSettingsDeploymentStep>("Configuration");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<SiteSettingsDeploymentStep>("Site Settings");
+    public override string Name => nameof(SiteSettings);
 
-    public SiteSettingsDeploymentStep()
-    {
-        Name = nameof(SiteSettings);
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Configuration;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => SettingsLocalizationSources.SiteSettings;
 
     public string[] Settings { get; set; }
 }

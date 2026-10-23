@@ -113,7 +113,7 @@ public class ContentItemsFieldType : FieldType
         var contentItemsQuery = await FilterWhereArgumentsAsync(query, where, context, session);
         contentItemsQuery = PageQuery(contentItemsQuery, context);
 
-        IEnumerable<ContentItem> contentItems = await contentItemsQuery.ListAsync();
+        IEnumerable<ContentItem> contentItems = await contentItemsQuery.ListAsync(context.CancellationToken);
 
         foreach (var filter in filters)
         {

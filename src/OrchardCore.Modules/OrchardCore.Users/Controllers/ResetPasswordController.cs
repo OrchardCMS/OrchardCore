@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,10 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.ResetPassword)]
 public sealed class ResetPasswordController : Controller
 {
+    private const string ForgotPasswordCooldownCacheKeyPrefix = "ForgotPasswordEmail:";
+
+    private static readonly TimeSpan s_forgotPasswordCooldown = TimeSpan.FromMinutes(1);
+
     private readonly IUserService _userService;
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
@@ -28,6 +33,7 @@ public sealed class ResetPasswordController : Controller
     private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
     private readonly UserEmailService _userEmailService;
     private readonly IDisplayManager<ResetPasswordForm> _resetPasswordDisplayManager;
+    private readonly IDistributedCache _distributedCache;
 
     internal readonly IStringLocalizer S;
 
@@ -42,6 +48,7 @@ public sealed class ResetPasswordController : Controller
         IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
         IOptionsMonitor<RegistrationOptions> registrationOptions,
+        IDistributedCache distributedCache,
         IStringLocalizer<ResetPasswordController> stringLocalizer)
     {
         _userService = userService;
@@ -54,6 +61,7 @@ public sealed class ResetPasswordController : Controller
         _resetPasswordDisplayManager = resetPasswordDisplayManager;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         _registrationOptions = registrationOptions;
+        _distributedCache = distributedCache;
         S = stringLocalizer;
     }
 
@@ -100,7 +108,7 @@ public sealed class ResetPasswordController : Controller
             {
                 ModelState.AddModelError(string.Empty, S["Before you can reset your password, you need to verify your email address."]);
             }
-            else
+            else if (await TryStartForgotPasswordCooldownAsync(user))
             {
                 await _userEmailService.SendPasswordResetAsync(user);
 
@@ -174,5 +182,25 @@ public sealed class ResetPasswordController : Controller
     public IActionResult ResetPasswordConfirmation()
     {
         return View();
+    }
+
+    // The per-IP rate limit only applies when the Rate Limits feature is enabled, and it allows the many users who share an IP address
+    // to recover their passwords, so this cooldown always limits how often the same user can receive a password reset email.
+    // The confirmation page is still shown during the cooldown, so it doesn't reveal whether the account exists.
+    private async Task<bool> TryStartForgotPasswordCooldownAsync(IUser user)
+    {
+        var cooldownKey = ForgotPasswordCooldownCacheKeyPrefix + await _userManager.GetUserIdAsync(user);
+
+        if (await _distributedCache.GetAsync(cooldownKey, HttpContext.RequestAborted) != null)
+        {
+            return false;
+        }
+
+        await _distributedCache.SetAsync(cooldownKey, [1], new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = s_forgotPasswordCooldown,
+        }, HttpContext.RequestAborted);
+
+        return true;
     }
 }

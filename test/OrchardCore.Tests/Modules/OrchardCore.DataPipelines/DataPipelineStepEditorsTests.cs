@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text.Json;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -181,6 +182,242 @@ public sealed class DataPipelineStepEditorsTests
         Assert.DoesNotContain(operators, option => option.TextContent == option.GetAttribute("value"));
     }
 
+    [Theory]
+    [InlineData("DisplayText", DataFilterOperator.Equals, "Text", "StartsWith", "Between")]
+    [InlineData("PublishedUtc", DataFilterOperator.Equals, "DateTime", "InLastDays", "Contains")]
+    [InlineData("Published", DataFilterOperator.Equals, "Boolean", "IsNotEmpty", "GreaterThan")]
+    public async Task Editor_DataSourceFilter_ShowsTheOperatorsOfTheFieldType(string field, DataFilterOperator filterOperator, string fieldType, string shown, string hidden)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings
+        {
+            Source = "Contents",
+            DataSet = "BlogPost",
+            Filters = [new DataSourceFilter { Field = field, Operator = filterOperator }],
+        });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var row = editor.QuerySelector("[data-dp-rows] [data-dp-filter-row]");
+        Assert.Equal(fieldType, row.QuerySelector($"[data-dp-filter-field] option[value='{field}']").GetAttribute("data-dp-type"));
+
+        var shownOption = row.QuerySelector($"[data-dp-filter-operator] option[value='{shown}']");
+        Assert.False(shownOption.HasAttribute("hidden"));
+        Assert.False(shownOption.HasAttribute("disabled"));
+        Assert.Contains(fieldType, shownOption.GetAttribute("data-dp-types").Split(' '));
+
+        var hiddenOption = row.QuerySelector($"[data-dp-filter-operator] option[value='{hidden}']");
+        Assert.True(hiddenOption.HasAttribute("hidden"));
+        Assert.True(hiddenOption.HasAttribute("disabled"));
+        Assert.DoesNotContain(fieldType, hiddenOption.GetAttribute("data-dp-types").Split(' '));
+    }
+
+    [Fact]
+    public async Task Editor_DataSourceFilterWithAnOperatorThatDoesNotApply_KeepsItSelected()
+    {
+        // Arrange: a filter saved before the comparisons were limited to the type of the field.
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings
+        {
+            Source = "Contents",
+            DataSet = "BlogPost",
+            Filters = [new DataSourceFilter { Field = "PublishedUtc", Operator = DataFilterOperator.Contains, Values = ["2026"] }],
+        });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var option = editor.QuerySelector($"select[name='{Prefix}Filters[0].Operator'] option[value='Contains']");
+        Assert.True(option.HasAttribute("selected"));
+        Assert.False(option.HasAttribute("hidden"));
+        Assert.False(option.HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public async Task Editor_DataSource_LabelsTheFieldsAndTheMaximumNumberOfRows()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var labels = editor.QuerySelectorAll("label.ocat-label").Select(label => label.TextContent.Trim()).ToList();
+        Assert.Contains("Fields to read", labels);
+        Assert.Contains("Maximum number of rows", labels);
+    }
+
+    [Fact]
+    public async Task Editor_DataSource_ShowsTheChosenDataSetAndAsksTheDesignerToChangeIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var picker = editor.QuerySelector("[data-dp-dataset-picker]");
+        Assert.Equal("Contents::BlogPost", picker.QuerySelector($"input[type=hidden][name='{Prefix}DataSet']").GetAttribute("value"));
+        Assert.Contains("Blog Post", picker.QuerySelector("[data-dp-dataset-summary]").TextContent, StringComparison.Ordinal);
+        Assert.Contains("Content items", picker.QuerySelector("[data-dp-dataset-summary]").TextContent, StringComparison.Ordinal);
+        Assert.NotNull(picker.QuerySelector("button[data-dp-dataset-open]"));
+    }
+
+    [Fact]
+    public async Task DataSets_Get_ListsTheDataSetsWithTheirDataSource()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, []);
+
+        // Act
+        using var response = await context.Client.GetAsync($"Admin/DataPipelines/{pipelineId}/Designer/DataSets", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var dataSets = json.RootElement.GetProperty("dataSets").EnumerateArray().ToList();
+
+        var blogPost = Assert.Single(dataSets, dataSet => dataSet.GetProperty("value").GetString() == "Contents::BlogPost");
+        Assert.Equal("Blog Post", blogPost.GetProperty("displayName").GetString());
+        Assert.Equal("Content items", blogPost.GetProperty("source").GetString());
+        Assert.Contains(dataSets, dataSet => dataSet.GetProperty("source").GetString() == "Users");
+    }
+
+    [Fact]
+    public async Task AddDataSource_DataSet_AddsAStepThatReadsIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, []);
+
+        // Act
+        using var response = await PostJsonAsync(context, pipelineId, "AddDataSource", new { revision = await GetRevisionAsync(context, pipelineId), dataSet = "Contents::BlogPost", x = 80, y = 40 });
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var stepId = json.RootElement.GetProperty("node").GetProperty("id").GetString();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var pipeline = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().GetAsync(pipelineId);
+            var step = pipeline.GetEditableDefinition().FindStep(stepId);
+            var settings = step.GetOrCreate<DataSourceStepSettings>();
+
+            Assert.Equal(DataSourceStep.StepName, step.Type);
+            Assert.Equal((80, 40), (step.X, step.Y));
+            Assert.Equal(("Contents", "BlogPost"), (settings.Source, settings.DataSet));
+        });
+    }
+
+    [Theory]
+    [InlineData("Contents::Missing")]
+    [InlineData("BlogPost")]
+    [InlineData(null)]
+    public async Task AddDataSource_DataSetTheUserCanNotRead_IsABadRequest(string dataSet)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, []);
+
+        // Act
+        using var response = await PostJsonAsync(context, pipelineId, "AddDataSource", new { revision = await GetRevisionAsync(context, pipelineId), dataSet, x = 0, y = 0 });
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData(DataFilterOperator.IsEmpty, new string[0])]
+    [InlineData(DataFilterOperator.Equals, new[] { "2026-01-01" })]
+    [InlineData(DataFilterOperator.Between, new[] { "2026-01-01", "2026-01-31" })]
+    public async Task EditorPost_DataSourceFilter_KeepsTheValuesTheOperatorTakes(DataFilterOperator filterOperator, string[] expected)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        using var response = await PostEditorAsync(context, pipelineId, "source", new()
+        {
+            [$"{Prefix}DataSet"] = "Contents::BlogPost",
+            [$"{Prefix}MaxRows"] = "0",
+            [$"{Prefix}Filters[0].Field"] = "PublishedUtc",
+            [$"{Prefix}Filters[0].Operator"] = filterOperator.ToString(),
+            [$"{Prefix}Filters[0].Value"] = "2026-01-01",
+            [$"{Prefix}Filters[0].SecondValue"] = "2026-01-31",
+        });
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var pipeline = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().GetAsync(pipelineId);
+            var settings = pipeline.GetEditableDefinition().FindStep("source").GetOrCreate<DataSourceStepSettings>();
+            var filter = Assert.Single(settings.Filters);
+
+            Assert.Equal(filterOperator, filter.Operator);
+            Assert.Equal(expected, filter.Values);
+        });
+    }
+
+    [Theory]
+    [InlineData(DataFilterOperator.In)]
+    [InlineData(DataFilterOperator.NotIn)]
+    public async Task EditorPost_DataSourceFilterWithAList_SavesEachValueAndShowsThemBack(DataFilterOperator filterOperator)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost" });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        using var response = await PostEditorAsync(context, pipelineId, "source", new()
+        {
+            [$"{Prefix}DataSet"] = "Contents::BlogPost",
+            [$"{Prefix}MaxRows"] = "0",
+            [$"{Prefix}Filters[0].Field"] = "DisplayText",
+            [$"{Prefix}Filters[0].Operator"] = filterOperator.ToString(),
+            [$"{Prefix}Filters[0].Value"] = "Man must explore, \"Smith, John\" ,",
+        });
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var pipeline = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().GetAsync(pipelineId);
+            var settings = pipeline.GetEditableDefinition().FindStep("source").GetOrCreate<DataSourceStepSettings>();
+
+            Assert.Equal(["Man must explore", "Smith, John"], Assert.Single(settings.Filters).Values);
+        });
+
+        var value = editor.QuerySelector($"input[name='{Prefix}Filters[0].Value']");
+        Assert.Equal("Man must explore, \"Smith, John\"", value.GetAttribute("value"));
+    }
+
     [Fact]
     public async Task Editor_SaveToMediaWithDefaultMediaOptions_WarnsOfTheRejectedFileTypes()
     {
@@ -228,6 +465,21 @@ public sealed class DataPipelineStepEditorsTests
             Assert.NotEqual("s3cret!", settings.ProtectedPassword);
             Assert.Equal("s3cret!", scope.ServiceProvider.GetRequiredService<DataPipelineSecrets>().Unprotect(settings.ProtectedPassword));
         });
+    }
+
+    // Posts JSON to an endpoint of the designer the way it does: with the antiforgery token of its page in a header.
+    private static async Task<HttpResponseMessage> PostJsonAsync(SiteContext context, string pipelineId, string action, object body)
+    {
+        var (token, cookies) = await GetAntiforgeryAsync(context, pipelineId);
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"Admin/DataPipelines/{pipelineId}/Designer/{action}")
+        {
+            Content = JsonContent.Create(body),
+        };
+        request.Headers.Add("Cookie", cookies);
+        request.Headers.Add("RequestVerificationToken", token);
+
+        return await context.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     // Posts a step editor the way the designer does: with the antiforgery token of the designer page.

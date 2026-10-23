@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Deployment;
@@ -7,15 +8,13 @@ namespace OrchardCore.Deployment.Deployment;
 /// </summary>
 public class DeploymentPlanDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<DeploymentPlanDeploymentStep>("Deployment");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<DeploymentPlanDeploymentStep>("Deployment Plans");
+    public override string Name => "DeploymentPlan";
 
-    public DeploymentPlanDeploymentStep()
-    {
-        Name = "DeploymentPlan";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => DeploymentLocalizationSources.Deployment;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => DeploymentLocalizationSources.DeploymentPlans;
 
     public bool IncludeAll { get; set; } = true;
 
