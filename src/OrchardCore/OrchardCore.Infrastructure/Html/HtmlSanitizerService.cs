@@ -16,7 +16,11 @@ public class HtmlSanitizerService : IHtmlSanitizerService
     // belong to a tenant that was released or is idle, don't stay in memory.
     private static readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(10);
 
-    // The entries are evicted at the latest after this long, even if they are read continuously.
+    // The entries are evicted at the latest after this long, even if they are read continuously. This might seem
+    // useless since the sliding expiration already evicts unused entries, but it lets other fragments get a turn
+    // once the cache capacity is filled. For instance a big fragment that is displayed once every 10 minutes is
+    // cached and, without an absolute expiration, would keep its place and prevent other fragments from being
+    // cached, even those that are displayed thousands of times per second.
     private static readonly TimeSpan _absoluteExpiration = TimeSpan.FromHours(1);
 
     // Content is sanitized each time it is displayed, while it rarely changes, so the result for a given fragment
