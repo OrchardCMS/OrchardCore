@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -9,15 +10,13 @@ namespace OrchardCore.DataPipelines.Deployment;
 /// </summary>
 public class DataPipelinesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<DataPipelinesDeploymentStep>("Data");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<DataPipelinesDeploymentStep>("Data Pipelines");
+    public override string Name => "DataPipelines";
 
-    public DataPipelinesDeploymentStep()
-    {
-        Name = "DataPipelines";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => DataPipelinesLocalizationSources.Data;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => DataPipelinesLocalizationSources.DataPipelines;
 
     /// <summary>
     /// Gets or sets a value indicating whether every pipeline is exported, including the ones created later.

@@ -69,7 +69,7 @@
             <div class="ocat-wrapper">
                 <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="Editor" class="form-select" id="type-part-editor-select">
+                    <select asp-for="Editor" class="form-select" data-type-part-editor-select>
                         @foreach (var editorShape in editorShapes)
                         {
                             var shape = await Factory.CreateAsync(editorShape);
@@ -90,7 +90,7 @@
             <div class="ocat-wrapper">
                 <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="DisplayMode" class="form-select" id="type-part-display-select">
+                    <select asp-for="DisplayMode" class="form-select" data-type-part-display-select>
                         @foreach (var displayShape in displayShapes)
                         {
                             var shape = await Factory.CreateAsync(displayShape);

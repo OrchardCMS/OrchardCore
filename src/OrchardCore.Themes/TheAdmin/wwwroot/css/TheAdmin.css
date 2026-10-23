@@ -161,6 +161,10 @@
   all: unset;
 }
 
+[v-cloak] {
+  display: none;
+}
+
 a {
   text-decoration: none;
 }
@@ -365,7 +369,7 @@ body[data-actions-layout=menu] .action-bar-bottom:not(.action-bar-ready) .action
 }
 
 .ta-content:has(.action-bar-bottom) {
-  padding-bottom: calc(var(--oc-action-bar-bottom-height) + 1rem);
+  padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 1rem);
 }
 
 /*
@@ -10702,7 +10706,8 @@ span.field-validation-error {
   display: none;
 }
 
-.input-validation-error {
+.input-validation-error,
+input[type=url]:invalid {
   border-color: var(--bs-form-invalid-border-color);
 }
 

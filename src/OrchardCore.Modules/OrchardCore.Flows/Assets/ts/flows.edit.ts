@@ -44,12 +44,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const contentTypesName = target.dataset.contenttypesName;
         const contentItemsName = target.dataset.contentitemsName;
         fetch(createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName)
-            .then((response) => response.text())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Failed to build the editor (HTTP ${response.status}).`);
+                }
+
+                return response.text();
+            })
             .then((data) => {
                 const result = JSON.parse(data);
                 document.getElementById(targetId)!.insertAdjacentHTML("beforeend", result.Content);
                 evalScripts(result.Scripts);
-            });
+            })
+            .catch((error) => console.error(error));
     });
 
     document.addEventListener("click", (event) => {
@@ -77,12 +84,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const contentTypesName = target.dataset.contenttypesName;
         const contentItemsName = target.dataset.contentitemsName;
         fetch(createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName)
-            .then((response) => response.text())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Failed to build the editor (HTTP ${response.status}).`);
+                }
+
+                return response.text();
+            })
             .then((data) => {
                 const result = JSON.parse(data);
                 widgetTemplate.insertAdjacentHTML("beforebegin", result.Content);
                 evalScripts(result.Scripts);
-            });
+            })
+            .catch((error) => console.error(error));
     });
 
     document.addEventListener("click", (event) => {

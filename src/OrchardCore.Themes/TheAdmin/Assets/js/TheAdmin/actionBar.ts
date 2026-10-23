@@ -88,18 +88,61 @@ const initActionBar = (bar: HTMLElement) => {
 };
 
 (function () {
-    const bars = document.querySelectorAll<HTMLElement>('.action-bar-bottom');
-
-    if (bars.length === 0) {
-        return;
-    }
-
-    bars.forEach(initActionBar);
+    const observedBars: HTMLElement[] = [];
 
     // Lets the content reserve the space covered by the fixed bar.
-    const lastBar = bars[bars.length - 1];
-    new ResizeObserver(() => {
-        document.documentElement.style.setProperty('--oc-action-bar-bottom-height', lastBar.offsetHeight + 'px');
-    }).observe(lastBar);
+    const updateHeight = () => {
+        const bar = observedBars.filter(b => b.isConnected && b.offsetParent !== null).pop();
+
+        if (bar) {
+            document.documentElement.style.setProperty('--oc-action-bar-bottom-height', bar.offsetHeight + 'px');
+        } else {
+            document.documentElement.style.removeProperty('--oc-action-bar-bottom-height');
+        }
+    };
+
+    const resizeObserver = new ResizeObserver(updateHeight);
+
+    const initBars = (root: ParentNode) => {
+        const bars = Array.from(root.querySelectorAll<HTMLElement>('.action-bar-bottom:not(.action-bar-ready)'));
+
+        if (root instanceof HTMLElement && root.matches('.action-bar-bottom:not(.action-bar-ready)')) {
+            bars.unshift(root);
+        }
+
+        for (const bar of bars) {
+            initActionBar(bar);
+            observedBars.push(bar);
+            resizeObserver.observe(bar);
+        }
+    };
+
+    initBars(document);
+
+    // Bars rendered later, e.g. by Vue components, are initialized when they are added to the page.
+    new MutationObserver(mutations => {
+        let removed = false;
+
+        for (const mutation of mutations) {
+            mutation.addedNodes.forEach(node => {
+                if (node instanceof HTMLElement) {
+                    initBars(node);
+                }
+            });
+
+            removed ||= mutation.removedNodes.length > 0;
+        }
+
+        if (removed) {
+            for (let i = observedBars.length - 1; i >= 0; i--) {
+                if (!observedBars[i].isConnected) {
+                    resizeObserver.unobserve(observedBars[i]);
+                    observedBars.splice(i, 1);
+                }
+            }
+
+            updateHeight();
+        }
+    }).observe(document.body, { childList: true, subtree: true });
 })();
 export {};

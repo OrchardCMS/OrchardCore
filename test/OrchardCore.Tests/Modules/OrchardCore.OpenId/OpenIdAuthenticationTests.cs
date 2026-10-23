@@ -362,7 +362,8 @@ public class OpenIdAuthenticationTests
 
         HttpResponseMessage response = null;
 
-        for (var i = 0; i < 11; i++)
+        // The password grant shares the budget of the login page, which allows 100 attempts per minute per IP address.
+        for (var i = 0; i < 101; i++)
         {
             var request = HttpRequestHelper.CreatePostMessage("connect/token", new Dictionary<string, string>
             {
@@ -376,6 +377,66 @@ public class OpenIdAuthenticationTests
         }
 
         Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task OpenIdClientCredentialsGrant_BeyondPasswordAuthenticationLimit_IsNotRateLimited()
+    {
+        var context = new SiteContext();
+
+        await context.InitializeAsync();
+
+        const string clientId = "client-credentials-client";
+        const string clientSecret = "ClientSecret01_";
+
+        var recipe = new JsonObject
+        {
+            ["steps"] = new JsonArray
+            {
+                new JsonObject
+                {
+                    { "name", "Feature" },
+                    { "enable", new JsonArray(
+                        "OrchardCore.Users",
+                        "OrchardCore.RateLimits",
+                        "OrchardCore.OpenId.Server",
+                        "OrchardCore.OpenId.Validation",
+                        "OrchardCore.OpenId") },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdServerSettings" },
+                    { "EnableTokenEndpoint", true },
+                    { "AllowClientCredentialsFlow", true },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdApplication" },
+                    { "ClientId", clientId },
+                    { "ClientSecret", clientSecret },
+                    { "DisplayName", "Client Credentials Test Application" },
+                    { "Type", "confidential" },
+                    { "AllowClientCredentialsFlow", true },
+                },
+            },
+        };
+
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
+
+        // A server that requests tokens for many users must not be limited like password guesses from an IP address.
+        for (var i = 0; i < 101; i++)
+        {
+            var request = HttpRequestHelper.CreatePostMessage("connect/token", new Dictionary<string, string>
+            {
+                { "client_id", clientId },
+                { "client_secret", clientSecret },
+                { "grant_type", "client_credentials" },
+            });
+
+            var response = await context.Client.SendAsync(request, CancellationToken.None);
+
+            Assert.NotEqual(HttpStatusCode.TooManyRequests, response.StatusCode);
+        }
     }
 
     [Fact]

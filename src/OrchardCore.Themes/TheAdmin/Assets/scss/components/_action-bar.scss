@@ -113,5 +113,5 @@ body[data-actions-layout="menu"] .action-bar-bottom:not(.action-bar-ready) .acti
 
 // Prevents the content from being hidden behind the fixed bottom action bar.
 .ta-content:has(.action-bar-bottom) {
-    padding-bottom: calc(var(--oc-action-bar-bottom-height) + 1rem);
+    padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 1rem);
 }

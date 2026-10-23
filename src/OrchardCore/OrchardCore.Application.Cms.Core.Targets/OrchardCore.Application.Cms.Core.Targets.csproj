@@ -97,6 +97,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenApi\OrchardCore.OpenApi.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId.Secrets\OrchardCore.OpenId.Secrets.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.PublishLater\OrchardCore.PublishLater.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" PrivateAssets="none" />
@@ -112,6 +113,8 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Roles\OrchardCore.Roles.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Scripting\OrchardCore.Scripting.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search\OrchardCore.Search.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Secrets\OrchardCore.Secrets.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Secrets.AzureKeyVault\OrchardCore.Secrets.AzureKeyVault.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AzureAI\OrchardCore.AzureAI.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Elasticsearch\OrchardCore.Elasticsearch.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Lucene\OrchardCore.Lucene.csproj" PrivateAssets="none" />
