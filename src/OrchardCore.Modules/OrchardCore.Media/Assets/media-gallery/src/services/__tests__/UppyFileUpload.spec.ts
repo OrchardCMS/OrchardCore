@@ -337,6 +337,9 @@ describe("UppyFileUpload", () => {
       });
 
       it("should register AfterDirSelected handler", async () => {
+        const mockXhrPlugin = { setOptions: vi.fn() };
+        mockGetPlugin.mockImplementation((name: string) => (name === "XHRUpload" ? mockXhrPlugin : null));
+
         const wrapper = await mountWithFileUpload(xhrModel);
 
         eventBus.emit("AfterDirSelected", {
@@ -345,6 +348,9 @@ describe("UppyFileUpload", () => {
           filePath: "/Documents",
           isDirectory: true,
         });
+
+        // The handler refreshes the XHR upload endpoint for the new folder.
+        expect(mockXhrPlugin.setOptions).toHaveBeenCalledWith(expect.objectContaining({ endpoint: expect.any(String) }));
 
         wrapper.unmount();
       });
@@ -1236,17 +1242,31 @@ describe("UppyFileUpload", () => {
       });
 
       it("should skip when file is null", async () => {
+        global.fetch = vi.fn();
+        const successSpy = vi.fn();
+        eventBus.on("UploadSuccess", successSpy);
+
         const wrapper = await mountWithFileUpload(tusModel);
 
         await emitUppyEventAsync("upload-success", null, { uploadURL: "http://localhost/tus/abc" });
+
+        expect(global.fetch).not.toHaveBeenCalled();
+        expect(successSpy).not.toHaveBeenCalled();
 
         wrapper.unmount();
       });
 
       it("should skip when response has no uploadURL", async () => {
+        global.fetch = vi.fn();
+        const successSpy = vi.fn();
+        eventBus.on("UploadSuccess", successSpy);
+
         const wrapper = await mountWithFileUpload(tusModel);
 
         await emitUppyEventAsync("upload-success", { id: "f1", name: "file.jpg" }, {});
+
+        expect(global.fetch).not.toHaveBeenCalled();
+        expect(successSpy).not.toHaveBeenCalled();
 
         wrapper.unmount();
       });
@@ -1334,10 +1354,18 @@ describe("UppyFileUpload", () => {
 
         const wrapper = await mountWithFileUpload(tusModel);
 
+        const successSpy = vi.fn();
+        eventBus.on("UploadSuccess", successSpy);
+
         await emitUppyEventAsync("upload-success",
           { id: "f4", name: "orphan.jpg" },
           { uploadURL: "http://localhost/tus/orphan" },
         );
+
+        expect(global.fetch).toHaveBeenCalledWith("http://localhost/tus/fileinfo/orphan", expect.anything());
+        // There is no placeholder to update, so the store stays empty, but the upload is still reported.
+        expect(globals.assetsStore.value).toEqual([]);
+        expect(successSpy).toHaveBeenCalledWith({ name: "orphan.jpg", resumed: false });
 
         wrapper.unmount();
       });
@@ -1382,8 +1410,8 @@ describe("UppyFileUpload", () => {
       it("should handle upload event with empty fileIDs", async () => {
         const wrapper = await mountWithFileUpload(tusModel);
 
-        emitUppyEvent("upload", "upload-1", []);
-        emitUppyEvent("upload", "upload-1", undefined);
+        expect(() => emitUppyEvent("upload", "upload-1", [])).not.toThrow();
+        expect(() => emitUppyEvent("upload", "upload-1", undefined)).not.toThrow();
 
         wrapper.unmount();
       });
@@ -1601,6 +1629,9 @@ describe("UppyFileUpload", () => {
       });
 
       it("should handle successful upload with no server files array", async () => {
+        const successSpy = vi.fn();
+        eventBus.on("UploadSuccess", successSpy);
+
         const wrapper = await mountWithFileUpload(xhrModel);
 
         emitUppyEvent("complete", {
@@ -1613,10 +1644,16 @@ describe("UppyFileUpload", () => {
           failed: [],
         });
 
+        // Without a files array in the response, the upload is reported as successful as is.
+        expect(successSpy).toHaveBeenCalledWith({ name: "noresponse.jpg" });
+
         wrapper.unmount();
       });
 
       it("should handle successful upload with no response body", async () => {
+        const successSpy = vi.fn();
+        eventBus.on("UploadSuccess", successSpy);
+
         const wrapper = await mountWithFileUpload(xhrModel);
 
         emitUppyEvent("complete", {
@@ -1629,10 +1666,16 @@ describe("UppyFileUpload", () => {
           failed: [],
         });
 
+        // Without a files array in the response, the upload is reported as successful as is.
+        expect(successSpy).toHaveBeenCalledWith({ name: "nobody.jpg" });
+
         wrapper.unmount();
       });
 
       it("should handle successful upload with no response", async () => {
+        const successSpy = vi.fn();
+        eventBus.on("UploadSuccess", successSpy);
+
         const wrapper = await mountWithFileUpload(xhrModel);
 
         emitUppyEvent("complete", {
@@ -1642,11 +1685,17 @@ describe("UppyFileUpload", () => {
           failed: [],
         });
 
+        // Without a files array in the response, the upload is reported as successful as is.
+        expect(successSpy).toHaveBeenCalledWith({ name: "noresp.jpg" });
+
         wrapper.unmount();
       });
 
       it("should handle case where placeholder is not found in assetsStore", async () => {
         globals.setAssetsStore([]);
+
+        const successSpy = vi.fn();
+        eventBus.on("UploadSuccess", successSpy);
 
         const wrapper = await mountWithFileUpload(xhrModel);
 
@@ -1670,6 +1719,10 @@ describe("UppyFileUpload", () => {
           ],
           failed: [],
         });
+
+        // There is no placeholder to update, so the store stays empty, but the upload is still reported.
+        expect(globals.assetsStore.value).toEqual([]);
+        expect(successSpy).toHaveBeenCalledWith({ name: "orphan.jpg" });
 
         wrapper.unmount();
       });
