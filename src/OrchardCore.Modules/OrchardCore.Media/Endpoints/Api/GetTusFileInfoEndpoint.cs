@@ -41,7 +41,7 @@ public static class GetTusFileInfoEndpoint
             return httpContext.ApiForbidProblem();
         }
 
-        var entry = await tusMetadataStore.GetAsync(uploadId);
+        var entry = await tusMetadataStore.GetAsync(uploadId, httpContext.RequestAborted);
 
         if (entry == null || string.IsNullOrEmpty(entry.MediaFilePath))
         {
@@ -61,7 +61,7 @@ public static class GetTusFileInfoEndpoint
         }
 
         // Remove the entry now that the client has retrieved it and both authorization checks passed.
-        await tusMetadataStore.RemoveAsync(uploadId);
+        await tusMetadataStore.RemoveAsync(uploadId, httpContext.RequestAborted);
 
         return TypedResults.Ok(MediaEndpointHelpers.CreateFileResult(fileInfo, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
     }

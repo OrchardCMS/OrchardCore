@@ -33,6 +33,9 @@ $(function () {
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
+        })
+        .fail(function (jqXHR) {
+            console.error('Failed to build the editor (HTTP ' + jqXHR.status + ').');
         });
     });
 
@@ -56,6 +59,9 @@ $(function () {
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
+        })
+        .fail(function (jqXHR) {
+            console.error('Failed to build the editor (HTTP ' + jqXHR.status + ').');
         });
     });
 

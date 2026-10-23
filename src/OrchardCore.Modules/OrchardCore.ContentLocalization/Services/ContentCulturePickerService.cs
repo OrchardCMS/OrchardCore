@@ -100,13 +100,20 @@ public class ContentCulturePickerService : IContentCulturePickerService
 
     public void SetContentCulturePickerCookie(string targetCulture)
     {
-        var response = _httpContextAccessor.HttpContext.Response;
+        var httpContext = _httpContextAccessor.HttpContext;
+        var response = httpContext.Response;
         // Set the cookie to handle redirecting to a custom controller
         response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
         response.Cookies.Append(
             CookieRequestCultureProvider.DefaultCookieName,
             CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
-            new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime) }
+            new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime),
+                // The culture cookie is only read on the server by the 'CookieRequestCultureProvider'.
+                HttpOnly = true,
+                Secure = httpContext.Request.IsHttps,
+            }
         );
     }
 }

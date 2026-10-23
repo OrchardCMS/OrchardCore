@@ -163,7 +163,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
         var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, context, _htmlEncoder);
 
-        var result = await _emailService.SendAsync(email, subject, body);
+        var result = await _emailService.SendAsync(email, subject, body, cancellationToken: context.CancellationToken);
 
         if (!result.Succeeded)
         {

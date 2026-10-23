@@ -85,7 +85,7 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
 
         if (!string.IsNullOrWhiteSpace(content))
         {
-            await response.WriteAsync(content);
+            await response.WriteAsync(content, workflowContext.CancellationToken);
         }
 
         _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;

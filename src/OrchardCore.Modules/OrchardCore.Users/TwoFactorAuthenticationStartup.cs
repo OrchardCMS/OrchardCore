@@ -123,8 +123,8 @@ public sealed class TwoFactorAuthenticationRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithTwoFactorAuthentication, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorAuthentication, 5));
-            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithRecoveryCode, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorRecovery, 3));
+            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithTwoFactorAuthentication, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPolicy(UserRateLimiterPolicyNames.TwoFactorAuthentication, 5, RateLimitPartitionKeys.GetTwoFactorUser));
+            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithRecoveryCode, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPolicy(UserRateLimiterPolicyNames.TwoFactorRecovery, 3, RateLimitPartitionKeys.GetTwoFactorUser));
         });
     }
 }
@@ -137,7 +137,7 @@ public sealed class EmailAuthenticatorRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(Endpoints.EmailAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1)));
+            options.AddRouteRateLimit(Endpoints.EmailAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetTwoFactorUser));
         });
     }
 }
@@ -150,7 +150,7 @@ public sealed class SmsAuthenticatorRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(Endpoints.SmsAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1)));
+            options.AddRouteRateLimit(Endpoints.SmsAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetTwoFactorUser));
         });
     }
 }

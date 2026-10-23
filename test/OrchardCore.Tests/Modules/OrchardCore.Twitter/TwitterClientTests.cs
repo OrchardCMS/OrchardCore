@@ -43,7 +43,9 @@ public class TwitterClientTests
         _mockHttpMessageHandler = new Mock<TwitterClientMessageHandler>(
             Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
             Options.Create(settings),
-            _mockDataProtectionProvider);
+            new ServiceCollection().BuildServiceProvider(),
+            _mockDataProtectionProvider,
+            NullLogger<TwitterClientMessageHandler>.Instance);
     }
 
     [Fact]
@@ -115,7 +117,9 @@ public class TwitterClientTests
         var handler = new Mock<TwitterClientMessageHandler>(
             Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
             Options.Create(settings),
-            Mock.Of<IDataProtectionProvider>(dpp => dpp.CreateProtector(It.IsAny<string>()) == protector));
+            new ServiceCollection().BuildServiceProvider(),
+            Mock.Of<IDataProtectionProvider>(dpp => dpp.CreateProtector(It.IsAny<string>()) == protector),
+            NullLogger<TwitterClientMessageHandler>.Instance);
 
         handler.Setup(c => c.GetNonce()).Returns(() => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");
 
