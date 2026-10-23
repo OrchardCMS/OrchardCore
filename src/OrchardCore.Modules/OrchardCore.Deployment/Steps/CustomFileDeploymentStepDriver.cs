@@ -41,6 +41,8 @@ public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentSte
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(step.FileName), S["A virtual path is required."]);
             }
+            // The specific base path here doesn't matter, we just want to see if the generated physical path would be
+            // out of bounds.
             else if (PathExtensions.IsOutsideOfBasePath(Path.GetTempPath(), step.FileName))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(step.FileName), S["Path must be relative to the base directory."]);
