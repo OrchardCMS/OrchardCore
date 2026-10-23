@@ -131,9 +131,11 @@ public class ShapeTemplateBindingStrategy : ShapeTableProvider, IShapeTableHarve
                     .BoundAs(
                         relativePath, displayContext =>
                         {
-                            var viewEngine = displayContext.ServiceProvider
-                                .GetServices<IShapeTemplateViewEngine>()
-                                .Single(e => e.GetType() == viewEngineType);
+                            // Resolving the view engine by its own type avoids resolving all the view engines for each rendered template.
+                            var viewEngine = displayContext.ServiceProvider.GetService(viewEngineType) as IShapeTemplateViewEngine
+                                ?? displayContext.ServiceProvider
+                                    .GetServices<IShapeTemplateViewEngine>()
+                                    .Single(e => e.GetType() == viewEngineType);
 
                             return viewEngine.RenderAsync(relativePath, displayContext);
                         });

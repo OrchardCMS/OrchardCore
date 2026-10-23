@@ -1,0 +1,107 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.GitHub\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenuGitHubLogin.cs
+msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
+msgid "Authentication"
+msgstr ""
+
+#: AdminMenuGitHubLogin.cs
+msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
+msgid "GitHub"
+msgstr ""
+
+#: AdminMenuGitHubLogin.cs
+msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
+msgid "Security"
+msgstr ""
+
+#: AdminMenuGitHubLogin.cs
+msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
+msgid "Settings"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.GitHub.Permissions"
+msgid "Manage GitHub Authentication settings"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "An error occurred while decrypting a setting. Please apply and save."
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Client ID"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Client secret"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "GitHub Authentication Settings"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "Store tokens"
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The Client ID defined in the general tab of your <a target=\"_blank\" href=\"https://github.com/settings/apps\">GitHub App</a>."
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The secret for your app."
+msgstr ""
+
+#: Views/GithubAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: ViewModels/GithubAuthenticationSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "API key is required"
+msgstr ""
+
+#: ViewModels/GithubAuthenticationSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "API secret key is required"
+msgstr ""
+
+#: ViewModels/GithubAuthenticationSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid path"
+msgstr ""

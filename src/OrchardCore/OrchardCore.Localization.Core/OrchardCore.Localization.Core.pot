@@ -1,0 +1,359 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Localization.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Data/DataLocalizationPermissions.cs
+msgctxt "OrchardCore.Localization.Data.DataLocalizationPermissions"
+msgid "Manage all dynamic translations"
+msgstr ""
+
+#: Data/DataLocalizationPermissions.cs
+msgctxt "OrchardCore.Localization.Data.DataLocalizationPermissions"
+msgid "Manage dynamic localizations"
+msgstr ""
+
+#: Data/DataLocalizationPermissions.cs
+msgctxt "OrchardCore.Localization.Data.DataLocalizationPermissions"
+msgid "View dynamic translations and statistics"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "'{0}' and '{1}' do not match."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Both ErrorMessageResourceType and ErrorMessageResourceName need to be set on this attribute."
+msgstr ""
+
+#. Format arguments: {0}; {1}; {2}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'."
+msgstr ""
+
+#. Format arguments: {0}; {1}; {2}; {3}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Could not convert the value of type '{0}' to '{1}' as expected by method {2}.{3}."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Could not find a property named {0}."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Either ErrorMessageString or ErrorMessageResourceName must be set, but not both."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "IsValid(object value) has not been implemented by this class. The preferred entry point is GetValidationResult() and classes should override IsValid(object value, ValidationContext context)."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MetadataClassType cannot be null."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "MinLengthAttribute must have a Length value that is zero or greater."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public and static."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute.Method was not specified."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The CustomValidationAttribute.ValidatorType was not specified."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The OperandType must be set when strings are used for minimum and maximum values."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The custom DataType string cannot be null or empty."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The custom validation type '{0}' must be public."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field of type {0} must be a string, array or ICollection type."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} is invalid."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string or array type with a maximum length of '{1}'."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string or array type with a minimum length of '{1}'."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string with a maximum length of {1}."
+msgstr ""
+
+#. Format arguments: {0}; {1}; {2}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be a string with a minimum length of {2} and a maximum length of {1}."
+msgstr ""
+
+#. Format arguments: {0}; {1}; {2}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must be between {1} and {2}."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field {0} must match the regular expression '{1}'."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The instance provided must match the ObjectInstance on the ValidationContext supplied."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} is null. Every key control parameter must be a string."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} with value '{1}' is not a string. Every key control parameter must be a string."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The key parameter at position {0} with value '{1}' occurs more than once."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The maximum length must be a nonnegative integer."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The maximum value '{0}' must be greater than or equal to the minimum value '{1}'."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The minimum and maximum values must be set."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The number of control parameters must be even."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The pattern must be set to a valid regular expression."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The property '{0}' on resource type '{1}' is not a string type."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The property {0}.{1} could not be found."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The resource type '{0}' does not have an accessible static property named '{1}'."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type '{0}' does not contain a public property named '{1}'."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type '{0}' needs to represent an enumeration type."
+msgstr ""
+
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type provided for EnumDataTypeAttribute cannot be null."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The type {0} must implement {1}."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The value for property '{0}' must be of type '{1}'."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid credit card number."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid e-mail address."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid fully-qualified http, https, or ftp URL."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is not a valid phone number."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field is required."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} field only accepts files with the following extensions: {1}."
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The {0} property has not been set.  Use the {1} method to get the value."
+msgstr ""
+
+#. Format arguments: {0}
+#: DataAnnotations/DataAnnotationsDefaultErrorMessages.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} is not valid."
+msgstr ""
+
+#: LocalizationPermissions.cs
+msgctxt "OrchardCore.Localization.LocalizationPermissions"
+msgid "Manage supported culture"
+msgstr ""

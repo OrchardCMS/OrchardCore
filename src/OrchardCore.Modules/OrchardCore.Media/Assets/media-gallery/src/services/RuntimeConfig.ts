@@ -65,6 +65,8 @@ export interface IStandaloneConfigSource {
   oidcScope?: string;
   /** Enable real-time updates. Requires SignalR CORS on the Orchard origin; defaults to false. */
   signalrEnabled?: boolean;
+  /** Maximum upload size in bytes. Keep aligned with the Orchard tenant's Media:MaxFileSize. */
+  maxFileSize?: number;
 }
 
 const DEFAULT_CLIENT_ID = "media_gallery";

@@ -3700,6 +3700,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "nurullahturkoglu",
+      "name": "Nurullah Türkoğlu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73299153?v=4",
+      "profile": "https://github.com/nurullahturkoglu",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

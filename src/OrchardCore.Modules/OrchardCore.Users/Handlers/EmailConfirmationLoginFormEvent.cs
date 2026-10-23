@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
-using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 
@@ -45,9 +43,6 @@ internal sealed class EmailConfirmationLoginFormEvent : LoginFormEventBase
             model.Add("returnUrl", returnUrlValue);
         }
 
-        return new RedirectToActionResult(
-            actionName: nameof(EmailConfirmationController.ConfirmEmailSent),
-            controllerName: typeof(EmailConfirmationController).ControllerName(),
-            routeValues: model);
+        return new EmailConfirmationRequiredResult(model);
     }
 }

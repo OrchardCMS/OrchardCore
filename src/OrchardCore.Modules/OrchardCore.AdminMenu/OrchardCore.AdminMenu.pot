@@ -1,0 +1,602 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.AdminMenu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.AdminMenu.AdminMenu"
+msgid "Admin Menus"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.AdminMenu.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Admin menu deleted successfully."
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Admin menu toggled successfully."
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Admin menu updated successfully."
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Admin menus successfully removed."
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Can't delete the admin menu."
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Can't find the admin menu."
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/MenuController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
+msgid "Error when retrieving the list of admin menus."
+msgstr ""
+
+#: Controllers/NodeController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node added successfully."
+msgstr ""
+
+#: Controllers/NodeController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node deleted successfully."
+msgstr ""
+
+#: Controllers/NodeController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node toggled successfully."
+msgstr ""
+
+#: Controllers/NodeController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "Admin node updated successfully."
+msgstr ""
+
+#: Controllers/NodeController.cs
+msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
+msgid "The admin node has validation errors."
+msgstr ""
+
+#: Deployment/AdminMenuDeploymentStep.cs
+msgctxt "OrchardCore.AdminMenu.Deployment.AdminMenuDeploymentStep"
+msgid "Admin Menus"
+msgstr ""
+
+#: Deployment/AdminMenuDeploymentStep.cs
+msgctxt "OrchardCore.AdminMenu.Deployment.AdminMenuDeploymentStep"
+msgid "Content Management"
+msgstr ""
+
+#: Services/AdminMenuJSLocalizer.cs
+msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
+msgid "No result found"
+msgstr ""
+
+#: Services/AdminMenuJSLocalizer.cs
+msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
+msgid "Remove"
+msgstr ""
+
+#: Services/AdminMenuJSLocalizer.cs
+msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
+msgid "Select"
+msgstr ""
+
+#: Services/AdminMenuJSLocalizer.cs
+msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
+msgid "Type to search"
+msgstr ""
+
+#: Views/AdminMenuEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Disable"
+msgstr ""
+
+#: Views/AdminMenuEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Enable"
+msgstr ""
+
+#: Views/AdminMenuEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/AdminMenuEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/AdminMenuEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Buttons.SummaryAdmin"
+msgid "Edit Nodes"
+msgstr ""
+
+#: Views/AdminMenuEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/AdminMenuEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
+msgid "Enabled"
+msgstr ""
+
+#: Views/AdminMenuEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
+msgid "Status"
+msgstr ""
+
+#: Views/Items/AdminMenuDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Summary"
+msgid "Adds all admin menus to the plan."
+msgstr ""
+
+#: Views/Items/AdminMenuDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Summary"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Items/AdminMenuDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Thumbnail"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Items/AdminMenuDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Thumbnail"
+msgid "Exports all the admin Menus."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Icon"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Link"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Link Text"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Link Url"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Opens the linked document in a new window or tab."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Opens the linked document in the full body of the window."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Opens the linked document in the parent frame."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Opens the linked document in the same frame as it was clicked (this is default)."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Permissions"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Pick"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Pick an icon"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Select an icon to display when this link is a first level menu item."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Target"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "The Link Text as it will be shown in the tree."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "The permissions required to display this menu item (optional)."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "The target attribute of the A tag, see more:"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeSummary"
+msgid "Link"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeThumbnail.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeThumbnail"
+msgid "Adds a link with a text and a url."
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeThumbnail.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeThumbnail"
+msgid "Link Admin Node"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Icon"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Link Text"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Permissions"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Pick"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Pick an icon"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Select an icon to display when this menu item is at the first level."
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "The permissions required to display this menu item (optional)."
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "The text of the menu item as it will be shown in the tree."
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeSummary"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeThumbnail.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeThumbnail"
+msgid "Adds a menu item that acts as a container for others."
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeThumbnail.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeThumbnail"
+msgid "Placeholder Admin Node"
+msgstr ""
+
+#: Views/Menu/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Menu/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Menu/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/Menu/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Create Admin Menu"
+msgstr ""
+
+#: Views/Menu/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/Menu/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Menu/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: localizedAdminMenuName
+#: Views/Menu/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Edit Admin Menu: {0}"
+msgstr ""
+
+#: Views/Menu/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Edit Admin Nodes"
+msgstr ""
+
+#: Views/Menu/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Menu/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "<strong>Nothing here!</strong> There are no admin menus for the moment."
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Actions"
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Add Admin Menu"
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Name"
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Search"
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "Status"
+msgstr ""
+
+#: Views/Menu/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
+msgid "selected"
+msgstr ""
+
+#. Format arguments: {0}: menuType
+#: Views/MenuItem.TreeSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Can't show the item of type: {0}. Maybe a required module has been disabled?"
+msgstr ""
+
+#: Views/MenuItem.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Delete"
+msgstr ""
+
+#: Views/MenuItem.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Disable"
+msgstr ""
+
+#: Views/MenuItem.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Edit"
+msgstr ""
+
+#: Views/MenuItem.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Enable"
+msgstr ""
+
+#: Views/MenuItem.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Toggle"
+msgstr ""
+
+#: Views/MenuItem.TreeSummary.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/MenuItem.TreeThumbnail.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeThumbnail"
+msgid "Add"
+msgstr ""
+
+#: Views/Node/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Node/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Node/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/Node/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Create Node"
+msgstr ""
+
+#. Format arguments: {0}: adminMenu?.Name
+#: Views/Node/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "Edit Nodes for '{0}'"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Delete"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Edit Node"
+msgstr ""
+
+#. Format arguments: {0}: adminMenu?.Name
+#: Views/Node/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Edit Nodes for '{0}'"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Position Order"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Selection Priority"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "The position order of this link in the admin menu."
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "and continue"
+msgstr ""
+
+#: Views/Node/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "<strong>Nothing here!</strong> There are no nodes on this tree for the moment."
+msgstr ""
+
+#: Views/Node/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Add Node"
+msgstr ""
+
+#: Views/Node/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Admin Menus"
+msgstr ""
+
+#: Views/Node/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Available Admin Nodes"
+msgstr ""
+
+#: Views/Node/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Back"
+msgstr ""
+
+#: Views/Node/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: localizedAdminMenuName
+#: Views/Node/List.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "Edit Nodes for '{0}'"
+msgstr ""
+
+#: Views/Node/List.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.List"
+msgid "There was an error when moving the tree node."
+msgstr ""

@@ -1,12 +1,14 @@
 <Project>
   <PropertyGroup>
+    <!-- Embeds the project's checked-in translation template, <AssemblyName>.pot, and enables its update. -->
     <GenerateLocalizationCatalog Condition="'$(GenerateLocalizationCatalog)' == ''">true</GenerateLocalizationCatalog>
+    <!-- Extracts the localizable strings during the build and rewrites the template, instead of only embedding it. -->
+    <UpdateLocalizationCatalogs Condition="'$(UpdateLocalizationCatalogs)' == ''">false</UpdateLocalizationCatalogs>
+    <!-- Writes the line of each source reference in the template, which changes with every edit of the file. -->
+    <LocalizationCatalogLineNumbers Condition="'$(LocalizationCatalogLineNumbers)' == ''">false</LocalizationCatalogLineNumbers>
     <LocalizationStrict Condition="'$(LocalizationStrict)' == ''">false</LocalizationStrict>
     <_LocalizationToolsProject>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/OrchardCore.Localization.Tools.csproj</_LocalizationToolsProject>
     <_LocalizationToolsDirectory>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/</_LocalizationToolsDirectory>
     <LocalizationToolPath Condition="'$(LocalizationToolPath)' == '' and !Exists('$(_LocalizationToolsProject)')">$(MSBuildThisFileDirectory)../tools/any/OrchardCore.Localization.Tools.dll</LocalizationToolPath>
   </PropertyGroup>
-  <ItemGroup Condition="'$(GenerateLocalizationCatalog)' == 'true' and Exists('$(_LocalizationToolsProject)')">
-    <ProjectReference Include="$(_LocalizationToolsProject)" ReferenceOutputAssembly="false" PrivateAssets="all" AdditionalProperties="GenerateLocalizationCatalog=false" />
-  </ItemGroup>
 </Project>

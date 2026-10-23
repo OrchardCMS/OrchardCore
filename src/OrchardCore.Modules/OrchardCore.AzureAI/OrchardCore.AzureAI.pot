@@ -1,0 +1,257 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.AzureAI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.AzureAI.AdminMenu"
+msgid "Azure AI Search"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.AzureAI.AdminMenu"
+msgid "Search"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.AzureAI.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AzureAI.ContentsStartup"
+msgid "Content in Azure AI Search"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AzureAI.ContentsStartup"
+msgid "Create an Azure AI Search index based on site contents."
+msgstr ""
+
+#: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
+msgid "API Key"
+msgstr ""
+
+#: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
+msgid "API Key is required when using API Key authentication type."
+msgstr ""
+
+#: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
+msgid "Default"
+msgstr ""
+
+#: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
+msgid "Endpoint is required."
+msgstr ""
+
+#: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
+msgid "Endpoint must be a valid url."
+msgstr ""
+
+#: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
+msgid "Managed Identity"
+msgstr ""
+
+#: Views/AzureAISearchContentIndexSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchContentIndexSettings.Edit"
+msgid "Azure AI Search Index Settings"
+msgstr ""
+
+#: Views/AzureAISearchContentIndexSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchContentIndexSettings.Edit"
+msgid "Check to include the value of this element in the index."
+msgstr ""
+
+#: Views/AzureAISearchContentIndexSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchContentIndexSettings.Edit"
+msgid "Include this element in the index"
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "API key stored. Leave blank for current key or enter a new one"
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Api Key"
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Authentication Type"
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Azure AI Search has been set up and configured. Feel free to utilize the provided settings below to customize your connection preferences if needed."
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Check to configure a custom Azure Search AI instance."
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Endpoint"
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Identity Client Id"
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Leaving identity client id blank will use system."
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Provide an authentication key"
+msgstr ""
+
+#: Views/AzureAISearchDefaultSettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
+msgid "Use custom Azure Search AI settings"
+msgstr ""
+
+#: Views/AzureAISearchIndexProfile.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchIndexProfile.Edit"
+msgid "Analyzer"
+msgstr ""
+
+#: Views/AzureAISearchQuerySettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchQuerySettings.Edit"
+msgid "Default Query Settings"
+msgstr ""
+
+#: Views/AzureAISearchQuerySettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchQuerySettings.Edit"
+msgid "Query analyzer"
+msgstr ""
+
+#: Views/AzureAISearchQuerySettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchQuerySettings.Edit"
+msgid "Query field names"
+msgstr ""
+
+#: Views/AzureAISearchQuerySettings.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.AzureAISearchQuerySettings.Edit"
+msgid "The fields to use for query. Leave it blank to query all searchable fields."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexDeploymentStep.Fields.Edit"
+msgid "Include all search indexes."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexDeploymentStep.Fields.Edit"
+msgid "The search indexes to add as part of the plan."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexDeploymentStep.Fields.Summary"
+msgid "Azure AI Search Indexes"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexDeploymentStep.Fields.Summary"
+msgid "No index selected."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexDeploymentStep.Fields.Thumbnail"
+msgid "Azure AI Search Indexes"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified search indexes."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexRebuildDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexRebuildDeploymentStep.Fields.Edit"
+msgid "Include all Azure AI Search indices."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexRebuildDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexRebuildDeploymentStep.Fields.Edit"
+msgid "The Azure AI Search indices to rebuild as part of the plan."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexRebuildDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexRebuildDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexRebuildDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexRebuildDeploymentStep.Fields.Summary"
+msgid "No index selected."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexRebuildDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexRebuildDeploymentStep.Fields.Summary"
+msgid "Rebuild Azure AI Search Indices"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexRebuildDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexRebuildDeploymentStep.Fields.Thumbnail"
+msgid "Rebuild Azure AI Search Indices"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexRebuildDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexRebuildDeploymentStep.Fields.Thumbnail"
+msgid "Rebuild all or specified Azure AI Search indices."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexResetDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexResetDeploymentStep.Fields.Edit"
+msgid "Include all Azure AI Search indices."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexResetDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexResetDeploymentStep.Fields.Edit"
+msgid "The Azure AI Search Indices to reset as part of the plan."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexResetDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexResetDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexResetDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexResetDeploymentStep.Fields.Summary"
+msgid "No index selected."
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexResetDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexResetDeploymentStep.Fields.Summary"
+msgid "Reset Azure AI Search Indices"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexResetDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexResetDeploymentStep.Fields.Thumbnail"
+msgid "Reset Azure AI Indices"
+msgstr ""
+
+#: Views/Items/AzureAISearchIndexResetDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.AzureAI.Views.Items.AzureAISearchIndexResetDeploymentStep.Fields.Thumbnail"
+msgid "Reset all or specified Azure AI Search indices."
+msgstr ""

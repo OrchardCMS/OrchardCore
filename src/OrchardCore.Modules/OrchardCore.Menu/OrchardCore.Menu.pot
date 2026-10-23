@@ -1,0 +1,306 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Menu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Menu.AdminMenu"
+msgid "Content"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Menu.AdminMenu"
+msgid "Menus"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Menu.Controllers.AdminController"
+msgid "Menu item deleted successfully."
+msgstr ""
+
+#. Format arguments: {0}: part.Url
+#: Drivers/HtmlMenuItemPartDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Menu.Drivers.HtmlMenuItemPartDisplayDriver"
+msgid "{0} is an invalid url."
+msgstr ""
+
+#. Format arguments: {0}: part.Url
+#: Drivers/LinkMenuItemPartDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Menu.Drivers.LinkMenuItemPartDisplayDriver"
+msgid "{0} is an invalid url."
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: string.Join(", ", invalidMenuItemDescriptions)
+#: Drivers/MenuPartDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Menu.Drivers.MenuPartDisplayDriver"
+msgid "The menu item content item {1} has no matching content type definition. Publishing this content item may erase created content. Fix any content type issues beforehand."
+msgid_plural "The following menu item content items have no matching content type definitions: {1}. Publishing these content items may erase created content. Fix any content type issues beforehand."
+msgstr[0] ""
+msgstr[1] ""
+
+#: GraphQL/MenuItemsListQueryObjectType.cs
+msgctxt "OrchardCore.Menu.GraphQL.MenuItemsListQueryObjectType"
+msgid "The menu items."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Menu.Permissions"
+msgid "Manage menus"
+msgstr ""
+
+#: Services/MenuItemStereotypesProvider.cs
+msgctxt "OrchardCore.Menu.Services.MenuItemStereotypesProvider"
+msgid "Menu Item"
+msgstr ""
+
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "No result found"
+msgstr ""
+
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "Remove"
+msgstr ""
+
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "Select"
+msgstr ""
+
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "Type to search"
+msgstr ""
+
+#. Format arguments: {0}: menu?.DisplayText
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.Admin.Create"
+msgid "Edit {0}"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Menu.Views.Admin.Create"
+msgid "Manage Content"
+msgstr ""
+
+#. Format arguments: {0}: localizedTypeDisplayName
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.Admin.Create"
+msgid "New {0}"
+msgstr ""
+
+#. Format arguments: {0}: localizedTypeDisplayName, menu?.DisplayText
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.Admin.Edit"
+msgid "Edit {0}"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.Admin.Edit"
+msgid "Manage Content"
+msgstr ""
+
+#: Views/ContentMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Edit"
+msgid "Check content permissions"
+msgstr ""
+
+#: Views/ContentMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/ContentMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Edit"
+msgid "When enabled, we will verify the user's permission to view content items before displaying them in the menu. This process may negatively impact performance, so it is highly recommended to cache the menu when this option is activated."
+msgstr ""
+
+#: Views/ContentMenuItemPart.Thumbnail.cshtml
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Thumbnail"
+msgid "Content Menu Item"
+msgstr ""
+
+#: Views/ContentMenuItemPart.Thumbnail.cshtml
+msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Thumbnail"
+msgid "Links to a Content url."
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Html"
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Opens the linked document in a new window or tab."
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Opens the linked document in the full body of the window."
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Opens the linked document in the parent frame."
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Opens the linked document in the same frame as it was clicked (this is default)."
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Target"
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "The target attribute of the A tag, see more:"
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
+msgid "Url"
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Thumbnail.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Thumbnail"
+msgid "Html Menu Item"
+msgstr ""
+
+#: Views/HtmlMenuItemPart.Thumbnail.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Thumbnail"
+msgid "Links to a custom url with HTML."
+msgstr ""
+
+#: Views/HtmlMenuItemPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr ""
+
+#: Views/HtmlMenuItemPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/HtmlMenuItemPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
+msgid "Whether the Html is sanitized to prevent custom scripts."
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Opens the linked document in a new window or tab."
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Opens the linked document in the full body of the window."
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Opens the linked document in the parent frame."
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Opens the linked document in the same frame as it was clicked (this is default)."
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Target"
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "The target attribute of the A tag, see more:"
+msgstr ""
+
+#: Views/LinkMenuItemPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
+msgid "Url"
+msgstr ""
+
+#: Views/LinkMenuItemPart.Thumbnail.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Thumbnail"
+msgid "Link Menu Item"
+msgstr ""
+
+#: Views/LinkMenuItemPart.Thumbnail.cshtml
+msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Thumbnail"
+msgid "Links to a custom url."
+msgstr ""
+
+#: Views/MenuItem.Admin.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
+msgid "Add"
+msgstr ""
+
+#: Views/MenuItem.Admin.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
+msgid "Delete"
+msgstr ""
+
+#: Views/MenuItem.Admin.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
+msgid "Edit"
+msgstr ""
+
+#: Views/MenuItem.Thumbnail.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItem.Thumbnail"
+msgid "Add"
+msgstr ""
+
+#: Views/MenuItemPermissionPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
+msgid "Permissions"
+msgstr ""
+
+#: Views/MenuItemPermissionPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
+msgid "The permissions required to display this menu item (optional)."
+msgstr ""
+
+#: Views/MenuPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "Add Menu Item"
+msgstr ""
+
+#: Views/MenuPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "Available Menu Items"
+msgstr ""
+
+#: Views/MenuPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/MenuPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
+msgid "You have reordered the navigation."
+msgstr ""

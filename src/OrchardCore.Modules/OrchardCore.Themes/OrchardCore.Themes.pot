@@ -1,0 +1,222 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Themes\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Design"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Themes.AdminMenu"
+msgid "Themes"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Admin theme was reset."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "The Site theme was reset."
+msgstr ""
+
+#. Format arguments: {0}: feature.Name ?? feature.Id
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was disabled."
+msgstr ""
+
+#. Format arguments: {0}: feature.Name ?? feature.Id
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was enabled"
+msgstr ""
+
+#. Format arguments: {0}: feature.Name ?? feature.Id
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was enabled."
+msgstr ""
+
+#. Format arguments: {0}: feature.Name ?? feature.Id; {1}: isAdmin ? "Admin" : "Site"
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Controllers.AdminController"
+msgid "{0} was set as the default {1} theme"
+msgstr ""
+
+#: Deployment/ThemesDeploymentStep.cs
+msgctxt "OrchardCore.Themes.Deployment.ThemesDeploymentStep"
+msgid "Theming"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Themes.Permissions"
+msgid "Apply a Theme"
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))
+#: Services/ThemeService.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The feature {1} was disabled."
+msgid_plural "The following features were disabled: {1}."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count; {1}: string.Join(", ", enabledFeatures.Select(f => f.Name ?? f.Id))
+#: Services/ThemeService.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The feature {1} was enabled."
+msgid_plural "The following features were enabled: {1}."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: themeName
+#: Services/ThemeService.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features disabled."
+msgstr ""
+
+#. Format arguments: {0}: themeName
+#: Services/ThemeService.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Services.ThemeService"
+msgid "The theme \"{0}\" is already in the stack of themes that need features enabled."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Admin theme?"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Are you sure you want to reset the Site theme?"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Admin Theme"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset Site Theme"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Reset current themes"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "The following actions reset the themes. It is used for sites that can't use theming."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "Themes"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Themes.Views.Admin.Index"
+msgid "There are no themes installed."
+msgstr ""
+
+#: Views/AdminDashboardThemes.cshtml
+msgctxt "OrchardCore.Themes.Views.AdminDashboardThemes"
+msgid "Customize theme"
+msgstr ""
+
+#: Views/AdminDashboardThemes.cshtml
+msgctxt "OrchardCore.Themes.Views.AdminDashboardThemes"
+msgid "Install and configure current theme for your site."
+msgstr ""
+
+#: Views/AdminDashboardThemes.cshtml
+msgctxt "OrchardCore.Themes.Views.AdminDashboardThemes"
+msgid "Manage themes"
+msgstr ""
+
+#: Views/Items/ThemeEntry-ButtonsMakeCurrent.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemeEntry-ButtonsMakeCurrent.SummaryAdmin"
+msgid "Make Current"
+msgstr ""
+
+#: Views/Items/ThemeEntry-ButtonsToggleState.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemeEntry-ButtonsToggleState.SummaryAdmin"
+msgid "Disable"
+msgstr ""
+
+#: Views/Items/ThemeEntry-ButtonsToggleState.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemeEntry-ButtonsToggleState.SummaryAdmin"
+msgid "Enable"
+msgstr ""
+
+#: Views/Items/ThemeEntry-Current.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemeEntry-Current.SummaryAdmin"
+msgid "This is the current Admin theme"
+msgstr ""
+
+#: Views/Items/ThemeEntry-Current.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemeEntry-Current.SummaryAdmin"
+msgid "This is the current Site theme"
+msgstr ""
+
+#: Views/Items/ThemesDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Edit"
+msgid "Themes"
+msgstr ""
+
+#: Views/Items/ThemesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Adds the currently selected site theme and admin theme to the plan."
+msgstr ""
+
+#: Views/Items/ThemesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Summary"
+msgid "Themes"
+msgstr ""
+
+#: Views/Items/ThemesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Exports the currently selected site theme and admin theme."
+msgstr ""
+
+#: Views/Items/ThemesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
+msgid "Themes"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "OrchardCore.Themes.Views.ToggleTheme"
+msgid "Auto"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "OrchardCore.Themes.Views.ToggleTheme"
+msgid "Dark"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "OrchardCore.Themes.Views.ToggleTheme"
+msgid "Light"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "OrchardCore.Themes.Views.ToggleTheme"
+msgid "Toggle theme"
+msgstr ""

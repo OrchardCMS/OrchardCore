@@ -3,12 +3,12 @@
     <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <RazorCompilerDirectory>$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators</RazorCompilerDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <!-- The minimum Roslyn version the extraction is compiled against. Its runtime assets are excluded so that
+         SdkAssemblyResolver binds the process to the Roslyn and Razor compiler of the .NET SDK that drives the build.
+         Every project that runs the extraction in process must exclude them as well. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" ExcludeAssets="runtime" />
     <PackageReference Include="Fluid.Core" />
-    <Reference Include="Microsoft.CodeAnalysis.Razor.Compiler" HintPath="$(RazorCompilerDirectory)/Microsoft.CodeAnalysis.Razor.Compiler.dll" />
-    <Reference Include="Microsoft.AspNetCore.Razor.Utilities.Shared" HintPath="$(RazorCompilerDirectory)/Microsoft.AspNetCore.Razor.Utilities.Shared.dll" />
   </ItemGroup>
 </Project>

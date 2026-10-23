@@ -1,0 +1,266 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Google\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Authentication/Services/GoogleAuthenticationService.cs
+msgctxt "OrchardCore.Google.Authentication.Services.GoogleAuthenticationService"
+msgid "The Client ID is required."
+msgstr ""
+
+#: Authentication/Services/GoogleAuthenticationService.cs
+msgctxt "OrchardCore.Google.Authentication.Services.GoogleAuthenticationService"
+msgid "The Client Secret is required."
+msgstr ""
+
+#: GoogleAnalyticsAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleAnalyticsAdminMenu"
+msgid "Google Analytics"
+msgstr ""
+
+#: GoogleAnalyticsAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleAnalyticsAdminMenu"
+msgid "Integrations"
+msgstr ""
+
+#: GoogleAnalyticsAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleAnalyticsAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: GoogleAuthenticationStartup.cs
+msgctxt "OrchardCore.Google.GoogleAnalyticsDeploymentStartup"
+msgid "Exports the Google Analytics settings."
+msgstr ""
+
+#: GoogleAuthenticationStartup.cs
+msgctxt "OrchardCore.Google.GoogleAnalyticsDeploymentStartup"
+msgid "Google Analytics Settings"
+msgstr ""
+
+#: GoogleAuthenticationAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleAuthenticationAdminMenu"
+msgid "Authentication"
+msgstr ""
+
+#: GoogleAuthenticationAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleAuthenticationAdminMenu"
+msgid "Google"
+msgstr ""
+
+#: GoogleAuthenticationAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleAuthenticationAdminMenu"
+msgid "Security"
+msgstr ""
+
+#: GoogleAuthenticationAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleAuthenticationAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: GoogleAuthenticationStartup.cs
+msgctxt "OrchardCore.Google.GoogleAuthenticationDeploymentStartup"
+msgid "Exports the Google Authentication settings."
+msgstr ""
+
+#: GoogleAuthenticationStartup.cs
+msgctxt "OrchardCore.Google.GoogleAuthenticationDeploymentStartup"
+msgid "Google Authentication Settings"
+msgstr ""
+
+#: GoogleTagManagerAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleTagManagerAdminMenu"
+msgid "Google Tag Manager"
+msgstr ""
+
+#: GoogleTagManagerAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleTagManagerAdminMenu"
+msgid "Integrations"
+msgstr ""
+
+#: GoogleTagManagerAdminMenu.cs
+msgctxt "OrchardCore.Google.GoogleTagManagerAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: GoogleAuthenticationStartup.cs
+msgctxt "OrchardCore.Google.GoogleTagManagerDeploymentStartup"
+msgid "Exports the Google Tag Manager settings."
+msgstr ""
+
+#: GoogleAuthenticationStartup.cs
+msgctxt "OrchardCore.Google.GoogleTagManagerDeploymentStartup"
+msgid "Google Tag Manager Settings"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Google.Permissions"
+msgid "Manage Google Analytics settings"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Google.Permissions"
+msgid "Manage Google Authentication settings"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Google.Permissions"
+msgid "Manage Google Tag Manager settings"
+msgstr ""
+
+#: Views/GoogleAnalyticsSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "Google Analytics Settings"
+msgstr ""
+
+#: Views/GoogleAnalyticsSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/GoogleAnalyticsSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "The tracking ID defined in your Google Analytics account."
+msgstr ""
+
+#: Views/GoogleAnalyticsSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
+msgid "Tracking ID"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "API secret key"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "An error occurred while decrypting a setting. Please apply and save."
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Client ID"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Google Authentication Settings"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "Store tokens"
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The client id defined in Google API console for the application."
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The client secret defined in Google API console for the application."
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr ""
+
+#: Views/GoogleAuthenticationSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: Views/GoogleTagManagerSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "Container ID"
+msgstr ""
+
+#: Views/GoogleTagManagerSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "Google Tag Manager Settings"
+msgstr ""
+
+#: Views/GoogleTagManagerSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/GoogleTagManagerSettings.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
+msgid "The container ID defined in your Google Tag Manager account."
+msgstr ""
+
+#: Views/Items/GoogleAnalyticsDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Edit"
+msgid "Google Analytics Settings"
+msgstr ""
+
+#: Views/Items/GoogleAnalyticsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Summary"
+msgid "Adds Google Analytics settings to the plan."
+msgstr ""
+
+#: Views/Items/GoogleAnalyticsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Summary"
+msgid "Google Analytics Settings"
+msgstr ""
+
+#: Views/Items/GoogleAnalyticsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Thumbnail"
+msgid "Exports the Google Analytics settings."
+msgstr ""
+
+#: Views/Items/GoogleAnalyticsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Google.Views.Items.GoogleAnalyticsDeploymentStep.Thumbnail"
+msgid "Google Analytics Settings"
+msgstr ""
+
+#: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "ClientID key is required"
+msgstr ""
+
+#: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "ClientSecret is required"
+msgstr ""
+
+#: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid path"
+msgstr ""
+
+#. Format arguments: {0}
+#: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} is required"
+msgstr ""
+
+#. Format arguments: {0}
+#: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} key is required"
+msgstr ""

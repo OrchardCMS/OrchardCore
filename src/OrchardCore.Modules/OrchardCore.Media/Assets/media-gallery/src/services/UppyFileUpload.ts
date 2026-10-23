@@ -134,16 +134,12 @@ export const useFileUpload = (model: IFileUploadModel): void => {
     uppy.setOptions({ logger: debugLogger });
   }
 
-  const restrictions: Record<string, unknown> = {};
-  if (model.maxFileSize > 0) {
-    restrictions.maxFileSize = model.maxFileSize;
-  }
-  if (model.allowedExtensions) {
-    restrictions.allowedFileTypes = model.allowedExtensions.split(",");
-  }
-  if (Object.keys(restrictions).length > 0) {
-    uppy.setOptions({ restrictions });
-  }
+  uppy.setOptions({
+    restrictions: {
+      maxFileSize: model.maxFileSize > 0 ? model.maxFileSize : null,
+      allowedFileTypes: model.allowedExtensions ? model.allowedExtensions.split(",") : null,
+    },
+  });
 
   const isTus = model.tusEnabled && !!model.tusEndpointUrl;
 
@@ -303,6 +299,9 @@ export const useFileUpload = (model: IFileUploadModel): void => {
     }
 
     uppy.on("files-added", async (files) => {
+      // Uppy also emits this event when every selected file was rejected.
+      if (files.length === 0) return;
+
       const destinationPath = selectedDirectory.value.directoryPath;
 
       // Remember which folder each file is actually headed to, so the completion

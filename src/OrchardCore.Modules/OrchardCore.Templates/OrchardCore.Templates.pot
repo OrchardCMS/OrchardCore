@@ -1,0 +1,415 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Templates\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Templates.AdminMenu"
+msgid "Design"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Templates.AdminMenu"
+msgid "Templates"
+msgstr ""
+
+#: AdminTemplatesAdminMenu.cs
+msgctxt "OrchardCore.Templates.AdminTemplatesAdminMenu"
+msgid "Admin Templates"
+msgstr ""
+
+#: AdminTemplatesAdminMenu.cs
+msgctxt "OrchardCore.Templates.AdminTemplatesAdminMenu"
+msgid "Design"
+msgstr ""
+
+#: AdminTemplatesPermissions.cs
+msgctxt "OrchardCore.Templates.AdminTemplatesPermissions"
+msgid "Manage admin templates"
+msgstr ""
+
+#: Controllers/TemplateController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "A template with the same name already exists."
+msgstr ""
+
+#: Controllers/TemplateController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "Delete"
+msgstr ""
+
+#. Format arguments: {0}: placementsLink; {1}: docsLink
+#: Controllers/TemplateController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "If you left the content empty because you want to hide the shape, use <a href=\"{0}\">Placements</a> instead. See <a href=\"{1}\">the docs</a> for more info about this feature."
+msgstr ""
+
+#: Controllers/TemplateController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "Template deleted successfully."
+msgstr ""
+
+#: Controllers/TemplateController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "Templates successfully removed."
+msgstr ""
+
+#. Format arguments: {0}: model.Name
+#: Controllers/TemplateController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "The \"{0}\" template has been created."
+msgstr ""
+
+#: Controllers/TemplateController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "The content is mandatory."
+msgstr ""
+
+#: Controllers/TemplateController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateController"
+msgid "The name is mandatory."
+msgstr ""
+
+#: Deployment/AllAdminTemplatesDeploymentStep.cs
+msgctxt "OrchardCore.Templates.Deployment.AllAdminTemplatesDeploymentStep"
+msgid "All Admin Templates"
+msgstr ""
+
+#: Deployment/AllAdminTemplatesDeploymentStep.cs
+msgctxt "OrchardCore.Templates.Deployment.AllAdminTemplatesDeploymentStep"
+msgid "Development"
+msgstr ""
+
+#: Deployment/AllTemplatesDeploymentStep.cs
+msgctxt "OrchardCore.Templates.Deployment.AllTemplatesDeploymentStep"
+msgid "All Templates"
+msgstr ""
+
+#: Deployment/AllTemplatesDeploymentStep.cs
+msgctxt "OrchardCore.Templates.Deployment.AllTemplatesDeploymentStep"
+msgid "Development"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Templates.Permissions"
+msgid "Manage templates"
+msgstr ""
+
+#. Format arguments: {0}: contentPartDefinition.DisplayName()
+#: Settings/TemplateContentPartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Settings.TemplateContentPartDefinitionDriver"
+msgid "Template for a {0} part in detail views"
+msgstr ""
+
+#. Format arguments: {0}: contentPartDefinition.DisplayName()
+#: Settings/TemplateContentPartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Settings.TemplateContentPartDefinitionDriver"
+msgid "Template for a {0} part in summary views"
+msgstr ""
+
+#. Format arguments: {0}: contentTypeDefinition.DisplayName
+#: Settings/TemplateContentTypeDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Settings.TemplateContentTypeDefinitionDriver"
+msgid "Template for a {0} content item in detail views"
+msgstr ""
+
+#. Format arguments: {0}: contentTypeDefinition.DisplayName
+#: Settings/TemplateContentTypeDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Settings.TemplateContentTypeDefinitionDriver"
+msgid "Template for a {0} content item in summary views"
+msgstr ""
+
+#. Format arguments: {0}: partName; {1}: contentTypePartDefinition.ContentTypeDefinition.DisplayName
+#: Settings/TemplateContentTypePartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Settings.TemplateContentTypePartDefinitionDriver"
+msgid "Template for the {0} part in a {1} type in detail views"
+msgstr ""
+
+#. Format arguments: {0}: partName; {1}: contentTypePartDefinition.ContentTypeDefinition.DisplayName
+#: Settings/TemplateContentTypePartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Settings.TemplateContentTypePartDefinitionDriver"
+msgid "Template for the {0} part in a {1} type in summary views"
+msgstr ""
+
+#: Views/Items/AllAdminTemplatesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllAdminTemplatesDeploymentStep.Fields.Edit"
+msgid "Check if the templates should be exported as files instead of inline."
+msgstr ""
+
+#: Views/Items/AllAdminTemplatesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllAdminTemplatesDeploymentStep.Fields.Edit"
+msgid "Export templates as files"
+msgstr ""
+
+#: Views/Items/AllAdminTemplatesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllAdminTemplatesDeploymentStep.Summary"
+msgid "Adds all admin templates to the plan."
+msgstr ""
+
+#: Views/Items/AllAdminTemplatesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllAdminTemplatesDeploymentStep.Summary"
+msgid "All Admin Templates"
+msgstr ""
+
+#: Views/Items/AllAdminTemplatesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllAdminTemplatesDeploymentStep.Thumbnail"
+msgid "All Admin Templates"
+msgstr ""
+
+#: Views/Items/AllAdminTemplatesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllAdminTemplatesDeploymentStep.Thumbnail"
+msgid "Exports admin templates."
+msgstr ""
+
+#: Views/Items/AllTemplatesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllTemplatesDeploymentStep.Fields.Edit"
+msgid "Check if the templates should be exported as files instead of inline."
+msgstr ""
+
+#: Views/Items/AllTemplatesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllTemplatesDeploymentStep.Fields.Edit"
+msgid "Export templates as files"
+msgstr ""
+
+#: Views/Items/AllTemplatesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllTemplatesDeploymentStep.Summary"
+msgid "Adds all templates to the plan."
+msgstr ""
+
+#: Views/Items/AllTemplatesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllTemplatesDeploymentStep.Summary"
+msgid "All Templates"
+msgstr ""
+
+#: Views/Items/AllTemplatesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllTemplatesDeploymentStep.Thumbnail"
+msgid "All Templates"
+msgstr ""
+
+#: Views/Items/AllTemplatesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Templates.Views.Items.AllTemplatesDeploymentStep.Thumbnail"
+msgid "Exports templates."
+msgstr ""
+
+#: Views/Preview/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Preview.Index"
+msgid "Preview Disconnected"
+msgstr ""
+
+#: Views/Preview/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Preview.Index"
+msgid "Preview Error"
+msgstr ""
+
+#: Views/Preview/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Preview.Index"
+msgid "Template Preview"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Admin Templates"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Content"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Create Template"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Description"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Preview"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Templates"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "The Liquid template."
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "The description of the template."
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "The name of the template."
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "and continue"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Admin Templates"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Content"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Edit Admin Template"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Edit Template"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Preview"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Templates"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "The Liquid template."
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "The description of the template."
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "The name of the template."
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "and continue"
+msgstr ""
+
+#. Format arguments: {0}: OrchardCore.Admin.Constants.DocsUrl
+#: Views/Template/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.Template.Index"
+msgid "<strong>Nothing here!</strong> There are no templates for the moment. <a class=\"seedoc\" href=\"{0}reference/modules/Templates\" target=\"_blank\">See documentation</a>"
+msgstr ""
+
+#: Views/Template/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Template/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Index"
+msgid "Admin Templates"
+msgstr ""
+
+#: Views/Template/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Template/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Index"
+msgid "Templates"
+msgstr ""
+
+#: Views/Template/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/TemplateCreateButton.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateCreateButton"
+msgid "Add Template"
+msgstr ""
+
+#: Views/TemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/TemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/TemplateSettings.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSettings"
+msgid "Edit templates"
+msgstr ""

@@ -43,6 +43,43 @@ public sealed class PotWriterTests
     }
 
     [Fact]
+    public void Write_FormatArguments_DescribesCountAndMergesCallSites()
+    {
+        var catalog = new LocalizationCatalog();
+        catalog.Add("Context", "{0} of {1}", null, new SourceReference("B.cs"), formatArguments: ["total", "items"]);
+        catalog.Add("Context", "{0} of {1}", null, new SourceReference("A.cs"), formatArguments: ["count", "entries"]);
+        catalog.Add("Context", "One item", "{0} of {1} items", new SourceReference("Plural.cs"));
+        catalog.Add("Context", "Literal {{braces}}", null, new SourceReference("Literal.cs"));
+
+        var output = PotWriter.Write(catalog, "Example");
+
+        Assert.Contains("#. Format arguments: {0}: count, total; {1}: entries, items\n", output);
+        Assert.Contains("#. Format arguments: {0}: count; {1}\n", output);
+        Assert.Equal(2, output.Split("#. Format arguments:", StringSplitOptions.None).Length - 1);
+    }
+
+    [Fact]
+    public void Write_InvalidFormat_DoesNotAddFormatCommentOrFlag()
+    {
+        var catalog = new LocalizationCatalog();
+        catalog.Add("Context", "Value {0", null, new SourceReference("Messages.cs"), formatArguments: ["value"]);
+
+        var output = PotWriter.Write(catalog, "Example");
+
+        Assert.DoesNotContain("#. Format arguments:", output);
+        Assert.DoesNotContain("#, csharp-format", output);
+    }
+
+    [Fact]
+    public void Write_MultilineArgument_KeepsPotCommentOnOneLine()
+    {
+        var catalog = new LocalizationCatalog();
+        catalog.Add("Context", "Value {0}", null, new SourceReference("Messages.cs"), formatArguments: ["GetValue(\n  item)"]);
+
+        Assert.Contains("#. Format arguments: {0}: GetValue(   item)\n#: Messages.cs", PotWriter.Write(catalog, "Example"));
+    }
+
+    [Fact]
     public void Add_ConflictingPluralDefinitions_ReportsError()
     {
         var catalog = new LocalizationCatalog();

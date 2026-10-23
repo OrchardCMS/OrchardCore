@@ -1,0 +1,201 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.ContentLocalization\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ContentLocalization.AdminMenu"
+msgid "Content Culture"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ContentLocalization.AdminMenu"
+msgid "Content Culture Picker"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ContentLocalization.AdminMenu"
+msgid "Localization"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ContentLocalization.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. Format arguments: {0}: targetCulture
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentLocalization.Controllers.AdminController"
+msgid "A localization already exists for '{0}'."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.ContentLocalization.Controllers.AdminController"
+msgid "Could not create localized version of the content item."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.ContentLocalization.Controllers.AdminController"
+msgid "Localized version of the content created successfully."
+msgstr ""
+
+#: Drivers/LocalizationContentsAdminListDisplayDriver.cs
+msgctxt "OrchardCore.ContentLocalization.Drivers.LocalizationContentsAdminListDisplayDriver"
+msgid "All cultures"
+msgstr ""
+
+#: GraphQL/LocalizationInputObjectType.cs
+msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationInputObjectType"
+msgid "the culture of the content item to filter"
+msgstr ""
+
+#: GraphQL/LocalizationInputObjectType.cs
+msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationInputObjectType"
+msgid "the localization part of the content item"
+msgstr ""
+
+#: GraphQL/LocalizationInputObjectType.cs
+msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationInputObjectType"
+msgid "the localization set of the content item to filter"
+msgstr ""
+
+#: GraphQL/LocalizationQueryObjectType.cs
+msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationQueryObjectType"
+msgid "Localization cultures for your content item."
+msgstr ""
+
+#: GraphQL/LocalizationQueryObjectType.cs
+msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationQueryObjectType"
+msgid "The culture for your content item."
+msgstr ""
+
+#: GraphQL/LocalizationQueryObjectType.cs
+msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationQueryObjectType"
+msgid "The localization set for your content item."
+msgstr ""
+
+#: GraphQL/LocalizationQueryObjectType.cs
+msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationQueryObjectType"
+msgid "The localizations of the content item."
+msgstr ""
+
+#: Views/ContentCulturePickerSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentCulturePickerSettings.Edit"
+msgid "Homepage redirect "
+msgstr ""
+
+#: Views/ContentCulturePickerSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentCulturePickerSettings.Edit"
+msgid "Redirects to the homepage of the target culture if the ContentItem of the target culture does not exist."
+msgstr ""
+
+#: Views/ContentCulturePickerSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentCulturePickerSettings.Edit"
+msgid "Set Cookie"
+msgstr ""
+
+#: Views/ContentCulturePickerSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentCulturePickerSettings.Edit"
+msgid "Sets the localization cookie when switching cultures using the ContentCulturePicker"
+msgstr ""
+
+#: Views/ContentRequestCultureProviderSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentRequestCultureProviderSettings.Edit"
+msgid "Set Cookie"
+msgstr ""
+
+#: Views/ContentRequestCultureProviderSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentRequestCultureProviderSettings.Edit"
+msgid "Sets the localization cookie based on the LocalizationPart culture when accessing a page in the frontend."
+msgstr ""
+
+#: Views/ContentsAdminList-LocalizationPartFilter.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentsAdminList-LocalizationPartFilter"
+msgid "Culture"
+msgstr ""
+
+#: Views/ContentsAdminList-LocalizationPartFilter.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.ContentsAdminList-LocalizationPartFilter"
+msgid "Filter by culture"
+msgstr ""
+
+#: Views/Items/ContentsAdminFilters-Culture.Thumbnail.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.Items.ContentsAdminFilters-Culture.Thumbnail"
+msgid "Accepts a single value"
+msgstr ""
+
+#: Views/Items/ContentsAdminFilters-Culture.Thumbnail.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.Items.ContentsAdminFilters-Culture.Thumbnail"
+msgid "Culture"
+msgstr ""
+
+#: Views/Items/ContentsAdminFilters-Culture.Thumbnail.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.Items.ContentsAdminFilters-Culture.Thumbnail"
+msgid "Filters on a content items localization culture."
+msgstr ""
+
+#: Views/LocalizationPart.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.Edit"
+msgid "Add or remove supported cultures for the site"
+msgstr ""
+
+#. Format arguments: {0}: culture.Culture.DisplayName
+#: Views/LocalizationPart.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.Edit"
+msgid "Create {0}"
+msgstr ""
+
+#. Format arguments: {0}: Model.CultureInfo.Name; {1}: Model.CultureInfo.DisplayName
+#: Views/LocalizationPart.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.Edit"
+msgid "Current Culture: {1} | {0}"
+msgstr ""
+
+#. Format arguments: {0}: culture.Culture.DisplayName
+#: Views/LocalizationPart.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.Edit"
+msgid "Edit {0}"
+msgstr ""
+
+#: Views/LocalizationPart.Edit.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.Edit"
+msgid "Please save your content item before creating localizations"
+msgstr ""
+
+#. Format arguments: {0}: CultureInfo.InstalledUICulture.Name; {1}: CultureInfo.InstalledUICulture.DisplayName
+#: Views/LocalizationPart.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.Edit"
+msgid "Your site does not have any cultures. Current System culture is {1} | {0}"
+msgstr ""
+
+#: Views/LocalizationPart.SummaryAdmin.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.SummaryAdmin"
+msgid "Culture"
+msgstr ""
+
+#. Format arguments: {0}: culture.Culture.DisplayName
+#: Views/LocalizationPart.SummaryAdminLinks.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.SummaryAdminLinks"
+msgid "Create {0}"
+msgstr ""
+
+#. Format arguments: {0}: culture.Culture.DisplayName
+#: Views/LocalizationPart.SummaryAdminLinks.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.SummaryAdminLinks"
+msgid "Edit {0}"
+msgstr ""
+
+#: Views/LocalizationPart.SummaryAdminLinks.cshtml
+msgctxt "OrchardCore.ContentLocalization.Views.LocalizationPart.SummaryAdminLinks"
+msgid "Localizations"
+msgstr ""

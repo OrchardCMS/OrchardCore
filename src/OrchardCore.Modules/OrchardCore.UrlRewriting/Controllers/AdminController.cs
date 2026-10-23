@@ -8,8 +8,10 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Routing;
+using OrchardCore.UrlRewriting.Endpoints.Rules;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 
@@ -55,7 +57,8 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(RewriteRuleOptions options)
+    public async Task<IActionResult> Index(
+        RewriteRuleOptions options)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
@@ -66,24 +69,21 @@ public sealed class AdminController : Controller
 
         var model = new ListRewriteRuleViewModel
         {
-            Rules = [],
+            Rules = rules.ToList(),
             Options = options,
             SourceNames = _urlRewritingRuleSources.Select(x => x.TechnicalName),
         };
-
-        foreach (var rule in rules)
-        {
-            model.Rules.Add(new RewriteRuleEntry
-            {
-                Rule = rule,
-                Shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin),
-            });
-        }
 
         model.Options.BulkActions =
         [
             new SelectListItem(S["Delete"], nameof(RewriteRuleAction.Remove)),
         ];
+
+        // The AdminList shape renders the rules with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<RewriteRule>
+        {
+            Source = model.Rules,
+        };
 
         return View(model);
     }

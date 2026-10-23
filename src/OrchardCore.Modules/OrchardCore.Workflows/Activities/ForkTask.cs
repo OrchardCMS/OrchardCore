@@ -24,7 +24,9 @@ public class ForkTask : TaskActivity<ForkTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+#pragma warning disable OCLOC104 // The fork names are entered by the user who designs the workflow.
         => Forks.SelectMany(f => Outcome(S[f]));
+#pragma warning restore OCLOC104
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

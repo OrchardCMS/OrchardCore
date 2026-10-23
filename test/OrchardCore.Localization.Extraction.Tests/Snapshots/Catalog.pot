@@ -12,6 +12,7 @@ msgctxt "A.Context"
 msgid "Line\n\"quoted\"\\tail\t"
 msgstr ""
 
+#. Format arguments: {0}: count
 #: Other.cs:2
 #: Views/Test.cshtml:3
 #, csharp-format

@@ -11,8 +11,4 @@ public class HtmlFieldSettings : FieldSettings
     [DefaultValue(true)]
     public bool SanitizeHtml { get; set; } = true;
 
-    /// <summary>
-    /// Whether Liquid templating is enabled.
-    /// </summary>
-    public bool RenderLiquid { get; set; }
 }

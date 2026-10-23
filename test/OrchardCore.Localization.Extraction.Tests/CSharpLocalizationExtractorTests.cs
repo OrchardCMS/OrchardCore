@@ -294,6 +294,48 @@ public sealed class CSharpLocalizationExtractorTests
     }
 
     [Fact]
+    public void Extract_FormatArguments_MapsIndexerAndExtensionParameters()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using Microsoft.Extensions.Localization;
+            namespace Example;
+            public class Owner
+            {
+                public string Get(IStringLocalizer<Owner> words, string name, int total)
+                    => words["Hello {0}, {1}", name, total].Value
+                        + words.GetString("Total: {0}", total).Value
+                        + StringLocalizerExtensions.GetString(words, name: "Static: {0}", arguments: [name]).Value;
+            }
+            """);
+
+        var output = PotWriter.Write(catalog, "Example");
+        Assert.Contains("#. Format arguments: {0}: name; {1}: total\n", output);
+        Assert.Contains("#. Format arguments: {0}: total\n", output);
+        Assert.Contains("#. Format arguments: {0}: name\n", output);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Fact]
+    public void Extract_PluralFormatArguments_MapsCountAndAdditionalArguments()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using Microsoft.Extensions.Localization;
+            namespace Example;
+            public class Owner
+            {
+                public string Get(IStringLocalizer<Owner> words, int count, string item)
+                    => words.Plural(plural: "{0} {1} items", singular: "{0} {1} item", count: count, arguments: [item]).Value
+                        + words.Plural(count, "One file", "{0} files").Value;
+            }
+            """, includePlurals: true);
+
+        var output = PotWriter.Write(catalog, "Example");
+        Assert.Contains("#. Format arguments: {0}: count; {1}: item\n", output);
+        Assert.Contains("#. Format arguments: {0}: count\n", output);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Fact]
     public void Extract_StaticExtensionCall_UsesResolvedParameters()
     {
         var catalog = TestWorkspace.ExtractCSharp("""

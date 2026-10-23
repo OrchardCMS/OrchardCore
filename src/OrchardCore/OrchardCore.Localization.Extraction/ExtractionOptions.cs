@@ -10,6 +10,19 @@ public sealed class ExtractionOptions
     public string ViewPrefix { get; init; } = "";
     public string LanguageVersion { get; init; } = "14.0";
     public string InterceptorsNamespaces { get; init; } = "";
+
+    /// <summary>
+    /// Gets the directory containing the Roslyn assemblies of the .NET SDK that drives the build, such as its
+    /// <c>Roslyn/bincore</c> directory. The process must be bound to it with <see cref="SdkAssemblyResolver"/>
+    /// before extraction; the option records the input for cache invalidation.
+    /// </summary>
+    public string RoslynDirectory { get; init; } = "";
+
+    /// <summary>
+    /// Gets the path of the SDK's <c>Microsoft.CodeAnalysis.Razor.Compiler</c> assembly, whose source generator
+    /// compiles Razor files before their localizer calls are extracted.
+    /// </summary>
+    public string RazorCompilerPath { get; init; } = "";
     public string RazorLanguageVersion { get; init; } = "10.0";
     public string RazorConfiguration { get; init; } = "MVC-3.0";
     public string Nullable { get; init; } = "disable";

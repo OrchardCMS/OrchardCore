@@ -1,0 +1,312 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.DataLocalization\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.AdminMenu"
+msgid "Dynamic Translations"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.AdminMenu"
+msgid "Localization"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.AdminController"
+msgid "Translations saved successfully."
+msgstr ""
+
+#: Deployment/AllDataTranslationsDeploymentStep.cs
+msgctxt "OrchardCore.DataLocalization.Deployment.AllDataTranslationsDeploymentStep"
+msgid "Internationalization"
+msgstr ""
+
+#: Deployment/TranslationsDeploymentStep.cs
+msgctxt "OrchardCore.DataLocalization.Deployment.TranslationsDeploymentStep"
+msgid "Internationalization"
+msgstr ""
+
+#: Recipes/TranslationsStep.cs
+msgctxt "OrchardCore.DataLocalization.Recipes.TranslationsStep"
+msgid "The 'translations' property is required."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "All Categories"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "An error occurred while saving."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Auto-save"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Category"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Culture"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Dynamic Translations"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Failed to load translations."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Failed to save translations."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Loading..."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Missing only"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "No translatable strings found matching your criteria."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Original"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Search translations"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Statistics"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translation"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translations saved successfully."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Unsaved changes"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "You have read-only access to dynamic translations. Contact an administrator to request edit permissions."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "You have unsaved changes. Do you want to discard them?"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "strings"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "translated"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Category"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Completion"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Culture"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Dynamic Translations"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Edit Translations"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Edit translations"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "No categories found for this culture."
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Overall Progress"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Progress"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Progress by Category"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Progress by Culture"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "Statistics"
+msgstr ""
+
+#: Views/Admin/Statistics.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
+msgid "strings"
+msgstr ""
+
+#: Views/Items/AllDataTranslationsDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.AllDataTranslationsDeploymentStep.Edit"
+msgid "Dynamic Data Translations"
+msgstr ""
+
+#: Views/Items/AllDataTranslationsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.AllDataTranslationsDeploymentStep.Summary"
+msgid "Adds all data translations to the plan."
+msgstr ""
+
+#: Views/Items/AllDataTranslationsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.AllDataTranslationsDeploymentStep.Summary"
+msgid "Dynamic Data Translations"
+msgstr ""
+
+#: Views/Items/AllDataTranslationsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.AllDataTranslationsDeploymentStep.Thumbnail"
+msgid "Dynamic Data Translations"
+msgstr ""
+
+#: Views/Items/AllDataTranslationsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.AllDataTranslationsDeploymentStep.Thumbnail"
+msgid "Exports all data translations."
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Edit"
+msgid "Adds translations to the deployment plan."
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Edit"
+msgid "Categories"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Edit"
+msgid "Cultures"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Edit"
+msgid "Include all cultures"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Edit"
+msgid "Leave empty to export all categories"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Edit"
+msgid "Translations"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Edit.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Edit"
+msgid "When unchecked, you can select specific cultures to export."
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Summary.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Summary"
+msgid "Adds translations to the deployment plan."
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Summary.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Summary"
+msgid "All cultures"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Summary.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Summary"
+msgid "Categories:"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Summary.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Summary"
+msgid "Cultures:"
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Thumbnail.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Thumbnail"
+msgid "Export translations for import to another site."
+msgstr ""
+
+#: Views/Items/TranslationsDeploymentStep_Fields_Thumbnail.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Items.TranslationsDeploymentStep_Fields_Thumbnail"
+msgid "Translations"
+msgstr ""

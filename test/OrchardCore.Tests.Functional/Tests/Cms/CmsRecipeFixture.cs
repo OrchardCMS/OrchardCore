@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 
@@ -13,9 +14,9 @@ public abstract class CmsRecipeFixture : IAsyncLifetime
     public IBrowser Browser => _testFixture.Browser;
     public string BaseUrl => _testFixture.BaseUrl;
 
-    protected CmsRecipeFixture()
+    protected CmsRecipeFixture(Action<WebApplicationBuilder> configure = null)
     {
-        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}");
+        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}", configure: configure);
     }
 
     public async ValueTask InitializeAsync()
@@ -166,3 +167,7 @@ public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "PredefinedListEditorTests";
 }
 
+public sealed class PartToggleEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "PartToggleEditorTests";
+}

@@ -1,0 +1,1637 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Media\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AdminMenu"
+msgid "API"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AdminMenu"
+msgid "Library"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AdminMenu"
+msgid "Media"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AdminMenu"
+msgid "Options"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AdminMenu"
+msgid "Profiles"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Media.Controllers.AdminController"
+msgid "Unspecified"
+msgstr ""
+
+#: Controllers/MediaCacheController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaCacheController"
+msgid "Asset cache purged, with errors."
+msgstr ""
+
+#: Controllers/MediaCacheController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaCacheController"
+msgid "Asset cache purged."
+msgstr ""
+
+#: Controllers/MediaCacheController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaCacheController"
+msgid "The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "A profile with the same name already exists."
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "BoxPad"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Crop"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Custom Size"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Default"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Default (Max)"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Gif"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Jpg"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Max"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Media profile deleted successfully."
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Media profiles successfully removed."
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Min"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Pad"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Png"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "Stretch"
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "The name is mandatory."
+msgstr ""
+
+#: Controllers/MediaProfilesController.cs
+msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
+msgid "WebP"
+msgstr ""
+
+#: Deployment/AllMediaProfilesDeploymentStep.cs
+msgctxt "OrchardCore.Media.Deployment.AllMediaProfilesDeploymentStep"
+msgid "Content Management"
+msgstr ""
+
+#: Deployment/MediaDeploymentStep.cs
+msgctxt "OrchardCore.Media.Deployment.MediaDeploymentStep"
+msgid "Content Management"
+msgstr ""
+
+#: Deployment/MediaDeploymentStep.cs
+msgctxt "OrchardCore.Media.Deployment.MediaDeploymentStep"
+msgid "Media"
+msgstr ""
+
+#: Drivers/MediaApiSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaApiSettingsDisplayDriver"
+msgid "Bearer — OAuth2 + PKCE (requires OpenID Connect)"
+msgstr ""
+
+#: Drivers/MediaApiSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaApiSettingsDisplayDriver"
+msgid "Cookie (default)"
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/MediaFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", settings.AllowedExtensions)
+#: Drivers/MediaFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
+msgid "Media extension is not allowed. Only media with '{0}' extensions are allowed."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/MediaFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
+msgid "{0}: Selecting multiple media is forbidden."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName(); {1}: ex.FileName
+#: Drivers/MediaFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
+msgid "{0}: The file {1} was not found. Reupload the file."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/MediaFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
+msgid "{0}: There was an error handling the files."
+msgstr ""
+
+#: Endpoints/Api/UploadMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "A file with this name already exists in the current folder."
+msgstr ""
+
+#: Endpoints/Api/CopyMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot copy media because a file already exists with the same name"
+msgstr ""
+
+#: Endpoints/Api/CreateFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot create folder because a file already exists with the same name"
+msgstr ""
+
+#: Endpoints/Api/CreateFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot create folder because a folder already exists with the same name"
+msgstr ""
+
+#: Endpoints/Api/CreateFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot create folder because the folder name contains invalid characters"
+msgstr ""
+
+#: Endpoints/Api/CreateFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot create folder inside a system folder"
+msgstr ""
+
+#: Endpoints/Api/DeleteFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot delete a system folder"
+msgstr ""
+
+#: Endpoints/Api/DeleteFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot delete path because it is not a directory"
+msgstr ""
+
+#: Endpoints/Api/DeleteFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot delete root media folder"
+msgstr ""
+
+#: Endpoints/Api/MoveMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Cannot move media because a file already exists with the same name"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(",", filesOnError)
+#: Endpoints/Api/MoveMediaListEndpoint.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Error when moving files. Maybe they already exist on the target folder? Files on error: {0}"
+msgstr ""
+
+#. Format arguments: {0}: extension, newExtension
+#: Endpoints/Api/CopyMediaEndpoint.cs
+#: Endpoints/Api/MoveMediaEndpoint.cs
+#: Endpoints/Api/UploadMediaEndpoint.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "This file extension is not allowed: {0}"
+msgstr ""
+
+#: Endpoints/Api/GetPermittedStorageEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Unspecified"
+msgstr ""
+
+#. Format arguments: {0}: rolesUrl
+#: Events/SecureMediaFeatureEventHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Events.SecureMediaFeatureEventHandler"
+msgid "<p><strong>Secure Media</strong> is now enabled. Review and update role <strong>permissions</strong> to ensure users can access only the media they should.</p><p>Open the <a href=\"{0}\">Roles page</a> to configure permissions.<br />For guidance, see the <a href=\"https://docs.orchardcore.net/en/latest/reference/modules/Media/#secure-media\" target=\"_blank\" rel=\"noopener noreferrer\">secure media documentation</a>.</p>"
+msgstr ""
+
+#: GraphQL/MediaAssetObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaAssetObjectType"
+msgid "The date and time in UTC when the asset was last modified."
+msgstr ""
+
+#: GraphQL/MediaAssetObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaAssetObjectType"
+msgid "The length of the file."
+msgstr ""
+
+#: GraphQL/MediaAssetObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaAssetObjectType"
+msgid "The name of the asset."
+msgstr ""
+
+#: GraphQL/MediaAssetObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaAssetObjectType"
+msgid "The url to the asset."
+msgstr ""
+
+#: GraphQL/MediaAssetQuery.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaAssetQuery"
+msgid "Media asset path."
+msgstr ""
+
+#: GraphQL/MediaAssetQuery.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaAssetQuery"
+msgid "Media assets are items that are part of your media library."
+msgstr ""
+
+#: GraphQL/MediaAssetQuery.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaAssetQuery"
+msgid "Whether to get the assets from just the top directory or from all sub-directories as well."
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFieldQueryObjectType"
+msgid "the absolute urls of the media items"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFieldQueryObjectType"
+msgid "the files of the media items"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFieldQueryObjectType"
+msgid "the media file names"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFieldQueryObjectType"
+msgid "the media paths"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFieldQueryObjectType"
+msgid "the media texts"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "auto-orient the image based on EXIF data (defaults to true)"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the background color of the image"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the file name of the media file item"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the format of the image (jpg, png, gif, webp)"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the height of the image"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the media profile name to use for image processing"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the media text of the file item"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the path of the media file item"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the quality of the image (1-100)"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the resize mode (pad, boxpad, max, min, stretch)"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the url name of the media file item"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the url of the media file item with image processing parameters"
+msgstr ""
+
+#: GraphQL/MediaFieldQueryObjectType.cs
+msgctxt "OrchardCore.Media.GraphQL.MediaFileItemType"
+msgid "the width of the image"
+msgstr ""
+
+#: MediaCacheAdminMenu.cs
+msgctxt "OrchardCore.Media.MediaCacheAdminMenu"
+msgid "Cache"
+msgstr ""
+
+#: MediaCacheAdminMenu.cs
+msgctxt "OrchardCore.Media.MediaCacheAdminMenu"
+msgid "Media"
+msgstr ""
+
+#: MediaCacheAdminMenu.cs
+msgctxt "OrchardCore.Media.MediaCacheAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStep"
+msgid "File extension not allowed: '{0}'"
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStep"
+msgid "Media target path must be a relative file path without traversal segments: '{0}'"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "A file with this name already exists in the current folder."
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "A folder must be selected"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Add media"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Anchor"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Are you sure you want to delete these files?"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Are you sure you want to delete this file?"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Are you sure you want to delete this folder?"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Are you sure you want to move the selected file(s) to this folder?"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Available Storage"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Cancel"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Cannot delete the root folder"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Clear Errors"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Copied!"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Copy"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Copy error"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Copy file"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/MediaJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Could not sign in to the Media API. The sign-in service at {0} could not be reached — check that OpenID Connect is enabled and the Media API bearer client is configured, or switch the Media API to Cookie authentication in the Media settings."
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Create a subfolder"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Create folder"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Delete"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Delete file"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Delete folder"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Download"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Drop files here"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Drop your file here"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Enter media text"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error getting folders"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error moving file"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error:"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Errors"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Failed to download file"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File copied successfully."
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File name"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File name is required"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File(s) moved successfully."
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Files"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "First"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Folder Action"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Invalid file extension"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Large Thumbs"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Last"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Last modified"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Loading media browser..."
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Media text"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Move"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Move file"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Move file(s)"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Name"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Next"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "No Files"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Not Found"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Nothing to show with this filter"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "OK"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Ok"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Pause upload"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Previous"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Remove"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Rename"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Rename file"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Reset Anchor"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Resume upload"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Resumed"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Search and filter..."
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select All"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select Media"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select None"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select a file"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select a folder"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select an anchor"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Size"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Small Thumbs"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Storage Info"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Success"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Temporarily unavailable"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "The file is already in this folder"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "This file exceeds the maximum upload size"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/MediaJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "This file exceeds the maximum upload size of {0}"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "This folder is empty"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Unauthorized"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Upload files"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Uploads"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Validation error"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "View"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "What do you want to do with this folder?"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "You are not authorized to perform this action on these files"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "You are not authorized to perform this action on this file"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "You are not authorized to perform this action on this folder"
+msgstr ""
+
+#: Services/MediaJSLocalizer.cs
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Your files will be uploaded to the current folder when you drop them here"
+msgstr ""
+
+#: Settings/MediaFieldSettingsDriver.cs
+msgctxt "OrchardCore.Media.Settings.MediaFieldSettingsDriver"
+msgid "Please select at least one extension."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Index"
+msgid "Assets"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "A CDN base url that will be prefixed to the request path when serving images."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Allowed file extensions"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Assets path"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Assets request path"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Assets users folder"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Atomic move"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Cdn base url"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Hierarchical namespace"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Indicates whether SignalR is enabled for real-time media updates."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Indicates whether the TUS resumable upload protocol is enabled."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Indicates whether the storage provider supports a true hierarchical folder structure."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Indicates whether the storage provider supports atomic move operations."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Indicates whether the thumbnails (grid) view is disabled in the media gallery."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Max browser cache days"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Max cache days"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Max file size"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Max secure files browser cache days"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Max upload chunk size"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Media is configured with appsettings.json."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Media options"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Restricted file extensions"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "See documentation"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "SignalR"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Storage provider"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Supported sizes"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "TUS uploads"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Temporary file lifetime"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The accepted sizes for custom width and height."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The default number of days for the media cache control header for secure files."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The default number of days for the media cache control header."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The folder under AssetsPath used to store users own media assets."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The lifetime of temporary files created during upload."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The list of allowed file extensions."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The maximum chunk size when uploading files in bytes. If 0 or null, no chunked upload is used."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The maximum number of days a cached resized media item will be valid for, before being rebuilt on request."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The maximum size of an uploaded file in bytes."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The name of the configured media storage provider."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The name of the folder used to store media assets inside the App_Data folder."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "The request path used to route asset files."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Thumbnails disabled"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Views.Admin.Options"
+msgid "Users need the 'Upload media file extensions requiring additional permission' permission to upload files with these extensions."
+msgstr ""
+
+#: Views/Items/AllMediaProfilesDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.Items.AllMediaProfilesDeploymentStep.Edit"
+msgid "All Media Profiles"
+msgstr ""
+
+#: Views/Items/AllMediaProfilesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Media.Views.Items.AllMediaProfilesDeploymentStep.Summary"
+msgid "Adds all media profiles to the plan."
+msgstr ""
+
+#: Views/Items/AllMediaProfilesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Media.Views.Items.AllMediaProfilesDeploymentStep.Summary"
+msgid "All Media Profiles"
+msgstr ""
+
+#: Views/Items/AllMediaProfilesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Media.Views.Items.AllMediaProfilesDeploymentStep.Thumbnail"
+msgid "All Media Profiles"
+msgstr ""
+
+#: Views/Items/AllMediaProfilesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Media.Views.Items.AllMediaProfilesDeploymentStep.Thumbnail"
+msgid "Exports all media profiles."
+msgstr ""
+
+#: Views/Items/MediaDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.Items.MediaDeploymentStep.Fields.Edit"
+msgid "Include all media."
+msgstr ""
+
+#: Views/Items/MediaDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.Items.MediaDeploymentStep.Fields.Edit"
+msgid "The media to add as part of the plan."
+msgstr ""
+
+#: Views/Items/MediaDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Media.Views.Items.MediaDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr ""
+
+#: Views/Items/MediaDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Media.Views.Items.MediaDeploymentStep.Fields.Summary"
+msgid "Media"
+msgstr ""
+
+#: Views/Items/MediaDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Media.Views.Items.MediaDeploymentStep.Fields.Summary"
+msgid "No media selected."
+msgstr ""
+
+#: Views/Items/MediaDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Media.Views.Items.MediaDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified media."
+msgstr ""
+
+#: Views/Items/MediaDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Media.Views.Items.MediaDeploymentStep.Fields.Thumbnail"
+msgid "Media"
+msgstr ""
+
+#: Views/MediaApiSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaApiSettings.Edit"
+msgid "How the Media Gallery, uploads and realtime updates authenticate to the Media API (api/media). Exactly one scheme is active at a time — never both. Cookie works out of the box with the admin session (with antiforgery protection on writes). Bearer uses OAuth2 bearer tokens and requires the OpenID Connect Token Validation feature and a registered PKCE client."
+msgstr ""
+
+#: Views/MediaApiSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaApiSettings.Edit"
+msgid "Media API authentication"
+msgstr ""
+
+#: Views/MediaCache/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaCache.Index"
+msgid "Are you sure you want to purge the entire asset cache?"
+msgstr ""
+
+#: Views/MediaCache/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaCache.Index"
+msgid "Asset Cache"
+msgstr ""
+
+#: Views/MediaCache/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaCache.Index"
+msgid "Media is configured with appsettings.json."
+msgstr ""
+
+#: Views/MediaCache/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaCache.Index"
+msgid "Purge All"
+msgstr ""
+
+#: Views/MediaCache/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaCache.Index"
+msgid "Purge all the assets from the cache"
+msgstr ""
+
+#: Views/MediaCache/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaCache.Index"
+msgid "The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."
+msgstr ""
+
+#: Views/MediaField-Attached.Option.cshtml
+msgctxt "OrchardCore.Media.Views.MediaField-Attached.Option"
+msgid "Attached"
+msgstr ""
+
+#: Views/MediaField-Gallery.Option.cshtml
+msgctxt "OrchardCore.Media.Views.MediaField-Gallery.Option"
+msgid "Gallery"
+msgstr ""
+
+#: Views/MediaField.DisplayOption.cshtml
+msgctxt "OrchardCore.Media.Views.MediaField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/MediaField.Option.cshtml
+msgctxt "OrchardCore.Media.Views.MediaField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Allow all default media types"
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Allow anchors"
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Allow media text"
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Multiple"
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#. Format arguments: {0}: group.Key
+#: Views/MediaFieldSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Select all extensions with the '{0}' type."
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "The hint text to display on the editor."
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "This will allow the user to attach any accessible file from the media library."
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Whether a media is required."
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Whether media text editing is allowed."
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Whether multiple media can be selected."
+msgstr ""
+
+#: Views/MediaFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "Whether selecting an anchor point for resizing is allowed."
+msgstr ""
+
+#. Format arguments: {0}: group.Key
+#: Views/MediaFieldSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgid "{0} types"
+msgstr ""
+
+#: Views/MediaProfileEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/MediaProfileEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Auto Orient"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Automatically orient the image based on EXIF metadata. Enabled by default."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Background Color"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Create Media Profile"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Format"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Height"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Hint"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Media Profiles"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Quality"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Resize Mode"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,80'."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Select the format for the processed image. A default value means a format command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Select the height for the processed image. A default value means a height command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Select the resize mode for the processed image."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Select the width for the processed image. A default value means a width command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "The hint for the media profile."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "The name of the media profile."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "The quality percentage for the processed image. Only supported with the JPG and WebP format. A value of 100% means a quality command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Width"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "and continue"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Auto Orient"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Automatically orient the image based on EXIF metadata. Enabled by default."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Background Color"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Edit Media Profile"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Format"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Height"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Media Profiles"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Quality"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Resize Mode"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,16'."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Select the format for the processed image. A default value means a format command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Select the height for the processed image. A default value means a height command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Select the resize mode for the processed image."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Select the width for the processed image. A default value means a width command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "The hint for the media profile."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "The name of the media profile."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "The quality percentage for the processed image. Only supported with the JPG or WebP format. A value of 100% means a quality command will not be applied."
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Width"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "and continue"
+msgstr ""
+
+#: Views/MediaProfiles/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
+msgid "<strong>Nothing here!</strong> There are no media profiles for the moment."
+msgstr ""
+
+#: Views/MediaProfiles/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/MediaProfiles/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
+msgid "Add Media Profile"
+msgstr ""
+
+#: Views/MediaProfiles/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
+msgid "Media Profiles"
+msgstr ""
+
+#: Views/MediaProfiles/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/MediaProfiles/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/MediaProfiles/Index.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditAnchorModal.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditAnchorModal"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditAnchorModal.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditAnchorModal"
+msgid "OK"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditAnchorModal.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditAnchorModal"
+msgid "Reset Anchor"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditAnchorModal.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditAnchorModal"
+msgid "Select an anchor"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditLocalization.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditLocalization"
+msgid "File has been deleted"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditLocalization.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditLocalization"
+msgid "No Files"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditLocalization.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditLocalization"
+msgid "Not Found"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditLocalization.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditLocalization"
+msgid "Only one item is allowed on this field."
+msgstr ""
+
+#: Views/Shared/MediaFieldEditLocalization.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditLocalization"
+msgid "Temporarily unavailable"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditMediaTextModal.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditMediaTextModal"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditMediaTextModal.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditMediaTextModal"
+msgid "Enter media text"
+msgstr ""
+
+#: Views/Shared/MediaFieldEditMediaTextModal.cshtml
+msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditMediaTextModal"
+msgid "OK"
+msgstr ""

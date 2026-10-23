@@ -1,0 +1,92 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Contents.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Access content via the api"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Clone content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Clone own content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Delete content for others"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Delete own content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Edit content for others"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Edit own content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Edit the owner of a content item"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "List content items"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Preview content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Preview own content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Publish or unpublish content for others"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "Publish or unpublish own content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "View all content"
+msgstr ""
+
+#: CommonPermissions.cs
+msgctxt "OrchardCore.Contents.CommonPermissions"
+msgid "View own content"
+msgstr ""
+
+#: ContentTypesPermissions.cs
+msgctxt "OrchardCore.Contents.ContentTypesPermissions"
+msgid "Edit content types."
+msgstr ""
+
+#: ContentTypesPermissions.cs
+msgctxt "OrchardCore.Contents.ContentTypesPermissions"
+msgid "View content types."
+msgstr ""
