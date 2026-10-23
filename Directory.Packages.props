@@ -143,5 +143,8 @@
   <ItemGroup>
     <!-- Transitive Packages -->
     <PackageVersion Include="MessagePack" Version="3.1.10" />
+    <!-- Pinned to versions that are not affected by known vulnerabilities (NU1902, NU1903). -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.13" />
   </ItemGroup>
 </Project>
