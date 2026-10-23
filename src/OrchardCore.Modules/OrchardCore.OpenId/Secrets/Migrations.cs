@@ -4,6 +4,7 @@ using OrchardCore.OpenId.Settings;
 using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
+// Keep the full type name: existing tenants use it as the migration history key.
 namespace OrchardCore.OpenId.Secrets;
 
 /// <summary>
