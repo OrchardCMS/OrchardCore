@@ -45,20 +45,17 @@ public sealed class ContentTypeAuthorizationHandler : AuthorizationHandler<Permi
             }
         }
 
-        var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirement.Permission);
+        // The resource can be a content type name
+        var contentType = contentItem != null
+            ? contentItem.ContentType
+            : context.Resource.ToString()
+            ;
 
-        if (contentTypePermission != null)
+        if (!string.IsNullOrEmpty(contentType) &&
+            (permission ?? requirement.Permission) is { } basePermission &&
+            ContentTypePermissionsHelper.CreateDynamicPermissionOf(basePermission.Name, contentType) is { } dynamicPermission)
         {
-            // The resource can be a content type name
-            var contentType = contentItem != null
-                ? contentItem.ContentType
-                : context.Resource.ToString()
-                ;
-
-            if (!string.IsNullOrEmpty(contentType))
-            {
-                permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentType);
-            }
+            permission = dynamicPermission;
         }
 
         if (permission == null)
