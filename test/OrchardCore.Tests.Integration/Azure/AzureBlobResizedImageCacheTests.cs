@@ -145,9 +145,7 @@ public sealed class AzureBlobResizedImageCacheTests : IAsyncLifetime
     public async Task Clear_EmptyCache_Succeeds()
     {
         // ClearAsync on an empty container must not throw.
-        var exception = await Record.ExceptionAsync(() => _cache.ClearAsync());
-
-        Assert.Null(exception);
+        await _cache.ClearAsync();
     }
 
     [DockerFact]
