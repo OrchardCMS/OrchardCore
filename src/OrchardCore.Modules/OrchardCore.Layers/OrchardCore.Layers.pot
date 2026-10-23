@@ -73,11 +73,6 @@ msgctxt "OrchardCore.Layers.Controllers.LayerRuleController"
 msgid "The condition has validation errors."
 msgstr ""
 
-#: Deployment/AllLayersDeploymentStep.cs
-msgctxt "OrchardCore.Layers.Deployment.AllLayersDeploymentStep"
-msgid "Content"
-msgstr ""
-
 #: Drivers/LayerMetadataWelder.cs
 msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
 msgid "Layer is missing field."

@@ -30,3 +30,43 @@ msgstr ""
 msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
 msgid "You do not have sufficient permissions to complete this request"
 msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Configuration"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content Management"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Development"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Infrastructure"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Search"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Security"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Settings"
+msgstr ""

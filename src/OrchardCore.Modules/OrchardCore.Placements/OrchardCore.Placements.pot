@@ -71,11 +71,6 @@ msgctxt "OrchardCore.Placements.Controllers.AdminController"
 msgid "The Shape type can't be empty."
 msgstr ""
 
-#: Deployment/PlacementsDeploymentStep.cs
-msgctxt "OrchardCore.Placements.Deployment.PlacementsDeploymentStep"
-msgid "Development"
-msgstr ""
-
 #: Permissions.cs
 msgctxt "OrchardCore.Placements.Permissions"
 msgid "Manage placements"

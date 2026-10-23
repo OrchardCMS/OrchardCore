@@ -77,11 +77,6 @@ msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "{0} Feature"
 msgstr ""
 
-#: Deployment/AllRolesDeploymentStep.cs
-msgctxt "OrchardCore.Roles.Deployment.AllRolesDeploymentStep"
-msgid "Security"
-msgstr ""
-
 #: Services/RoleStore.cs
 msgctxt "OrchardCore.Roles.Services.RoleStore"
 msgid "Can't delete system roles."

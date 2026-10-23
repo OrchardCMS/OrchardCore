@@ -49,14 +49,9 @@ msgctxt "OrchardCore.Features.Controllers.AdminController"
 msgid "Uncategorized"
 msgstr ""
 
-#: Deployment/AllFeaturesDeploymentStep.cs
-msgctxt "OrchardCore.Features.Deployment.AllFeaturesDeploymentStep"
+#: FeaturesLocalizationSources.cs
+msgctxt "OrchardCore.Features.FeaturesLocalizationSources"
 msgid "All Features"
-msgstr ""
-
-#: Deployment/AllFeaturesDeploymentStep.cs
-msgctxt "OrchardCore.Features.Deployment.AllFeaturesDeploymentStep"
-msgid "Infrastructure"
 msgstr ""
 
 #. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))

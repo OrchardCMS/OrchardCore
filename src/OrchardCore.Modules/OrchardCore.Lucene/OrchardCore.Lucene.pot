@@ -48,36 +48,6 @@ msgctxt "OrchardCore.Lucene.Controllers.AdminController"
 msgid "Invalid query: {0}"
 msgstr ""
 
-#: Deployment/LuceneIndexDeploymentStep.cs
-msgctxt "OrchardCore.Lucene.Deployment.LuceneIndexDeploymentStep"
-msgid "Lucene Search Indexes"
-msgstr ""
-
-#: Deployment/LuceneIndexDeploymentStep.cs
-msgctxt "OrchardCore.Lucene.Deployment.LuceneIndexDeploymentStep"
-msgid "Search"
-msgstr ""
-
-#: Deployment/LuceneIndexRebuildDeploymentStep.cs
-msgctxt "OrchardCore.Lucene.Deployment.LuceneIndexRebuildDeploymentStep"
-msgid "Rebuild Lucene Search Indices"
-msgstr ""
-
-#: Deployment/LuceneIndexRebuildDeploymentStep.cs
-msgctxt "OrchardCore.Lucene.Deployment.LuceneIndexRebuildDeploymentStep"
-msgid "Search"
-msgstr ""
-
-#: Deployment/LuceneIndexResetDeploymentStep.cs
-msgctxt "OrchardCore.Lucene.Deployment.LuceneIndexResetDeploymentStep"
-msgid "Reset Lucene Search Indices"
-msgstr ""
-
-#: Deployment/LuceneIndexResetDeploymentStep.cs
-msgctxt "OrchardCore.Lucene.Deployment.LuceneIndexResetDeploymentStep"
-msgid "Search"
-msgstr ""
-
 #: Drivers/LuceneIndexProfileDisplayDriver.cs
 msgctxt "OrchardCore.Lucene.Drivers.LuceneIndexProfileDisplayDriver"
 msgid "Lucene 4.8"
@@ -96,6 +66,28 @@ msgstr ""
 #: Shapes/LuceneContentPickerShapeProvider.cs
 msgctxt "OrchardCore.Lucene.LuceneContentPickerShapeProvider"
 msgid "Lucene"
+msgstr ""
+
+#. Format arguments: {0}
+#: LuceneIndexPermissionHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Lucene.LuceneIndexPermissionHelper"
+msgid "Query Lucene {0} Index"
+msgstr ""
+
+#: LuceneLocalizationSources.cs
+msgctxt "OrchardCore.Lucene.LuceneLocalizationSources"
+msgid "Lucene Search Indexes"
+msgstr ""
+
+#: LuceneLocalizationSources.cs
+msgctxt "OrchardCore.Lucene.LuceneLocalizationSources"
+msgid "Rebuild Lucene Search Indices"
+msgstr ""
+
+#: LuceneLocalizationSources.cs
+msgctxt "OrchardCore.Lucene.LuceneLocalizationSources"
+msgid "Reset Lucene Search Indices"
 msgstr ""
 
 #: Views/Admin/Query.cshtml

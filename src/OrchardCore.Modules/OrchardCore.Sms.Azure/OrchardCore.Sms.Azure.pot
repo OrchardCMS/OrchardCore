@@ -26,6 +26,21 @@ msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
 msgid "You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."
 msgstr ""
 
+#: Drivers/AzureSmsSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSmsSecretMigrationDisplayDriver"
+msgid "Azure Communication Services SMS"
+msgstr ""
+
+#: Drivers/AzureSmsSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSmsSecretMigrationDisplayDriver"
+msgid "Azure Communication Services SMS: Connection string"
+msgstr ""
+
+#: Drivers/AzureSmsSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSmsSecretMigrationDisplayDriver"
+msgid "Connection string"
+msgstr ""
+
 #: Services/AzureSmsProvider.cs
 msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProvider"
 msgid "Azure Communication Services"
@@ -76,11 +91,6 @@ msgstr ""
 #: Views/AzureSmsSettings.Edit.cshtml
 msgctxt "OrchardCore.Sms.Azure.Views.AzureSmsSettings.Edit"
 msgid "Enable"
-msgstr ""
-
-#: Views/AzureSmsSettings.Edit.cshtml
-msgctxt "OrchardCore.Sms.Azure.Views.AzureSmsSettings.Edit"
-msgid "Enter a new value to replace the existing secret"
 msgstr ""
 
 #: Views/AzureSmsSettings.Edit.cshtml

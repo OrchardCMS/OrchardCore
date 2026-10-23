@@ -6,6 +6,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: Authentication/Drivers/GoogleSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Google.Authentication.Drivers.GoogleSecretMigrationDisplayDriver"
+msgid "Client secret"
+msgstr ""
+
+#: Authentication/Drivers/GoogleSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Google.Authentication.Drivers.GoogleSecretMigrationDisplayDriver"
+msgid "Google Authentication"
+msgstr ""
+
+#: Authentication/Drivers/GoogleSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Google.Authentication.Drivers.GoogleSecretMigrationDisplayDriver"
+msgid "Google Authentication: Client secret"
+msgstr ""
+
 #: Authentication/Services/GoogleAuthenticationService.cs
 msgctxt "OrchardCore.Google.Authentication.Services.GoogleAuthenticationService"
 msgid "The Client ID is required."
@@ -138,11 +153,6 @@ msgstr ""
 
 #: Views/GoogleAuthenticationSettings.Edit.cshtml
 msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
-msgid "An error occurred while decrypting a setting. Please apply and save."
-msgstr ""
-
-#: Views/GoogleAuthenticationSettings.Edit.cshtml
-msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
 msgid "CallbackPath"
 msgstr ""
 
@@ -243,19 +253,7 @@ msgstr ""
 
 #: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
 msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
-msgid "ClientSecret is required"
-msgstr ""
-
-#: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
-msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
 msgid "Invalid path"
-msgstr ""
-
-#. Format arguments: {0}
-#: Authentication/ViewModels/GoogleAuthenticationSettingsViewModel.cs
-#, csharp-format
-msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
-msgid "{0} is required"
 msgstr ""
 
 #. Format arguments: {0}

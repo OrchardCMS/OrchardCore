@@ -12,11 +12,6 @@ msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMes
 msgid "Application Id is required"
 msgstr ""
 
-#: ViewModels/MicrosoftAccountSettingsViewModel.cs
-msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
-msgid "Application Secret is required"
-msgstr ""
-
 #: ViewModels/AzureADSettingsViewModel.cs
 #: ViewModels/MicrosoftAccountSettingsViewModel.cs
 msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
@@ -68,13 +63,23 @@ msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
 msgid "Settings"
 msgstr ""
 
-#: Deployment/AzureADDeploymentStep.cs
-msgctxt "OrchardCore.Microsoft.Authentication.Deployment.AzureADDeploymentStep"
-msgid "Microsoft Authentication"
+#: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
+msgid "App secret"
 msgstr ""
 
-#: Deployment/MicrosoftAccountDeploymentStep.cs
-msgctxt "OrchardCore.Microsoft.Authentication.Deployment.MicrosoftAccountDeploymentStep"
+#: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
+msgid "Microsoft Account Authentication"
+msgstr ""
+
+#: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
+msgid "Microsoft Account Authentication: App secret"
+msgstr ""
+
+#: MicrosoftAuthenticationLocalizationSources.cs
+msgctxt "OrchardCore.Microsoft.Authentication.MicrosoftAuthenticationLocalizationSources"
 msgid "Microsoft Authentication"
 msgstr ""
 
@@ -156,11 +161,6 @@ msgstr ""
 #: Views/Items/MicrosoftAccountDeploymentStep.Thumbnail.cshtml
 msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.MicrosoftAccountDeploymentStep.Thumbnail"
 msgid "Microsoft Account Settings"
-msgstr ""
-
-#: Views/MicrosoftAccountSettings.Edit.cshtml
-msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
-msgid "An error occurred while decrypting a setting. Please apply and save."
 msgstr ""
 
 #: Views/MicrosoftAccountSettings.Edit.cshtml

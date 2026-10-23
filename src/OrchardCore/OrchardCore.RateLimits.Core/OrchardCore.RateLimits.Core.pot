@@ -11,11 +11,6 @@ msgctxt "OrchardCore.RateLimits.Core.RateLimitsPermissions"
 msgid "Manage Rate Limits"
 msgstr ""
 
-#: Deployment/AllRateLimitPoliciesDeploymentStep.cs
-msgctxt "OrchardCore.RateLimits.Deployment.AllRateLimitPoliciesDeploymentStep"
-msgid "Security"
-msgstr ""
-
 #: Recipes/CreateOrUpdateRateLimitPoliciesStep.cs
 msgctxt "OrchardCore.RateLimits.Recipes.CreateOrUpdateRateLimitPoliciesStep"
 msgid "The 'policies' array is required."

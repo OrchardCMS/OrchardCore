@@ -26,13 +26,8 @@ msgctxt "OrchardCore.DataLocalization.Controllers.AdminController"
 msgid "Translations saved successfully."
 msgstr ""
 
-#: Deployment/AllDataTranslationsDeploymentStep.cs
-msgctxt "OrchardCore.DataLocalization.Deployment.AllDataTranslationsDeploymentStep"
-msgid "Internationalization"
-msgstr ""
-
-#: Deployment/TranslationsDeploymentStep.cs
-msgctxt "OrchardCore.DataLocalization.Deployment.TranslationsDeploymentStep"
+#: DataLocalizationLocalizationSources.cs
+msgctxt "OrchardCore.DataLocalization.DataLocalizationLocalizationSources"
 msgid "Internationalization"
 msgstr ""
 

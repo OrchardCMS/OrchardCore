@@ -31,16 +31,6 @@ msgctxt "OrchardCore.Settings.Controllers.AdminController"
 msgid "Site settings updated successfully."
 msgstr ""
 
-#: Deployment/SiteSettingsDeploymentStep.cs
-msgctxt "OrchardCore.Settings.Deployment.SiteSettingsDeploymentStep"
-msgid "Configuration"
-msgstr ""
-
-#: Deployment/SiteSettingsDeploymentStep.cs
-msgctxt "OrchardCore.Settings.Deployment.SiteSettingsDeploymentStep"
-msgid "Site Settings"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.Settings.DeploymentStartup"
 msgid "Debugging settings"
@@ -59,6 +49,11 @@ msgstr ""
 #: Drivers/DefaultSiteSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
 msgid "The Base url must be a fully qualified URL."
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "The CDN base url must be a fully qualified URL."
 msgstr ""
 
 #: Drivers/DefaultSiteSettingsDisplayDriver.cs
@@ -83,6 +78,11 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
 msgid "The page size options must be less than or equal to {0}."
+msgstr ""
+
+#: SettingsLocalizationSources.cs
+msgctxt "OrchardCore.Settings.SettingsLocalizationSources"
+msgid "Site Settings"
 msgstr ""
 
 #: Views/Admin/Index.cshtml

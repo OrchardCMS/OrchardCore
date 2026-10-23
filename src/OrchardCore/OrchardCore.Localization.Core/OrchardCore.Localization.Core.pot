@@ -16,6 +16,13 @@ msgctxt "OrchardCore.Localization.Data.DataLocalizationPermissions"
 msgid "Manage dynamic localizations"
 msgstr ""
 
+#. Format arguments: {0}
+#: Data/DataLocalizationPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.Data.DataLocalizationPermissions"
+msgid "Manage {0} translations"
+msgstr ""
+
 #: Data/DataLocalizationPermissions.cs
 msgctxt "OrchardCore.Localization.Data.DataLocalizationPermissions"
 msgid "View dynamic translations and statistics"

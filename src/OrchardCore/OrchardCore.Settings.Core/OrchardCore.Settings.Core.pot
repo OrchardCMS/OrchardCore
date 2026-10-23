@@ -6,11 +6,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
-#: Deployment/SiteSettingsPropertyDeploymentStep.cs
-msgctxt "OrchardCore.Settings.Deployment.SiteSettingsPropertyDeploymentStep"
-msgid "Configuration"
-msgstr ""
-
 #: SettingsPermissions.cs
 msgctxt "OrchardCore.Settings.SettingsPermissions"
 msgid "Manage debugging settings"

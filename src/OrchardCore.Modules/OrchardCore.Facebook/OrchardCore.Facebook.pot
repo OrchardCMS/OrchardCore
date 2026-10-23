@@ -72,9 +72,19 @@ msgctxt "OrchardCore.Facebook.AdminMenuLogin"
 msgid "Settings"
 msgstr ""
 
-#: Deployment/FacebookLoginDeploymentStep.cs
-msgctxt "OrchardCore.Facebook.Deployment.FacebookLoginDeploymentStep"
+#: Drivers/FacebookSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Facebook.Drivers.FacebookSecretMigrationDisplayDriver"
+msgid "App secret"
+msgstr ""
+
+#: Drivers/FacebookSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Facebook.Drivers.FacebookSecretMigrationDisplayDriver"
 msgid "Meta"
+msgstr ""
+
+#: Drivers/FacebookSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Facebook.Drivers.FacebookSecretMigrationDisplayDriver"
+msgid "Meta: App secret"
 msgstr ""
 
 #: Drivers/MetaConversionsApiEventTaskDisplayDriver.cs
@@ -85,6 +95,11 @@ msgstr ""
 #: FacebookConstants.cs
 msgctxt "OrchardCore.Facebook.FacebookConstants"
 msgid "Manage Facebook Pixel settings."
+msgstr ""
+
+#: FacebookLocalizationSources.cs
+msgctxt "OrchardCore.Facebook.FacebookLocalizationSources"
+msgid "Meta"
 msgstr ""
 
 #: Permissions.cs
@@ -239,11 +254,6 @@ msgstr ""
 #: Views/FacebookPluginPartSettings.Edit.cshtml
 msgctxt "OrchardCore.Facebook.Views.FacebookPluginPartSettings.Edit"
 msgid "The default template of the plugin, in Liquid format."
-msgstr ""
-
-#: Views/FacebookSettings.Edit.cshtml
-msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
-msgid "An error occurred while decrypting a setting. Please apply and save."
 msgstr ""
 
 #: Views/FacebookSettings.Edit.cshtml

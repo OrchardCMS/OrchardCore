@@ -126,11 +126,6 @@ msgctxt "OrchardCore.Sitemaps.Controllers.SourceController"
 msgid "The sitemap source has validation errors."
 msgstr ""
 
-#: Deployment/AllSitemapsDeploymentStep.cs
-msgctxt "OrchardCore.Sitemaps.Deployment.AllSitemapsDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
 #. Format arguments: {0}: invalidCharactersForMessage
 #: Drivers/CustomPathSitemapSourceDriver.cs
 #, csharp-format

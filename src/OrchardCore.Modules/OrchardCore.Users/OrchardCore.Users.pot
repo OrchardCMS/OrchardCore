@@ -695,19 +695,11 @@ msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
 msgid "You have generated new recovery codes."
 msgstr ""
 
-#: Deployment/AllUsersDeploymentStep.cs
-msgctxt "OrchardCore.Users.Deployment.AllUsersDeploymentStep"
-msgid "Security"
-msgstr ""
-
-#: Deployment/CustomUserSettingsDeploymentStep.cs
-msgctxt "OrchardCore.Users.Deployment.CustomUserSettingsDeploymentStep"
-msgid "Custom User Settings"
-msgstr ""
-
-#: Deployment/CustomUserSettingsDeploymentStep.cs
-msgctxt "OrchardCore.Users.Deployment.CustomUserSettingsDeploymentStep"
-msgid "Security"
+#. Format arguments: {0}
+#: CustomUserSettingsPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.CustomUserSettingsPermissions"
+msgid "Manage Own Custom User Settings - {0}"
 msgstr ""
 
 #: Drivers/RegisterUserFormDisplayDriver.cs
@@ -880,6 +872,11 @@ msgstr ""
 #: Services/UserEmailService.cs
 msgctxt "OrchardCore.Users.Services.UserEmailService"
 msgid "Reset your password"
+msgstr ""
+
+#: UsersLocalizationSources.cs
+msgctxt "OrchardCore.Users.UsersLocalizationSources"
+msgid "Custom User Settings"
 msgstr ""
 
 #: Views/Account/ChangePassword.cshtml

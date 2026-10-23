@@ -6,6 +6,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: AzureAILocalizationSources.cs
+msgctxt "OrchardCore.AzureAI.AzureAILocalizationSources"
+msgid "Azure AI Search Indexes"
+msgstr ""
+
+#: AzureAILocalizationSources.cs
+msgctxt "OrchardCore.AzureAI.AzureAILocalizationSources"
+msgid "Rebuild Azure AI Search Indices"
+msgstr ""
+
+#: AzureAILocalizationSources.cs
+msgctxt "OrchardCore.AzureAI.AzureAILocalizationSources"
+msgid "Reset Azure AI Search Indices"
+msgstr ""
+
 #: AzureAISearchPermissions.cs
 msgctxt "OrchardCore.AzureAI.AzureAISearchPermissions"
 msgid "Manage Azure AI Search Settings"
@@ -14,36 +29,6 @@ msgstr ""
 #: ServiceCollectionExtensions.cs
 msgctxt "OrchardCore.AzureAI.Core.ServiceCollectionExtensions.AzureAISearchLocalizationMarker"
 msgid "Azure AI Search"
-msgstr ""
-
-#: Deployment/AzureAISearchIndexDeploymentStep.cs
-msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexDeploymentStep"
-msgid "Azure AI Search Indexes"
-msgstr ""
-
-#: Deployment/AzureAISearchIndexDeploymentStep.cs
-msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexDeploymentStep"
-msgid "Search"
-msgstr ""
-
-#: Deployment/AzureAISearchIndexRebuildDeploymentStep.cs
-msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexRebuildDeploymentStep"
-msgid "Rebuild Azure AI Search Indices"
-msgstr ""
-
-#: Deployment/AzureAISearchIndexRebuildDeploymentStep.cs
-msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexRebuildDeploymentStep"
-msgid "Search"
-msgstr ""
-
-#: Deployment/AzureAISearchIndexResetDeploymentStep.cs
-msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexResetDeploymentStep"
-msgid "Reset Azure AI Search Indices"
-msgstr ""
-
-#: Deployment/AzureAISearchIndexResetDeploymentStep.cs
-msgctxt "OrchardCore.AzureAI.Deployment.AzureAISearchIndexResetDeploymentStep"
-msgid "Search"
 msgstr ""
 
 #: Handlers/AzureAISearchIndexHandler.cs

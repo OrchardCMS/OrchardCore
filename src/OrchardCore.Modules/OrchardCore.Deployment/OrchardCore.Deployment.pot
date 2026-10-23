@@ -123,14 +123,29 @@ msgctxt "OrchardCore.Deployment.Controllers.StepController"
 msgid "The deployment plan step has validation errors."
 msgstr ""
 
-#: Deployment/DeploymentPlanDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Deployment.DeploymentPlanDeploymentStep"
+#: DeploymentLocalizationSources.cs
+msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
+msgid "Custom File"
+msgstr ""
+
+#: DeploymentLocalizationSources.cs
+msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
 msgid "Deployment"
 msgstr ""
 
-#: Deployment/DeploymentPlanDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Deployment.DeploymentPlanDeploymentStep"
+#: DeploymentLocalizationSources.cs
+msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
 msgid "Deployment Plans"
+msgstr ""
+
+#: DeploymentLocalizationSources.cs
+msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
+msgid "JSON Recipe"
+msgstr ""
+
+#: DeploymentLocalizationSources.cs
+msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
+msgid "Recipe File"
 msgstr ""
 
 #: Services/FileDownloadDeploymentTargetProvider.cs
@@ -150,26 +165,6 @@ msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
 msgid "No changes have been made. The following types of deployment plans cannot be added: {0}. Please ensure that the related features are enabled to add these types of deployment plans."
 msgstr ""
 
-#: Steps/CustomFileDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStep"
-msgid "Custom File"
-msgstr ""
-
-#: Steps/CustomFileDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStep"
-msgid "Deployment"
-msgstr ""
-
-#: Steps/JsonRecipeDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStep"
-msgid "Deployment"
-msgstr ""
-
-#: Steps/JsonRecipeDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStep"
-msgid "JSON Recipe"
-msgstr ""
-
 #: Steps/JsonRecipeDeploymentStepDriver.cs
 msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
 msgid "Invalid JSON supplied"
@@ -178,16 +173,6 @@ msgstr ""
 #: Steps/JsonRecipeDeploymentStepDriver.cs
 msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
 msgid "The recipe must have a name property"
-msgstr ""
-
-#: Steps/RecipeFileDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStep"
-msgid "Deployment"
-msgstr ""
-
-#: Steps/RecipeFileDeploymentStep.cs
-msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStep"
-msgid "Recipe File"
 msgstr ""
 
 #: Views/DeploymentPlan/Create.cshtml

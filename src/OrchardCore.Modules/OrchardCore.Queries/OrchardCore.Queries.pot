@@ -46,21 +46,6 @@ msgctxt "OrchardCore.Queries.Controllers.AdminController"
 msgid "Query updated successfully."
 msgstr ""
 
-#: Deployment/AllQueriesDeploymentStep.cs
-msgctxt "OrchardCore.Queries.Deployment.AllQueriesDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/QueryBasedContentDeploymentStep.cs
-msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/QueryBasedContentDeploymentStep.cs
-msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStep"
-msgid "Queried Content Items"
-msgstr ""
-
 #: Deployment/QueryBasedContentDeploymentStepDriver.cs
 msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
 msgid "Make sure it is a valid JSON object. Example: { key : 'value' }"
@@ -94,6 +79,11 @@ msgstr ""
 #: Drivers/QueryDisplayDriver.cs
 msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
 msgid "Name is required"
+msgstr ""
+
+#: QueriesLocalizationSources.cs
+msgctxt "OrchardCore.Queries.QueriesLocalizationSources"
+msgid "Queried Content Items"
 msgstr ""
 
 #. Format arguments: {0}: name

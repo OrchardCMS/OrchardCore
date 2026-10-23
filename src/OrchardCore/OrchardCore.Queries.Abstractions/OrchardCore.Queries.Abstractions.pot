@@ -11,6 +11,13 @@ msgctxt "OrchardCore.Queries.QueryPermissions"
 msgid "Execute Api - All queries"
 msgstr ""
 
+#. Format arguments: {0}
+#: QueryPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.QueryPermissions"
+msgid "Execute Api - {0}"
+msgstr ""
+
 #: QueryPermissions.cs
 msgctxt "OrchardCore.Queries.QueryPermissions"
 msgid "Manage queries"

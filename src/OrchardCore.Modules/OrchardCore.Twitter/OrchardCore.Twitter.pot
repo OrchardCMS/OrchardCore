@@ -13,17 +13,7 @@ msgstr ""
 
 #: ViewModels/TwitterSettingsViewModel.cs
 msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
-msgid "API secret key is required"
-msgstr ""
-
-#: ViewModels/TwitterSettingsViewModel.cs
-msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
 msgid "Access token is required"
-msgstr ""
-
-#: ViewModels/TwitterSettingsViewModel.cs
-msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
-msgid "Access token secret is required"
 msgstr ""
 
 #: Signin/ViewModels/TwitterSigninSettingsViewModel.cs
@@ -64,6 +54,31 @@ msgstr ""
 #: AdminMenuSignin.cs
 msgctxt "OrchardCore.Twitter.AdminMenuSignIn"
 msgid "Sign In with X (Twitter)"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "API secret key"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "Access token secret"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "X (Twitter)"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "X (Twitter): API secret key"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "X (Twitter): Access token secret"
 msgstr ""
 
 #: Permissions.cs
@@ -139,11 +154,6 @@ msgstr ""
 #: Views/TwitterSettings.Edit.cshtml
 msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
 msgid "Access Token Secret"
-msgstr ""
-
-#: Views/TwitterSettings.Edit.cshtml
-msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
-msgid "An error occurred while decrypting a setting. Please apply and save."
 msgstr ""
 
 #: Views/TwitterSettings.Edit.cshtml

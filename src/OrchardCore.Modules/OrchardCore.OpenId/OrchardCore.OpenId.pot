@@ -135,14 +135,19 @@ msgctxt "OrchardCore.OpenId.Controllers.ValidationConfigurationController"
 msgid "OpenID validation configuration successfully updated."
 msgstr ""
 
-#: Deployment/OpenIdServerDeploymentStep.cs
-msgctxt "OrchardCore.OpenId.Deployment.OpenIdServerDeploymentStep"
+#: Drivers/OpenIdClientSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSecretMigrationDisplayDriver"
+msgid "Client secret"
+msgstr ""
+
+#: Drivers/OpenIdClientSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSecretMigrationDisplayDriver"
 msgid "OpenID Connect"
 msgstr ""
 
-#: Deployment/OpenIdValidationDeploymentStep.cs
-msgctxt "OrchardCore.OpenId.Deployment.OpenIdValidationDeploymentStep"
-msgid "OpenID Connect"
+#: Drivers/OpenIdClientSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSecretMigrationDisplayDriver"
+msgid "OpenID Connect: Client secret"
 msgstr ""
 
 #: Drivers/OpenIdClientSettingsDisplayDriver.cs
@@ -168,6 +173,11 @@ msgstr ""
 #: ManagementAdminMenu.cs
 msgctxt "OrchardCore.OpenId.ManagementAdminMenu"
 msgid "Scopes"
+msgstr ""
+
+#: OpenIdLocalizationSources.cs
+msgctxt "OrchardCore.OpenId.OpenIdLocalizationSources"
+msgid "OpenID Connect"
 msgstr ""
 
 #: Services/OpenIdClientService.cs
@@ -1072,11 +1082,6 @@ msgstr ""
 
 #: Views/OpenIdClientSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
-msgid "A client secret is securely stored. Provide a new one to replace it."
-msgstr ""
-
-#: Views/OpenIdClientSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
 msgid "Add a parameter"
 msgstr ""
 
@@ -1222,11 +1227,6 @@ msgstr ""
 #: Views/OpenIdClientSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
 msgid "Scopes"
-msgstr ""
-
-#: Views/OpenIdClientSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
-msgid "Set a client secret for your new account."
 msgstr ""
 
 #: Views/OpenIdClientSettings.Edit.cshtml

@@ -227,11 +227,6 @@ msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "You can only remove a 'Disabled' or an 'Uninitialized' tenant."
 msgstr ""
 
-#: Deployment/AllFeatureProfilesDeploymentStep.cs
-msgctxt "OrchardCore.Tenants.Deployment.AllFeatureProfilesDeploymentStep"
-msgid "Infrastructure"
-msgstr ""
-
 #: FeatureProfilesAdminMenu.cs
 msgctxt "OrchardCore.Tenants.FeatureProfilesAdminMenu"
 msgid "Feature Profiles"

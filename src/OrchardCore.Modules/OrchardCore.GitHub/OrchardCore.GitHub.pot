@@ -26,14 +26,24 @@ msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
 msgid "Settings"
 msgstr ""
 
+#: Drivers/GitHubSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.GitHub.Drivers.GitHubSecretMigrationDisplayDriver"
+msgid "Client secret"
+msgstr ""
+
+#: Drivers/GitHubSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.GitHub.Drivers.GitHubSecretMigrationDisplayDriver"
+msgid "GitHub Authentication"
+msgstr ""
+
+#: Drivers/GitHubSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.GitHub.Drivers.GitHubSecretMigrationDisplayDriver"
+msgid "GitHub Authentication: Client secret"
+msgstr ""
+
 #: Permissions.cs
 msgctxt "OrchardCore.GitHub.Permissions"
 msgid "Manage GitHub Authentication settings"
-msgstr ""
-
-#: Views/GithubAuthenticationSettings.Edit.cshtml
-msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
-msgid "An error occurred while decrypting a setting. Please apply and save."
 msgstr ""
 
 #: Views/GithubAuthenticationSettings.Edit.cshtml
@@ -94,11 +104,6 @@ msgstr ""
 #: ViewModels/GithubAuthenticationSettingsViewModel.cs
 msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
 msgid "API key is required"
-msgstr ""
-
-#: ViewModels/GithubAuthenticationSettingsViewModel.cs
-msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
-msgid "API secret key is required"
 msgstr ""
 
 #: ViewModels/GithubAuthenticationSettingsViewModel.cs
