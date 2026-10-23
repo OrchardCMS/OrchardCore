@@ -6,6 +6,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: Drivers/SmtpSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSecretMigrationDisplayDriver"
+msgid "Password"
+msgstr ""
+
+#: Drivers/SmtpSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSecretMigrationDisplayDriver"
+msgid "SMTP"
+msgstr ""
+
+#: Drivers/SmtpSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSecretMigrationDisplayDriver"
+msgid "SMTP: Password"
+msgstr ""
+
 #: Drivers/SmtpSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
 msgid "The Default Sender is a required field."

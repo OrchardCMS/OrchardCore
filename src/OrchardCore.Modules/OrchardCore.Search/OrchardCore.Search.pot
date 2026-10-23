@@ -21,16 +21,6 @@ msgctxt "OrchardCore.Search.AdminMenu"
 msgid "Site Search"
 msgstr ""
 
-#: Deployment/SearchSettingsDeploymentStep.cs
-msgctxt "OrchardCore.Search.Deployment.SearchSettingsDeploymentStep"
-msgid "Search"
-msgstr ""
-
-#: Deployment/SearchSettingsDeploymentStep.cs
-msgctxt "OrchardCore.Search.Deployment.SearchSettingsDeploymentStep"
-msgid "Search Settings"
-msgstr ""
-
 #: Controllers/SearchController.cs
 msgctxt "OrchardCore.Search.SearchController"
 msgid "No default search index has been configured."
@@ -41,6 +31,11 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Search.SearchController"
 msgid "No search service provider found for {0} provider."
+msgstr ""
+
+#: SearchLocalizationSources.cs
+msgctxt "OrchardCore.Search.SearchLocalizationSources"
+msgid "Search Settings"
 msgstr ""
 
 #: Views/Items/SearchSettingsDeploymentStep.Fields.Summary.cshtml

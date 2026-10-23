@@ -75,26 +75,6 @@ msgctxt "OrchardCore.Templates.Controllers.TemplateController"
 msgid "The name is mandatory."
 msgstr ""
 
-#: Deployment/AllAdminTemplatesDeploymentStep.cs
-msgctxt "OrchardCore.Templates.Deployment.AllAdminTemplatesDeploymentStep"
-msgid "All Admin Templates"
-msgstr ""
-
-#: Deployment/AllAdminTemplatesDeploymentStep.cs
-msgctxt "OrchardCore.Templates.Deployment.AllAdminTemplatesDeploymentStep"
-msgid "Development"
-msgstr ""
-
-#: Deployment/AllTemplatesDeploymentStep.cs
-msgctxt "OrchardCore.Templates.Deployment.AllTemplatesDeploymentStep"
-msgid "All Templates"
-msgstr ""
-
-#: Deployment/AllTemplatesDeploymentStep.cs
-msgctxt "OrchardCore.Templates.Deployment.AllTemplatesDeploymentStep"
-msgid "Development"
-msgstr ""
-
 #: Permissions.cs
 msgctxt "OrchardCore.Templates.Permissions"
 msgid "Manage templates"
@@ -140,6 +120,16 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Templates.Settings.TemplateContentTypePartDefinitionDriver"
 msgid "Template for the {0} part in a {1} type in summary views"
+msgstr ""
+
+#: TemplatesLocalizationSources.cs
+msgctxt "OrchardCore.Templates.TemplatesLocalizationSources"
+msgid "All Admin Templates"
+msgstr ""
+
+#: TemplatesLocalizationSources.cs
+msgctxt "OrchardCore.Templates.TemplatesLocalizationSources"
+msgid "All Templates"
 msgstr ""
 
 #: Views/Items/AllAdminTemplatesDeploymentStep.Fields.Edit.cshtml

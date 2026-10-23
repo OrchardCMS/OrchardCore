@@ -61,6 +61,21 @@ msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
 msgid "Managed Identity"
 msgstr ""
 
+#: Drivers/AzureAISearchSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchSecretMigrationDisplayDriver"
+msgid "API key"
+msgstr ""
+
+#: Drivers/AzureAISearchSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchSecretMigrationDisplayDriver"
+msgid "Azure AI Search"
+msgstr ""
+
+#: Drivers/AzureAISearchSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchSecretMigrationDisplayDriver"
+msgid "Azure AI Search: API key"
+msgstr ""
+
 #: Views/AzureAISearchContentIndexSettings.Edit.cshtml
 msgctxt "OrchardCore.AzureAI.Views.AzureAISearchContentIndexSettings.Edit"
 msgid "Azure AI Search Index Settings"
@@ -74,11 +89,6 @@ msgstr ""
 #: Views/AzureAISearchContentIndexSettings.Edit.cshtml
 msgctxt "OrchardCore.AzureAI.Views.AzureAISearchContentIndexSettings.Edit"
 msgid "Include this element in the index"
-msgstr ""
-
-#: Views/AzureAISearchDefaultSettings.Edit.cshtml
-msgctxt "OrchardCore.AzureAI.Views.AzureAISearchDefaultSettings.Edit"
-msgid "API key stored. Leave blank for current key or enter a new one"
 msgstr ""
 
 #: Views/AzureAISearchDefaultSettings.Edit.cshtml

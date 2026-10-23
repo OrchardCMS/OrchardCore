@@ -16,6 +16,11 @@ msgctxt "OrchardCore.AdminMenu.AdminMenu"
 msgid "Tools"
 msgstr ""
 
+#: AdminMenuLocalizationSources.cs
+msgctxt "OrchardCore.AdminMenu.AdminMenuLocalizationSources"
+msgid "Admin Menus"
+msgstr ""
+
 #: Controllers/MenuController.cs
 msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
 msgid "Admin menu deleted successfully."
@@ -81,14 +86,11 @@ msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
 msgid "The admin node has validation errors."
 msgstr ""
 
-#: Deployment/AdminMenuDeploymentStep.cs
-msgctxt "OrchardCore.AdminMenu.Deployment.AdminMenuDeploymentStep"
-msgid "Admin Menus"
-msgstr ""
-
-#: Deployment/AdminMenuDeploymentStep.cs
-msgctxt "OrchardCore.AdminMenu.Deployment.AdminMenuDeploymentStep"
-msgid "Content Management"
+#. Format arguments: {0}
+#: Permissions.cs
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Permissions"
+msgid "View Admin Menu - {0}"
 msgstr ""
 
 #: Services/AdminMenuJSLocalizer.cs

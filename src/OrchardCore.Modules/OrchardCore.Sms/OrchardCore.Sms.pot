@@ -91,6 +91,21 @@ msgctxt "OrchardCore.Sms.Drivers.SmsTaskDisplayDriver"
 msgid "Phone number requires a value."
 msgstr ""
 
+#: Drivers/TwilioSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSecretMigrationDisplayDriver"
+msgid "Auth token"
+msgstr ""
+
+#: Drivers/TwilioSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSecretMigrationDisplayDriver"
+msgid "Twilio"
+msgstr ""
+
+#: Drivers/TwilioSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSecretMigrationDisplayDriver"
+msgid "Twilio: Auth token"
+msgstr ""
+
 #: Drivers/TwilioSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Sms.Drivers.TwilioSettingsDisplayDriver"
 msgid "Account SID requires a value."
@@ -209,11 +224,6 @@ msgstr ""
 #: Views/TwilioSettings.Edit.cshtml
 msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
 msgid "Auth Token"
-msgstr ""
-
-#: Views/TwilioSettings.Edit.cshtml
-msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
-msgid "Auth token was securely saved. Enter a new value if you wish to replace the existing secret."
 msgstr ""
 
 #: Views/TwilioSettings.Edit.cshtml

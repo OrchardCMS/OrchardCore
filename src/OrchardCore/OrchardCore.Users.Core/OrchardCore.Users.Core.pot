@@ -167,9 +167,23 @@ msgctxt "OrchardCore.Users.UsersPermissions"
 msgid "Assign any role to users"
 msgstr ""
 
+#. Format arguments: {0}
+#: UsersPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Assign {0} role to users"
+msgstr ""
+
 #: UsersPermissions.cs
 msgctxt "OrchardCore.Users.UsersPermissions"
 msgid "Delete any user"
+msgstr ""
+
+#. Format arguments: {0}
+#: UsersPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Delete users in {0} role"
 msgstr ""
 
 #: UsersPermissions.cs
@@ -187,14 +201,35 @@ msgctxt "OrchardCore.Users.UsersPermissions"
 msgid "Edit own user information"
 msgstr ""
 
+#. Format arguments: {0}
+#: UsersPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Edit users in {0} role"
+msgstr ""
+
 #: UsersPermissions.cs
 msgctxt "OrchardCore.Users.UsersPermissions"
 msgid "List all users"
 msgstr ""
 
+#. Format arguments: {0}
+#: UsersPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "List users in {0} role"
+msgstr ""
+
 #: UsersPermissions.cs
 msgctxt "OrchardCore.Users.UsersPermissions"
 msgid "Manage security settings and all users"
+msgstr ""
+
+#. Format arguments: {0}
+#: UsersPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.UsersPermissions"
+msgid "Manage users in {0} role"
 msgstr ""
 
 #: UsersPermissions.cs

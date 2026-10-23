@@ -54,11 +54,6 @@ msgctxt "OrchardCore.Themes.Controllers.AdminController"
 msgid "{0} was set as the default {1} theme"
 msgstr ""
 
-#: Deployment/ThemesDeploymentStep.cs
-msgctxt "OrchardCore.Themes.Deployment.ThemesDeploymentStep"
-msgid "Theming"
-msgstr ""
-
 #: Permissions.cs
 msgctxt "OrchardCore.Themes.Permissions"
 msgid "Apply a Theme"
@@ -94,6 +89,11 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Themes.Services.ThemeService"
 msgid "The theme \"{0}\" is already in the stack of themes that need features enabled."
+msgstr ""
+
+#: ThemesLocalizationSources.cs
+msgctxt "OrchardCore.Themes.ThemesLocalizationSources"
+msgid "Theming"
 msgstr ""
 
 #: Views/Admin/Index.cshtml

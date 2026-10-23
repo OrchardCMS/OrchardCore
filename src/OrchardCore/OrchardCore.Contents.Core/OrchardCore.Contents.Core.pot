@@ -90,3 +90,101 @@ msgstr ""
 msgctxt "OrchardCore.Contents.ContentTypesPermissions"
 msgid "View content types."
 msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Clone own {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Clone {0} by others"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Delete {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Delete {0} for others"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Edit the owner of a {0} content item"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Edit {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Edit {0} for others"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "List {0} content items"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Preview own {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Preview {0} by others"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Publish or unpublish {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "Publish or unpublish {0} for others"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "View own {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: ContentTypePermissionsHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Contents.Security.ContentTypePermissionsHelper"
+msgid "View {0} by others"
+msgstr ""

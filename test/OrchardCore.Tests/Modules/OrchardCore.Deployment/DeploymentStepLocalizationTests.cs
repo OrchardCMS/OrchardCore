@@ -52,12 +52,13 @@ public class DeploymentStepLocalizationTests
             });
 
         await context.InitializeAsync();
-        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "de"], "OrchardCore.Deployment");
 
         foreach (var (culture, entries) in poFiles)
         {
             await TenantLocalizationTestHelper.WritePoFileAsync(context, culture, entries);
         }
+
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "de"], "OrchardCore.Deployment");
 
         return context;
     }

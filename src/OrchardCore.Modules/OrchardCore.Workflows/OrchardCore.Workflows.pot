@@ -360,16 +360,6 @@ msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
 msgid "Workflow {0} deleted"
 msgstr ""
 
-#: Deployment/AllWorkflowTypeDeploymentStep.cs
-msgctxt "OrchardCore.Workflows.Deployment.AllWorkflowTypeDeploymentStep"
-msgid "All Workflow Types"
-msgstr ""
-
-#: Deployment/AllWorkflowTypeDeploymentStep.cs
-msgctxt "OrchardCore.Workflows.Deployment.AllWorkflowTypeDeploymentStep"
-msgid "Workflows"
-msgstr ""
-
 #. Format arguments: {0}: string.Join(" ", errors)
 #: Drivers/ForEachTaskDisplayDriver.cs
 #, csharp-format
@@ -2541,4 +2531,14 @@ msgstr ""
 #: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
 msgid "Status"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "All Workflow Types"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Workflows"
 msgstr ""

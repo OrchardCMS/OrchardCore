@@ -136,6 +136,21 @@ msgctxt "OrchardCore.Contents.AuditTrail.Services.ContentAuditTrailEventConfigur
 msgid "Unpublished"
 msgstr ""
 
+#: ContentsLocalizationSources.cs
+msgctxt "OrchardCore.Contents.ContentsLocalizationSources"
+msgid "All Content"
+msgstr ""
+
+#: ContentsLocalizationSources.cs
+msgctxt "OrchardCore.Contents.ContentsLocalizationSources"
+msgid "Content Types"
+msgstr ""
+
+#: ContentsLocalizationSources.cs
+msgctxt "OrchardCore.Contents.ContentsLocalizationSources"
+msgid "Export Content To Deployment Target"
+msgstr ""
+
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Contents.Controllers.AdminController"
 msgid "All content types"
@@ -345,44 +360,9 @@ msgctxt "OrchardCore.Contents.Deployment.AddToDeploymentPlan.AddToDeploymentPlan
 msgid "Couldn't add selected content to deployment plan."
 msgstr ""
 
-#: Deployment/AddToDeploymentPlan/ContentItemDeploymentStep.cs
-msgctxt "OrchardCore.Contents.Deployment.AddToDeploymentPlan.ContentItemDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
 #: Deployment/AddToDeploymentPlan/ContentItemDeploymentStepDriver.cs
 msgctxt "OrchardCore.Contents.Deployment.AddToDeploymentPlan.ContentItemDeploymentStepDriver"
 msgid "Your content item does not exist."
-msgstr ""
-
-#: Deployment/AllContentDeploymentStep.cs
-msgctxt "OrchardCore.Contents.Deployment.AllContentDeploymentStep"
-msgid "All Content"
-msgstr ""
-
-#: Deployment/AllContentDeploymentStep.cs
-msgctxt "OrchardCore.Contents.Deployment.AllContentDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/ContentDeploymentStep.cs
-msgctxt "OrchardCore.Contents.Deployment.ContentDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/ContentDeploymentStep.cs
-msgctxt "OrchardCore.Contents.Deployment.ContentDeploymentStep"
-msgid "Content Types"
-msgstr ""
-
-#: Deployment/ExportContentToDeploymentTarget/ExportContentToDeploymentTargetDeploymentStep.cs
-msgctxt "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget.ExportContentToDeploymentTargetDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/ExportContentToDeploymentTarget/ExportContentToDeploymentTargetDeploymentStep.cs
-msgctxt "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget.ExportContentToDeploymentTargetDeploymentStep"
-msgid "Export Content To Deployment Target"
 msgstr ""
 
 #: Deployment/ExportContentToDeploymentTarget/ExportContentToDeploymentTargetStartup.cs
@@ -1211,7 +1191,7 @@ msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventActions.SummaryA
 msgid "Yes"
 msgstr ""
 
-#. Format arguments: {0}: contentItem.ContentType; {1}: editForLink; {2}: Html.ActionLink(versionText, "Display", "AuditTrailContent",         new         {             area = "OrchardCore.Contents",             auditTrailEventId = Model.AuditTrailEvent.EventId         }, null)
+#. Format arguments: {0}: contentItem.ContentType; {1}: editForLink; {2}: Html.ActionLink(versionText, "Display", "AuditTrailContent",          new          {              area = "OrchardCore.Contents",              auditTrailEventId = Model.AuditTrailEvent.EventId          }, null)
 #: Views/Items/AuditTrailContentEventData.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmin"
@@ -1225,7 +1205,7 @@ msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmi
 msgid "The {0} {1} was {2}."
 msgstr ""
 
-#. Format arguments: {0}: Html.ActionLink(versionText, "Display", "AuditTrailContent",         new         {             area = "OrchardCore.Contents",             auditTrailEventId = Model.AuditTrailEvent.EventId         }, null); {1}: contentItem.ContentType; {2}: editForLink; {3}: eventName
+#. Format arguments: {0}: Html.ActionLink(versionText, "Display", "AuditTrailContent",          new          {              area = "OrchardCore.Contents",              auditTrailEventId = Model.AuditTrailEvent.EventId          }, null); {1}: contentItem.ContentType; {2}: editForLink; {3}: eventName
 #: Views/Items/AuditTrailContentEventData.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmin"

@@ -26,6 +26,16 @@ msgctxt "OrchardCore.ContentTypes.AdminMenu"
 msgid "Design"
 msgstr ""
 
+#: ContentTypesLocalizationSources.cs
+msgctxt "OrchardCore.ContentTypes.ContentTypesLocalizationSources"
+msgid "Replace Content Definitions"
+msgstr ""
+
+#: ContentTypesLocalizationSources.cs
+msgctxt "OrchardCore.ContentTypes.ContentTypesLocalizationSources"
+msgid "Update Content Definitions"
+msgstr ""
+
 #. Format arguments: {0}: partViewModel.DisplayName, typeViewModel.DisplayName
 #: Controllers/AdminController.cs
 #, csharp-format
@@ -185,31 +195,6 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
 msgid "There are no fields."
-msgstr ""
-
-#: Deployment/ContentDefinitionDeploymentStep.cs
-msgctxt "OrchardCore.ContentTypes.Deployment.ContentDefinitionDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/ContentDefinitionDeploymentStep.cs
-msgctxt "OrchardCore.ContentTypes.Deployment.ContentDefinitionDeploymentStep"
-msgid "Update Content Definitions"
-msgstr ""
-
-#: Deployment/DeleteContentDefinitionDeploymentStep.cs
-msgctxt "OrchardCore.ContentTypes.Deployment.DeleteContentDefinitionDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/ReplaceContentDefinitionDeploymentStep.cs
-msgctxt "OrchardCore.ContentTypes.Deployment.ReplaceContentDefinitionDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/ReplaceContentDefinitionDeploymentStep.cs
-msgctxt "OrchardCore.ContentTypes.Deployment.ReplaceContentDefinitionDeploymentStep"
-msgid "Replace Content Definitions"
 msgstr ""
 
 #: Editors/ContentTypeSettingsDisplayDriver.cs

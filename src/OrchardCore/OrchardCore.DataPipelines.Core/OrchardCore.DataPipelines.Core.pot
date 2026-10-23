@@ -263,7 +263,7 @@ msgstr ""
 
 #: Steps/Sources/DataSourceStep.cs
 msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
-msgid "A step that reads only the new rows reads all of them: remove the most rows to read."
+msgid "A step that reads only the new rows reads all of them: set the maximum number of rows to 0."
 msgstr ""
 
 #: Steps/Sources/DataSourceStep.cs
@@ -323,16 +323,23 @@ msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
 msgid "The data source '{0}' is not available. The feature that provides it may be disabled."
 msgstr ""
 
+#. Format arguments: {0}: field.Name; {1}: filter.Operator; {2}: field.Type
+#: Steps/Sources/DataSourceStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The filter on '{0}' can't use the {1} comparison on a {2} field. Choose another comparison."
+msgstr ""
+
+#: Steps/Sources/DataSourceStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
+msgid "The maximum number of rows to read can't be negative."
+msgstr ""
+
 #. Format arguments: {0}: incremental.Name
 #: Steps/Sources/DataSourceStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
 msgid "The new rows are read by a number or a date, and '{0}' is neither."
-msgstr ""
-
-#: Steps/Sources/DataSourceStep.cs
-msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
-msgid "The number of rows to read can't be negative."
 msgstr ""
 
 #: Steps/Transforms/DistinctStep.cs

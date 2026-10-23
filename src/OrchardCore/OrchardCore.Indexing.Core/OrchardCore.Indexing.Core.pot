@@ -6,36 +6,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
-#: Deployments/IndexProfileDeploymentStep.cs
-msgctxt "OrchardCore.Indexing.Core.Deployments.IndexProfileDeploymentStep"
-msgid "Index Profiles"
-msgstr ""
-
-#: Deployments/IndexProfileDeploymentStep.cs
-msgctxt "OrchardCore.Indexing.Core.Deployments.IndexProfileDeploymentStep"
-msgid "Indexing"
-msgstr ""
-
-#: Deployments/RebuildIndexDeploymentStep.cs
-msgctxt "OrchardCore.Indexing.Core.Deployments.RebuildIndexDeploymentStep"
-msgid "Indexing"
-msgstr ""
-
-#: Deployments/RebuildIndexDeploymentStep.cs
-msgctxt "OrchardCore.Indexing.Core.Deployments.RebuildIndexDeploymentStep"
-msgid "Rebuild Indexes"
-msgstr ""
-
-#: Deployments/ResetIndexDeploymentStep.cs
-msgctxt "OrchardCore.Indexing.Core.Deployments.ResetIndexDeploymentStep"
-msgid "Indexing"
-msgstr ""
-
-#: Deployments/ResetIndexDeploymentStep.cs
-msgctxt "OrchardCore.Indexing.Core.Deployments.ResetIndexDeploymentStep"
-msgid "Reset Indexes"
-msgstr ""
-
 #: Handlers/ContentIndexProfileHandler.cs
 msgctxt "OrchardCore.Indexing.Core.Handlers.ContentIndexProfileHandler"
 msgid "At least one content type must be selected."
@@ -90,9 +60,36 @@ msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
 msgid "Unable to find a provider named '{0}' with the type '{1}'."
 msgstr ""
 
+#: IndexingLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.Core.IndexingLocalizationSources"
+msgid "Index Profiles"
+msgstr ""
+
+#: IndexingLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.Core.IndexingLocalizationSources"
+msgid "Indexing"
+msgstr ""
+
+#: IndexingLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.Core.IndexingLocalizationSources"
+msgid "Rebuild Indexes"
+msgstr ""
+
+#: IndexingLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.Core.IndexingLocalizationSources"
+msgid "Reset Indexes"
+msgstr ""
+
 #: IndexingPermissions.cs
 msgctxt "OrchardCore.Indexing.Core.IndexingPermissions"
 msgid "Manage Indexes"
+msgstr ""
+
+#. Format arguments: {0}
+#: IndexingPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Core.IndexingPermissions"
+msgid "Query '{0}' Index"
 msgstr ""
 
 #: IndexingPermissions.cs

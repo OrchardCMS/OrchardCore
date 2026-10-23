@@ -146,21 +146,6 @@ msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "WebP"
 msgstr ""
 
-#: Deployment/AllMediaProfilesDeploymentStep.cs
-msgctxt "OrchardCore.Media.Deployment.AllMediaProfilesDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/MediaDeploymentStep.cs
-msgctxt "OrchardCore.Media.Deployment.MediaDeploymentStep"
-msgid "Content Management"
-msgstr ""
-
-#: Deployment/MediaDeploymentStep.cs
-msgctxt "OrchardCore.Media.Deployment.MediaDeploymentStep"
-msgid "Media"
-msgstr ""
-
 #: Drivers/MediaApiSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Media.Drivers.MediaApiSettingsDisplayDriver"
 msgid "Bearer — OAuth2 + PKCE (requires OpenID Connect)"
@@ -424,6 +409,11 @@ msgctxt "OrchardCore.Media.MediaCacheAdminMenu"
 msgid "Settings"
 msgstr ""
 
+#: MediaLocalizationSources.cs
+msgctxt "OrchardCore.Media.MediaLocalizationSources"
+msgid "Media"
+msgstr ""
+
 #. Format arguments: {0}: file.TargetPath
 #: Recipes/MediaStep.cs
 #, csharp-format
@@ -436,6 +426,13 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Media.Recipes.MediaStep"
 msgid "Media target path must be a relative file path without traversal segments: '{0}'"
+msgstr ""
+
+#. Format arguments: {0}
+#: SecureMediaPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.SecureMediaPermissions"
+msgid "View media content in folder '{0}'"
 msgstr ""
 
 #: Services/MediaJSLocalizer.cs

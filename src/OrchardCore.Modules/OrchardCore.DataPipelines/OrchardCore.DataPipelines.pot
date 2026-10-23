@@ -132,13 +132,13 @@ msgctxt "OrchardCore.DataPipelines.DataPipelinePermissions"
 msgid "View data pipelines and their runs"
 msgstr ""
 
-#: Deployment/DataPipelinesDeploymentStep.cs
-msgctxt "OrchardCore.DataPipelines.Deployment.DataPipelinesDeploymentStep"
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
 msgid "Data"
 msgstr ""
 
-#: Deployment/DataPipelinesDeploymentStep.cs
-msgctxt "OrchardCore.DataPipelines.Deployment.DataPipelinesDeploymentStep"
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
 msgid "Data Pipelines"
 msgstr ""
 
@@ -154,7 +154,7 @@ msgstr ""
 
 #: Drivers/SourceAndFileStepDisplayDrivers.cs
 msgctxt "OrchardCore.DataPipelines.Drivers.DataSourceStepDisplayDriver"
-msgid "A step that reads only the new rows reads all of them: set the most rows to 0."
+msgid "A step that reads only the new rows reads all of them: set the maximum number of rows to 0."
 msgstr ""
 
 #: Drivers/SourceAndFileStepDisplayDrivers.cs
@@ -1479,6 +1479,11 @@ msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Change"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
 msgid "Choose a data set"
 msgstr ""
 
@@ -1499,7 +1504,7 @@ msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
-msgid "Fields"
+msgid "Fields to read"
 msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
@@ -1509,7 +1514,12 @@ msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
-msgid "Most rows"
+msgid "Maximum number of rows"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "No data set is chosen."
 msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
@@ -1517,9 +1527,11 @@ msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
 msgid "No, read every row"
 msgstr ""
 
+#. Format arguments: {0}: "{Parameter:Since}"
 #: Views/DataSource.Fields.Edit.cshtml
+#, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
-msgid "Only the rows that match every filter are read. Write dates as yyyy-MM-dd; they are compared in UTC."
+msgid "Only the rows that match every filter are read. Dates and times are compared in UTC. To use a placeholder, such as {0}, or a date without a time on a date and time field, which covers the whole day, write the value as text."
 msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
@@ -1534,7 +1546,7 @@ msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
-msgid "The data is read with the access of the user who publishes the pipeline."
+msgid "The data is read with the access of the user who publishes the pipeline. Choosing another data set clears the fields and the filters."
 msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
@@ -2426,7 +2438,7 @@ msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
-msgid "And (Between)"
+msgid "Choose a value"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
@@ -2441,12 +2453,17 @@ msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "No"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "Remove"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
-msgid "Second value, for Between"
+msgid "Second value"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
@@ -2456,7 +2473,39 @@ msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Values, separated by commas"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Write the value as text"
+msgstr ""
+
+#. Format arguments: {0}: "{Parameter:Since}"
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Write the value as text, such as {0}"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Yes"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "and"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "contains"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "days"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
@@ -2501,12 +2550,12 @@ msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
-msgid "is in the last days"
+msgid "is in the last"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
-msgid "is in the next days"
+msgid "is in the next"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml

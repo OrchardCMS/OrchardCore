@@ -58,11 +58,6 @@ msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
 msgid "The template doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
-#: Deployment/AllShortcodeTemplatesDeploymentStep.cs
-msgctxt "OrchardCore.Shortcodes.Deployment.AllShortcodeTemplatesDeploymentStep"
-msgid "Content"
-msgstr ""
-
 #: Services/ShortcodesJSLocalizer.cs
 msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
 msgid "No categories found"

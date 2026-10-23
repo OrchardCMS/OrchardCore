@@ -11,14 +11,16 @@ msgctxt "OrchardCore.CustomSettings.AdminMenu"
 msgid "Settings"
 msgstr ""
 
-#: Deployment/CustomSettingsDeploymentStep.cs
-msgctxt "OrchardCore.CustomSettings.Deployment.CustomSettingsDeploymentStep"
+#: CustomSettingsLocalizationSources.cs
+msgctxt "OrchardCore.CustomSettings.CustomSettingsLocalizationSources"
 msgid "Custom Settings"
 msgstr ""
 
-#: Deployment/CustomSettingsDeploymentStep.cs
-msgctxt "OrchardCore.CustomSettings.Deployment.CustomSettingsDeploymentStep"
-msgid "Settings"
+#. Format arguments: {0}
+#: Permissions.cs
+#, csharp-format
+msgctxt "OrchardCore.CustomSettings.Permissions"
+msgid "Manage Custom Settings - {0}"
 msgstr ""
 
 #: Services/CustomSettingsStereotypesProvider.cs

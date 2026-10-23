@@ -6,6 +6,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: Drivers/AzureEmailSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSecretMigrationDisplayDriver"
+msgid "Azure Communication Services Email"
+msgstr ""
+
+#: Drivers/AzureEmailSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSecretMigrationDisplayDriver"
+msgid "Azure Communication Services Email: Connection string"
+msgstr ""
+
+#: Drivers/AzureEmailSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSecretMigrationDisplayDriver"
+msgid "Connection string"
+msgstr ""
+
 #: Drivers/AzureEmailSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSettingsDisplayDriver"
 msgid "Connection string is required."

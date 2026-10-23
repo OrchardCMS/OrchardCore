@@ -6,34 +6,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
-#: Deployment/ElasticsearchIndexDeploymentStep.cs
-msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticsearchIndexDeploymentStep"
+#: ElasticsearchLocalizationSources.cs
+msgctxt "OrchardCore.Elasticsearch.Core.ElasticsearchLocalizationSources"
 msgid "Elasticsearch Search Indexes"
 msgstr ""
 
-#: Deployment/ElasticsearchIndexDeploymentStep.cs
-msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticsearchIndexDeploymentStep"
-msgid "Search"
-msgstr ""
-
-#: Deployment/ElasticsearchIndexRebuildDeploymentStep.cs
-msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticsearchIndexRebuildDeploymentStep"
+#: ElasticsearchLocalizationSources.cs
+msgctxt "OrchardCore.Elasticsearch.Core.ElasticsearchLocalizationSources"
 msgid "Rebuild Elasticsearch Indices"
 msgstr ""
 
-#: Deployment/ElasticsearchIndexRebuildDeploymentStep.cs
-msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticsearchIndexRebuildDeploymentStep"
-msgid "Search"
-msgstr ""
-
-#: Deployment/ElasticsearchIndexResetDeploymentStep.cs
-msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticsearchIndexResetDeploymentStep"
+#: ElasticsearchLocalizationSources.cs
+msgctxt "OrchardCore.Elasticsearch.Core.ElasticsearchLocalizationSources"
 msgid "Reset Elasticsearch Indices"
-msgstr ""
-
-#: Deployment/ElasticsearchIndexResetDeploymentStep.cs
-msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticsearchIndexResetDeploymentStep"
-msgid "Search"
 msgstr ""
 
 #: Handlers/ElasticsearchIndexProfileHandler.cs
