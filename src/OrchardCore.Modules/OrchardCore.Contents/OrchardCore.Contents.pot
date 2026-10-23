@@ -1191,7 +1191,7 @@ msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventActions.SummaryA
 msgid "Yes"
 msgstr ""
 
-#. Format arguments: {0}: contentItem.ContentType; {1}: editForLink; {2}: Html.ActionLink(versionText, "Display", "AuditTrailContent",          new          {              area = "OrchardCore.Contents",              auditTrailEventId = Model.AuditTrailEvent.EventId          }, null)
+#. Format arguments: {0}: contentItem.ContentType; {1}: editForLink; {2}: Html.ActionLink(versionText, "Display", "AuditTrailContent",         new         {             area = "OrchardCore.Contents",             auditTrailEventId = Model.AuditTrailEvent.EventId         }, null)
 #: Views/Items/AuditTrailContentEventData.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmin"
@@ -1205,7 +1205,7 @@ msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmi
 msgid "The {0} {1} was {2}."
 msgstr ""
 
-#. Format arguments: {0}: Html.ActionLink(versionText, "Display", "AuditTrailContent",          new          {              area = "OrchardCore.Contents",              auditTrailEventId = Model.AuditTrailEvent.EventId          }, null); {1}: contentItem.ContentType; {2}: editForLink; {3}: eventName
+#. Format arguments: {0}: Html.ActionLink(versionText, "Display", "AuditTrailContent",         new         {             area = "OrchardCore.Contents",             auditTrailEventId = Model.AuditTrailEvent.EventId         }, null); {1}: contentItem.ContentType; {2}: editForLink; {3}: eventName
 #: Views/Items/AuditTrailContentEventData.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmin"

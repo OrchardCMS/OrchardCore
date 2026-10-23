@@ -136,6 +136,21 @@ msgctxt "OrchardCore.Users.AuditTrail.DeploymentStartup"
 msgid "User Audit Trail settings"
 msgstr ""
 
+#: AuditTrail/Permissions.cs
+msgctxt "OrchardCore.Users.AuditTrail.Permissions"
+msgid "Manage Audit Trail settings for user events"
+msgstr ""
+
+#: AuditTrail/Permissions.cs
+msgctxt "OrchardCore.Users.AuditTrail.Permissions"
+msgid "View Audit Trail events about own user"
+msgstr ""
+
+#: AuditTrail/Permissions.cs
+msgctxt "OrchardCore.Users.AuditTrail.Permissions"
+msgid "View Audit Trail events about users"
+msgstr ""
+
 #: AuditTrail/Registration/UserRegistrationAuditTrailEventConfiguration.cs
 msgctxt "OrchardCore.Users.AuditTrail.Registration.UserRegistrationAuditTrailEventConfiguration"
 msgid "A user was successfully registered."
