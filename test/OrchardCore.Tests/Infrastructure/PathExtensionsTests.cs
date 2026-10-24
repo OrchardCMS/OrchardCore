@@ -69,6 +69,10 @@ public class PathExtensionsTests
         var isOutside = PathExtensions.IsOutsideOfBasePath(basePath, absolutePath);
 
         // Assert
-        Assert.True(isOutside, absolutePath);
+        Assert.True(
+            isOutside,
+            $"basePath: {basePath}\n" +
+            $"combined: {PathExtensions.Combine(basePath, path)}\n" +
+            $"absolutePath: {absolutePath}");
     }
 }
