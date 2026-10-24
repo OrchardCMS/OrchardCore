@@ -541,7 +541,7 @@ Most lists share their first and last columns, so `AdminListColumns` declares th
 
 ### Row actions
 
-The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → List actions layout**. `AdminSettings.ListActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
+The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → Actions layout**. `AdminSettings.ActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
 
 | Layout    | Description                                                                                                   |
 | --------- | ------------------------------------------------------------------------------------------------------------- |
@@ -549,6 +549,20 @@ The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListAct
 | `Menu`    | A single dropdown opened by an ellipsis button, holding the `Actions` shapes (restyled as menu items) and the `ActionsMenu` shapes. |
 
 Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Grid` layout renders it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. Themes can override the Buttons or Menu templates, including per list, but option shapes do not register additional choices. For example, override the Buttons presentation to render icon buttons without adding a third selectable mode.
+
+### Edit page action bar
+
+The submit buttons of admin edit pages, such as **Publish**, **Save** and **Cancel**, are rendered in a bar fixed to the bottom of the viewport, so they are always reachable without scrolling. Views opt in by wrapping their buttons in an element with the `action-bar-bottom` class, typically the last child of the form:
+
+```cshtml
+<div class="action-bar-bottom">
+    <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+    <a class="btn btn-danger action-bar-secondary" asp-action="Delete">@T["Delete"]</a>
+    <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
+</div>
+```
+
+Mark every action other than the main ones with the `action-bar-secondary` class. A secondary action can be a single button or a whole control group, for example the date input and the button of **Publish Later**. When the **Actions layout** setting resolves to `Menu`, the admin theme moves the secondary actions into a single menu opened by an ellipsis button, and keeps only the main actions visible. On small screens the secondary actions are always moved into this menu, whatever the setting. The page content is padded so the bar never hides the end of the form.
 
 ### Declaring the columns of a list
 

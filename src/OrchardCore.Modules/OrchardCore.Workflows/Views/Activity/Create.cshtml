@@ -20,11 +20,9 @@
         <input type="hidden" asp-for="ActivityId" />
         @await DisplayAsync(Model.ActivityEditor)
 
-        <div class="ocat-wrapper">
-            <div class="ocat-end-offset">
-                <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-                <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
-            </div>
+        <div class="action-bar-bottom">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
         </div>
     </form>
 </div>
