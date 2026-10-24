@@ -63,26 +63,6 @@ msgctxt "OrchardCore.OpenId.ClientAdminMenu"
 msgid "Settings"
 msgstr ""
 
-#: Configuration/OpenIdValidationConfiguration.cs
-msgctxt "OrchardCore.OpenId.Configuration.OpenIdValidationConfiguration"
-msgid "Authentication is required to complete this request."
-msgstr ""
-
-#: Configuration/OpenIdValidationConfiguration.cs
-msgctxt "OrchardCore.OpenId.Configuration.OpenIdValidationConfiguration"
-msgid "Forbidden"
-msgstr ""
-
-#: Configuration/OpenIdValidationConfiguration.cs
-msgctxt "OrchardCore.OpenId.Configuration.OpenIdValidationConfiguration"
-msgid "Unauthorized"
-msgstr ""
-
-#: Configuration/OpenIdValidationConfiguration.cs
-msgctxt "OrchardCore.OpenId.Configuration.OpenIdValidationConfiguration"
-msgid "You do not have sufficient permissions to complete this request."
-msgstr ""
-
 #: Controllers/ApplicationController.cs
 msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
 msgid "No client secret can be set for public applications."
