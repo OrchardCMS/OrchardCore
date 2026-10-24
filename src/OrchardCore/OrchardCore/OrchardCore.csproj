@@ -13,6 +13,11 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <!-- For Unit Tests-->
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="ncrontab" />
     <PackageReference Include="NodaTime" />
