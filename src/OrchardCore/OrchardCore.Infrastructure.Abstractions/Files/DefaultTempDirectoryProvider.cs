@@ -32,6 +32,9 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
 
         if (string.IsNullOrWhiteSpace(basePath))
         {
+            // Windows normally resolves the current user's temp folder (SYSTEM uses SystemTemp when GetTempPath2
+            // is available). Unix may return shared /tmp; CreateTempSubdirectory atomically creates a unique
+            // directory with mode 700, safe under a correctly configured, sticky-bit-protected /tmp.
             var systemTempPath = Path.GetTempPath();
 
             if (!string.IsNullOrWhiteSpace(systemTempPath) && Directory.Exists(systemTempPath))
