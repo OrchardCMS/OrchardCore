@@ -17,16 +17,16 @@ The base location is controlled globally by the `OrchardCore:TempDirectory` conf
   "OrchardCore": {
     "TempDirectory": {
       // Base path under which tenant-scoped temporary files are stored.
-      // When omitted, the operating system temporary directory (Path.GetTempPath()) is used.
+      // When omitted, a unique directory is created under the operating system temporary directory.
       "Path": "/mnt/shared/temp"
     }
   }
 }
 ```
 
-Files are laid out as `{Path}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. On Unix-like operating systems, a newly created tenant directory uses owner-only permissions (`700`), matching `Directory.CreateTempSubdirectory()`. When `Path` is not set, the store falls back to the operating system temporary directory, preserving the previous behavior.
+When `Path` is set, files are laid out as `{Path}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. On Unix-like operating systems, a newly created tenant directory uses owner-only permissions (`700`).
 
-Because the operating system temporary directory can be writable by other local users (`/tmp` on Unix, or `C:\Windows\Temp` on Windows when the user profile is not loaded) and the tenant directory has a predictable name, the store makes sure, when `Path` is not set, that the tenant directory there is a real directory that only the application's user can access. It refuses to use it when it is a symbolic link or belongs to another user, and otherwise restricts it to owner-only permissions on Unix, or to the application's user, the system and the administrators on Windows. In that case, remove it, or set `Path` to a private location.
+When `Path` is not set, the provider creates a unique temporary directory under `Path.GetTempPath()` and logs a warning with its location. On Windows, .NET uses the operating system's `GetTempPath2` API when available, and falls back to `GetTempPath` otherwise. If the returned system temporary directory is unavailable, the provider creates a GUID-named directory under the user's local application data directory instead and logs that path. The unique directory prevents the provider from trusting a predictable tenant directory directly under a shared system temporary directory. On Unix-like operating systems, the generated directory uses owner-only permissions (`700`).
 
 This one setting applies to every temporary file consumer: media chunked uploads, TUS uploads, deployment and recipe imports/exports, and tenant recipe uploads.
 
