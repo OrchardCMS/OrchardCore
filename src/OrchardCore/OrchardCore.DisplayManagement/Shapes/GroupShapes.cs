@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ViewModels;
 using OrchardCore.Modules;
@@ -10,8 +11,15 @@ namespace OrchardCore.DisplayManagement.Shapes;
 [Feature(Application.DefaultFeatureId)]
 public class GroupShapes : IShapeAttributeProvider
 {
+    protected readonly IStringLocalizer S;
+
+    public GroupShapes(IStringLocalizer<GroupShapes> localizer)
+    {
+        S = localizer;
+    }
+
     [Shape]
-    public static IHtmlContent AdminTabs(IShape shape)
+    public IHtmlContent AdminTabs(IShape shape)
     {
         var tabsGrouping = shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
         if (tabsGrouping == null)
@@ -56,7 +64,9 @@ public class GroupShapes : IShapeAttributeProvider
             aTag.Attributes["role"] = "tab";
             aTag.Attributes["aria-controls"] = tabId;
             aTag.Attributes["aria-selected"] = "false";
-            aTag.InnerHtml.Append(tab);
+
+            // The tab name stays the identifier, only its caption is localized.
+            aTag.InnerHtml.Append(S[tab].Value);
 
             linkTag.InnerHtml.AppendHtml(aTag);
             tagBuilder.InnerHtml.AppendHtml(linkTag);
@@ -67,7 +77,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public static async Task<IHtmlContent> Card(IDisplayHelper displayAsync, GroupingViewModel shape)
+    public async Task<IHtmlContent> Card(IDisplayHelper displayAsync, GroupingViewModel shape)
     {
         var tagBuilder = shape.GetTagBuilder("div");
         tagBuilder.AddCssClass("card-body");
@@ -86,7 +96,7 @@ public class GroupShapes : IShapeAttributeProvider
 
         var headerTitleTag = new TagBuilder("h5");
         headerTitleTag.AddCssClass("float-start mb-0 mt-1");
-        headerTitleTag.InnerHtml.Append(shape.Grouping.Key);
+        headerTitleTag.InnerHtml.Append(S[shape.Grouping.Key].Value);
 
         var buttonTag = new TagBuilder("button");
         buttonTag.AddCssClass("btn btn-link btn-block text-start float-end");

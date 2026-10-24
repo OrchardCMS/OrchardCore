@@ -322,6 +322,8 @@ To apply a position modifier, or column width modifier, apply the appropriate va
 
 Fields or Parts which do not have a grouping will fall into the default `Content` group when other fields apply a grouping.
 
+Tab and card names, the default `Content` group included, are displayed through `IStringLocalizer`, so they are translated like any other string: add the name as a `msgid` to the module's PO file. The name itself remains the identifier of the group, so placement rules and the generated element ids are the same in every culture.
+
 !!! warning "Shape position vs. group position"
     The **position** (the number after `:`) controls the order of shapes **within a zone**. The **group position** (the number after `;`) controls the order of the **groups themselves** (e.g., which tab appears first). These are two different things.
 
