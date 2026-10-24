@@ -53,18 +53,34 @@ public sealed class DefaultTempDirectoryProviderTests : IDisposable
     }
 
     [Fact]
-    public void EmptyTempPath_FallsBackToSystemTempPath()
+    public void EmptyTempPath_CreatesUniqueTemporaryDirectory()
     {
         var store = new DefaultTempDirectoryProvider(
             Options.Create(new TempDirectoryOptions { Path = null }),
             new ShellSettings { Name = "Gamma" });
 
         var root = store.GetRootDirectory();
+        var tempDirectory = Directory.GetParent(root).FullName;
 
-        Assert.Equal(Path.Combine(Path.GetTempPath(), "Gamma"), root);
+        try
+        {
+            Assert.Equal(Path.Combine(tempDirectory, "Gamma"), root);
+            Assert.StartsWith("OrchardCore-", Path.GetFileName(tempDirectory));
+            Assert.Equal(
+                Path.TrimEndingDirectorySeparator(Path.GetTempPath()),
+                Directory.GetParent(tempDirectory).FullName);
 
-        // Cleanup this one since it is created outside _basePath.
-        Directory.Delete(root, recursive: true);
+            if (!OperatingSystem.IsWindows())
+            {
+                var ownerOnly = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute;
+                Assert.Equal(ownerOnly, File.GetUnixFileMode(tempDirectory));
+                Assert.Equal(ownerOnly, File.GetUnixFileMode(root));
+            }
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [Fact]
