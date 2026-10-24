@@ -35,6 +35,8 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
     public void Configure(AuthenticationOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
         if (settings == null)
         {
@@ -47,6 +49,8 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
     public void Configure(OpenIddictServerOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
         if (settings == null)
         {
@@ -195,6 +199,8 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
     public void Configure(OpenIddictServerDataProtectionOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
         if (settings == null)
         {
@@ -208,6 +214,8 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
     public void Configure(string name, OpenIddictServerAspNetCoreOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         // Note: the OpenID module handles the authorization, end session, token and userinfo requests
         // in its dedicated ASP.NET Core MVC controller, which requires enabling the pass-through mode.
         options.EnableAuthorizationEndpointPassthrough = true;
