@@ -23,7 +23,8 @@ public class UserStore :
     IUserTwoFactorRecoveryCodeStore<IUser>,
     IUserTwoFactorStore<IUser>,
     IUserAuthenticatorKeyStore<IUser>,
-    IUserPhoneNumberStore<IUser>
+    IUserPhoneNumberStore<IUser>,
+    IUserPasskeyStore<IUser>
 {
     private const string TokenProtector = "OrchardCore.UserStore.Token";
     private const string InternalLoginProvider = "[OrchardCoreUserStore]";
@@ -944,6 +945,125 @@ public class UserStore :
         }
 
         return Task.FromResult<bool>(false);
+    }
+    #endregion
+
+    #region IUserPasskeyStore<IUser>
+    public Task AddOrUpdatePasskeyAsync(IUser user, UserPasskeyInfo passkey, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(passkey);
+
+        if (user is User u)
+        {
+            var userPasskey = FindPasskey(u, passkey.CredentialId);
+
+            if (userPasskey == null)
+            {
+                userPasskey = new UserPasskey
+                {
+                    CredentialId = passkey.CredentialId,
+                    CreatedUtc = passkey.CreatedAt.UtcDateTime,
+                };
+
+                u.Passkeys.Add(userPasskey);
+            }
+
+            userPasskey.PublicKey = passkey.PublicKey;
+            userPasskey.Name = passkey.Name;
+            userPasskey.SignCount = passkey.SignCount;
+            userPasskey.Transports = passkey.Transports;
+            userPasskey.IsUserVerified = passkey.IsUserVerified;
+            userPasskey.IsBackupEligible = passkey.IsBackupEligible;
+            userPasskey.IsBackedUp = passkey.IsBackedUp;
+            userPasskey.AttestationObject = passkey.AttestationObject;
+            userPasskey.ClientDataJson = passkey.ClientDataJson;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task<IList<UserPasskeyInfo>> GetPasskeysAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult<IList<UserPasskeyInfo>>(u.Passkeys.Select(ToPasskeyInfo).ToList());
+        }
+
+        return Task.FromResult<IList<UserPasskeyInfo>>([]);
+    }
+
+    public async Task<IUser> FindByPasskeyIdAsync(byte[] credentialId, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(credentialId);
+
+        var credentialIdHash = UserByPasskeyIndex.HashCredentialId(credentialId);
+
+        var users = await _session.Query<User, UserByPasskeyIndex>(x => x.CredentialIdHash == credentialIdHash).ListAsync(cancellationToken);
+
+        // The index only holds a hash, so compare the full identifier.
+        return users.FirstOrDefault(user => FindPasskey(user, credentialId) != null);
+    }
+
+    public Task<UserPasskeyInfo> FindPasskeyAsync(IUser user, byte[] credentialId, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(credentialId);
+
+        if (user is User u)
+        {
+            var userPasskey = FindPasskey(u, credentialId);
+
+            if (userPasskey != null)
+            {
+                return Task.FromResult(ToPasskeyInfo(userPasskey));
+            }
+        }
+
+        return Task.FromResult<UserPasskeyInfo>(null);
+    }
+
+    public Task RemovePasskeyAsync(IUser user, byte[] credentialId, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(credentialId);
+
+        if (user is User u)
+        {
+            var userPasskey = FindPasskey(u, credentialId);
+
+            if (userPasskey != null)
+            {
+                u.Passkeys.Remove(userPasskey);
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static UserPasskey FindPasskey(User user, byte[] credentialId)
+    {
+        return user.Passkeys.FirstOrDefault(x => x.CredentialId.AsSpan().SequenceEqual(credentialId));
+    }
+
+    private static UserPasskeyInfo ToPasskeyInfo(UserPasskey passkey)
+    {
+        return new UserPasskeyInfo(
+            passkey.CredentialId,
+            passkey.PublicKey,
+            new DateTimeOffset(DateTime.SpecifyKind(passkey.CreatedUtc, DateTimeKind.Utc)),
+            passkey.SignCount,
+            passkey.Transports,
+            passkey.IsUserVerified,
+            passkey.IsBackupEligible,
+            passkey.IsBackedUp,
+            passkey.AttestationObject,
+            passkey.ClientDataJson)
+        {
+            Name = passkey.Name,
+        };
     }
     #endregion
 }

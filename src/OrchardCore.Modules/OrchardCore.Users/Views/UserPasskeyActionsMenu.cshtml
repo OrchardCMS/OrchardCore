@@ -1,0 +1,12 @@
+@using OrchardCore.Users.Models
+
+@model SummaryAdminUserViewModel
+
+@inject IAuthorizationService AuthorizationService
+
+@if (await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User))
+{
+    <li>
+        <a asp-action="RemoveAll" asp-controller="AdminPasskey" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Remove passkeys"]" data-message="@T["Are you sure you want to remove all the passkeys of this user? They will have to log in another way."]">@T["Remove passkeys"]</a>
+    </li>
+}

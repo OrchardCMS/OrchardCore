@@ -18,6 +18,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 {
     private static readonly string s_twoFactorAuthenticationControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
     private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_securityControllerName = typeof(SecurityController).ControllerName();
 
     protected readonly UserManager<IUser> UserManager;
     protected readonly IDistributedCache DistributedCache;
@@ -155,8 +156,12 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         return providers.Intersect(TwoFactorOptions.Providers).ToList();
     }
 
+    // Two-factor authentication is managed from a section of the Security page.
     protected IActionResult RedirectToTwoFactorIndex()
-        => RedirectToAction(nameof(TwoFactorAuthenticationController.Index), s_twoFactorAuthenticationControllerName);
+        => RedirectToSecurity("two-factor");
+
+    protected IActionResult RedirectToSecurity(string section)
+        => RedirectToAction(nameof(SecurityController.Index), s_securityControllerName, null, section);
 
     protected IActionResult RedirectToAccountLogin()
         => RedirectToAction(nameof(AccountController.Login), s_accountControllerName);

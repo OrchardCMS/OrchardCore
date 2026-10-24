@@ -16,6 +16,8 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
         typeof(TwoFactorAuthenticationController).ControllerName(),
         typeof(AuthenticatorAppController).ControllerName(),
         typeof(SmsAuthenticatorController).ControllerName(),
+        typeof(PasskeyController).ControllerName(),
+        typeof(SecurityController).ControllerName(),
     ];
 
     private readonly UserOptions _userOptions;
@@ -39,6 +41,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
         if ((context.HttpContext?.User.Identity?.IsAuthenticated ?? false) == false ||
             context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase) ||
             context.HttpContext.Request.Path.Equals("/" + _userOptions.TwoFactorAuthenticationPath, StringComparison.OrdinalIgnoreCase) ||
+            context.HttpContext.Request.Path.Equals("/" + _userOptions.SecurityPath, StringComparison.OrdinalIgnoreCase) ||
             context.HttpContext.Request.Path.Equals("/TwoFactor-Authenticator/", StringComparison.OrdinalIgnoreCase))
         {
             return;
@@ -57,6 +60,12 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
             }
         }
 
+        // A user who signed in with multiple factors, for instance with a passkey, already meets the requirement.
+        if (context.HttpContext.User.HasClaim(UserConstants.AuthenticationMethodsClaimType, UserConstants.MultiFactorAuthenticationMethod))
+        {
+            return;
+        }
+
         if (context.HttpContext.User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
         {
             var user = await _userManager.GetUserAsync(context.HttpContext.User);
@@ -68,7 +77,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
 
             if (await _twoFactorHandlerCoordinator.IsRequiredAsync(user))
             {
-                context.Result = new RedirectResult("~/" + _userOptions.TwoFactorAuthenticationPath);
+                context.Result = new RedirectResult("~/" + _userOptions.SecurityPath);
             }
         }
     }

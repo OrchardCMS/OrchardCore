@@ -1,0 +1,12 @@
+@model OrchardCore.Users.Models.UserSecuritySettings
+
+<div class="ocat-wrapper" asp-validation-class-for="UseSiteTheme">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseSiteTheme" />
+            <span asp-validation-for="UseSiteTheme"></span>
+            <label class="form-check-label" asp-for="UseSiteTheme">@T["Use site theme for the security pages"]</label>
+            <span class="hint">@T["The Security page, where users manage their two-factor authentication and their passkeys, and the pages it links to. Requires an active site theme."]</span>
+        </div>
+    </div>
+</div>
