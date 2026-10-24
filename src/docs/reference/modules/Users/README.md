@@ -53,7 +53,7 @@ This ensures user names are rendered consistently while making use of OrchardCor
 
 When **Users must verify their email address** is enabled in the User Registration settings (`UsersMustValidateEmail` in recipes), users can't sign in until they confirm their email address. If a user signs in with a valid user name and password before confirming their email, they're taken to a page that explains that their email must be confirmed, with a **Send confirmation email** action that sends a new confirmation link. This lets users recover when the original email was lost or its link expired.
 
-The action is only offered for about 10 minutes after the successful password check, in the same browser. A short-lived cookie remembers which user passed the check; it doesn't sign the user in. A user can request a new email at most once a minute. When the [Rate Limits](../RateLimits/README.md) feature is enabled, the `ResendEmailConfirmation` route is also limited to 2 requests per minute per IP address, using the `email-confirmation` policy.
+The action is only offered for about 10 minutes after the successful password check, in the same browser. A short-lived cookie remembers which user passed the check; it doesn't sign the user in. A user can request a new email at most once a minute. When the [Rate Limits](../RateLimits/README.md) feature is enabled, the `ResendEmailConfirmation` route is also limited to 2 requests per minute for the user who passed the password check, using the `email-confirmation` policy, so that the users who share an IP address don't share this limit.
 
 ## Security Page
 
@@ -342,6 +342,8 @@ User module settings can be configured using the `Settings` recipe step:
 |----------------------|---------|------------------------------------------------------------|
 | `AllowResetPassword` | Boolean | Whether to allow users to reset their password.            |
 | `UseSiteTheme`       | Boolean | Whether to use the site theme for the reset password page. |
+
+A user receives at most one password reset email per minute. Further requests during that minute show the same confirmation page without sending an email, so that the page doesn't reveal whether the account exists. When the [Rate Limits](../RateLimits/README.md) feature is enabled, the forgot password and reset password pages are also limited to 20 requests per minute per IP address, using the `password-recovery` policy.
 
 ### Change Email Settings
 

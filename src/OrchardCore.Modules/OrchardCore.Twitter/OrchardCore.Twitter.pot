@@ -1,0 +1,247 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Twitter\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: ViewModels/TwitterSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "API key is required"
+msgstr ""
+
+#: ViewModels/TwitterSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Access token is required"
+msgstr ""
+
+#: Signin/ViewModels/TwitterSigninSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid path"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Twitter.AdminMenu"
+msgid "Integrations"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Twitter.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Twitter.AdminMenu"
+msgid "X (Twitter)"
+msgstr ""
+
+#: AdminMenuSignin.cs
+msgctxt "OrchardCore.Twitter.AdminMenuSignIn"
+msgid "Authentication"
+msgstr ""
+
+#: AdminMenuSignin.cs
+msgctxt "OrchardCore.Twitter.AdminMenuSignIn"
+msgid "Security"
+msgstr ""
+
+#: AdminMenuSignin.cs
+msgctxt "OrchardCore.Twitter.AdminMenuSignIn"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenuSignin.cs
+msgctxt "OrchardCore.Twitter.AdminMenuSignIn"
+msgid "Sign In with X (Twitter)"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "API secret key"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "Access token secret"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "X (Twitter)"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "X (Twitter): API secret key"
+msgstr ""
+
+#: Drivers/TwitterSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
+msgid "X (Twitter): Access token secret"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Twitter.Permissions"
+msgid "Manage Sign in with X (Twitter) settings"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Twitter.Permissions"
+msgid "Manage X (Twitter) settings"
+msgstr ""
+
+#: Services/TwitterSettingsService.cs
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "Access Token Secret is required"
+msgstr ""
+
+#: Services/TwitterSettingsService.cs
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "Access Token is required"
+msgstr ""
+
+#: Services/TwitterSettingsService.cs
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "ConsumerKey is required"
+msgstr ""
+
+#: Services/TwitterSettingsService.cs
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
+msgid "ConsumerSecret is required"
+msgstr ""
+
+#: Views/Items/UpdateTwitterStatusTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Design"
+msgid "Update X (Twitter) Status"
+msgstr ""
+
+#: Views/Items/UpdateTwitterStatusTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Edit"
+msgid "Template for updating X (Twitter) status"
+msgstr ""
+
+#: Views/Items/UpdateTwitterStatusTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Edit"
+msgid "The status text of the post."
+msgstr ""
+
+#: Views/Items/UpdateTwitterStatusTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Thumbnail"
+msgid "Create a post"
+msgstr ""
+
+#: Views/Items/UpdateTwitterStatusTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Thumbnail"
+msgid "Update X (Twitter) Status"
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "API key"
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "API secret key"
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "Access Token"
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "Access Token Secret"
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The API key defined in the Keys and tokens tab of X (Twitter) app dashboard."
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The API secret defined in the Keys and tokens tab of X (Twitter) app dashboard."
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The Access Token Secret in the Keys and tokens tab of X (Twitter) app dashboard."
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The Access Token defined in the Keys and tokens tab of X (Twitter) app dashboard."
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: Views/TwitterSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
+msgid "X (Twitter) Integration Settings"
+msgstr ""
+
+#: Views/TwitterSigninSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#: Views/TwitterSigninSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/TwitterSigninSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "Sign in with X (Twitter) Settings"
+msgstr ""
+
+#: Views/TwitterSigninSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr ""
+
+#: Views/TwitterSigninSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "Store tokens"
+msgstr ""
+
+#: Views/TwitterSigninSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr ""
+
+#: Views/TwitterSigninSettings.Edit.cshtml
+msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: Workflows/Activities/UpdateTwitterStatusTask.cs
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/UpdateTwitterStatusTask.cs
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/UpdateTwitterStatusTask.cs
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Social"
+msgstr ""
+
+#: Workflows/Activities/UpdateTwitterStatusTask.cs
+msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
+msgid "Update X (Twitter) Status Task"
+msgstr ""

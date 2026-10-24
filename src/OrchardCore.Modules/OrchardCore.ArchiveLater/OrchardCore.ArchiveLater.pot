@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.ArchiveLater\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Views/ArchiveLaterPart.Edit.cshtml
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Edit"
+msgid "Archive Later"
+msgstr ""
+
+#: Views/ArchiveLaterPart.Edit.cshtml
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Edit"
+msgid "Cancel Archive Later"
+msgstr ""
+
+#: Views/ArchiveLaterPart.Option.cshtml
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Option"
+msgid "Standard"
+msgstr ""
+
+#. Format arguments: {0}: await DisplayAsync(await New.DateTime(Utc: Model.ScheduledArchiveUtc, Format: "g"))
+#: Views/ArchiveLaterPart.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.SummaryAdmin"
+msgid "Scheduled to be archived on {0}"
+msgstr ""

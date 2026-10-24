@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Settings;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.Facebook.Login.Configuration;
 
@@ -18,17 +19,20 @@ public class FacebookLoginConfiguration :
     private readonly FacebookSettings _facebookSettings;
     private readonly IFacebookLoginService _loginService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public FacebookLoginConfiguration(
         IOptions<FacebookSettings> facebookSettings,
         IFacebookLoginService loginService,
         IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         ILogger<FacebookLoginConfiguration> logger)
     {
         _facebookSettings = facebookSettings.Value;
         _loginService = loginService;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -39,7 +43,10 @@ public class FacebookLoginConfiguration :
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
+        var hasSecret = !string.IsNullOrWhiteSpace(_facebookSettings.AppSecretSecretName) ||
+                        !string.IsNullOrWhiteSpace(_facebookSettings.AppSecret);
+
+        if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || !hasSecret)
         {
             _logger.LogWarning("The Facebook login provider is enabled but not configured.");
 
@@ -81,14 +88,13 @@ public class FacebookLoginConfiguration :
 
         options.AppId = _facebookSettings.AppId;
 
-        try
-        {
-            options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(_facebookSettings.AppSecret);
-        }
-        catch
-        {
-            _logger.LogError("The Facebook secret key could not be decrypted. It may have been encrypted using a different key.");
-        }
+        options.AppSecret = _serviceProvider.GetSecretValueAsync(
+            _facebookSettings.AppSecretSecretName,
+            _facebookSettings.AppSecret,
+            _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (loginSettings.CallbackPath.HasValue)
         {

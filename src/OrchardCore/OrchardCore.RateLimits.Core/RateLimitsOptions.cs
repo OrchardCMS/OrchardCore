@@ -10,6 +10,7 @@ public sealed class RateLimitsOptions
 {
     private readonly Dictionary<string, RouteRateLimit> _routeRateLimits = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<GroupRateLimit> _groupRateLimits = [];
+    private readonly List<PathString> _globalPolicyExcludedPaths = [];
 
     /// <summary>
     /// Gets the registered built-in route rate limits.
@@ -22,6 +23,12 @@ public sealed class RateLimitsOptions
     /// </summary>
     public IEnumerable<GroupRateLimit> GroupRateLimits
         => _groupRateLimits;
+
+    /// <summary>
+    /// Gets the request path prefixes that global policies don't count, such as the paths that serve static files.
+    /// </summary>
+    public IEnumerable<PathString> GlobalPolicyExcludedPaths
+        => _globalPolicyExcludedPaths;
 
     /// <summary>
     /// Registers a route rate limit that applies to all HTTP methods for the specified route name.
@@ -64,6 +71,24 @@ public sealed class RateLimitsOptions
     public void AddGroupRateLimit(string groupName, Func<HttpContext, RateLimitPartition<string>> partitioner)
     {
         _groupRateLimits.Add(new GroupRateLimit(groupName, partitioner));
+    }
+
+    /// <summary>
+    /// Excludes the requests whose path starts with the specified prefix from global policies, so that serving static files,
+    /// such as the images of a page, doesn't consume the request budget of a client. Endpoint and group policies still apply.
+    /// </summary>
+    /// <param name="pathPrefix">The request path prefix to exclude, such as <c>/media</c>.</param>
+    public void ExcludePathFromGlobalPolicies(PathString pathPrefix)
+    {
+        if (!pathPrefix.HasValue || pathPrefix == "/")
+        {
+            throw new ArgumentException("The path prefix must not be empty or the root path.", nameof(pathPrefix));
+        }
+
+        if (!_globalPolicyExcludedPaths.Contains(pathPrefix))
+        {
+            _globalPolicyExcludedPaths.Add(pathPrefix);
+        }
     }
 
     private static string CreateKey(string routeName, IReadOnlyList<string> httpMethods)

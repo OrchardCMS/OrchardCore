@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
+    <!-- The Roslyn assemblies are loaded from the SDK that builds the tests, see SdkTestInitializer. The Razor
+         runtime compilation package referenced by Orchard Core projects would otherwise deploy them. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" ExcludeAssets="runtime" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.DisplayManagement.Liquid/OrchardCore.DisplayManagement.Liquid.csproj" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.Localization.Core/OrchardCore.Localization.Core.csproj" />
+    <ProjectReference Include="../../src/OrchardCore/OrchardCore.Localization.Tools/OrchardCore.Localization.Tools.csproj" ReferenceOutputAssembly="false" />
+    <Compile Remove="Fixtures/**/*.cs" />
+    <None Update="Fixtures/**/*" CopyToOutputDirectory="Never" />
+    <None Update="Snapshots/*.pot" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The tests bind to the compiler of the SDK that builds them, like the build-time worker does. -->
+    <AssemblyMetadata Include="RoslynDirectory" Value="$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Roslyn/bincore/" />
+    <AssemblyMetadata Include="RazorCompilerPath" Value="$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll" />
+  </ItemGroup>
+</Project>

@@ -376,6 +376,8 @@ public sealed class AdminController : Controller
                 library = Endpoint("Library"),
                 save = Endpoint("Save", designer),
                 addStep = Endpoint("AddStep", designer),
+                dataSets = Endpoint("DataSets", designer),
+                addDataSource = Endpoint("AddDataSource", designer),
                 editor = Endpoint("Editor", designer),
                 settings = Endpoint("Settings", designer),
                 fields = Endpoint("Fields"),

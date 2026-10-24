@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.GitHub.Settings;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
@@ -15,15 +16,18 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
 {
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationOptionsConfiguration(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         ILogger<GitHubAuthenticationOptionsConfiguration> logger)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -42,8 +46,10 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(settings.ClientID) ||
-            string.IsNullOrWhiteSpace(settings.ClientSecret))
+        var hasSecret = !string.IsNullOrWhiteSpace(settings.ClientSecretSecretName) ||
+                        !string.IsNullOrWhiteSpace(settings.ClientSecret);
+
+        if (string.IsNullOrWhiteSpace(settings.ClientID) || !hasSecret)
         {
             _logger.LogWarning("The GitHub login provider is enabled but not configured.");
 
@@ -57,15 +63,13 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
 
         options.ClientId = settings.ClientID;
 
-        try
-        {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication)
-                .Unprotect(settings.ClientSecret);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
-        }
+        options.ClientSecret = _serviceProvider.GetSecretValueAsync(
+            settings.ClientSecretSecretName,
+            settings.ClientSecret,
+            _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (settings.CallbackPath.HasValue)
         {

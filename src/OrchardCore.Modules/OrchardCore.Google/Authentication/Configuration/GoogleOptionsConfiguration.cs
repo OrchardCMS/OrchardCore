@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Google.Authentication.Settings;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.Google.Authentication.Configuration;
 
@@ -14,15 +15,18 @@ public class GoogleOptionsConfiguration :
 {
     private readonly GoogleAuthenticationSettings _googleAuthenticationSettings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public GoogleOptionsConfiguration(
         IOptions<GoogleAuthenticationSettings> googleAuthenticationSettings,
         IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         ILogger<GoogleOptionsConfiguration> logger)
     {
         _googleAuthenticationSettings = googleAuthenticationSettings.Value;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -33,8 +37,10 @@ public class GoogleOptionsConfiguration :
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientID) ||
-            string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret))
+        var hasSecret = !string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecretSecretName) ||
+                        !string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret);
+
+        if (string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientID) || !hasSecret)
         {
             _logger.LogWarning("The Google login provider is enabled but not configured.");
 
@@ -61,14 +67,14 @@ public class GoogleOptionsConfiguration :
         }
 
         options.ClientId = _googleAuthenticationSettings.ClientID;
-        try
-        {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(_googleAuthenticationSettings.ClientSecret);
-        }
-        catch
-        {
-            _logger.LogError("The Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
-        }
+
+        options.ClientSecret = _serviceProvider.GetSecretValueAsync(
+            _googleAuthenticationSettings.ClientSecretSecretName,
+            _googleAuthenticationSettings.ClientSecret,
+            _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (_googleAuthenticationSettings.CallbackPath.HasValue)
         {

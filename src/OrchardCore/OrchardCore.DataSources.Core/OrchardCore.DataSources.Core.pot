@@ -1,0 +1,190 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.DataSources.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: field.Key
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The field [{0}] does not exist."
+msgstr ""
+
+#. Format arguments: {0}: field.Key
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The field [{0}] is already aggregated and cannot be aggregated again."
+msgstr ""
+
+#: Expressions/ExpressionCompiler.cs
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The formula contains an unsupported element."
+msgstr ""
+
+#: Expressions/ExpressionCompiler.cs
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The formula mixes aggregated values (such as SUM) with row-level fields. Wrap each field in an aggregate function."
+msgstr ""
+
+#. Format arguments: {0}: function.Name
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The function {0} cannot be used inside another aggregate function."
+msgstr ""
+
+#. Format arguments: {0}: call.Name
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The function {0} does not exist."
+msgstr ""
+
+#. Format arguments: {0}: function.Name; {1}: function.Signature
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The function {0} is written {1}."
+msgstr ""
+
+#. Format arguments: {0}: function.Name; {1}: argument.DataType
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The function {0} needs a number, but receives a {1} value."
+msgstr ""
+
+#. Format arguments: {0}: binary.Operator; {1}: leftType; {2}: rightType
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The operator '{0}' cannot combine {1} and {2} values."
+msgstr ""
+
+#. Format arguments: {0}: unary.Operator
+#: Expressions/ExpressionCompiler.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
+msgid "The operator '{0}' needs a number."
+msgstr ""
+
+#. Format arguments: {0}: start + 1
+#: Expressions/ExpressionLexer.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionLexer"
+msgid "The field reference that starts at position {0} has no closing ']'."
+msgstr ""
+
+#. Format arguments: {0}: start + 1
+#: Expressions/ExpressionLexer.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionLexer"
+msgid "The text that starts at position {0} has no closing quote."
+msgstr ""
+
+#. Format arguments: {0}: current; {1}: index + 1
+#: Expressions/ExpressionLexer.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionLexer"
+msgid "Unexpected character '{0}' at position {1}."
+msgstr ""
+
+#. Format arguments: {0}: text; {1}: token.Position + 1; {2}: token.Text
+#: Expressions/ExpressionParser.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "Expected '{0}' at position {1} but found '{2}'."
+msgstr ""
+
+#. Format arguments: {0}: text
+#: Expressions/ExpressionParser.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "Expected '{0}' at the end of the formula."
+msgstr ""
+
+#. Format arguments: {0}: token.Position + 1
+#: Expressions/ExpressionParser.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "The field reference at position {0} is empty."
+msgstr ""
+
+#: Expressions/ExpressionParser.cs
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "The formula ends unexpectedly."
+msgstr ""
+
+#: Expressions/ExpressionParser.cs
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "The formula is empty."
+msgstr ""
+
+#: Expressions/ExpressionParser.cs
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "The formula is nested too deeply."
+msgstr ""
+
+#. Format arguments: {0}: token.Text; {1}: token.Position + 1
+#: Expressions/ExpressionParser.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "The number '{0}' at position {1} is too large."
+msgstr ""
+
+#. Format arguments: {0}: next.Text, token.Text; {1}: next.Position + 1, token.Position + 1
+#: Expressions/ExpressionParser.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "Unexpected '{0}' at position {1}."
+msgstr ""
+
+#. Format arguments: {0}: token.Text; {1}: token.Position + 1
+#: Expressions/ExpressionParser.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
+msgid "Unknown name '{0}' at position {1}. Write fields in square brackets, such as [Name]."
+msgstr ""
+
+#: Files/CsvDataFileFormat.cs
+msgctxt "OrchardCore.DataSources.Files.CsvDataFileFormat"
+msgid "CSV (comma separated values)"
+msgstr ""
+
+#: Files/ExcelDataFileFormat.cs
+msgctxt "OrchardCore.DataSources.Files.ExcelDataFileFormat"
+msgid "Excel workbook"
+msgstr ""
+
+#: Files/ExcelDataFileFormat.cs
+msgctxt "OrchardCore.DataSources.Files.ExcelDataFileFormat"
+msgid "The file is not an Excel workbook."
+msgstr ""
+
+#. Format arguments: {0}: options.SheetName ?? string.Empty
+#: Files/ExcelDataFileFormat.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Files.ExcelDataFileFormat"
+msgid "The workbook has no worksheet named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: sheetName; {1}: maxRows
+#: Files/ExcelDataFileFormat.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Files.ExcelDataFileFormat"
+msgid "The worksheet '{0}' can hold {1} rows at most. Write the rows to a CSV file, or split them into several worksheets."
+msgstr ""
+
+#: Files/JsonDataFileFormat.cs
+msgctxt "OrchardCore.DataSources.Files.JsonDataFileFormat"
+msgid "JSON"
+msgstr ""
+
+#: Files/JsonLinesDataFileFormat.cs
+msgctxt "OrchardCore.DataSources.Files.JsonLinesDataFileFormat"
+msgid "JSON Lines"
+msgstr ""

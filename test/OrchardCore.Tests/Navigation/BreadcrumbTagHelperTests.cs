@@ -647,7 +647,7 @@ public class BreadcrumbTagHelperTests
     {
         var services = CreateServices();
         var display = ConfigureRendering(services);
-        var permission = new Permission("ManageRecords", "Manage records");
+        var permission = PermissionHelpers.Create("ManageRecords", "Manage records");
         var permissions = new Mock<IPermissionService>(MockBehavior.Strict);
         permissions.Setup(value => value.FindByNameAsync(permission.Name)).ReturnsAsync(permission);
         services.Setup(value => value.GetService(typeof(IPermissionService))).Returns(permissions.Object);
@@ -714,7 +714,7 @@ public class BreadcrumbTagHelperTests
     {
         var services = CreateServices();
         var display = ConfigureRendering(services);
-        var permission = new Permission("ManageRecords", "Manage records");
+        var permission = PermissionHelpers.Create("ManageRecords", "Manage records");
         var permissions = new Mock<IPermissionService>(MockBehavior.Strict);
         var authorization = new Mock<IAuthorizationService>(MockBehavior.Strict);
 
@@ -1166,7 +1166,7 @@ public class BreadcrumbTagHelperTests
     [Fact]
     public async Task ProcessAsync_ProviderChangesPermission_ResolvesOnlyFinalAncestorPermission()
     {
-        var permission = new Permission("FinalPermission", "Final permission");
+        var permission = PermissionHelpers.Create("FinalPermission", "Final permission");
         var provider = new DelegateBreadcrumbProvider(context =>
         {
             var ancestor = Assert.Single(context.Items);

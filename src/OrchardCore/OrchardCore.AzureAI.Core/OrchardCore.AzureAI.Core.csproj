@@ -30,6 +30,7 @@
     <ProjectReference Include="..\OrchardCore.Indexing.Core\OrchardCore.Indexing.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Search.Abstractions\OrchardCore.Search.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Secrets.Abstractions\OrchardCore.Secrets.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

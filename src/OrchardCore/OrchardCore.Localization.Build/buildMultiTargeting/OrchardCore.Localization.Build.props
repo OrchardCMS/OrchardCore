@@ -1,0 +1,4 @@
+<Project>
+  <!-- The outer build of a multi-targeting project imports this folder instead of build/. -->
+  <Import Project="../build/OrchardCore.Localization.Build.props" />
+</Project>

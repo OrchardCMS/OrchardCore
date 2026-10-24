@@ -23,6 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The localization analyzers and their code fixes are packed with the assembly declaring LocalizationSource,
+         so that every project referencing it gets the rules. Roslyn components reside in analyzers/dotnet/cs/. -->
+    <None Include="..\OrchardCore.Localization.Analyzers\bin\$(Configuration)\netstandard2.0\OrchardCore.Localization.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\OrchardCore.Localization.Analyzers.CodeFixes\bin\$(Configuration)\netstandard2.0\OrchardCore.Localization.Analyzers.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>OrchardCore</_Parameter1>
     </AssemblyAttribute>

@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
@@ -30,15 +33,19 @@ using OrchardCore.OpenId.ViewModels;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
+using OrchardCore.OpenId.Secrets.Drivers;
+using OrchardCore.OpenId.Secrets.Services;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
 using OrchardCore.RateLimits;
+using OrchardCore.Secrets;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
+using OpenIdSecretsMigrations = OrchardCore.OpenId.Secrets.Migrations;
 
 namespace OrchardCore.OpenId;
 
@@ -85,6 +92,16 @@ public sealed class ClientStartup : StartupBase
             // Built-in initializers:
             ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
         });
+    }
+}
+
+[Feature(OpenIdConstants.Features.Client)]
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class ClientSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, OpenIdClientSecretMigrationDisplayDriver>();
     }
 }
 
@@ -202,14 +219,38 @@ public sealed class ServerStartup : StartupBase
     }
 }
 
+[Feature(OpenIdConstants.Features.Secrets)]
+public sealed class ServerSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<OpenIdServerSettings, OpenIdSecretSettingsDisplayDriver>();
+        services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>, OpenIdSecretsOptionsConfiguration>();
+        services.AddDataMigration<OpenIdSecretsMigrations>();
+    }
+}
+
 [Feature(OpenIdConstants.Features.Server)]
 [RequireFeatures("OrchardCore.RateLimits")]
 public sealed class ServerRateLimitsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // Shares the budget of the login page, so it must use the same limit.
+        var passwordAuthentication = RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100);
+
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit("Access.Token", HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
+            options.AddRouteRateLimit("Access.Token", HttpMethods.Post, context =>
+            {
+                // Only the password grant checks user credentials. The other grants exchange codes, refresh tokens or client secrets
+                // that can't be guessed, and they are often sent for many users by a single server, so they must not share this budget.
+                // The token request is extracted by the OpenID server handler, which runs in the authentication middleware.
+                var request = context.GetOpenIddictServerRequest();
+
+                return request is null || request.IsPasswordGrantType()
+                    ? passwordAuthentication(context)
+                    : RateLimitPartition.GetNoLimiter(UserRateLimiterPolicyNames.PasswordAuthentication);
+            }));
     }
 }
 
@@ -228,10 +269,6 @@ public sealed class ValidationStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ValidationAdminMenu>();
-
-        // Used to attach RFC 9457 Problem Details bodies to the challenge responses produced
-        // by the OpenIddict validation handler, honoring app-level ProblemDetails customizations.
-        services.AddProblemDetails();
 
         services.AddOpenIddict()
             .AddValidation(options =>

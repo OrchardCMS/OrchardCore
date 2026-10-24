@@ -66,6 +66,8 @@ public class HelpCommand : DefaultCommandHandler
             return S["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
         }
 
+#pragma warning disable OCLOC104 // The help text is declared by the command, with its own localizer.
         return S[descriptor.HelpText];
+#pragma warning restore OCLOC104
     }
 }

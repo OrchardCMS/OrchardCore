@@ -159,6 +159,10 @@
   all: unset;
 }
 
+[v-cloak] {
+  display: none;
+}
+
 a {
   text-decoration: none;
 }
@@ -10580,7 +10584,8 @@ span.field-validation-error {
   display: none;
 }
 
-.input-validation-error {
+.input-validation-error,
+input[type=url]:invalid {
   border-color: var(--bs-form-invalid-border-color);
 }
 

@@ -1,0 +1,264 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Cors\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Cors.AdminMenu"
+msgid "Cross-Origin Resource Sharing"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Cors.AdminMenu"
+msgid "Security"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Cors.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", policyWarnings)
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Cors.Controllers.AdminController"
+msgid "Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {0} </strong><br />Refer to docs: <a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Cors.Controllers.AdminController"
+msgid "The CORS settings have updated successfully."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Cors.DeploymentStartup"
+msgid "Cors settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Cors.DeploymentStartup"
+msgid "Exports the Cors settings."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Cors.Permissions"
+msgid "Managing Cors Settings"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Add"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Add a policy"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allow any header"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allow any method"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allow any origin"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allow certain or all headers to be used by the external client."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allow credentials"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allowed headers"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allowed methods"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allowed origins"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allows credentials to be transported in requests. This setting is not allowed in combination with Allow Any Origin."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allows requests from any origin. This will bypass any origin that is configured below."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allows requests with any header. This will bypass any headers that are configured below."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Allows requests with any method. This will bypass any methods that are configured below."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Cancel"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Configure the credentials behavior."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Configure the methods behavior (POST, PUT, DELETE, GET, etc)."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Configure the origins behavior."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Configure which headers should be exposed."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Credentials"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Default Policy"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Delete"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Details"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Edit"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Exposed headers"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Header"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Headers"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Method"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Methods"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Nothing here! There are no CORS policies for the moment."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Nothing here! Your search returned no results."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Origin"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Origins"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Policy name"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Provide policy details."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Save"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Search"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Set as default policy"
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "Sets response header 'Access-Control-Expose-Headers'."
+msgstr ""
+
+#: Services/CorsJSLocalizer.cs
+msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
+msgid "The name of the policy."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Cors.Views.Admin.Index"
+msgid "CORS Settings"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Cors.Views.Admin.Index"
+msgid "CORS stands for Cross-Origin Resource Sharing. More information can be found here:"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Cors.Views.Admin.Index"
+msgid "The current tenant will be reloaded when the CORS is executed."
+msgstr ""

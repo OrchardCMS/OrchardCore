@@ -47,10 +47,26 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)/../OrchardCore/OrchardCore.SourceGenerators/OrchardCore.SourceGenerators.csproj" 
-                      Condition=" $(MSBuildProjectName) != 'OrchardCore.SourceGenerators' "
-                      OutputItemType="Analyzer" 
+  <PropertyGroup>
+    <!-- The compiler tooling projects neither use the Orchard Core analyzers nor extract localization catalogs. -->
+    <OrchardCoreToolingProject Condition="'$(OrchardCoreToolingProject)' == '' and ('$(MSBuildProjectName)' == 'OrchardCore.SourceGenerators' or '$(MSBuildProjectName)' == 'OrchardCore.Localization.Analyzers' or '$(MSBuildProjectName)' == 'OrchardCore.Localization.Analyzers.CodeFixes' or '$(MSBuildProjectName)' == 'OrchardCore.Localization.Extraction' or '$(MSBuildProjectName)' == 'OrchardCore.Localization.Tools' or '$(MSBuildProjectName)' == 'OrchardCore.Localization.Build')">true</OrchardCoreToolingProject>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(OrchardCoreToolingProject)' != 'true'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)/../OrchardCore/OrchardCore.SourceGenerators/OrchardCore.SourceGenerators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+    <!-- The localization analyzers and their code fixes ship in the OrchardCore.Abstractions package. -->
+    <ProjectReference Include="$(MSBuildThisFileDirectory)/../OrchardCore/OrchardCore.Localization.Analyzers/OrchardCore.Localization.Analyzers.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)/../OrchardCore/OrchardCore.Localization.Analyzers.CodeFixes/OrchardCore.Localization.Analyzers.CodeFixes.csproj"
+                      OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
+  <Import Project="../OrchardCore/OrchardCore.Localization.Build/OrchardCore.Localization.Build.props"
+          Condition="'$(GenerateLocalizationCatalog)' != 'false' and '$(OrchardCoreToolingProject)' != 'true'" />
+  <Import Project="../OrchardCore/OrchardCore.Localization.Build/OrchardCore.Localization.Build.targets"
+          Condition="'$(GenerateLocalizationCatalog)' != 'false' and '$(OrchardCoreToolingProject)' != 'true'" />
+
 </Project>

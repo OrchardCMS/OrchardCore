@@ -136,14 +136,27 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
             ?? endpoint?.Metadata.GetMetadata<IEndpointNameMetadata>()?.EndpointName;
     }
 
-    private static bool Matches(RateLimitPolicy policy, HttpContext context)
+    private bool Matches(RateLimitPolicy policy, HttpContext context)
         => policy.Scope switch
         {
-            RateLimitPolicyScope.Global => true,
+            RateLimitPolicyScope.Global => !IsExcludedFromGlobalPolicies(context),
             RateLimitPolicyScope.Endpoint => !string.IsNullOrWhiteSpace(policy.Path) && context.Request.Path.StartsWithSegments(policy.Path, StringComparison.OrdinalIgnoreCase),
             RateLimitPolicyScope.Group => !string.IsNullOrWhiteSpace(policy.GroupName) && EndpointBelongsToGroup(context, policy.GroupName),
             _ => false,
         };
+
+    private bool IsExcludedFromGlobalPolicies(HttpContext context)
+    {
+        foreach (var pathPrefix in _rateLimitsOptions.GlobalPolicyExcludedPaths)
+        {
+            if (context.Request.Path.StartsWithSegments(pathPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private static bool EndpointBelongsToGroup(HttpContext context, string groupName)
     {

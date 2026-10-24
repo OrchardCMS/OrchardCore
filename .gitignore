@@ -226,7 +226,8 @@ src/Templates/**/content/**/.template.config/
 # BenchmarkDotNet artifacts
 BenchmarkDotNet.Artifacts
 
+# Playwright CLI test artifacts
+.playwright-cli/
 .playwright-cli
 .playwright-mcp
 .claude/*
-

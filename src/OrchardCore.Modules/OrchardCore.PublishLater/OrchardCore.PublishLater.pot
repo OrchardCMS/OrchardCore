@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.PublishLater\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Views/PublishLaterPart.Edit.cshtml
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.Edit"
+msgid "Cancel Publish Later"
+msgstr ""
+
+#: Views/PublishLaterPart.Edit.cshtml
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.Edit"
+msgid "Publish Later"
+msgstr ""
+
+#: Views/PublishLaterPart.Option.cshtml
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.Option"
+msgid "Standard"
+msgstr ""
+
+#. Format arguments: {0}: await DisplayAsync(await New.DateTime(Utc: Model.ScheduledPublishUtc, Format: "g"))
+#: Views/PublishLaterPart.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.SummaryAdmin"
+msgid "Scheduled to be published on {0}"
+msgstr ""
