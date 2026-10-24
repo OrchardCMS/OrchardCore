@@ -78,7 +78,7 @@ public sealed class Migrations : DataMigration
         await CreateContentItemIdIndexAsync();
 
         // Shortcut other migration steps on new content definition schemas.
-        return 7;
+        return 8;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -242,15 +242,29 @@ public sealed class Migrations : DataMigration
         return 7;
     }
 
+    public async Task<int> UpdateFrom7Async()
+    {
+        // The index created by the previous step led with DocumentId before Published, so a read by ID that filters on
+        // ContentItemId and Published could seek on the first column only and had to check Published on every row it
+        // found. Published now precedes DocumentId, which stays in the key so the join to Document is covered.
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .DropIndex("IDX_ContentItemIndex_ContentItemId")
+        );
+
+        await CreateContentItemIdIndexAsync();
+
+        return 8;
+    }
+
     // Every other index on ContentItemIndex leads with DocumentId, so a query by ContentItemId (IContentManager.GetAsync, for one
     // item or a batch) can't seek and scans an index instead. DocumentId is the join to Document; Published and Latest are what a
-    // read by ID filters on.
+    // read by ID filters on, so Published precedes DocumentId.
     private Task CreateContentItemIdIndexAsync()
         => SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_ContentItemId",
                 "ContentItemId",
-                "DocumentId",
                 "Published",
+                "DocumentId",
                 "Latest")
         );
 }
