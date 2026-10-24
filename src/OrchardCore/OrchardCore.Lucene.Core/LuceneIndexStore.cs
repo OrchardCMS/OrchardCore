@@ -231,7 +231,17 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     }
 
     private string GetFullPath(string indexFullName)
-        => PathExtensions.Combine(_rootPath, indexFullName);
+    {
+        // Encode illegal filesystem name characters (e.g. "/" becomes "_47"), to prevent unwanted subdirectory creation
+        // or path traversal attacks. This way each index is one-to-one mapped to a single directory directly inside the
+        // root path.
+        var charactersToReplace = Path.GetInvalidFileNameChars();
+        var safeNameCharacters = indexFullName
+            .Select(character => charactersToReplace.Contains(character) ? $"_{(int)character}" : character.ToString());
+        var safeName = string.Join(string.Empty, safeNameCharacters);
+
+        return PathExtensions.Combine(_rootPath, safeName);
+    }
 
     private FSDirectory CreateDirectory(string indexFullName)
     {
