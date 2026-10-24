@@ -5,6 +5,7 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Minimalistic localizer that does nothing.
 /// </summary>
+[SkipLocalizationExtraction]
 public class NullStringLocalizer : IStringLocalizer
 {
     private static readonly PluralizationRuleDelegate s_defaultPluralRule = n => (n == 1) ? 0 : 1;

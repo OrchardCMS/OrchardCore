@@ -1,0 +1,519 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Roles\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Roles.AdminMenu"
+msgid "Access Control"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Roles.AdminMenu"
+msgid "Roles"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Could not delete this role."
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: string.Join(", ", errorDescriptions)
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Could not delete this role. {1}"
+msgid_plural "Could not delete this role. Errors: {1}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Invalid role name."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role created successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role deleted successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role name is required."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role updated successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "System roles cannot be deleted."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "The role name is already in use."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "The role was cloned successfully."
+msgstr ""
+
+#. Format arguments: {0}: feature.Id
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "{0} Feature"
+msgstr ""
+
+#: Services/RoleStore.cs
+msgctxt "OrchardCore.Roles.Services.RoleStore"
+msgid "Can't delete system roles."
+msgstr ""
+
+#. Format arguments: {0}: nameof(Role)
+#: Services/RoleStore.cs
+#, csharp-format
+msgctxt "OrchardCore.Roles.Services.RoleStore"
+msgid "Role is not of a '{0}' type."
+msgstr ""
+
+#: Views/Admin/Clone.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Clone"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: Model.Role.RoleName
+#: Views/Admin/Clone.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Roles.Views.Admin.Clone"
+msgid "Clone '{0}' Role"
+msgstr ""
+
+#: Views/Admin/Clone.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Clone"
+msgid "Description"
+msgstr ""
+
+#: Views/Admin/Clone.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Clone"
+msgid "Role name"
+msgstr ""
+
+#: Views/Admin/Clone.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Clone"
+msgid "Roles"
+msgstr ""
+
+#: Views/Admin/Clone.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Clone"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Create Role"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Description"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Roles"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Create"
+msgid "Save &amp; Configure"
+msgstr ""
+
+#: Views/Admin/Display.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Display"
+msgid "Back"
+msgstr ""
+
+#: Views/Admin/Display.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Display"
+msgid "Roles"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Description"
+msgstr ""
+
+#. Format arguments: {0}: Model.Role.RoleName
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Edit '{0}' Role"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Roles"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "and continue"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no roles for the moment."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Add Role"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Kind"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Roles"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Index"
+msgid "Your search returned no results."
+msgstr ""
+
+#: Views/Admin/_DuplicatedPermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._DuplicatedPermissions"
+msgid "Duplicate Permissions Detected"
+msgstr ""
+
+#: Views/Admin/_DuplicatedPermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._DuplicatedPermissions"
+msgid "The following permissions are ambiguous and must be uniquely named across all modules:"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Allow"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Anonymous"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Authenticated"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Effective"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Permission"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Permission is granted explicitly."
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Permission is implied by a higher level permission, or explicitly granted."
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Search permissions"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Security Critical"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "This permission is effective but the source could not be determined."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", grantingRoles)
+#: Views/Admin/_RolePermissions.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "This permission is granted by role: {0}"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "This permission is granted to this role."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", impliedByAssigned)
+#: Views/Admin/_RolePermissions.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "This permission is implied by: {0}"
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "This permission is not granted to this role."
+msgstr ""
+
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "This system role provides comprehensive access by granting all available permissions."
+msgstr ""
+
+#: Views/Items/AllRolesDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Edit"
+msgid "All Roles"
+msgstr ""
+
+#: Views/Items/AllRolesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Summary"
+msgid "Adds all roles to the plan."
+msgstr ""
+
+#: Views/Items/AllRolesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Summary"
+msgid "All Roles"
+msgstr ""
+
+#: Views/Items/AllRolesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Thumbnail"
+msgid "All Roles"
+msgstr ""
+
+#: Views/Items/AllRolesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.AllRolesDeploymentStep.Thumbnail"
+msgid "Exports every role."
+msgstr ""
+
+#: Views/Items/GetUsersByRoleTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Design"
+msgid "Get users in roles"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(',', Model.Activity.Roles); {1}: Model.Activity.OutputKeyName
+#: Views/Items/GetUsersByRoleTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Design"
+msgid "Get users in roles {0} to {1}"
+msgstr ""
+
+#: Views/Items/GetUsersByRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Edit"
+msgid "Choose the roles used to identify users during list generation."
+msgstr ""
+
+#: Views/Items/GetUsersByRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Edit"
+msgid "Output Key Name"
+msgstr ""
+
+#: Views/Items/GetUsersByRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Edit"
+msgid "Roles"
+msgstr ""
+
+#: Views/Items/GetUsersByRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Edit"
+msgid "The designated key name for storing the users' list in the workflow output. This key enables later access to the list within the workflow.With Liquid support."
+msgstr ""
+
+#: Views/Items/GetUsersByRoleTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Thumbnail"
+msgid "Get users in roles"
+msgstr ""
+
+#: Views/Items/GetUsersByRoleTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Thumbnail"
+msgid "Get users in roles."
+msgstr ""
+
+#: Views/Items/UnassignUserRoleTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Design"
+msgid "Unassign user from roles"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.UserName; {1}: string.Join(",", Model.Activity.Roles)
+#: Views/Items/UnassignUserRoleTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Design"
+msgid "Unassign {0} from roles {1}"
+msgstr ""
+
+#: Views/Items/UnassignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Edit"
+msgid "Roles"
+msgstr ""
+
+#: Views/Items/UnassignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Edit"
+msgid "The Roles to remove."
+msgstr ""
+
+#: Views/Items/UnassignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Edit"
+msgid "The User to update. With Liquid support."
+msgstr ""
+
+#: Views/Items/UnassignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Edit"
+msgid "UserName"
+msgstr ""
+
+#: Views/Items/UnassignUserRoleTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Thumbnail"
+msgid "Unassign a user from roles."
+msgstr ""
+
+#: Views/Items/UnassignUserRoleTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Thumbnail"
+msgid "Unassign user from roles"
+msgstr ""
+
+#: Views/RoleEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Roles.Views.RoleEntry.Buttons.SummaryAdmin"
+msgid "Are you sure you want to delete this role?"
+msgstr ""
+
+#: Views/RoleEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Roles.Views.RoleEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/RoleEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Roles.Views.RoleEntry.Buttons.SummaryAdmin"
+msgid "Delete role"
+msgstr ""
+
+#: Views/RoleEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Roles.Views.RoleEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/RoleEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Roles.Views.RoleEntry.DefaultTags.SummaryAdmin"
+msgid "System"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Name
+#: Views/RoleEntry.DefaultTags.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Roles.Views.RoleEntry.DefaultTags.SummaryAdmin"
+msgid "The '{0}' role cannot be deleted."
+msgstr ""
+
+#: Workflows/Activities/GetUsersByRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/GetUsersByRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/GetUsersByRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
+msgid "Get Users by Role Task"
+msgstr ""
+
+#: Workflows/Activities/GetUsersByRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
+msgid "User"
+msgstr ""
+
+#: Workflows/Activities/UnassignUserRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/UnassignUserRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/UnassignUserRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
+msgid "Unassign User Role Task"
+msgstr ""
+
+#: Workflows/Activities/UnassignUserRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
+msgid "User"
+msgstr ""

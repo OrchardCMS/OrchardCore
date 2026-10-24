@@ -1,0 +1,367 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Security\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Security.AdminMenu"
+msgid "Security"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Security.AdminMenu"
+msgid "Security Headers"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Security.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Drivers/SecuritySettingsDisplayDriver.cs
+msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
+msgid "The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Security.SecurityDeploymentStartup"
+msgid "Exports the Security settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Security.SecurityDeploymentStartup"
+msgid "Security settings"
+msgstr ""
+
+#: SecurityPermissions.cs
+msgctxt "OrchardCore.Security.SecurityPermissions"
+msgid "Manage Security Headers Settings"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Allows administrators to control resources the user agent is allowed to load for a given page."
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Base URI"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Child Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Connect Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Default Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Enable Sandbox"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Enables a sandbox for the requested resource similar to the iframe sandbox attribute."
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Font Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Form Action"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Frame Ancestors"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Frame Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Image Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Manifest Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Media Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Object Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Sandbox"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Script Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Style Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+msgid "Upgrade Insecure Requests"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Accelerometer"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Allows a site to control which features and APIs can be used in the browser."
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Ambient Light Sensor"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Any"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Autoplay"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Battery"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Camera"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Display Capture"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Document Domain"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Encrypted Media"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Full Screen"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Game Pad"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Geolocation"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Gyroscope"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Layout Animations"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Legacy ImageFormat"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Magnetometer"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Microphone"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Midi"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Oversized Images"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Payment"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Picture In Picture"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Public Key Retrieval"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Push"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Screen Wake Lock"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Self"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Speaker Selection"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Synchronous XML Http Request"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "USB"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Unoptimized Images"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Unsized Media"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Web Share"
+msgstr ""
+
+#: Views/PermissionsPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
+msgid "Web XR"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Allows a site to control how much information the browser includes when navigating away from a page."
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "No referrer"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "No referrer when downgrade"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Origin"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Origin when cross origin"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Referrer Policy"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Same origin"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Strict origin"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Strict origin when cross origin"
+msgstr ""
+
+#: Views/ReferrerPolicySettings.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ReferrerPolicySettings.Edit"
+msgid "Unsafe URL"
+msgstr ""

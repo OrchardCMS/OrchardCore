@@ -1,0 +1,93 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Spatial\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/GeoPointFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Spatial.Drivers.GeoPointFieldDisplayDriver"
+msgid "The {0} field is required."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/GeoPointFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Spatial.Drivers.GeoPointFieldDisplayDriver"
+msgid "{0} is an invalid number."
+msgstr ""
+
+#: GraphQL/GeoPointFieldProvider.cs
+msgctxt "OrchardCore.Spatial.GraphQL.GeoPointFieldProvider"
+msgid "Geo point field"
+msgstr ""
+
+#: GraphQL/GeoPointFieldQueryObjectType.cs
+msgctxt "OrchardCore.Spatial.GraphQL.GeoPointFieldQueryObjectType"
+msgid "the latitude of the geo point"
+msgstr ""
+
+#: GraphQL/GeoPointFieldQueryObjectType.cs
+msgctxt "OrchardCore.Spatial.GraphQL.GeoPointFieldQueryObjectType"
+msgid "the longitude of the geo point"
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/GeoPointFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Spatial.Handlers.GeoPointFieldHandler"
+msgid "The {0} field is required."
+msgstr ""
+
+#: Views/GeoPointField-Leaflet.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointField-Leaflet.Edit"
+msgid "Latitude"
+msgstr ""
+
+#: Views/GeoPointField-Leaflet.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointField-Leaflet.Edit"
+msgid "Longitude"
+msgstr ""
+
+#: Views/GeoPointField-Leaflet.Option.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointField-Leaflet.Option"
+msgid "Leaflet editor"
+msgstr ""
+
+#: Views/GeoPointField.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointField.Edit"
+msgid "Latitude"
+msgstr ""
+
+#: Views/GeoPointField.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointField.Edit"
+msgid "Longitude"
+msgstr ""
+
+#: Views/GeoPointField.Option.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/GeoPointFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/GeoPointFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/GeoPointFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/GeoPointFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Spatial.Views.GeoPointFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""

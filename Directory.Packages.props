@@ -91,7 +91,9 @@
        compiler in global.json. Version 5.9 is supported by SDK 10.0.4xx and newer. -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="5.9.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="5.9.0" />
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@ namespace OrchardCore.Localization.PortableObject;
 /// <summary>
 /// Represents an <see cref="HtmlLocalizer"/> for portable objects.
 /// </summary>
+[SkipLocalizationExtraction]
 public class PortableObjectHtmlLocalizer : HtmlLocalizer
 {
     private readonly IStringLocalizer _localizer;

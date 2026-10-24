@@ -37,7 +37,9 @@ public class ScriptTask : TaskActivity<ScriptTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+#pragma warning disable OCLOC104 // The outcome names are entered by the user who designs the workflow.
         => Outcome(AvailableOutcomes.Select(x => S[x]).ToArray());
+#pragma warning restore OCLOC104
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

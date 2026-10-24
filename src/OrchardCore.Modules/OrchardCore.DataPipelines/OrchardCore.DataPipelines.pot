@@ -1,0 +1,3354 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.DataPipelines\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.DataPipelines.AdminMenu"
+msgid "Data Pipelines"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.DataPipelines.AdminMenu"
+msgid "Pipelines"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.DataPipelines.AdminMenu"
+msgid "Run History"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.DataPipelines.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "Enable the pipeline '{0}' before running it."
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "Publish the pipeline '{0}' before running it."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "The name is required."
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "The next run of the pipeline '{0}' starts over, such as reading every row again."
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "The pipeline '{0}' is running: start it over once its run ended."
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "The pipeline '{0}' was deleted."
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "The pipeline '{0}' will run in the background."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.DataPipelines.Controllers.AdminController"
+msgid "The run is being cancelled."
+msgstr ""
+
+#: Controllers/DataPipelineDesignerController.cs
+msgctxt "OrchardCore.DataPipelines.Controllers.DataPipelineDesignerController"
+msgid "Enable the pipeline before running it."
+msgstr ""
+
+#: Controllers/DataPipelineDesignerController.cs
+msgctxt "OrchardCore.DataPipelines.Controllers.DataPipelineDesignerController"
+msgid "Fix the errors of the pipeline before publishing it."
+msgstr ""
+
+#: Controllers/DataPipelineDesignerController.cs
+msgctxt "OrchardCore.DataPipelines.Controllers.DataPipelineDesignerController"
+msgid "Publish the pipeline before running it."
+msgstr ""
+
+#: Controllers/DataPipelineDesignerController.cs
+msgctxt "OrchardCore.DataPipelines.Controllers.DataPipelineDesignerController"
+msgid "The name is required."
+msgstr ""
+
+#: Controllers/DataPipelineDesignerController.cs
+msgctxt "OrchardCore.DataPipelines.Controllers.DataPipelineDesignerController"
+msgid "The pipeline was changed by someone else."
+msgstr ""
+
+#. Format arguments: {0}: link.Title
+#: Controllers/SharedLinksAdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.SharedLinksAdminController"
+msgid "The link to '{0}' no longer works."
+msgstr ""
+
+#. Format arguments: {0}: link.Title
+#: Controllers/SharedLinksAdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Controllers.SharedLinksAdminController"
+msgid "The link to '{0}' was deleted."
+msgstr ""
+
+#: DataPipelinePermissions.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinePermissions"
+msgid "Manage data pipelines"
+msgstr ""
+
+#: DataPipelinePermissions.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinePermissions"
+msgid "Run data pipelines"
+msgstr ""
+
+#: DataPipelinePermissions.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinePermissions"
+msgid "View data pipelines and their runs"
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Data"
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Data Pipelines"
+msgstr ""
+
+#: Drivers/TransformStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.ConvertTimeZoneStepDisplayDriver"
+msgid "Choose a time zone."
+msgstr ""
+
+#: Drivers/SourceAndFileStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.CreateFileStepDisplayDriver"
+msgid "Choose the format of the file."
+msgstr ""
+
+#: Drivers/SourceAndFileStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.DataSourceStepDisplayDriver"
+msgid "A step that reads only the new rows reads all of them: set the maximum number of rows to 0."
+msgstr ""
+
+#: Drivers/SourceAndFileStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.DataSourceStepDisplayDriver"
+msgid "The number of rows can't be negative."
+msgstr ""
+
+#: Drivers/TransformStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.LimitStepDisplayDriver"
+msgid "Enter the number of rows to keep."
+msgstr ""
+
+#: Drivers/SaveContentItemsStepDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.SaveContentItemsStepDisplayDriver"
+msgid "Save between 1 and 10,000 items at once."
+msgstr ""
+
+#: Drivers/DestinationStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.SendByEmailStepDisplayDriver"
+msgid "The maximum size of the attachments must be at least 1 MB."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", invalid)
+#: Drivers/DestinationStepDisplayDrivers.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Drivers.SendByEmailStepDisplayDriver"
+msgid "These email addresses aren't valid: {0}."
+msgstr ""
+
+#. Format arguments: {0}: header.Name, model.ApiKeyHeaderName
+#: Drivers/DestinationStepDisplayDrivers.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Drivers.SendToWebApiStepDisplayDriver"
+msgid "'{0}' isn't a valid header name."
+msgstr ""
+
+#: Drivers/DestinationStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.SendToWebApiStepDisplayDriver"
+msgid "Enter an absolute http or https URL, such as https://api.example.com/files."
+msgstr ""
+
+#: Drivers/DestinationStepDisplayDrivers.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.SendToWebApiStepDisplayDriver"
+msgid "The timeout must be at least one second."
+msgstr ""
+
+#. Format arguments: {0}: ShareDownloadLinkStep.MaxDays
+#: Drivers/ShareDownloadLinkStepDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Drivers.ShareDownloadLinkStepDisplayDriver"
+msgid "A link works between 1 and {0} days."
+msgstr ""
+
+#: Drivers/ShareDownloadLinkStepDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.ShareDownloadLinkStepDisplayDriver"
+msgid "The number of downloads of a link can't be negative."
+msgstr ""
+
+#. Format arguments: {0}: item.PipelineId
+#: Recipes/DataPipelinesRecipeStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Recipes.DataPipelinesRecipeStep"
+msgid "The data pipeline '{0}' has no name."
+msgstr ""
+
+#. Format arguments: {0}: item.Name; {1}: DataPipelineIndex.MaxIdLength
+#: Recipes/DataPipelinesRecipeStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Recipes.DataPipelinesRecipeStep"
+msgid "The identifier of the data pipeline '{0}' is longer than {1} characters."
+msgstr ""
+
+#: Services/DataPipelineDesignerModelBuilder.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineDesignerModelBuilder"
+msgid "Destinations"
+msgstr ""
+
+#: Services/DataPipelineDesignerModelBuilder.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineDesignerModelBuilder"
+msgid "Files"
+msgstr ""
+
+#: Services/DataPipelineDesignerModelBuilder.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineDesignerModelBuilder"
+msgid "Sources"
+msgstr ""
+
+#: Services/DataPipelineDesignerModelBuilder.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineDesignerModelBuilder"
+msgid "Transforms"
+msgstr ""
+
+#: Services/DataPipelineFileLinkHandler.cs
+msgctxt "OrchardCore.DataPipelines.Services.DataPipelineFileLinkHandler"
+msgid "Pipeline file"
+msgstr ""
+
+#. Format arguments: {0}: title
+#: SharedLinks/SharedLinkManager.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "'{0}' was shared with you"
+msgstr ""
+
+#. Format arguments: {0}: title
+#: SharedLinks/SharedLinkManager.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "'{0}' was shared with you."
+msgstr ""
+
+#: SharedLinks/SharedLinkManager.cs
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "A link is shared with one user of the site at least."
+msgstr ""
+
+#: SharedLinks/SharedLinkManager.cs
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "A link works for a positive duration."
+msgstr ""
+
+#: SharedLinks/SharedLinkManager.cs
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "Enable the Email feature to email the shared links."
+msgstr ""
+
+#: SharedLinks/SharedLinkManager.cs
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "Enable the Users feature to share links with users."
+msgstr ""
+
+#. Format arguments: {0}: title
+#: SharedLinks/SharedLinkManager.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "Open {0}"
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: expires
+#: SharedLinks/SharedLinkManager.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "Sign in to open it. The link works once, until {1} (UTC)."
+msgid_plural "Sign in to open it. The link works {0} times, until {1} (UTC)."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: expires
+#: SharedLinks/SharedLinkManager.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "Sign in to open it. The link works until {0} (UTC)."
+msgstr ""
+
+#. Format arguments: {0}: SharedLinkIndex.MaxResourceIdLength
+#: SharedLinks/SharedLinkManager.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "The identifier of a shared resource has {0} characters at most."
+msgstr ""
+
+#. Format arguments: {0}: name.Trim()
+#: SharedLinks/SharedLinkManager.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
+msgid "There is no user named '{0}', or with that email."
+msgstr ""
+
+#: SharedLinks/SharedLinkPermissions.cs
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkPermissions"
+msgid "Manage shared links"
+msgstr ""
+
+#: SharedLinks/SharedLinksAdminMenu.cs
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinksAdminMenu"
+msgid "Shared Links"
+msgstr ""
+
+#: SharedLinks/SharedLinksAdminMenu.cs
+msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinksAdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Steps/Media/ReadMediaFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ReadMediaFileStep"
+msgid "Enter the path of a file of the media library."
+msgstr ""
+
+#: Steps/Media/ReadMediaFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ReadMediaFileStep"
+msgid "Read a media file"
+msgstr ""
+
+#: Steps/Media/ReadMediaFileStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ReadMediaFileStep"
+msgid "Reads the rows of a CSV, JSON or Excel file of the media library."
+msgstr ""
+
+#. Format arguments: {0}: path
+#: Steps/Media/ReadMediaFileStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ReadMediaFileStep"
+msgid "The format of the file '{0}' is not supported. Choose its format."
+msgstr ""
+
+#. Format arguments: {0}: path
+#: Steps/Media/ReadMediaFileStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ReadMediaFileStep"
+msgid "The media library has no file '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: folder
+#: Steps/Media/ReadMediaFileStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ReadMediaFileStep"
+msgid "The user the pipeline runs for may not read the media of the folder '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: mapping.Target ?? string.Empty; {1}: settings.ContentType
+#: Steps/Contents/SaveContentItemsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "'{0}' is not a part or field of '{1}' that can be written."
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Choose the content type of the items."
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Choose the field that finds the items to update."
+msgstr ""
+
+#. Format arguments: {0}: created; {1}: updated; {2}: settings.ContentType; {3}: skipped; {4}: failed
+#: Steps/Contents/SaveContentItemsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Created {0} and updated {1} '{2}' content items; skipped {3} and rejected {4} rows."
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Creates or updates content items from rows."
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Error"
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Map at least one field to the content items."
+msgstr ""
+
+#. Format arguments: {0}: settings.ContentType; {1}: key, key ?? string.Empty
+#: Steps/Contents/SaveContentItemsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "No '{0}' content item matches '{1}'."
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Rejected"
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Rows"
+msgstr ""
+
+#: Steps/Contents/SaveContentItemsStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "Save content items"
+msgstr ""
+
+#. Format arguments: {0}: settings.ContentType ?? string.Empty
+#: Steps/Contents/SaveContentItemsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "The content type '{0}' doesn't exist."
+msgstr ""
+
+#. Format arguments: {0}: mapping.Source ?? string.Empty, settings.KeyField
+#: Steps/Contents/SaveContentItemsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "The input has no field named '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: settings.ContentType
+#: Steps/Contents/SaveContentItemsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "The user the pipeline runs for may not edit or publish '{0}' content items."
+msgstr ""
+
+#. Format arguments: {0}: failed
+#: Steps/Contents/SaveContentItemsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveContentItemsStep"
+msgid "{0} rows couldn't be saved."
+msgstr ""
+
+#: Steps/Media/SaveToMediaStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveToMediaStep"
+msgid "Save to the media library"
+msgstr ""
+
+#. Format arguments: {0}: path
+#: Steps/Media/SaveToMediaStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveToMediaStep"
+msgid "Saved '{0}' to the media library."
+msgstr ""
+
+#: Steps/Media/SaveToMediaStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveToMediaStep"
+msgid "Saves files to a folder of the media library."
+msgstr ""
+
+#. Format arguments: {0}: file.FileName
+#: Steps/Media/SaveToMediaStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveToMediaStep"
+msgid "The file '{0}' is larger than the media library accepts."
+msgstr ""
+
+#: Steps/Media/SaveToMediaStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SaveToMediaStep"
+msgid "The folder must be inside the media library."
+msgstr ""
+
+#. Format arguments: {0}: extension
+#: Steps/Media/SaveToMediaStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveToMediaStep"
+msgid "The media library doesn't accept files with the extension '{0}'. Add it to the allowed file extensions of the media library (the OrchardCore:Media:AllowedFileExtensions setting), or create a file in a format it accepts, such as an Excel workbook."
+msgstr ""
+
+#. Format arguments: {0}: folder
+#: Steps/Media/SaveToMediaStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SaveToMediaStep"
+msgid "The user the pipeline runs for may not manage the media of the folder '{0}'."
+msgstr ""
+
+#: Steps/Destinations/SendByEmailStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "Emails can't be sent: enable the Email feature."
+msgstr ""
+
+#: Steps/Destinations/SendByEmailStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "Enter the email address of at least one recipient."
+msgstr ""
+
+#: Steps/Destinations/SendByEmailStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "Send by email"
+msgstr ""
+
+#: Steps/Destinations/SendByEmailStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "Sends the files as the attachments of an email."
+msgstr ""
+
+#. Format arguments: {0}: recipients
+#: Steps/Destinations/SendByEmailStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "Sent an email without attachments to {0}"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", files.Select(file => $"'{file.FileName}'")); {1}: recipients
+#: Steps/Destinations/SendByEmailStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "Sent {0} by email to {1}"
+msgstr ""
+
+#. Format arguments: {0}: errors
+#: Steps/Destinations/SendByEmailStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "The email could not be sent: {0}"
+msgstr ""
+
+#. Format arguments: {0}: ((double)size / BytesPerMegabyte).ToString("0.##", CultureInfo.InvariantCulture); {1}: settings.MaxAttachmentSizeMegabytes
+#: Steps/Destinations/SendByEmailStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "The files weigh {0} MB, more than the {1} MB the attachments of the email can weigh. Raise the limit, or zip the files."
+msgstr ""
+
+#: Steps/Destinations/SendByEmailStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "The maximum size of the attachments must be at least 1 MB."
+msgstr ""
+
+#: Steps/Destinations/SendByEmailStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "There are no files to send: no email was sent."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", invalid)
+#: Steps/Destinations/SendByEmailStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
+msgid "These email addresses aren't valid: {0}."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "'{0}' isn't a valid header name."
+msgstr ""
+
+#. Format arguments: {0}: file.FileName; {1}: displayUrl; {2}: DataPipelineRemotePaths.Redact(ex.Message, secret, url.Query)
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Could not send '{0}' to {1}: {2}"
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Enter the URL of the web API."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Enter the name of the form field that holds the file."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Enter the name of the header that holds the API key."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Enter the secret of the authentication."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Enter the user name of the basic authentication."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Headers are not secret: set the credentials with the authentication settings, not with the '{0}' header."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Send to a web API"
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Sends each file to a web API, in an HTTP request."
+msgstr ""
+
+#. Format arguments: {0}: file.FileName; {1}: displayUrl; {2}: response.StatusCode
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "Sent '{0}' to {1} ({2})"
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The '{0}' header is set by the step."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The URL can't hold credentials: set them in the authentication settings."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The URL isn't https: the credentials and the files travel in clear text."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The URL of the web API must be an absolute http or https URL."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The secret of the authentication can't be read on this site, such as when its data protection keys changed: enter it again."
+msgstr ""
+
+#: Steps/Destinations/SendToWebApiStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The timeout must be at least one second."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The value of the '{0}' header can't hold line breaks."
+msgstr ""
+
+#. Format arguments: {0}: displayUrl; {1}: response.StatusCode; {2}: response.ReasonPhrase; {3}: file.FileName; {4}: DataPipelineRemotePaths.Redact(body, secret)
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The web API at {0} answered {1} ({2}) to '{3}': {4}"
+msgstr ""
+
+#. Format arguments: {0}: displayUrl; {1}: timeout.TotalSeconds; {2}: file.FileName
+#: Steps/Destinations/SendToWebApiStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
+msgid "The web API at {0} didn't answer within {1} seconds when sending '{2}'."
+msgstr ""
+
+#. Format arguments: {0}: MaxDays
+#: Steps/Destinations/ShareDownloadLinkStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
+msgid "A link works between 1 and {0} days."
+msgstr ""
+
+#: Steps/Destinations/ShareDownloadLinkStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
+msgid "Enter the users to share the files with."
+msgstr ""
+
+#: Steps/Destinations/ShareDownloadLinkStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
+msgid "Share a download link"
+msgstr ""
+
+#. Format arguments: {0}: file.FileName; {1}: string.Join(", ", result.Link.RecipientNames); {2}: result.Link.ExpiresUtc.ToString("u", CultureInfo.InvariantCulture)
+#: Steps/Destinations/ShareDownloadLinkStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
+msgid "Shared '{0}' with {1} until {2}."
+msgstr ""
+
+#: Steps/Destinations/ShareDownloadLinkStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
+msgid "Shares files with users through secure, expiring download links."
+msgstr ""
+
+#. Format arguments: {0}: file.FileName; {1}: string.Join(", ", missed)
+#: Steps/Destinations/ShareDownloadLinkStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
+msgid "The link to '{0}' could not be emailed to {1}: they have no email address, or the email failed."
+msgstr ""
+
+#: Steps/Destinations/ShareDownloadLinkStep.cs
+msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
+msgid "The number of downloads of a link can't be negative."
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
+msgid "Add Pipeline"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
+msgid "Data Pipelines"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
+msgid "You design the pipeline next: add a source to read data from, then the steps that transform and deliver it."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> No data pipeline matches your search."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no data pipelines for the moment."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Add Pipeline"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Are you sure you want to delete the pipeline '{0}', its versions and its run history?"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Data Pipelines"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Delete"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Disabled"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Draft"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Edit"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Forget what the runs of the pipeline '{0}' kept, such as how far its sources read new rows? Its next run starts over, and may deliver data again."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Last run"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Modified"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Ok"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Publish the pipeline to run it."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Run"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Run history"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Run now"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Run the pipeline '{0}' now?"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Search the pipelines"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "See documentation"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Start over"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "The published version runs."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Unpublished changes"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.PublishedVersionNumber
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "Version {0}"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "View"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Cancel this run?"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Data Pipelines"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Delivered"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Ended"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Error"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Files"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Log"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Open the pipeline"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Queued"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Rows in"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Rows out"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Run History"
+msgstr ""
+
+#. Format arguments: {0}: run.PipelineName
+#: Views/Admin/Run.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Run of {0}"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Started"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Status"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Step"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Steps"
+msgstr ""
+
+#. Format arguments: {0}: run.VersionNumber
+#: Views/Admin/Run.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Version {0}"
+msgstr ""
+
+#: Views/Admin/Run.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
+msgid "Warnings"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/Admin/Runs.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "<strong>Nothing here!</strong> No pipeline ran yet."
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "<strong>Nothing here!</strong> No run matches your search."
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Cancel the run"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Cancel this run?"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Data Pipelines"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Details"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Duration"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Every status"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "No"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Open the pipeline"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Queued"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Run History"
+msgstr ""
+
+#. Format arguments: {0}: Model.Pipeline.Name
+#: Views/Admin/Runs.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Run History of {0}"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Run history of the pipeline"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Search by pipeline"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "See every pipeline"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Started by"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Status"
+msgstr ""
+
+#. Format arguments: {0}: Model.Pipeline.Name
+#: Views/Admin/Runs.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "The runs of {0}, the most recent first."
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "The version that ran"
+msgstr ""
+
+#. Format arguments: {0}: run.VersionNumber
+#: Views/Admin/Runs.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Version {0}"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Yes"
+msgstr ""
+
+#. Format arguments: {0}: (completed - started).TotalSeconds
+#: Views/Admin/Runs.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "{0:N1} s"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/Admin/Runs.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/Aggregate.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Design"
+msgid "Add a value"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", Model.GroupBy)
+#: Views/Aggregate.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Design"
+msgid "by {0}"
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "Add a value"
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "Group by"
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "No grouping"
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "The rows with the same values of these fields form a group. Select none to summarize every row into one."
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "The values computed for each group, such as the number of rows or the sum of a field."
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "Values"
+msgstr ""
+
+#: Views/CalculatedFields.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CalculatedFields.Fields.Design"
+msgid "Add a calculated field"
+msgstr ""
+
+#: Views/CalculatedFields.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CalculatedFields.Fields.Edit"
+msgid "Add a field"
+msgstr ""
+
+#: Views/CalculatedFields.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CalculatedFields.Fields.Edit"
+msgid "Calculated fields"
+msgstr ""
+
+#: Views/CalculatedFields.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CalculatedFields.Fields.Edit"
+msgid "Each formula can use the fields of the input and the fields calculated before it. A field with the name of an input field replaces its value. Click a field or a function to insert it into the formula you last edited."
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Design"
+msgid "a time zone"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Design"
+msgid "every date and time"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Design"
+msgid "the site's time zone"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Design"
+msgid "the user's time zone"
+msgstr ""
+
+#. Format arguments: {0}: fields; {1}: timeZone
+#: Views/ConvertTimeZone.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Design"
+msgid "{0}, from UTC to {1}"
+msgstr ""
+
+#. Format arguments: {0}: fields; {1}: timeZone
+#: Views/ConvertTimeZone.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Design"
+msgid "{0}, from {1} to UTC"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "A published pipeline runs for the user who published it, and a preview for you. A user who chose no time zone in their profile gets the time zone of the site."
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "A time zone"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Choose a time zone"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Convert"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Every date and time"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Fields"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "From UTC to the time zone"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "From the time zone to UTC"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Orchard Core stores dates in UTC: convert them from UTC to show local dates and times, and convert local dates and times, such as the ones of a file, to UTC to save them."
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "The date and time fields to convert. Select none to convert all of them. Dates without a time have no time zone, so they aren't converted."
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "The input has no date and time field."
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "The time zone of the site"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "The time zone of the user the pipeline runs for"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Time zone"
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "A comma by default; type tab for tab-separated values."
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "CSV delimiter"
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "Connect several steps to the input to write each one to its own worksheet of the workbook. Name the worksheets one per line, in the order of the connections; a worksheet without a name is named after the step it comes from."
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "File name"
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "Format"
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "Indent the JSON"
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "Name the columns with the labels of the fields"
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "Start with a row of column names"
+msgstr ""
+
+#. Format arguments: {0}: "{PipelineName}"; {1}: "{RunId}"; {2}: "{Date:format}"
+#: Views/CreateFile.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "Without the extension. Placeholders: {0}, {1}, and {2}, where the format is a .NET date format such as yyyy-MM-dd."
+msgstr ""
+
+#: Views/CreateFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
+msgid "Worksheet names"
+msgstr ""
+
+#: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
+msgid "A disabled pipeline doesn't run, whether it is started by a user or a workflow."
+msgstr ""
+
+#: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
+msgid "Description"
+msgstr ""
+
+#: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
+msgid "Enabled"
+msgstr ""
+
+#: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
+msgid "Name"
+msgstr ""
+
+#: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
+msgid "What the pipeline does, shown in the list of pipelines."
+msgstr ""
+
+#: Views/DataPipelineStepTitle.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineStepTitle.Edit"
+msgid "Shown on the canvas instead of the name of the step."
+msgstr ""
+
+#: Views/DataPipelineStepTitle.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineStepTitle.Edit"
+msgid "Title"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/DataSource.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Design"
+msgid "1 field"
+msgid_plural "{0} fields"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Views/DataSource.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Design"
+msgid "1 filter"
+msgid_plural "{0} filters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/DataSource.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Design"
+msgid "Choose a data set"
+msgstr ""
+
+#: Views/DataSource.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Design"
+msgid "Every field"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "0 reads every row."
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Add a filter"
+msgstr ""
+
+#. Format arguments: {0}: field.DisplayName
+#: Views/DataSource.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "By {0}"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Change"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Choose a data set"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Data set"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Each successful run keeps the largest value of the field it read, and the next run reads only the rows with a larger value, such as the items modified since the last run. Use a field that grows whenever a row is added or changed. A preview reads every row."
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Every field"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Fields to read"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Filters"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Maximum number of rows"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "No data set is chosen."
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "No, read every row"
+msgstr ""
+
+#. Format arguments: {0}: "{Parameter:Since}"
+#: Views/DataSource.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Only the rows that match every filter are read. Dates and times are compared in UTC. To use a placeholder, such as {0}, or a date without a time on a date and time field, which covers the whole day, write the value as text."
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Read only new rows"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "The data is read with the access of the user who publishes the pipeline. Choosing another data set clears the fields and the filters."
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "The fields to read, in this order. Select none to read every field."
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "The parameters of a data set that takes them, such as a saved query: one name=value per line."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", Model.Fields)
+#: Views/Distinct.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Design"
+msgid "By {0}"
+msgstr ""
+
+#: Views/Distinct.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Design"
+msgid "Every field"
+msgstr ""
+
+#: Views/Distinct.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Edit"
+msgid "A row is a duplicate when these fields hold the same values as a row before it. Select none to compare every field. Values are compared exactly."
+msgstr ""
+
+#: Views/Distinct.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Edit"
+msgid "Compare"
+msgstr ""
+
+#: Views/Distinct.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Edit"
+msgid "Every field"
+msgstr ""
+
+#: Views/Filter.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Filter.Fields.Design"
+msgid "Enter a condition"
+msgstr ""
+
+#: Views/Filter.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Filter.Fields.Edit"
+msgid "Condition"
+msgstr ""
+
+#: Views/Filter.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Filter.Fields.Edit"
+msgid "The rows for which the condition is true go to the Matched output; the others to the Unmatched output."
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Design"
+msgid "Any run"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Design"
+msgid "Data Pipeline Run Completed"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.Status
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Design"
+msgid "{0} runs"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Edit"
+msgid "Any data pipeline"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Edit"
+msgid "Data pipeline"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Edit"
+msgid "Every run"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Edit"
+msgid "Runs"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Edit"
+msgid "Runs that failed or were cancelled"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Edit"
+msgid "Runs that succeeded"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Edit"
+msgid "The run is the last result: its RunId, PipelineName, Status, Error, Deliveries and Steps."
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Thumbnail"
+msgid "Data Pipeline Run Completed"
+msgstr ""
+
+#: Views/Items/DataPipelineRunCompletedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelineRunCompletedEvent.Fields.Thumbnail"
+msgid "Executes when a run of a data pipeline ends."
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Edit"
+msgid "Exports data pipelines with their published definition, or their draft when they were never published. Secrets, such as passwords, aren't exported."
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Edit"
+msgid "Include all the data pipelines"
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Edit"
+msgid "Including the ones created after this step. Uncheck it to export the selected pipelines only."
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Edit"
+msgid "Pipelines"
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Edit"
+msgid "The pipelines to export."
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Edit"
+msgid "There is no data pipeline yet."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Summary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Summary"
+msgid "Adds 1 data pipeline, without its secrets."
+msgid_plural "Adds {0} data pipelines, without their secrets."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Summary"
+msgid "Adds every data pipeline, without its secrets."
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Summary"
+msgid "Data Pipelines"
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Thumbnail"
+msgid "Data Pipelines"
+msgstr ""
+
+#: Views/Items/DataPipelinesDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.DataPipelinesDeploymentStep.Fields.Thumbnail"
+msgid "Exports every data pipeline, or the selected ones, without the secrets of their steps."
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Design"
+msgid "Doesn't wait for the run"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Design"
+msgid "Run Data Pipeline"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Design"
+msgid "Waits for the run"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "Choose a data pipeline"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "Data pipeline"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "Skip when a run is already queued or running"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "The published version of the pipeline runs in the background, with the access of the user who published it."
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "The workflow then continues with the Skipped outcome instead of queuing another run, such as when a timer starts it more often than a run lasts."
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "The workflow then continues with the Succeeded or Failed outcome, and the run as its last result and its DataPipelineRun output. Otherwise it continues at once with the Queued outcome."
+msgstr ""
+
+#. Format arguments: {0}: "{Parameter:name}"
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "Values passed to the run, one name=value per line, with Liquid. Steps use them with the {0} placeholder, such as in the parameters and filters of a data source."
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Edit"
+msgid "Wait for the run to end"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Thumbnail"
+msgid "Run Data Pipeline"
+msgstr ""
+
+#: Views/Items/RunDataPipelineTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Items.RunDataPipelineTask.Fields.Thumbnail"
+msgid "Runs a data pipeline, and can wait for the run to end."
+msgstr ""
+
+#: Views/Join.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Design"
+msgid "Choose the fields to match on"
+msgstr ""
+
+#: Views/Join.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Design"
+msgid "Full join"
+msgstr ""
+
+#: Views/Join.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Design"
+msgid "Inner join"
+msgstr ""
+
+#: Views/Join.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Design"
+msgid "Left join"
+msgstr ""
+
+#: Views/Join.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Design"
+msgid "Right join"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Add a pair of fields"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Added to a field of the right input whose name the left input already has."
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Every row of both inputs (full join)"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Every row of the left input (left join)"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Every row of the right input (right join)"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Ignore the case of text"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Match on"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Only the rows that match (inner join)"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Prefix of right fields"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Rows to keep"
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "The right input is held in memory, so connect the smaller data set to the right."
+msgstr ""
+
+#: Views/Join.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Join.Fields.Edit"
+msgid "Two rows match when every pair of fields holds equal values."
+msgstr ""
+
+#. Format arguments: {0}: Model.Count
+#: Views/Limit.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Limit.Fields.Design"
+msgid "The first {0} rows"
+msgstr ""
+
+#. Format arguments: {0}: Model.Count; {1}: Model.Skip
+#: Views/Limit.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Limit.Fields.Design"
+msgid "{0} rows after the first {1}"
+msgstr ""
+
+#: Views/Limit.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Limit.Fields.Edit"
+msgid "Rows to keep"
+msgstr ""
+
+#: Views/Limit.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Limit.Fields.Edit"
+msgid "Rows to skip"
+msgstr ""
+
+#: Views/Limit.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Limit.Fields.Edit"
+msgid "Skipped before the rows are kept."
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Design"
+msgid "Choose a file"
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "CSV delimiter"
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "File"
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "Format"
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "From the extension of the file"
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "The first row holds the names of the columns (CSV, Excel)"
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "The path of the file in the media library."
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "The worksheet of a workbook to read; empty for the first one."
+msgstr ""
+
+#: Views/ReadMediaFile.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ReadMediaFile.Fields.Edit"
+msgid "Worksheet"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/SaveContentItems.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Design"
+msgid "1 value"
+msgid_plural "{0} values"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/SaveContentItems.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Design"
+msgid "Choose a content type"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Design"
+msgid "drafts"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Design"
+msgid "published"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Add a value"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Choose a content type"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Content item id"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Content type"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Create items; skip the rows that match one"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Display text"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Items per save"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Match on"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Otherwise they are saved as drafts."
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Publish the items"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Rows"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "The field of the rows that finds the item a row updates."
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "The parts and fields of the items, and the fields of the rows that set them. Lists such as content pickers take ids separated by commas."
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "The user who publishes the pipeline must be allowed to edit, and to publish, items of this type."
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Update the item a row matches, or create one"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Update the items rows match; reject the others"
+msgstr ""
+
+#: Views/SaveContentItems.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Edit"
+msgid "Values"
+msgstr ""
+
+#: Views/SaveToMedia.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveToMedia.Fields.Edit"
+msgid "Folder"
+msgstr ""
+
+#: Views/SaveToMedia.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveToMedia.Fields.Edit"
+msgid "Otherwise the file is saved under a name with a number appended."
+msgstr ""
+
+#: Views/SaveToMedia.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveToMedia.Fields.Edit"
+msgid "Replace a file with the same name"
+msgstr ""
+
+#: Views/SaveToMedia.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SaveToMedia.Fields.Edit"
+msgid "The folder of the media library the files are saved to; empty for the root. The user who publishes the pipeline must be allowed to manage its media."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", Model.RejectedExtensions)
+#: Views/SaveToMedia.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SaveToMedia.Fields.Edit"
+msgid "The media library doesn't accept {0} files, so a run fails when it saves one. Create files in a format it accepts, such as an Excel workbook, or add the extensions to its allowed file extensions (the OrchardCore:Media:AllowedFileExtensions setting)."
+msgstr ""
+
+#: Views/SelectFields.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SelectFields.Fields.Design"
+msgid "Every field"
+msgstr ""
+
+#: Views/SelectFields.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SelectFields.Fields.Edit"
+msgid "Add a field"
+msgstr ""
+
+#: Views/SelectFields.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SelectFields.Fields.Edit"
+msgid "Fields"
+msgstr ""
+
+#: Views/SelectFields.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SelectFields.Fields.Edit"
+msgid "The fields to keep, in this order, with an optional new name and type. Without any field, the rows pass unchanged. A value that can't be converted becomes empty."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/SendByEmail.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Design"
+msgid "1 recipient"
+msgid_plural "{0} recipients"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Bcc"
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Body"
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "By default, no email is sent when the step receives no files."
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Cc"
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Email addresses, separated by commas or semicolons."
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Maximum size (MB)"
+msgstr ""
+
+#. Format arguments: {0}: "{PipelineName}"; {1}: "{RunId}"; {2}: "{Date:format}"; {3}: SendByEmailStep.FileNamesPlaceholder
+#: Views/SendByEmail.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Placeholders of the subject and the body: {0}, {1}, {2}, and {3}, the names of the attached files."
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Send the email when there are no files to attach"
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "Subject"
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "The body is HTML"
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "The step fails when the attachments weigh more. Most mail servers refuse emails larger than 10 to 25 MB."
+msgstr ""
+
+#: Views/SendByEmail.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendByEmail.Fields.Edit"
+msgid "To"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "A form with the file (multipart/form-data)"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "API key"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "API key in a header"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Add a header"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Authentication"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Basic (user name and password)"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Bearer token"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Body"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Each file is sent in its own request. A response other than 2xx fails the step."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Form field"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Header"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Headers"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Headers are not secret: set the credentials with the authentication below."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "How long to wait for the answer to each request."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Leave empty to keep the current API key."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Leave empty to keep the current password."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Leave empty to keep the current token."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Method"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Password"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Remove the API key"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Remove the password"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Remove the token"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Sent in the Authorization header, after Bearer."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "The content of the file"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "The name of the form field that holds the file."
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Timeout (seconds)"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "Token"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "URL"
+msgstr ""
+
+#: Views/SendToWebApi.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SendToWebApi.Fields.Edit"
+msgid "User name"
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Design"
+msgid "Enter the recipients"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/ShareDownloadLink.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Design"
+msgid "For 1 day"
+msgid_plural "For {0} days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "A link can also be revoked from the list of shared links."
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "An optional message added to the email."
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "Days the link works"
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "Email subject"
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "How many times each link can be used, by all its recipients together. 0 for no limit."
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "Maximum downloads"
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "Message"
+msgstr ""
+
+#. Format arguments: {0}: "{PipelineName}"; {1}: "{RunId}"; {2}: "{Date:format}"
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "Placeholders: {0}, {1}, and {2}."
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "Recipients"
+msgstr ""
+
+#: Views/ShareDownloadLink.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Edit"
+msgid "The user names or emails of the users of this site the files are shared with, separated by commas. They receive the link by email, and it works only for them, once signed in."
+msgstr ""
+
+#: Views/Shared/DataPipelineCalculatedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineCalculatedFieldRow"
+msgid "Formula"
+msgstr ""
+
+#: Views/Shared/DataPipelineCalculatedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineCalculatedFieldRow"
+msgid "Move up"
+msgstr ""
+
+#: Views/Shared/DataPipelineCalculatedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineCalculatedFieldRow"
+msgid "Name"
+msgstr ""
+
+#: Views/Shared/DataPipelineCalculatedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineCalculatedFieldRow"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/DataPipelineContentMappingRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineContentMappingRow"
+msgid "Choose a part or field"
+msgstr ""
+
+#: Views/Shared/DataPipelineContentMappingRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineContentMappingRow"
+msgid "Field of the rows"
+msgstr ""
+
+#: Views/Shared/DataPipelineContentMappingRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineContentMappingRow"
+msgid "Part or field"
+msgstr ""
+
+#: Views/Shared/DataPipelineContentMappingRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineContentMappingRow"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Choose a value"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Comparison"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Field"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "No"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Second value"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Value"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Values, separated by commas"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Write the value as text"
+msgstr ""
+
+#. Format arguments: {0}: "{Parameter:Since}"
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Write the value as text, such as {0}"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "Yes"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "and"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "contains"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "days"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "doesn't contain"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "doesn't equal"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "ends with"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "equals"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is between"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is empty"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is greater than"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is greater than or equal to"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is in the last"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is in the next"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is less than"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is less than or equal to"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "is one of"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "isn't empty"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "isn't one of"
+msgstr ""
+
+#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
+msgid "starts with"
+msgstr ""
+
+#: Views/Shared/DataPipelineFieldInsert.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFieldInsert"
+msgid "Connect a step to the input to list its fields here."
+msgstr ""
+
+#: Views/Shared/DataPipelineFieldOptions.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFieldOptions"
+msgid "Choose a field"
+msgstr ""
+
+#. Format arguments: {0}: Model.Selected
+#: Views/Shared/DataPipelineFieldOptions.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFieldOptions"
+msgid "{0} (missing)"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/Shared/DataPipelineFormulaHelp.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFormulaHelp"
+msgid "Functions and operators ({0})"
+msgstr ""
+
+#: Views/Shared/DataPipelineFormulaHelp.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFormulaHelp"
+msgid "No function matches the search."
+msgstr ""
+
+#. Format arguments: {0}: "+ - * / % = <> < <= > >= AND OR NOT"
+#: Views/Shared/DataPipelineFormulaHelp.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFormulaHelp"
+msgid "Operators: {0}."
+msgstr ""
+
+#. Format arguments: {0}: "[Price]"
+#: Views/Shared/DataPipelineFormulaHelp.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFormulaHelp"
+msgid "Refer to a field with its name in square brackets: {0}."
+msgstr ""
+
+#: Views/Shared/DataPipelineFormulaHelp.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFormulaHelp"
+msgid "Search the functions"
+msgstr ""
+
+#. Format arguments: {0}: "'CA'"; {1}: "&"
+#: Views/Shared/DataPipelineFormulaHelp.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFormulaHelp"
+msgid "Text goes in quotes: {0}. Join text with {1}."
+msgstr ""
+
+#: Views/Shared/DataPipelineHttpHeaderRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineHttpHeaderRow"
+msgid "Name"
+msgstr ""
+
+#: Views/Shared/DataPipelineHttpHeaderRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineHttpHeaderRow"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/DataPipelineHttpHeaderRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineHttpHeaderRow"
+msgid "Value"
+msgstr ""
+
+#: Views/Shared/DataPipelineJoinKeyRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineJoinKeyRow"
+msgid "Left"
+msgstr ""
+
+#: Views/Shared/DataPipelineJoinKeyRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineJoinKeyRow"
+msgid "Left field"
+msgstr ""
+
+#: Views/Shared/DataPipelineJoinKeyRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineJoinKeyRow"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/DataPipelineJoinKeyRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineJoinKeyRow"
+msgid "Right"
+msgstr ""
+
+#: Views/Shared/DataPipelineJoinKeyRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineJoinKeyRow"
+msgid "Right field"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "(rows, for a count)"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Average"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Count"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Count distinct"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Field"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Function"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Maximum"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Median"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Minimum"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Name"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/DataPipelineMeasureRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
+msgid "Sum"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Boolean"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Date"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Date and time"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Decimal"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Field"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Integer"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Move up"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "New name"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Same type"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Text"
+msgstr ""
+
+#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
+msgid "Type"
+msgstr ""
+
+#: Views/Shared/DataPipelineSortRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
+msgid "Ascending"
+msgstr ""
+
+#: Views/Shared/DataPipelineSortRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
+msgid "Descending"
+msgstr ""
+
+#: Views/Shared/DataPipelineSortRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
+msgid "Field"
+msgstr ""
+
+#: Views/Shared/DataPipelineSortRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
+msgid "Move up"
+msgstr ""
+
+#: Views/Shared/DataPipelineSortRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
+msgid "Order"
+msgstr ""
+
+#: Views/Shared/DataPipelineSortRow.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
+msgid "Remove"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/SharedLinksAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Views/SharedLinksAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "1 use"
+msgid_plural "{0} uses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "<strong>Nothing here!</strong> No shared link matches your search."
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "<strong>Nothing here!</strong> Nothing was shared yet."
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "A link works only for its recipients, once signed in. A link is deleted a day after it stops working."
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Active"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Cancel"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Delete"
+msgstr ""
+
+#. Format arguments: {0}: link.Title
+#: Views/SharedLinksAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Delete the link to '{0}'?"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Expired"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Kind"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "No"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Ok"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Recipients"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Revoke"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Revoke the link"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Revoked"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Search by name or source"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Shared"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Shared Links"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Shared by"
+msgstr ""
+
+#. Format arguments: {0}: link.Title
+#: Views/SharedLinksAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Stop the link to '{0}' from working?"
+msgstr ""
+
+#. Format arguments: {0}: link.ExpiresUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture)
+#: Views/SharedLinksAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "The link works until {0} (UTC)."
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Used up"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Uses"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "View the source"
+msgstr ""
+
+#: Views/SharedLinksAdmin/Index.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "Yes"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/SharedLinksAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: link.Uses; {1}: link.MaxUses
+#: Views/SharedLinksAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
+msgid "{0} of {1} uses"
+msgstr ""
+
+#: Views/Sort.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Sort.Fields.Design"
+msgid "Choose the fields to sort by"
+msgstr ""
+
+#: Views/Sort.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Sort.Fields.Edit"
+msgid "Add a field"
+msgstr ""
+
+#: Views/Sort.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Sort.Fields.Edit"
+msgid "Sort by"
+msgstr ""
+
+#: Views/Sort.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Sort.Fields.Edit"
+msgid "The most significant field first. Sorting holds every row in memory before writing the first one."
+msgstr ""
+
+#: Views/Union.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Union.Fields.Design"
+msgid "Appends the rows of its inputs"
+msgstr ""
+
+#: Views/Union.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Union.Fields.Edit"
+msgid "Connect the outputs of several steps to the input of this step: their rows are appended one after the other. Fields are matched by name; a field some rows don't have is empty in them."
+msgstr ""
+
+#: Views/ZipFiles.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ZipFiles.Fields.Edit"
+msgid "Archive name"
+msgstr ""
+
+#. Format arguments: {0}: "{PipelineName}"; {1}: "{RunId}"; {2}: "{Date:format}"
+#: Views/ZipFiles.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.ZipFiles.Fields.Edit"
+msgid "Without the .zip extension. Placeholders: {0}, {1}, and {2}."
+msgstr ""
+
+#: Workflows/DataPipelineRunCompletedEvent.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent"
+msgid "Data"
+msgstr ""
+
+#: Workflows/DataPipelineRunCompletedEvent.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent"
+msgid "Data Pipeline Run Completed Event"
+msgstr ""
+
+#: Workflows/DataPipelineRunCompletedEvent.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent"
+msgid "Done"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Workflows/RunDataPipelineTask.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "A run of the data pipeline '{0}' is already queued or running."
+msgstr ""
+
+#: Workflows/RunDataPipelineTask.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "Data"
+msgstr ""
+
+#: Workflows/RunDataPipelineTask.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/RunDataPipelineTask.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "Queued"
+msgstr ""
+
+#: Workflows/RunDataPipelineTask.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "Run Data Pipeline Task"
+msgstr ""
+
+#: Workflows/RunDataPipelineTask.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "Skipped"
+msgstr ""
+
+#: Workflows/RunDataPipelineTask.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "Succeeded"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Workflows/RunDataPipelineTask.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "The data pipeline '{0}' isn't published, or is disabled."
+msgstr ""
+
+#: Workflows/RunDataPipelineTask.cs
+msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
+msgid "The data pipeline doesn't exist."
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Author"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Content item"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Content item id"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Content type"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Created"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Display text"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Latest"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Modified"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Owner"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Published"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Published on"
+msgstr ""
+
+#: DataSources/Contents/ContentDataColumns.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
+msgid "Version id"
+msgstr ""
+
+#: DataSources/Contents/ContentItemsDataSource.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentItemsDataSource"
+msgid "Content"
+msgstr ""
+
+#: DataSources/Contents/ContentItemsDataSource.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentItemsDataSource"
+msgid "Content items"
+msgstr ""
+
+#: DataSources/Contents/ContentItemsDataSource.cs
+msgctxt "OrchardCore.DataSources.Contents.ContentItemsDataSource"
+msgid "The content items of each content type, with their parts and fields."
+msgstr ""
+
+#. Format arguments: {0}: query.Source
+#: DataSources/Queries/QueriesDataSource.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "A {0} query that returns content items."
+msgstr ""
+
+#. Format arguments: {0}: query.Source
+#: DataSources/Queries/QueriesDataSource.cs
+#, csharp-format
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "A {0} query."
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Author"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Content item id"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Content type"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Created"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Display text"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Latest"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Modified"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Owner"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Published"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Published on"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Queries"
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "The results of the saved queries."
+msgstr ""
+
+#: DataSources/Queries/QueriesDataSource.cs
+msgctxt "OrchardCore.DataSources.Queries.QueriesDataSource"
+msgid "Version id"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Email"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Email confirmed"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Enabled"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Failed sign-ins"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Locked out until"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Lockout enabled"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "One row per role of each user."
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "One row per user."
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Phone number"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Phone number confirmed"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Role"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Roles"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "The users of the site and their roles."
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Two-factor authentication"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "User id"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "User name"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "User roles"
+msgstr ""
+
+#: DataSources/Users/UsersDataSource.cs
+msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
+msgid "Users"
+msgstr ""
