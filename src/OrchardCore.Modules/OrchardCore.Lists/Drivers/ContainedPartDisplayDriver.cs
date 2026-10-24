@@ -110,7 +110,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
 
             if (definition != null)
             {
-                var listPart = definition.Parts.FirstOrDefault(x => x.PartDefinition.Name == nameof(ListPart));
+                var listPart = definition.Parts.FirstOrDefault(p => p.Name == nameof(ListPart));
                 var settings = listPart?.GetSettings<ListPartSettings>();
 
                 if (settings != null)
@@ -126,6 +126,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
                             model.Container = container;
                             model.EnableOrdering = settings.EnableOrdering;
                             model.ContainerContentTypeDefinition = definition;
+                            model.TypePartDefinition = listPart;
                         }).Location("Content:1.5"));
 
                         if (settings.ShowHeader)
