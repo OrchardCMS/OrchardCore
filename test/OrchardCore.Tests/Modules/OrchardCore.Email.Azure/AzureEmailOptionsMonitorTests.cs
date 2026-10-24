@@ -20,7 +20,7 @@ public class AzureEmailOptionsMonitorTests
     public async Task RequestUpdate_ShouldRefreshAzureEmailOptionsWithoutReleasingTenant()
     {
         using var context = new SiteContext()
-            .WithRecipe("SaaS");
+            .WithRecipe("Minimal");
 
         await context.InitializeAsync();
 

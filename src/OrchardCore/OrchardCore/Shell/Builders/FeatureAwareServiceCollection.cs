@@ -8,7 +8,7 @@ namespace OrchardCore.Environment.Shell.Builders;
 /// <summary>
 /// A service collection that keeps track of the <see cref="IFeatureInfo"/> for each added service.
 /// </summary>
-public class FeatureAwareServiceCollection : IServiceCollection
+public class FeatureAwareServiceCollection : IFeatureAwareServiceCollection
 {
     private readonly IServiceCollection _innerServiceCollection;
 
@@ -25,12 +25,17 @@ public class FeatureAwareServiceCollection : IServiceCollection
     /// </summary>
     public IDictionary<IFeatureInfo, ServiceCollection> FeatureCollections => _featureServiceCollections;
 
+    /// <inheritdoc />
+    public IFeatureInfo CurrentFeature { get; private set; }
+
     /// <summary>
     /// Sets the current feature that services will be assigned when added to this collection.
     /// </summary>
     /// <param name="feature">The feature for services to be assigned.</param>
     public void SetCurrentFeature(IFeatureInfo feature)
     {
+        CurrentFeature = feature;
+
         if (!_featureServiceCollections.TryGetValue(feature, out _currentFeatureServiceCollection))
         {
             _featureServiceCollections.Add(feature, _currentFeatureServiceCollection = []);
