@@ -19,7 +19,7 @@ public static class PathExtensions
             return path;
         }
 
-        if (other.StartsWith('/') || other.StartsWith('\\'))
+        if (other[0] is '\\' or '/' || Path.IsPathFullyQualified(other))
         {
             // "other" is already an app-rooted path. Return it as-is.
             return other;
