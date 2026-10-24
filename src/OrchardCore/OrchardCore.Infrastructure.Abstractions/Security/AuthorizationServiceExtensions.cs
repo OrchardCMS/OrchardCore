@@ -18,7 +18,7 @@ public static class AuthorizationServiceExtensions
             return Task.FromResult(false);
         }
 
-        var task = service.AuthorizeAsync(user, resource, new PermissionRequirement(permission));
+        var task = service.AuthorizeAsync(user, resource, permission.Requirement);
 
         if (task.IsCompletedSuccessfully)
         {

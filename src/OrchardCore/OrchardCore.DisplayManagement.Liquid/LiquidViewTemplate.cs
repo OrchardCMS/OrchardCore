@@ -66,7 +66,9 @@ internal static class LiquidViewTemplate
     private static async Task RenderAsyncCore(RazorPage<dynamic> page, IServiceProvider services, IFluidTemplate template)
     {
         var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
-        var context = new LiquidTemplateContext(services, templateOptions);
+
+        // The context is shared by all the templates of the request, each one is rendered in its own scope.
+        var context = services.GetRequiredService<LiquidTemplateContextAccessor>().GetContext(templateOptions);
         var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
         // Defer the buffer disposing so that a template can be rendered twice.
@@ -157,6 +159,9 @@ public static class LiquidViewTemplateExtensions
             return await callback();
         }
 
+        // The context may be shared by nested templates, the view context of the enclosing one is restored.
+        var previousViewContext = context.ViewContext;
+
         try
         {
             await context.EnterScopeAsync(viewContext, model);
@@ -165,6 +170,7 @@ public static class LiquidViewTemplateExtensions
         finally
         {
             context.ReleaseScope();
+            context.ViewContext = previousViewContext;
         }
     }
 
@@ -206,6 +212,9 @@ public static class LiquidViewTemplateExtensions
             return;
         }
 
+        // The context may be shared by nested templates, the view context of the enclosing one is restored.
+        var previousViewContext = context.ViewContext;
+
         try
         {
             await context.EnterScopeAsync(viewContext, model);
@@ -214,6 +223,7 @@ public static class LiquidViewTemplateExtensions
         finally
         {
             context.ReleaseScope();
+            context.ViewContext = previousViewContext;
         }
     }
 
@@ -301,6 +311,9 @@ public static class LiquidTemplateContextExtensions
         await context.InitializeAsync(viewContext);
 
         context.EnterChildScope();
+
+        // The template is rendered with its own view context, e.g. its executing file path localizes it.
+        context.ViewContext = viewContext;
 
         // The view localizer is only resolved and contextualized if the template localizes something.
         context.SetValue("ViewLocalizer", new ObjectValue(new LazyViewLocalizer(context.Services, viewContext)));

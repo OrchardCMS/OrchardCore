@@ -5,6 +5,9 @@ namespace OrchardCore.Mvc.LocationExpander;
 
 internal sealed class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
 {
+    // The ordered providers of the current request are cached in the 'HttpContext' items.
+    private static readonly object s_providersKey = new();
+
     public int Priority
     {
         get { throw new NotSupportedException(); }
@@ -14,7 +17,7 @@ internal sealed class CompositeViewLocationExpanderProvider : IViewLocationExpan
     {
         var expanderProviders = DiscoverProviders(context);
 
-        foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
+        foreach (var provider in expanderProviders)
         {
             viewLocations = provider.ExpandViewLocations(context, viewLocations);
         }
@@ -26,18 +29,30 @@ internal sealed class CompositeViewLocationExpanderProvider : IViewLocationExpan
     {
         var expanderProviders = DiscoverProviders(context);
 
-        foreach (var provider in expanderProviders.OrderBy(x => x.Priority))
+        foreach (var provider in expanderProviders)
         {
             provider.PopulateValues(context);
         }
     }
 
-    private static IEnumerable<IViewLocationExpanderProvider> DiscoverProviders(ViewLocationExpanderContext context)
+    private static IViewLocationExpanderProvider[] DiscoverProviders(ViewLocationExpanderContext context)
     {
-        return context
-            .ActionContext
-            .HttpContext
-            .RequestServices
-            .GetServices<IViewLocationExpanderProvider>();
+        var httpContext = context.ActionContext.HttpContext;
+
+        // The providers are scoped services that are resolved and sorted once per request, instead of
+        // for each of the many view lookups a request performs.
+        if (httpContext.Items.TryGetValue(s_providersKey, out var cached))
+        {
+            return (IViewLocationExpanderProvider[])cached;
+        }
+
+        var providers = httpContext.RequestServices
+            .GetServices<IViewLocationExpanderProvider>()
+            .OrderBy(x => x.Priority)
+            .ToArray();
+
+        httpContext.Items[s_providersKey] = providers;
+
+        return providers;
     }
 }
