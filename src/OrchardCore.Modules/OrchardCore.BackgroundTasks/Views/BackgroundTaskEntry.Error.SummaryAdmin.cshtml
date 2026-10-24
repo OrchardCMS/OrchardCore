@@ -1,0 +1,15 @@
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@{
+    var lastRun = Model.Value.State?.LastRun;
+}
+
+@if (lastRun?.Result == BackgroundTaskRunResult.Failed && !string.IsNullOrEmpty(lastRun.ErrorMessage))
+{
+    <div class="small text-danger text-truncate" title="@lastRun.ErrorMessage" data-last-error>
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @lastRun.ErrorMessage
+    </div>
+}
