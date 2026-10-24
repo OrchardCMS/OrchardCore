@@ -41,13 +41,9 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
             {
                 basePath = Directory.CreateTempSubdirectory($"OrchardCore-{Guid.NewGuid():N}-").FullName;
 
-                // Not configuring a path is the default, so this is not a warning.
-                if (logger.IsEnabled(LogLevel.Information))
-                {
-                    logger.LogInformation(
-                        "No temporary directory path is configured. Using the unique temporary directory '{TempDirectoryPath}'.",
-                        basePath);
-                }
+                logger.LogWarning(
+                    "No temporary directory path is configured. Using the unique temporary directory '{TempDirectoryPath}'.",
+                    basePath);
             }
             else
             {
