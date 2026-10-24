@@ -62,8 +62,10 @@ public static class PathExtensions
     /// </summary>
     public static string ResolvePath(string path)
     {
-        // Normalize paths on Windows (or any other hypothetical system where "/" isn't the path separator character).
-        if (Path.DirectorySeparatorChar != '/')
+        var isWindows = OperatingSystem.IsWindows();
+        
+        // Normalize paths on Windows.
+        if (isWindows)
         {
             path = path.Replace('/', Path.DirectorySeparatorChar);
         }
@@ -84,7 +86,8 @@ public static class PathExtensions
             // We need to resolve paths with multiple path separators (e.g "//" or "\\") or, directory traversals e.g. ("../" or "./").
             if (segment.Length == 0 ||
                 segment.Equals(ParentDirectoryToken) ||
-                segment.Equals(CurrentDirectoryToken))
+                segment.Equals(CurrentDirectoryToken) ||
+                (isWindows && segment.Value?.Contains(':') == true))
             {
                 requiresResolution = true;
                 break;
@@ -126,10 +129,17 @@ public static class PathExtensions
         }
 
         var builder = new StringBuilder();
-        for (var i = 0; i < pathSegments.Count; i++)
+        foreach (var segment in pathSegments)
         {
-            var segment = pathSegments[i];
             builder.Append(Path.DirectorySeparatorChar);
+            
+            // On Windows, prevent malformed/malicious paths, by removing everything before a directory path segment
+            // such as "C:" even if it's in the middle of the path.
+            if (isWindows && segment.Value?.Contains(':') == true)
+            {
+                builder.Clear();
+            }
+            
             builder.Append(segment.Buffer, segment.Offset, segment.Length);
         }
 
