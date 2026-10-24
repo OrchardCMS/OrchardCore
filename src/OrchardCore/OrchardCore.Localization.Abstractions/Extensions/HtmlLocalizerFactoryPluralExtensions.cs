@@ -24,6 +24,7 @@ public static class HtmlLocalizerFactoryPluralExtensions
     /// <remarks>
     /// The translation itself is not HTML encoded. Use a string localizer for text that must be encoded when rendered.
     /// </remarks>
+    [SkipLocalizationExtraction]
     public static LocalizedHtmlString Plural(this IHtmlLocalizerFactory factory, int count, LocalizationSource source, string plural, params object[] arguments)
     {
         ArgumentNullException.ThrowIfNull(factory);

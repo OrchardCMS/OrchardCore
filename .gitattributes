@@ -1,5 +1,7 @@
 * text=auto
 *.map text eol=lf
+# Translation templates are generated with LF line endings and compared byte for byte.
+*.pot text eol=lf
 **/wwwroot/Scripts/* linguist-vendored
 # Force LF line endings for all built/vendored files under wwwroot
 **/wwwroot/**/*.js text eol=lf

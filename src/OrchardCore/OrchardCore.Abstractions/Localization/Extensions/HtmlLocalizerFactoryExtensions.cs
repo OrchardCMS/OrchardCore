@@ -20,6 +20,7 @@ public static class HtmlLocalizerFactoryExtensions
     /// <remarks>
     /// The translation itself is not HTML encoded. Use a string localizer for text that must be encoded when rendered.
     /// </remarks>
+    [SkipLocalizationExtraction]
     public static LocalizedHtmlString Localize(this IHtmlLocalizerFactory factory, LocalizationSource source, params object[] arguments)
     {
         ArgumentNullException.ThrowIfNull(factory);

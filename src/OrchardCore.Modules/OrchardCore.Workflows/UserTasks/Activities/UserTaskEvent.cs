@@ -39,7 +39,9 @@ public class UserTaskEvent : EventActivity
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
+#pragma warning disable OCLOC104 // The action names are entered by the user who designs the workflow.
         return Actions.SelectMany(a => Outcome(S[a]));
+#pragma warning restore OCLOC104
     }
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

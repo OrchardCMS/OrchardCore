@@ -1,0 +1,107 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TheAdmin\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Views/Breadcrumb.cshtml
+msgctxt "TheAdmin.Views.Breadcrumb"
+msgid "Breadcrumb"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
+msgid "Are you sure you want to remove this element?"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
+msgid "Collapse / expand menu"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
+msgid "Delete"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
+msgid "Ok"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
+msgid "Show / hide menu"
+msgstr ""
+
+#: Views/Navigation-admin.cshtml
+msgctxt "TheAdmin.Views.Navigation-admin"
+msgid "Admin menu"
+msgstr ""
+
+#: Views/Navigation-admin.cshtml
+msgctxt "TheAdmin.Views.Navigation-admin"
+msgid "Filter"
+msgstr ""
+
+#: Views/Navigation-admin.cshtml
+msgctxt "TheAdmin.Views.Navigation-admin"
+msgid "Filter the admin menu"
+msgstr ""
+
+#: Views/Pager.cshtml
+msgctxt "TheAdmin.Views.Pager"
+msgid "Listing pages"
+msgstr ""
+
+#: Views/Pager_First.cshtml
+msgctxt "TheAdmin.Views.Pager_First"
+msgid "Go to first page."
+msgstr ""
+
+#: Views/Pager_Last.cshtml
+msgctxt "TheAdmin.Views.Pager_Last"
+msgid "Go to last page."
+msgstr ""
+
+#: Views/Pager_Next.cshtml
+msgctxt "TheAdmin.Views.Pager_Next"
+msgid "Go to next page."
+msgstr ""
+
+#: Views/Pager_PageSizeSelector.cshtml
+msgctxt "TheAdmin.Views.Pager_PageSizeSelector"
+msgid "Items per page"
+msgstr ""
+
+#: Views/Pager_Previous.cshtml
+msgctxt "TheAdmin.Views.Pager_Previous"
+msgid "Go to previous page."
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "TheAdmin.Views.ToggleTheme"
+msgid "Auto"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "TheAdmin.Views.ToggleTheme"
+msgid "Dark"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "TheAdmin.Views.ToggleTheme"
+msgid "Light"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "TheAdmin.Views.ToggleTheme"
+msgid "Toggle theme"
+msgstr ""
