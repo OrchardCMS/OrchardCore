@@ -1,5 +1,6 @@
 using System.Dynamic;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace OrchardCore.DisplayManagement.Shapes;
 
@@ -119,7 +120,8 @@ public class Composite : DynamicObject
 
     protected bool Equals(Composite other)
     {
-        return Equals(Properties, other.Properties);
+        // Each instance owns its properties, so two composites are only equal when they are the same instance.
+        return ReferenceEquals(this, other);
     }
 
     public override bool Equals(object obj)
@@ -144,7 +146,7 @@ public class Composite : DynamicObject
 
     public override int GetHashCode()
     {
-        return Properties.GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 }
 
