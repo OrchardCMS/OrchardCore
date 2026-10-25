@@ -165,9 +165,15 @@ describe("FileLibraryManager", () => {
       isDirectory: false,
     };
 
+    vi.mocked(notify).mockClear();
+
     await renameFile(file);
 
-    // renameFile calls moveMedia on the data service - just verify no throw
+    const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
+    expect(mockInstance.moveMedia).toHaveBeenCalledWith("/Images/photo1.jpg", "/Images/renamed.jpg");
+    expect(fileItems.value.find((x) => x.filePath === "/Images/renamed.jpg")?.name).toBe("renamed.jpg");
+    expect(fileItems.value.find((x) => x.filePath === "/Images/photo1.jpg")).toBeUndefined();
+    expect(notify).not.toHaveBeenCalled();
   });
 
   it("should create a directory", async () => {
@@ -227,12 +233,16 @@ describe("FileLibraryManager", () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
-  it("should notify info for file copy (not yet supported)", async () => {
+  it("should copy a file and notify success", async () => {
     const { fileCopy } = useFileLibraryManager();
+    vi.mocked(notify).mockClear();
 
     await fileCopy({ oldPath: "/Images/photo1.jpg", newPath: "/Documents/photo1.jpg" });
 
-    // Should not throw - just shows notification
+    const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
+    expect(mockInstance.copyMedia).toHaveBeenCalledWith("/Images/photo1.jpg", "/Documents/photo1.jpg");
+    expect(fileItems.value.find((x) => x.filePath === "/Other/photo1.jpg")).toBeDefined();
+    expect(notify).toHaveBeenCalledTimes(1);
   });
 
   it("should notify error when getDirectoryTree rejects in getFileLibraryStoreAsync", async () => {

@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Email.Azure\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Drivers/AzureEmailSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSecretMigrationDisplayDriver"
+msgid "Azure Communication Services Email"
+msgstr ""
+
+#: Drivers/AzureEmailSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSecretMigrationDisplayDriver"
+msgid "Azure Communication Services Email: Connection string"
+msgstr ""
+
+#: Drivers/AzureEmailSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSecretMigrationDisplayDriver"
+msgid "Connection string"
+msgstr ""
+
+#: Drivers/AzureEmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSettingsDisplayDriver"
+msgid "Connection string is required."
+msgstr ""
+
+#: Drivers/AzureEmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSettingsDisplayDriver"
+msgid "The Default Sender is a required field."
+msgstr ""
+
+#: Drivers/AzureEmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSettingsDisplayDriver"
+msgid "The Default Sender is invalid."
+msgstr ""
+
+#: Services/AzureEmailProvider.cs
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProvider"
+msgid "Azure Communication Services"
+msgstr ""
+
+#: Services/AzureEmailProviderBase.cs
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "An error occurred while sending an email."
+msgstr ""
+
+#. Format arguments: {0}: bccRecipient
+#: Services/AzureEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "Invalid email address for the 'BCC' recipient: '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: ccRecipient
+#: Services/AzureEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "Invalid email address for the 'CC' recipient: '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: toRecipient
+#: Services/AzureEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "Invalid email address for the 'To' recipient: '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: senderAddress
+#: Services/AzureEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "Invalid email address for the sender: '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: replyTo
+#: Services/AzureEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "Invalid email address to reply to: '{0}'."
+msgstr ""
+
+#: Services/AzureEmailProviderBase.cs
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "The Azure Email Provider is disabled."
+msgstr ""
+
+#. Format arguments: {0}: attachment.Filename
+#: Services/AzureEmailProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Azure.Services.AzureEmailProviderBase"
+msgid "Unable to attach the file named '{0}' since its type is not supported."
+msgstr ""
+
+#: Services/DefaultAzureEmailProvider.cs
+msgctxt "OrchardCore.Email.Azure.Services.DefaultAzureEmailProvider"
+msgid "Default Azure Communication Services"
+msgstr ""
+
+#: Views/AzureEmailSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Azure.Views.AzureEmailSettings.Edit"
+msgid "Azure connection string"
+msgstr ""
+
+#: Views/AzureEmailSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Azure.Views.AzureEmailSettings.Edit"
+msgid "Connection String"
+msgstr ""
+
+#: Views/AzureEmailSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Azure.Views.AzureEmailSettings.Edit"
+msgid "Enable Azure Provider"
+msgstr ""
+
+#: Views/AzureEmailSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Azure.Views.AzureEmailSettings.Edit"
+msgid "Sender email address"
+msgstr ""
+
+#: Views/AzureEmailSettings.Edit.cshtml
+msgctxt "OrchardCore.Email.Azure.Views.AzureEmailSettings.Edit"
+msgid "The default email address to use as a sender, unless the email sender is set."
+msgstr ""

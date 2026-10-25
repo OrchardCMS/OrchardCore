@@ -1,0 +1,4 @@
+<Project>
+  <!-- Gives the outer build of a multi-targeting project the UpdateLocalizationCatalog target, which runs the update in the inner build of its first target framework. -->
+  <Import Project="../build/OrchardCore.Localization.Build.targets" />
+</Project>

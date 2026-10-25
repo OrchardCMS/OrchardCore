@@ -182,7 +182,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
         var httpClient = _httpClientFactory.CreateClient();
 
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, workflowContext.CancellationToken);
 
         var responseCodes = ParseResponseCodes(HttpResponseCodes);
 
@@ -190,7 +190,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
         workflowContext.LastResult = new
         {
-            Body = await response.Content.ReadAsStringAsync(),
+            Body = await response.Content.ReadAsStringAsync(workflowContext.CancellationToken),
             Headers = response.Headers.ToDictionary(x => x.Key),
             response.StatusCode,
             response.ReasonPhrase,

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
@@ -10,6 +11,7 @@ namespace OrchardCore.DisplayManagement.Liquid;
 /// An <see cref="IViewLocalizer"/> that is resolved and contextualized to its view on first use,
 /// as most templates don't localize anything while contextualizing a localizer allocates.
 /// </summary>
+[SkipLocalizationExtraction]
 internal sealed class LazyViewLocalizer : IViewLocalizer
 {
     private readonly IServiceProvider _services;

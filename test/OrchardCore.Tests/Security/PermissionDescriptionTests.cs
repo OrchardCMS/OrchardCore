@@ -10,6 +10,7 @@ namespace OrchardCore.Tests.Security;
 public class PermissionDescriptionTests
 {
     [Fact]
+    [Obsolete("Remove these when the corresponding constructor is removed.")]
     public void Constructor_WithStringDescription_CreatesDescriptionWithoutContext()
     {
         // Act
@@ -21,6 +22,7 @@ public class PermissionDescriptionTests
     }
 
     [Fact]
+    [Obsolete("Remove these when the corresponding constructor is removed.")]
     public void Constructor_WithNullStringDescription_HasNoDescription()
     {
         // Act

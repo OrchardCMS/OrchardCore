@@ -38,7 +38,7 @@ public class ModularTenantContainerMiddleware
             {
                 httpContext.Response.Headers.Append(HeaderNames.RetryAfter, "10");
                 httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                await httpContext.Response.WriteAsync("The requested tenant is currently initializing.");
+                await httpContext.Response.WriteAsync("The requested tenant is currently initializing.", httpContext.RequestAborted);
                 return;
             }
 

@@ -1,0 +1,348 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Admin\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Admin.AdminMenu"
+msgid "Admin"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Admin.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Admin.DeploymentStartup"
+msgid "Admin settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Admin.DeploymentStartup"
+msgid "Exports the admin settings."
+msgstr ""
+
+#: Views/AdminDashboard.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminDashboard"
+msgid "Welcome to Orchard Core"
+msgstr ""
+
+#: Views/AdminDashboard.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminDashboard"
+msgid "Your site is ready. Get started with the actions below, or browse the menu to discover all its possibilities."
+msgstr ""
+
+#: Views/AdminDashboardDocumentation.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminDashboardDocumentation"
+msgid "Documentation"
+msgstr ""
+
+#: Views/AdminDashboardDocumentation.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminDashboardDocumentation"
+msgid "Learn more"
+msgstr ""
+
+#: Views/AdminDashboardDocumentation.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminDashboardDocumentation"
+msgid "Read the documentation and join the community."
+msgstr ""
+
+#: Views/AdminList.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminList"
+msgid "No results found."
+msgstr ""
+
+#: Views/AdminList-Grid.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminList-Grid"
+msgid "No results found."
+msgstr ""
+
+#: Views/AdminListActions.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListActions"
+msgid "Actions"
+msgstr ""
+
+#: Views/AdminListActions-Menu.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListActions-Menu"
+msgid "Actions"
+msgstr ""
+
+#: Views/AdminListLayoutSelector.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListLayoutSelector"
+msgid "Grid"
+msgstr ""
+
+#: Views/AdminListLayoutSelector.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListLayoutSelector"
+msgid "Layout"
+msgstr ""
+
+#: Views/AdminListLayoutSelector.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListLayoutSelector"
+msgid "List"
+msgstr ""
+
+#: Views/AdminListSearch.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListSearch"
+msgid "Search"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/AdminListToolbar.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/AdminListToolbar.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
+msgid "Actions"
+msgstr ""
+
+#. Format arguments: {0}: item.Text.ToLower()
+#: Views/AdminListToolbar.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
+msgid "Are you sure you want to {0} these items?"
+msgstr ""
+
+#: Views/AdminListToolbar.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
+msgid "Bulk Action"
+msgstr ""
+
+#. Format arguments: {0}: startIndex; {1}: endIndex
+#: Views/AdminListToolbar.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
+msgid "Items {0} to {1}"
+msgstr ""
+
+#: Views/AdminListToolbar.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
+msgid "Select All"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/AdminListToolbar.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Buttons"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Display New menu"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Display titles in top bar"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Enable Admin Menu filter"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Enable quick navigation"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Enable theme toggler"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Focused"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Grid"
+msgstr ""
+
+#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultActionsLayout"
+#: Views/AdminSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "How the actions of each row are displayed: as buttons, or in a single compact menu. Use the configuration default to inherit {0} from appsettings.json."
+msgstr ""
+
+#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultLayout"
+#: Views/AdminSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "How the admin lists are rendered, e.g. the content items list. Use the configuration default to inherit {0} from appsettings.json."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Let users choose the layout of a list"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "List"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "List actions layout"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "List layout"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Menu"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Navigation menu behavior"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Only the section of the current page is open, and opening a section closes the others."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Persistent"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Sections stay open until you close them, from page to page, so several can be open at once."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Show breadcrumb"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "The section holding the current page is always open, whichever behavior is chosen."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Use configuration default"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether a New menu is displayed in the admin menu."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether a filter input is displayed above the admin menu."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether each list shows a selector with the available layouts. A user's choice is kept in a cookie, per list, and applies to that user only. The layout above stays the one every list starts from."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether or not to display a theme toggler."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether the breadcrumb trail is displayed on admin screens."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether the quick navigation palette (Ctrl+K / Cmd+K) is displayed."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Whether the titles are displayed in the top bar."
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "Filter navigation destinations"
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "Go to an admin page..."
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "Loading navigation..."
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "Navigation destinations"
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "No destinations found"
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "Quick navigation"
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "Quick navigation (Ctrl+K)"
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "Unable to load navigation. Close and reopen the palette to try again."
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "to close"
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "to navigate"
+msgstr ""
+
+#: Views/QuickNavigationNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.QuickNavigationNavbarItem"
+msgid "to open"
+msgstr ""
+
+#: Views/VisitSiteNavbarItem.cshtml
+msgctxt "OrchardCore.Admin.Views.VisitSiteNavbarItem"
+msgid "Visit Site"
+msgstr ""

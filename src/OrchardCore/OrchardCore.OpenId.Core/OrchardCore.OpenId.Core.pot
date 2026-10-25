@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.OpenId.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: OpenIdPermissions.cs
+msgctxt "OrchardCore.OpenId.OpenIdPermissions"
+msgid "View and edit the OpenID Connect client settings."
+msgstr ""
+
+#: OpenIdPermissions.cs
+msgctxt "OrchardCore.OpenId.OpenIdPermissions"
+msgid "View and edit the OpenID Connect server settings."
+msgstr ""
+
+#: OpenIdPermissions.cs
+msgctxt "OrchardCore.OpenId.OpenIdPermissions"
+msgid "View and edit the OpenID Connect validation settings."
+msgstr ""
+
+#: OpenIdPermissions.cs
+msgctxt "OrchardCore.OpenId.OpenIdPermissions"
+msgid "View, add, edit and remove the OpenID Connect applications."
+msgstr ""
+
+#: OpenIdPermissions.cs
+msgctxt "OrchardCore.OpenId.OpenIdPermissions"
+msgid "View, add, edit and remove the OpenID Connect scopes."
+msgstr ""
