@@ -14,10 +14,7 @@ Both feeds receive the same packages from each successful preview build. Choose 
 | Feed | NuGet v3 source URL |
 | --- | --- |
 | Cloudsmith | <https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json> |
-| Cloudflare R2 | <https://pub-2d45bb223ac347db9e31688ac2bd1eaa.r2.dev/index.json> |
-
-!!! note
-    Cloudflare's `r2.dev` public development URLs are rate-limited and intended for development traffic. If the R2 feed is rate-limited, use Cloudsmith instead.
+| Cloudflare R2 | <https://nuget-preview.orchardcore.net/index.json> |
 
 ## Adding Orchard Core preview feed to Visual Studio
 
@@ -42,12 +39,12 @@ You can also add the package source by using a NuGet.config file:
 </configuration>
 ```
 
-To use Cloudflare R2 instead, replace the `OrchardCorePreview` source URL with `https://pub-2d45bb223ac347db9e31688ac2bd1eaa.r2.dev/index.json`.
+To use Cloudflare R2 instead, replace the `OrchardCorePreview` source URL with `https://nuget-preview.orchardcore.net/index.json`.
 
 ## Adding Orchard Core preview feed with the .NET CLI
 
 For example, to add the Cloudflare R2 feed:
 
 ```bash
-dotnet nuget add source https://pub-2d45bb223ac347db9e31688ac2bd1eaa.r2.dev/index.json --name OrchardCorePreview
+dotnet nuget add source https:/nuget-preview.orchardcore.net/index.json --name OrchardCorePreview
 ```
