@@ -28,7 +28,7 @@
 <script asp-src="~/OrchardCore.Localization/Scripts/localization-settings/localization-settings.min.js" debug-src="~/OrchardCore.Localization/Scripts/localization-settings/localization-settings.js" at="Foot" depends-on="vuejs" type="module"></script>
 
 <div class="ocat-wrapper">
-    <label class="ocat-label">@T["Define which cultures are supported by the site."]</label>
+    <label class="ocat-label ocat-label-required">@T["Define which cultures are supported by the site."]</label>
     <div class="ocat-end">
         <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist localization-settings-wrapper" data-supported-cultures="@supportedCultures" data-all-cultures="@allCultures" data-default-culture="@defaultCulture" data-selected-culture="@selectedCulture" data-invariant-culture-display-name="@CultureInfo.InvariantCulture.DisplayName" data-translations="@translationsJson" data-supported-cultures-input-id="@Html.IdFor(m => m.SupportedCultures)" data-supported-cultures-input-name="@Html.NameFor(m => m.SupportedCultures)" data-default-culture-input-id="@Html.IdFor(m => m.DefaultCulture)" data-default-culture-input-name="@Html.NameFor(m => m.DefaultCulture)">
         </div>

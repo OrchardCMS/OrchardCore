@@ -20,7 +20,7 @@
 </div>
 
 <div id="@(Html.IdFor(m => m.EnumerableExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="EnumerableExpression">
-    <label asp-for="EnumerableExpression" class="ocat-label">@T["Enumerable Expression"]</label>
+    <label asp-for="EnumerableExpression" class="ocat-label ocat-label-required">@T["Enumerable Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="EnumerableExpression" class="form-control code" />
         <span asp-validation-for="EnumerableExpression"></span>
@@ -29,7 +29,7 @@
 </div>
 
 <div id="@(Html.IdFor(m => m.LiquidEnumerableExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidEnumerableExpression">
-    <label asp-for="LiquidEnumerableExpression" class="ocat-label">@T["Enumerable Expression"]</label>
+    <label asp-for="LiquidEnumerableExpression" class="ocat-label ocat-label-required">@T["Enumerable Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="LiquidEnumerableExpression" class="form-control code" />
         <span asp-validation-for="LiquidEnumerableExpression"></span>
@@ -38,7 +38,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="LoopVariableName">
-    <label asp-for="LoopVariableName" class="ocat-label">@T["Looping Variable"]</label>
+    <label asp-for="LoopVariableName" class="ocat-label ocat-label-required">@T["Looping Variable"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="LoopVariableName" class="form-control" />
         <span asp-validation-for="LoopVariableName"></span>

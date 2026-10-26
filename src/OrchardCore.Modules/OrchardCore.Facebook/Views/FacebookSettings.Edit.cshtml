@@ -17,7 +17,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="AppId">
-    <label asp-for="AppId" class="ocat-label">@T["Application Identifier"]</label>
+    <label asp-for="AppId" class="ocat-label ocat-label-required">@T["Application Identifier"]</label>
     <div class="ocat-end">
         <input asp-for="AppId" class="form-control" autocomplete="off" />
         <span asp-validation-for="AppId"></span>
@@ -43,7 +43,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="SdkJs">
-    <label asp-for="SdkJs" class="ocat-label">@T["Javascript Sdk js"]</label>
+    <label asp-for="SdkJs" class="ocat-label ocat-label-required">@T["Javascript Sdk js"]</label>
     <div class="ocat-limited">
         <input asp-for="SdkJs" class="form-control" value="@Model.SdkJs" />
         <span asp-validation-for="SdkJs"></span>

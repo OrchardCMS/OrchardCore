@@ -55,7 +55,7 @@
 </div>
 
 <div class="ocat-wrapper" id="StereotypesContainer">
-    <label asp-for="Stereotypes" class="ocat-label">@T["Stereotypes"]</label>
+    <label asp-for="Stereotypes" class="ocat-label ocat-label-required">@T["Stereotypes"]</label>
     <div class="ocat-end">
         <input asp-for="Stereotypes" class="form-control medium" />
         <span class="hint">@T["The Stereotypes of the content types that this field can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
@@ -63,7 +63,7 @@
 </div>
 
 <div class="ocat-wrapper" id="ContentTypesContainer">
-    <label asp-for="DisplayedContentTypes" class="ocat-label">@T["Content Types"]</label>
+    <label asp-for="DisplayedContentTypes" class="ocat-label ocat-label-required">@T["Content Types"]</label>
     <div class="ocat-end">
         <span class="hint">@T["The content types to display. Choose at least one."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })
