@@ -218,6 +218,9 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // Ensure the per-fixture App_Data path exists before shell initialization persists settings.
         Directory.CreateDirectory(resolvedAppDataPath);
 
+        // Configure a per-fixture temporary directory, as the default unique one logs a warning.
+        builder.Configuration["OrchardCore:TempDirectory:Path"] = Path.Combine(resolvedAppDataPath, "Temp");
+
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
         string connectionString = null;
