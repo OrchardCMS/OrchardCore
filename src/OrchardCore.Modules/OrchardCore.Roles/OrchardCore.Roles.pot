@@ -495,6 +495,11 @@ msgstr ""
 
 #: Workflows/Activities/GetUsersByRoleTask.cs
 msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
+msgid "The users in the selected roles: their ids, by user name."
+msgstr ""
+
+#: Workflows/Activities/GetUsersByRoleTask.cs
+msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
 msgid "User"
 msgstr ""
 

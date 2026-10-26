@@ -276,6 +276,11 @@ msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
 msgid "Messaging"
 msgstr ""
 
+#: Workflows/Activities/EmailTask.cs
+msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
+msgid "The result of sending the email."
+msgstr ""
+
 #: ViewModels/EmailTestViewModel.cs
 msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
 msgid "Invalid Email."

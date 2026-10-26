@@ -1155,6 +1155,11 @@ msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
 msgid "Tenant"
 msgstr ""
 
+#: Workflows/Activities/CreateTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
+msgid "The settings of the tenant it created, or the validation errors when it failed."
+msgstr ""
+
 #: Workflows/Activities/DisableTenantTask.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
 msgid "Disable Tenant Task"

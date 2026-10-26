@@ -11,6 +11,11 @@ msgctxt "OrchardCore.Notifications.Activities.NotifyContentOwnerTask"
 msgid "Notify Content's Owner Task"
 msgstr ""
 
+#: Activities/NotifyContentOwnerTask.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyContentOwnerTask"
+msgid "The owner of the content item, a user."
+msgstr ""
+
 #: Activities/NotifyUserTask.cs
 msgctxt "OrchardCore.Notifications.Activities.NotifyUserTask"
 msgid "Notify Specific Users Task"
@@ -29,6 +34,11 @@ msgstr ""
 #: Activities/NotifyUserTaskActivity.cs
 msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
 msgid "Failed: no user found"
+msgstr ""
+
+#: Activities/NotifyUserTaskActivity.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
+msgid "How many notifications the activity sent."
 msgstr ""
 
 #: Activities/NotifyUserTaskActivity.cs

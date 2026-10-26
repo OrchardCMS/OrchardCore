@@ -46,6 +46,191 @@ msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
 msgid "Starting"
 msgstr ""
 
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "How many activities the instance ran."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The body of the response."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The content type of the content item."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The content type."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The details of the error."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The display text, its title."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The email address."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The errors, when it failed."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The fault message of the instance."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The headers of the response, by name."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The id of the activity that faulted."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The id of the content item."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The id of the instance that faulted."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The id of the user who owns it."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The id of the user."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The id of the version of the content item."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The id of this version of the content item."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The message of the error."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The name of the activity that faulted."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The name of the event, for example Published."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The name of the user who last changed it."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The name of the workflow that faulted."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The names of the user's roles."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The reason phrase, for example OK."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The status code, for example 200."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The type of the activity that faulted."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "The user name."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "When it was created."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "When it was last changed."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "When it was published."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "Whether it succeeded."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "Whether the email address is confirmed."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "Whether the event started the workflow."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "Whether the status code is 2xx."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "Whether the user is enabled."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "Whether this is the latest version."
+msgstr ""
+
+#: Helpers/WorkflowValueMembers.cs
+msgctxt "OrchardCore.Workflows.Helpers.WorkflowValueMembers"
+msgid "Whether this version is published."
+msgstr ""
+
 #: WorkflowsPermissions.cs
 msgctxt "OrchardCore.Workflows.WorkflowsPermissions"
 msgid "Execute workflows"
