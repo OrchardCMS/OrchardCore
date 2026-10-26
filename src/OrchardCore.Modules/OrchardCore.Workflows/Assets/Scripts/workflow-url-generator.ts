@@ -7,8 +7,8 @@ import { dispatchFieldChange } from "@orchardcore/bloom/helpers/editorLifecycle"
 const initWorkflowUrlGenerator = (button: HTMLElement) => {
     const root = button.closest<HTMLElement>("[data-workflow-type-id]") ?? document.body;
     const activityRoot = button.closest<HTMLElement>("[data-activity-id]") ?? root;
-    const urlInput = root.querySelector<HTMLInputElement>("#workflow-url-text");
-    const tokenLifeSpanInput = root.querySelector<HTMLInputElement>("#token-lifespan");
+    const urlInput = root.querySelector<HTMLInputElement>("[data-workflow-url-text]");
+    const tokenLifeSpanInput = root.querySelector<HTMLInputElement>("[data-token-lifespan]");
 
     const generateWorkflowUrl = async () => {
         const query = new URLSearchParams({

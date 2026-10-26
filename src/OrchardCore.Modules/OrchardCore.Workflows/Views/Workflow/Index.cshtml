@@ -80,6 +80,7 @@
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
+    <input asp-for="ReturnUrl" type="hidden" />
 
     <div class="mb-3">
         <ul class="list-group with-checkbox">
@@ -210,9 +211,5 @@
         @await DisplayAsync(Model.Pager)
     </div>
 </form>
-
-<div class="mb-3">
-    <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
-</div>
 
 <script asp-src="~/OrchardCore.Workflows/Scripts/workflow-index-editors/workflow-index.min.js" debug-src="~/OrchardCore.Workflows/Scripts/workflow-index-editors/workflow-index.js" at="Foot" type="module"></script>

@@ -186,13 +186,13 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, 
 
         var httpClient = _httpClientFactory.CreateClient();
 
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, workflowContext.CancellationToken);
 
         var responseCodes = ParseResponseCodes(HttpResponseCodes);
 
         var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
 
-        var responseBody = await response.Content.ReadAsStringAsync();
+        var responseBody = await response.Content.ReadAsStringAsync(workflowContext.CancellationToken);
 
         workflowContext.LastResult = new
         {

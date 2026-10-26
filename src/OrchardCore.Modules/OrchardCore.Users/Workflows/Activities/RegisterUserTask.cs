@@ -138,7 +138,9 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
             {
                 foreach (var item in errors)
                 {
+#pragma warning disable OCLOC104 // The errors are the identity errors, which are declared and extracted where they are described.
                     updater.ModelState.TryAddModelError(item.Key, S[item.Value]);
+#pragma warning restore OCLOC104
                 }
             }
             return null;
@@ -163,7 +165,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
 
         var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, context, _htmlEncoder);
 
-        var result = await _emailService.SendAsync(email, subject, body);
+        var result = await _emailService.SendAsync(email, subject, body, cancellationToken: context.CancellationToken);
 
         if (!result.Succeeded)
         {

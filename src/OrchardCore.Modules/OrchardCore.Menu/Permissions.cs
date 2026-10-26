@@ -7,9 +7,8 @@ namespace OrchardCore.Menu;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private static readonly Permission s_editMenuContent = ContentTypePermissionsHelper.CreateDynamicPermission(
-        ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name],
-        "Menu");
+    private static readonly Permission s_editMenuContent = ContentTypePermissionsHelper
+        .CreateDynamicPermissionOf(CommonPermissions.EditContent.Name, "Menu");
 
     public static readonly Permission ManageMenu = new("ManageMenu", LocalizationSource.Create<Permissions>("Manage menus"), [s_editMenuContent]);
 

@@ -2,8 +2,10 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
+using OrchardCore.Secrets;
 using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services;
@@ -11,17 +13,23 @@ namespace OrchardCore.Twitter.Services;
 public class TwitterClientMessageHandler : DelegatingHandler
 {
     private readonly TwitterSettings _twitterSettings;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IClock _clock;
+    private readonly ILogger _logger;
 
     public TwitterClientMessageHandler(
         IClock clock,
         IOptions<TwitterSettings> twitterSettings,
-        IDataProtectionProvider dataProtectionProvider)
+        IServiceProvider serviceProvider,
+        IDataProtectionProvider dataProtectionProvider,
+        ILogger<TwitterClientMessageHandler> logger)
     {
         _twitterSettings = twitterSettings.Value;
+        _serviceProvider = serviceProvider;
         _dataProtectionProvider = dataProtectionProvider;
         _clock = clock;
+        _logger = logger;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -39,14 +47,18 @@ public class TwitterClientMessageHandler : DelegatingHandler
     {
         var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
 
-        // Unprotect the secrets in local variables, as the settings instance is shared by all the requests.
-        var consumerSecret = !string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret)
-            ? protector.Unprotect(_twitterSettings.ConsumerSecret)
-            : _twitterSettings.ConsumerSecret;
+        // Read the secrets in local variables, as the settings instance is shared by all the requests.
+        var consumerSecret = await _serviceProvider.GetSecretValueAsync(
+            _twitterSettings.ConsumerSecretSecretName,
+            _twitterSettings.ConsumerSecret,
+            protector,
+            _logger) ?? string.Empty;
 
-        var accessTokenSecret = !string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret)
-            ? protector.Unprotect(_twitterSettings.AccessTokenSecret)
-            : _twitterSettings.AccessTokenSecret;
+        var accessTokenSecret = await _serviceProvider.GetSecretValueAsync(
+            _twitterSettings.AccessTokenSecretSecretName,
+            _twitterSettings.AccessTokenSecret,
+            protector,
+            _logger) ?? string.Empty;
 
         var nonce = GetNonce();
         var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();

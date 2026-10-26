@@ -1,0 +1,458 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Seo\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Seo.AdminMenu"
+msgid "Robots"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Seo.AdminMenu"
+msgid "Search"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Seo.AdminMenu"
+msgid "Search Engine Optimization"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Seo.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. Format arguments: {0}: SeoConstants.RobotsFileName
+#: Drivers/RobotsSettingsDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Seo.Drivers.RobotsSettingsDisplayDriver"
+msgid "A physical {0} file is found for the current site. Until removed, the settings below will have no effect."
+msgstr ""
+
+#: Drivers/SeoMetaPartDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
+msgid "The canonical entry contains invalid characters."
+msgstr ""
+
+#: Drivers/SeoMetaPartDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
+msgid "The google schema is written in an incorrect format."
+msgstr ""
+
+#: Drivers/SeoMetaPartDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
+msgid "The meta entries are written in an incorrect format."
+msgstr ""
+
+#: GraphQL/MetaEntryQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.MetaEntryQueryObjectType"
+msgid "Charset of the meta entry"
+msgstr ""
+
+#: GraphQL/MetaEntryQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.MetaEntryQueryObjectType"
+msgid "Content of the meta entry"
+msgstr ""
+
+#: GraphQL/MetaEntryQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.MetaEntryQueryObjectType"
+msgid "HttpEquiv of the meta entry"
+msgstr ""
+
+#: GraphQL/MetaEntryQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.MetaEntryQueryObjectType"
+msgid "Meta entry"
+msgstr ""
+
+#: GraphQL/MetaEntryQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.MetaEntryQueryObjectType"
+msgid "Name of the meta entry"
+msgstr ""
+
+#: GraphQL/MetaEntryQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.MetaEntryQueryObjectType"
+msgid "Property of the meta entry"
+msgstr ""
+
+#: GraphQL/MetaEntryQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.MetaEntryQueryObjectType"
+msgid "The generated tag of the meta entry"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "SEO meta fields"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The canonical link of the content item"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The content item specific meta robots definition"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The meta description of the content item"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The meta keywords of the content item"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta google schema"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta opengraph description"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta opengraph title"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta opengraph type"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta twitter card"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta twitter creator"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta twitter description"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta twitter site"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo meta twitter title"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "The seo page title"
+msgstr ""
+
+#: GraphQL/SeoMetaQueryObjectType.cs
+msgctxt "OrchardCore.Seo.GraphQL.SeoMetaQueryObjectType"
+msgid "Whether to render the seo metas"
+msgstr ""
+
+#. Format arguments: {0}: "[ { content: 'First content', name: 'name1', property: 'prop1', httpEquiv: 'http-equiv1', charset: 'charset1' }, { content: 'Second content', name: 'name2', property: 'prop2', httpEquiv: 'http-equiv2', charset: 'charset2' } ]"
+#: Services/SeoJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "A JSON representation of the allowed values, e.g. {0}"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Add a custom meta tag"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Cancel"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Charset"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Content"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Custom Meta Tags"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Edit Data"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Http Equiv"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Name"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "OK"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Property"
+msgstr ""
+
+#: Services/SeoJSLocalizer.cs
+msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
+msgid "Remove element from list"
+msgstr ""
+
+#: Views/RobotsSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.RobotsSettings.Edit"
+msgid "Add a rule to allow all web robots."
+msgstr ""
+
+#: Views/RobotsSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.RobotsSettings.Edit"
+msgid "Add a rule to disallow web robots to the admin routes."
+msgstr ""
+
+#: Views/RobotsSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.RobotsSettings.Edit"
+msgid "Additional rules"
+msgstr ""
+
+#. Format arguments: {0}: "User-agent: *", $"Disallow: /{AdminOptions.Value.AdminUrlPrefix}"
+#: Views/RobotsSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Seo.Views.RobotsSettings.Edit"
+msgid "Adds: <code>{0}</code>"
+msgstr ""
+
+#: Views/RobotsSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.RobotsSettings.Edit"
+msgid "Optionally, you can include any additional rules."
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Canonical"
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Custom Meta Tags"
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Meta Description"
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Meta Keywords"
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Meta Robots"
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Override the default canonical url."
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Override the default generated web browser page title (recommended to keep under 70 characters)."
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Page Title"
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Render"
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "The meta description to render for this page."
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "The meta keywords to render for this page, comma separated."
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "The robots meta to render for this page."
+msgstr ""
+
+#: Views/SeoMetaPart.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPart.Edit"
+msgid "Whether to render metadata for this page."
+msgstr ""
+
+#: Views/SeoMetaPartGoogleSchema.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartGoogleSchema.Edit"
+msgid "Google Schema"
+msgstr ""
+
+#: Views/SeoMetaPartGoogleSchema.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartGoogleSchema.Edit"
+msgid "The Social Meta Settings Google Schema is used by default, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartOpenGraph.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartOpenGraph.Edit"
+msgid "Open Graph Description"
+msgstr ""
+
+#: Views/SeoMetaPartOpenGraph.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartOpenGraph.Edit"
+msgid "Open Graph Title"
+msgstr ""
+
+#: Views/SeoMetaPartOpenGraph.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartOpenGraph.Edit"
+msgid "Open Graph Type"
+msgstr ""
+
+#: Views/SeoMetaPartOpenGraph.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartOpenGraph.Edit"
+msgid "The Meta Description is used by default, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartOpenGraph.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartOpenGraph.Edit"
+msgid "The Social Meta Settings Open Graph Type is used by default, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartOpenGraph.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartOpenGraph.Edit"
+msgid "The Title is used by default, then the Page Title, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Check to display the Custom Meta Tags."
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Check to display the Google Schema panel."
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Check to display the Keywords panel."
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Check to display the Open Graph panel."
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Check to display the Twitter panel."
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Display Custom Meta Tags"
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Display Google Schema"
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Display Keywords"
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Display Open Graph"
+msgstr ""
+
+#: Views/SeoMetaPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartSettings.Edit"
+msgid "Display Twitter"
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "The Meta Description is used by default, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "The Social Meta Settings Twitter Card is used by default, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "The Social Meta Settings Twitter Creator is used by default, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "The Social Meta Settings Twitter Site is used by default, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "The Title is used by default, then the Page Title, or can be overridden here."
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "Twitter Card"
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "Twitter Creator"
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "Twitter Description"
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "Twitter Site"
+msgstr ""
+
+#: Views/SeoMetaPartTwitter.Edit.cshtml
+msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
+msgid "Twitter Title"
+msgstr ""

@@ -14,7 +14,7 @@ public class ContentDefinitionCacheContextProvider : ICacheContextProvider
 
     public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
     {
-        if (contexts.Any(ctx => string.Equals(ctx, "types", StringComparison.OrdinalIgnoreCase)))
+        if (contexts.ContainsContext("types"))
         {
             var identifier = await _contentDefinitionManager.GetIdentifierAsync();
             entries.Add(new CacheContextEntry("types", identifier));

@@ -59,8 +59,8 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
             await builder.AddAsync(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), async listTypeMenu =>
             {
                 AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
-                listTypeMenu.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
-                    ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
+                listTypeMenu.Permission(ContentTypePermissionsHelper.CreateDynamicPermissionOf(
+                    CommonPermissions.EditContent, _contentType));
                 await AddContentItemsAsync(listTypeMenu);
             });
         }
@@ -102,8 +102,8 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
                     itemBuilder.LocalNav();
                     AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => itemBuilder.AddClass(c));
 
-                    itemBuilder.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
-                    ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
+                    itemBuilder.Permission(ContentTypePermissionsHelper.CreateDynamicPermissionOf(
+                        CommonPermissions.EditContent, _contentType));
                 });
             }
         }

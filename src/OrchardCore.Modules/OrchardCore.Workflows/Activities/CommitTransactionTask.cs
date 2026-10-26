@@ -36,7 +36,7 @@ public class CommitTransactionTask : TaskActivity<CommitTransactionTask>
             return Outcome("Done", "Invalid");
         }
 
-        await _session.SaveChangesAsync();
+        await _session.SaveChangesAsync(workflowContext.CancellationToken);
 
         return Outcome("Done", "Valid");
     }

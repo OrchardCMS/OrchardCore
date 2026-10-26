@@ -41,19 +41,35 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
     public static string CurrentConnectionString => s_currentConnectionString;
 
+    internal static bool IsPostgresConfigured =>
+        _originalDatabaseProvider == "Postgres" && !string.IsNullOrEmpty(_originalConnectionString);
+
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
+    private readonly string _postgresConnectionString;
 
     public string ServerAddress { get; }
 
-    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector)
+    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector, string postgresConnectionString = null)
     {
         _app = app;
         ServerAddress = serverAddress;
         _logCollector = logCollector;
+        _postgresConnectionString = postgresConnectionString;
     }
 
-    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null)
+    /// <summary>
+    /// Starts an isolated CMS host, with optional fixture-specific configuration and services.
+    /// </summary>
+    /// <param name="contentRoot">The CMS application's content root.</param>
+    /// <param name="appDataPath">The fixture's application data directory.</param>
+    /// <param name="instanceId">The fixture's database isolation identifier.</param>
+    /// <param name="configure">Optional host customization applied before building the application.</param>
+    public static async Task<OrchardTestServer> StartCmsAsync(
+        string contentRoot,
+        string appDataPath,
+        string instanceId = null,
+        Action<WebApplicationBuilder> configure = null)
     {
         var loggerProvider = new FakeLoggerProvider();
 
@@ -73,7 +89,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
         builder.Services.AddSingleton<IModuleNamesProvider, TestThemeModuleNamesProvider>();
 
-        ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        var postgresConnectionString = ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        configure?.Invoke(builder);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -81,7 +98,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
+        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector, postgresConnectionString);
     }
 
     public static async Task<OrchardTestServer> StartMvcAsync(string contentRoot, string appDataPath)
@@ -169,12 +186,25 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         if (_app is not null)
         {
-            await _app.StopAsync();
-            await _app.DisposeAsync();
+            try
+            {
+                await _app.StopAsync();
+                await _app.DisposeAsync();
+            }
+            finally
+            {
+                if (_postgresConnectionString is not null)
+                {
+                    // Npgsql pools outlive hosts. Release this fixture's idle connections
+                    // without clearing pools belonging to other, still-running fixtures.
+                    using var connection = new Npgsql.NpgsqlConnection(_postgresConnectionString);
+                    Npgsql.NpgsqlConnection.ClearPool(connection);
+                }
+            }
         }
     }
 
-    private static void ConfigureServices(
+    private static string ConfigureServices(
         WebApplicationBuilder builder,
         string appDataPath,
         string instanceId,
@@ -199,9 +229,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
+        string connectionString = null;
         if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
         {
-            var connectionString = _originalConnectionString;
+            connectionString = _originalConnectionString;
 
             if (!string.IsNullOrEmpty(instanceId))
             {
@@ -241,6 +272,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Logging.AddFilter<FakeLoggerProvider>(level => level >= LogLevel.Warning);
         builder.Logging.AddProvider(loggerProvider);
+
+        return IsPostgresConfigured && !string.IsNullOrEmpty(instanceId) ? connectionString : null;
     }
 
     /// <summary>

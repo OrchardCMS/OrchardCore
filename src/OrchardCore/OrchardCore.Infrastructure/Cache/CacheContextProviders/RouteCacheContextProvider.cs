@@ -13,7 +13,7 @@ public class RouteCacheContextProvider : ICacheContextProvider
 
     public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
     {
-        if (contexts.Any(ctx => string.Equals(ctx, "route", StringComparison.OrdinalIgnoreCase)))
+        if (contexts.ContainsContext("route"))
         {
             var httpContext = _httpContextAccessor.HttpContext;
             entries.Add(new CacheContextEntry("route", httpContext.Request.Path.Value.ToLowerInvariant()));

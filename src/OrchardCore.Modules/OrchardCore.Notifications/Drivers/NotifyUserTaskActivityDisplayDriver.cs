@@ -118,6 +118,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     /// </summary>
     protected override void EditActivity(TActivity activity, TEditViewModel model)
     {
+        // Nothing to do by default, derived drivers override this to populate their own properties.
     }
 
     /// <summary>
@@ -135,7 +136,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     /// </summary>
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
-
+        // Nothing to do by default, derived drivers override this to update their own properties.
     }
 
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)

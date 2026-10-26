@@ -178,7 +178,7 @@ public class EmailTask : TaskActivity<EmailTask>, IActivityProvidedValues
             message.Sender = sender.Trim();
         }
 
-        var result = await _emailService.SendAsync(message);
+        var result = await _emailService.SendAsync(message, cancellationToken: workflowContext.CancellationToken);
         workflowContext.LastResult = result;
 
         if (!result.Succeeded)

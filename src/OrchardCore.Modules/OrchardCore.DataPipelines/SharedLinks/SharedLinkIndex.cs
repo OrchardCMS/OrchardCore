@@ -3,19 +3,23 @@ using YesSql.Indexes;
 namespace OrchardCore.DataPipelines.SharedLinks;
 
 /// <summary>
-/// Indexes the shared links, to find them by identifier, list and search them, and delete the expired ones.
+/// Indexes the shared links, to find them by identifier or by resource, list and search them, and delete the expired
+/// ones.
 /// </summary>
 public sealed class SharedLinkIndex : MapIndex
 {
     public const int MaxIdLength = 26;
     public const int MaxKindLength = 100;
     public const int MaxTitleLength = 255;
+    public const int MaxResourceIdLength = 255;
 
     public long DocumentId { get; set; }
 
     public string LinkId { get; set; }
 
     public string Kind { get; set; }
+
+    public string ResourceId { get; set; }
 
     public string Title { get; set; }
 
@@ -38,6 +42,7 @@ public sealed class SharedLinkIndexProvider : IndexProvider<SharedLink>
             {
                 LinkId = link.LinkId,
                 Kind = link.Kind,
+                ResourceId = link.ResourceId,
                 Title = Truncate(link.Title),
                 SourceName = Truncate(link.SourceName),
                 CreatedUtc = link.CreatedUtc,

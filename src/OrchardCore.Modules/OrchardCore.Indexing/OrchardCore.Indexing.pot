@@ -1,0 +1,572 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Indexing\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Indexing.AdminMenu"
+msgid "Indexes"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Indexing.AdminMenu"
+msgid "Search"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "1 index has been rebuilt successfully."
+msgid_plural "{0} indexes have been rebuilt successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "1 index has been removed successfully."
+msgid_plural "{0} indexes have been removed successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "1 index has been reset successfully."
+msgid_plural "{0} indexes have been reset successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "1 index has been synchronized successfully."
+msgid_plural "{0} indexes have been synchronized successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "An error occurred while rebuilding the index."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "An index has been created successfully. The synchronizing process was triggered in the background."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "An index has been rebuilt successfully. The synchronizing process was triggered in the background."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "An index has been reset successfully. The synchronizing process was triggered in the background."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "An index has been updated successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Invalid provider or type."
+msgstr ""
+
+#. Format arguments: {0}: indexProfile.ProviderName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "No index manager found to rebuild index for provider '{0}'."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "No index were rebuilt."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "No index were removed."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "No index were reset."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "No index were synchronized."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Rebuild"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Reset"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Synchronize"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "The index was removed successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "The synchronizing process was triggered in the background."
+msgstr ""
+
+#. Format arguments: {0}: indexProfile.ProviderName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Unable to create the index for the provider '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: indexProfile.ProviderName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Unable to delete the index for the provider {0}."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Unable to delete the index locally. Try force-deleting the index."
+msgstr ""
+
+#. Format arguments: {0}: providerName; {1}: type
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Unable to find a provider named '{0}' with the type '{1}'."
+msgstr ""
+
+#. Format arguments: {0}: providerName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Controllers.AdminController"
+msgid "Unable to find a provider with the name '{0}'."
+msgstr ""
+
+#: Deployments/IndexProfileDeploymentStepDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Deployments.IndexProfileDeploymentStepDisplayDriver"
+msgid "At least one index profile is required."
+msgstr ""
+
+#: Drivers/ContentIndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.ContentIndexProfileDisplayDriver"
+msgid "At least one content type must be selected."
+msgstr ""
+
+#: Drivers/IndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
+msgid "The index name is a required field."
+msgstr ""
+
+#: Drivers/IndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
+msgid "The index name must be less than 255 characters."
+msgstr ""
+
+#: Drivers/IndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
+msgid "The name is required field."
+msgstr ""
+
+#: Drivers/IndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
+msgid "The name must be less than 255 characters."
+msgstr ""
+
+#: Drivers/IndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
+msgid "There is already another index with the same name."
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Create"
+msgid "Indexes"
+msgstr ""
+
+#. Format arguments: {0}: Model.DisplayName
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Views.Admin.Create"
+msgid "New '{0}' index"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: Model.DisplayName
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Views.Admin.Edit"
+msgid "Edit '{0}' index"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Edit"
+msgid "Indexes"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no indexes at the moment."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Add index"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Available Sources"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Indexes"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Last modified"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Source"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "You need to enable a feature which provides an index source."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "Your search returned no results."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Indexing.Views.Admin.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/ContentIndexMetadata.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
+msgid "Any culture"
+msgstr ""
+
+#: Views/ContentIndexMetadata.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
+msgid "Check to index draft if it exists, otherwise only the published version is indexed."
+msgstr ""
+
+#: Views/ContentIndexMetadata.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
+msgid "Content types"
+msgstr ""
+
+#: Views/ContentIndexMetadata.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
+msgid "Culture"
+msgstr ""
+
+#: Views/ContentIndexMetadata.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
+msgid "Index Latest version"
+msgstr ""
+
+#: Views/ContentIndexMetadata.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
+msgid "The content culture that it will index."
+msgstr ""
+
+#: Views/ContentIndexMetadata.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
+msgid "The content types to index. Choose at least one."
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Force Delete"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "No"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Rebuild"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Rebuild Index"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Reset"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Reset Index"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Synchronize"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Synchronize Index"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "This will restart the indexing of all content items. Continue?"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "This will synchronize the indexing of content items. Continue?"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Yes"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Your index will be forcing to delete, which might alter some services during the process. Continue?"
+msgstr ""
+
+#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
+msgid "Your index will be rebuilt, which might alter some services during the process. Continue?"
+msgstr ""
+
+#: Views/IndexProfile.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/IndexProfile.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/IndexProfile.DefaultMeta.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.DefaultMeta.SummaryAdmin"
+msgid "Author"
+msgstr ""
+
+#: Views/IndexProfile.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.DefaultTags.SummaryAdmin"
+msgid "Provider"
+msgstr ""
+
+#: Views/IndexProfile.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.DefaultTags.SummaryAdmin"
+msgid "Type"
+msgstr ""
+
+#: Views/IndexProfile.Link.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.Link"
+msgid "Add"
+msgstr ""
+
+#: Views/IndexProfileFields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfileFields.Edit"
+msgid "A unique name for the index."
+msgstr ""
+
+#: Views/IndexProfileFields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfileFields.Edit"
+msgid "Index Name"
+msgstr ""
+
+#: Views/IndexProfileFields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.IndexProfileFields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Fields.Edit"
+msgid "Include all index profiles"
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Fields.Edit"
+msgid "No index profiles are available."
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Fields.Edit"
+msgid "The index profiles to export as part of the plan."
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Summary"
+msgid "All index profiles"
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Summary"
+msgid "Index Profiles"
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Summary"
+msgid "No selected index profiles."
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Thumbnail"
+msgid "Export all or specified index profiles."
+msgstr ""
+
+#: Views/Items/IndexProfileDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.IndexProfileDeploymentStep.Thumbnail"
+msgid "Index Profiles"
+msgstr ""
+
+#: Views/Items/RebuildIndexDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.RebuildIndexDeploymentStep.Fields.Edit"
+msgid "Include all indexes."
+msgstr ""
+
+#: Views/Items/RebuildIndexDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.RebuildIndexDeploymentStep.Fields.Edit"
+msgid "The indexes to rebuild as part of the plan."
+msgstr ""
+
+#: Views/Items/RebuildIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.RebuildIndexDeploymentStep.Fields.Summary"
+msgid "All indexes"
+msgstr ""
+
+#: Views/Items/RebuildIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.RebuildIndexDeploymentStep.Fields.Summary"
+msgid "No index selected."
+msgstr ""
+
+#: Views/Items/RebuildIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.RebuildIndexDeploymentStep.Fields.Summary"
+msgid "Rebuild Indexes"
+msgstr ""
+
+#: Views/Items/RebuildIndexDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.RebuildIndexDeploymentStep.Fields.Thumbnail"
+msgid "Rebuild Indexes"
+msgstr ""
+
+#: Views/Items/RebuildIndexDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.RebuildIndexDeploymentStep.Fields.Thumbnail"
+msgid "Rebuild all or specified indexes."
+msgstr ""
+
+#: Views/Items/ResetIndexDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.ResetIndexDeploymentStep.Fields.Edit"
+msgid "Include all indexes."
+msgstr ""
+
+#: Views/Items/ResetIndexDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.ResetIndexDeploymentStep.Fields.Edit"
+msgid "The indexes to reset as part of the plan."
+msgstr ""
+
+#: Views/Items/ResetIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.ResetIndexDeploymentStep.Fields.Summary"
+msgid "All indexes"
+msgstr ""
+
+#: Views/Items/ResetIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.ResetIndexDeploymentStep.Fields.Summary"
+msgid "No index selected."
+msgstr ""
+
+#: Views/Items/ResetIndexDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.ResetIndexDeploymentStep.Fields.Summary"
+msgid "Reset Indexes"
+msgstr ""
+
+#: Views/Items/ResetIndexDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.ResetIndexDeploymentStep.Fields.Thumbnail"
+msgid "Reset Indexes"
+msgstr ""
+
+#: Views/Items/ResetIndexDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Indexing.Views.Items.ResetIndexDeploymentStep.Fields.Thumbnail"
+msgid "Reset all or specified indexes."
+msgstr ""

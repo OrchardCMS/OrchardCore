@@ -13,7 +13,7 @@
 
 @model UserNotificationNavbarViewModel
 
-<li class="nav-item dropdown text-end notification-navbar-container" data-mark-as-read-url="@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications }))">
+<li class="nav-item dropdown text-end notification-navbar-container" data-mark-as-read-url="@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications })">
     <a type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="@T["Notifications"]">
         @if (Model.TotalUnread > 0)
         {

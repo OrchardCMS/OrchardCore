@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,13 +9,10 @@ namespace OrchardCore.ContentTypes.Deployment;
 /// </summary>
 public class DeleteContentDefinitionDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<DeleteContentDefinitionDeploymentStep>("Content Management");
+    public override string Name => "DeleteContentDefinition";
 
-    public DeleteContentDefinitionDeploymentStep()
-    {
-        Name = "DeleteContentDefinition";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
     public string[] ContentTypes { get; set; } = [];
 

@@ -1,0 +1,10 @@
+@using OrchardCore.ContentTypes.Models
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Localization.Data
+
+@inject IDataLocalizer D
+
+@model ShapeViewModel<ContentTypeEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a class="list-item-search-text" asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Value.Name">@D[Model.Value.DisplayName, "Content Types"]</a>

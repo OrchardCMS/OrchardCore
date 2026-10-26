@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -151,6 +152,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
+        services.AddScoped<IAdminListItemDisplayManager<ContentItem>, ContentItemAdminListDisplayManager>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();
 
@@ -213,6 +215,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -236,11 +236,19 @@ services.AddScoped<IJSLocalizer, ModuleBJSLocalizer>();
 var localizations = Orchard.GetJSLocalizations("module-a", "module-b");
 ```
 
-## Extracting strings with PoExtractor
+## Exporting translation templates during a build
 
-The string keys inside `GetLocalizations` are plain `IStringLocalizer` calls, which means they are detected automatically by [PoExtractor](https://github.com/OrchardCoreContrib/OrchardCoreContrib.PoExtractor):
+The string keys inside `GetLocalizations` are ordinary C# `IStringLocalizer` calls. `OrchardCore.Localization.Build` extracts their constant keys and typed localizer contexts into the module's POT template during a normal build. For example, the calls above use the `MyModule.Services.MyModuleJSLocalizer` context.
 
-```bash
-dotnet tool install --global OrchardCoreContrib.PoExtractor
-extractpo src/MyModule output/Localization -l C#
+Outside the Orchard Core source tree, reference `OrchardCore.Localization.Build` in each project whose strings should be extracted. To collect templates for upload to Crowdin or another localization platform, set `LocalizationCatalogOutputPath` to a shared absolute output directory. For example, from the solution root in PowerShell:
+
+```powershell
+dotnet build src/MyModule/MyModule.csproj -p:LocalizationCatalogOutputPath="$PWD/artifacts/localization"
 ```
+
+The exported template is written to `<output>/<TargetFramework>/<AssemblyName>.pot`, for example `artifacts/localization/net10.0/MyModule.pot`. Build the solution or application with the same property to collect templates from all participating projects built through that entry point. Without the property, templates are generated and embedded but not copied into an export directory.
+
+This is the recommended successor to POExtractor. Follow the [build-time POT export workflow](README.md#export-translation-templates-for-localization-platforms) to produce a fresh snapshot, upload source templates, and download translated PO files for deployment.
+
+!!! note
+    Extraction reads the C# localizer calls in `GetLocalizations`; it does not scan JavaScript or TypeScript assets. Declare localizable strings as constant C# localizer keys and expose them through `IJSLocalizer` as shown above. The existing PO-file-backed runtime translation workflow is unchanged.

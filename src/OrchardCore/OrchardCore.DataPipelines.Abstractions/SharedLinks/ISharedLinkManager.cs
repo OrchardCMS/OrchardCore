@@ -59,4 +59,14 @@ public interface ISharedLinkManager
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>The links, and the number of links that match.</returns>
     Task<(IReadOnlyList<SharedLink> Links, int Count)> ListAsync(string search, int skip, int take, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Lists the links to a resource, the most recent first, such as to show them next to the resource, or to revoke
+    /// or delete them when the resource is deleted.
+    /// </summary>
+    /// <param name="kind">The kind of the resource, the <c>Kind</c> of its <see cref="ISharedLinkHandler"/>.</param>
+    /// <param name="resourceId">The identifier of the resource.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>The links, whether they work or not.</returns>
+    Task<IReadOnlyList<SharedLink>> ListAsync(string kind, string resourceId, CancellationToken cancellationToken = default);
 }

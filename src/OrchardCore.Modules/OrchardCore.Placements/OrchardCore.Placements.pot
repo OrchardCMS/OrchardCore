@@ -1,0 +1,291 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Placements\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Placements.AdminMenu"
+msgid "Design"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Placements.AdminMenu"
+msgid "Placements"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", emptyNodesIndexes)
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "A valid placement must contain either <b>place</b>, <b>shape</b>, <b>wrappers</b> or <b>alternates</b>. Please correct the placements at positions: {0}."
+msgstr ""
+
+#. Format arguments: {0}: jsonException.Message
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "An error occurred while parsing the placement<br/>{0}"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "An error occurred while saving the placement."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "Delete"
+msgstr ""
+
+#. Format arguments: {0}: viewModel.ShapeType
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "Placement rules for \"{0}\" already exists. Please edit existing rule."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "Placements successfully removed."
+msgstr ""
+
+#. Format arguments: {0}: shapeType, viewModel.ShapeType
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "The \"{0}\" placement has been deleted."
+msgstr ""
+
+#. Format arguments: {0}: viewModel.ShapeType
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "The \"{0}\" placement have been saved."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "The Shape type can't be empty."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Placements.Permissions"
+msgid "Manage placements"
+msgstr ""
+
+#. Format arguments: {0}: displayName
+#: Settings/PlacementContentPartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement for a {0} part"
+msgstr ""
+
+#. Format arguments: {0}: displayName
+#: Settings/PlacementContentPartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement for a {0} part in detail views"
+msgstr ""
+
+#. Format arguments: {0}: displayName
+#: Settings/PlacementContentPartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement for a {0} part in summary views"
+msgstr ""
+
+#. Format arguments: {0}: displayName
+#: Settings/PlacementContentPartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentPartDefinitionDriver"
+msgid "Placement in admin editor for a {0} part"
+msgstr ""
+
+#. Format arguments: {0}: displayName; {1}: partName
+#: Settings/PlacementContentPartFieldDefinitionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} field in a {1}"
+msgstr ""
+
+#. Format arguments: {0}: displayName; {1}: partName
+#: Settings/PlacementContentPartFieldDefinitionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} field in a {1} in detail views"
+msgstr ""
+
+#. Format arguments: {0}: displayName; {1}: partName
+#: Settings/PlacementContentPartFieldDefinitionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} field in a {1} in summary views"
+msgstr ""
+
+#. Format arguments: {0}: partName; {1}: displayName
+#: Settings/PlacementContentTypePartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} part in a {1} type"
+msgstr ""
+
+#. Format arguments: {0}: partName; {1}: displayName
+#: Settings/PlacementContentTypePartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} part in a {1} type in detail views"
+msgstr ""
+
+#. Format arguments: {0}: partName; {1}: displayName
+#: Settings/PlacementContentTypePartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement for the {0} part in a {1} type in summary views"
+msgstr ""
+
+#. Format arguments: {0}: displayName; {1}: partName
+#: Settings/PlacementContentPartFieldDefinitionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement in admin editor for the {0} field in a {1}"
+msgstr ""
+
+#. Format arguments: {0}: partName; {1}: displayName
+#: Settings/PlacementContentTypePartDefinitionDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Settings.PlacementContentTypePartDefinitionDriver"
+msgid "Placement in admin editor for the {0} part in a {1} type"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Create Placement"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Delete"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Edit Placement"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Placement rules"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Placements"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Shape type"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "The type of the shape."
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "and continue"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no placements at the moment."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Add Placement"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Placements"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "Shape type"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/Items/PlacementsDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Edit"
+msgid "Placements"
+msgstr ""
+
+#: Views/Items/PlacementsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Summary"
+msgid "Adds all placements to the plan."
+msgstr ""
+
+#: Views/Items/PlacementsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Summary"
+msgid "Placements"
+msgstr ""
+
+#: Views/Items/PlacementsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Thumbnail"
+msgid "All Placements"
+msgstr ""
+
+#: Views/Items/PlacementsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Thumbnail"
+msgid "Exports placements defined in Placements module."
+msgstr ""
+
+#: Views/PlacementSettings.cshtml
+msgctxt "OrchardCore.Placements.Views.PlacementSettings"
+msgid "Edit placements"
+msgstr ""
+
+#: Views/ShapePlacement.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Placements.Views.ShapePlacement.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/ShapePlacement.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Placements.Views.ShapePlacement.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""

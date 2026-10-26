@@ -16,6 +16,7 @@ using OrchardCore.Deployment;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.FileStorage;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Json;
 using OrchardCore.Localization;
@@ -84,7 +85,9 @@ public sealed class WorkflowTypeController : Controller
     }
 
     [Admin("Workflows/Types", "WorkflowTypes")]
-    public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        WorkflowTypeIndexOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -156,6 +159,13 @@ public sealed class WorkflowTypeController : Controller
         [
             new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
         ];
+
+        // The AdminList shape renders the types with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<WorkflowTypeEntry>
+        {
+            Source = model.WorkflowTypes,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

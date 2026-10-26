@@ -2,6 +2,7 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -10,6 +11,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
+using OrchardCore.Workflows.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -87,6 +89,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
+        
+        // Builds the rows of the workflow types admin list.
+        services.AddDisplayDriver<WorkflowTypeEntry, WorkflowTypeEntryDisplayDriver>();
+        services.AddDisplayDriver<WorkflowEntry, WorkflowEntryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddDisplayDriver<IActivity, MissingActivityDisplayDriver>();
         services.AddDisplayDriver<IActivity, ActivityRetryPolicyDisplayDriver>();
@@ -136,6 +142,7 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTrimmingServices(_shellConfiguration);
+
     }
 }
 

@@ -46,7 +46,7 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
                 return new[] { user };
             }
 
-            var owner = await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner && x.IsEnabled).FirstOrDefaultAsync();
+            var owner = await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner && x.IsEnabled).FirstOrDefaultAsync(workflowContext.CancellationToken);
 
             if (owner != null)
             {

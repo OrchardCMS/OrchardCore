@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -49,6 +50,7 @@ using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
+using OrchardCore.RateLimits;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -217,6 +219,9 @@ public sealed class Startup : StartupBase
 
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
+
+        // Builds the rows of the media profiles admin list.
+        services.AddDisplayDriver<MediaProfileEntry, MediaProfileEntryDisplayDriver>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
         services.AddRecipeExecutionStep<MediaProfileStep>();
 
@@ -225,6 +230,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
         services.AddChunkFileUploadServices();
+
     }
 
     public override void Configure(
@@ -332,6 +338,15 @@ public sealed class MediaSlugifyStartup : StartupBase
 
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
+    }
+}
+
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class RateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<RateLimitsOptions>, MediaRateLimitsOptionsConfiguration>();
     }
 }
 

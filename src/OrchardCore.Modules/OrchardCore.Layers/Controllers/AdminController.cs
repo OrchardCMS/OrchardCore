@@ -121,6 +121,12 @@ public sealed class AdminController : Controller
             }
         }
 
+        // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<Layer>
+        {
+            Source = model.Layers,
+        };
+
         return View(model);
     }
 

@@ -1,0 +1,247 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Sms\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Activities/SmsTask.cs
+msgctxt "OrchardCore.Sms.Activities.SmsTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/SmsTask.cs
+msgctxt "OrchardCore.Sms.Activities.SmsTask"
+msgid "Failed"
+msgstr ""
+
+#: Activities/SmsTask.cs
+msgctxt "OrchardCore.Sms.Activities.SmsTask"
+msgid "Messaging"
+msgstr ""
+
+#: Activities/SmsTask.cs
+msgctxt "OrchardCore.Sms.Activities.SmsTask"
+msgid "SMS Task"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Sms.AdminMenu"
+msgid "Communication"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Sms.AdminMenu"
+msgid "SMS"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Sms.AdminMenu"
+msgid "SMS Test"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Sms.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Sms.AdminMenu"
+msgid "Testing"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Sms.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Sms.Controllers.AdminController"
+msgid "Please provide a valid phone number."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Sms.Controllers.AdminController"
+msgid "Please select a valid provider."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Sms.Controllers.AdminController"
+msgid "The test SMS message failed to send."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Sms.Controllers.AdminController"
+msgid "The test SMS message has been successfully sent."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Sms.Controllers.AdminController"
+msgid "This is a test SMS message."
+msgstr ""
+
+#: Drivers/SmsTaskDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.SmsTaskDisplayDriver"
+msgid "Message Body requires a value."
+msgstr ""
+
+#: Drivers/SmsTaskDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.SmsTaskDisplayDriver"
+msgid "Phone number requires a value."
+msgstr ""
+
+#: Drivers/TwilioSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSecretMigrationDisplayDriver"
+msgid "Auth token"
+msgstr ""
+
+#: Drivers/TwilioSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSecretMigrationDisplayDriver"
+msgid "Twilio"
+msgstr ""
+
+#: Drivers/TwilioSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSecretMigrationDisplayDriver"
+msgid "Twilio: Auth token"
+msgstr ""
+
+#: Drivers/TwilioSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSettingsDisplayDriver"
+msgid "Account SID requires a value."
+msgstr ""
+
+#: Drivers/TwilioSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSettingsDisplayDriver"
+msgid "Auth Token required a value."
+msgstr ""
+
+#: Drivers/TwilioSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSettingsDisplayDriver"
+msgid "Phone number requires a value."
+msgstr ""
+
+#: Drivers/TwilioSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSettingsDisplayDriver"
+msgid "Please provide a valid phone number."
+msgstr ""
+
+#: Drivers/TwilioSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Drivers.TwilioSettingsDisplayDriver"
+msgid "You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."
+msgstr ""
+
+#: Views/Admin/Test.cshtml
+msgctxt "OrchardCore.Sms.Views.Admin.Test"
+msgid "No SMS providers are available. Enable at least one SMS provider feature."
+msgstr ""
+
+#: Views/Admin/Test.cshtml
+msgctxt "OrchardCore.Sms.Views.Admin.Test"
+msgid "Phone Number"
+msgstr ""
+
+#: Views/Admin/Test.cshtml
+msgctxt "OrchardCore.Sms.Views.Admin.Test"
+msgid "Phone number must include a country code. For example, +1 for United States."
+msgstr ""
+
+#: Views/Admin/Test.cshtml
+msgctxt "OrchardCore.Sms.Views.Admin.Test"
+msgid "Provider"
+msgstr ""
+
+#: Views/Admin/Test.cshtml
+msgctxt "OrchardCore.Sms.Views.Admin.Test"
+msgid "Select a provider"
+msgstr ""
+
+#: Views/Admin/Test.cshtml
+msgctxt "OrchardCore.Sms.Views.Admin.Test"
+msgid "Send"
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Design"
+msgid "Send SMS"
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Edit"
+msgid "Body"
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Edit"
+msgid "Optionally, From Phone Number"
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Edit"
+msgid "Optionally, set the send from phone number must include a country code. For example, +1 for United States. With Liquid support."
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Edit"
+msgid "Phone Number"
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Edit"
+msgid "Phone number must include a country code. For example, +1 for United States. With Liquid support."
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Edit"
+msgid "The body of the SMS message. With Liquid support."
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Thumbnail"
+msgid "Send SMS"
+msgstr ""
+
+#: Views/Items/SmsTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Sms.Views.Items.SmsTask.Fields.Thumbnail"
+msgid "Send an SMS message."
+msgstr ""
+
+#: Views/SmsSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.SmsSettings.Edit"
+msgid "Default SMS provider"
+msgstr ""
+
+#: Views/SmsSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.SmsSettings.Edit"
+msgid "Select a provider"
+msgstr ""
+
+#: Views/TwilioSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
+msgid "Account SID"
+msgstr ""
+
+#: Views/TwilioSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
+msgid "Auth Token"
+msgstr ""
+
+#: Views/TwilioSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
+msgid "Enable Twilio Provider"
+msgstr ""
+
+#: Views/TwilioSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
+msgid "Phone Number"
+msgstr ""
+
+#: Views/TwilioSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
+msgid "Phone number must include a country code. For example, +1 for United States."
+msgstr ""
+
+#: Views/TwilioSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Views.TwilioSettings.Edit"
+msgid "Twilio Account Info"
+msgstr ""

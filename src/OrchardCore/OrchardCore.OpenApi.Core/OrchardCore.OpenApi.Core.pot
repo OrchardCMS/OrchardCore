@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.OpenApi.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: OpenApiPermissions.cs
+msgctxt "OrchardCore.OpenApi.OpenApiPermissions"
+msgid "Access view content endpoints"
+msgstr ""
+
+#: OpenApiPermissions.cs
+msgctxt "OrchardCore.OpenApi.OpenApiPermissions"
+msgid "Manage OpenAPI settings and access interactive documentation UIs"
+msgstr ""

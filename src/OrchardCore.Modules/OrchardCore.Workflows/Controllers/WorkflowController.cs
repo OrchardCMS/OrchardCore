@@ -90,7 +90,11 @@ public sealed class WorkflowController : Controller
     }
 
     [Admin("Workflows/Types/{workflowTypeId}/Instances/{action}", "Workflows")]
-    public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
+    public async Task<IActionResult> Index(
+        long workflowTypeId,
+        WorkflowIndexViewModel model,
+        PagerParameters pagerParameters,
+        string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
