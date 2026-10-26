@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation;
@@ -13,7 +12,6 @@ public class NavigationManager : INavigationManager
 {
     private readonly IEnumerable<INavigationProvider> _navigationProviders;
     private readonly ILogger _logger;
-    protected readonly ShellSettings _shellSettings;
     private readonly IUrlHelperFactory _urlHelperFactory;
     private readonly IAuthorizationService _authorizationService;
 
@@ -22,13 +20,11 @@ public class NavigationManager : INavigationManager
     public NavigationManager(
         IEnumerable<INavigationProvider> navigationProviders,
         ILogger<NavigationManager> logger,
-        ShellSettings shellSettings,
         IUrlHelperFactory urlHelperFactory,
         IAuthorizationService authorizationService)
     {
         _navigationProviders = navigationProviders;
         _logger = logger;
-        _shellSettings = shellSettings;
         _urlHelperFactory = urlHelperFactory;
         _authorizationService = authorizationService;
     }
