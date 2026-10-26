@@ -7,8 +7,8 @@ namespace OrchardCore.FileStorage;
 
 /// <summary>
 /// Default filesystem based <see cref="ITempDirectoryProvider"/> implementation. Temporary files are placed under a
-/// tenant-scoped sub-directory of <see cref="TempDirectoryOptions.Path"/> or a unique sub-directory of the operating
-/// system temporary directory when no path is configured.
+/// tenant-scoped sub-directory of <see cref="TempDirectoryOptions.Path"/> or the user's local application data
+/// directory. A unique system temporary directory is used when no user location is available.
 /// </summary>
 public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
 {
@@ -32,47 +32,55 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
 
         if (string.IsNullOrWhiteSpace(basePath))
         {
-            // Windows normally resolves the current user's temp folder (SYSTEM uses SystemTemp when GetTempPath2
-            // is available). Unix may return shared /tmp; CreateTempSubdirectory atomically creates a unique
-            // directory with mode 700, safe under a correctly configured, sticky-bit-protected /tmp.
-            var systemTempPath = Path.GetTempPath();
-
-            if (!string.IsNullOrWhiteSpace(systemTempPath) && Directory.Exists(systemTempPath))
-            {
-                basePath = Directory.CreateTempSubdirectory($"OrchardCore-{Guid.NewGuid():N}-").FullName;
-
-                logger.LogWarning(
-                    "No temporary directory path is configured. Using the unique temporary directory '{TempDirectoryPath}'.",
-                    basePath);
-            }
-            else
-            {
-                var localAppDataPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
-                if (string.IsNullOrWhiteSpace(localAppDataPath))
-                {
-                    throw new InvalidOperationException(
-                        $"The operating system temporary directory '{systemTempPath}' is unavailable and no local application data directory could be determined. Configure 'OrchardCore:TempDirectory:Path'.");
-                }
-
-                basePath = Path.Combine(localAppDataPath, "OrchardCore", "Temp", Guid.NewGuid().ToString("N"));
-                if (OperatingSystem.IsWindows())
-                {
-                    Directory.CreateDirectory(basePath);
-                }
-                else
-                {
-                    Directory.CreateDirectory(basePath, OwnerOnly);
-                }
-
-                logger.LogWarning(
-                    "No temporary directory path is configured and the operating system temporary directory '{SystemTempPath}' is unavailable. Using the unique temporary directory '{TempDirectoryPath}'.",
-                    systemTempPath,
-                    basePath);
-            }
+            basePath = GetDefaultBasePath(
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData),
+                logger);
         }
 
         // Scope temporary files per tenant so that tenants can neither collide with nor observe each other's files.
         _rootPath = Path.Combine(basePath, shellSettings.Name);
+    }
+
+    internal static string GetDefaultBasePath(string localAppDataPath, ILogger<DefaultTempDirectoryProvider> logger)
+    {
+        if (!string.IsNullOrWhiteSpace(localAppDataPath))
+        {
+            var path = Path.Combine(localAppDataPath, "OrchardCore", "Temp");
+
+            try
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    Directory.CreateDirectory(path);
+                }
+                else
+                {
+                    Directory.CreateDirectory(path, OwnerOnly);
+                }
+
+                return path;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return CreateFallbackDirectory(logger, ex);
+            }
+        }
+
+        return CreateFallbackDirectory(logger);
+    }
+
+    private static string CreateFallbackDirectory(ILogger<DefaultTempDirectoryProvider> logger, Exception exception = null)
+    {
+        // CreateTempSubdirectory uses Path.GetTempPath(): normally the user's temp folder on Windows, or TMPDIR
+        // or /tmp on Unix. Atomic creation with mode 700 prevents pre-creation attacks in sticky-bit-protected /tmp.
+        var path = Directory.CreateTempSubdirectory("OrchardCore-").FullName;
+
+        logger.LogWarning(
+            exception,
+            "No temporary directory path is configured and the user's local application data directory is unavailable. Using the unique temporary directory '{TempDirectoryPath}'.",
+            path);
+
+        return path;
     }
 
     public string GetRootDirectory()
