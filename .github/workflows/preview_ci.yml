@@ -104,6 +104,7 @@ jobs:
         : "${AWS_ACCESS_KEY_ID:?Set the R2_ACCESS_KEY_ID repository secret}"
         : "${AWS_SECRET_ACCESS_KEY:?Set the R2_SECRET_ACCESS_KEY repository secret}"
         dotnet tool install sleet --version 7.2.0 --tool-path "$RUNNER_TEMP/sleet"
+        "$RUNNER_TEMP/sleet/sleet" retention settings --stable 1 --prerelease 5 --config none 
         "$RUNNER_TEMP/sleet/sleet" push "$RUNNER_TEMP/preview-packages" --config none --skip-existing
     - name: Set up Docker Buildx
       if: steps.check-publish.outputs.should-publish == 'true'
