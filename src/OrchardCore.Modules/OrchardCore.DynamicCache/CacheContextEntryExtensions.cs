@@ -33,7 +33,7 @@ public static class CacheContextEntryExtensions
             length += (entry.Key?.Length ?? 0) + (entry.Value?.Length ?? 0);
         }
 
-        return string.Create(length, entries, static (span, entries) =>
+        return string.Create(length, sorted, static (span, entries) =>
         {
             foreach (var entry in entries)
             {
