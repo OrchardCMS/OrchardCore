@@ -1,6 +1,6 @@
 # Add preview package source
 
-In this article, we are going to add a new package source pointing to the preview packages. When the `main` branch has changes, the daily preview build publishes packages to both [Cloudsmith](https://cloudsmith.io/~orchardcore/repos/preview/packages/) and Cloudflare R2. The Preview - CI workflow can also be run manually. Release packages are published to NuGet, built from code corresponding to that release's version tag.
+In this article, we are going to add a new package source pointing to the preview packages. When the `main` branch has changes, the daily preview build publishes packages to [Cloudsmith](https://cloudsmith.io/~orchardcore/repos/preview/packages/). The Preview - CI workflow can also be run manually. Release packages are published to NuGet, built from code corresponding to that release's version tag.
 
 The preview packages are the most up-to-date versions but not the most stable and can contain breaking changes. Only use them if you want to work with the latest development version of Orchard Core, e.g. to try out a fix for a bug you reported.
 
@@ -14,7 +14,6 @@ Both feeds receive the same packages from each successful preview build. Choose 
 | Feed | NuGet v3 source URL |
 | --- | --- |
 | Cloudsmith | <https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json> |
-| Cloudflare R2 | <https://nuget-preview.orchardcore.net/index.json> |
 
 ## Adding Orchard Core preview feed to Visual Studio
 
@@ -39,12 +38,10 @@ You can also add the package source by using a NuGet.config file:
 </configuration>
 ```
 
-To use Cloudflare R2 instead, replace the `OrchardCorePreview` source URL with `https://nuget-preview.orchardcore.net/index.json`.
-
 ## Adding Orchard Core preview feed with the .NET CLI
 
-For example, to add the Cloudflare R2 feed:
+For example, to add the Cloudsmith feed:
 
 ```bash
-dotnet nuget add source https:/nuget-preview.orchardcore.net/index.json --name OrchardCorePreview
+dotnet nuget add source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --name OrchardCorePreview
 ```
