@@ -1,0 +1,284 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Microsoft.Authentication\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: ViewModels/AzureADSettingsViewModel.cs
+#: ViewModels/MicrosoftAccountSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Application Id is required"
+msgstr ""
+
+#: ViewModels/AzureADSettingsViewModel.cs
+#: ViewModels/MicrosoftAccountSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid path"
+msgstr ""
+
+#: ViewModels/AzureADSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Tenant Id is required"
+msgstr ""
+
+#: AdminMenuAAD.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuAAD"
+msgid "Authentication"
+msgstr ""
+
+#: AdminMenuAAD.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuAAD"
+msgid "Microsoft Entra ID"
+msgstr ""
+
+#: AdminMenuAAD.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuAAD"
+msgid "Security"
+msgstr ""
+
+#: AdminMenuAAD.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuAAD"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenuMicrosoftAccount.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
+msgid "Authentication"
+msgstr ""
+
+#: AdminMenuMicrosoftAccount.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
+msgid "Microsoft"
+msgstr ""
+
+#: AdminMenuMicrosoftAccount.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
+msgid "Security"
+msgstr ""
+
+#: AdminMenuMicrosoftAccount.cs
+msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
+msgid "Settings"
+msgstr ""
+
+#: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
+msgid "App secret"
+msgstr ""
+
+#: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
+msgid "Microsoft Account Authentication"
+msgstr ""
+
+#: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
+msgid "Microsoft Account Authentication: App secret"
+msgstr ""
+
+#: MicrosoftAuthenticationLocalizationSources.cs
+msgctxt "OrchardCore.Microsoft.Authentication.MicrosoftAuthenticationLocalizationSources"
+msgid "Microsoft Authentication"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Permissions"
+msgid "Manage Microsoft Authentication settings"
+msgstr ""
+
+#: Services/AzureADService.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Services.AzureADService"
+msgid "AppId is required"
+msgstr ""
+
+#: Services/AzureADService.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Services.AzureADService"
+msgid "DisplayName is required"
+msgstr ""
+
+#: Services/AzureADService.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Services.AzureADService"
+msgid "TenantId is required"
+msgstr ""
+
+#: Services/MicrosoftAccountService.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Services.MicrosoftAccountService"
+msgid "AppId is required"
+msgstr ""
+
+#: Services/MicrosoftAccountService.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Services.MicrosoftAccountService"
+msgid "AppSecret is required"
+msgstr ""
+
+#: Views/Items/AzureADDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.AzureADDeploymentStep.Edit"
+msgid "Microsoft Entra ID Settings"
+msgstr ""
+
+#: Views/Items/AzureADDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.AzureADDeploymentStep.Summary"
+msgid "Adds Microsoft Entra ID settings to the plan."
+msgstr ""
+
+#: Views/Items/AzureADDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.AzureADDeploymentStep.Summary"
+msgid "Microsoft Entra ID Settings"
+msgstr ""
+
+#: Views/Items/AzureADDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.AzureADDeploymentStep.Thumbnail"
+msgid "Exports the Microsoft Entra ID settings."
+msgstr ""
+
+#: Views/Items/AzureADDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.AzureADDeploymentStep.Thumbnail"
+msgid "Microsoft Entra ID Settings"
+msgstr ""
+
+#: Views/Items/MicrosoftAccountDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.MicrosoftAccountDeploymentStep.Edit"
+msgid "Microsoft Account Settings"
+msgstr ""
+
+#: Views/Items/MicrosoftAccountDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.MicrosoftAccountDeploymentStep.Summary"
+msgid "Adds Microsoft Account settings to the plan."
+msgstr ""
+
+#: Views/Items/MicrosoftAccountDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.MicrosoftAccountDeploymentStep.Summary"
+msgid "Microsoft Account Settings"
+msgstr ""
+
+#: Views/Items/MicrosoftAccountDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.MicrosoftAccountDeploymentStep.Thumbnail"
+msgid "Exports the Microsoft Account settings."
+msgstr ""
+
+#: Views/Items/MicrosoftAccountDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.Items.MicrosoftAccountDeploymentStep.Thumbnail"
+msgid "Microsoft Account Settings"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "AppId"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "Microsoft Account Authentication Settings"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "Secret Key"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "Store tokens"
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "The Application ID found on the Microsoft developer portal parameters."
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "The Application secret key found on the Microsoft developer portal parameters."
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr ""
+
+#: Views/MicrosoftAccountSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "AppId"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "Microsoft Entra ID Authentication Settings"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "Store external authentication tokens for reuse"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "Store tokens"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "TenantId"
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "The Application ID found on the Microsoft Entra ID App registration parameters."
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "The Tenant (Directory) ID found on the Microsoft Entra ID App registration parameters. For multi-tenant App registrations, use 'common' or 'organizations'."
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "The display name of the provider."
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."
+msgstr ""
+
+#: Views/MicrosoftEntraIDSettings.Edit.cshtml
+msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""

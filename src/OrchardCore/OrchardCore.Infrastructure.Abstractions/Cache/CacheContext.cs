@@ -86,8 +86,8 @@ public class CacheContext
     }
 
     public string CacheId { get; }
-    public ICollection<string> Contexts => (ICollection<string>)_contexts ?? [];
-    public IEnumerable<string> Tags => _tags ?? [];
+    public ICollection<string> Contexts => (ICollection<string>)_contexts ?? Array.Empty<string>();
+    public IEnumerable<string> Tags => (IEnumerable<string>)_tags ?? Array.Empty<string>();
     public DateTimeOffset? ExpiresOn { get; private set; }
     public TimeSpan? ExpiresAfter { get; private set; }
     public TimeSpan? ExpiresSliding { get; private set; }

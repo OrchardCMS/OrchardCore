@@ -1,0 +1,92 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Localization\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Cultures"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Localization"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Localization.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Drivers/LocalizationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "A culture is required"
+msgstr ""
+
+#: Drivers/LocalizationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "The site has been restarted for the settings to take effect."
+msgstr ""
+
+#: GraphQL/CultureQueryObjectType.cs
+msgctxt "OrchardCore.Localization.GraphQL.CultureQueryObjectType"
+msgid "The culture code."
+msgstr ""
+
+#: GraphQL/CultureQueryObjectType.cs
+msgctxt "OrchardCore.Localization.GraphQL.CultureQueryObjectType"
+msgid "Whether this is the default culture."
+msgstr ""
+
+#: GraphQL/SiteCulturesQuery.cs
+msgctxt "OrchardCore.Localization.GraphQL.SiteCulturesQuery"
+msgid "The active cultures configured for the site."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Localization.LocalizationDeploymentStartup"
+msgid "Culture settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Localization.LocalizationDeploymentStartup"
+msgid "Exports the culture settings."
+msgstr ""
+
+#: Services/LocalizationJSLocalizer.cs
+msgctxt "OrchardCore.Localization.Services.LocalizationJSLocalizer"
+msgid "Add culture"
+msgstr ""
+
+#: Services/LocalizationJSLocalizer.cs
+msgctxt "OrchardCore.Localization.Services.LocalizationJSLocalizer"
+msgid "Culture"
+msgstr ""
+
+#: Services/LocalizationJSLocalizer.cs
+msgctxt "OrchardCore.Localization.Services.LocalizationJSLocalizer"
+msgid "Default culture"
+msgstr ""
+
+#: Services/LocalizationJSLocalizer.cs
+msgctxt "OrchardCore.Localization.Services.LocalizationJSLocalizer"
+msgid "Remove culture"
+msgstr ""
+
+#: Services/LocalizationJSLocalizer.cs
+msgctxt "OrchardCore.Localization.Services.LocalizationJSLocalizer"
+msgid "Set as default"
+msgstr ""
+
+#: Views/LocalizationSettings.Edit.cshtml
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Define which cultures are supported by the site."
+msgstr ""
+
+#: Views/LocalizationSettings.Edit.cshtml
+msgctxt "OrchardCore.Localization.Views.LocalizationSettings.Edit"
+msgid "Fall back to parent culture(s)"
+msgstr ""

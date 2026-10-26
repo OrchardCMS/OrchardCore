@@ -1,0 +1,381 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.UrlRewriting\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.UrlRewriting.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.UrlRewriting.AdminMenu"
+msgid "URL Rewriting"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "Invalid rule source."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "Rule created successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "Rule deleted successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "Rule updated successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "Rules removed successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "Unable to find a rule-source that can handle the source '{Source}'."
+msgstr ""
+
+#: Drivers/RewriteRulesDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.RewriteRulesDisplayDriver"
+msgid "Name is required"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "A valid Match URL Pattern is required."
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "A valid Substitution URL Pattern is required."
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "Append Query String from Original Request"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "Exclude Query String from Original Request"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "Found (302)"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "Moved Permanently (301)"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "Permanent Redirect (308)"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "Temporary Redirect (307)"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "The Match URL Pattern is required."
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "The Substitution URL Pattern is required."
+msgstr ""
+
+#: Drivers/UrlRewriteRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
+msgid "A valid Match URL Pattern is required."
+msgstr ""
+
+#: Drivers/UrlRewriteRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
+msgid "A valid Substitution URL Pattern is required."
+msgstr ""
+
+#: Drivers/UrlRewriteRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
+msgid "Append Query String from Original Request"
+msgstr ""
+
+#: Drivers/UrlRewriteRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
+msgid "Exclude Query String from Original Request"
+msgstr ""
+
+#: Drivers/UrlRewriteRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
+msgid "The Substitution URL Pattern is required."
+msgstr ""
+
+#: Recipes/UrlRewritingStep.cs
+msgctxt "OrchardCore.UrlRewriting.Recipes.UrlRewritingStep"
+msgid "Could not find rule source value. The rule will not be imported"
+msgstr ""
+
+#: Recipes/UrlRewritingStep.cs
+msgctxt "OrchardCore.UrlRewriting.Recipes.UrlRewritingStep"
+msgid "Unable to find a rule-source that can handle the source '{Source}'."
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: Model.DisplayName
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Create"
+msgid "New '{0}' rule"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Create"
+msgid "URL Rewriting Rules"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: Model.DisplayName
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Edit"
+msgid "Edit '{0}' rule"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Edit"
+msgid "URL Rewriting Rules"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no rewrite rules at the moment."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Add Rule"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Available Rule Types"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Last modified"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Source"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "URL Rewriting Rules"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Unable to sort the list. Try refreshing your page and try again."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "You need to enable a feature which provides a rewrite rule source."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "Your search returned no results."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/RewriteRule.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/RewriteRule.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/RewriteRule.DefaultMeta.SummaryAdmin.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.DefaultMeta.SummaryAdmin"
+msgid "Author"
+msgstr ""
+
+#: Views/RewriteRule.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.DefaultTags.SummaryAdmin"
+msgid "Source"
+msgstr ""
+
+#: Views/RewriteRule.Fields.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Fields.Edit"
+msgid "A display name for the rule."
+msgstr ""
+
+#: Views/RewriteRule.Fields.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Fields.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/RewriteRule.Handle.SummaryAdmin.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Handle.SummaryAdmin"
+msgid "Drag to reorder"
+msgstr ""
+
+#: Views/RewriteRule.Link.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Link"
+msgid "Add"
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "Case Insensitive"
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "Defines a URL structure with placeholders that will be replaced by actual values during the request."
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "Match URL Pattern"
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "Query String Policy"
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "Redirect Type"
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "Specifies a pattern using regular expressions to match incoming URLs, following the syntax defined in ECMA-262."
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "The Substitution URL Pattern"
+msgstr ""
+
+#: Views/UrlRedirectRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRedirectRule.Edit"
+msgid "When checked, the pattern will be case insensitive."
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "Case Insensitive"
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "Defines a URL structure with placeholders that will be replaced by actual values during the request."
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "Match URL Pattern"
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "Query String Policy"
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "Specifies a pattern using regular expressions to match incoming URLs, following the syntax defined in ECMA-262."
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "Stop Evaluation of Subsequent Rules"
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "The Substitution URL Pattern"
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "When checked, the pattern will be case insensitive."
+msgstr ""
+
+#: Views/UrlRewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.UrlRewriteRule.Edit"
+msgid "When selected, subsequent rules will be ignored if this rule is matched."
+msgstr ""

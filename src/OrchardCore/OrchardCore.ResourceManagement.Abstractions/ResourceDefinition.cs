@@ -32,6 +32,12 @@ public class ResourceDefinition
     public string Name { get; private set; }
     public string Type { get; private set; }
     public string Version { get; private set; }
+
+    /// <summary>
+    /// Gets the parsed <see cref="Version"/>, or <see langword="null"/> if the resource has no version.
+    /// </summary>
+    public Version ParsedVersion { get; private set; }
+
     public bool? AppendVersion { get; private set; }
     public string Url { get; private set; }
     public string UrlDebug { get; private set; }
@@ -126,12 +132,13 @@ public class ResourceDefinition
     /// <param name="version">The version to set, in the form of. <code>major.minor[.build[.revision]]</code></param>
     public ResourceDefinition SetVersion(string version)
     {
-        if (!System.Version.TryParse(version, out _))
+        if (!System.Version.TryParse(version, out var parsedVersion))
         {
             throw new FormatException("The resource version should be in the form of major.minor[.build[.revision]].");
         }
 
         Version = version;
+        ParsedVersion = parsedVersion;
 
         return this;
     }
@@ -182,67 +189,11 @@ public class ResourceDefinition
         string applicationPath,
         IFileVersionProvider fileVersionProvider)
     {
-        string url, filePathAttributeName = null;
-
-        // Url priority.
-        if (settings.DebugMode)
-        {
-            url = settings.CdnMode
-                ? Coalesce(UrlCdnDebug, UrlDebug, UrlCdn, Url)
-                : Coalesce(UrlDebug, Url, UrlCdnDebug, UrlCdn);
-        }
-        else
-        {
-            url = settings.CdnMode
-                ? Coalesce(UrlCdn, Url, UrlCdnDebug, UrlDebug)
-                : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
-        }
-
-        if (string.IsNullOrEmpty(url))
-        {
-            url = null;
-        }
-        if (!string.IsNullOrEmpty(settings.Culture))
-        {
-            var nearestCulture = FindNearestCulture(settings.Culture);
-            if (!string.IsNullOrEmpty(nearestCulture))
-            {
-                url = Path.ChangeExtension(url, nearestCulture + Path.GetExtension(url));
-            }
-        }
-
-        if (url != null && url.StartsWith("~/", StringComparison.Ordinal))
-        {
-            if (!string.IsNullOrEmpty(BasePath))
-            {
-                url = string.Concat(BasePath, url.AsSpan(1));
-            }
-            else
-            {
-                url = string.Concat(applicationPath, url.AsSpan(1));
-            }
-        }
-
-        // If settings has value, it can override resource definition, otherwise use resource definition.
-        if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
-            (!settings.AppendVersion.HasValue && AppendVersion == true)))
-        {
-            url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
-        }
-
-        // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-        if (url != null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
-
-            // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
-            !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
-            !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
-            !url.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
-            !url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
-        {
-            url = settings.CdnBaseUrl + url;
-        }
+        var url = GetUrl(settings, applicationPath, fileVersionProvider);
 
         TagBuilder tagBuilder;
+        string filePathAttributeName = null;
+
         switch (Type)
         {
             case "script":
@@ -321,6 +272,254 @@ public class ResourceDefinition
         }
 
         return tagBuilder;
+    }
+
+    /// <summary>
+    /// Writes the tag of the resource, as <see cref="GetTagBuilder"/> would render it with a null encoder,
+    /// without building the tag and its attributes dictionary for each rendered resource.
+    /// </summary>
+    public void WriteTo(TextWriter writer, RequireSettings settings, string applicationPath, IFileVersionProvider fileVersionProvider)
+    {
+        var url = GetUrl(settings, applicationPath, fileVersionProvider);
+
+        var attributes = new TagAttributes();
+
+        string tagName, filePathAttributeName = null;
+        var selfClosing = false;
+
+        switch (Type)
+        {
+            case "script":
+                tagName = "script";
+                if (settings.HasAttributes)
+                {
+                    foreach (var kv in settings.Attributes)
+                    {
+                        attributes.Set(kv.Key, kv.Value, replaceExisting: false);
+                    }
+                }
+                filePathAttributeName = "src";
+                break;
+            case "stylesheet":
+                if (url == null && InnerContent != null)
+                {
+                    // Inline style declaration.
+                    tagName = "style";
+                    attributes.Set("type", MediaTypeNames.Text.Css, replaceExisting: true);
+                }
+                else
+                {
+                    // Stylesheet resource.
+                    tagName = "link";
+                    selfClosing = true;
+                    attributes.Set("type", MediaTypeNames.Text.Css, replaceExisting: true);
+                    attributes.Set("rel", "stylesheet", replaceExisting: true);
+                    filePathAttributeName = "href";
+                }
+                break;
+            case "link":
+                tagName = "link";
+                selfClosing = true;
+                filePathAttributeName = "href";
+                break;
+            default:
+                tagName = "meta";
+                selfClosing = true;
+                break;
+        }
+
+        if (!string.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
+        {
+            attributes.Set("integrity", CdnIntegrity, replaceExisting: true);
+            attributes.Set("crossorigin", "anonymous", replaceExisting: true);
+        }
+        else if (!string.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
+        {
+            attributes.Set("integrity", CdnDebugIntegrity, replaceExisting: true);
+            attributes.Set("crossorigin", "anonymous", replaceExisting: true);
+        }
+
+        if (Attributes != null)
+        {
+            foreach (var kv in Attributes)
+            {
+                attributes.Set(kv.Key, kv.Value, replaceExisting: false);
+            }
+        }
+
+        if (settings.HasAttributes)
+        {
+            foreach (var kv in settings.Attributes)
+            {
+                attributes.Set(kv.Key, kv.Value, replaceExisting: false);
+            }
+        }
+
+        string innerContent = null;
+
+        if (!string.IsNullOrEmpty(url) && filePathAttributeName != null)
+        {
+            attributes.Set(filePathAttributeName, url, replaceExisting: true);
+        }
+        else if (!string.IsNullOrEmpty(InnerContent))
+        {
+            innerContent = InnerContent;
+        }
+
+        writer.Write('<');
+        writer.Write(tagName);
+        attributes.WriteTo(writer);
+
+        if (selfClosing)
+        {
+            writer.Write(" />");
+            return;
+        }
+
+        writer.Write('>');
+
+        if (innerContent != null)
+        {
+            writer.Write(innerContent);
+        }
+
+        writer.Write("</");
+        writer.Write(tagName);
+        writer.Write('>');
+    }
+
+    private string GetUrl(RequireSettings settings, string applicationPath, IFileVersionProvider fileVersionProvider)
+    {
+        string url;
+
+        // Url priority.
+        if (settings.DebugMode)
+        {
+            url = settings.CdnMode
+                ? Coalesce(UrlCdnDebug, UrlDebug, UrlCdn, Url)
+                : Coalesce(UrlDebug, Url, UrlCdnDebug, UrlCdn);
+        }
+        else
+        {
+            url = settings.CdnMode
+                ? Coalesce(UrlCdn, Url, UrlCdnDebug, UrlDebug)
+                : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
+        }
+
+        if (string.IsNullOrEmpty(url))
+        {
+            url = null;
+        }
+        if (!string.IsNullOrEmpty(settings.Culture))
+        {
+            var nearestCulture = FindNearestCulture(settings.Culture);
+            if (!string.IsNullOrEmpty(nearestCulture))
+            {
+                url = Path.ChangeExtension(url, nearestCulture + Path.GetExtension(url));
+            }
+        }
+
+        if (url != null && url.StartsWith("~/", StringComparison.Ordinal))
+        {
+            if (!string.IsNullOrEmpty(BasePath))
+            {
+                url = string.Concat(BasePath, url.AsSpan(1));
+            }
+            else
+            {
+                url = string.Concat(applicationPath, url.AsSpan(1));
+            }
+        }
+
+        // If settings has value, it can override resource definition, otherwise use resource definition.
+        if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
+            (!settings.AppendVersion.HasValue && AppendVersion == true)))
+        {
+            url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
+        }
+
+        // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
+        if (url != null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
+
+            // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
+            !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+            !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+            !url.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
+            !url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
+        {
+            url = settings.CdnBaseUrl + url;
+        }
+
+        return url;
+    }
+
+    /// <summary>
+    /// The attributes of a tag, kept sorted by name ignoring the case, as the attributes dictionary of a tag builder.
+    /// </summary>
+    private struct TagAttributes
+    {
+        private KeyValuePair<string, string>[] _items;
+        private int _count;
+
+        public void Set(string name, string value, bool replaceExisting)
+        {
+            _items ??= new KeyValuePair<string, string>[8];
+
+            var index = 0;
+            while (index < _count)
+            {
+                var comparison = StringComparer.OrdinalIgnoreCase.Compare(_items[index].Key, name);
+
+                if (comparison == 0)
+                {
+                    if (replaceExisting)
+                    {
+                        _items[index] = new KeyValuePair<string, string>(name, value);
+                    }
+
+                    return;
+                }
+
+                if (comparison > 0)
+                {
+                    break;
+                }
+
+                index++;
+            }
+
+            if (_count == _items.Length)
+            {
+                Array.Resize(ref _items, _count * 2);
+            }
+
+            if (index < _count)
+            {
+                Array.Copy(_items, index, _items, index + 1, _count - index);
+            }
+
+            _items[index] = new KeyValuePair<string, string>(name, value);
+            _count++;
+        }
+
+        public readonly void WriteTo(TextWriter writer)
+        {
+            for (var i = 0; i < _count; i++)
+            {
+                var (name, value) = _items[i];
+
+                if (string.Equals(name, "id", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(value))
+                {
+                    continue;
+                }
+
+                writer.Write(' ');
+                writer.Write(name);
+                writer.Write("=\"");
+                writer.Write(value);
+                writer.Write('"');
+            }
+        }
     }
 
     public string FindNearestCulture(string culture)

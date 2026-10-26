@@ -1,0 +1,201 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.DataPipelines.Ftp\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Drivers/UploadToFtpStepDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.Drivers.UploadToFtpStepDisplayDriver"
+msgid "The port must be between 1 and 65535."
+msgstr ""
+
+#: Drivers/UploadToFtpStepDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.Drivers.UploadToFtpStepDisplayDriver"
+msgid "The timeout must be at least one second."
+msgstr ""
+
+#. Format arguments: {0}: host; {1}: DataPipelineRemotePaths.Redact(ex.Message, password)
+#: Steps/UploadToFtpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "Could not upload to the FTP server '{0}': {1}"
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "Enter the host of the FTP server."
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "Enter the user name, such as anonymous for a public server."
+msgstr ""
+
+#. Format arguments: {0}: host
+#: Steps/UploadToFtpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The certificate of the FTP server '{0}' isn't validated."
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The connection isn't encrypted: the credentials and the files travel in clear text."
+msgstr ""
+
+#. Format arguments: {0}: host
+#: Steps/UploadToFtpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The connection to the FTP server '{0}' isn't encrypted: the credentials and the files travel in clear text."
+msgstr ""
+
+#. Format arguments: {0}: remotePath; {1}: host
+#: Steps/UploadToFtpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The file '{0}' already exists on the FTP server '{1}', and the step doesn't overwrite files."
+msgstr ""
+
+#. Format arguments: {0}: settings.Host
+#: Steps/UploadToFtpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The host '{0}' isn't a valid host name or IP address."
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The password can't be read on this site, such as when its data protection keys changed: enter it again."
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The port must be between 1 and 65535."
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "The timeout must be at least one second."
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "Upload to an FTP server"
+msgstr ""
+
+#. Format arguments: {0}: fileName; {1}: DataPipelineRemotePaths.ToDisplayUrl(scheme, host, settings.Port, remotePath)
+#: Steps/UploadToFtpStep.cs
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "Uploaded '{0}' to {1}"
+msgstr ""
+
+#: Steps/UploadToFtpStep.cs
+msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
+msgid "Uploads files to a folder of an FTP server."
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Design.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Design"
+msgid "Not encrypted"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Clear it only for a server with a self-signed certificate on a trusted network."
+msgstr ""
+
+#. Format arguments: {0}: "{PipelineName}"; {1}: "{RunId}"; {2}: "{Date:format}"
+#: Views/UploadToFtp.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Created when it doesn't exist. Empty for the folder the user starts in. Placeholders: {0}, {1}, and {2}."
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Encryption"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Explicit TLS (FTPES)"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Host"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Implicit TLS (FTPS)"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Leave empty to keep the current password."
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "None (plain FTP)"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Otherwise the step fails when a file with the same name exists."
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Password"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Plain FTP isn't encrypted: the user name, the password and the files travel in clear text."
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Port"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Remote folder"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Remove the password"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Replace existing files"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Timeout (seconds)"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "User name"
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Usually 21, or 990 for implicit TLS."
+msgstr ""
+
+#: Views/UploadToFtp.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Ftp.Views.UploadToFtp.Fields.Edit"
+msgid "Validate the certificate of the server"
+msgstr ""

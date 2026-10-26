@@ -79,7 +79,7 @@ public static class ContentExtensions
             return null;
         }
 
-        var result = (ContentElement)elementData.Deserialize(contentElementType, JOptions.Default);
+        var result = CreateElement(contentElementType, elementData);
 
         result.Data = elementData;
         result.ContentItem = contentElement.ContentItem;
@@ -87,6 +87,30 @@ public static class ContentExtensions
         contentElement.Elements[name] = result;
 
         return result;
+    }
+
+    /// <summary>
+    /// Creates a content element of the given type from its JSON data.
+    /// </summary>
+    private static ContentElement CreateElement(Type contentElementType, JsonObject elementData)
+    {
+        // The base 'ContentPart' and 'ContentField' types don't declare any serializable property, their state
+        // only lives in their 'Data'. Deserializing them would serialize the whole JSON subtree (including any
+        // fields) to parse it back for nothing, so they are directly instantiated.
+        if (contentElementType == typeof(ContentPart))
+        {
+            return new ContentPart();
+        }
+
+        if (contentElementType == typeof(ContentField))
+        {
+            return new ContentField();
+        }
+
+        // The properties are set directly from the nodes when possible, otherwise the node is deserialized, which
+        // first writes it to a buffer that is then parsed. The relaxed encoder then avoids escaping and un-escaping
+        // all the characters like '<', '>' or '&' that HTML contents are made of.
+        return (ContentElement)ContentElementBinder.Bind(contentElementType, elementData, JOptions.UnsafeRelaxedJsonEscaping);
     }
 
     /// <summary>

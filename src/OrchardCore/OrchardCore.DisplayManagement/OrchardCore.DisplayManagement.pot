@@ -1,0 +1,216 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.DisplayManagement\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 day"
+msgid_plural "{0} days"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 day ago"
+msgid_plural "{0} days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 hour"
+msgid_plural "{0} hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 hour ago"
+msgid_plural "{0} hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 minute"
+msgid_plural "{0} minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 minute ago"
+msgid_plural "{0} minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 month ago"
+msgid_plural "{0} months ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 second"
+msgid_plural "{0} seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 second ago"
+msgid_plural "{0} seconds ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 week ago"
+msgid_plural "{0} weeks ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 year ago"
+msgid_plural "{0} years ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Shapes/DateTimeShapes.cs
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "a moment ago"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "approximately a day"
+msgid_plural "approximately {0} days"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "approximately a minute"
+msgid_plural "approximately {0} minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "approximately an hour"
+msgid_plural "approximately {0} hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Shapes/DateTimeShapes.cs
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "dddd, MMMM d, yyyy h:mm:ss tt"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 day"
+msgid_plural "in {0} days"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 hour"
+msgid_plural "in {0} hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 minute"
+msgid_plural "in {0} minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 month"
+msgid_plural "in {0} months"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 second"
+msgid_plural "in {0} seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 week"
+msgid_plural "in {0} weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Shapes/DateTimeShapes.cs
+#, csharp-format
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in 1 year"
+msgid_plural "in {0} years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Shapes/DateTimeShapes.cs
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "in a moment"
+msgstr ""
+
+#: Shapes/DateTimeShapes.cs
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "less than a second"
+msgstr ""

@@ -1,0 +1,1226 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Tenants\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Tenants.AdminMenu"
+msgid "Multi-Tenancy"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Tenants.AdminMenu"
+msgid "Tenants"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "All"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "All states"
+msgstr ""
+
+#. Format arguments: {0}: id; {1}: context.ErrorMessage
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "An error occurred while removing the tenant '{0}'. {1}"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "An error occurred while saving the tenant settings."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "An error occurred while validating the tenant database settings."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Disable"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Disabled"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Enable"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Name"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Running"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "State"
+msgstr ""
+
+#. Format arguments: {0}: shellSettings.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The tenant '{0}' is already disabled."
+msgstr ""
+
+#. Format arguments: {0}: shellSettings.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The tenant '{0}' is already enabled."
+msgstr ""
+
+#. Format arguments: {0}: shellSettings.Name
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "The tenant '{0}' was removed, see the log file for more info."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "Uninitialized"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "You can only disable a Running tenant."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "You can only enable a Disabled tenant."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "You can only remove a 'Disabled' or 'Uninitialized' tenant."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Tenants.Controllers.AdminController"
+msgid "You cannot disable the default tenant."
+msgstr ""
+
+#: Controllers/FeatureProfilesController.cs
+msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
+msgid "A feature profile with the same name already exists."
+msgstr ""
+
+#: Controllers/FeatureProfilesController.cs
+msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/FeatureProfilesController.cs
+msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
+msgid "Feature profile deleted successfully."
+msgstr ""
+
+#: Controllers/FeatureProfilesController.cs
+msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
+msgid "Feature profiles successfully removed."
+msgstr ""
+
+#: Controllers/FeatureProfilesController.cs
+msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
+msgid "Invalid json supplied."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Controllers/TenantApiController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "An error occurred while removing the tenant '{0}'."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "An error occurred while saving the tenant settings."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "An error occurred while validating the tenant database settings."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Either a 'recipe' file or 'RecipeName' is required."
+msgstr ""
+
+#. Format arguments: {0}: recipeName
+#: Controllers/TenantApiController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Recipe '{0}' not found."
+msgstr ""
+
+#. Format arguments: {0}: model.Name
+#: Controllers/TenantApiController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant not found: '{0}'"
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The connection string is required for this database provider."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The database provider is not defined."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The database provider is not supported."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The email is invalid."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The tenant can't be setup."
+msgstr ""
+
+#. Format arguments: {0}: model.UserName
+#: Controllers/TenantApiController.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "User name '{0}' is invalid, can only contain letters or digits."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You can only disable a Running tenant."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You can only enable a Disabled tenant."
+msgstr ""
+
+#: Controllers/TenantApiController.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You can only remove a 'Disabled' or an 'Uninitialized' tenant."
+msgstr ""
+
+#: FeatureProfilesAdminMenu.cs
+msgctxt "OrchardCore.Tenants.FeatureProfilesAdminMenu"
+msgid "Feature Profiles"
+msgstr ""
+
+#: FeatureProfilesAdminMenu.cs
+msgctxt "OrchardCore.Tenants.FeatureProfilesAdminMenu"
+msgid "Multi-Tenancy"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Tenants.Permissions"
+msgid "Manage tenant feature profiles"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Tenants.Permissions"
+msgid "Manage tenants"
+msgstr ""
+
+#. Format arguments: {0}: optionDisplayName
+#: Services/TenantDatabasePatternResolver.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Services.TenantDatabasePatternResolver"
+msgid "The configured {0} is invalid."
+msgstr ""
+
+#. Format arguments: {0}: optionDisplayName
+#: Services/TenantDatabasePatternResolver.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Services.TenantDatabasePatternResolver"
+msgid "The configured {0} must resolve to a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore."
+msgstr ""
+
+#. Format arguments: {0}: optionDisplayName
+#: Services/TenantDatabasePatternResolver.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Services.TenantDatabasePatternResolver"
+msgid "The configured {0} resolved to an empty value."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "A table prefix is required."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "A tenant with the same host and prefix already exists."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "A tenant with the same name already exists."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "Invalid tenant name. Must contain characters only and no spaces."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The existing tenant to be validated was not found."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The feature profile does not exist."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The provided connection string is invalid or server is unreachable."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The provided database provider is not supported."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The provided database, table prefix and schema are already in use."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The related database file is already in use."
+msgstr ""
+
+#. Format arguments: {0}: "TrustServerCertificate=True"
+#: Services/TenantValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The table prefix must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The table schema must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The tenant name is in conflict with the 'Default' tenant."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The tenant name is mandatory."
+msgstr ""
+
+#: Services/TenantValidator.cs
+msgctxt "OrchardCore.Tenants.Services.TenantValidator"
+msgid "The url prefix can not contain more than one segment."
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Create &amp; Setup"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Create Tenant"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "Tenants"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Create"
+msgid "The name of the tenant."
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Edit Tenant"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "Tenants"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
+msgid "The name of the tenant."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no tenants for the moment."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Add Tenant"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Category"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Database"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Recipe"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "State"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Tags"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Tenants"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/FeatureProfileEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/FeatureProfileEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "Create Feature Profile"
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "Feature Profiles"
+msgstr ""
+
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
+msgid "Edit Feature Profile"
+msgstr ""
+
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
+msgid "Feature Profiles"
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "Cancel"
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "Name"
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "Rules"
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "Save"
+msgstr ""
+
+#. Format arguments: {0}: "OrchardCore.Flows"
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "The feature rules. Here is an example if a rule that would exclude '{0}' feature."
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "The name of the feature profile."
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "and continue"
+msgstr ""
+
+#: Views/FeatureProfiles/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
+msgid "<strong>Nothing here!</strong> There are no feature profiles for the moment."
+msgstr ""
+
+#: Views/FeatureProfiles/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/FeatureProfiles/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
+msgid "Add Feature Profile"
+msgstr ""
+
+#: Views/FeatureProfiles/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
+msgid "Feature Profiles"
+msgstr ""
+
+#: Views/FeatureProfiles/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/FeatureProfiles/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/FeatureProfiles/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/Items/AllFeatureProfilesDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.AllFeatureProfilesDeploymentStep.Edit"
+msgid "All Feature Profiles"
+msgstr ""
+
+#: Views/Items/AllFeatureProfilesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.AllFeatureProfilesDeploymentStep.Summary"
+msgid "Adds all feature profiles to the plan."
+msgstr ""
+
+#: Views/Items/AllFeatureProfilesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.AllFeatureProfilesDeploymentStep.Summary"
+msgid "All Feature Profiles"
+msgstr ""
+
+#: Views/Items/AllFeatureProfilesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.AllFeatureProfilesDeploymentStep.Thumbnail"
+msgid "All Feature Profiles"
+msgstr ""
+
+#: Views/Items/AllFeatureProfilesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.AllFeatureProfilesDeploymentStep.Thumbnail"
+msgid "Exports all feature profiles."
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Design"
+msgid "Create Tenant"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\"."
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "(Optional) the description of the tenant to create."
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Connection string"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Feature Profile"
+msgstr ""
+
+#. Format arguments: {0}: "dbo"
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "For example, '{0}' for SQL Server."
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Host name"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Recipe"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Schema"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Select the name of the tenant to create."
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Table Prefix"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "Url Prefix"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "What type of database to use?"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
+msgid "When left blank, the default value on the server will be used."
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Thumbnail"
+msgid "Create Tenant"
+msgstr ""
+
+#: Views/Items/CreateTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Thumbnail"
+msgid "Create a tenant."
+msgstr ""
+
+#: Views/Items/DisableTenantTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.DisableTenantTask.Fields.Design"
+msgid "Disable Tenant"
+msgstr ""
+
+#: Views/Items/DisableTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.DisableTenantTask.Fields.Edit"
+msgid "Select the name of the tenant to disable."
+msgstr ""
+
+#: Views/Items/DisableTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.DisableTenantTask.Fields.Edit"
+msgid "Tenant name"
+msgstr ""
+
+#: Views/Items/DisableTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.DisableTenantTask.Fields.Thumbnail"
+msgid "Disable Tenant"
+msgstr ""
+
+#: Views/Items/DisableTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.DisableTenantTask.Fields.Thumbnail"
+msgid "Disable a tenant."
+msgstr ""
+
+#: Views/Items/EnableTenantTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.EnableTenantTask.Fields.Design"
+msgid "Enable Tenant"
+msgstr ""
+
+#: Views/Items/EnableTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.EnableTenantTask.Fields.Edit"
+msgid "Select the name of the tenant to enable."
+msgstr ""
+
+#: Views/Items/EnableTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.EnableTenantTask.Fields.Edit"
+msgid "Tenant name"
+msgstr ""
+
+#: Views/Items/EnableTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.EnableTenantTask.Fields.Thumbnail"
+msgid "Enable Tenant"
+msgstr ""
+
+#: Views/Items/EnableTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.EnableTenantTask.Fields.Thumbnail"
+msgid "Enable a tenant."
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Design"
+msgid "Setup Tenant"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Admin email"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Admin password"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Admin user name"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Connection string"
+msgstr ""
+
+#. Format arguments: {0}: "dbo"
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "For example, '{0}' for SQL Server."
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Recipe"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Schema"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Select the name of tenant to setup."
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Site name"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Table Prefix"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "Tenant name"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "What type of database to use?"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
+msgid "When left blank, the default value on the server will be used."
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Thumbnail"
+msgid "Setup Tenant"
+msgstr ""
+
+#: Views/Items/SetupTenantTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Thumbnail"
+msgid "Setup a tenant."
+msgstr ""
+
+#: Views/ManageFeaturesActionButton.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageFeaturesActionButton"
+msgid "Features"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Are you sure you want to disable this tenant?"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Are you sure you want to remove this tenant?"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Cancel"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Disable"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Edit"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Enable"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Ok"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Reload"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Remove"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "Setup"
+msgstr ""
+
+#: Views/ManageTenantActionButtons.cshtml
+msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
+msgid "View"
+msgstr ""
+
+#: Views/ProfileFeatureTags.cshtml
+msgctxt "OrchardCore.Tenants.Views.ProfileFeatureTags"
+msgid "Feature Profile"
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Configured in the application's root settings."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Connection string"
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Database Presets"
+msgstr ""
+
+#. Format arguments: {0}: "dbo"
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "For example, '{0}' for SQL Server."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Generated automatically from the configured tenant schema pattern when the tenant is created."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Generated automatically from the configured tenant schema pattern."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Generated automatically from the configured tenant table prefix pattern when the tenant is created."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Generated automatically from the configured tenant table prefix pattern."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "None"
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Optionally specify which presets should be used for the Setup experience."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Table Prefix"
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Table Schema"
+msgstr ""
+
+#. Format arguments: {0}: provider.SampleConnectionString, selectedProvider?.SampleConnectionString
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "The connection string to your database instance, e.g. {0}."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "This value is required by configuration when the selected database provider supports table prefixes."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "Used to prefix this tenant's database tables when tenants share the same database."
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "What type of database to use?"
+msgstr ""
+
+#: Views/Shared/_TenantDatabaseInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
+msgid "When left blank, the default value on the server will be used."
+msgstr ""
+
+#: Views/Shared/_TenantFeatureProfile.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantFeatureProfile"
+msgid "Feature profile"
+msgstr ""
+
+#: Views/Shared/_TenantFeatureProfile.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantFeatureProfile"
+msgid "Optionally specify which feature profile should be applied to this tenant."
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"https://orchardcore.net/site1\"."
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "Category"
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "Description"
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "Example: If host is \"orchardproject.net\", the tenant site URL is \"https://orchardcore.net/\"."
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "Hostname"
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "The category of the tenant."
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "The description of the tenant."
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "Url Prefix"
+msgstr ""
+
+#: Views/Shared/_TenantInfo.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
+msgid "You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."
+msgstr ""
+
+#: Views/Shared/_TenantRecipes.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantRecipes"
+msgid "Optionally specify which presets should be used for the Setup experience."
+msgstr ""
+
+#: Views/Shared/_TenantRecipes.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantRecipes"
+msgid "Recipe"
+msgstr ""
+
+#: Views/Shared/_TenantRecipes.cshtml
+msgctxt "OrchardCore.Tenants.Views.Shared._TenantRecipes"
+msgid "Select a recipe"
+msgstr ""
+
+#: Views/ShellSettingsEntry.Category.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.Category.SummaryAdmin"
+msgid "Category"
+msgstr ""
+
+#: Views/ShellSettingsEntry.Database.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.Database.SummaryAdmin"
+msgid "Database provider"
+msgstr ""
+
+#: Views/ShellSettingsEntry.Description.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.Description.SummaryAdmin"
+msgid "Url host"
+msgstr ""
+
+#: Views/ShellSettingsEntry.Recipe.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.Recipe.SummaryAdmin"
+msgid "Recipe"
+msgstr ""
+
+#: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
+msgid "Initializing"
+msgstr ""
+
+#: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
+msgid "Invalid"
+msgstr ""
+
+#: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
+msgid "Running"
+msgstr ""
+
+#: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
+msgid "Uninitialized"
+msgstr ""
+
+#: Views/TenantsFilters.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantsFilters"
+msgid "Category"
+msgstr ""
+
+#: Views/TenantsFilters.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantsFilters"
+msgid "Filter by category"
+msgstr ""
+
+#: Views/TenantsFilters.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantsFilters"
+msgid "Filter by state"
+msgstr ""
+
+#: Views/TenantsFilters.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantsFilters"
+msgid "Sort"
+msgstr ""
+
+#: Views/TenantsFilters.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantsFilters"
+msgid "Sort by"
+msgstr ""
+
+#: Views/TenantsFilters.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantsFilters"
+msgid "State"
+msgstr ""
+
+#: Workflows/Activities/CreateTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
+msgid "Create Tenant Task"
+msgstr ""
+
+#: Workflows/Activities/CreateTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/CreateTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/CreateTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
+msgid "Tenant"
+msgstr ""
+
+#: Workflows/Activities/DisableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
+msgid "Disable Tenant Task"
+msgstr ""
+
+#: Workflows/Activities/DisableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
+msgid "Disabled"
+msgstr ""
+
+#: Workflows/Activities/DisableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/DisableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
+msgid "Tenant"
+msgstr ""
+
+#: Workflows/Activities/EnableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
+msgid "Enable Tenant Task"
+msgstr ""
+
+#: Workflows/Activities/EnableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
+msgid "Enabled"
+msgstr ""
+
+#: Workflows/Activities/EnableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/EnableTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
+msgid "Tenant"
+msgstr ""
+
+#: Workflows/Activities/SetupTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/SetupTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/SetupTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
+msgid "Setup Tenant Task"
+msgstr ""
+
+#: Workflows/Activities/SetupTenantTask.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
+msgid "Tenant"
+msgstr ""
+
+#: Workflows/Activities/TenantActivity.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.TenantActivity"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/TenantActivity.cs
+msgctxt "OrchardCore.Tenants.Workflows.Activities.TenantActivity"
+msgid "Tenant"
+msgstr ""

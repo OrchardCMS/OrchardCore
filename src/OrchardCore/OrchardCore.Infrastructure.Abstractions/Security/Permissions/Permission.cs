@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
+using OrchardCore.Security;
 
 namespace OrchardCore.Security.Permissions;
 
@@ -38,6 +39,7 @@ public class Permission
     /// <remarks>
     /// The permission name must be unique across the system.
     /// </remarks>
+    [Obsolete($"Use the overload with {nameof(LocalizationSource)} instead.")]
     public Permission(string name, string description, bool isSecurityCritical = false)
         : this(name, description is null ? null : LocalizationSource.Create(description), isSecurityCritical)
     {
@@ -68,6 +70,7 @@ public class Permission
     /// <remarks>
     /// The permission name must be unique across the system.
     /// </remarks>
+    [Obsolete($"Use the overload with {nameof(LocalizationSource)} instead.")]
     public Permission(string name, string description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
     {
         ImpliedBy = impliedBy;
@@ -120,6 +123,15 @@ public class Permission
     /// Gets a value indicating whether the permission is security critical.
     /// </summary>
     public bool IsSecurityCritical { get; }
+
+    private PermissionRequirement _requirement;
+
+    /// <summary>
+    /// Gets the authorization requirement of this permission. The same instance is reused for all the authorization
+    /// checks of the permission, which are made for each displayed content item, so it is not allocated and hashed
+    /// by the authorization handler context on each of them.
+    /// </summary>
+    internal PermissionRequirement Requirement => _requirement ??= new PermissionRequirement(this);
 
     /// <summary>
     /// Converts a <see cref="Permission"/> to a <see cref="Claim"/>.

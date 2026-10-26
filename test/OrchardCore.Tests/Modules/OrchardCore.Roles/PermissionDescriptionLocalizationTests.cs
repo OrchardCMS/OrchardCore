@@ -50,12 +50,13 @@ public class PermissionDescriptionLocalizationTests
             });
 
         await context.InitializeAsync();
-        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "de"]);
 
         foreach (var (culture, translation) in translations)
         {
             await TenantLocalizationTestHelper.WritePoFileAsync(context, culture, (s_permissionContext, Description, translation));
         }
+
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "de"]);
 
         return context;
     }

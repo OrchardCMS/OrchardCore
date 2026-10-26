@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Recipes.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: RecipePermissions.cs
+msgctxt "OrchardCore.Recipes.RecipePermissions"
+msgid "Manage Recipes"
+msgstr ""
+
+#. Format arguments: {0}: stepResult.StepName
+#: Services/RecipeExecutor.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeExecutor"
+msgid "Unexpected error occurred while executing the '{0}' step."
+msgstr ""
+
+#. Format arguments: {0}: name; {1}: GlobalMethodName
+#: VariablesMethodProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.VariablesMethodProvider"
+msgid "The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe."
+msgstr ""

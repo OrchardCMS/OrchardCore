@@ -1,0 +1,3 @@
+<Project>
+  <Import Project="../OrchardCore.Localization.Extraction/Directory.Build.props" />
+</Project>

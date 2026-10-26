@@ -151,7 +151,7 @@
                     else if (Model.RecoveryCodesLeft == 1)
                     {
                         <div class="alert alert-danger text-center my-3">
-                            <strong>@T["You have 1 recovery code left."]</strong>
+                            <strong>@T.Plural(Model.RecoveryCodesLeft, "You have 1 recovery code left.", "You have {0} recovery codes left.", Model.RecoveryCodesLeft)</strong>
                         </div>
                     }
                     else if (Model.RecoveryCodesLeft <= 3)
