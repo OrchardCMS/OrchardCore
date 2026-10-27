@@ -51,11 +51,14 @@ public static class StringExtensions
             return text;
         }
 
-        // Search beginning of word.
+        // Search beginning of word, unless the cut already falls at the end of one.
         var backup = characterCount;
-        while (characterCount > 0 && char.IsAsciiLetter(text[characterCount - 1]))
+        if (char.IsAsciiLetter(text[characterCount]))
         {
-            characterCount--;
+            while (characterCount > 0 && char.IsAsciiLetter(text[characterCount - 1]))
+            {
+                characterCount--;
+            }
         }
 
         // Search previous word.

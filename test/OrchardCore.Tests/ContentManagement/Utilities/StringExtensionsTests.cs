@@ -26,6 +26,9 @@ public class StringExtensionsTests
     [InlineData("Orchard Core", 70, "Orchard Core")]
     [InlineData("Orchard Core", 4, $"Orch{DefaultEllipsis}")]
     [InlineData("Orchard Core", 7, $"Orchard{DefaultEllipsis}")]
+    [InlineData("Orchard Core Framework", 12, $"Orchard Core{DefaultEllipsis}")]
+    [InlineData("Orchard Core Framework", 13, $"Orchard Core{DefaultEllipsis}")]
+    [InlineData("Orchard Core Framework", 14, $"Orchard Core{DefaultEllipsis}")]
     public void Ellipsize_Default_TrimsString(string text, int characterCount, string expected)
     {
         // Arrange & Act
@@ -43,8 +46,9 @@ public class StringExtensionsTests
     [InlineData(null, 10, DefaultEllipsis, true, "")]
     [InlineData("", 10, DefaultEllipsis, true, "")]
     [InlineData("Orchard Core", 70, DefaultEllipsis, true, "Orchard Core")]
-    [InlineData("Orchard Core", 7, DefaultEllipsis, true, DefaultEllipsis)]
-    [InlineData("Orchard Core", 7, CustomEllipsis, true, CustomEllipsis)]
+    [InlineData("Orchard Core", 4, DefaultEllipsis, true, DefaultEllipsis)]
+    [InlineData("Orchard Core", 7, DefaultEllipsis, true, $"Orchard{DefaultEllipsis}")]
+    [InlineData("Orchard Core", 7, CustomEllipsis, true, $"Orchard{CustomEllipsis}")]
     [InlineData("Orchard Core", 10, CustomEllipsis, true, $"Orchard{CustomEllipsis}")]
     public void Ellipsize_CustomEllipsisString_TrimssString(string text, int characterCount, string ellipsis, bool wordBoundary, string expected)
     {
