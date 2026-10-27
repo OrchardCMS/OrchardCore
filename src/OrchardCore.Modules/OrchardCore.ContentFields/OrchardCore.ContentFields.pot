@@ -533,7 +533,7 @@ msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
 msgid "Please provide a Stereotype."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", titleErrors)
+#. Format arguments: {0}: Liquid errors
 #: Settings/ContentPickerFieldSettingsDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
@@ -597,7 +597,7 @@ msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
 msgid "Generated Hidden"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', errors)
+#. Format arguments: {0}: Liquid errors
 #: Settings/TextFieldSettingsDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"

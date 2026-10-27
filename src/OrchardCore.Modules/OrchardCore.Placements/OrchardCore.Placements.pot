@@ -16,7 +16,7 @@ msgctxt "OrchardCore.Placements.AdminMenu"
 msgid "Placements"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", emptyNodesIndexes)
+#. Format arguments: {0}: positions
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Placements.Controllers.AdminController"
@@ -245,6 +245,7 @@ msgctxt "OrchardCore.Placements.Views.Admin.Index"
 msgid "Shape type"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Index"
 msgid "selected"

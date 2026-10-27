@@ -141,11 +141,13 @@ msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "You have unsaved changes. Do you want to discard them?"
 msgstr ""
 
+#. Shown after a number of strings to translate.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "strings"
 msgstr ""
 
+#. Shown after the number of strings that are translated.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "translated"
@@ -211,6 +213,7 @@ msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
 msgid "Statistics"
 msgstr ""
 
+#. Shown after the number of translated strings and the total number of strings.
 #: Views/Admin/Statistics.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Statistics"
 msgid "strings"

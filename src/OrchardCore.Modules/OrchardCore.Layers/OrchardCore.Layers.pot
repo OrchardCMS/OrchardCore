@@ -143,7 +143,7 @@ msgctxt "OrchardCore.Layers.Permissions"
 msgid "Manage layers"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", unknownTypes)
+#. Format arguments: {0}: type names
 #: Recipes/LayerStep.cs
 #, csharp-format
 msgctxt "OrchardCore.Layers.Recipes.LayerStep"

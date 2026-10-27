@@ -7,7 +7,7 @@
     var scheduledUtc = Model.ScheduledArchiveUtc.Value.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
 
     @* A fact about the item, so it reads as a badge like the other facts of the row. *@
-    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Scheduled to be archived on {0}", (object)(await DisplayAsync(await New.DateTime(Utc: Model.ScheduledArchiveUtc, Format: "g")))]">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Scheduled to be archived on {0}", Arg("date and time", (object)(await DisplayAsync(await New.DateTime(Utc: Model.ScheduledArchiveUtc, Format: "g"))))]">
         <i class="fa-solid fa-box-archive text-secondary" aria-hidden="true"></i> <time datetime="@scheduledUtc">@await DisplayAsync(await New.Timespan(Utc: Model.ScheduledArchiveUtc))</time>
     </span>
 }

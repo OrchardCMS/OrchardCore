@@ -177,7 +177,7 @@ msgctxt "OrchardCore.DataPipelines.Drivers.SendByEmailStepDisplayDriver"
 msgid "The maximum size of the attachments must be at least 1 MB."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", invalid)
+#. Format arguments: {0}: email addresses
 #: Drivers/DestinationStepDisplayDrivers.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Drivers.SendByEmailStepDisplayDriver"
@@ -293,7 +293,7 @@ msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
 msgid "Open {0}"
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: expires
+#. Format arguments: {0}: maximum uses; {1}: expiration date
 #: SharedLinks/SharedLinkManager.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
@@ -302,7 +302,7 @@ msgid_plural "Sign in to open it. The link works {0} times, until {1} (UTC)."
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: expires
+#. Format arguments: {0}: expiration date
 #: SharedLinks/SharedLinkManager.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.SharedLinks.SharedLinkManager"
@@ -533,7 +533,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
 msgid "Sent an email without attachments to {0}"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", files.Select(file => $"'{file.FileName}'")); {1}: recipients
+#. Format arguments: {0}: file names; {1}: recipients
 #: Steps/Destinations/SendByEmailStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
@@ -547,7 +547,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
 msgid "The email could not be sent: {0}"
 msgstr ""
 
-#. Format arguments: {0}: ((double)size / BytesPerMegabyte).ToString("0.##", CultureInfo.InvariantCulture); {1}: settings.MaxAttachmentSizeMegabytes
+#. Format arguments: {0}: size in MB; {1}: maximum size in MB
 #: Steps/Destinations/SendByEmailStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
@@ -564,7 +564,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
 msgid "There are no files to send: no email was sent."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", invalid)
+#. Format arguments: {0}: email addresses
 #: Steps/Destinations/SendByEmailStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SendByEmailStep"
@@ -578,7 +578,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
 msgid "'{0}' isn't a valid header name."
 msgstr ""
 
-#. Format arguments: {0}: file.FileName; {1}: displayUrl; {2}: DataPipelineRemotePaths.Redact(ex.Message, secret, url.Query)
+#. Format arguments: {0}: file.FileName; {1}: displayUrl; {2}: error message
 #: Steps/Destinations/SendToWebApiStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
@@ -673,14 +673,14 @@ msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
 msgid "The value of the '{0}' header can't hold line breaks."
 msgstr ""
 
-#. Format arguments: {0}: displayUrl; {1}: response.StatusCode; {2}: response.ReasonPhrase; {3}: file.FileName; {4}: DataPipelineRemotePaths.Redact(body, secret)
+#. Format arguments: {0}: displayUrl; {1}: status code; {2}: reason phrase; {3}: file.FileName; {4}: response
 #: Steps/Destinations/SendToWebApiStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
 msgid "The web API at {0} answered {1} ({2}) to '{3}': {4}"
 msgstr ""
 
-#. Format arguments: {0}: displayUrl; {1}: timeout.TotalSeconds; {2}: file.FileName
+#. Format arguments: {0}: displayUrl; {1}: seconds; {2}: file.FileName
 #: Steps/Destinations/SendToWebApiStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SendToWebApiStep"
@@ -704,7 +704,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
 msgid "Share a download link"
 msgstr ""
 
-#. Format arguments: {0}: file.FileName; {1}: string.Join(", ", result.Link.RecipientNames); {2}: result.Link.ExpiresUtc.ToString("u", CultureInfo.InvariantCulture)
+#. Format arguments: {0}: file.FileName; {1}: recipients; {2}: expiration date
 #: Steps/Destinations/ShareDownloadLinkStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
@@ -716,7 +716,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
 msgid "Shares files with users through secure, expiring download links."
 msgstr ""
 
-#. Format arguments: {0}: file.FileName; {1}: string.Join(", ", missed)
+#. Format arguments: {0}: file.FileName; {1}: recipients
 #: Steps/Destinations/ShareDownloadLinkStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.ShareDownloadLinkStep"
@@ -1158,7 +1158,7 @@ msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
 msgid "Yes"
 msgstr ""
 
-#. Format arguments: {0}: (completed - started).TotalSeconds
+#. Format arguments: {0}: seconds
 #: Views/Admin/Runs.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
@@ -1179,7 +1179,7 @@ msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Design"
 msgid "Add a value"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", Model.GroupBy)
+#. Format arguments: {0}: field names
 #: Views/Aggregate.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Design"
@@ -1559,7 +1559,7 @@ msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
 msgid "The parameters of a data set that takes them, such as a saved query: one name=value per line."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", Model.Fields)
+#. Format arguments: {0}: field names
 #: Views/Distinct.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Design"
@@ -1967,11 +1967,13 @@ msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Design"
 msgid "Choose a content type"
 msgstr ""
 
+#. Shown after the number of values: the content items are saved as drafts.
 #: Views/SaveContentItems.Fields.Design.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Design"
 msgid "drafts"
 msgstr ""
 
+#. Shown after the number of values: the content items are saved as published.
 #: Views/SaveContentItems.Fields.Design.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.SaveContentItems.Fields.Design"
 msgid "published"
@@ -2082,7 +2084,7 @@ msgctxt "OrchardCore.DataPipelines.Views.SaveToMedia.Fields.Edit"
 msgid "The folder of the media library the files are saved to; empty for the root. The user who publishes the pipeline must be allowed to manage its media."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", Model.RejectedExtensions)
+#. Format arguments: {0}: file extensions
 #: Views/SaveToMedia.Fields.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.SaveToMedia.Fields.Edit"
@@ -2335,7 +2337,7 @@ msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Design"
 msgid "Enter the recipients"
 msgstr ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: days
 #: Views/ShareDownloadLink.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.ShareDownloadLink.Fields.Design"
@@ -2493,6 +2495,7 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "Yes"
 msgstr ""
 
+#. Shown between the two values of the "is between" operator.
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "and"
@@ -2503,6 +2506,7 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "contains"
 msgstr ""
 
+#. Shown after the number of days of the "is in the last" and "is in the next" operators.
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "days"
@@ -2605,7 +2609,7 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFieldOptions"
 msgid "{0} (missing)"
 msgstr ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: number of functions and operators
 #: Views/Shared/DataPipelineFormulaHelp.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineFormulaHelp"
@@ -2823,6 +2827,7 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
 msgid "Move up"
 msgstr ""
 
+#. Sort direction: ascending or descending.
 #: Views/Shared/DataPipelineSortRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
 msgid "Order"
@@ -2960,7 +2965,7 @@ msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
 msgid "Stop the link to '{0}' from working?"
 msgstr ""
 
-#. Format arguments: {0}: link.ExpiresUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture)
+#. Format arguments: {0}: expiration date
 #: Views/SharedLinksAdmin/Index.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
@@ -2972,6 +2977,7 @@ msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
 msgid "Used up"
 msgstr ""
 
+#. Number of times the shared link has been used.
 #: Views/SharedLinksAdmin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
 msgid "Uses"

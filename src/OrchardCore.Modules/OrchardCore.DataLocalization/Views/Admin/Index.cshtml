@@ -100,7 +100,7 @@
         <fieldset class="translations-list mb-3" v-for="(provider, index) in filteredProviders" :key="provider.name">
             <legend>
                 <span class="me-1">{{ provider.name }}</span>
-                <span class="hint">({{ getTotalStringsCount(provider) }} @T["strings"]<span v-if="getTotalTranslatedCount(provider) > 0">, {{ getTotalTranslatedCount(provider) }} @T["translated"]</span>)</span>
+                <span class="hint">({{ getTotalStringsCount(provider) }} @T.Note("Shown after a number of strings to translate.")["strings"]<span v-if="getTotalTranslatedCount(provider) > 0">, {{ getTotalTranslatedCount(provider) }} @T.Note("Shown after the number of strings that are translated.")["translated"]</span>)</span>
             </legend>
 
             <!-- Ungrouped strings (no sub-groups) -->
@@ -131,7 +131,7 @@
             <div v-for="subGroup in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
                 <h6 class="text-muted border-bottom pb-1">
                     {{ subGroup.name }}
-                    <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T["strings"])</span>
+                    <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T.Note("Shown after a number of strings to translate.")["strings"])</span>
                 </h6>
                 <table class="table table-sm">
                     <thead>

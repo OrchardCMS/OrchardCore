@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -108,7 +109,7 @@ public sealed class SelectFieldsStep : DataPipelineStepType<SelectFieldsStep, Se
 
             if (index < 0)
             {
-                errors.Add(S["The input has no field named '{0}'.", selected.Field ?? string.Empty]);
+                errors.Add(S["The input has no field named '{0}'.", Arg("field name", selected.Field ?? string.Empty)]);
 
                 continue;
             }

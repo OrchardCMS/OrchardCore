@@ -23,6 +23,7 @@ using OrchardCore.Routing;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Notifications.Controllers;
 
@@ -90,8 +91,8 @@ public sealed class AdminController : Controller, IUpdateModel
 
         options.Statuses =
         [
-            new(S["Read"], nameof(NotificationStatus.Read)),
-            new(S["Unread"], nameof(NotificationStatus.Unread)),
+            new(S.Note("Notification status filter: notifications that have been read.")["Read"], nameof(NotificationStatus.Read)),
+            new(S.Note("Notification status filter: notifications that have not been read.")["Unread"], nameof(NotificationStatus.Unread)),
         ];
         options.Sorts =
         [
@@ -195,7 +196,7 @@ public sealed class AdminController : Controller, IUpdateModel
                     if (counter > 0)
                     {
                         await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
-                        await _notifier.SuccessAsync(H["{0} {1} unread successfully.", counter, H.Plural(counter, "notification", "notifications")]);
+                        await _notifier.SuccessAsync(H.Note("{1} is the translation of \"notification\" or \"notifications\", matching the number.")["{0} {1} unread successfully.", Arg("number of notifications", counter), Arg("notification or notifications", H.Plural(Arg("number of notifications", counter), "notification", "notifications"))]);
                     }
                     break;
                 case NotificationBulkAction.Read:
@@ -217,7 +218,7 @@ public sealed class AdminController : Controller, IUpdateModel
                     if (counter > 0)
                     {
                         await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
-                        await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
+                        await _notifier.SuccessAsync(H.Note("{1} is the translation of \"notification\" or \"notifications\", matching the number.")["{0} {1} read successfully.", Arg("number of notifications", counter), Arg("notification or notifications", H.Plural(Arg("number of notifications", counter), "notification", "notifications"))]);
                     }
                     break;
                 case NotificationBulkAction.Remove:
@@ -229,7 +230,7 @@ public sealed class AdminController : Controller, IUpdateModel
                     if (counter > 0)
                     {
                         await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
-                        await _notifier.SuccessAsync(H["{0} {1} removed successfully.", counter, H.Plural(counter, "notification", "notifications")]);
+                        await _notifier.SuccessAsync(H.Note("{1} is the translation of \"notification\" or \"notifications\", matching the number.")["{0} {1} removed successfully.", Arg("number of notifications", counter), Arg("notification or notifications", H.Plural(Arg("number of notifications", counter), "notification", "notifications"))]);
                     }
                     break;
                 default:
@@ -266,7 +267,7 @@ public sealed class AdminController : Controller, IUpdateModel
         if (counter > 0)
         {
             await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
-            await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
+            await _notifier.SuccessAsync(H.Note("{1} is the translation of \"notification\" or \"notifications\", matching the number.")["{0} {1} read successfully.", Arg("number of notifications", counter), Arg("notification or notifications", H.Plural(Arg("number of notifications", counter), "notification", "notifications"))]);
         }
 
         return RedirectTo(returnUrl);

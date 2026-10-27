@@ -20,7 +20,7 @@
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisallowAdmin">
             <label class="form-check-label" asp-for="DisallowAdmin">@T["Add a rule to disallow web robots to the admin routes."]</label>
-            <span class="hint dashed">@T["Adds: <code>{0}</code>", $"Disallow: /{AdminOptions.Value.AdminUrlPrefix}"]</span>
+            <span class="hint dashed">@T["Adds: <code>{0}</code>", Arg("robots.txt rule", $"Disallow: /{AdminOptions.Value.AdminUrlPrefix}")]</span>
         </div>
         <span asp-validation-for="DisallowAdmin"></span>
     </div>

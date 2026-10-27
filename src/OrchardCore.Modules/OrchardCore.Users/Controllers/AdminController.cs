@@ -22,6 +22,7 @@ using OrchardCore.Users.ViewModels;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Users.Controllers;
 
@@ -486,7 +487,7 @@ public sealed class AdminController : Controller
             var errorDescriptions = result.Errors.Select(error => error.Description).ToArray();
             if (errorDescriptions.Length > 0)
             {
-                await _notifier.ErrorAsync(H.Plural(errorDescriptions.Length, "Could not delete the user. {1}", "Could not delete the user. Errors: {1}", string.Join(", ", errorDescriptions)));
+                await _notifier.ErrorAsync(H.Plural(Arg("number of errors", errorDescriptions.Length), "Could not delete the user. {1}", "Could not delete the user. Errors: {1}", Arg("errors", string.Join(", ", errorDescriptions))));
             }
             else
             {

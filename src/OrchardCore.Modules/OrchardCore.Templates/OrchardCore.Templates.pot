@@ -379,6 +379,7 @@ msgctxt "OrchardCore.Templates.Views.Template.Index"
 msgid "Templates"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Template/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Index"
 msgid "selected"

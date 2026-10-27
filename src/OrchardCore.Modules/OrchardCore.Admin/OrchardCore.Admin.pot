@@ -105,7 +105,8 @@ msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
 msgid "Actions"
 msgstr ""
 
-#. Format arguments: {0}: item.Text.ToLower()
+#. {0} is the lowercased name of the selected bulk action.
+#. Format arguments: {0}: bulk action
 #: Views/AdminListToolbar.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Admin.Views.AdminListToolbar"

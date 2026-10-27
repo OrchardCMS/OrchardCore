@@ -55,7 +55,7 @@ msgctxt "OrchardCore.Autoroute.Models.AutoroutePartExtensions"
 msgid "Your permalink is too long. The permalink can only be up to {0} characters."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Settings/AutoroutePartSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"

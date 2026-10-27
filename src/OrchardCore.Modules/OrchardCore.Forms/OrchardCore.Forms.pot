@@ -76,6 +76,7 @@ msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
 msgid "Greater than"
 msgstr ""
 
+#. Operator of a visibility condition: the value is equal to.
 #: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
 msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
 msgid "Is"
@@ -575,6 +576,7 @@ msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
 msgid "Week"
 msgstr ""
 
+#. The HTML for attribute of the label: the ID of the form element it describes.
 #: Views/Items/LabelPart.Fields.Edit.cshtml
 msgctxt "OrchardCore.Forms.Views.Items.LabelPart.Fields.Edit"
 msgid "For"

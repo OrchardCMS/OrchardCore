@@ -289,14 +289,14 @@ msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
 msgid "The number of elements to display in the feed."
 msgstr ""
 
-#. Format arguments: {0}: D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType]
+#. Format arguments: {0}: content type name
 #: Views/ListPartNavigationAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
 msgid "Create {0}"
 msgstr ""
 
-#. Format arguments: {0}: D[Model.ContainerContentTypeDefinition?.DisplayName, DataLocalizationContext.ContentType]
+#. Format arguments: {0}: content type name
 #: Views/ListPartNavigationAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
@@ -308,7 +308,7 @@ msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
 msgid "List Items"
 msgstr ""
 
-#. Format arguments: {0}: D[Model.ContainedContentTypeDefinitions[0].DisplayName, DataLocalizationContext.ContentType]
+#. Format arguments: {0}: content type name
 #: Views/ListPartNavigationAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
@@ -375,7 +375,7 @@ msgctxt "OrchardCore.Lists.Views.ListPartSummaryAdmin"
 msgid "List Items"
 msgstr ""
 
-#. Format arguments: {0}: D[Model.ContainedContentTypes[0], DataLocalizationContext.ContentType]
+#. Format arguments: {0}: content type name
 #: Views/ListPartSummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Lists.Views.ListPartSummaryAdmin"

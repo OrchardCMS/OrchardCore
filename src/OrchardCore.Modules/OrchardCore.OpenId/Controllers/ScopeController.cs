@@ -14,6 +14,7 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.OpenId.Controllers;
 
@@ -161,7 +162,7 @@ public sealed class ScopeController : Controller
         {
             if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
+                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", Arg("tenant resource", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name)]);
 
                 ViewData["ReturnUrl"] = returnUrl;
 
@@ -258,7 +259,7 @@ public sealed class ScopeController : Controller
         {
             if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
+                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", Arg("tenant resource", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name)]);
 
                 ViewData["ReturnUrl"] = returnUrl;
 

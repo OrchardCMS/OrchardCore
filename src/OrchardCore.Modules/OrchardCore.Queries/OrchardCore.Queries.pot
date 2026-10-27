@@ -223,6 +223,7 @@ msgctxt "OrchardCore.Queries.Views.Admin.Index"
 msgid "You need to enable a feature which provides a query source."
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Queries.Views.Admin.Index"
 msgid "selected"

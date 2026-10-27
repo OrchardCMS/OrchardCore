@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -70,7 +71,7 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStep, Send
 
         if (invalid.Count > 0)
         {
-            context.AddError(S["These email addresses aren't valid: {0}.", string.Join(", ", invalid)]);
+            context.AddError(S["These email addresses aren't valid: {0}.", Arg("email addresses", string.Join(", ", invalid))]);
         }
 
         if (settings.MaxAttachmentSizeMegabytes < 1)
@@ -106,7 +107,7 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStep, Send
         if (size > maxSize)
         {
             throw new DataPipelineDestinationException(
-                S["The files weigh {0} MB, more than the {1} MB the attachments of the email can weigh. Raise the limit, or zip the files.", ((double)size / BytesPerMegabyte).ToString("0.##", CultureInfo.InvariantCulture), settings.MaxAttachmentSizeMegabytes]);
+                S["The files weigh {0} MB, more than the {1} MB the attachments of the email can weigh. Raise the limit, or zip the files.", Arg("size in MB", ((double)size / BytesPerMegabyte).ToString("0.##", CultureInfo.InvariantCulture)), Arg("maximum size in MB", settings.MaxAttachmentSizeMegabytes)]);
         }
 
         var emailService = context.Services?.GetService<IEmailService>()
@@ -173,7 +174,7 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStep, Send
 
         context.AddDelivery(files.Count == 0
             ? S["Sent an email without attachments to {0}", recipients]
-            : S["Sent {0} by email to {1}", string.Join(", ", files.Select(file => $"'{file.FileName}'")), recipients]);
+            : S["Sent {0} by email to {1}", Arg("file names", string.Join(", ", files.Select(file => $"'{file.FileName}'"))), recipients]);
     }
 
     private static string Render(string template, DataPipelineRunContext run, DateTime now, string fileNames)

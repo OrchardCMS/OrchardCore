@@ -356,6 +356,7 @@ msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
 msgid "The site settings 'Base url' property is empty, but is required to generate sitemaps."
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Admin/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
 msgid "selected"
@@ -701,6 +702,7 @@ msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
 msgid "The site settings 'Base url' property is empty, but is required to generate sitemaps."
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/SitemapIndex/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
 msgid "selected"

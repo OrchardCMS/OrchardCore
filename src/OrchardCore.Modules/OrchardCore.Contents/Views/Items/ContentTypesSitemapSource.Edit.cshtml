@@ -191,13 +191,13 @@
                             <div class="col-12 col-md-3 limit-items">
                                 <div class="d-flex flex-column justify-content-center content-types-take-container">
                                     <div class="ocat-wrapper">
-                                        <label asp-for="LimitedContentTypes[i].Skip" class="ocat-label pr-3">@T["Skip"]</label>
+                                        <label asp-for="LimitedContentTypes[i].Skip" class="ocat-label pr-3">@T.Note("Number of content items to skip.")["Skip"]</label>
                                         <div class="ocat-end">
                                             <input asp-for="LimitedContentTypes[i].Skip" class="form-control w-100" readonly="@notChecked" />
                                         </div>
                                     </div>
                                     <div class="ocat-wrapper">
-                                        <label asp-for="LimitedContentTypes[i].Take" class="ocat-label pr-3">@T["Take"]</label>
+                                        <label asp-for="LimitedContentTypes[i].Take" class="ocat-label pr-3">@T.Note("Maximum number of content items to include.")["Take"]</label>
                                         <div class="ocat-end">
                                             <input asp-for="LimitedContentTypes[i].Take" class="form-control w-100" readonly="@notChecked" />
                                         </div>

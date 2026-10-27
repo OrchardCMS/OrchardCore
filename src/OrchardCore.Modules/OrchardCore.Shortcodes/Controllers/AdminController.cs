@@ -20,6 +20,7 @@ using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Shortcodes.Controllers;
 
@@ -173,7 +174,7 @@ public sealed class AdminController : Controller
             }
             else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))]);
             }
         }
 
@@ -267,7 +268,7 @@ public sealed class AdminController : Controller
             }
             else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))]);
             }
         }
 

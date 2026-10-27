@@ -22,6 +22,7 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Tenants.Controllers;
 
@@ -730,7 +731,7 @@ public sealed class AdminController : Controller
         var context = await _shellRemovalManager.RemoveAsync(shellSettings);
         if (!context.Success)
         {
-            await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", id, context.ErrorMessage]);
+            await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", Arg("tenant name", id), Arg("error message", context.ErrorMessage)]);
         }
         else
         {

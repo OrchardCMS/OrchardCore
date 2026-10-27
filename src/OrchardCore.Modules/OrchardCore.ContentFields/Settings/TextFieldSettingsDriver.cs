@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.ContentFields.Settings;
 
@@ -68,7 +69,7 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
             }
             else if (!_liquidTemplateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(' ', errors))]);
             }
         }
 

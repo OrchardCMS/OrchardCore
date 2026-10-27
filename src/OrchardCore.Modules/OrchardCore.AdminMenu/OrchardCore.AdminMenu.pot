@@ -425,6 +425,7 @@ msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
 msgid "Status"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Menu/List.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
 msgid "selected"
@@ -492,7 +493,7 @@ msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
 msgid "Create Node"
 msgstr ""
 
-#. Format arguments: {0}: adminMenu?.Name
+#. Format arguments: {0}: admin menu name
 #: Views/Node/Create.cshtml
 #, csharp-format
 msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
@@ -519,7 +520,7 @@ msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
 msgid "Edit Node"
 msgstr ""
 
-#. Format arguments: {0}: adminMenu?.Name
+#. Format arguments: {0}: admin menu name
 #: Views/Node/Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"

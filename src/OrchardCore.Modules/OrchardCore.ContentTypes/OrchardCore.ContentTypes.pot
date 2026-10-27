@@ -134,7 +134,7 @@ msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
 msgid "The \"{0}\" part settings have been saved."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", partsToAdd)
+#. Format arguments: {0}: number of parts; {1}: part names
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
@@ -262,7 +262,7 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
 msgid "Edit Content Part - {0}"
 msgstr ""
 
-#. Format arguments: {0}: D[typeDefinition.DisplayName, "Content Types"]
+#. Format arguments: {0}: content type name
 #: Views/Admin/AddFieldTo.cshtml
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
@@ -609,7 +609,7 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
 msgid "Edit Content Part - {0}"
 msgstr ""
 
-#. Format arguments: {0}: D[typeDefinition.DisplayName, "Content Types"]
+#. Format arguments: {0}: content type name
 #: Views/Admin/EditField.cshtml
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources.Operations;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -46,7 +47,7 @@ public sealed class SortStep : DataPipelineStepType<SortStep, SortStepSettings>,
 
         foreach (var key in settings.Keys.Where(key => fields.IndexOf(key.Field) < 0))
         {
-            context.AddError(S["The input has no field named '{0}'.", key.Field ?? string.Empty]);
+            context.AddError(S["The input has no field named '{0}'.", Arg("field name", key.Field ?? string.Empty)]);
         }
 
         context.SetOutputFields(fields);

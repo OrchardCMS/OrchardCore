@@ -15,6 +15,7 @@ using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.UserTasks.Activities;
 using OrchardCore.Workflows.UserTasks.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Workflows.UserTasks.Drivers;
 
@@ -73,7 +74,7 @@ public sealed class UserTaskEventContentDriver : ContentDisplayDriver
 
             if (!availableActions.Contains(action))
             {
-                await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", action]);
+                await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", Arg("user action", action)]);
             }
             else
             {

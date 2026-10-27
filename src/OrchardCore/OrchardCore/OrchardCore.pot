@@ -21,14 +21,14 @@ msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
 msgid "Failed to create a 'ShellContext' before removing the tenant."
 msgstr ""
 
-#. Format arguments: {0}: type
+#. Format arguments: {0}: handler type
 #: Shell/Removing/ShellRemovalManager.cs
 #, csharp-format
 msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"
 msgid "Failed to execute the host handler '{0}'."
 msgstr ""
 
-#. Format arguments: {0}: type
+#. Format arguments: {0}: handler type
 #: Shell/Removing/ShellRemovalManager.cs
 #, csharp-format
 msgctxt "OrchardCore.Environment.Shell.Removing.ShellRemovalManager"

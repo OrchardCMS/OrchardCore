@@ -19,7 +19,7 @@
 }
 
 @* The form is necessary to generate an antiforgery token for the delete and bulk actions. *@
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-filter-submit="true" data-min-selected-items="1" data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-filter-submit="true" data-min-selected-items="1" data-selected-label="@T.Note("Shown after the number of selected items.")["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -71,7 +71,7 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
                                 @foreach (var item in Model.Options.BulkActions)
                                 {
-                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", item.Text.ToLower()]">@item.Text</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T.Note("{0} is the lowercased name of the selected bulk action.")["Are you sure you want to {0} these items?", Arg("bulk action", item.Text.ToLower())]">@item.Text</a></li>
                                 }
                             </ul>
                         </div>
@@ -118,19 +118,19 @@
                                     @if (secret.IsExpired)
                                     {
                                         <span class="badge text-bg-danger fw-normal" data-bs-toggle="tooltip" title="@T["This secret has expired"]">
-                                            <i class="fa-solid fa-hourglass-end" aria-hidden="true"></i> @T["Expired {0}", secret.ExpiresUtc.Value.ToString("d")]
+                                            <i class="fa-solid fa-hourglass-end" aria-hidden="true"></i> @T["Expired {0}", Arg("expiration date", secret.ExpiresUtc.Value.ToString("d"))]
                                         </span>
                                     }
                                     else if (secret.IsExpiringSoon)
                                     {
                                         <span class="badge text-bg-warning fw-normal" data-bs-toggle="tooltip" title="@T["This secret expires within 30 days"]">
-                                            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> @T["Expires {0}", secret.ExpiresUtc.Value.ToString("d")]
+                                            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> @T["Expires {0}", Arg("expiration date", secret.ExpiresUtc.Value.ToString("d"))]
                                         </span>
                                     }
                                     else if (secret.ExpiresUtc.HasValue)
                                     {
                                         <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Expiration date"]">
-                                            <i class="fa-solid fa-hourglass-start text-secondary" aria-hidden="true"></i> @T["Expires {0}", secret.ExpiresUtc.Value.ToString("d")]
+                                            <i class="fa-solid fa-hourglass-start text-secondary" aria-hidden="true"></i> @T["Expires {0}", Arg("expiration date", secret.ExpiresUtc.Value.ToString("d"))]
                                         </span>
                                     }
                                     else

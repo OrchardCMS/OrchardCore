@@ -8,7 +8,7 @@
         @if (!string.IsNullOrEmpty(Model.AdminMenuId))
         {
             var adminMenu = AdminMenuService.GetAdminMenuById(await AdminMenuService.GetAdminMenuListAsync(), Model.AdminMenuId);
-            <breadcrumb-item id="Nodes" action="List" controller="Node" area="OrchardCore.AdminMenu" route-id="@Model.AdminMenuId" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Edit Nodes for '{0}'", adminMenu?.Name]</breadcrumb-item>
+            <breadcrumb-item id="Nodes" action="List" controller="Node" area="OrchardCore.AdminMenu" route-id="@Model.AdminMenuId" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Edit Nodes for '{0}'", Arg("admin menu name", adminMenu?.Name)]</breadcrumb-item>
         }
     </breadcrumb>
 </zone>

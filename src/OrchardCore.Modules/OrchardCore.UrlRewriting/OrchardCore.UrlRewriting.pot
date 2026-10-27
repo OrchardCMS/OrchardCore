@@ -250,6 +250,7 @@ msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
 msgid "Your search returned no results."
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
 msgid "selected"

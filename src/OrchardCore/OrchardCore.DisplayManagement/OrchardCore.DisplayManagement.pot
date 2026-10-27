@@ -6,7 +6,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: days
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -15,7 +15,7 @@ msgid_plural "{0} days"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: days
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -24,7 +24,7 @@ msgid_plural "{0} days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -33,7 +33,7 @@ msgid_plural "{0} hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -42,7 +42,7 @@ msgid_plural "{0} hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -51,7 +51,7 @@ msgid_plural "{0} minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -60,7 +60,7 @@ msgid_plural "{0} minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: months
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -69,7 +69,7 @@ msgid_plural "{0} months ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: seconds
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -78,7 +78,7 @@ msgid_plural "{0} seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: seconds
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -87,7 +87,7 @@ msgid_plural "{0} seconds ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: weeks
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -96,7 +96,7 @@ msgid_plural "{0} weeks ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: years
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -110,7 +110,7 @@ msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "a moment ago"
 msgstr ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: days
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -119,7 +119,7 @@ msgid_plural "approximately {0} days"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -128,7 +128,7 @@ msgid_plural "approximately {0} minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -137,12 +137,13 @@ msgid_plural "approximately {0} hours"
 msgstr[0] ""
 msgstr[1] ""
 
+#. Default .NET custom date and time format. Adapt the pattern to the culture, but keep its format specifiers such as dddd, MMMM, yyyy, mm and tt.
 #: Shapes/DateTimeShapes.cs
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "dddd, MMMM d, yyyy h:mm:ss tt"
 msgstr ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: days
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -151,7 +152,7 @@ msgid_plural "in {0} days"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -160,7 +161,7 @@ msgid_plural "in {0} hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -169,7 +170,7 @@ msgid_plural "in {0} minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: months
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -178,7 +179,7 @@ msgid_plural "in {0} months"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: seconds
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -187,7 +188,7 @@ msgid_plural "in {0} seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: weeks
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
@@ -196,7 +197,7 @@ msgid_plural "in {0} weeks"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count
+#. Format arguments: {0}: years
 #: Shapes/DateTimeShapes.cs
 #, csharp-format
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"

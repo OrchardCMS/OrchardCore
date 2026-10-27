@@ -201,6 +201,7 @@ msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "Title"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/BackgroundTask/Index.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "selected"

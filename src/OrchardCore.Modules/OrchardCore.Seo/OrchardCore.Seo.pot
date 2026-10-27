@@ -240,7 +240,7 @@ msgctxt "OrchardCore.Seo.Views.RobotsSettings.Edit"
 msgid "Additional rules"
 msgstr ""
 
-#. Format arguments: {0}: "User-agent: *", $"Disallow: /{AdminOptions.Value.AdminUrlPrefix}"
+#. Format arguments: {0}: "User-agent: *", robots.txt rule
 #: Views/RobotsSettings.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Seo.Views.RobotsSettings.Edit"

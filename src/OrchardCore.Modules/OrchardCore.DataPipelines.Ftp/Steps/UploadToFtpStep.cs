@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Ftp;
 
@@ -137,13 +138,13 @@ public sealed class UploadToFtpStep : DataPipelineStepType<UploadToFtpStep, Uplo
                 },
                 folder,
                 settings.Overwrite,
-                (fileName, remotePath) => S["Uploaded '{0}' to {1}", fileName, DataPipelineRemotePaths.ToDisplayUrl(scheme, host, settings.Port, remotePath)],
+                (fileName, remotePath) => S["Uploaded '{0}' to {1}", fileName, Arg("URL", DataPipelineRemotePaths.ToDisplayUrl(scheme, host, settings.Port, remotePath))],
                 remotePath => S["The file '{0}' already exists on the FTP server '{1}', and the step doesn't overwrite files.", remotePath, host]);
         }
         catch (Exception ex) when (ex is not OperationCanceledException and not DataPipelineDestinationException)
         {
             throw new DataPipelineDestinationException(
-                S["Could not upload to the FTP server '{0}': {1}", host, DataPipelineRemotePaths.Redact(ex.Message, password)],
+                S["Could not upload to the FTP server '{0}': {1}", host, Arg("error message", DataPipelineRemotePaths.Redact(ex.Message, password))],
                 ex);
         }
     }

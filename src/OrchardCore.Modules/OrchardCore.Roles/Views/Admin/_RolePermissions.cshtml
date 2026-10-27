@@ -95,7 +95,7 @@ else
 
                                     if (impliedByAssigned.Count > 0)
                                     {
-                                        toolTip = T["This permission is implied by: {0}", string.Join(", ", impliedByAssigned)];
+                                        toolTip = T["This permission is implied by: {0}", Arg("permission names", string.Join(", ", impliedByAssigned))];
                                     }
                                     else
                                     {
@@ -110,7 +110,7 @@ else
                                         }
 
                                         toolTip = grantingRoles.Count > 0
-                                            ? T["This permission is granted by role: {0}", string.Join(", ", grantingRoles)]
+                                            ? T["This permission is granted by role: {0}", Arg("role names", string.Join(", ", grantingRoles))]
                                             : T["This permission is effective but the source could not be determined."];
                                     }
                                 }

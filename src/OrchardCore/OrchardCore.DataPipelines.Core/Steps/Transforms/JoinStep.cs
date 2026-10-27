@@ -3,6 +3,7 @@ using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataSources.Operations;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -118,12 +119,12 @@ public sealed class JoinStep : DataPipelineStepType<JoinStep, JoinStepSettings>,
 
             if (leftIndex < 0)
             {
-                errors.Add(S["The left input has no field named '{0}'.", key.LeftField ?? string.Empty]);
+                errors.Add(S["The left input has no field named '{0}'.", Arg("field name", key.LeftField ?? string.Empty)]);
             }
 
             if (rightIndex < 0)
             {
-                errors.Add(S["The right input has no field named '{0}'.", key.RightField ?? string.Empty]);
+                errors.Add(S["The right input has no field named '{0}'.", Arg("field name", key.RightField ?? string.Empty)]);
             }
 
             if (leftIndex >= 0 && rightIndex >= 0)

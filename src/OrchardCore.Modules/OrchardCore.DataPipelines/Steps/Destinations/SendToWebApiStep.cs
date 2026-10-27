@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -230,12 +231,12 @@ public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApi
             }
             catch (OperationCanceledException) when (!context.CancellationToken.IsCancellationRequested)
             {
-                throw new DataPipelineDestinationException(S["The web API at {0} didn't answer within {1} seconds when sending '{2}'.", displayUrl, (int)timeout.TotalSeconds, file.FileName]);
+                throw new DataPipelineDestinationException(S["The web API at {0} didn't answer within {1} seconds when sending '{2}'.", displayUrl, Arg("seconds", (int)timeout.TotalSeconds), file.FileName]);
             }
             catch (HttpRequestException ex)
             {
                 throw new DataPipelineDestinationException(
-                    S["Could not send '{0}' to {1}: {2}", file.FileName, displayUrl, DataPipelineRemotePaths.Redact(ex.Message, secret, url.Query)],
+                    S["Could not send '{0}' to {1}: {2}", file.FileName, displayUrl, Arg("error message", DataPipelineRemotePaths.Redact(ex.Message, secret, url.Query))],
                     ex);
             }
 
@@ -246,7 +247,7 @@ public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApi
                     var body = await ReadStartAsync(response, timeoutSource.Token);
 
                     throw new DataPipelineDestinationException(
-                        S["The web API at {0} answered {1} ({2}) to '{3}': {4}", displayUrl, (int)response.StatusCode, response.ReasonPhrase, file.FileName, DataPipelineRemotePaths.Redact(body, secret)]);
+                        S["The web API at {0} answered {1} ({2}) to '{3}': {4}", displayUrl, Arg("status code", (int)response.StatusCode), Arg("reason phrase", response.ReasonPhrase), file.FileName, Arg("response", DataPipelineRemotePaths.Redact(body, secret))]);
                 }
 
                 context.AddDelivery(S["Sent '{0}' to {1} ({2})", file.FileName, displayUrl, (int)response.StatusCode]);

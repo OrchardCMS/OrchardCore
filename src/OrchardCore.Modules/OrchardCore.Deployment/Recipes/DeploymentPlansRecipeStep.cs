@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Deployment.Recipes;
 
@@ -70,7 +71,7 @@ public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
         {
             context.Errors.Add(
                 S["No changes have been made. The following types of deployment plans cannot be added: {0}. Please ensure that the related features are enabled to add these types of deployment plans.",
-                string.Join(", ", unknownTypes)]);
+                Arg("type names", string.Join(", ", unknownTypes))]);
 
             return Task.CompletedTask;
         }

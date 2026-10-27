@@ -51,7 +51,7 @@ msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
 msgid "The template content is mandatory."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
@@ -298,6 +298,7 @@ msgctxt "OrchardCore.Shortcodes.Views.Admin.Index"
 msgid "Shortcodes"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Index"
 msgid "selected"

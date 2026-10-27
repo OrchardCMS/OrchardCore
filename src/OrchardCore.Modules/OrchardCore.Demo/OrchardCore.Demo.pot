@@ -61,21 +61,25 @@ msgctxt "OrchardCore.Demo.AdminMenu"
 msgid "Todo (Liquid - Frontend)"
 msgstr ""
 
+#. .NET custom date format. Adapt it to the culture, but keep its format specifiers such as MMMM, dd and yyyy.
 #: Pages/Admin/Hello.cshtml
 msgctxt "OrchardCore.Demo.Pages.Admin.Hello"
 msgid "MMMM dd, yyyy"
 msgstr ""
 
+#. .NET custom date format. Adapt it to the culture, but keep its format specifiers such as MMMM, dd and yyyy.
 #: Pages/Hello.cshtml
 msgctxt "OrchardCore.Demo.Pages.Hello"
 msgid "MMMM dd, yyyy"
 msgstr ""
 
+#. .NET custom date format. Adapt it to the culture, but keep its format specifiers such as MMMM, dd and yyyy.
 #: Pages/HelloWorld.cshtml
 msgctxt "OrchardCore.Demo.Pages.HelloWorld"
 msgid "MMMM dd, yyyy"
 msgstr ""
 
+#. .NET custom date format. Adapt it to the culture, but keep its format specifiers such as MMMM, dd and yyyy.
 #: Pages/OutsideAdmin.cshtml
 msgctxt "OrchardCore.Demo.Pages.OutsideAdmin"
 msgid "MMMM dd, yyyy"

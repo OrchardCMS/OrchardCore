@@ -86,6 +86,7 @@ msgctxt "TheAdmin.Views.Pager_Previous"
 msgid "Go to previous page."
 msgstr ""
 
+#. Color mode that follows the color mode of the operating system.
 #: Views/ToggleTheme.cshtml
 msgctxt "TheAdmin.Views.ToggleTheme"
 msgid "Auto"

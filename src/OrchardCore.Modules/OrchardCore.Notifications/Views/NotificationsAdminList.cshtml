@@ -9,7 +9,7 @@
     var hasButtons = header?.Zones.IsNotEmpty("ActionBarButtons") == true;
 }
 
-<div class="bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
+<div class="bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T.Note("Shown after the number of selected items.")["selected"]">
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 <input type="submit" name="submit.BulkAction" class="visually-hidden" />

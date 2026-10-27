@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
@@ -112,7 +113,7 @@ public class ShellRemovalManager : IShellRemovalManager
                             type,
                             shellSettings.Name);
 
-                        context.ErrorMessage = S["Failed to execute the tenant handler '{0}'.", type];
+                        context.ErrorMessage = S["Failed to execute the tenant handler '{0}'.", Arg("handler type", type)];
                         context.Error = ex;
 
                         break;
@@ -167,7 +168,7 @@ public class ShellRemovalManager : IShellRemovalManager
                         type,
                         shellSettings.Name);
 
-                    context.ErrorMessage = S["Failed to execute the host handler '{0}'.", type];
+                    context.ErrorMessage = S["Failed to execute the host handler '{0}'.", Arg("handler type", type)];
                     context.Error = ex;
 
                     break;

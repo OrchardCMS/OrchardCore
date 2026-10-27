@@ -1,6 +1,7 @@
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries.Types;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Apis.GraphQL.Queries;
 
@@ -31,35 +32,35 @@ public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphT
     // Applies to all types.
     public static readonly Dictionary<string, Func<IStringLocalizer, string, string>> EqualityOperators = new()
     {
-        { "",  (S, description) => S["{0} is equal to", description] },
-        { "_not",  (S, description) => S["{0} is not equal to", description] },
+        { "",  (S, description) => S["{0} is equal to", Arg("field description", description)] },
+        { "_not",  (S, description) => S["{0} is not equal to", Arg("field description", description)] },
     };
 
     // Applies to all types.
     public static readonly Dictionary<string, Func<IStringLocalizer, string, string>> MultiValueComparisonOperators = new()
     {
-        { "_in", (S, description) => S["{0} is in collection", description] },
-        { "_not_in", (S, description) => S["{0} is not in collection", description] },
+        { "_in", (S, description) => S["{0} is in collection", Arg("field description", description)] },
+        { "_not_in", (S, description) => S["{0} is not in collection", Arg("field description", description)] },
     };
 
     // Applies to non strings.
     public static readonly Dictionary<string, Func<IStringLocalizer, string, string>> NonStringValueComparisonOperators = new()
     {
-        { "_gt", (S, description) => S["{0} is greater than", description] },
-        { "_gte", (S, description) => S["{0} is greater than or equal", description] },
-        { "_lt", (S, description) => S["{0} is less than", description] },
-        { "_lte", (S, description) => S["{0} is less than or equal", description] },
+        { "_gt", (S, description) => S["{0} is greater than", Arg("field description", description)] },
+        { "_gte", (S, description) => S["{0} is greater than or equal", Arg("field description", description)] },
+        { "_lt", (S, description) => S["{0} is less than", Arg("field description", description)] },
+        { "_lte", (S, description) => S["{0} is less than or equal", Arg("field description", description)] },
     };
 
     // Applies to strings.
     public static readonly Dictionary<string, Func<IStringLocalizer, string, string>> StringComparisonOperators = new()
     {
-        { "_contains", (S, description) => S["{0} contains the string", description] },
-        { "_not_contains", (S, description) => S["{0} does not contain the string", description] },
-        { "_starts_with", (S, description) => S["{0} starts with the string", description] },
-        { "_not_starts_with", (S, description) => S["{0} does not start with the string", description] },
-        { "_ends_with", (S, description) => S["{0} ends with the string", description] },
-        { "_not_ends_with", (S, description) => S["{0} does not end with the string", description] },
+        { "_contains", (S, description) => S["{0} contains the string", Arg("field description", description)] },
+        { "_not_contains", (S, description) => S["{0} does not contain the string", Arg("field description", description)] },
+        { "_starts_with", (S, description) => S["{0} starts with the string", Arg("field description", description)] },
+        { "_not_starts_with", (S, description) => S["{0} does not start with the string", Arg("field description", description)] },
+        { "_ends_with", (S, description) => S["{0} ends with the string", Arg("field description", description)] },
+        { "_not_ends_with", (S, description) => S["{0} does not end with the string", Arg("field description", description)] },
     };
 
     public void AddScalarFilterFields<TGraphType>(string fieldName, string description)

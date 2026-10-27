@@ -32,6 +32,7 @@ using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 using YesSql;
 using YesSql.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Workflows.Controllers;
 
@@ -221,7 +222,7 @@ public sealed class WorkflowTypeController : Controller
 
                     if (deletedWorkflowTypeNames.Count > 0)
                     {
-                        await _notifier.SuccessAsync(H.Plural(deletedWorkflowTypeNames.Count, "The workflow \"{1}\" has been deleted.", "The following workflows have been deleted: {1}.", string.Join(", ", deletedWorkflowTypeNames)));
+                        await _notifier.SuccessAsync(H.Plural(Arg("number of workflows", deletedWorkflowTypeNames.Count), "The workflow \"{1}\" has been deleted.", "The following workflows have been deleted: {1}.", Arg("workflow names", string.Join(", ", deletedWorkflowTypeNames))));
                     }
 
                     break;

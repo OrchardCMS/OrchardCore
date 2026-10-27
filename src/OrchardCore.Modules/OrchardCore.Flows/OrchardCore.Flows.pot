@@ -13,7 +13,7 @@ msgctxt "OrchardCore.Flows.Drivers.BagPartDisplayDriver"
 msgid "The Widget content item with id {0} has no matching {1} content type definition."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", invalidWidgetDescriptions)
+#. Format arguments: {0}: number of content items; {1}: content items
 #: Drivers/FlowPartDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Flows.Drivers.FlowPartDisplayDriver"
@@ -114,7 +114,7 @@ msgctxt "OrchardCore.Flows.Views.BagPart.Edit"
 msgid "Add Item"
 msgstr ""
 
-#. Format arguments: {0}: D[type.DisplayName, DataLocalizationContext.ContentType]
+#. Format arguments: {0}: content type name
 #: Views/BagPart.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Flows.Views.BagPart.Edit"

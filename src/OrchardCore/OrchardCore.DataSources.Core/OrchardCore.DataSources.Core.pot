@@ -72,28 +72,28 @@ msgctxt "OrchardCore.DataSources.Expressions.ExpressionCompiler"
 msgid "The operator '{0}' needs a number."
 msgstr ""
 
-#. Format arguments: {0}: start + 1
+#. Format arguments: {0}: position
 #: Expressions/ExpressionLexer.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionLexer"
 msgid "The field reference that starts at position {0} has no closing ']'."
 msgstr ""
 
-#. Format arguments: {0}: start + 1
+#. Format arguments: {0}: position
 #: Expressions/ExpressionLexer.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionLexer"
 msgid "The text that starts at position {0} has no closing quote."
 msgstr ""
 
-#. Format arguments: {0}: current; {1}: index + 1
+#. Format arguments: {0}: character; {1}: position
 #: Expressions/ExpressionLexer.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionLexer"
 msgid "Unexpected character '{0}' at position {1}."
 msgstr ""
 
-#. Format arguments: {0}: text; {1}: token.Position + 1; {2}: token.Text
+#. Format arguments: {0}: text; {1}: position; {2}: token.Text
 #: Expressions/ExpressionParser.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
@@ -107,7 +107,7 @@ msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
 msgid "Expected '{0}' at the end of the formula."
 msgstr ""
 
-#. Format arguments: {0}: token.Position + 1
+#. Format arguments: {0}: position
 #: Expressions/ExpressionParser.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
@@ -129,21 +129,21 @@ msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
 msgid "The formula is nested too deeply."
 msgstr ""
 
-#. Format arguments: {0}: token.Text; {1}: token.Position + 1
+#. Format arguments: {0}: token.Text; {1}: position
 #: Expressions/ExpressionParser.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
 msgid "The number '{0}' at position {1} is too large."
 msgstr ""
 
-#. Format arguments: {0}: next.Text, token.Text; {1}: next.Position + 1, token.Position + 1
+#. Format arguments: {0}: next.Text, token.Text; {1}: position
 #: Expressions/ExpressionParser.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"
 msgid "Unexpected '{0}' at position {1}."
 msgstr ""
 
-#. Format arguments: {0}: token.Text; {1}: token.Position + 1
+#. Format arguments: {0}: token.Text; {1}: position
 #: Expressions/ExpressionParser.cs
 #, csharp-format
 msgctxt "OrchardCore.DataSources.Expressions.ExpressionParser"

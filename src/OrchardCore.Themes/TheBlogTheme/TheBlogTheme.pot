@@ -11,11 +11,13 @@ msgctxt "TheBlogTheme.Views.Blog-ListPart"
 msgid "Older Posts →"
 msgstr ""
 
+#. CSS class of the pager link to the older posts, not displayed.
 #: Views/Blog-ListPart.liquid
 msgctxt "TheBlogTheme.Views.Blog-ListPart"
 msgid "next"
 msgstr ""
 
+#. CSS class of the pager link to the newer posts, not displayed.
 #: Views/Blog-ListPart.liquid
 msgctxt "TheBlogTheme.Views.Blog-ListPart"
 msgid "previous"
@@ -31,11 +33,13 @@ msgctxt "TheBlogTheme.Views.Category-TermPart"
 msgid "Older Posts →"
 msgstr ""
 
+#. CSS class of the pager link to the older posts, not displayed.
 #: Views/Category-TermPart.liquid
 msgctxt "TheBlogTheme.Views.Category-TermPart"
 msgid "next"
 msgstr ""
 
+#. CSS class of the pager link to the newer posts, not displayed.
 #: Views/Category-TermPart.liquid
 msgctxt "TheBlogTheme.Views.Category-TermPart"
 msgid "previous"
@@ -46,6 +50,7 @@ msgctxt "TheBlogTheme.Views.Category-TermPart"
 msgid "← Newer Posts"
 msgstr ""
 
+#. Date format of the publication date. Adapt the .NET custom date format to the culture, but keep its format specifiers such as MMMM, dd and yyyy.
 #: Views/Content-BlogPost.liquid
 msgctxt "TheBlogTheme.Views.Content-BlogPost"
 msgid "MMMM dd, yyyy"
@@ -63,6 +68,7 @@ msgctxt "TheBlogTheme.Views.Content-BlogPost"
 msgid "on {0}"
 msgstr ""
 
+#. Date format of the publication date. Adapt the .NET custom date format to the culture, but keep its format specifiers such as MMMM, dd and yyyy.
 #: Views/Content-BlogPost.Summary.liquid
 msgctxt "TheBlogTheme.Views.Content-BlogPost.Summary"
 msgid "MMMM dd, yyyy"
@@ -120,11 +126,13 @@ msgctxt "TheBlogTheme.Views.Tag-TermPart"
 msgid "Older Posts →"
 msgstr ""
 
+#. CSS class of the pager link to the older posts, not displayed.
 #: Views/Tag-TermPart.liquid
 msgctxt "TheBlogTheme.Views.Tag-TermPart"
 msgid "next"
 msgstr ""
 
+#. CSS class of the pager link to the newer posts, not displayed.
 #: Views/Tag-TermPart.liquid
 msgctxt "TheBlogTheme.Views.Tag-TermPart"
 msgid "previous"

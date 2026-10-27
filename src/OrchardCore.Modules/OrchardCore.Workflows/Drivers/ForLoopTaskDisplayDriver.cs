@@ -7,6 +7,7 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Workflows.Drivers;
 
@@ -70,11 +71,11 @@ public sealed class ForLoopTaskDisplayDriver : ActivityDisplayDriver<ForLoopTask
     {
         if (string.IsNullOrWhiteSpace(expression))
         {
-            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} is required field.", label]);
+            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} is required field.", Arg("field label", label)]);
         }
         else if (!_templateManager.Validate(expression, out var errors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} doesn't contain a valid Liquid expression. Details: {1}", label, string.Join(" ", errors)]);
+            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} doesn't contain a valid Liquid expression. Details: {1}", Arg("field label", label), Arg("Liquid errors", string.Join(" ", errors))]);
         }
     }
 
@@ -82,7 +83,7 @@ public sealed class ForLoopTaskDisplayDriver : ActivityDisplayDriver<ForLoopTask
     {
         if (string.IsNullOrWhiteSpace(expression))
         {
-            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} is required field.", label]);
+            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} is required field.", Arg("field label", label)]);
         }
     }
 }

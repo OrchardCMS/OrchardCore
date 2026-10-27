@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Liquid.Handlers;
 
@@ -48,7 +49,7 @@ public class LiquidPartHandler : ContentPartHandler<LiquidPart>
             !_liquidTemplateManager.Validate(part.Liquid, out var errors))
         {
             context.Fail(
-                S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)],
+                S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))],
                 nameof(part.Liquid));
         }
     }

@@ -13,6 +13,7 @@ using OrchardCore.Users;
 using YesSql;
 using IIdGenerator = OrchardCore.Entities.IIdGenerator;
 using ISession = YesSql.ISession;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.SharedLinks;
 
@@ -346,8 +347,8 @@ public sealed class SharedLinkManager : ISharedLinkManager
         var expires = link.ExpiresUtc.ToString("f", CultureInfo.CurrentCulture);
 
         return link.MaxUses > 0
-            ? S.Plural(link.MaxUses, "Sign in to open it. The link works once, until {1} (UTC).", "Sign in to open it. The link works {0} times, until {1} (UTC).", expires)
-            : S["Sign in to open it. The link works until {0} (UTC).", expires];
+            ? S.Plural(Arg("maximum uses", link.MaxUses), "Sign in to open it. The link works once, until {1} (UTC).", "Sign in to open it. The link works {0} times, until {1} (UTC).", Arg("expiration date", expires))
+            : S["Sign in to open it. The link works until {0} (UTC).", Arg("expiration date", expires)];
     }
 
     private sealed record Recipient(string UserId, string UserName, string Email);

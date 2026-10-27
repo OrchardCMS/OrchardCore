@@ -13,6 +13,7 @@ using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
 using OrchardCore.Recipes.Models;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Deployment.Remote.Controllers;
 
@@ -107,7 +108,7 @@ public sealed class ImportRemoteInstanceController : Controller
         {
             _logger.LogError(e, "Unable to import a recipe from deployment plan.");
 
-            await _notifier.ErrorAsync(H["The deployment plan failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors)]);
+            await _notifier.ErrorAsync(H["The deployment plan failed with the following errors: {0}", Arg("errors", string.Join(' ', e.StepResult.Errors))]);
         }
         catch (Exception e)
         {

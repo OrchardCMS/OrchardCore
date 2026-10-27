@@ -51,6 +51,7 @@ msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "Previously created"
 msgstr ""
 
+#. Notification status filter: notifications that have been read.
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "Read"
@@ -66,6 +67,7 @@ msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "Remove"
 msgstr ""
 
+#. Notification status filter: notifications that have not been read.
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "Unread"
@@ -78,49 +80,52 @@ msgid_plural "notifications"
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: counter; {1}: H.Plural(counter, "notification", "notifications")
+#. {1} is the translation of "notification" or "notifications", matching the number.
+#. Format arguments: {0}: number of notifications; {1}: notification or notifications
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "{0} {1} read successfully."
 msgstr ""
 
-#. Format arguments: {0}: counter; {1}: H.Plural(counter, "notification", "notifications")
+#. {1} is the translation of "notification" or "notifications", matching the number.
+#. Format arguments: {0}: number of notifications; {1}: notification or notifications
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "{0} {1} removed successfully."
 msgstr ""
 
-#. Format arguments: {0}: counter; {1}: H.Plural(counter, "notification", "notifications")
+#. {1} is the translation of "notification" or "notifications", matching the number.
+#. Format arguments: {0}: number of notifications; {1}: notification or notifications
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "{0} {1} unread successfully."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', htmlBodyErrors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/NotifyUserTaskActivityDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
 msgid "HTML Body field does not contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', subjectErrors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/NotifyUserTaskActivityDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
 msgid "Subject field does not contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', summaryErrors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/NotifyUserTaskActivityDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
 msgid "Summary field does not contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', textBodyErrors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/NotifyUserTaskActivityDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
@@ -302,6 +307,7 @@ msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
 msgid "Subject"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/NotificationsAdminList.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
 msgid "selected"
@@ -337,7 +343,8 @@ msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
 msgid "Ok"
 msgstr ""
 
-#. Format arguments: {0}: @item.Text.ToLower()
+#. {0} is the lowercased name of the selected bulk action.
+#. Format arguments: {0}: bulk action
 #: Views/NotificationsAdminListBulkActions.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListBulkActions"

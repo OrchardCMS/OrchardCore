@@ -10,4 +10,4 @@
         <i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Unassign user from roles"])
     </h4>
 </header>
-<em>@T["Unassign {0} from roles {1}", Model.Activity.UserName, string.Join(",", Model.Activity.Roles)]</em>
+<em>@T["Unassign {0} from roles {1}", Model.Activity.UserName, Arg("role names", string.Join(",", Model.Activity.Roles))]</em>

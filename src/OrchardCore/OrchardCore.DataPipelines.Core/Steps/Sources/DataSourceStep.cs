@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources.Operations;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -156,7 +157,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
             var after = watermark;
             predicates.Add((incremental.Name, value => !DataValues.IsEmpty(value) && DataValues.Compare(value, after) > 0));
             query.Conditions.Add(new DataCondition { Field = incremental.Name, Operator = DataFilterOperator.GreaterThan, Values = [after] });
-            context.LogInformation(S["Reads the rows whose '{0}' is after {1}.", incremental.Name, DataValues.ToText(after)]);
+            context.LogInformation(S["Reads the rows whose '{0}' is after {1}.", Arg("field name", incremental.Name), Arg("last value read", DataValues.ToText(after))]);
         }
 
         // The rows are filtered again here, as a source may ignore conditions: it can only stop at the most rows when
@@ -304,7 +305,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
                 if (field is null)
                 {
-                    errors.Add(S["The data set has no field named '{0}'.", name ?? string.Empty]);
+                    errors.Add(S["The data set has no field named '{0}'.", Arg("field name", name ?? string.Empty)]);
 
                     continue;
                 }
@@ -321,7 +322,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
             if (field is null)
             {
-                errors.Add(S["The data set has no field named '{0}' to filter on.", filter.Field ?? string.Empty]);
+                errors.Add(S["The data set has no field named '{0}' to filter on.", Arg("field name", filter.Field ?? string.Empty)]);
 
                 continue;
             }
@@ -347,7 +348,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
             if (incremental is null)
             {
-                errors.Add(S["The data set has no field named '{0}' to read the new rows by.", settings.IncrementalField]);
+                errors.Add(S["The data set has no field named '{0}' to read the new rows by.", Arg("field name", settings.IncrementalField)]);
             }
             else if (!DataValues.IsNumeric(incremental.Type) && !DataValues.IsTemporal(incremental.Type))
             {

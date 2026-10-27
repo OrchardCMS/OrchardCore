@@ -3,6 +3,7 @@ using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -55,7 +56,7 @@ public sealed class ConvertTimeZoneStep : DataPipelineStepType<ConvertTimeZoneSt
 
             if (index < 0)
             {
-                context.AddError(S["The input has no field named '{0}'.", name ?? string.Empty]);
+                context.AddError(S["The input has no field named '{0}'.", Arg("field name", name ?? string.Empty)]);
             }
             else if (fields[index].Type != DataFieldType.DateTime)
             {

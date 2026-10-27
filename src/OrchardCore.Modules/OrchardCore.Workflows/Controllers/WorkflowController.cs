@@ -23,6 +23,7 @@ using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 using YesSql;
 using YesSql.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Workflows.Controllers;
 
@@ -264,7 +265,7 @@ public sealed class WorkflowController : Controller
 
         var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
         await _workflowStore.DeleteAsync(workflow);
-        await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", id]);
+        await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", Arg("workflow ID", id)]);
         return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });
     }
 
@@ -309,7 +310,7 @@ public sealed class WorkflowController : Controller
             {
                 await _workflowManager.RestartWorkflowAsync(workflow, workflowType);
 
-                await _notifier.SuccessAsync(H["Workflow {0} has been restarted.", id]);
+                await _notifier.SuccessAsync(H["Workflow {0} has been restarted.", Arg("workflow ID", id)]);
             }
         }
 
@@ -349,7 +350,7 @@ public sealed class WorkflowController : Controller
 
                     if (deletedWorkflowIds.Count > 0)
                     {
-                        await _notifier.SuccessAsync(H.Plural(deletedWorkflowIds.Count, "The workflow \"{1}\" has been deleted.", "The following workflows have been deleted: {1}.", string.Join(", ", deletedWorkflowIds)));
+                        await _notifier.SuccessAsync(H.Plural(Arg("number of workflows", deletedWorkflowIds.Count), "The workflow \"{1}\" has been deleted.", "The following workflows have been deleted: {1}.", Arg("workflow IDs", string.Join(", ", deletedWorkflowIds))));
                     }
 
                     break;

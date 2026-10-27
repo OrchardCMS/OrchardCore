@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Liquid.Fields;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Liquid.Handlers;
 
@@ -40,7 +41,7 @@ public sealed class LiquidFieldHandler : ContentFieldHandler<LiquidField>
             !_liquidTemplateManager.Validate(field.Liquid, out var errors))
         {
             context.Fail(
-                S["The Liquid field doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)],
+                S["The Liquid field doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))],
                 nameof(field.Liquid));
         }
     }

@@ -11,6 +11,7 @@ using OrchardCore.Notifications.ViewModels;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Notifications.Drivers;
 
@@ -70,22 +71,22 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
         if (!_liquidTemplateManager.Validate(model.Subject, out var subjectErrors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(' ', subjectErrors))]);
         }
 
         if (!_liquidTemplateManager.Validate(model.Summary, out var summaryErrors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(' ', summaryErrors))]);
         }
 
         if (!_liquidTemplateManager.Validate(model.TextBody, out var textBodyErrors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(' ', textBodyErrors))]);
         }
 
         if (!_liquidTemplateManager.Validate(model.HtmlBody, out var htmlBodyErrors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(' ', htmlBodyErrors))]);
         }
 
         activity.Subject = new WorkflowExpression<string>(model.Subject);

@@ -13,7 +13,7 @@
 
 <div class="form-check list-group-select-all-container">
     <input type="checkbox" class="form-check-input list-group-select-all" id="@checkboxId">
-    <label class="form-check-label list-group-select-all-label" for="@checkboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryName]">
-        <span class="list-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryName]</span>
+    <label class="form-check-label list-group-select-all-label" for="@checkboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", Arg("number of features", "__COUNT__"), Arg("category name", categoryName)]">
+        <span class="list-group-select-all-text">@T["Select all {0} features grouped under {1} category", Arg("number of features", 0), Arg("category name", categoryName)]</span>
     </label>
 </div>

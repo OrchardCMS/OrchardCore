@@ -35,7 +35,7 @@ msgctxt "OrchardCore.Menu.Drivers.LinkMenuItemPartDisplayDriver"
 msgid "{0} is an invalid url."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", invalidMenuItemDescriptions)
+#. Format arguments: {0}: number of content items; {1}: content items
 #: Drivers/MenuPartDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Menu.Drivers.MenuPartDisplayDriver"

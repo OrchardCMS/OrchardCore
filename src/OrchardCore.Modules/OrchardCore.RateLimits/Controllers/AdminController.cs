@@ -22,6 +22,7 @@ using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
 using OrchardCore.RateLimits.ViewModels;
 using OrchardCore.Routing;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.RateLimits.Controllers;
 
@@ -366,7 +367,7 @@ public sealed class AdminController : Controller
                     }
 
                     _shellReleaseManager.RequestRelease();
-                    await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was enabled successfully.", "{1} policies were enabled successfully.", totalChanged));
+                    await _notifier.SuccessAsync(H.Plural(Arg("number of policies", totalChanged), "{1} policy was enabled successfully.", "{1} policies were enabled successfully.", Arg("number of policies", totalChanged)));
 
                     break;
                 }
@@ -390,7 +391,7 @@ public sealed class AdminController : Controller
                     }
 
                     _shellReleaseManager.RequestRelease();
-                    await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was disabled successfully.", "{1} policies were disabled successfully.", totalChanged));
+                    await _notifier.SuccessAsync(H.Plural(Arg("number of policies", totalChanged), "{1} policy was disabled successfully.", "{1} policies were disabled successfully.", Arg("number of policies", totalChanged)));
 
                     break;
                 }
@@ -420,7 +421,7 @@ public sealed class AdminController : Controller
                         _shellReleaseManager.RequestRelease();
                     }
 
-                    await _notifier.SuccessAsync(H.Plural(totalDeleted, "{1} policy was deleted successfully.", "{1} policies were deleted successfully.", totalDeleted));
+                    await _notifier.SuccessAsync(H.Plural(Arg("number of policies", totalDeleted), "{1} policy was deleted successfully.", "{1} policies were deleted successfully.", Arg("number of policies", totalDeleted)));
 
                     break;
                 }

@@ -6,7 +6,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Settings/PreviewPartSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.ContentPreview.Settings.PreviewPartSettingsDisplayDriver"

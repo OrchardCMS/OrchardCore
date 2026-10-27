@@ -18,7 +18,7 @@ msgctxt "OrchardCore.Recipes.Services.RecipeExecutor"
 msgid "Unexpected error occurred while executing the '{0}' step."
 msgstr ""
 
-#. Format arguments: {0}: name; {1}: GlobalMethodName
+#. Format arguments: {0}: variable name; {1}: section name
 #: VariablesMethodProvider.cs
 #, csharp-format
 msgctxt "OrchardCore.Recipes.VariablesMethodProvider"

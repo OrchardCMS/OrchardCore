@@ -2,6 +2,7 @@ using System.IO.Compression;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -68,7 +69,7 @@ public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStep, ZipFilesSt
             }
         }
 
-        context.LogInformation(S["Zipped {0} files into '{1}'.", count, archive.FileName]);
+        context.LogInformation(S["Zipped {0} files into '{1}'.", Arg("number of files", count), archive.FileName]);
 
         await context.GetOutput().WriteFileAsync(archive, context.CancellationToken);
     }

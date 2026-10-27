@@ -58,7 +58,7 @@
                                 WorkflowStatus.Finished => T["Finished"],
                                 WorkflowStatus.Faulted => T["Faulted"],
                                 WorkflowStatus.Aborted => T["Aborted"],
-                                _ => T["Status: {0}", status.ToString()]
+                                _ => T["Status: {0}", Arg("workflow status", status.ToString())]
                             };
                         } @localizedStatus
                     </label>

@@ -136,7 +136,7 @@ msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
 msgid "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: totalDeleted
+#. Format arguments: {0}: number of policies; {1}: number of policies
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
@@ -145,7 +145,7 @@ msgid_plural "{1} policies were deleted successfully."
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count; {1}: totalChanged
+#. Format arguments: {0}: number of policies; {1}: number of policies
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
@@ -154,7 +154,7 @@ msgid_plural "{1} policies were disabled successfully."
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count; {1}: totalChanged
+#. Format arguments: {0}: number of policies; {1}: number of policies
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
@@ -461,6 +461,7 @@ msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
 msgid "These policies are set by features and are read-only."
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
 msgid "selected"

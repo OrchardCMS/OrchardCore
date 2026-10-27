@@ -35,7 +35,7 @@ msgctxt "OrchardCore.Alias.Models.AliasPartExtensions"
 msgid "Your alias is too long. The alias can only be up to {0} characters. \"{1}\""
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Settings/AliasPartSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Alias.Settings.AliasPartSettingsDisplayDriver"

@@ -19,7 +19,7 @@
     <script at="Foot" asp-name="prism" depends-on="jsdiff" asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
     <script at="Foot" asp-name="prismjson" depends-on="prism" asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-json.min.js"></script>
     <script at="Foot" asp-name="diffviewer" depends-on="prismjson" asp-src="~/OrchardCore.AuditTrail/Scripts/diffviewer.js"></script>
-    <div id="diffapp" data-split="@T["Split"]" data-unified="@T["Unified"]" data-old="@Model.Previous" data-new="@Model.Current" data-old-time="@oldTime" data-old-text="@oldText" data-new-time="@newTime" data-new-text="@newText"></div>
+    <div id="diffapp" data-split="@T.Note("Diff view mode that shows the two versions side by side.")["Split"]" data-unified="@T.Note("Diff view mode that shows the changes of the two versions in a single view.")["Unified"]" data-old="@Model.Previous" data-new="@Model.Current" data-old-time="@oldTime" data-old-text="@oldText" data-new-time="@newTime" data-new-text="@newText"></div>
 }
 else
 {

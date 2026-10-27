@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Media.Core.Helpers;
 
@@ -29,7 +30,7 @@ public sealed class FileSizeHelper
 
         if (bytes == 0)
         {
-            return S["{0} KB", 0];
+            return S["{0} KB", Arg("kilobytes", 0)];
         }
 
         var magnitude = (int)Math.Log(bytes, 1024);
@@ -37,13 +38,13 @@ public sealed class FileSizeHelper
 
         return magnitude switch
         {
-            0 or 1 => S["{0} B", adjustedSize],
-            2 => S["{0} KB", adjustedSize],
-            3 => S["{0} MB", adjustedSize],
-            4 => S["{0} GB", adjustedSize],
-            5 => S["{0} TB", adjustedSize],
-            6 => S["{0} PB", adjustedSize],
-            _ => S["{0} EB", adjustedSize]
+            0 or 1 => S["{0} B", Arg("bytes", adjustedSize)],
+            2 => S["{0} KB", Arg("kilobytes", adjustedSize)],
+            3 => S["{0} MB", Arg("megabytes", adjustedSize)],
+            4 => S["{0} GB", Arg("gigabytes", adjustedSize)],
+            5 => S["{0} TB", Arg("terabytes", adjustedSize)],
+            6 => S["{0} PB", Arg("petabytes", adjustedSize)],
+            _ => S["{0} EB", Arg("exabytes", adjustedSize)]
         };
     }
 }

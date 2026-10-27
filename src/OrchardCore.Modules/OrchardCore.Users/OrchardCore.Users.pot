@@ -361,7 +361,7 @@ msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Could not delete the user."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", errorDescriptions)
+#. Format arguments: {0}: number of errors; {1}: errors
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Users.Controllers.AdminController"
@@ -1026,6 +1026,7 @@ msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
 msgid "Audit Trail User Event Settings"
 msgstr ""
 
+#. Redaction option that stores the value of a user property as is, without redacting it.
 #: Views/AuditTrailAdmin/Index.cshtml
 msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
 msgid "Store"
@@ -1286,7 +1287,7 @@ msgctxt "OrchardCore.Users.Views.ExternalAuthentications.LinkExternalLogin"
 msgid "Username"
 msgstr ""
 
-#. Format arguments: {0}: ViewData["LoginProvider"]
+#. Format arguments: {0}: login provider
 #: Views/ExternalAuthentications/LinkExternalLogin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Users.Views.ExternalAuthentications.LinkExternalLogin"
@@ -1323,7 +1324,7 @@ msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
 msgid "Username"
 msgstr ""
 
-#. Format arguments: {0}: ViewData["LoginProvider"]
+#. Format arguments: {0}: login provider
 #: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
@@ -2094,6 +2095,7 @@ msgctxt "OrchardCore.Users.Views.ResetPassword.ResetPasswordConfirmation"
 msgid "Click here to log in"
 msgstr ""
 
+#. Followed by the link "Click here to log in".
 #: Views/ResetPassword/ResetPasswordConfirmation.cshtml
 msgctxt "OrchardCore.Users.Views.ResetPassword.ResetPasswordConfirmation"
 msgid "Please "
@@ -2905,6 +2907,7 @@ msgctxt "OrchardCore.Users.Views.UsersAdminList"
 msgid "User"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/UsersAdminList.cshtml
 msgctxt "OrchardCore.Users.Views.UsersAdminList"
 msgid "selected"
@@ -2915,7 +2918,8 @@ msgctxt "OrchardCore.Users.Views.UsersAdminList.Fields.BulkActions"
 msgid "Actions"
 msgstr ""
 
-#. Format arguments: {0}: @item.Text.ToLower()
+#. {0} is the lowercased name of the selected bulk action.
+#. Format arguments: {0}: bulk action
 #: Views/UsersAdminListBulkActions.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Users.Views.UsersAdminListBulkActions"

@@ -73,7 +73,7 @@ msgctxt "OrchardCore.Recipes.Controllers.AdminController"
 msgid "Recipe was not found."
 msgstr ""
 
-#. Format arguments: {0}: recipe.DisplayName; {1}: string.Join(' ', e.StepResult.Errors)
+#. Format arguments: {0}: recipe.DisplayName; {1}: errors
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Recipes.Controllers.AdminController"

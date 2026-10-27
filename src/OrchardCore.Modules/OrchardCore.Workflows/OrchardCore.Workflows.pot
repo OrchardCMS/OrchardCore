@@ -301,7 +301,7 @@ msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
 msgid "Recently created"
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", deletedWorkflowIds)
+#. Format arguments: {0}: number of workflows; {1}: workflow IDs
 #: Controllers/WorkflowController.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
@@ -310,14 +310,14 @@ msgid_plural "The following workflows have been deleted: {1}."
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: id
+#. Format arguments: {0}: workflow ID
 #: Controllers/WorkflowController.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
 msgid "Workflow {0} has been deleted."
 msgstr ""
 
-#. Format arguments: {0}: id
+#. Format arguments: {0}: workflow ID
 #: Controllers/WorkflowController.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
@@ -329,7 +329,7 @@ msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
 msgid "Delete"
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", deletedWorkflowTypeNames)
+#. Format arguments: {0}: number of workflows; {1}: workflow names
 #: Controllers/WorkflowTypeController.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
@@ -360,7 +360,7 @@ msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
 msgid "Workflow {0} deleted"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/ForEachTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.ForEachTaskDisplayDriver"
@@ -372,21 +372,21 @@ msgctxt "OrchardCore.Workflows.Drivers.ForEachTaskDisplayDriver"
 msgid "Enumerable is required field."
 msgstr ""
 
-#. Format arguments: {0}: label; {1}: string.Join(" ", errors)
+#. Format arguments: {0}: field label; {1}: Liquid errors
 #: Drivers/ForLoopTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.ForLoopTaskDisplayDriver"
 msgid "{0} doesn't contain a valid Liquid expression. Details: {1}"
 msgstr ""
 
-#. Format arguments: {0}: label
+#. Format arguments: {0}: field label
 #: Drivers/ForLoopTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.ForLoopTaskDisplayDriver"
 msgid "{0} is required field."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/IfElseTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.IfElseTaskDisplayDriver"
@@ -398,7 +398,7 @@ msgctxt "OrchardCore.Workflows.Drivers.IfElseTaskDisplayDriver"
 msgid "Condition is required field."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/LiquidTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.LiquidTaskDisplayDriver"
@@ -410,7 +410,7 @@ msgctxt "OrchardCore.Workflows.Drivers.LiquidTaskDisplayDriver"
 msgid "Expression is required field."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/SetOutputTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.SetOutputTaskDisplayDriver"
@@ -422,7 +422,7 @@ msgctxt "OrchardCore.Workflows.Drivers.SetOutputTaskDisplayDriver"
 msgid "Value is required field."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/SetVariableTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.SetVariableTaskDisplayDriver"
@@ -434,7 +434,7 @@ msgctxt "OrchardCore.Workflows.Drivers.SetVariableTaskDisplayDriver"
 msgid "Value is required field."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Drivers/WhileLoopTaskDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.WhileLoopTaskDisplayDriver"
@@ -586,7 +586,7 @@ msgctxt "OrchardCore.Workflows.UserTasks.Activities.UserTaskEvent"
 msgid "User Task Event"
 msgstr ""
 
-#. Format arguments: {0}: action
+#. Format arguments: {0}: user action
 #: UserTasks/Drivers/UserTaskEventContentDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.UserTasks.Drivers.UserTaskEventContentDriver"
@@ -942,7 +942,7 @@ msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Design"
 msgid "Fork"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", Model.Activity.Forks)
+#. Format arguments: {0}: branch names
 #: Views/Items/ForkTask.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Design"
@@ -1721,14 +1721,14 @@ msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
 msgid "No user actions specified"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", Model.Activity.Actions)
+#. Format arguments: {0}: user actions
 #: Views/Items/UserTaskEvent.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
 msgid "Request any user action of <em>{0}</em>"
 msgstr ""
 
-#. Format arguments: {0}: Model.Activity.Roles.Any() ? Html.Raw(Html.Encode(string.Join(", ", Model.Activity.Roles))) : T["Any"]
+#. Format arguments: {0}: role names
 #: Views/Items/UserTaskEvent.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
@@ -2031,6 +2031,7 @@ msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Workflows"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "selected"
@@ -2146,7 +2147,7 @@ msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
 msgid "Starting"
 msgstr ""
 
-#. Format arguments: {0}: status.ToString()
+#. Format arguments: {0}: workflow status
 #: Views/WorkflowTrimming.Fields.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
@@ -2483,6 +2484,7 @@ msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
 msgid "Workflows"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/WorkflowType/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
 msgid "selected"

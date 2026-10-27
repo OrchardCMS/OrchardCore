@@ -6,49 +6,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
-#. Format arguments: {0}: adjustedSize
+#. Format arguments: {0}: bytes
 #: Helpers/FileSizeHelper.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
 msgid "{0} B"
 msgstr ""
 
-#. Format arguments: {0}: adjustedSize
+#. Format arguments: {0}: exabytes
 #: Helpers/FileSizeHelper.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
 msgid "{0} EB"
 msgstr ""
 
-#. Format arguments: {0}: adjustedSize
+#. Format arguments: {0}: gigabytes
 #: Helpers/FileSizeHelper.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
 msgid "{0} GB"
 msgstr ""
 
-#. Format arguments: {0}: 0, adjustedSize
+#. Format arguments: {0}: kilobytes
 #: Helpers/FileSizeHelper.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
 msgid "{0} KB"
 msgstr ""
 
-#. Format arguments: {0}: adjustedSize
+#. Format arguments: {0}: megabytes
 #: Helpers/FileSizeHelper.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
 msgid "{0} MB"
 msgstr ""
 
-#. Format arguments: {0}: adjustedSize
+#. Format arguments: {0}: petabytes
 #: Helpers/FileSizeHelper.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
 msgid "{0} PB"
 msgstr ""
 
-#. Format arguments: {0}: adjustedSize
+#. Format arguments: {0}: terabytes
 #: Helpers/FileSizeHelper.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"

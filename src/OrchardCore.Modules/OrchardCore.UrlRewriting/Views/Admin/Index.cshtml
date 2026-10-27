@@ -36,7 +36,7 @@
                 rows-id="@UrlRewritingAdminList.SortableContainerId"
                 rows-class="bulk-select-list"
                 rows-data-checkbox-name="ruleIds"
-                rows-data-selected-text="@T["selected"].Value"
+                rows-data-selected-text="@T.Note("Shown after the number of selected items.")["selected"].Value"
                 rows-data-sort-url="@Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" })"
                 rows-data-sort-error-message="@T["Unable to sort the list. Try refreshing your page and try again."].Value"
                 bulk-actions="Model.Options.BulkActions"

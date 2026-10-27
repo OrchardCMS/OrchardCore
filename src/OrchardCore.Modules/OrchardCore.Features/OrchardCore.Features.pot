@@ -21,7 +21,7 @@ msgctxt "OrchardCore.Features.Controllers.AdminController"
 msgid "Please select one or more features."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))
+#. Format arguments: {0}: number of features; {1}: feature names
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Features.Controllers.AdminController"
@@ -30,7 +30,7 @@ msgid_plural "The following features were disabled: {1}."
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))
+#. Format arguments: {0}: number of features; {1}: feature names
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Features.Controllers.AdminController"
@@ -54,7 +54,7 @@ msgctxt "OrchardCore.Features.FeaturesLocalizationSources"
 msgid "All Features"
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))
+#. Format arguments: {0}: number of features; {1}: feature names
 #: Services/ModuleService.cs
 #, csharp-format
 msgctxt "OrchardCore.Features.Services.ModuleService"
@@ -63,7 +63,7 @@ msgid_plural "The following features were disabled: {1}."
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", enabledFeatures.Select(f => f.Name ?? f.Id))
+#. Format arguments: {0}: number of features; {1}: feature names
 #: Services/ModuleService.cs
 #, csharp-format
 msgctxt "OrchardCore.Features.Services.ModuleService"
@@ -159,7 +159,7 @@ msgctxt "OrchardCore.Features.Views.Admin.Features"
 msgid "Search"
 msgstr ""
 
-#. Format arguments: {0}: "__VISIBLE__", totalFeatures; {1}: "__TOTAL__", totalFeatures
+#. Format arguments: {0}: number of visible features; {1}: total number of features
 #: Views/Admin/Features.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Features.Views.Admin.Features"
@@ -265,7 +265,7 @@ msgctxt "OrchardCore.Features.Views.FeatureEntry.DefaultTags.SummaryAdmin"
 msgid "This dependency is not available."
 msgstr ""
 
-#. Format arguments: {0}: "__COUNT__", 0; {1}: categoryName
+#. Format arguments: {0}: number of features; {1}: category name
 #: Views/FeaturesGroupToolbar.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Features.Views.FeaturesGroupToolbar"

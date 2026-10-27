@@ -118,7 +118,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
 msgid "Summary"
 msgstr ""
 
-#. Format arguments: {0}: measure.Field, name ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Transforms/AggregateStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.AggregateStep"
@@ -198,7 +198,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
 msgid "The input has no date and time field to convert."
 msgstr ""
 
-#. Format arguments: {0}: name ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Transforms/ConvertTimeZoneStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.ConvertTimeZoneStep"
@@ -222,7 +222,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
 msgid "Create a file"
 msgstr ""
 
-#. Format arguments: {0}: file.FileName; {1}: count
+#. Format arguments: {0}: file.FileName; {1}: number of rows
 #: Steps/Files/CreateFileStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.CreateFileStep"
@@ -281,7 +281,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
 msgid "Reads content items, users, query results or any other data set."
 msgstr ""
 
-#. Format arguments: {0}: incremental.Name; {1}: DataValues.ToText(after)
+#. Format arguments: {0}: field name; {1}: last value read
 #: Steps/Sources/DataSourceStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
@@ -295,21 +295,21 @@ msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
 msgid "The data set '{0}' doesn't exist, or the user the pipeline runs for may not read it."
 msgstr ""
 
-#. Format arguments: {0}: filter.Field ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Sources/DataSourceStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
 msgid "The data set has no field named '{0}' to filter on."
 msgstr ""
 
-#. Format arguments: {0}: settings.IncrementalField
+#. Format arguments: {0}: field name
 #: Steps/Sources/DataSourceStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
 msgid "The data set has no field named '{0}' to read the new rows by."
 msgstr ""
 
-#. Format arguments: {0}: name ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Sources/DataSourceStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.DataSourceStep"
@@ -352,7 +352,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.DistinctStep"
 msgid "Remove duplicates"
 msgstr ""
 
-#. Format arguments: {0}: name ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Transforms/DistinctStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.DistinctStep"
@@ -428,14 +428,14 @@ msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
 msgid "Right"
 msgstr ""
 
-#. Format arguments: {0}: key.LeftField ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Transforms/JoinStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
 msgid "The left input has no field named '{0}'."
 msgstr ""
 
-#. Format arguments: {0}: key.RightField ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Transforms/JoinStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.JoinStep"
@@ -472,7 +472,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.SelectFieldsStep"
 msgid "Select fields"
 msgstr ""
 
-#. Format arguments: {0}: selected.Field ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Transforms/SelectFieldsStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SelectFieldsStep"
@@ -501,7 +501,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.SortStep"
 msgid "Sorts the rows by one or more fields."
 msgstr ""
 
-#. Format arguments: {0}: key.Field ?? string.Empty
+#. Format arguments: {0}: field name
 #: Steps/Transforms/SortStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.SortStep"
@@ -538,7 +538,7 @@ msgctxt "OrchardCore.DataPipelines.Steps.ZipFilesStep"
 msgid "Zip files"
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: archive.FileName
+#. Format arguments: {0}: number of files; {1}: archive.FileName
 #: Steps/Files/ZipFilesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Steps.ZipFilesStep"

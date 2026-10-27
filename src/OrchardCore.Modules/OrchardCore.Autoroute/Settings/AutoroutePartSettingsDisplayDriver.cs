@@ -6,6 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Autoroute.Settings;
 
@@ -57,7 +58,7 @@ public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefiniti
 
         if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
         {
-            context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))]);
         }
         else
         {

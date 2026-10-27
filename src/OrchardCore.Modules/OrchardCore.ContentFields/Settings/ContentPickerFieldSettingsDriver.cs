@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.ContentFields.Settings;
 
@@ -80,7 +81,7 @@ public sealed class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitio
     {
         if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
         {
-            context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+            context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", titleErrors))]);
 
             return false;
         }

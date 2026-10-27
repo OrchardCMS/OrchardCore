@@ -9,6 +9,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Themes.Controllers;
 
@@ -142,10 +143,10 @@ public sealed class AdminController : Controller
                 if (!isEnabled)
                 {
                     await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
-                    await _notifier.SuccessAsync(H["{0} was enabled", feature.Name ?? feature.Id]);
+                    await _notifier.SuccessAsync(H["{0} was enabled", Arg("theme name", feature.Name ?? feature.Id)]);
                 }
 
-                await _notifier.SuccessAsync(H["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+                await _notifier.SuccessAsync(H.Note("{1} is the untranslated word \"Admin\" or \"Site\".")["{0} was set as the default {1} theme", Arg("theme name", feature.Name ?? feature.Id), Arg("theme kind", isAdmin ? "Admin" : "Site")]);
             }
         }
 
@@ -200,7 +201,7 @@ public sealed class AdminController : Controller
 
         await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
 
-        await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name ?? feature.Id]);
+        await _notifier.SuccessAsync(H["{0} was disabled.", Arg("theme name", feature.Name ?? feature.Id)]);
 
         return RedirectToAction(nameof(Index));
     }
@@ -223,7 +224,7 @@ public sealed class AdminController : Controller
 
         await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
 
-        await _notifier.SuccessAsync(H["{0} was enabled.", feature.Name ?? feature.Id]);
+        await _notifier.SuccessAsync(H["{0} was enabled.", Arg("theme name", feature.Name ?? feature.Id)]);
 
         return RedirectToAction(nameof(Index));
     }

@@ -18,6 +18,7 @@ using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Routing;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.ContentTypes.Controllers;
 
@@ -369,7 +370,7 @@ public sealed class AdminController : Controller
             await _contentDefinitionService.AddPartToTypeAsync(partToAdd, typeViewModel.Name);
         }
 
-        await _notifier.SuccessAsync(H.Plural(partsToAdd.Count(), "The \"{1}\" part has been added.", "The following parts have been added: {1}.", string.Join(", ", partsToAdd)));
+        await _notifier.SuccessAsync(H.Plural(Arg("number of parts", partsToAdd.Count()), "The \"{1}\" part has been added.", "The following parts have been added: {1}.", Arg("part names", string.Join(", ", partsToAdd))));
 
         if (!ModelState.IsValid)
         {

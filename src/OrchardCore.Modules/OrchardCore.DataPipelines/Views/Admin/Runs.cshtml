@@ -98,7 +98,7 @@
                             <span class="badge ta-badge fw-normal" title="@T["Queued"]"><i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@run.QueuedUtc.ToString("o")">@await DisplayAsync(await New.Timespan(Utc: run.QueuedUtc))</time></span>
                             @if (run.CompletedUtc is { } completed && run.StartedUtc is { } started)
                             {
-                                <span class="badge ta-badge fw-normal" title="@T["Duration"]"><i class="fa-solid fa-stopwatch text-secondary" aria-hidden="true"></i> @T["{0:N1} s", (completed - started).TotalSeconds]</span>
+                                <span class="badge ta-badge fw-normal" title="@T["Duration"]"><i class="fa-solid fa-stopwatch text-secondary" aria-hidden="true"></i> @T["{0:N1} s", Arg("seconds", (completed - started).TotalSeconds)]</span>
                             }
                             <span class="badge ta-badge fw-normal" title="@T["Started by"]"><i class="fa-solid fa-play text-secondary" aria-hidden="true"></i> @run.Trigger@(string.IsNullOrEmpty(run.TriggeredBy) ? string.Empty : " · " + run.TriggeredBy)</span>
                         </div>

@@ -19,6 +19,7 @@ using OrchardCore.Placements.Services;
 using OrchardCore.Placements.Models;
 using OrchardCore.Placements.ViewModels;
 using OrchardCore.Routing;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Placements.Controllers;
 
@@ -227,7 +228,7 @@ public sealed class AdminController : Controller
 
             if (emptyNodesIndexes.Any())
             {
-                await _notifier.ErrorAsync(H["A valid placement must contain either <b>place</b>, <b>shape</b>, <b>wrappers</b> or <b>alternates</b>. Please correct the placements at positions: {0}.", string.Join(", ", emptyNodesIndexes)]);
+                await _notifier.ErrorAsync(H["A valid placement must contain either <b>place</b>, <b>shape</b>, <b>wrappers</b> or <b>alternates</b>. Please correct the placements at positions: {0}.", Arg("positions", string.Join(", ", emptyNodesIndexes))]);
                 return View(viewModel);
             }
 

@@ -9,7 +9,7 @@
     <breadcrumb name="Tenants" title="@T["Tenants"]" />
 </zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="tenantNames" data-bulk-action-name="BulkAction" data-selected-text="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="tenantNames" data-bulk-action-name="BulkAction" data-selected-text="@T.Note("Shown after the number of selected items.")["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input name="BulkAction" type="hidden" />

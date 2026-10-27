@@ -11,6 +11,7 @@ using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
 using LiquidPermissions = OrchardCore.Liquid.Permissions;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Facebook.Widgets.Drivers;
 
@@ -96,7 +97,7 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
 
         if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
         {
-            context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))]);
         }
         else
         {

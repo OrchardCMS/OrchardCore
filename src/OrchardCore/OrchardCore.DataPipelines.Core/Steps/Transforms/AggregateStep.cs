@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources.Operations;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -97,7 +98,7 @@ public sealed class AggregateStep : DataPipelineStepType<AggregateStep, Aggregat
 
             if (index < 0)
             {
-                errors.Add(S["The input has no field named '{0}'.", name ?? string.Empty]);
+                errors.Add(S["The input has no field named '{0}'.", Arg("field name", name ?? string.Empty)]);
 
                 continue;
             }
@@ -140,7 +141,7 @@ public sealed class AggregateStep : DataPipelineStepType<AggregateStep, Aggregat
 
                 if (sourceIndex < 0)
                 {
-                    errors.Add(S["The input has no field named '{0}'.", measure.Field]);
+                    errors.Add(S["The input has no field named '{0}'.", Arg("field name", measure.Field)]);
 
                     continue;
                 }

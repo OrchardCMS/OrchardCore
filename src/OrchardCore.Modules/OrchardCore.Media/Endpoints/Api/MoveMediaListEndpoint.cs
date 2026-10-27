@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -82,7 +83,7 @@ public static class MoveMediaListEndpoint
 
         if (filesOnError.Count > 0)
         {
-            return httpContext.ApiValidationProblem(detail: localizer["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)]);
+            return httpContext.ApiValidationProblem(detail: localizer["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", Arg("file names", string.Join(",", filesOnError))]);
         }
 
         return TypedResults.Ok();

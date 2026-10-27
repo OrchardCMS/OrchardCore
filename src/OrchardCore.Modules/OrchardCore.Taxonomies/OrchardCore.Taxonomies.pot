@@ -287,6 +287,7 @@ msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldSettings.Edit"
 msgid "Whether only one element can be selected."
 msgstr ""
 
+#. Setting of the tags editor: whether editors can create new tags inline.
 #: Views/TaxonomyFieldTagsEditorSettings.Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldTagsEditorSettings.Edit"
 msgid "Open"
@@ -297,7 +298,7 @@ msgctxt "OrchardCore.Taxonomies.Views.TaxonomyFieldTagsEditorSettings.Edit"
 msgid "Whether new tags can be created inline. Note: When creating tags inline only the display text term property will be set."
 msgstr ""
 
-#. Format arguments: {0}: D[termContentType.DisplayName, "Content Types"]
+#. Format arguments: {0}: content type name
 #: Views/TaxonomyPart.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyPart.Edit"

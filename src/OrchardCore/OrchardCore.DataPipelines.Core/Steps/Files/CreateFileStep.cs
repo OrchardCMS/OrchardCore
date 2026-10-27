@@ -5,6 +5,7 @@ using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataSources.Files;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -111,7 +112,7 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStep, Create
 
         file.RowCount = count;
 
-        context.LogInformation(S["Created the file '{0}' with {1} rows.", file.FileName, count]);
+        context.LogInformation(S["Created the file '{0}' with {1} rows.", file.FileName, Arg("number of rows", count)]);
 
         await context.GetOutput().WriteFileAsync(file, context.CancellationToken);
     }

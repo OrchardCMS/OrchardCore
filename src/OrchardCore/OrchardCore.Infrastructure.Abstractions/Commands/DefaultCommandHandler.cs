@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Environment.Commands;
 
@@ -68,7 +69,7 @@ public abstract class DefaultCommandHandler : ICommandHandler
 
         var arguments = (context.Arguments ?? []).ToArray();
         var invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments)
-            ?? throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
+            ?? throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", Arg("command arguments", string.Join(" ", arguments))]);
 
         Context = context;
 

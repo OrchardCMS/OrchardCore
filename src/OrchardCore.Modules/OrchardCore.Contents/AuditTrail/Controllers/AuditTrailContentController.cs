@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using YesSql;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Contents.AuditTrail.Controllers;
 
@@ -113,7 +114,7 @@ public sealed class AuditTrailContentController : Controller
             var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToArray();
             if (errorMessages.Length > 0)
             {
-                await _notifier.WarningAsync(H.Plural(errorMessages.Length, "'{1}' was not restored, the version is not valid. {2}", "'{1}' was not restored, the version is not valid. Errors: {2}", contentItem.DisplayText, string.Join(", ", errorMessages)));
+                await _notifier.WarningAsync(H.Plural(Arg("number of errors", errorMessages.Length), "'{1}' was not restored, the version is not valid. {2}", "'{1}' was not restored, the version is not valid. Errors: {2}", Arg("content item title", contentItem.DisplayText), Arg("error messages", string.Join(", ", errorMessages))));
             }
             else
             {

@@ -18,7 +18,7 @@ msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
 msgid "A property \"{0}\" exists but is not decorated with \"{1}\""
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", arguments)
+#. Format arguments: {0}: command arguments
 #: Commands/DefaultCommandHandler.cs
 #, csharp-format
 msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"

@@ -16,28 +16,28 @@ msgctxt "OrchardCore.RateLimits.Recipes.CreateOrUpdateRateLimitPoliciesStep"
 msgid "The 'policies' array is required."
 msgstr ""
 
-#. Format arguments: {0}: policy.Name ?? policy.PolicyId ?? string.Empty
+#. Format arguments: {0}: policy name
 #: Recipes/CreateOrUpdateRateLimitPoliciesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Recipes.CreateOrUpdateRateLimitPoliciesStep"
 msgid "The endpoint policy '{0}' must define a request path."
 msgstr ""
 
-#. Format arguments: {0}: policy.Name ?? policy.PolicyId ?? string.Empty
+#. Format arguments: {0}: policy name
 #: Recipes/CreateOrUpdateRateLimitPoliciesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Recipes.CreateOrUpdateRateLimitPoliciesStep"
 msgid "The endpoint policy '{0}' must use a request path that starts with '/'."
 msgstr ""
 
-#. Format arguments: {0}: policy.Name ?? policy.PolicyId ?? string.Empty
+#. Format arguments: {0}: policy name
 #: Recipes/CreateOrUpdateRateLimitPoliciesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Recipes.CreateOrUpdateRateLimitPoliciesStep"
 msgid "The group policy '{0}' must define a rate-limit group."
 msgstr ""
 
-#. Format arguments: {0}: policy.Name ?? policy.PolicyId ?? string.Empty
+#. Format arguments: {0}: policy name
 #: Recipes/CreateOrUpdateRateLimitPoliciesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Recipes.CreateOrUpdateRateLimitPoliciesStep"

@@ -18,7 +18,7 @@ msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
 msgid "List of available commands:"
 msgstr ""
 
-#. Format arguments: {0}: descriptor.MethodInfo.DeclaringType?.FullName; {1}: descriptor.MethodInfo.Name
+#. Format arguments: {0}: type name; {1}: method name
 #: Commands/Builtin/HelpCommand.cs
 #, csharp-format
 msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"

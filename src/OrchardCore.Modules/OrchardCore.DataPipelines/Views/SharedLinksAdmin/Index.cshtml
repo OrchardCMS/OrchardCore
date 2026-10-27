@@ -63,7 +63,7 @@
                             }
                             else
                             {
-                                <span class="badge ta-badge fw-normal" title="@T["The link works until {0} (UTC).", link.ExpiresUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture)]"><i class="fa-solid fa-link text-success" aria-hidden="true"></i> @T["Active"]</span>
+                                <span class="badge ta-badge fw-normal" title="@T["The link works until {0} (UTC).", Arg("expiration date", link.ExpiresUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture))]"><i class="fa-solid fa-link text-success" aria-hidden="true"></i> @T["Active"]</span>
                             }
                             <span class="badge ta-badge fw-normal" title="@T["Kind"]"><i class="fa-solid fa-tag text-secondary" aria-hidden="true"></i> @(Model.KindNames.TryGetValue(link.Kind, out var kindName) ? kindName : link.Kind)</span>
                             <span class="badge ta-badge fw-normal" title="@T["Recipients"]"><i class="fa-solid fa-user-group text-secondary" aria-hidden="true"></i> @string.Join(", ", link.RecipientNames)</span>
@@ -72,7 +72,7 @@
                                 <span class="badge ta-badge fw-normal" title="@T["Shared by"]"><i class="fa-solid fa-share-nodes text-secondary" aria-hidden="true"></i> @link.SourceName</span>
                             }
                             <span class="badge ta-badge fw-normal" title="@T["Shared"]"><i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> @await DisplayAsync(await New.Timespan(Utc: link.CreatedUtc))</span>
-                            <span class="badge ta-badge fw-normal" title="@T["Uses"]">
+                            <span class="badge ta-badge fw-normal" title="@T.Note("Number of times the shared link has been used.")["Uses"]">
                                 <i class="fa-solid fa-arrow-pointer text-secondary" aria-hidden="true"></i>
                                 @if (link.MaxUses > 0)
                                 {

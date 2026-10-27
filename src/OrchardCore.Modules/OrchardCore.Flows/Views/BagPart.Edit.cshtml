@@ -70,7 +70,7 @@
        data-flowmetadata="false"
        data-parent-content-type="@parentContentType"
        data-part-name="@partName"
-           href="javascript:;">@T["Add {0}", D[type.DisplayName, DataLocalizationContext.ContentType]]</a>
+           href="javascript:;">@T["Add {0}", Arg("content type name", D[type.DisplayName, DataLocalizationContext.ContentType])]</a>
     }
     else if (totalItems > 1)
     {

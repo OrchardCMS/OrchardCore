@@ -58,7 +58,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
         {
             var operators = new List<SelectListItem>()
             {
-                new(S["Is"], nameof(FormVisibilityOperator.Is)),
+                new(S.Note("Operator of a visibility condition: the value is equal to.")["Is"], nameof(FormVisibilityOperator.Is)),
                 new(S["Is not"], nameof(FormVisibilityOperator.IsNot)),
                 new(S["Empty"], nameof(FormVisibilityOperator.Empty)),
                 new(S["Not empty"], nameof(FormVisibilityOperator.NotEmpty)),

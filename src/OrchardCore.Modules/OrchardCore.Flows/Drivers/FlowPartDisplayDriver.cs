@@ -17,6 +17,7 @@ using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Flows.Drivers;
 
@@ -98,11 +99,10 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
             if (invalidWidgetDescriptions.Count > 0)
             {
-                await _notifier.WarningAsync(H.Plural(
-                    invalidWidgetDescriptions.Count,
+                await _notifier.WarningAsync(H.Plural(Arg("number of content items", invalidWidgetDescriptions.Count),
                     "The widget content item {1} has no matching content type definition. Publishing this content item may erase created content. Fix any content type issues beforehand.",
                     "The following widget content items have no matching content type definitions: {1}. Publishing these content items may erase created content. Fix any content type issues beforehand.",
-                    string.Join(", ", invalidWidgetDescriptions)));
+                    Arg("content items", string.Join(", ", invalidWidgetDescriptions))));
             }
 
             model.FlowPart = flowPart;

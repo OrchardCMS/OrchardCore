@@ -7,6 +7,7 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Workflows.Drivers;
 
@@ -49,7 +50,7 @@ public sealed class IfElseTaskDisplayDriver : ActivityDisplayDriver<IfElseTask, 
             }
             else if (!_templateManager.Validate(model.LiquidConditionExpression, out var errors))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidConditionExpression), S["Condition doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidConditionExpression), S["Condition doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))]);
             }
         }
         else if (model.Syntax == WorkflowScriptSyntax.JavaScript)

@@ -406,7 +406,7 @@ msgctxt "OrchardCore.Facebook.Views.Items.MetaConversionsApiEventTask.Fields.Thu
 msgid "Send a server-side conversion event to Meta (e.g. Purchase, Lead)."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Widgets/Drivers/FacebookPluginPartDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Facebook.Widgets.Drivers.FacebookPluginPartDisplayDriver"
@@ -418,7 +418,7 @@ msgctxt "OrchardCore.Facebook.Widgets.Drivers.FacebookPluginPartDisplayDriver"
 msgid "You do not have permission to manage Liquid templates."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
+#. Format arguments: {0}: Liquid errors
 #: Widgets/Settings/FacebookPluginPartSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Facebook.Widgets.Settings.FacebookPluginPartSettingsDisplayDriver"

@@ -98,7 +98,7 @@ msgctxt "OrchardCore.OpenId.Controllers.ScopeController"
 msgid "The name is already taken by another scope."
 msgstr ""
 
-#. Format arguments: {0}: OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
+#. Format arguments: {0}: tenant resource
 #: Controllers/ScopeController.cs
 #, csharp-format
 msgctxt "OrchardCore.OpenId.Controllers.ScopeController"
@@ -417,6 +417,7 @@ msgctxt "OrchardCore.OpenId.ValidationAdminMenu"
 msgid "Token Validation"
 msgstr ""
 
+#. .NET standard date format of the dates shown on this page (short date). Keep it unless the culture needs another .NET date format.
 #: Views/OpenIdServerSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel"
 msgid "d"

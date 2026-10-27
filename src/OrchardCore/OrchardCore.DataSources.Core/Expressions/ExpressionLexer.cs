@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.Extensions.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataSources.Expressions;
 
@@ -98,7 +99,7 @@ public static class ExpressionLexer
 
             if (matched is null)
             {
-                throw new ExpressionException(localizer["Unexpected character '{0}' at position {1}.", current, index + 1], index);
+                throw new ExpressionException(localizer["Unexpected character '{0}' at position {1}.", Arg("character", current), Arg("position", index + 1)], index);
             }
 
             tokens.Add(new ExpressionToken(ExpressionTokenKind.Operator, matched, index));
@@ -159,7 +160,7 @@ public static class ExpressionLexer
         }
 
         throw kind == ExpressionTokenKind.Field
-            ? new ExpressionException(localizer["The field reference that starts at position {0} has no closing ']'.", start + 1], start)
-            : new ExpressionException(localizer["The text that starts at position {0} has no closing quote.", start + 1], start);
+            ? new ExpressionException(localizer["The field reference that starts at position {0} has no closing ']'.", Arg("position", start + 1)], start)
+            : new ExpressionException(localizer["The text that starts at position {0} has no closing quote.", Arg("position", start + 1)], start);
     }
 }

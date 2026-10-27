@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.Extensions.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataSources.Expressions;
 
@@ -47,7 +48,7 @@ public sealed class ExpressionParser
 
         if (next.Kind != ExpressionTokenKind.End)
         {
-            throw new ExpressionException(localizer["Unexpected '{0}' at position {1}.", next.Text, next.Position + 1], next.Position);
+            throw new ExpressionException(localizer["Unexpected '{0}' at position {1}.", next.Text, Arg("position", next.Position + 1)], next.Position);
         }
 
         return root;
@@ -188,7 +189,7 @@ public sealed class ExpressionParser
             case ExpressionTokenKind.Field:
                 if (string.IsNullOrWhiteSpace(token.Text))
                 {
-                    throw new ExpressionException(S["The field reference at position {0} is empty.", token.Position + 1], token.Position);
+                    throw new ExpressionException(S["The field reference at position {0} is empty.", Arg("position", token.Position + 1)], token.Position);
                 }
 
                 return new FieldNode(token.Text.Trim(), token.Position);
@@ -206,7 +207,7 @@ public sealed class ExpressionParser
                 throw new ExpressionException(S["The formula ends unexpectedly."], token.Position);
 
             default:
-                throw new ExpressionException(S["Unexpected '{0}' at position {1}.", token.Text, token.Position + 1], token.Position);
+                throw new ExpressionException(S["Unexpected '{0}' at position {1}.", token.Text, Arg("position", token.Position + 1)], token.Position);
         }
     }
 
@@ -228,7 +229,7 @@ public sealed class ExpressionParser
 
         if (!MatchOperator("("))
         {
-            throw new ExpressionException(S["Unknown name '{0}' at position {1}. Write fields in square brackets, such as [Name].", token.Text, token.Position + 1], token.Position);
+            throw new ExpressionException(S["Unknown name '{0}' at position {1}. Write fields in square brackets, such as [Name].", token.Text, Arg("position", token.Position + 1)], token.Position);
         }
 
         var arguments = new List<ExpressionNode>();
@@ -260,7 +261,7 @@ public sealed class ExpressionParser
             return number;
         }
 
-        throw new ExpressionException(S["The number '{0}' at position {1} is too large.", token.Text, token.Position + 1], token.Position);
+        throw new ExpressionException(S["The number '{0}' at position {1} is too large.", token.Text, Arg("position", token.Position + 1)], token.Position);
     }
 
     private T Nested<T>(Func<T> parse)
@@ -288,7 +289,7 @@ public sealed class ExpressionParser
 
             throw token.Kind == ExpressionTokenKind.End
                 ? new ExpressionException(S["Expected '{0}' at the end of the formula.", text], token.Position)
-                : new ExpressionException(S["Expected '{0}' at position {1} but found '{2}'.", text, token.Position + 1, token.Text], token.Position);
+                : new ExpressionException(S["Expected '{0}' at position {1} but found '{2}'.", text, Arg("position", token.Position + 1), token.Text], token.Position);
         }
     }
 

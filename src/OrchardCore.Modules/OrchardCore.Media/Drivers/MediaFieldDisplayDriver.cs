@@ -11,6 +11,7 @@ using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Media.Drivers;
 
@@ -153,7 +154,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
 
                 if (!settings.AllowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", string.Join(", ", settings.AllowedExtensions)]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", Arg("allowed extensions", string.Join(", ", settings.AllowedExtensions))]);
                 }
             }
         }

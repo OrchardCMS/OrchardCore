@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Environment.Commands.Builtin;
 
@@ -63,7 +64,7 @@ public class HelpCommand : DefaultCommandHandler
     {
         if (string.IsNullOrEmpty(descriptor.HelpText))
         {
-            return S["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
+            return S["{0}.{1}: no help text", Arg("type name", descriptor.MethodInfo.DeclaringType?.FullName), Arg("method name", descriptor.MethodInfo.Name)];
         }
 
 #pragma warning disable OCLOC104 // The help text is declared by the command, with its own localizer.

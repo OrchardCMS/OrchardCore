@@ -13,6 +13,7 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Recipes.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Recipes.Controllers;
 
@@ -145,7 +146,7 @@ public sealed class AdminController : Controller
         {
             _logger.LogError(e, "Unable to import a recipe file.");
 
-            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run due to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
+            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run due to the following errors: {1}", recipe.DisplayName, Arg("errors", string.Join(' ', e.StepResult.Errors))]);
         }
         catch (Exception e)
         {

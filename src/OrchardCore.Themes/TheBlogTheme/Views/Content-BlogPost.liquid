@@ -15,7 +15,7 @@
                         <h1>{{ Model.ContentItem.DisplayText }}</h1>
                         <h2 class="subheading">{{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}</h2>
                         <span class="meta">
-                            {% assign format = "MMMM dd, yyyy" | t %}
+                            {% assign format = "MMMM dd, yyyy" | t: note: "Date format of the publication date. Adapt the .NET custom date format to the culture, but keep its format specifiers such as MMMM, dd and yyyy." %}
                             {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
                             {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Author }}</a> {{ "on {0}" | t: dateTime | raw }}
                         </span>

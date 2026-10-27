@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataSources.Operations;
 using OrchardCore.DataSources;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -40,7 +41,7 @@ public sealed class DistinctStep : DataPipelineStepType<DistinctStep, DistinctSt
 
         foreach (var name in GetSettings(context.Step).Fields.Where(name => fields.IndexOf(name) < 0))
         {
-            context.AddError(S["The input has no field named '{0}'.", name ?? string.Empty]);
+            context.AddError(S["The input has no field named '{0}'.", Arg("field name", name ?? string.Empty)]);
         }
 
         context.SetOutputFields(fields);

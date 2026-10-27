@@ -26,7 +26,7 @@ msgctxt "OrchardCore.Tenants.Controllers.AdminController"
 msgid "All states"
 msgstr ""
 
-#. Format arguments: {0}: id; {1}: context.ErrorMessage
+#. Format arguments: {0}: tenant name; {1}: error message
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Tenants.Controllers.AdminController"
@@ -470,6 +470,7 @@ msgctxt "OrchardCore.Tenants.Views.Admin.Index"
 msgid "Tenants"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Index"
 msgid "selected"
@@ -577,6 +578,7 @@ msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
 msgid "Search"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/FeatureProfiles/Index.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
 msgid "selected"

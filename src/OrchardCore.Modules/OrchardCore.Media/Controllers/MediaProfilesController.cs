@@ -360,12 +360,12 @@ public sealed class MediaProfilesController : Controller
         }
 
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Default (Max)"], Value = ((int)ResizeMode.Undefined).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Max"], Value = ((int)ResizeMode.Max).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Crop"], Value = ((int)ResizeMode.Crop).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Pad"], Value = ((int)ResizeMode.Pad).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Min"], Value = ((int)ResizeMode.Min).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Stretch"], Value = ((int)ResizeMode.Stretch).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Resizes the image to fit within the size, keeping its aspect ratio.")["Max"], Value = ((int)ResizeMode.Max).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Resizes the image to fill the size, cropping what exceeds it.")["Crop"], Value = ((int)ResizeMode.Crop).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Resizes the image to fit within the size, padding the remaining area.")["Pad"], Value = ((int)ResizeMode.Pad).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Pads the image to the size without upscaling it.")["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Resizes the image to the smallest size that covers the size, keeping its aspect ratio.")["Min"], Value = ((int)ResizeMode.Min).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Stretches the image to the size, ignoring its aspect ratio.")["Stretch"], Value = ((int)ResizeMode.Stretch).ToString() });
 
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Default"], Value = ((int)Format.Undefined).ToString() });
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Gif"], Value = ((int)Format.Gif).ToString() });

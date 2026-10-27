@@ -81,7 +81,7 @@ msgctxt "OrchardCore.Deployment.Controllers.ImportController"
 msgid "Recipe imported successfully!"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', e.StepResult.Errors)
+#. Format arguments: {0}: errors
 #: Controllers/ImportController.cs
 #, csharp-format
 msgctxt "OrchardCore.Deployment.Controllers.ImportController"
@@ -158,7 +158,7 @@ msgctxt "OrchardCore.Deployment.FileDownloadDeploymentTargetProvider"
 msgid "File Download"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", unknownTypes)
+#. Format arguments: {0}: type names
 #: Recipes/DeploymentPlansRecipeStep.cs
 #, csharp-format
 msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
@@ -315,6 +315,7 @@ msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
 msgid "Search"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/DeploymentPlan/Index.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
 msgid "selected"

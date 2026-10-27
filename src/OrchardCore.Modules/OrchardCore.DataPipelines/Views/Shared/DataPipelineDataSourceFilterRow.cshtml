@@ -30,8 +30,8 @@
         <option value="true">@T["Yes"]</option>
         <option value="false">@T["No"]</option>
     </select>
-    <span class="input-group-text" hidden data-dp-filter-days>@T["days"]</span>
-    <span class="input-group-text" hidden data-dp-filter-and>@T["and"]</span>
+    <span class="input-group-text" hidden data-dp-filter-days>@T.Note("Shown after the number of days of the \"is in the last\" and \"is in the next\" operators.")["days"]</span>
+    <span class="input-group-text" hidden data-dp-filter-and>@T.Note("Shown between the two values of the \"is between\" operator.")["and"]</span>
     <input name="@(prefix).SecondValue" value="@Model.Filter.SecondValue" class="form-control" aria-label="@T["Second value"]" placeholder="@T["Value"]" hidden data-dp-filter-second />
     <button type="button" class="btn btn-outline-secondary" aria-pressed="false" title="@T["Write the value as text, such as {0}", "{Parameter:Since}"]" hidden data-dp-filter-text>
         <i class="fa-solid fa-i-cursor" aria-hidden="true"></i>

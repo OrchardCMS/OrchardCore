@@ -16,7 +16,7 @@ msgctxt "OrchardCore.DataPipelines.Ftp.Drivers.UploadToFtpStepDisplayDriver"
 msgid "The timeout must be at least one second."
 msgstr ""
 
-#. Format arguments: {0}: host; {1}: DataPipelineRemotePaths.Redact(ex.Message, password)
+#. Format arguments: {0}: host; {1}: error message
 #: Steps/UploadToFtpStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
@@ -86,7 +86,7 @@ msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"
 msgid "Upload to an FTP server"
 msgstr ""
 
-#. Format arguments: {0}: fileName; {1}: DataPipelineRemotePaths.ToDisplayUrl(scheme, host, settings.Port, remotePath)
+#. Format arguments: {0}: fileName; {1}: URL
 #: Steps/UploadToFtpStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Ftp.UploadToFtpStep"

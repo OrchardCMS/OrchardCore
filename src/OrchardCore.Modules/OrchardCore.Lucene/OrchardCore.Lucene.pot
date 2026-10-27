@@ -95,7 +95,7 @@ msgctxt "OrchardCore.Lucene.Views.Admin.Query"
 msgid "An optional Json object containing the parameter values for this query."
 msgstr ""
 
-#. Format arguments: {0}: Model.Count.ToString(); {1}: Model.Elapsed.TotalMilliseconds.ToString()
+#. Format arguments: {0}: number of results; {1}: milliseconds
 #: Views/Admin/Query.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Lucene.Views.Admin.Query"

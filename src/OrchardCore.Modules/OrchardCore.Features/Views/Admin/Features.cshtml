@@ -54,9 +54,9 @@
             <div class="row gx-2 align-items-center">
                 <div class="col">
                     <span id="list-summary"
-                          data-summary-text="@T["Showing {0} of {1} features", "__VISIBLE__", "__TOTAL__"]"
+                          data-summary-text="@T["Showing {0} of {1} features", Arg("number of visible features", "__VISIBLE__"), Arg("total number of features", "__TOTAL__")]"
                           data-total-count="@totalFeatures">
-                        @T["Showing {0} of {1} features", totalFeatures, totalFeatures]
+                        @T["Showing {0} of {1} features", Arg("number of visible features", totalFeatures), Arg("total number of features", totalFeatures)]
                     </span>
                 </div>
                 <div class="col col-md-auto text-end d-flex align-items-center justify-content-end gap-2">

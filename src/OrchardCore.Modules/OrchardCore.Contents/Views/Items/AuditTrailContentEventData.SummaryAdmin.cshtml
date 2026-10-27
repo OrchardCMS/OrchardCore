@@ -16,37 +16,37 @@
 {
     <small>
         @T["The {0} {1} was restored as {2}",
-        contentItem.ContentType,
-        editForLink,
-        Html.ActionLink(versionText, "Display", "AuditTrailContent",
+        Arg("content type", contentItem.ContentType),
+        Arg("content item link", editForLink),
+        Arg("version link", Html.ActionLink(versionText, "Display", "AuditTrailContent",
         new
         {
             area = "OrchardCore.Contents",
             auditTrailEventId = Model.AuditTrailEvent.EventId
-        }, null)]
+        }, null))]
     </small>
 }
 else if (Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Removed)
 {
     <small>
         @T["The {0} {1} was {2}.",
-        contentItem.ContentType,
-        contentItem.DisplayText,
-        eventName]
+        Arg("content type", contentItem.ContentType),
+        Arg("content item title", contentItem.DisplayText),
+        Arg("event name", eventName)]
     </small>
 }
 else
 {
     <small>
         @T["{0} of the {1} {2} was {3}",
-        Html.ActionLink(versionText, "Display", "AuditTrailContent",
+        Arg("version link", Html.ActionLink(versionText, "Display", "AuditTrailContent",
         new
         {
             area = "OrchardCore.Contents",
             auditTrailEventId = Model.AuditTrailEvent.EventId
-        }, null),
-        contentItem.ContentType,
-        editForLink,
-        eventName]
+        }, null)),
+        Arg("content type", contentItem.ContentType),
+        Arg("content item link", editForLink),
+        Arg("event name", eventName)]
     </small>
 }

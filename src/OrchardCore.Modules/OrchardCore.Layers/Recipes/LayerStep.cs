@@ -9,6 +9,7 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Rules;
 using OrchardCore.Rules.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Layers.Recipes;
 
@@ -111,7 +112,7 @@ public sealed class LayerStep : NamedRecipeStepHandler
 
         if (unknownTypes.Count != 0)
         {
-            context.Errors.Add(S["No changes have been made. The following types of conditions cannot be added: {0}. Please ensure that the related features are enabled to add these types of conditions.", string.Join(", ", unknownTypes)]);
+            context.Errors.Add(S["No changes have been made. The following types of conditions cannot be added: {0}. Please ensure that the related features are enabled to add these types of conditions.", Arg("type names", string.Join(", ", unknownTypes))]);
 
             return;
         }

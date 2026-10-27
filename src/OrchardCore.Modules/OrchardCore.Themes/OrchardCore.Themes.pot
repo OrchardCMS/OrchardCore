@@ -26,28 +26,29 @@ msgctxt "OrchardCore.Themes.Controllers.AdminController"
 msgid "The Site theme was reset."
 msgstr ""
 
-#. Format arguments: {0}: feature.Name ?? feature.Id
+#. Format arguments: {0}: theme name
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.Controllers.AdminController"
 msgid "{0} was disabled."
 msgstr ""
 
-#. Format arguments: {0}: feature.Name ?? feature.Id
+#. Format arguments: {0}: theme name
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.Controllers.AdminController"
 msgid "{0} was enabled"
 msgstr ""
 
-#. Format arguments: {0}: feature.Name ?? feature.Id
+#. Format arguments: {0}: theme name
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.Controllers.AdminController"
 msgid "{0} was enabled."
 msgstr ""
 
-#. Format arguments: {0}: feature.Name ?? feature.Id; {1}: isAdmin ? "Admin" : "Site"
+#. {1} is the untranslated word "Admin" or "Site".
+#. Format arguments: {0}: theme name; {1}: theme kind
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.Controllers.AdminController"
@@ -59,7 +60,7 @@ msgctxt "OrchardCore.Themes.Permissions"
 msgid "Apply a Theme"
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))
+#. Format arguments: {0}: number of features; {1}: feature names
 #: Services/ThemeService.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.Services.ThemeService"
@@ -68,7 +69,7 @@ msgid_plural "The following features were disabled: {1}."
 msgstr[0] ""
 msgstr[1] ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", enabledFeatures.Select(f => f.Name ?? f.Id))
+#. Format arguments: {0}: number of features; {1}: feature names
 #: Services/ThemeService.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.Services.ThemeService"
@@ -201,6 +202,7 @@ msgctxt "OrchardCore.Themes.Views.Items.ThemesDeploymentStep.Thumbnail"
 msgid "Themes"
 msgstr ""
 
+#. Color mode that follows the color mode of the operating system.
 #: Views/ToggleTheme.cshtml
 msgctxt "OrchardCore.Themes.Views.ToggleTheme"
 msgid "Auto"

@@ -119,7 +119,7 @@ msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
 msgid "Elasticsearch Query"
 msgstr ""
 
-#. Format arguments: {0}: Model.Count.ToString(); {1}: Model.Elapsed.TotalMilliseconds.ToString()
+#. Format arguments: {0}: number of results; {1}: milliseconds
 #: Views/Admin/Query.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"

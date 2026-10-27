@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DisplayManagement.Shapes;
 
@@ -39,72 +40,72 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (time.TotalYears() > 1)
         {
-            return H.Plural(time.TotalYears(), "1 year ago", "{0} years ago");
+            return H.Plural(Arg("years", time.TotalYears()), "1 year ago", "{0} years ago");
         }
 
         if (time.TotalYears() < -1)
         {
-            return H.Plural(-time.TotalYears(), "in 1 year", "in {0} years");
+            return H.Plural(Arg("years", -time.TotalYears()), "in 1 year", "in {0} years");
         }
 
         if (time.TotalMonths() > 1)
         {
-            return H.Plural(time.TotalMonths(), "1 month ago", "{0} months ago");
+            return H.Plural(Arg("months", time.TotalMonths()), "1 month ago", "{0} months ago");
         }
 
         if (time.TotalMonths() < -1)
         {
-            return H.Plural(-time.TotalMonths(), "in 1 month", "in {0} months");
+            return H.Plural(Arg("months", -time.TotalMonths()), "in 1 month", "in {0} months");
         }
 
         if (time.TotalWeeks() > 1)
         {
-            return H.Plural(time.TotalWeeks(), "1 week ago", "{0} weeks ago");
+            return H.Plural(Arg("weeks", time.TotalWeeks()), "1 week ago", "{0} weeks ago");
         }
 
         if (time.TotalWeeks() < -1)
         {
-            return H.Plural(-time.TotalWeeks(), "in 1 week", "in {0} weeks");
+            return H.Plural(Arg("weeks", -time.TotalWeeks()), "in 1 week", "in {0} weeks");
         }
 
         if (time.TotalHours > 24)
         {
-            return H.Plural(time.Days, "1 day ago", "{0} days ago");
+            return H.Plural(Arg("days", time.Days), "1 day ago", "{0} days ago");
         }
 
         if (time.TotalHours < -24)
         {
-            return H.Plural(-time.Days, "in 1 day", "in {0} days");
+            return H.Plural(Arg("days", -time.Days), "in 1 day", "in {0} days");
         }
 
         if (time.TotalMinutes > 60)
         {
-            return H.Plural(time.Hours, "1 hour ago", "{0} hours ago");
+            return H.Plural(Arg("hours", time.Hours), "1 hour ago", "{0} hours ago");
         }
 
         if (time.TotalMinutes < -60)
         {
-            return H.Plural(-time.Hours, "in 1 hour", "in {0} hours");
+            return H.Plural(Arg("hours", -time.Hours), "in 1 hour", "in {0} hours");
         }
 
         if (time.TotalSeconds > 60)
         {
-            return H.Plural(time.Minutes, "1 minute ago", "{0} minutes ago");
+            return H.Plural(Arg("minutes", time.Minutes), "1 minute ago", "{0} minutes ago");
         }
 
         if (time.TotalSeconds < -60)
         {
-            return H.Plural(-time.Minutes, "in 1 minute", "in {0} minutes");
+            return H.Plural(Arg("minutes", -time.Minutes), "in 1 minute", "in {0} minutes");
         }
 
         if (time.TotalSeconds > 10)
         {
-            return H.Plural(time.Seconds, "1 second ago", "{0} seconds ago"); // Aware that the singular won't be used.
+            return H.Plural(Arg("seconds", time.Seconds), "1 second ago", "{0} seconds ago"); // Aware that the singular won't be used.
         }
 
         if (time.TotalSeconds < -10)
         {
-            return H.Plural(-time.Seconds, "in 1 second", "in {0} seconds");
+            return H.Plural(Arg("seconds", -time.Seconds), "in 1 second", "in {0} seconds");
         }
 
         return time.TotalMilliseconds > 0
@@ -117,7 +118,7 @@ public class DateTimeShapes : IShapeAttributeProvider
     {
         Utc ??= _clock.UtcNow;
         var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
-        Format ??= S["dddd, MMMM d, yyyy h:mm:ss tt"].Value;
+        Format ??= S.Note("Default .NET custom date and time format. Adapt the pattern to the culture, but keep its format specifiers such as dddd, MMMM, yyyy, mm and tt.")["dddd, MMMM d, yyyy h:mm:ss tt"].Value;
 
         return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
     }
@@ -149,7 +150,7 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (seconds > 0)
         {
-            return H.Plural(seconds, "1 second", "{0} seconds");
+            return H.Plural(Arg("seconds", seconds), "1 second", "{0} seconds");
         }
 
         return H["less than a second"];
@@ -161,10 +162,10 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (timeSpan.Days == totalDays)
         {
-            return H.Plural(timeSpan.Days, "1 day", "{0} days");
+            return H.Plural(Arg("days", timeSpan.Days), "1 day", "{0} days");
         }
 
-        return H.Plural((int)Math.Round(totalDays), "approximately a day", "approximately {0} days");
+        return H.Plural(Arg("days", (int)Math.Round(totalDays)), "approximately a day", "approximately {0} days");
     }
 
     private LocalizedHtmlString GetDurationInHours(TimeSpan timeSpan)
@@ -173,10 +174,10 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (timeSpan.Hours == totalHours)
         {
-            return H.Plural(timeSpan.Hours, "1 hour", "{0} hours");
+            return H.Plural(Arg("hours", timeSpan.Hours), "1 hour", "{0} hours");
         }
 
-        return H.Plural((int)Math.Round(totalHours), "approximately an hour", "approximately {0} hours");
+        return H.Plural(Arg("hours", (int)Math.Round(totalHours)), "approximately an hour", "approximately {0} hours");
     }
 
     private LocalizedHtmlString GetDurationInMinutes(TimeSpan timeSpan)
@@ -185,10 +186,10 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (timeSpan.Minutes == totalMinutes)
         {
-            return H.Plural(timeSpan.Minutes, "1 minute", "{0} minutes");
+            return H.Plural(Arg("minutes", timeSpan.Minutes), "1 minute", "{0} minutes");
         }
 
-        return H.Plural((int)Math.Round(totalMinutes), "approximately a minute", "approximately {0} minutes");
+        return H.Plural(Arg("minutes", (int)Math.Round(totalMinutes)), "approximately a minute", "approximately {0} minutes");
     }
 }
 

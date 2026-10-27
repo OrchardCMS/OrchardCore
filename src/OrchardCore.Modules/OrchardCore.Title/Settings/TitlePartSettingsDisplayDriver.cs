@@ -7,6 +7,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Title.Settings;
 
@@ -56,7 +57,7 @@ public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDi
             }
             else if (!_liquidTemplateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The pattern doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(' ', errors))]);
             }
         }
 

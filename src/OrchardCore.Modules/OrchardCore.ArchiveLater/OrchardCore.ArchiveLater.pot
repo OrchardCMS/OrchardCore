@@ -21,7 +21,7 @@ msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Option"
 msgid "Standard"
 msgstr ""
 
-#. Format arguments: {0}: await DisplayAsync(await New.DateTime(Utc: Model.ScheduledArchiveUtc, Format: "g"))
+#. Format arguments: {0}: date and time
 #: Views/ArchiveLaterPart.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.SummaryAdmin"

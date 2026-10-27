@@ -38,7 +38,7 @@ msgctxt "OrchardCore.Deployment.Remote.Controllers.ExportRemoteInstanceControlle
 msgid "Deployment executed successfully."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', e.StepResult.Errors)
+#. Format arguments: {0}: errors
 #: Controllers/ImportRemoteInstanceController.cs
 #, csharp-format
 msgctxt "OrchardCore.Deployment.Remote.Controllers.ImportRemoteInstanceController"
@@ -225,6 +225,7 @@ msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
 msgid "Search"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/RemoteClient/Index.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
 msgid "selected"
@@ -350,6 +351,7 @@ msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
 msgid "Search"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/RemoteInstance/Index.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
 msgid "selected"

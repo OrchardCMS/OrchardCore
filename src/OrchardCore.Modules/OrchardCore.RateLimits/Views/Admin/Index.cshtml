@@ -30,7 +30,7 @@
     </div>
 </form>
 
-<form asp-action="Index" method="post" class="no-multisubmit rate-limits-index" data-selected-text="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit rate-limits-index" data-selected-text="@T.Note("Shown after the number of selected items.")["selected"]">
     <input asp-for="BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 

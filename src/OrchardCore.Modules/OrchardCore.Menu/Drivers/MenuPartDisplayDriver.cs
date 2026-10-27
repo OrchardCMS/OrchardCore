@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Menu.Drivers;
 
@@ -59,11 +60,10 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
 
             if (invalidMenuItemDescriptions.Count > 0)
             {
-                await _notifier.WarningAsync(H.Plural(
-                    invalidMenuItemDescriptions.Count,
+                await _notifier.WarningAsync(H.Plural(Arg("number of content items", invalidMenuItemDescriptions.Count),
                     "The menu item content item {1} has no matching content type definition. Publishing this content item may erase created content. Fix any content type issues beforehand.",
                     "The following menu item content items have no matching content type definitions: {1}. Publishing these content items may erase created content. Fix any content type issues beforehand.",
-                    string.Join(", ", invalidMenuItemDescriptions)));
+                    Arg("content items", string.Join(", ", invalidMenuItemDescriptions))));
             }
 
             model.MenuPart = part;

@@ -17,6 +17,7 @@ using OrchardCore.Features.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Features.Controllers;
 
@@ -314,11 +315,11 @@ public sealed class AdminController : Controller
     {
         if (enabled)
         {
-            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was enabled.", "The following features were enabled: {1}.", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
+            await _notifier.SuccessAsync(H.Plural(Arg("number of features", features.Length), "The feature {1} was enabled.", "The following features were enabled: {1}.", Arg("feature names", string.Join(", ", features.Select(f => f.Name ?? f.Id)))));
         }
         else
         {
-            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was disabled.", "The following features were disabled: {1}.", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
+            await _notifier.SuccessAsync(H.Plural(Arg("number of features", features.Length), "The feature {1} was disabled.", "The following features were disabled: {1}.", Arg("feature names", string.Join(", ", features.Select(f => f.Name ?? f.Id)))));
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.SharedLinks;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Steps;
 
@@ -97,13 +98,13 @@ public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLi
             }, context.CancellationToken);
 
             // The link holds the token, so it is sent to the recipients only, never recorded.
-            context.AddDelivery(S["Shared '{0}' with {1} until {2}.", file.FileName, string.Join(", ", result.Link.RecipientNames), result.Link.ExpiresUtc.ToString("u", CultureInfo.InvariantCulture)]);
+            context.AddDelivery(S["Shared '{0}' with {1} until {2}.", file.FileName, Arg("recipients", string.Join(", ", result.Link.RecipientNames)), Arg("expiration date", result.Link.ExpiresUtc.ToString("u", CultureInfo.InvariantCulture))]);
 
             var missed = result.Link.RecipientNames.Except(result.Notified, StringComparer.Ordinal).ToList();
 
             if (missed.Count > 0)
             {
-                context.LogWarning(S["The link to '{0}' could not be emailed to {1}: they have no email address, or the email failed.", file.FileName, string.Join(", ", missed)]);
+                context.LogWarning(S["The link to '{0}' could not be emailed to {1}: they have no email address, or the email failed.", file.FileName, Arg("recipients", string.Join(", ", missed))]);
             }
         }
     }

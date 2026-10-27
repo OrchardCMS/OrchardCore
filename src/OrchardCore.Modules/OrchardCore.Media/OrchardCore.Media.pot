@@ -61,11 +61,13 @@ msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "A profile with the same name already exists."
 msgstr ""
 
+#. Image resize mode of a media profile. Pads the image to the size without upscaling it.
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "BoxPad"
 msgstr ""
 
+#. Image resize mode of a media profile. Resizes the image to fill the size, cropping what exceeds it.
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Crop"
@@ -101,6 +103,7 @@ msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Jpg"
 msgstr ""
 
+#. Image resize mode of a media profile. Resizes the image to fit within the size, keeping its aspect ratio.
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Max"
@@ -116,11 +119,13 @@ msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Media profiles successfully removed."
 msgstr ""
 
+#. Image resize mode of a media profile. Resizes the image to the smallest size that covers the size, keeping its aspect ratio.
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Min"
 msgstr ""
 
+#. Image resize mode of a media profile. Resizes the image to fit within the size, padding the remaining area.
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Pad"
@@ -131,6 +136,7 @@ msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Png"
 msgstr ""
 
+#. Image resize mode of a media profile. Stretches the image to the size, ignoring its aspect ratio.
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Stretch"
@@ -163,7 +169,7 @@ msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
 msgid "A value is required for {0}."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", settings.AllowedExtensions)
+#. Format arguments: {0}: allowed extensions
 #: Drivers/MediaFieldDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
@@ -241,7 +247,7 @@ msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
 msgid "Cannot move media because a file already exists with the same name"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(",", filesOnError)
+#. Format arguments: {0}: file names
 #: Endpoints/Api/MoveMediaListEndpoint.cs
 #, csharp-format
 msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
@@ -1568,6 +1574,7 @@ msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
 msgid "Search"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/MediaProfiles/Index.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
 msgid "selected"

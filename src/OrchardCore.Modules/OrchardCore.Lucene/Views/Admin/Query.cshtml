@@ -53,7 +53,7 @@
 <div class="mb-3">
     @if (Model.Elapsed != TimeSpan.Zero)
     {
-        <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", Model.Count.ToString(), Model.Elapsed.TotalMilliseconds.ToString()]</span></p>
+        <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", Arg("number of results", Model.Count.ToString()), Arg("milliseconds", Model.Elapsed.TotalMilliseconds.ToString())]</span></p>
     }
 </div>
 @if (Model.Documents.Any())

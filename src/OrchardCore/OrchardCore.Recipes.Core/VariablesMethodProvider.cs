@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Scripting;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Recipes;
 
@@ -43,7 +44,7 @@ public sealed class VariablesMethodProvider : IGlobalMethodProvider
         {
             var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
 
-            throw new ValidationException(S["The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.", name, GlobalMethodName]);
+            throw new ValidationException(S["The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.", Arg("variable name", name), Arg("section name", GlobalMethodName)]);
         }
 
         var value = variable.Value<string>();

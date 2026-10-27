@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Liquid;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Facebook.Widgets.Settings;
 
@@ -38,7 +39,7 @@ public sealed class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDef
 
         if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
         {
-            context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))]);
         }
         else
         {

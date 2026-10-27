@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Liquid.Drivers;
 
@@ -64,7 +65,7 @@ public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPar
 
         if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", Arg("Liquid errors", string.Join(" ", errors))]);
         }
         else
         {

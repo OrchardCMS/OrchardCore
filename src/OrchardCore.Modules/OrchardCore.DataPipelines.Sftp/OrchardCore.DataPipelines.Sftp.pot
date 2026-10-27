@@ -21,7 +21,7 @@ msgctxt "OrchardCore.DataPipelines.Sftp.Drivers.UploadToSftpStepDisplayDriver"
 msgid "The timeout must be at least one second."
 msgstr ""
 
-#. Format arguments: {0}: host; {1}: DataPipelineRemotePaths.Redact(ex.Message, password, privateKey, passphrase)
+#. Format arguments: {0}: host; {1}: error message
 #: Steps/UploadToSftpStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
@@ -43,7 +43,7 @@ msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
 msgid "Enter the user name."
 msgstr ""
 
-#. Format arguments: {0}: host; {1}: presented
+#. Format arguments: {0}: host; {1}: host key fingerprint
 #: Steps/UploadToSftpStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
@@ -74,7 +74,7 @@ msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
 msgid "The host key fingerprint must be a SHA-256 fingerprint, such as SHA256:ohD8VZEXGWo6Ez8GSEJQ9WpafgLFsOfLOtGGQCQo6Og."
 msgstr ""
 
-#. Format arguments: {0}: host; {1}: presented
+#. Format arguments: {0}: host; {1}: host key fingerprint
 #: Steps/UploadToSftpStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
@@ -101,7 +101,7 @@ msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"
 msgid "Upload to an SFTP server"
 msgstr ""
 
-#. Format arguments: {0}: fileName; {1}: DataPipelineRemotePaths.ToDisplayUrl("sftp", host, settings.Port, remotePath)
+#. Format arguments: {0}: fileName; {1}: URL
 #: Steps/UploadToSftpStep.cs
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Sftp.UploadToSftpStep"

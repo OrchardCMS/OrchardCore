@@ -21,98 +21,98 @@ msgctxt "OrchardCore.Apis.GraphQL.GraphQLPermissions"
 msgid "Execute GraphQL."
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} contains the string"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} does not contain the string"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} does not end with the string"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} does not start with the string"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} ends with the string"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is equal to"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is greater than"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is greater than or equal"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is in collection"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is less than"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is less than or equal"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is not equal to"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"
 msgid "{0} is not in collection"
 msgstr ""
 
-#. Format arguments: {0}: description
+#. Format arguments: {0}: field description
 #: Queries/WhereInputObjectGraphType.cs
 #, csharp-format
 msgctxt "OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType"

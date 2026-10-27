@@ -31,7 +31,7 @@
         @if (typeDefinition is not null)
         {
             <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
-            <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@typeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", D[typeDefinition.DisplayName, "Content Types"]]</breadcrumb-item>
+            <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@typeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", Arg("content type name", D[typeDefinition.DisplayName, "Content Types"])]</breadcrumb-item>
         }
         else
         {

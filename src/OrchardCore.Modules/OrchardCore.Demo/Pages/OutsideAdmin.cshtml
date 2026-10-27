@@ -34,5 +34,5 @@
     @Model.Message
 </p>
 <p>
-    Date using the DateTimeShape: @await DisplayAsync(await New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))
+    Date using the DateTimeShape: @await DisplayAsync(await New.DateTime(Utc: null, Format: T.Note(".NET custom date format. Adapt it to the culture, but keep its format specifiers such as MMMM, dd and yyyy.")["MMMM dd, yyyy"].Value))
 </p>

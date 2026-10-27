@@ -21,7 +21,7 @@ msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "Could not delete this role."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: string.Join(", ", errorDescriptions)
+#. Format arguments: {0}: number of errors; {1}: errors
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
@@ -308,7 +308,7 @@ msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
 msgid "This permission is effective but the source could not be determined."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", grantingRoles)
+#. Format arguments: {0}: role names
 #: Views/Admin/_RolePermissions.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
@@ -320,7 +320,7 @@ msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
 msgid "This permission is granted to this role."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", impliedByAssigned)
+#. Format arguments: {0}: permission names
 #: Views/Admin/_RolePermissions.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
@@ -367,7 +367,7 @@ msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Design"
 msgid "Get users in roles"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(',', Model.Activity.Roles); {1}: Model.Activity.OutputKeyName
+#. Format arguments: {0}: role names; {1}: output name
 #: Views/Items/GetUsersByRoleTask.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Roles.Views.Items.GetUsersByRoleTask.Fields.Design"
@@ -409,7 +409,7 @@ msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Design"
 msgid "Unassign user from roles"
 msgstr ""
 
-#. Format arguments: {0}: Model.Activity.UserName; {1}: string.Join(",", Model.Activity.Roles)
+#. Format arguments: {0}: Model.Activity.UserName; {1}: role names
 #: Views/Items/UnassignUserRoleTask.Fields.Design.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Roles.Views.Items.UnassignUserRoleTask.Fields.Design"

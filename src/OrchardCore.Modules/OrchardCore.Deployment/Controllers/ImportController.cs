@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Deployment.Controllers;
 
@@ -120,7 +121,7 @@ public sealed class ImportController : Controller
             {
                 _logger.LogError(e, "Unable to import a deployment package.");
 
-                await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors)]);
+                await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", Arg("errors", string.Join(' ', e.StepResult.Errors))]);
             }
             catch (Exception e)
             {

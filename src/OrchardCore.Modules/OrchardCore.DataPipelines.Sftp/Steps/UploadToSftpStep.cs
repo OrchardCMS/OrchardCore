@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.Localization;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Sftp;
 
@@ -149,12 +150,12 @@ public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStep, Up
                 {
                     if (expected is null)
                     {
-                        context.LogWarning(S["The host key of the SFTP server '{0}' isn't verified. To verify it, set its fingerprint: SHA256:{1}", host, presented]);
+                        context.LogWarning(S["The host key of the SFTP server '{0}' isn't verified. To verify it, set its fingerprint: SHA256:{1}", host, Arg("host key fingerprint", presented)]);
                     }
                 },
                 folder,
                 settings.Overwrite,
-                (fileName, remotePath) => S["Uploaded '{0}' to {1}", fileName, DataPipelineRemotePaths.ToDisplayUrl("sftp", host, settings.Port, remotePath)],
+                (fileName, remotePath) => S["Uploaded '{0}' to {1}", fileName, Arg("URL", DataPipelineRemotePaths.ToDisplayUrl("sftp", host, settings.Port, remotePath))],
                 remotePath => S["The file '{0}' already exists on the SFTP server '{1}', and the step doesn't overwrite files.", remotePath, host]);
         }
         catch (Exception ex) when (ex is not OperationCanceledException and not DataPipelineDestinationException)
@@ -162,12 +163,12 @@ public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStep, Up
             if (expected is not null && presented is not null && !DataPipelineHostKeyFingerprint.Matches(expected, presented))
             {
                 throw new DataPipelineDestinationException(
-                    S["The SFTP server '{0}' presented the host key SHA256:{1}, which doesn't match the expected fingerprint. The connection was refused.", host, presented],
+                    S["The SFTP server '{0}' presented the host key SHA256:{1}, which doesn't match the expected fingerprint. The connection was refused.", host, Arg("host key fingerprint", presented)],
                     ex);
             }
 
             throw new DataPipelineDestinationException(
-                S["Could not upload to the SFTP server '{0}': {1}", host, DataPipelineRemotePaths.Redact(ex.Message, password, privateKey, passphrase)],
+                S["Could not upload to the SFTP server '{0}': {1}", host, Arg("error message", DataPipelineRemotePaths.Redact(ex.Message, password, privateKey, passphrase))],
                 ex);
         }
     }

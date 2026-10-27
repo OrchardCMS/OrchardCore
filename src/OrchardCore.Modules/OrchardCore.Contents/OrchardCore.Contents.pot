@@ -52,7 +52,7 @@ msgctxt "OrchardCore.Contents.AuditTrail.Controllers.AuditTrailContentController
 msgid "'{0}' was not restored, the version is not valid."
 msgstr ""
 
-#. Format arguments: {0}: count; {1}: contentItem.DisplayText; {2}: string.Join(", ", errorMessages)
+#. Format arguments: {0}: number of errors; {1}: content item title; {2}: error messages
 #: AuditTrail/Controllers/AuditTrailContentController.cs
 #, csharp-format
 msgctxt "OrchardCore.Contents.AuditTrail.Controllers.AuditTrailContentController"
@@ -400,7 +400,7 @@ msgctxt "OrchardCore.Contents.QuickNavigation.ContentItemNavigationSource"
 msgid "Content"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(' ', errors)
+#. Format arguments: {0}: Liquid errors
 #: Settings/FullTextAspectSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Contents.Settings.FullTextAspectSettingsDisplayDriver"
@@ -693,6 +693,7 @@ msgctxt "OrchardCore.Contents.Views.ContentsAdminList"
 msgid "Type"
 msgstr ""
 
+#. Shown after the number of selected items.
 #: Views/ContentsAdminList.cshtml
 msgctxt "OrchardCore.Contents.Views.ContentsAdminList"
 msgid "selected"
@@ -703,7 +704,8 @@ msgctxt "OrchardCore.Contents.Views.ContentsAdminList.Fields.BulkActions"
 msgid "Actions"
 msgstr ""
 
-#. Format arguments: {0}: @item.Text.ToLower()
+#. {0} is the lowercased name of the selected bulk action.
+#. Format arguments: {0}: bulk action
 #: Views/ContentsAdminListBulkActions.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.ContentsAdminListBulkActions"
@@ -720,7 +722,7 @@ msgctxt "OrchardCore.Contents.Views.ContentsAdminListCreate"
 msgid "New"
 msgstr ""
 
-#. Format arguments: {0}: Model.CreatableTypes.First().Text
+#. Format arguments: {0}: content type name
 #: Views/ContentsAdminListCreate.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.ContentsAdminListCreate"
@@ -1191,21 +1193,21 @@ msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventActions.SummaryA
 msgid "Yes"
 msgstr ""
 
-#. Format arguments: {0}: contentItem.ContentType; {1}: editForLink; {2}: Html.ActionLink(versionText, "Display", "AuditTrailContent", new { area = "OrchardCore.Contents", auditTrailEventId = Model.AuditTrailEvent.EventId }, null)
+#. Format arguments: {0}: content type; {1}: content item link; {2}: version link
 #: Views/Items/AuditTrailContentEventData.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmin"
 msgid "The {0} {1} was restored as {2}"
 msgstr ""
 
-#. Format arguments: {0}: contentItem.ContentType; {1}: contentItem.DisplayText; {2}: eventName
+#. Format arguments: {0}: content type; {1}: content item title; {2}: event name
 #: Views/Items/AuditTrailContentEventData.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmin"
 msgid "The {0} {1} was {2}."
 msgstr ""
 
-#. Format arguments: {0}: Html.ActionLink(versionText, "Display", "AuditTrailContent", new { area = "OrchardCore.Contents", auditTrailEventId = Model.AuditTrailEvent.EventId }, null); {1}: contentItem.ContentType; {2}: editForLink; {3}: eventName
+#. Format arguments: {0}: version link; {1}: content type; {2}: content item link; {3}: event name
 #: Views/Items/AuditTrailContentEventData.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventData.SummaryAdmin"
@@ -1254,11 +1256,13 @@ msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventDiff.DetailAdmin
 msgid "No previous content item available to diff against"
 msgstr ""
 
+#. Diff view mode that shows the two versions side by side.
 #: Views/Items/AuditTrailContentEventDiff.DetailAdmin.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventDiff.DetailAdmin"
 msgid "Split"
 msgstr ""
 
+#. Diff view mode that shows the changes of the two versions in a single view.
 #: Views/Items/AuditTrailContentEventDiff.DetailAdmin.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventDiff.DetailAdmin"
 msgid "Unified"
@@ -1639,11 +1643,13 @@ msgctxt "OrchardCore.Contents.Views.Items.ContentTypesSitemapSource.Edit"
 msgid "Select Content Types"
 msgstr ""
 
+#. Number of content items to skip.
 #: Views/Items/ContentTypesSitemapSource.Edit.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentTypesSitemapSource.Edit"
 msgid "Skip"
 msgstr ""
 
+#. Maximum number of content items to include.
 #: Views/Items/ContentTypesSitemapSource.Edit.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentTypesSitemapSource.Edit"
 msgid "Take"

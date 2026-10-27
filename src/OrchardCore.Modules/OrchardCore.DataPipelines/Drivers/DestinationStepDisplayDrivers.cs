@@ -5,6 +5,7 @@ using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Mvc.ModelBinding;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.DataPipelines.Drivers;
 
@@ -203,7 +204,7 @@ public sealed class SendByEmailStepDisplayDriver : DataPipelineStepDisplayDriver
 
         if (invalid.Count > 0)
         {
-            context.Updater.ModelState.AddModelError(Prefix, property, S["These email addresses aren't valid: {0}.", string.Join(", ", invalid)]);
+            context.Updater.ModelState.AddModelError(Prefix, property, S["These email addresses aren't valid: {0}.", Arg("email addresses", string.Join(", ", invalid))]);
         }
     }
 }

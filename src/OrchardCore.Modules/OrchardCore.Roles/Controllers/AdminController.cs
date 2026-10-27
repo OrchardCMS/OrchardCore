@@ -16,6 +16,7 @@ using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Roles.Controllers;
 
@@ -276,7 +277,7 @@ public sealed class AdminController : Controller
             var errorDescriptions = result.Errors.Select(error => error.Description).ToArray();
             if (errorDescriptions.Length > 0)
             {
-                await _notifier.ErrorAsync(H.Plural(errorDescriptions.Length, "Could not delete this role. {1}", "Could not delete this role. Errors: {1}", string.Join(", ", errorDescriptions)));
+                await _notifier.ErrorAsync(H.Plural(Arg("number of errors", errorDescriptions.Length), "Could not delete this role. {1}", "Could not delete this role. Errors: {1}", Arg("errors", string.Join(", ", errorDescriptions))));
             }
             else
             {

@@ -4,6 +4,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Features.Models;
+using static OrchardCore.Localization.LocalizationMetadata;
 
 namespace OrchardCore.Features.Services;
 
@@ -65,7 +66,7 @@ public class ModuleService : IModuleService
         var enabledFeatures = (await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force)).ToArray();
         if (enabledFeatures.Length > 0)
         {
-            await _notifier.SuccessAsync(H.Plural(enabledFeatures.Length, "The feature {1} was enabled.", "The following features were enabled: {1}.", string.Join(", ", enabledFeatures.Select(f => f.Name ?? f.Id))));
+            await _notifier.SuccessAsync(H.Plural(Arg("number of features", enabledFeatures.Length), "The feature {1} was enabled.", "The following features were enabled: {1}.", Arg("feature names", string.Join(", ", enabledFeatures.Select(f => f.Name ?? f.Id)))));
         }
     }
 
@@ -92,7 +93,7 @@ public class ModuleService : IModuleService
         var features = (await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force)).ToArray();
         if (features.Length > 0)
         {
-            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was disabled.", "The following features were disabled: {1}.", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
+            await _notifier.SuccessAsync(H.Plural(Arg("number of features", features.Length), "The feature {1} was disabled.", "The following features were disabled: {1}.", Arg("feature names", string.Join(", ", features.Select(f => f.Name ?? f.Id)))));
         }
     }
 
