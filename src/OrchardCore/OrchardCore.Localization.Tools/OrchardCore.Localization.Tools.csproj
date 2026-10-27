@@ -9,7 +9,7 @@
     <RollForward>Major</RollForward>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" GlobalPropertiesToRemove="GenerateLocalizationCatalog" />
+    <ProjectReference Include="../OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" />
     <!-- The Roslyn assemblies are loaded from the SDK that drives the build, see SdkAssemblyResolver. -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" ExcludeAssets="runtime" />
   </ItemGroup>
