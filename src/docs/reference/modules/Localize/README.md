@@ -347,6 +347,16 @@ msgstr[0] ""
 msgstr[1] ""
 ```
 
+A `LocalizationSource` takes its note when it is declared, with the `note` parameter of `LocalizationSource.Create` and of its constructor. The note is not stored in the source, so it doesn't change its value or its equality. The names of its format arguments are given where it is formatted, with `Arg` in the arguments of `Localize` and `Plural`:
+
+```csharp
+public static readonly LocalizationSource Greeting = LocalizationSource.Create<Owner>(
+    "Hello {0}",
+    note: "Greeting shown on the dashboard.");
+
+var text = stringLocalizerFactory.Localize(Greeting, Arg("user name", user.Name));
+```
+
 A format argument without a name is described by its C# expression, and the `count` of a plural by `count`. A comment starting with `// TRANSLATORS:` on the line above a C# call is added as a note too. Notes and argument names must be compile-time constants, or literal strings in Liquid, to be extracted.
 
 ### Translation templates

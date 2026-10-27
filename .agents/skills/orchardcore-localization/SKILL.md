@@ -65,6 +65,8 @@ H.Plural(note: "Relative date shown for future dates.", count: Arg("years", year
 S.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user.Name)];
 ```
 
+Sources: `LocalizationSource.Create<Owner>("Hello {0}", note: "...")`, then `factory.Localize(source, Arg("user name", name))`.
+
 Liquid: `{{ "in {0} years" | t: years: time.years, note: "Relative date shown for future dates." }}`. Notes and names must be constants (`OCLOC010` otherwise).
 
 ### Step 3: Reuse shared sources for strings declared without a localizer

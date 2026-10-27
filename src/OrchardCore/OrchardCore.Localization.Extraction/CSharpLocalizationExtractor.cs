@@ -127,7 +127,7 @@ public sealed class CSharpLocalizationExtractor
         return new LocalizationCall(receiver, key ?? forms!, plural, forms, GetFormatArguments(invocation.Arguments, method.Name == "Plural"), note);
     }
 
-    private static List<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
+    internal static List<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
     {
         var descriptions = new List<string?>();
         if (plural)
@@ -187,6 +187,9 @@ public sealed class CSharpLocalizationExtractor
         name = argument is null ? null : GetConstant(argument.Value);
         return true;
     }
+
+    internal static bool HasDynamicArgumentName(IOperation operation)
+        => TryGetArgumentName(operation, out var name) && name is null;
 
     /// <summary>
     /// Removes the <c>Note(note)</c> calls wrapping a localizer, which return the localizer unchanged at runtime, and
@@ -269,7 +272,7 @@ public sealed class CSharpLocalizationExtractor
             }
         }
 
-        if (model.GetOperation(node) is { } operation && operation.Descendants().Any(child => TryGetArgumentName(child, out var name) && name is null))
+        if (model.GetOperation(node) is { } operation && operation.Descendants().Any(HasDynamicArgumentName))
         {
             _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", source));
         }

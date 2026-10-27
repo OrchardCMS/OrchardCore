@@ -174,6 +174,67 @@ public sealed class LocalizationSourceExtractorTests
     }
 
     [Fact]
+    public void Extract_SourceNoteAndArgumentNames_DescribeMessages()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using OrchardCore.Localization;
+            using Microsoft.Extensions.Localization;
+            using Microsoft.AspNetCore.Mvc.Localization;
+            using static OrchardCore.Localization.LocalizationMetadata;
+            namespace Example;
+            public class Owner
+            {
+                public static LocalizationSource Greeting => LocalizationSource.Create<Owner>("Hello {0}", note: "Greeting shown on the dashboard.");
+                public static LocalizationSource Years => LocalizationSource.Create("in 1 year", typeof(Owner), "Relative date shown for future dates.");
+                public static LocalizationSource Plain => new LocalizationSource("Plain", typeof(Owner), "A constructor note.");
+                public string Get(IStringLocalizerFactory strings, IHtmlLocalizerFactory html, string user, int years)
+                    => strings.Localize(Greeting, Arg("user name", user)).Value
+                        + html.Plural(Arg("years", years), Years, "in {0} years").Value
+                        + strings.Localize(Plain).Value;
+            }
+            """, includeSources: true, includePlurals: true);
+
+        Assert.Empty(catalog.Diagnostics);
+        var greeting = Assert.Single(catalog.Messages, message => message.Text == "Hello {0}");
+        Assert.Equal("Example.Owner", greeting.Context);
+        Assert.Equal("Greeting shown on the dashboard.", Assert.Single(greeting.Comments));
+        Assert.Equal("user name", Assert.Single(greeting.FormatArguments[0]));
+        Assert.Single(greeting.References);
+
+        var years = Assert.Single(catalog.Messages, message => message.Text == "in 1 year");
+        Assert.Equal("in {0} years", years.Plural);
+        Assert.Equal("Relative date shown for future dates.", Assert.Single(years.Comments));
+        Assert.Equal("years", Assert.Single(years.FormatArguments[0]));
+
+        var plain = Assert.Single(catalog.Messages, message => message.Text == "Plain");
+        Assert.Equal("A constructor note.", Assert.Single(plain.Comments));
+        Assert.Empty(plain.FormatArguments);
+    }
+
+    [Fact]
+    public void Extract_DynamicSourceNoteOrArgumentName_ReportsAndKeepsMessage()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using OrchardCore.Localization;
+            using Microsoft.Extensions.Localization;
+            using static OrchardCore.Localization.LocalizationMetadata;
+            namespace Example;
+            public class Owner
+            {
+                public static string Note = "Dynamic";
+                public static LocalizationSource Greeting => LocalizationSource.Create<Owner>("Hello {0}", Note);
+                public string Get(IStringLocalizerFactory strings, string name, string user)
+                    => strings.Localize(Greeting, Arg(name, user)).Value;
+            }
+            """, includeSources: true);
+
+        Assert.Equal(2, catalog.Diagnostics.Count(diagnostic => diagnostic.Code == "OCLOC010"));
+        var message = Assert.Single(catalog.Messages);
+        Assert.Empty(message.Comments);
+        Assert.Equal("user", Assert.Single(message.FormatArguments[0]));
+    }
+
+    [Fact]
     public void Extract_InlineDeferredPlural_DoesNotCreateSingularConflict()
     {
         var catalog = TestWorkspace.ExtractCSharp("""
