@@ -40,34 +40,14 @@ public sealed class ShapeTemplateFiles
     {
         var shapeTable = await _shapeTableManager.GetShapeTableAsync(themeId);
 
-        // The longest paths first, so that an extension nested in another one's folder is not taken for it.
-        var extensions = _extensionManager.GetExtensions()
-            .Where(extension => !string.IsNullOrEmpty(extension.SubPath))
-            .OrderByDescending(extension => extension.SubPath.Length)
-            .ToArray();
-
+        var extensions = GetExtensionsByPath();
         var templates = new List<SourceTemplate>();
 
         foreach (var (bindingName, binding) in shapeTable.Bindings)
         {
             // Shapes bound to code have no file.
-            if (string.IsNullOrEmpty(binding.BindingSource))
-            {
-                continue;
-            }
-
-            var filePath = binding.BindingSource.Replace('\\', '/');
-            var extension = extensions.FirstOrDefault(extension =>
-                filePath.StartsWith(extension.SubPath.TrimEnd('/') + '/', StringComparison.OrdinalIgnoreCase));
-
-            if (extension == null)
-            {
-                continue;
-            }
-
-            var relativePath = filePath[(extension.SubPath.TrimEnd('/').Length + 1)..];
-
-            if (!SourceTemplateNames.TryGetTemplateName(relativePath, out var templateName))
+            if (!TryGetTemplateFile(binding.BindingSource, extensions, out var extension, out var filePath, out var relativePath) ||
+                !SourceTemplateNames.TryGetTemplateName(relativePath, out var templateName))
             {
                 continue;
             }
@@ -84,6 +64,21 @@ public sealed class ShapeTemplateFiles
         }
 
         return templates;
+    }
+
+    /// <summary>
+    /// Finds the template file a shape binding renders, e.g. to tell which file renders a shape.
+    /// </summary>
+    /// <param name="bindingSource">The source of the binding, e.g. <c>Areas/TheBlogTheme/Views/Content.liquid</c>.</param>
+    /// <param name="extensionId">The extension of the file.</param>
+    /// <param name="relativePath">The path of the file inside its extension.</param>
+    /// <returns>Whether the binding renders a file of an extension, rather than e.g. a shape defined in code.</returns>
+    public bool TryGetTemplateFile(string bindingSource, out string extensionId, out string relativePath)
+    {
+        var found = TryGetTemplateFile(bindingSource, GetExtensionsByPath(), out var extension, out _, out relativePath);
+        extensionId = extension?.Id;
+
+        return found;
     }
 
     /// <summary>
@@ -136,6 +131,38 @@ public sealed class ShapeTemplateFiles
         }
 
         return templates.Values.ToList();
+    }
+
+    // The longest paths first, so that an extension nested in another one's folder is not taken for it.
+    private IExtensionInfo[] GetExtensionsByPath()
+        => _extensionManager.GetExtensions()
+            .Where(extension => !string.IsNullOrEmpty(extension.SubPath))
+            .OrderByDescending(extension => extension.SubPath.Length)
+            .ToArray();
+
+    private static bool TryGetTemplateFile(string bindingSource, IExtensionInfo[] extensions, out IExtensionInfo extension, out string filePath, out string relativePath)
+    {
+        extension = null;
+        filePath = null;
+        relativePath = null;
+
+        if (string.IsNullOrEmpty(bindingSource))
+        {
+            return false;
+        }
+
+        var path = bindingSource.Replace('\\', '/');
+        extension = extensions.FirstOrDefault(extension => path.StartsWith(extension.SubPath.TrimEnd('/') + '/', StringComparison.OrdinalIgnoreCase));
+
+        if (extension == null)
+        {
+            return false;
+        }
+
+        filePath = path;
+        relativePath = path[(extension.SubPath.TrimEnd('/').Length + 1)..];
+
+        return true;
     }
 
     /// <summary>

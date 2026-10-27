@@ -314,8 +314,7 @@ public sealed class SourceTemplatesTests : IDisposable
         return new FeatureTemplateSource(
             CreateShapeTemplateFiles(),
             shellFeaturesManager.Object,
-            [siteThemeService.Object],
-            [],
+            new ActiveThemes([siteThemeService.Object], []),
             localizer.Object);
     }
 
@@ -391,8 +390,7 @@ public sealed class SourceTemplatesTests : IDisposable
         return new ThemeTemplateSource(
             CreateShapeTemplateFiles(),
             CreateExtensionManager(),
-            [siteThemeService.Object],
-            [adminThemeService.Object],
+            new ActiveThemes([siteThemeService.Object], [adminThemeService.Object]),
             localizer.Object);
     }
 

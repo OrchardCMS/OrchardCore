@@ -710,6 +710,7 @@ The columns of a list are declared in its rendering view.
 | `Sitemaps` | `SitemapListEntry` | `OrchardCore.Sitemaps` |
 | `Templates` | `TemplateEntry` | `OrchardCore.Templates` |
 | `TemplateSources` | `SourceTemplateEntry` | `OrchardCore.Templates` |
+| `TemplateAlternates` | `TemplateAlternateEntry` | `OrchardCore.Templates` |
 | `Tenants` | `ShellSettingsEntry` | `OrchardCore.Tenants` |
 | `UrlRewriting` | `RewriteRule` | `OrchardCore.UrlRewriting` |
 | `Users` | `User` | `OrchardCore.Users` |

@@ -1,0 +1,22 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<TemplateAlternateEntry>
+
+@{
+    var alternate = Model.Value.Alternate;
+}
+
+<div class="admin-list-secondary">
+    @if (alternate.ContentType == null)
+    {
+        @T["All content types, {0} display type", alternate.DisplayType]
+    }
+    else if (alternate.Element == null)
+    {
+        @T["{0}, {1} display type", alternate.ContentType, alternate.DisplayType]
+    }
+    else
+    {
+        @T["{0}, {1} display type, <code>{2}</code>", alternate.ContentType, alternate.DisplayType, alternate.Element]
+    }
+</div>

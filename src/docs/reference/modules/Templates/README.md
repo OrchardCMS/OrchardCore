@@ -40,6 +40,20 @@ A template that is not the one rendering its shape is shown as **Overridden by**
 
 Features don't tell which of their templates render the admin, so the list guesses it from the names of the templates, e.g. `TextField_Edit`, `Content_SummaryAdmin` or the workflow activities ending with `_Design`, and filters them with the **Renders** filter: the front end on the **Templates** page and the admin on the **Admin Templates** page by default, or both.
 
+## Alternates
+
+An alternate is a more specific name of a shape, which renders it only in some cases, e.g. `Content_Summary__BlogPost` renders the `Content` shape of the blog posts in the `Summary` display type, while `Content` keeps rendering the others. The **Alternates** button of a template in the **Theme Templates** and **Feature Templates** lists shows the alternates of its shape for the content types of the site: those of the content items (`Content`, or the stereotype of the content type, e.g. `Widget`), of their parts and of their fields, in the `Detail` and `Summary` display types on the **Templates** page, and in the `DetailAdmin` and `SummaryAdmin` display types on the **Admin Templates** page. They are the alternates the content display drivers add, described in [Available templates](#available-templates).
+
+Each alternate shows whether a local template has its name, and whether the theme or a feature already has a template rendering it. Its **Create** button opens the editor of a new template with this name. When the template of the list is a Liquid template of the active theme, its **Clone** button creates the template with its content, as a starting point; when the theme already has a template for the alternate, its **View** button shows this template, to clone it instead.
+
+Modules can suggest the alternates of other shapes by registering an `ITemplateAlternatesProvider`.
+
+## Inspect Content
+
+The **Inspect Content** button of the **Templates** and **Admin Templates** pages, and the **Inspect templates** action of the content items of the **Content Items** list, show the shapes a content item renders in a display type: each shape, indented under the shape rendering it, with the template that renders it and all its alternates, the most specific first, including those of this content item only, e.g. `Content__Alias__[Alias]` or `Content__Slug__[Slug]`. The alternate the template is bound to is checked, and each alternate opens the editor of the local template with its name.
+
+The templates are resolved as the front end does, with the active site theme and the templates, on the **Templates** page, and as the admin does, with the active admin theme and the admin templates, on the **Admin Templates** page. The content item is rendered in the admin to find its shapes, so the shapes that a template of the site theme renders in its own markup are not listed.
+
 ### Template sources
 
 Local templates are not tied to a theme: when the active theme changes, the templates cloned from the previous theme keep overriding the shapes of the new one. They are shown as **Cloned from** the previous theme.

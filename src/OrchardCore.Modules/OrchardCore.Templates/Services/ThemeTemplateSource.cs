@@ -1,10 +1,8 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Templates.Models;
-using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Templates.Services;
 
@@ -19,23 +17,19 @@ public sealed class ThemeTemplateSource : ITemplateSource
     private readonly ShapeTemplateFiles _shapeTemplateFiles;
     private readonly IExtensionManager _extensionManager;
 
-    // Registered by the Themes and Admin features, which can be disabled.
-    private readonly ISiteThemeService _siteThemeService;
-    private readonly IAdminThemeService _adminThemeService;
+    private readonly ActiveThemes _activeThemes;
 
     internal readonly IStringLocalizer S;
 
     public ThemeTemplateSource(
         ShapeTemplateFiles shapeTemplateFiles,
         IExtensionManager extensionManager,
-        IEnumerable<ISiteThemeService> siteThemeServices,
-        IEnumerable<IAdminThemeService> adminThemeServices,
+        ActiveThemes activeThemes,
         IStringLocalizer<ThemeTemplateSource> stringLocalizer)
     {
         _shapeTemplateFiles = shapeTemplateFiles;
         _extensionManager = extensionManager;
-        _siteThemeService = siteThemeServices.LastOrDefault();
-        _adminThemeService = adminThemeServices.LastOrDefault();
+        _activeThemes = activeThemes;
         S = stringLocalizer;
     }
 
@@ -49,7 +43,7 @@ public sealed class ThemeTemplateSource : ITemplateSource
 
     public async Task<IEnumerable<TemplateSourceScope>> GetScopesAsync(bool adminTemplates)
     {
-        var activeThemeId = await GetActiveThemeIdAsync(adminTemplates);
+        var activeThemeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
 
         return GetThemes(adminTemplates)
             .Select(theme =>
@@ -73,7 +67,7 @@ public sealed class ThemeTemplateSource : ITemplateSource
 
     public async Task<IEnumerable<SourceTemplate>> GetTemplatesAsync(bool adminTemplates, string scope)
     {
-        var activeThemeId = await GetActiveThemeIdAsync(adminTemplates);
+        var activeThemeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
         var themeId = string.IsNullOrEmpty(scope) ? activeThemeId : scope;
 
         // Only the themes of the list can be listed, e.g. not an admin theme as a site theme.
@@ -93,15 +87,6 @@ public sealed class ThemeTemplateSource : ITemplateSource
         return templates;
     }
 
-    private async Task<string> GetActiveThemeIdAsync(bool adminTemplates)
-    {
-        if (adminTemplates)
-        {
-            return _adminThemeService == null ? null : await _adminThemeService.GetAdminThemeNameAsync();
-        }
-
-        return _siteThemeService == null ? null : await _siteThemeService.GetSiteThemeNameAsync();
-    }
 
     // The themes that can be selected as a site theme, or as an admin theme, like on the Themes page.
     private IEnumerable<IExtensionInfo> GetThemes(bool adminTemplates)

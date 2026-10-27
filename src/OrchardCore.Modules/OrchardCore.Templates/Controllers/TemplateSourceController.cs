@@ -32,6 +32,11 @@ public sealed class TemplateSourceController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly SourceTemplatesService _sourceTemplatesService;
+    private readonly TemplateAlternatesService _templateAlternatesService;
+    private readonly ShapeTemplateFiles _shapeTemplateFiles;
+    private readonly ActiveThemes _activeThemes;
+    private readonly TemplatesManager _templatesManager;
+    private readonly AdminTemplatesManager _adminTemplatesManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
@@ -42,6 +47,11 @@ public sealed class TemplateSourceController : Controller
     public TemplateSourceController(
         IAuthorizationService authorizationService,
         SourceTemplatesService sourceTemplatesService,
+        TemplateAlternatesService templateAlternatesService,
+        ShapeTemplateFiles shapeTemplateFiles,
+        ActiveThemes activeThemes,
+        TemplatesManager templatesManager,
+        AdminTemplatesManager adminTemplatesManager,
         IShapeFactory shapeFactory,
         IOptions<PagerOptions> pagerOptions,
         INotifier notifier,
@@ -50,6 +60,11 @@ public sealed class TemplateSourceController : Controller
     {
         _authorizationService = authorizationService;
         _sourceTemplatesService = sourceTemplatesService;
+        _templateAlternatesService = templateAlternatesService;
+        _shapeTemplateFiles = shapeTemplateFiles;
+        _activeThemes = activeThemes;
+        _templatesManager = templatesManager;
+        _adminTemplatesManager = adminTemplatesManager;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
@@ -198,6 +213,14 @@ public sealed class TemplateSourceController : Controller
             Options = options,
         }));
 
+        var pageEntries = filteredEntries.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
+        var templatesWithAlternates = await _templateAlternatesService.GetTemplatesWithAlternatesAsync(options.AdminTemplates);
+
+        foreach (var entry in pageEntries)
+        {
+            entry.HasAlternates = templatesWithAlternates.Contains(entry.Template.Name);
+        }
+
         var model = new SourceTemplatesIndexViewModel
         {
             Source = templateSource,
@@ -205,7 +228,7 @@ public sealed class TemplateSourceController : Controller
             Options = options,
             List = new AdminListContext<SourceTemplateEntry>
             {
-                Source = filteredEntries.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
+                Source = pageEntries,
                 Search = search,
                 Actions = actions,
                 ToolbarActions = filters,
@@ -318,6 +341,159 @@ public sealed class TemplateSourceController : Controller
             Entry = entry,
             Content = await _sourceTemplatesService.ReadAsync(template),
         });
+    }
+
+    public async Task<IActionResult> Alternates(string source, string name, PagerParameters pagerParameters, bool adminTemplates = false, string scope = null, string search = null)
+    {
+        if (!await IsAuthorizedAsync(adminTemplates))
+        {
+            return Forbid();
+        }
+
+        var templateSource = _sourceTemplatesService.GetSource(source);
+        var template = templateSource == null ? null : await SourceTemplatesService.FindTemplateAsync(templateSource, name, adminTemplates, scope);
+
+        if (template == null)
+        {
+            return NotFound();
+        }
+
+        var entry = (await _sourceTemplatesService.GetEntriesAsync(templateSource, adminTemplates, scope))
+            .First(entry => string.Equals(entry.Template.Name, template.Name, StringComparison.OrdinalIgnoreCase));
+
+        IEnumerable<TemplateAlternate> alternates = await _templateAlternatesService.GetAlternatesAsync(template.Name, adminTemplates);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            alternates = alternates.Where(alternate =>
+                alternate.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                alternate.ContentType?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
+                alternate.Element?.Contains(search, StringComparison.OrdinalIgnoreCase) == true);
+        }
+
+        // The alternates of all the content types first, then those of each content type, the least specific first.
+        var sortedAlternates = alternates
+            .OrderBy(alternate => alternate.ContentType != null)
+            .ThenBy(alternate => alternate.ContentType, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(alternate => alternate.DisplayType, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(alternate => alternate.Element != null)
+            .ThenBy(alternate => alternate.Name.Length)
+            .ThenBy(alternate => alternate.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var localTemplates = adminTemplates
+            ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+            : await _templatesManager.GetTemplatesDocumentAsync();
+
+        // The templates the active theme and the features have for these names.
+        var themeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
+        var renderedBy = themeId == null
+            ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            : (await _shapeTemplateFiles.GetTemplatesAsync(themeId))
+                .GroupBy(template => template.Name, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key, group => group.First().ExtensionId, StringComparer.OrdinalIgnoreCase);
+
+        // The alternates the active theme renders are listed by the theme templates, the others by the feature templates.
+        var themeSource = _sourceTemplatesService.GetSource(ThemeTemplateSource.SourceName);
+        var themeTemplateNames = themeSource == null
+            ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            : (await themeSource.GetTemplatesAsync(adminTemplates, null)).Select(template => template.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var pager = new Pager(pagerParameters, _pagerOptions);
+        var routeData = new RouteData();
+        routeData.Values.TryAdd(nameof(name), template.Name);
+        routeData.Values.TryAdd(nameof(adminTemplates), adminTemplates);
+
+        if (!string.IsNullOrEmpty(scope))
+        {
+            routeData.Values.TryAdd(nameof(scope), scope);
+        }
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            routeData.Values.TryAdd(nameof(search), search);
+        }
+
+        var pagerShape = await _shapeFactory.PagerAsync(pager, sortedAlternates.Count, routeData);
+
+        var searchShape = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+        {
+            Name = nameof(search),
+            Value = search,
+        }));
+
+        ViewData["ReturnUrl"] = Url.Action(nameof(Index), new RouteValueDictionary
+        {
+            { nameof(source), templateSource.Name },
+            { _optionsAdminTemplates, adminTemplates },
+            { _optionsScope, scope },
+        });
+
+        return View(new SourceTemplateViewModel
+        {
+            Source = templateSource,
+            Entry = entry,
+            Search = search,
+            Alternates = new AdminListContext<TemplateAlternateEntry>
+            {
+                Source = sortedAlternates
+                    .Skip(pager.GetStartIndex())
+                    .Take(pager.PageSize)
+                    .Select(alternate => new TemplateAlternateEntry
+                    {
+                        Alternate = alternate,
+                        Base = entry,
+                        IsOverridden = localTemplates.Templates.ContainsKey(alternate.Name),
+                        RenderedBy = renderedBy.GetValueOrDefault(alternate.Name),
+                        RenderedBySource = themeTemplateNames.Contains(alternate.Name) ? ThemeTemplateSource.SourceName : FeatureTemplateSource.SourceName,
+                    })
+                    .ToList(),
+                Search = searchShape,
+                Pager = pagerShape,
+            },
+        });
+    }
+
+    [HttpPost, ActionName(nameof(Alternates))]
+    [FormValueRequired("submit.Filter")]
+    public ActionResult AlternatesFilterPOST(string source, string name, string search, bool adminTemplates = false, string scope = null)
+        => RedirectToAction(nameof(Alternates), new RouteValueDictionary
+        {
+            { nameof(source), source },
+            { nameof(name), name },
+            { nameof(adminTemplates), adminTemplates },
+            { nameof(scope), scope },
+            { nameof(search), search },
+        });
+
+    [HttpPost]
+    public async Task<IActionResult> CloneAs(string source, string name, string alternate, bool adminTemplates = false, string scope = null, string returnUrl = null)
+    {
+        if (!await IsAuthorizedAsync(adminTemplates))
+        {
+            return Forbid();
+        }
+
+        var templateSource = _sourceTemplatesService.GetSource(source);
+        var template = templateSource == null ? null : await SourceTemplatesService.FindTemplateAsync(templateSource, name, adminTemplates, scope);
+
+        // Only an alternate of the template can be created from it, not any template.
+        if (template == null || !(await _templateAlternatesService.GetAlternatesAsync(template.Name, adminTemplates))
+            .Any(item => string.Equals(item.Name, alternate, StringComparison.OrdinalIgnoreCase)))
+        {
+            return NotFound();
+        }
+
+        if (await _sourceTemplatesService.CloneAsAsync(template, alternate, adminTemplates))
+        {
+            await _notifier.SuccessAsync(H["The \"{0}\" template has been cloned as \"{1}\".", template.Name, alternate]);
+        }
+        else
+        {
+            await _notifier.WarningAsync(H["The \"{0}\" template could not be cloned as \"{1}\": a template with this name exists, or the template is not a Liquid template of the active theme.", template.Name, alternate]);
+        }
+
+        return RedirectToReturnUrlOrIndex(source, adminTemplates, scope, returnUrl);
     }
 
     [HttpPost]

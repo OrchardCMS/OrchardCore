@@ -36,6 +36,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
         "/Admin/TemplateSources/Theme?Options.AdminTemplates=true",
         "/Admin/TemplateSources/Feature",
         "/Admin/TemplateSources/Feature?Options.AdminTemplates=true",
+        "/Admin/TemplateSources/Theme/Alternates?name=Content",
         "/Admin/Features",
     ];
 

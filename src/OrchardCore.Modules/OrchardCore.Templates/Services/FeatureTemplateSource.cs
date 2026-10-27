@@ -1,10 +1,8 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Templates.Models;
-using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Templates.Services;
 
@@ -24,23 +22,19 @@ public sealed class FeatureTemplateSource : ITemplateSource
     private readonly ShapeTemplateFiles _shapeTemplateFiles;
     private readonly IShellFeaturesManager _shellFeaturesManager;
 
-    // Registered by the Themes and Admin features, which can be disabled.
-    private readonly ISiteThemeService _siteThemeService;
-    private readonly IAdminThemeService _adminThemeService;
+    private readonly ActiveThemes _activeThemes;
 
     internal readonly IStringLocalizer S;
 
     public FeatureTemplateSource(
         ShapeTemplateFiles shapeTemplateFiles,
         IShellFeaturesManager shellFeaturesManager,
-        IEnumerable<ISiteThemeService> siteThemeServices,
-        IEnumerable<IAdminThemeService> adminThemeServices,
+        ActiveThemes activeThemes,
         IStringLocalizer<FeatureTemplateSource> stringLocalizer)
     {
         _shapeTemplateFiles = shapeTemplateFiles;
         _shellFeaturesManager = shellFeaturesManager;
-        _siteThemeService = siteThemeServices.LastOrDefault();
-        _adminThemeService = adminThemeServices.LastOrDefault();
+        _activeThemes = activeThemes;
         S = stringLocalizer;
     }
 
@@ -102,7 +96,7 @@ public sealed class FeatureTemplateSource : ITemplateSource
         }
 
         // The templates rendering the shapes with the active theme, which overrides the module templates.
-        var themeId = await GetActiveThemeIdAsync(adminTemplates);
+        var themeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
         var renderedBy = themeId == null
             ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             : (await _shapeTemplateFiles.GetTemplatesAsync(themeId))
@@ -139,13 +133,4 @@ public sealed class FeatureTemplateSource : ITemplateSource
             .DistinctBy(extension => extension.Id, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-    private async Task<string> GetActiveThemeIdAsync(bool adminTemplates)
-    {
-        if (adminTemplates)
-        {
-            return _adminThemeService == null ? null : await _adminThemeService.GetAdminThemeNameAsync();
-        }
-
-        return _siteThemeService == null ? null : await _siteThemeService.GetSiteThemeNameAsync();
-    }
 }

@@ -42,6 +42,11 @@ public sealed class SourceTemplateEntry
     public string ClonedFrom { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the shape of the template has alternates, e.g. <c>Content__BlogPost</c> for <c>Content</c>.
+    /// </summary>
+    public bool HasAlternates { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the cloned template was edited since it was cloned.
     /// </summary>
     public bool IsModified { get; set; }

@@ -15,6 +15,8 @@ using OrchardCore.Templates.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Templates.Settings;
 using OrchardCore.Templates.Models;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.Implementation;
 
 namespace OrchardCore.Templates;
 
@@ -46,6 +48,16 @@ public sealed class Startup : StartupBase
         services.AddScoped<SourceTemplatesService>();
         services.AddScoped<ITemplateSource, ThemeTemplateSource>();
         services.AddScoped<ITemplateSource, FeatureTemplateSource>();
+        services.AddScoped<ActiveThemes>();
+        services.AddScoped<TemplateAlternatesService>();
+        services.AddScoped<ITemplateAlternatesProvider, ContentTemplateAlternatesProvider>();
+        services.AddDisplayDriver<TemplateAlternateEntry, TemplateAlternateEntryDisplayDriver>();
+
+        // Inspects the shapes a content item renders, from the templates lists and the actions of the content items.
+        services.AddScoped<ShapeInspector>();
+        services.AddScoped<IShapeDisplayEvents>(serviceProvider => serviceProvider.GetRequiredService<ShapeInspector>());
+        services.AddScoped<TemplateInspectionService>();
+        services.AddScoped<IContentDisplayDriver, TemplateInspectorContentDisplayDriver>();
         services.AddDisplayDriver<SourceTemplateEntry, SourceTemplateEntryDisplayDriver>();
 
         services.AddScoped<AdminTemplatesManager>();

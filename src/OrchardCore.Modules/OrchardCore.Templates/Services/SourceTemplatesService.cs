@@ -180,6 +180,50 @@ public sealed class SourceTemplatesService
     }
 
     /// <summary>
+    /// Clones a Liquid template in use as a local template with another name, e.g. an alternate of its shape, as a starting
+    /// point. It is not monitored, as it is not the template of the source with the same name.
+    /// </summary>
+    /// <param name="template">The template to clone.</param>
+    /// <param name="name">The name of the local template, e.g. <c>Content__BlogPost</c> for <c>Content</c>.</param>
+    /// <param name="adminTemplates">Whether to clone it as an admin template.</param>
+    /// <returns>Whether the template was cloned, which it is not when a local template has this name.</returns>
+    public async Task<bool> CloneAsAsync(SourceTemplate template, string name, bool adminTemplates)
+    {
+        if (!template.CanClone || string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        var localTemplates = adminTemplates
+            ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+            : await _templatesManager.LoadTemplatesDocumentAsync();
+
+        if (localTemplates.Templates.ContainsKey(name))
+        {
+            return false;
+        }
+
+        var content = await _shapeTemplateFiles.ReadAsync(template);
+
+        if (string.IsNullOrEmpty(content))
+        {
+            return false;
+        }
+
+        var clone = new Template
+        {
+            Content = content,
+            Description = $"Cloned from {template.ExtensionId} ({template.RelativePath}) as an alternate of {template.Name}.",
+        };
+
+        await (adminTemplates
+            ? _adminTemplatesManager.UpdateTemplateAsync(name, clone)
+            : _templatesManager.UpdateTemplateAsync(name, clone));
+
+        return true;
+    }
+
+    /// <summary>
     /// Deletes the local template overriding a template, so that the template of the source is used again.
     /// </summary>
     /// <returns>Whether a local template was deleted.</returns>

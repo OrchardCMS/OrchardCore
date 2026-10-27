@@ -15,6 +15,17 @@
    asp-route-returnUrl="@FullRequestPath"
    class="btn btn-secondary btn-sm">@T["View"]</a>
 
+@if (entry.HasAlternates)
+{
+    <a asp-action="Alternates"
+       asp-controller="TemplateSource"
+       asp-route-source="@entry.Source"
+       asp-route-scope="@entry.Scope"
+       asp-route-name="@entry.Template.Name"
+       asp-route-admintemplates="@entry.AdminTemplates"
+       class="btn btn-secondary btn-sm">@T["Alternates"]</a>
+}
+
 @if (!entry.IsOverridden)
 {
     if (entry.Template.CanClone)
