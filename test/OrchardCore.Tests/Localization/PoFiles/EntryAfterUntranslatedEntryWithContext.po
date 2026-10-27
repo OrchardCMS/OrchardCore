@@ -1,0 +1,6 @@
+msgctxt "OrchardCore.Users.Controllers.AccountController"
+msgid "Invalid login attempt."
+msgstr ""
+
+msgid "Unknown system error"
+msgstr "Error desconegut del sistema"
