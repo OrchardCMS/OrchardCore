@@ -274,6 +274,18 @@ The project uses:
 - Document each enum member individually when its behavior is relevant to users or downstream developers.
 - When XML documentation already exists, revise the existing block in place and keep `<param>` tags accurate and in signature order.
 
+### Translation Templates
+
+Each project commits a `.pot` translation template of its localized strings. Whenever a change adds, edits, moves or removes a localized string (`S["..."]`, `T["..."]`, `H["..."]`, `LocalizationSource.Create(...)`, a localized attribute, or a string in a Razor view or Liquid template), regenerate the templates and commit the `.pot` files that change:
+
+```bash
+dotnet build OrchardCore.slnx -p:UpdateLocalizationCatalogs=true
+```
+
+- Build the whole solution, not a single project: moving a string between projects changes the templates of both.
+- Regenerate after merging the base branch too, since strings merged from either side can leave a template out of date.
+- The `Localization` CI job runs the same build in Release and fails when a `.pot` file changes, so run it before pushing.
+
 ## Database Patterns
 
 ### YesSql Usage
@@ -500,9 +512,10 @@ public sealed class AdminMenu : AdminNavigationProvider
 2. Include unit tests for new functionality
 3. Update the canonical documentation page when adding or changing user-facing features, public APIs, configuration, stereotypes, or extension points, and keep the docs aligned with the shipped code and behavior
 4. Run asset build if modifying CSS/JS: `yarn build`
-5. Ensure all tests pass: `dotnet test`
-6. Link related GitHub issues using `Fixes #IssueId`
-7. Add release notes for significant changes in `src/docs/releases/`, but do not rely on release notes as the only documentation for a feature; release notes describe what changed, while the canonical docs describe the current behavior without transitional or versioned wording
+5. Regenerate the translation templates if localized strings changed: `dotnet build OrchardCore.slnx -p:UpdateLocalizationCatalogs=true` (see [Translation Templates](#translation-templates))
+6. Ensure all tests pass: `dotnet test`
+7. Link related GitHub issues using `Fixes #IssueId`
+8. Add release notes for significant changes in `src/docs/releases/`, but do not rely on release notes as the only documentation for a feature; release notes describe what changed, while the canonical docs describe the current behavior without transitional or versioned wording
 
 ## Useful Commands
 
