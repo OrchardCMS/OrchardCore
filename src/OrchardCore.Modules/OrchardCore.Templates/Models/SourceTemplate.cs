@@ -32,6 +32,18 @@ public sealed class SourceTemplate
     public bool IsInUse { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the extension whose template renders the shape instead of this one, e.g. the active theme
+    /// overriding the template of a module, or <see langword="null"/> when this template renders it.
+    /// </summary>
+    public string OverriddenBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the template renders the admin, e.g. an editor, rather than the front end, or
+    /// <see langword="null"/> when the source does not tell them apart.
+    /// </summary>
+    public bool? IsAdmin { get; set; }
+
+    /// <summary>
     /// Gets whether the template is written in Liquid, so that it can be cloned as a local template.
     /// Other templates, e.g. Razor ones, can only be viewed.
     /// </summary>

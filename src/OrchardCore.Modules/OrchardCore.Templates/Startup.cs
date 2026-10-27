@@ -45,6 +45,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<ShapeTemplateFiles>();
         services.AddScoped<SourceTemplatesService>();
         services.AddScoped<ITemplateSource, ThemeTemplateSource>();
+        services.AddScoped<ITemplateSource, FeatureTemplateSource>();
         services.AddDisplayDriver<SourceTemplateEntry, SourceTemplateEntryDisplayDriver>();
 
         services.AddScoped<AdminTemplatesManager>();

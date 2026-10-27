@@ -65,6 +65,17 @@ else if (!template.IsLiquid)
     </div>
 }
 
+@if (template.OverriddenBy != null)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-info mb-0" role="alert">
+                @T["The template of {0} renders this shape instead of this one. A local template with the same name overrides both.", template.OverriddenBy]
+            </div>
+        </div>
+    </div>
+}
+
 @if (entry.IsSourceChanged)
 {
     <div class="ocat-wrapper">

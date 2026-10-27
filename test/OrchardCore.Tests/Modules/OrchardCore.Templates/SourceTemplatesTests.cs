@@ -8,6 +8,8 @@ using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
@@ -25,6 +27,8 @@ public sealed class SourceTemplatesTests : IDisposable
     private readonly TemplateOverridesDocument _overrides = new();
     private readonly AdminTemplateOverridesDocument _adminOverrides = new();
     private readonly List<IExtensionInfo> _extensions = [];
+    private readonly Dictionary<string, ShapeBinding> _bindings = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _disabled = [];
     private string _siteThemeId = "SiteTheme";
 
     public void Dispose() => _root.Delete(recursive: true);
@@ -51,6 +55,21 @@ public sealed class SourceTemplatesTests : IDisposable
     public void TryGetTemplateName_OtherFile_ReturnsFalse(string relativePath)
     {
         Assert.False(SourceTemplateNames.TryGetTemplateName(relativePath, out _));
+    }
+
+    [Theory]
+    [InlineData("TextField_Edit", true)]
+    [InlineData("Content_SummaryAdmin", true)]
+    [InlineData("ContentPartSettings_Edit", true)]
+    [InlineData("NavigationItemText__multitenancy_Id", true)]
+    [InlineData("ScriptTask_Fields_Design", true)]
+    [InlineData("Content_Summary__BlogPost", false)]
+    [InlineData("TextField", false)]
+    [InlineData("MenuItemLink__ContentMenuItem", false)]
+    [InlineData("Credits", false)]
+    public void IsAdminTemplate_TemplateName_GuessesAdmin(string templateName, bool expected)
+    {
+        Assert.Equal(expected, SourceTemplateNames.IsAdminTemplate(templateName));
     }
 
     [Fact]
@@ -219,7 +238,88 @@ public sealed class SourceTemplatesTests : IDisposable
         Assert.Null(entry.ClonedFrom);
     }
 
-    private void AddExtension(string id, string baseTheme = null, bool isTheme = true, bool admin = false)
+    [Fact]
+    public async Task GetTemplatesAsync_AllFeatures_ListsTemplateOfLastEnabledModuleByShape()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("Base.Module", isTheme: false);
+        AddExtension("Dependent.Module", isTheme: false);
+        AddExtension("Disabled.Module", isTheme: false, enabled: false);
+        AddFile("Base.Module", "Views/TextField.cshtml", "base");
+        AddFile("Base.Module", "Views/TextField.Edit.cshtml", "editor");
+        AddFile("Dependent.Module", "Views/TextField.cshtml", "dependent");
+        AddFile("Disabled.Module", "Views/Disabled.cshtml", "disabled");
+        AddFile("SiteTheme", "Views/Layout.liquid", "theme");
+
+        var templates = (await CreateFeatureSource().GetTemplatesAsync(adminTemplates: false, scope: null)).ToList();
+
+        Assert.Equal(["TextField", "TextField_Edit"], templates.Select(template => template.Name).Order());
+        Assert.Contains(templates, template => template.Name == "TextField" && template.ExtensionId == "Dependent.Module" && template.OverriddenBy == null && template.IsAdmin == false);
+        Assert.Contains(templates, template => template.Name == "TextField_Edit" && template.IsAdmin == true);
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_OneFeature_MarksTemplatesOverriddenByThemeOrModule()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("Base.Module", isTheme: false);
+        AddExtension("Dependent.Module", isTheme: false);
+        AddFile("Base.Module", "Views/TextField.cshtml", "base");
+        AddFile("Base.Module", "Views/Menu.cshtml", "menu");
+        AddFile("Base.Module", "Views/Content.cshtml", "content");
+        AddFile("Dependent.Module", "Views/TextField.cshtml", "dependent");
+        AddFile("SiteTheme", "Views/Menu.liquid", "theme menu");
+        Bind("Menu", "SiteTheme", "Views/Menu.liquid");
+        Bind("TextField", "Dependent.Module", "Views/TextField.cshtml");
+        Bind("Content", "Base.Module", "Views/Content.cshtml");
+
+        var source = CreateFeatureSource();
+        var templates = (await source.GetTemplatesAsync(adminTemplates: false, scope: "Base.Module")).ToDictionary(template => template.Name);
+
+        Assert.Equal("SiteTheme", templates["Menu"].OverriddenBy);
+        Assert.Equal("Dependent.Module", templates["TextField"].OverriddenBy);
+        Assert.Null(templates["Content"].OverriddenBy);
+
+        var scopes = (await source.GetScopesAsync(adminTemplates: false)).Select(scope => scope.Name).ToList();
+        Assert.Equal([FeatureTemplateSource.AllFeaturesScope, "Base.Module", "Dependent.Module"], scopes);
+    }
+
+    private void Bind(string shapeType, string extensionId, string relativePath)
+    {
+        var filePath = $"{Application.ModulesRoot}{extensionId}/{relativePath}";
+        _bindings[shapeType] = new ShapeBinding { BindingName = shapeType.ToLowerInvariant(), BindingSource = filePath };
+    }
+
+    private FeatureTemplateSource CreateFeatureSource()
+    {
+        var shellFeaturesManager = new Mock<IShellFeaturesManager>();
+        shellFeaturesManager.Setup(manager => manager.GetEnabledFeaturesAsync()).ReturnsAsync(() => _extensions
+            .Where(extension => !_disabled.Contains(extension.Id))
+            .Select(extension =>
+            {
+                var feature = new Mock<IFeatureInfo>();
+                feature.SetupGet(feature => feature.Id).Returns(extension.Id);
+                feature.SetupGet(feature => feature.Extension).Returns(extension);
+
+                return feature.Object;
+            })
+            .ToList());
+
+        var siteThemeService = new Mock<ISiteThemeService>();
+        siteThemeService.Setup(service => service.GetSiteThemeNameAsync()).ReturnsAsync(() => _siteThemeId);
+
+        var localizer = new Mock<IStringLocalizer<FeatureTemplateSource>>();
+        localizer.Setup(localizer => localizer[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
+
+        return new FeatureTemplateSource(
+            CreateShapeTemplateFiles(),
+            shellFeaturesManager.Object,
+            [siteThemeService.Object],
+            [],
+            localizer.Object);
+    }
+
+    private void AddExtension(string id, string baseTheme = null, bool isTheme = true, bool admin = false, bool enabled = true)
     {
         var manifest = new Mock<IManifestInfo>();
         manifest.SetupGet(manifest => manifest.ModuleInfo).Returns(isTheme ? new ThemeAttribute { BaseTheme = baseTheme } : new ModuleAttribute());
@@ -234,6 +334,11 @@ public sealed class SourceTemplatesTests : IDisposable
         extension.SetupGet(extension => extension.Features).Returns([]);
 
         _extensions.Add(extension.Object);
+
+        if (!enabled)
+        {
+            _disabled.Add(id);
+        }
     }
 
     private void AddFile(string extensionId, string relativePath, string content)
@@ -265,7 +370,11 @@ public sealed class SourceTemplatesTests : IDisposable
         var razor = new Mock<IShapeTemplateViewEngine>();
         razor.SetupGet(engine => engine.TemplateFileExtensions).Returns([".cshtml"]);
 
-        return new ShapeTemplateFiles(Mock.Of<IShapeTableManager>(), CreateExtensionManager(), fileProviderAccessor.Object, [liquid.Object, razor.Object]);
+        var shapeTableManager = new Mock<IShapeTableManager>();
+        shapeTableManager.Setup(manager => manager.GetShapeTableAsync(It.IsAny<string>()))
+            .ReturnsAsync(() => new ShapeTable(new Dictionary<string, ShapeDescriptor>(), _bindings.Values.ToDictionary(binding => binding.BindingName, StringComparer.OrdinalIgnoreCase)));
+
+        return new ShapeTemplateFiles(shapeTableManager.Object, CreateExtensionManager(), fileProviderAccessor.Object, [liquid.Object, razor.Object]);
     }
 
     private ThemeTemplateSource CreateSource()

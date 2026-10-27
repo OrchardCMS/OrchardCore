@@ -43,17 +43,29 @@ public sealed class ThemeTemplateSource : ITemplateSource
 
     public LocalizedString DisplayName => S["Theme Templates"];
 
+    public LocalizedString GetDescription(bool adminTemplates) => adminTemplates
+        ? S["The templates of the admin themes. Clone a Liquid template of the active theme to customize it as an admin template, without changing the theme. Razor templates can be viewed as a reference."]
+        : S["The templates of the site themes. Clone a Liquid template of the active theme to customize it as a template, without changing the theme. Razor templates can be viewed as a reference."];
+
     public async Task<IEnumerable<TemplateSourceScope>> GetScopesAsync(bool adminTemplates)
     {
         var activeThemeId = await GetActiveThemeIdAsync(adminTemplates);
 
         return GetThemes(adminTemplates)
-            .Select(theme => new TemplateSourceScope
+            .Select(theme =>
             {
-                Name = theme.Id,
-                DisplayName = theme.Manifest?.Name ?? theme.Id,
-                IsInUse = string.Equals(theme.Id, activeThemeId, StringComparison.OrdinalIgnoreCase),
+                var isActive = string.Equals(theme.Id, activeThemeId, StringComparison.OrdinalIgnoreCase);
+                var name = theme.Manifest?.Name ?? theme.Id;
+
+                return new TemplateSourceScope
+                {
+                    Name = theme.Id,
+                    DisplayName = isActive ? S["{0} (active)", name] : name,
+                    IsInUse = isActive,
+                };
             })
+
+            // The active theme first, as it is listed by default.
             .OrderByDescending(scope => scope.IsInUse)
             .ThenBy(scope => scope.DisplayName, StringComparer.OrdinalIgnoreCase)
             .ToList();

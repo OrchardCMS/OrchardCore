@@ -7,20 +7,22 @@
     var sources = SourceTemplatesService.Sources.ToList();
 }
 
-@* The scopes of the source, e.g. its themes: changing it lists the templates of another one. *@
-@if (options.Scopes?.Count > 0)
-{
-    <select asp-for="@options.Scope" name="Options.Scope" asp-items="@options.Scopes" class="selectpicker show-tick" data-header="@T["Templates of"]" data-width="fit" data-style="btn-secondary" aria-label="@T["Templates of"]"></select>
-}
+<div class="d-flex flex-nowrap justify-content-end gap-2">
+    @* Switches to another template source, once there are several. *@
+    @if (sources.Count > 1)
+    {
+        <div class="btn-group" role="group" aria-label="@T["Template sources"]">
+            @foreach (var source in sources)
+            {
+                var isCurrent = string.Equals(source.Name, currentSource, StringComparison.OrdinalIgnoreCase);
+                <a asp-action="Index" asp-controller="TemplateSource" asp-route-source="@source.Name" asp-route-options.admintemplates="@options.AdminTemplates" class="btn btn-secondary text-nowrap @(isCurrent ? "active" : null)" aria-current="@(isCurrent ? "page" : null)" role="button">@source.DisplayName</a>
+            }
+        </div>
+    }
 
-@* Switches to another template source, once there are several. *@
-@if (sources.Count > 1)
-{
-    <div class="btn-group" role="group" aria-label="@T["Template sources"]">
-        @foreach (var source in sources)
-        {
-            var isCurrent = string.Equals(source.Name, currentSource, StringComparison.OrdinalIgnoreCase);
-            <a asp-action="Index" asp-controller="TemplateSource" asp-route-source="@source.Name" asp-route-options.admintemplates="@options.AdminTemplates" class="btn btn-secondary @(isCurrent ? "active" : null)" aria-current="@(isCurrent ? "page" : null)" role="button">@source.DisplayName</a>
-        }
-    </div>
-}
+    @* The scopes of the source, e.g. its themes: changing it lists the templates of another one. *@
+    @if (options.Scopes?.Count > 0)
+    {
+        <select asp-for="@options.Scope" name="Options.Scope" asp-items="@options.Scopes" class="selectpicker show-tick" data-header="@T["Templates of"]" data-width="auto" data-style="btn-secondary" data-live-search="@(options.Scopes.Count > 10 ? "true" : "false")" aria-label="@T["Templates of"]"></select>
+    }
+</div>

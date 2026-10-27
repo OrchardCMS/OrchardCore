@@ -28,6 +28,7 @@ public sealed class TemplateSourceController : Controller
     private const string _optionsFilter = "Options.Filter";
     private const string _optionsAdminTemplates = "Options.AdminTemplates";
     private const string _optionsScope = "Options.Scope";
+    private const string _optionsArea = "Options.Area";
 
     private readonly IAuthorizationService _authorizationService;
     private readonly SourceTemplatesService _sourceTemplatesService;
@@ -73,10 +74,10 @@ public sealed class TemplateSourceController : Controller
 
         var scopes = (await templateSource.GetScopesAsync(options.AdminTemplates)).ToList();
 
-        // An unknown scope, e.g. a theme that was removed, lists the scope in use.
-        if (!scopes.Any(scope => string.Equals(scope.Name, options.Scope, StringComparison.OrdinalIgnoreCase)))
+        // An unknown scope, e.g. a theme that was removed, lists the default scope.
+        if (!scopes.Any(scope => IsScope(scope, options.Scope)))
         {
-            options.Scope = scopes.FirstOrDefault(scope => scope.IsInUse)?.Name;
+            options.Scope = scopes.FirstOrDefault()?.Name;
         }
 
         IEnumerable<SourceTemplateEntry> entries = await _sourceTemplatesService.GetEntriesAsync(templateSource, options.AdminTemplates, options.Scope);
@@ -86,6 +87,32 @@ public sealed class TemplateSourceController : Controller
             entries = entries.Where(entry =>
                 entry.Template.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase) ||
                 entry.Template.RelativePath.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Only some sources tell which templates render the admin, the others don't show this filter.
+        var hasAreas = entries.Any(entry => entry.Template.IsAdmin != null);
+
+        if (hasAreas)
+        {
+            options.Area ??= options.AdminTemplates ? SourceTemplatesArea.Admin : SourceTemplatesArea.FrontEnd;
+
+            entries = options.Area switch
+            {
+                SourceTemplatesArea.FrontEnd => entries.Where(entry => entry.Template.IsAdmin != true),
+                SourceTemplatesArea.Admin => entries.Where(entry => entry.Template.IsAdmin != false),
+                _ => entries,
+            };
+
+            options.Areas =
+            [
+                new SelectListItem(S["Front end and admin"], nameof(SourceTemplatesArea.All)),
+                new SelectListItem(S["Front end"], nameof(SourceTemplatesArea.FrontEnd)),
+                new SelectListItem(S["Admin"], nameof(SourceTemplatesArea.Admin)),
+            ];
+        }
+        else
+        {
+            options.Area = null;
         }
 
         entries = options.Filter switch
@@ -119,6 +146,11 @@ public sealed class TemplateSourceController : Controller
             routeData.Values.TryAdd(_optionsFilter, options.Filter);
         }
 
+        if (options.Area != null)
+        {
+            routeData.Values.TryAdd(_optionsArea, options.Area);
+        }
+
         var pagerShape = await _shapeFactory.PagerAsync(pager, filteredEntries.Count, routeData);
 
         options.Filters =
@@ -130,10 +162,10 @@ public sealed class TemplateSourceController : Controller
             new SelectListItem(S["Source changed since cloned"], nameof(SourceTemplatesFilter.SourceChanged)),
         ];
 
-        var currentScope = scopes.FirstOrDefault(scope => string.Equals(scope.Name, options.Scope, StringComparison.OrdinalIgnoreCase));
+        var currentScope = scopes.FirstOrDefault(scope => IsScope(scope, options.Scope));
 
         options.Scopes = scopes
-            .Select(scope => new SelectListItem(scope.IsInUse ? S["{0} (active)", scope.DisplayName] : scope.DisplayName, scope.Name))
+            .Select(scope => new SelectListItem(scope.DisplayName, scope.Name ?? string.Empty))
             .ToList();
 
         // The templates of a scope not in use, e.g. a theme that is not active, can't be cloned or reset.
@@ -194,6 +226,7 @@ public sealed class TemplateSourceController : Controller
             { _optionsScope, model.Options.Scope },
             { _optionsSearch, model.Options.Search },
             { _optionsFilter, model.Options.Filter },
+            { _optionsArea, model.Options.Area },
         });
 
     [HttpPost, ActionName(nameof(Index))]
@@ -375,6 +408,10 @@ public sealed class TemplateSourceController : Controller
             { _optionsScope, scope },
         });
     }
+
+    // A missing scope and an empty one are the same, as a query string carries an empty value as no value.
+    private static bool IsScope(TemplateSourceScope scope, string name)
+        => string.Equals(scope.Name ?? string.Empty, name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
 
     private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
     {

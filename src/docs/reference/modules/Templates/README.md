@@ -32,6 +32,14 @@ The status of each template shows whether it is overridden, and monitors the tem
 
 The list can be filtered by these statuses. The clone records are stored by tenant next to the templates, but are not part of their recipes and deployments, so the templates imported in another tenant are shown as **Overridden**.
 
+## Feature Templates
+
+The **Feature Templates** button, next to **Theme Templates**, lists the templates of the enabled features, all of them by default, or those of the feature selected in the dropdown. They are almost all Razor templates, so they can be viewed as a reference to write a Liquid template with the same name, with the **Create override** button, which shows the name of each shape to override.
+
+A template that is not the one rendering its shape is shown as **Overridden by** the extension whose template renders it: the active theme, which overrides the templates of the features, or another feature, the last one enabled winning. A local template with the same name overrides both.
+
+Features don't tell which of their templates render the admin, so the list guesses it from the names of the templates, e.g. `TextField_Edit`, `Content_SummaryAdmin` or the workflow activities ending with `_Design`, and filters them with the **Renders** filter: the front end on the **Templates** page and the admin on the **Admin Templates** page by default, or both.
+
 ### Template sources
 
 Local templates are not tied to a theme: when the active theme changes, the templates cloned from the previous theme keep overriding the shapes of the new one. They are shown as **Cloned from** the previous theme.
@@ -53,6 +61,8 @@ public sealed class MyTemplateSource : ITemplateSource
     public string Name => "My";
 
     public LocalizedString DisplayName { get; }
+
+    public LocalizedString GetDescription(bool adminTemplates) => DisplayName;
 
     // No scopes: the templates are listed at once.
     public Task<IEnumerable<TemplateSourceScope>> GetScopesAsync(bool adminTemplates)

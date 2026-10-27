@@ -39,6 +39,12 @@ public class SourceTemplatesOptions
     public string Scope { get; set; }
     public string Search { get; set; }
     public SourceTemplatesFilter Filter { get; set; }
+
+    /// <summary>
+    /// Filters the templates by what they render, for the sources telling it, the front end on the templates
+    /// and the admin on the admin templates by default.
+    /// </summary>
+    public SourceTemplatesArea? Area { get; set; }
     public SourceTemplatesBulkAction BulkAction { get; set; }
 
     [BindNever]
@@ -49,6 +55,9 @@ public class SourceTemplatesOptions
 
     [BindNever]
     public List<SelectListItem> Scopes { get; set; }
+
+    [BindNever]
+    public List<SelectListItem> Areas { get; set; }
 }
 
 /// <summary>
@@ -70,6 +79,21 @@ public enum SourceTemplatesFilter
 
     /// <summary>The cloned templates whose source changed since, e.g. after the theme was updated.</summary>
     SourceChanged,
+}
+
+/// <summary>
+/// Filters the templates of a source by what they render, as guessed from their names.
+/// </summary>
+public enum SourceTemplatesArea
+{
+    /// <summary>All the templates.</summary>
+    All,
+
+    /// <summary>The templates rendering the front end, e.g. the display of a content part.</summary>
+    FrontEnd,
+
+    /// <summary>The templates rendering the admin, e.g. an editor.</summary>
+    Admin,
 }
 
 public enum SourceTemplatesBulkAction

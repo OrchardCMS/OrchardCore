@@ -57,6 +57,14 @@ else
     </span>
 }
 
+@if (entry.Template.OverriddenBy != null)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template of {0} renders this shape instead of this one. A local template overrides both.", entry.Template.OverriddenBy]">
+        <i class="fa-solid fa-layer-group text-secondary" aria-hidden="true"></i>
+        @T["Overridden by {0}", entry.Template.OverriddenBy]
+    </span>
+}
+
 @if (entry.IsSourceChanged)
 {
     <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template of the source changed since it was cloned, e.g. after an update. Review it, or reset the local template to it."]">

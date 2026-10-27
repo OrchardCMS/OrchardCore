@@ -8,6 +8,13 @@
     var options = (SourceTemplatesOptions)Model.Options;
 }
 
+@if (options.Areas != null)
+{
+    <div class="btn-group filter">
+        <select asp-for="@options.Area" name="Options.Area" asp-items="@options.Areas" class="selectpicker show-tick me-2" data-header="@T["Filter by what they render"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Renders"]" data-style="btn-sm"></select>
+    </div>
+}
+
 <div class="btn-group filter">
     <select asp-for="@options.Filter" name="Options.Filter" asp-items="@options.Filters" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm"></select>
 </div>

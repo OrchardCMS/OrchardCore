@@ -7,14 +7,7 @@
 </zone>
 
 <div class="alert alert-info" role="alert">
-    @if (Model.Options.AdminTemplates)
-    {
-        @T["The templates of the admin themes. Clone a Liquid template of the active theme to customize it as an admin template, without changing the theme. Razor templates can be viewed as a reference."]
-    }
-    else
-    {
-        @T["The templates of the site themes. Clone a Liquid template of the active theme to customize it as a template, without changing the theme. Razor templates can be viewed as a reference."]
-    }
+    @Model.Source.GetDescription(Model.Options.AdminTemplates)
 </div>
 
 @if (Model.Scope?.IsInUse == false)

@@ -20,7 +20,14 @@ public interface ITemplateSource
     LocalizedString DisplayName { get; }
 
     /// <summary>
+    /// Describes the templates of the source, shown above its list.
+    /// </summary>
+    /// <param name="adminTemplates">Whether the list shows the admin templates.</param>
+    LocalizedString GetDescription(bool adminTemplates);
+
+    /// <summary>
     /// Lists the parts of the source that can be listed on their own, e.g. the themes, which the user picks from.
+    /// The first one is listed by default.
     /// </summary>
     /// <param name="adminTemplates">Whether to list the scopes used by the admin, rather than by the front end.</param>
     /// <returns>The scopes, or none when the source lists its templates at once.</returns>
@@ -30,6 +37,6 @@ public interface ITemplateSource
     /// Lists the templates of the source.
     /// </summary>
     /// <param name="adminTemplates">Whether to list the templates used by the admin, rather than by the front end.</param>
-    /// <param name="scope">The name of the scope to list, or <see langword="null"/> for the one in use.</param>
+    /// <param name="scope">The name of the scope to list, or <see langword="null"/> for the default one.</param>
     Task<IEnumerable<SourceTemplate>> GetTemplatesAsync(bool adminTemplates, string scope);
 }

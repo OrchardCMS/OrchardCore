@@ -77,6 +77,11 @@ msgstr ""
 
 #: Controllers/TemplateSourceController.cs
 msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Admin"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
 msgid "All templates"
 msgstr ""
 
@@ -93,6 +98,16 @@ msgstr ""
 #: Controllers/TemplateSourceController.cs
 msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
 msgid "Edited since cloned"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Front end"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Front end and admin"
 msgstr ""
 
 #: Controllers/TemplateSourceController.cs
@@ -150,13 +165,6 @@ msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
 msgid "The override of the \"{0}\" template has been deleted."
 msgstr ""
 
-#. Format arguments: {0}: scope.DisplayName
-#: Controllers/TemplateSourceController.cs
-#, csharp-format
-msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
-msgid "{0} (active)"
-msgstr ""
-
 #. Format arguments: {0}: count
 #: Controllers/TemplateSourceController.cs
 #, csharp-format
@@ -183,9 +191,46 @@ msgctxt "OrchardCore.Templates.Permissions"
 msgid "Manage templates"
 msgstr ""
 
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "All features"
+msgstr ""
+
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "Feature Templates"
+msgstr ""
+
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "The templates of the enabled features. They are Razor templates, which can be viewed as a reference to write a template overriding them. A template overridden by the site theme or another feature is not the one rendered."
+msgstr ""
+
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "The templates of the enabled features. They are Razor templates, which can be viewed as a reference to write an admin template overriding them. A template overridden by the admin theme or another feature is not the one rendered."
+msgstr ""
+
+#: Services/ThemeTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
+msgid "The templates of the admin themes. Clone a Liquid template of the active theme to customize it as an admin template, without changing the theme. Razor templates can be viewed as a reference."
+msgstr ""
+
+#: Services/ThemeTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
+msgid "The templates of the site themes. Clone a Liquid template of the active theme to customize it as a template, without changing the theme. Razor templates can be viewed as a reference."
+msgstr ""
+
 #: Services/ThemeTemplateSource.cs
 msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
 msgid "Theme Templates"
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Services/ThemeTemplateSource.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
+msgid "{0} (active)"
 msgstr ""
 
 #. Format arguments: {0}: contentPartDefinition.DisplayName()
@@ -402,6 +447,13 @@ msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
 msgid "Overridden"
 msgstr ""
 
+#. Format arguments: {0}: entry.Template.OverriddenBy
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Overridden by {0}"
+msgstr ""
+
 #: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
 msgid "Razor"
@@ -445,6 +497,13 @@ msgstr ""
 #: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
 msgid "The template of the source is used."
+msgstr ""
+
+#. Format arguments: {0}: entry.Template.OverriddenBy
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template of {0} renders this shape instead of this one. A local template overrides both."
 msgstr ""
 
 #: Views/Template/Create.cshtml
@@ -694,6 +753,13 @@ msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
 msgid "The file of the template could not be read."
 msgstr ""
 
+#. Format arguments: {0}: template.OverriddenBy
+#: Views/TemplateSource/Display.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "The template of {0} renders this shape instead of this one. A local template with the same name overrides both."
+msgstr ""
+
 #: Views/TemplateSource/Display.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
 msgid "The theme of this template is not active: it can be viewed, but only cloned once its theme is active."
@@ -746,16 +812,6 @@ msgstr ""
 
 #: Views/TemplateSource/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
-msgid "The templates of the admin themes. Clone a Liquid template of the active theme to customize it as an admin template, without changing the theme. Razor templates can be viewed as a reference."
-msgstr ""
-
-#: Views/TemplateSource/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
-msgid "The templates of the site themes. Clone a Liquid template of the active theme to customize it as a template, without changing the theme. Razor templates can be viewed as a reference."
-msgstr ""
-
-#: Views/TemplateSource/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
 msgid "selected"
 msgstr ""
 
@@ -779,6 +835,16 @@ msgstr ""
 #: Views/TemplateSourceFilters.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
 msgid "Filter by status"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Filter by what they render"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Renders"
 msgstr ""
 
 #: Views/TemplateSourceFilters.cshtml
