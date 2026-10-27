@@ -9,6 +9,7 @@
 <a asp-action="Display"
    asp-controller="TemplateSource"
    asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
    asp-route-name="@entry.Template.Name"
    asp-route-admintemplates="@entry.AdminTemplates"
    asp-route-returnUrl="@FullRequestPath"
@@ -16,18 +17,19 @@
 
 @if (!entry.IsOverridden)
 {
-    if (entry.Template.IsLiquid)
+    if (entry.Template.CanClone)
     {
         <a asp-action="Clone"
            asp-controller="TemplateSource"
            asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
            asp-route-name="@entry.Template.Name"
            asp-route-admintemplates="@entry.AdminTemplates"
            asp-route-returnUrl="@FullRequestPath"
            class="btn btn-primary btn-sm"
            data-url-af="UnsafeUrl">@T["Clone"]</a>
     }
-    else
+    else if (entry.Template.IsInUse)
     {
         @* A Razor template can't be cloned: this only opens the editor of a new Liquid template with its name. *@
         <a asp-action="Create"
@@ -47,11 +49,12 @@ else
        asp-route-returnUrl="@FullRequestPath"
        class="btn btn-primary btn-sm">@T["Edit"]</a>
 
-    if (entry.Template.IsLiquid)
+    if (entry.Template.CanClone)
     {
         <a asp-action="Reset"
            asp-controller="TemplateSource"
            asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
            asp-route-name="@entry.Template.Name"
            asp-route-admintemplates="@entry.AdminTemplates"
            asp-route-returnUrl="@FullRequestPath"
@@ -65,6 +68,7 @@ else
     <a asp-action="Delete"
        asp-controller="TemplateSource"
        asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
        asp-route-name="@entry.Template.Name"
        asp-route-admintemplates="@entry.AdminTemplates"
        asp-route-returnUrl="@FullRequestPath"

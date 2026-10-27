@@ -26,8 +26,19 @@ public sealed class SourceTemplate
     public string FilePath { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the template renders its shape, e.g. it belongs to the active theme. A local template applies
+    /// at once to the shapes being rendered, so only these templates can be cloned; the others can only be viewed.
+    /// </summary>
+    public bool IsInUse { get; set; } = true;
+
+    /// <summary>
     /// Gets whether the template is written in Liquid, so that it can be cloned as a local template.
     /// Other templates, e.g. Razor ones, can only be viewed.
     /// </summary>
     public bool IsLiquid => FilePath?.EndsWith(".liquid", StringComparison.OrdinalIgnoreCase) == true;
+
+    /// <summary>
+    /// Gets whether the template can be cloned as a local template: a Liquid template in use.
+    /// </summary>
+    public bool CanClone => IsLiquid && IsInUse;
 }

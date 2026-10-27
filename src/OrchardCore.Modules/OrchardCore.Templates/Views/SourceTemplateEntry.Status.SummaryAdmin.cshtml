@@ -8,7 +8,7 @@
 
 @if (entry.Template.IsLiquid)
 {
-    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template can be cloned as a local template."]">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@(entry.Template.IsInUse ? T["The template can be cloned as a local template."] : T["The template can be cloned once its theme is active."])">
         <i class="fa-solid fa-code text-secondary" aria-hidden="true"></i>
         @T["Liquid"]
     </span>
@@ -26,6 +26,13 @@ else
     <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template of the source is used."]">
         <i class="fa-regular fa-file text-secondary" aria-hidden="true"></i>
         @T["Not overridden"]
+    </span>
+}
+else if (entry.ClonedFrom != null)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["A local template overrides it. It was cloned from another theme, which was likely active before, so it is not compared to this template."]">
+        <i class="fa-solid fa-code-branch text-warning" aria-hidden="true"></i>
+        @T["Cloned from {0}", entry.ClonedFrom]
     </span>
 }
 else if (!entry.IsCloned)

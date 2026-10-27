@@ -16,6 +16,7 @@ else
     <a asp-action="Display"
        asp-controller="TemplateSource"
        asp-route-source="@Model.Value.Source"
+       asp-route-scope="@Model.Value.Scope"
        asp-route-name="@Model.Value.Template.Name"
        asp-route-admintemplates="@Model.Value.AdminTemplates"
        asp-route-returnUrl="@FullRequestPath">@Model.Value.Template.Name</a>

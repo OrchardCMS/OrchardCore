@@ -9,13 +9,20 @@
 <div class="alert alert-info" role="alert">
     @if (Model.Options.AdminTemplates)
     {
-        @T["The templates used by the admin theme. Clone a Liquid template to customize it as an admin template, without changing the theme. Razor templates can be viewed as a reference."]
+        @T["The templates of the admin themes. Clone a Liquid template of the active theme to customize it as an admin template, without changing the theme. Razor templates can be viewed as a reference."]
     }
     else
     {
-        @T["The templates used by the site theme. Clone a Liquid template to customize it as a template, without changing the theme. Razor templates can be viewed as a reference."]
+        @T["The templates of the site themes. Clone a Liquid template of the active theme to customize it as a template, without changing the theme. Razor templates can be viewed as a reference."]
     }
 </div>
+
+@if (Model.Scope?.IsInUse == false)
+{
+    <div class="alert alert-warning" role="alert">
+        @T["{0} is not the active theme: its templates can be viewed, but only cloned once it is active, as local templates apply to the active theme at once. The status shows the local templates that would override them.", Model.Scope.DisplayName]
+    </div>
+}
 
 @* the form is necessary to generate an antiforgery token for the clone, reset and delete actions *@
 <form asp-action="Index" asp-route-source="@Model.Source.Name" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">

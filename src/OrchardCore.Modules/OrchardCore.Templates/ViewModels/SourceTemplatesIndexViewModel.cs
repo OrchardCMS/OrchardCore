@@ -15,6 +15,12 @@ public class SourceTemplatesIndexViewModel
     public ITemplateSource Source { get; set; }
 
     /// <summary>
+    /// The scope of the source the page lists, e.g. a theme, if the source has scopes.
+    /// </summary>
+    [BindNever]
+    public TemplateSourceScope Scope { get; set; }
+
+    /// <summary>
     /// The data context for rendering the templates, the toolbar and the pager in the configured layout.
     /// </summary>
     [BindNever]
@@ -26,6 +32,11 @@ public class SourceTemplatesIndexViewModel
 public class SourceTemplatesOptions
 {
     public bool AdminTemplates { get; set; }
+
+    /// <summary>
+    /// The scope of the source to list, e.g. a theme, or <see langword="null"/> for the one in use.
+    /// </summary>
+    public string Scope { get; set; }
     public string Search { get; set; }
     public SourceTemplatesFilter Filter { get; set; }
     public SourceTemplatesBulkAction BulkAction { get; set; }
@@ -35,6 +46,9 @@ public class SourceTemplatesOptions
 
     [BindNever]
     public List<SelectListItem> Filters { get; set; }
+
+    [BindNever]
+    public List<SelectListItem> Scopes { get; set; }
 }
 
 /// <summary>

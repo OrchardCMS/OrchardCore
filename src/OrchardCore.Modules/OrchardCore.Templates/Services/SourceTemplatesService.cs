@@ -52,9 +52,12 @@ public sealed class SourceTemplatesService
     /// <summary>
     /// Lists the templates of a source, sorted by name, with the state of their local overrides.
     /// </summary>
-    public async Task<IReadOnlyList<SourceTemplateEntry>> GetEntriesAsync(ITemplateSource source, bool adminTemplates)
+    /// <param name="source">The source of the templates.</param>
+    /// <param name="adminTemplates">Whether to list the admin templates.</param>
+    /// <param name="scope">The scope of the source to list, e.g. a theme, or <see langword="null"/> for the one in use.</param>
+    public async Task<IReadOnlyList<SourceTemplateEntry>> GetEntriesAsync(ITemplateSource source, bool adminTemplates, string scope)
     {
-        var templates = await source.GetTemplatesAsync(adminTemplates);
+        var templates = await source.GetTemplatesAsync(adminTemplates, scope);
         var localTemplates = await GetTemplatesDocumentAsync(adminTemplates);
         var overrides = await GetOverridesDocumentAsync(adminTemplates);
 
@@ -65,6 +68,7 @@ public sealed class SourceTemplatesService
             var entry = new SourceTemplateEntry
             {
                 Source = source.Name,
+                Scope = scope,
                 Template = template,
                 AdminTemplates = adminTemplates,
             };
@@ -73,7 +77,12 @@ public sealed class SourceTemplatesService
             {
                 entry.IsOverridden = true;
 
-                if (overrides.Overrides.TryGetValue(template.Name, out var record))
+                // A local template cloned from another file, e.g. of a theme that was active before, is not compared to this one.
+                if (overrides.Overrides.TryGetValue(template.Name, out var record) && !IsClonedFrom(record, template))
+                {
+                    entry.ClonedFrom = record.ExtensionId;
+                }
+                else if (record != null)
                 {
                     entry.IsCloned = true;
                     entry.IsModified = !string.Equals(ComputeHash(localTemplate.Content), record.Hash, StringComparison.Ordinal);
@@ -93,14 +102,14 @@ public sealed class SourceTemplatesService
     /// Finds a template of a source by its name.
     /// </summary>
     /// <returns>The template, or <see langword="null"/> when the source has no such template.</returns>
-    public static async Task<SourceTemplate> FindTemplateAsync(ITemplateSource source, string name, bool adminTemplates)
+    public static async Task<SourceTemplate> FindTemplateAsync(ITemplateSource source, string name, bool adminTemplates, string scope)
     {
         if (string.IsNullOrEmpty(name))
         {
             return null;
         }
 
-        return (await source.GetTemplatesAsync(adminTemplates))
+        return (await source.GetTemplatesAsync(adminTemplates, scope))
             .FirstOrDefault(template => string.Equals(template.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
@@ -110,7 +119,7 @@ public sealed class SourceTemplatesService
     public Task<string> ReadAsync(SourceTemplate template) => _shapeTemplateFiles.ReadAsync(template);
 
     /// <summary>
-    /// Clones a Liquid template of a source as a local template, and records where it comes from to monitor it.
+    /// Clones a Liquid template in use as a local template, and records where it comes from to monitor it.
     /// </summary>
     /// <param name="source">The source of the template.</param>
     /// <param name="template">The template to clone.</param>
@@ -119,7 +128,7 @@ public sealed class SourceTemplatesService
     /// <returns>Whether the template was cloned.</returns>
     public async Task<bool> CloneAsync(ITemplateSource source, SourceTemplate template, bool adminTemplates, bool overwrite)
     {
-        if (!template.IsLiquid)
+        if (!template.CanClone)
         {
             return false;
         }
@@ -198,6 +207,10 @@ public sealed class SourceTemplatesService
 
         return true;
     }
+
+    private static bool IsClonedFrom(TemplateOverride record, SourceTemplate template)
+        => string.Equals(record.ExtensionId, template.ExtensionId, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(record.RelativePath, template.RelativePath, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Computes the hash of a template content, ignoring the line endings, which can change when a file is checked out

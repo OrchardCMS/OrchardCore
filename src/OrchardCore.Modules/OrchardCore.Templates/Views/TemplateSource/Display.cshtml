@@ -5,7 +5,7 @@
     var returnUrl = ViewData["ReturnUrl"]?.ToString();
     if (!Url.IsLocalUrl(returnUrl))
     {
-        returnUrl = Url.Action("Index", "TemplateSource", new Microsoft.AspNetCore.Routing.RouteValueDictionary { ["area"] = "OrchardCore.Templates", ["source"] = entry.Source, ["Options.AdminTemplates"] = entry.AdminTemplates });
+        returnUrl = Url.Action("Index", "TemplateSource", new Microsoft.AspNetCore.Routing.RouteValueDictionary { ["area"] = "OrchardCore.Templates", ["source"] = entry.Source, ["Options.AdminTemplates"] = entry.AdminTemplates, ["Options.Scope"] = entry.Scope });
     }
 }
 
@@ -20,15 +20,15 @@
 <form method="post" class="no-multisubmit">
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body p-3 text-end">
-            @if (!entry.IsOverridden && template.IsLiquid)
+            @if (!entry.IsOverridden && template.CanClone)
             {
-                <a asp-action="Clone" asp-route-source="@entry.Source" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary" data-url-af="UnsafeUrl">@T["Clone"]</a>
+                <a asp-action="Clone" asp-route-source="@entry.Source" asp-route-scope="@entry.Scope" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary" data-url-af="UnsafeUrl">@T["Clone"]</a>
             }
-            else if (!entry.IsOverridden)
+            else if (!entry.IsOverridden && template.IsInUse)
             {
                 <a asp-action="Create" asp-controller="Template" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary">@T["Create override"]</a>
             }
-            else
+            else if (entry.IsOverridden)
             {
                 <a asp-action="Edit" asp-controller="Template" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary">@T["Edit override"]</a>
             }
@@ -44,7 +44,17 @@
     </div>
 </div>
 
-@if (!template.IsLiquid)
+@if (!template.IsInUse)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning mb-0" role="alert">
+                @T["The theme of this template is not active: it can be viewed, but only cloned once its theme is active."]
+            </div>
+        </div>
+    </div>
+}
+else if (!template.IsLiquid)
 {
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
