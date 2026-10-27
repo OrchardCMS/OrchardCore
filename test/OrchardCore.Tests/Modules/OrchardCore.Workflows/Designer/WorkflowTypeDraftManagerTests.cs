@@ -586,7 +586,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     [Fact]
     public async Task ValidateAsync_SetVariableOfAnUndeclaredVariable_ReturnsUndeclaredVariableWarning()
     {
-        Register(() => new SetVariableTask(TestExpressions.CreateManager(), new PassThroughStringLocalizer<SetVariableTask>()));
+        Register(() => new SetVariableTask(TestExpressions.CreateManager(), new Variables.PassThroughStringLocalizerFactory(), new PassThroughStringLocalizer<SetVariableTask>()));
         var record = _workflowType.Activities.Single(x => x.ActivityId == "a");
         record.Name = nameof(SetVariableTask);
         record.Properties = new JsonObject { ["VariableName"] = "missing" };

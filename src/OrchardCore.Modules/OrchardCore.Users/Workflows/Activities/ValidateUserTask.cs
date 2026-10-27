@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -76,12 +77,12 @@ public class ValidateUserTask : TaskActivity<ValidateUserTask>, IActivityProvide
         return Outcome(OrchardCoreConstants.Roles.Anonymous);
     }
 
-    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-    {
-        var lastResult = ActivityProvidedValue.LastResult("array", S["The names of the user's roles, when the user is in one of the roles."]);
+    private static readonly ActivityProvidedValue s_lastResult = ActivityProvidedValue.LastResult("array", LocalizationSource.Create<ValidateUserTask>("The names of the user's roles, when the user is in one of the roles."));
 
-        return SetUserName
-            ? [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "UserName", TypeName = "string", Description = S["The name of the signed-in user."] }, lastResult]
-            : [lastResult];
-    }
+    private static readonly ActivityProvidedValue s_userName = new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "UserName", TypeName = "string", Description = LocalizationSource.Create<ValidateUserTask>("The name of the signed-in user.") };
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => SetUserName
+            ? [s_userName, s_lastResult]
+            : [s_lastResult];
 }

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -41,6 +42,8 @@ public class SignalEvent : EventActivity, IActivityProvidedValues
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome("Done");
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Signal", TypeName = "string", Description = LocalizationSource.Create<SignalEvent>("The name of the signal.") }];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Signal", TypeName = "string", Description = S["The name of the signal."] }];
+        => s_providedValues;
 }

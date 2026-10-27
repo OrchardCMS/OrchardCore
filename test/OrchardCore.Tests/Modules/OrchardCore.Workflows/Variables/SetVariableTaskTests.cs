@@ -68,7 +68,7 @@ public sealed class SetVariableTaskTests
             .ReturnsAsync(value);
 
     private SetVariableTask CreateTask(string variableName, WorkflowScriptSyntax syntax)
-        => new(TestExpressions.CreateManager(_scriptEvaluator.Object, _expressionEvaluator.Object), new PassThroughStringLocalizer<SetVariableTask>())
+        => new(TestExpressions.CreateManager(_scriptEvaluator.Object, _expressionEvaluator.Object), new PassThroughStringLocalizerFactory(), new PassThroughStringLocalizer<SetVariableTask>())
         {
             VariableName = variableName,
             Syntax = syntax,

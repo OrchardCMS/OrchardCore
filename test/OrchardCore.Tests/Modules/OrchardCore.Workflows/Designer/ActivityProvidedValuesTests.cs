@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -13,7 +14,7 @@ public sealed class ActivityProvidedValuesTests
     {
         var options = new WorkflowOptions();
         options.RegisterActivity(typeof(ProvidingTask), null, registration => registration
-            .Provides(WorkflowValueSource.Input, "Owner", "string", "From the registration.")
+            .Provides(WorkflowValueSource.Input, "Owner", "string", new LocalizationSource("From the registration."))
             .Provides(WorkflowValueSource.Properties, "Status"));
 
         var values = new ProvidingTask().GetProvidedValues(options);
@@ -27,7 +28,7 @@ public sealed class ActivityProvidedValuesTests
     public void Provides_Members_DeclaresTheFieldsOfTheValue()
     {
         var registration = new ActivityRegistration(typeof(ProvidingTask))
-            .Provides(WorkflowValueSource.Input, "Customer", "object", "The customer.", [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }])
+            .Provides(WorkflowValueSource.Input, "Customer", "object", new LocalizationSource("The customer."), [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }])
             .Provides(WorkflowValueSource.Input, "Order");
 
         Assert.Equal(["Email"], registration.ProvidedValues[0].Members.Select(member => member.Name));
@@ -62,7 +63,7 @@ public sealed class ActivityProvidedValuesTests
         public IEnumerable<ActivityProvidedValue> GetProvidedValues()
             => _declare
                 ? [
-                    new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "contentItem", Description = new("Owner", "From the activity.") },
+                    new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "contentItem", Description = new LocalizationSource("From the activity.") },
                     new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = "Result" },
                 ]
                 : [];

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Scripting;
@@ -41,8 +42,10 @@ public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs, IActivityP
         => Outcome(AvailableOutcomes.Select(x => S[x]).ToArray());
 #pragma warning restore OCLOC104
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("any", LocalizationSource.Create<ScriptTask>("The value the script returns."))];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("any", S["The value the script returns."])];
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -53,6 +56,8 @@ public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs, IActivityP
         return Outcome(outcomes);
     }
 
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "Result", TypeName = "any", DisplayName = LocalizationSource.Create<ScriptTask>("Result"), Description = LocalizationSource.Create<ScriptTask>("The value the script returns: its last statement.") }];
+
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "any", DisplayName = S["Result"], Description = S["The value the script returns: its last statement."] }];
+        => s_outputs;
 }

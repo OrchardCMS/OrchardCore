@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -70,9 +71,11 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs, 
         return Outcome("Done");
     }
 
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = LocalizationSource.Create<SetPropertyTask>("Value"), Description = LocalizationSource.Create<SetPropertyTask>("The value the task sets the property to.") }];
+
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = S["Value"], Description = S["The value the task sets the property to."] }];
+        => s_outputs;
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => string.IsNullOrEmpty(PropertyName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = PropertyName, TypeName = "any", Description = S["The value this activity sets."] }];
+        => string.IsNullOrEmpty(PropertyName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = PropertyName, TypeName = "any", Description = LocalizationSource.Create<SetPropertyTask>("The value this activity sets.") }];
 }

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -70,5 +71,5 @@ public class SetOutputTask : TaskActivity<SetOutputTask>, IActivityProvidedValue
     }
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => string.IsNullOrEmpty(OutputName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = OutputName, TypeName = "any", Description = S["The value this activity sets."] }];
+        => string.IsNullOrEmpty(OutputName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = OutputName, TypeName = "any", Description = LocalizationSource.Create<SetOutputTask>("The value this activity sets.") }];
 }

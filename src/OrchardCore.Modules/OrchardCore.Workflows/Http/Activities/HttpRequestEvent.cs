@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -104,5 +105,5 @@ public class HttpRequestEvent : EventActivity, IActivityProvidedValues
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
         => string.IsNullOrEmpty(FormLocationKey)
             ? []
-            : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = WorkflowConstants.HttpFormLocationOutputKeyName, TypeName = "object", Description = S["The URLs to return to after a form is posted, by form location key."] }];
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = WorkflowConstants.HttpFormLocationOutputKeyName, TypeName = "object", Description = LocalizationSource.Create<HttpRequestEvent>("The URLs to return to after a form is posted, by form location key.") }];
 }

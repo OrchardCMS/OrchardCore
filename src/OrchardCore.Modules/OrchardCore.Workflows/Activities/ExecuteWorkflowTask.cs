@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -10,28 +11,35 @@ namespace OrchardCore.Workflows.Activities;
 /// Runs another workflow, one that is usable as an activity (<see cref="WorkflowType.IsActivity"/>), with its input
 /// variables set from expressions, and gets the values of its output variables back as the task's outputs.
 /// </summary>
-public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityOutputs, IActivityProvidedValues
+public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly IWorkflowExpressionManager _expressionManager;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public ExecuteWorkflowTask(
         IWorkflowTypeStore workflowTypeStore,
         IWorkflowExpressionManager expressionManager,
         IServiceProvider serviceProvider,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<ExecuteWorkflowTask> localizer)
     {
         _workflowTypeStore = workflowTypeStore;
         _expressionManager = expressionManager;
         _serviceProvider = serviceProvider;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Execute Workflow Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ExecuteWorkflowTask>("Execute Workflow Task");
 
-    public override LocalizedString Category => S["Primitives"];
+    public static LocalizationSource CategoryName => WorkflowsLocalizationSources.Primitives;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// The <see cref="WorkflowType.WorkflowTypeId"/> of the workflow to run.
@@ -89,22 +97,26 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
         {
             Name = output.Name,
             TypeName = string.IsNullOrEmpty(output.TypeName) ? "any" : output.TypeName,
-            DisplayName = new LocalizedString(output.Name, output.Name),
-            Description = string.IsNullOrEmpty(output.Description) ? null : new LocalizedString(output.Name, output.Description),
+            DisplayName = new LocalizationSource(output.Name),
+            Description = string.IsNullOrEmpty(output.Description) ? null : new LocalizationSource(output.Description),
         });
+
+    // The description is the same for every task; the fields are the outputs of the workflow it runs.
+    private static readonly LocalizationSource s_lastResultDescription =
+        LocalizationSource.Create<ExecuteWorkflowTask>("The outputs of the workflow it ran, by name, or its fault message when it failed.");
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
         =>
         [
             ActivityProvidedValue.LastResult(
                 "object",
-                S["The outputs of the workflow it ran, by name, or its fault message when it failed."],
+                s_lastResultDescription,
                 Outputs
                     .Select(output => new ActivityProvidedValueMember
                     {
                         Name = output.Name,
                         TypeName = string.IsNullOrEmpty(output.TypeName) ? "any" : output.TypeName,
-                        Description = new LocalizedString(output.Name, output.Description ?? string.Empty),
+                        Description = new LocalizationSource(output.Description ?? string.Empty),
                     })
                     .ToList()),
         ];

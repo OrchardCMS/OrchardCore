@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -28,6 +29,7 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly WorkflowOptions _workflowOptions;
     private readonly IEnumerable<IActivityPresetProvider> _presetProviders;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IStringLocalizerFactory _localizerFactory;
 
     internal readonly IStringLocalizer S;
 
@@ -41,6 +43,7 @@ public sealed class WorkflowDesignerModelBuilder
         IOptions<WorkflowOptions> workflowOptions,
         IEnumerable<IActivityPresetProvider> presetProviders,
         IWorkflowTypeStore workflowTypeStore,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<WorkflowDesignerModelBuilder> stringLocalizer)
     {
         _workflowManager = workflowManager;
@@ -52,6 +55,7 @@ public sealed class WorkflowDesignerModelBuilder
         _workflowOptions = workflowOptions.Value;
         _presetProviders = presetProviders;
         _workflowTypeStore = workflowTypeStore;
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -267,8 +271,8 @@ public sealed class WorkflowDesignerModelBuilder
                     {
                         Name = output.Name,
                         TypeName = output.TypeName,
-                        DisplayName = output.DisplayName?.Value ?? output.Name,
-                        Description = string.IsNullOrEmpty(output.Description?.Value) ? null : output.Description.Value,
+                        DisplayName = Localize(output.DisplayName) ?? output.Name,
+                        Description = Localize(output.Description),
                     })
                     .ToList()
                 : [],
@@ -279,13 +283,13 @@ public sealed class WorkflowDesignerModelBuilder
                     Source = value.Source.ToString(),
                     Name = value.Name,
                     TypeName = value.TypeName,
-                    Description = string.IsNullOrEmpty(value.Description?.Value) ? null : value.Description.Value,
+                    Description = Localize(value.Description),
                     Members = (value.Members ?? [])
                         .Select(member => new WorkflowDesignerProvidedValue
                         {
                             Name = member.Name,
                             TypeName = member.TypeName,
-                            Description = string.IsNullOrEmpty(member.Description?.Value) ? null : member.Description.Value,
+                            Description = Localize(member.Description),
                         })
                         .ToList(),
                     AvailableToItself = value.AvailableToItself,
@@ -293,6 +297,10 @@ public sealed class WorkflowDesignerModelBuilder
                 .ToList(),
         };
     }
+
+    // The translation of a value's description or name, or null when it has none.
+    private string Localize(LocalizationSource source)
+        => string.IsNullOrEmpty(source?.Value) ? null : _localizerFactory.Localize(source).Value;
 
     // A task that runs a workflow usable as an activity is shown as that workflow, as the activities pane lists it.
     private async Task<string> GetDisplayTextAsync(IActivity activity)

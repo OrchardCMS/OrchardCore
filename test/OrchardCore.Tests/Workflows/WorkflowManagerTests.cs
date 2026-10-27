@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Entities;
 using OrchardCore.Json;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
@@ -1632,7 +1633,7 @@ public class WorkflowManagerTests
             => Outcome(new LocalizedString("Done", "Done"));
 
         public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-            => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = new("Value", "Value") }];
+            => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = new LocalizationSource("Value") }];
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {

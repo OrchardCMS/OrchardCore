@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Activities;
 
 namespace OrchardCore.Workflows.Options;
@@ -44,18 +44,18 @@ public class ActivityRegistration
 
     /// <summary>
     /// Declares a value the activity provides, for example
-    /// <c>activity.Provides(WorkflowValueSource.Input, "Owner", "any", "The owner of the content item.")</c>.
+    /// <c>activity.Provides(WorkflowValueSource.Input, "Owner", "any", LocalizationSource.Create&lt;Startup&gt;("The owner of the content item."))</c>.
     /// </summary>
     /// <param name="source">Where the value is.</param>
     /// <param name="name">The key of the value in its source.</param>
     /// <param name="typeName">The variable type name of the value, or <c>any</c>.</param>
     /// <param name="description">What the value is, shown in the designer.</param>
-    /// <param name="members">The fields of the value, for example <c>WorkflowValueMembers.User(S)</c>.</param>
+    /// <param name="members">The fields of the value, for example <c>WorkflowValueMembers.User</c>.</param>
     public ActivityRegistration Provides(
         WorkflowValueSource source,
         string name,
         string typeName = "any",
-        string description = null,
+        LocalizationSource description = null,
         IEnumerable<ActivityProvidedValueMember> members = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
@@ -65,7 +65,7 @@ public class ActivityRegistration
             Source = source,
             Name = name,
             TypeName = string.IsNullOrEmpty(typeName) ? "any" : typeName,
-            Description = new LocalizedString(name, description ?? string.Empty),
+            Description = description,
             Members = members?.ToList() ?? [],
         });
 

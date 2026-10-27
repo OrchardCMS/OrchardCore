@@ -6,6 +6,7 @@ using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.Contents.Workflows.Variables;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows;
@@ -15,6 +16,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Content"] = "fa-solid fa-file-lines");
+
         services.AddActivity<ContentCreatedEvent, ContentCreatedEventDisplayDriver>();
         services.AddScoped<IWorkflowGlobalValueProvider, ContentWorkflowGlobalValueProvider>();
         services.AddActivity<ContentDeletedEvent, ContentDeletedEventDisplayDriver>();

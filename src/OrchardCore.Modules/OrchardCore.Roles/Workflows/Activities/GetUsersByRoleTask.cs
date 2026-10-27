@@ -2,6 +2,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -79,6 +80,6 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>, IActivityPro
         // A name computed by Liquid is only known when the activity runs.
         return string.IsNullOrEmpty(name) || name.Contains("{{") || name.Contains("{%")
             ? []
-            : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = name, TypeName = "object", Description = S["The users in the selected roles: their ids, by user name."] }];
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = name, TypeName = "object", Description = LocalizationSource.Create<GetUsersByRoleTask>("The users in the selected roles: their ids, by user name.") }];
     }
 }

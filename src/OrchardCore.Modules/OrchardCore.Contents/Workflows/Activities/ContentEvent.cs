@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
@@ -52,7 +53,7 @@ public abstract class ContentEvent : ContentActivity, IEvent, IActivityProvidedV
     public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
         =>
         [
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item of the event."], Members = WorkflowValueMembers.ContentItem(S) },
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = ContentEventConstants.ContentEventInputKey, TypeName = "object", Description = S["The content event."], Members = WorkflowValueMembers.ContentEvent(S) },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = LocalizationSource.Create<ContentEvent>("The content item of the event."), Members = WorkflowValueMembers.ContentItem },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = ContentEventConstants.ContentEventInputKey, TypeName = "object", Description = LocalizationSource.Create<ContentEvent>("The content event."), Members = WorkflowValueMembers.ContentEvent },
         ];
 }

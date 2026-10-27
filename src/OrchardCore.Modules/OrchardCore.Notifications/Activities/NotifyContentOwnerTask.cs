@@ -2,6 +2,7 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Localization;
 using OrchardCore.Users;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -63,6 +64,6 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
         =>
         [
             .. base.GetProvidedValues(),
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = S["The owner of the content item, a user."], Members = WorkflowValueMembers.User(S), AvailableToItself = true },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = LocalizationSource.Create<NotifyContentOwnerTask>("The owner of the content item, a user."), Members = WorkflowValueMembers.User, AvailableToItself = true },
         ];
 }

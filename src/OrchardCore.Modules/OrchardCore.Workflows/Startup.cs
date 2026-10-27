@@ -11,6 +11,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
+using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -118,6 +119,20 @@ public sealed class Startup : StartupBase
         services.AddScoped<WorkflowExpressionInputValidator>();
 
         services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
+
+        // The default icons of the categories of this module's activities. Other modules set the icons of theirs.
+        services.Configure<WorkflowOptions>(options =>
+        {
+            options.CategoryIcons["Background"] = "fa-solid fa-clock";
+            options.CategoryIcons["Content"] = "fa-solid fa-file-lines";
+            options.CategoryIcons["Control Flow"] = "fa-solid fa-diagram-project";
+            options.CategoryIcons["Exceptions"] = "fa-solid fa-bug";
+            options.CategoryIcons["HTTP"] = "fa-solid fa-globe";
+            options.CategoryIcons["Primitives"] = "fa-solid fa-cube";
+            options.CategoryIcons["Session"] = "fa-solid fa-database";
+            options.CategoryIcons["UI"] = "fa-solid fa-window-maximize";
+        });
+
         services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-bug");
         services.AddActivity<StartedByWorkflowEvent, StartedByWorkflowEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-right-to-bracket");
         services.AddActivity<Activity, ActivityMetadataDisplayDriver>();

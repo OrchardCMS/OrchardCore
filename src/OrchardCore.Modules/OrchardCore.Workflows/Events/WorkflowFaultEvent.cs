@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -70,6 +71,8 @@ return result;";
         return sample;
     }
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = WorkflowFaultModel.WorkflowFaultInputKey, TypeName = "object", Description = LocalizationSource.Create<WorkflowFaultEvent>("The fault the workflow caught."), Members = WorkflowValueMembers.WorkflowFault }];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = WorkflowFaultModel.WorkflowFaultInputKey, TypeName = "object", Description = S["The fault the workflow caught."], Members = WorkflowValueMembers.WorkflowFault(S) }];
+        => s_providedValues;
 }

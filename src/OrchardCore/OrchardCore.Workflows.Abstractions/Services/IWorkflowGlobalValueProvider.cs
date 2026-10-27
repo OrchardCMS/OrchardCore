@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Activities;
 
 namespace OrchardCore.Workflows.Services;
@@ -39,7 +39,7 @@ public sealed class WorkflowGlobalValue
     /// <summary>
     /// What it is, shown in the designer.
     /// </summary>
-    public LocalizedString Description { get; init; }
+    public LocalizationSource Description { get; init; }
 
     /// <summary>
     /// The Liquid path that reads the value, for example <c>Site</c>, or <see langword="null"/> when Liquid can't
@@ -62,7 +62,7 @@ public sealed class WorkflowGlobalValue
     /// <summary>
     /// A value that Liquid templates read.
     /// </summary>
-    public static WorkflowGlobalValue Liquid(string path, string typeName, LocalizedString description, IReadOnlyList<ActivityProvidedValueMember> members = null)
+    public static WorkflowGlobalValue Liquid(string path, string typeName, LocalizationSource description, IReadOnlyList<ActivityProvidedValueMember> members = null)
         => new()
         {
             Kind = WorkflowGlobalValueKind.Value,
@@ -76,7 +76,7 @@ public sealed class WorkflowGlobalValue
     /// <summary>
     /// A function that scripts call, for example <c>uuid()</c>.
     /// </summary>
-    public static WorkflowGlobalValue Function(string call, string typeName, LocalizedString description)
+    public static WorkflowGlobalValue Function(string call, string typeName, LocalizationSource description)
         => new()
         {
             Kind = WorkflowGlobalValueKind.Function,

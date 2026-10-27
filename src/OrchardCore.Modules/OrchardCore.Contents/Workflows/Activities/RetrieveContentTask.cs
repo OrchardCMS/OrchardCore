@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -48,13 +49,17 @@ public class RetrieveContentTask : ContentTask, IActivityOutputs, IActivityProvi
         return Outcome("Retrieved");
     }
 
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = LocalizationSource.Create<RetrieveContentTask>("Content item"), Description = LocalizationSource.Create<RetrieveContentTask>("The content item the task retrieved.") }];
+
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"], Description = S["The content item the task retrieved."] }];
+        => s_outputs;
+
+    private static readonly ActivityProvidedValue[] s_providedValues =
+    [
+        new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = LocalizationSource.Create<RetrieveContentTask>("The content item the activity retrieved."), Members = WorkflowValueMembers.ContentItem },
+        ActivityProvidedValue.LastResult("contentItem", LocalizationSource.Create<RetrieveContentTask>("The content item the activity retrieved."), WorkflowValueMembers.ContentItem),
+    ];
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        =>
-        [
-            new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity retrieved."], Members = WorkflowValueMembers.ContentItem(S) },
-            ActivityProvidedValue.LastResult("contentItem", S["The content item the activity retrieved."], WorkflowValueMembers.ContentItem(S)),
-        ];
+        => s_providedValues;
 }

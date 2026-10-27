@@ -10,6 +10,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 using Polly;
 
 namespace OrchardCore.Facebook;
@@ -52,6 +53,10 @@ public sealed class StartupPixel : StartupBase
 public sealed class StartupPixelWorkflows : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
-        => services.AddActivity<MetaConversionsApiEventTask, MetaConversionsApiEventTaskDisplayDriver>();
+    {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Meta"] = "fa-solid fa-tag");
+
+        services.AddActivity<MetaConversionsApiEventTask, MetaConversionsApiEventTaskDisplayDriver>();
+    }
 }
 

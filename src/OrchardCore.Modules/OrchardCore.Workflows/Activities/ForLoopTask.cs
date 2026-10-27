@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -164,12 +165,12 @@ public class ForLoopTask : TaskActivity<ForLoopTask>, IActivityProvidedValues
             : await _expressionManager.EvaluateAsync(expression, workflowContext, WorkflowExpressionSyntaxes.JavaScript);
     }
 
-    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-    {
-        var lastResult = ActivityProvidedValue.LastResult("number", S["The current index of the loop."]);
+    private static readonly LocalizationSource s_currentDescription = LocalizationSource.Create<ForLoopTask>("The current index of the loop.");
 
-        return string.IsNullOrEmpty(LoopVariableName)
-            ? [lastResult]
-            : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "number", Description = S["The current index of the loop."] }, lastResult];
-    }
+    private static readonly ActivityProvidedValue s_lastResult = ActivityProvidedValue.LastResult("number", s_currentDescription);
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(LoopVariableName)
+            ? [s_lastResult]
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "number", Description = s_currentDescription }, s_lastResult];
 }

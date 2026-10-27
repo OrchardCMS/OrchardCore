@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -184,6 +185,8 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
         return true;
     }
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "EmailConfirmationUrl", TypeName = "string", Description = LocalizationSource.Create<RegisterUserTask>("The URL that confirms the email of the registered user."), AvailableToItself = true }];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "EmailConfirmationUrl", TypeName = "string", Description = S["The URL that confirms the email of the registered user."], AvailableToItself = true }];
+        => s_providedValues;
 }

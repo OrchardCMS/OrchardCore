@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -57,11 +58,13 @@ public class UserTaskEvent : EventActivity, IActivityProvidedValues
         return (string)workflowContext.Input[ContentEventConstants.UserActionInputKey];
     }
 
+    private static readonly ActivityProvidedValue[] s_providedValues =
+    [
+        new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "UserAction", TypeName = "string", Description = LocalizationSource.Create<UserTaskEvent>("The action the user chose.") },
+        new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "ContentItem", TypeName = "contentItem", Description = LocalizationSource.Create<UserTaskEvent>("The content item the user acted on."), Members = WorkflowValueMembers.ContentItem },
+        new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "ContentEvent", TypeName = "object", Description = LocalizationSource.Create<UserTaskEvent>("The content event."), Members = WorkflowValueMembers.ContentEvent },
+    ];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        =>
-        [
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "UserAction", TypeName = "string", Description = S["The action the user chose."] },
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "ContentItem", TypeName = "contentItem", Description = S["The content item the user acted on."], Members = WorkflowValueMembers.ContentItem(S) },
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "ContentEvent", TypeName = "object", Description = S["The content event."], Members = WorkflowValueMembers.ContentEvent(S) },
-        ];
+        => s_providedValues;
 }

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Activities;
 
@@ -39,7 +39,7 @@ public sealed class ActivityProvidedValue
     /// <summary>
     /// What the value is, shown in the designer.
     /// </summary>
-    public LocalizedString Description { get; init; }
+    public LocalizationSource Description { get; init; }
 
     /// <summary>
     /// The fields of the value that scripts and Liquid templates read, for example the <c>ContentType</c> of a
@@ -59,7 +59,7 @@ public sealed class ActivityProvidedValue
     /// <param name="typeName">The <see cref="Services.IWorkflowVariableType.Name"/> of the value, or <c>any</c>.</param>
     /// <param name="description">What the value is, shown in the designer.</param>
     /// <param name="members">The fields of the value.</param>
-    public static ActivityProvidedValue LastResult(string typeName, LocalizedString description, IReadOnlyList<ActivityProvidedValueMember> members = null)
+    public static ActivityProvidedValue LastResult(string typeName, LocalizationSource description, IReadOnlyList<ActivityProvidedValueMember> members = null)
         => new()
         {
             Source = WorkflowValueSource.LastResult,
@@ -88,7 +88,7 @@ public sealed class ActivityProvidedValueMember
     /// <summary>
     /// What the field is, shown in the designer.
     /// </summary>
-    public LocalizedString Description { get; init; }
+    public LocalizationSource Description { get; init; }
 }
 
 /// <summary>

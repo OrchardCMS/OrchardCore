@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Facebook.Models;
 using OrchardCore.Facebook.Services;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -62,8 +63,10 @@ public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsAp
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("object", LocalizationSource.Create<MetaConversionsApiEventTask>("The result of sending the event."), WorkflowValueMembers.Result)];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("object", S["The result of sending the event."], WorkflowValueMembers.Result(S))];
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

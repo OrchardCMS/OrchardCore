@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text.Json;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -151,12 +152,12 @@ public class ForEachTask : TaskActivity<ForEachTask>, IActivityProvidedValues
             .ToList();
     }
 
-    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-    {
-        var lastResult = ActivityProvidedValue.LastResult("any", S["The current item of the loop."]);
+    private static readonly LocalizationSource s_currentDescription = LocalizationSource.Create<ForEachTask>("The current item of the loop.");
 
-        return string.IsNullOrEmpty(LoopVariableName)
-            ? [lastResult]
-            : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "any", Description = S["The current item of the loop."] }, lastResult];
-    }
+    private static readonly ActivityProvidedValue s_lastResult = ActivityProvidedValue.LastResult("any", s_currentDescription);
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(LoopVariableName)
+            ? [s_lastResult]
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "any", Description = s_currentDescription }, s_lastResult];
 }

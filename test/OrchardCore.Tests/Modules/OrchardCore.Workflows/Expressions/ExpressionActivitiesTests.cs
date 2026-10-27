@@ -168,7 +168,7 @@ public sealed class ExpressionActivitiesTests
     [Fact]
     public async Task SetVariable_LiteralValue_IsConvertedToTheVariableType()
     {
-        var task = new SetVariableTask(CreateManager(), Localizer<SetVariableTask>())
+        var task = new SetVariableTask(CreateManager(), new PassThroughStringLocalizerFactory(), Localizer<SetVariableTask>())
         {
             VariableName = "count",
             Value = new WorkflowExpression<object>("41", WorkflowExpressionSyntaxes.Literal),

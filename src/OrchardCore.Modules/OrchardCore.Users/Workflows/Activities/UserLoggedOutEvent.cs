@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Services;
@@ -22,7 +23,7 @@ public class UserLoggedOutEvent : UserEvent
     public override IEnumerable<ActivityProvidedValue> GetProvidedValues()
         =>
         [
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "UserName", TypeName = "string", Description = S["The name of the user who logged out."] },
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Roles", TypeName = "array", Description = S["The names of the user's roles."] },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "UserName", TypeName = "string", Description = LocalizationSource.Create<UserLoggedOutEvent>("The name of the user who logged out.") },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Roles", TypeName = "array", Description = LocalizationSource.Create<UserLoggedOutEvent>("The names of the user's roles.") },
         ];
 }

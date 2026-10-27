@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -9,23 +10,30 @@ namespace OrchardCore.Workflows.Activities;
 /// Sets a workflow variable to the result of a JavaScript or Liquid expression. A declared variable gets the value
 /// converted to its type; a value that doesn't convert faults the workflow.
 /// </summary>
-public class SetVariableTask : TaskActivity<SetVariableTask>
+public class SetVariableTask : TaskActivity<SetVariableTask>, IActivityDescription
 {
     private readonly IWorkflowExpressionManager _expressionManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
 
     protected readonly IStringLocalizer S;
 
     public SetVariableTask(
         IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<SetVariableTask> localizer)
     {
         _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Set Variable Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SetVariableTask>("Set Variable Task");
 
-    public override LocalizedString Category => S["Primitives"];
+    public static LocalizationSource CategoryName => WorkflowsLocalizationSources.Primitives;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// The name of the variable to set.

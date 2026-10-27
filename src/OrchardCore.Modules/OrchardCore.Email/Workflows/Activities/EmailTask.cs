@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -130,8 +131,10 @@ public class EmailTask : TaskActivity<EmailTask>, IActivityProvidedValues
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("object", LocalizationSource.Create<EmailTask>("The result of sending the email."), WorkflowValueMembers.Result)];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("object", S["The result of sending the email."], WorkflowValueMembers.Result(S))];
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

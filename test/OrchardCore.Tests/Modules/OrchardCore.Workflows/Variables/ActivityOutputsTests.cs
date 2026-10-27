@@ -41,7 +41,7 @@ public sealed class ActivityOutputsTests
     public void GetOutputs_ValueProducingActivity_DeclaresItsOutputs(IActivityOutputs activity, string expected)
     {
         Assert.Equal(expected, string.Join(",", activity.GetOutputs().Select(output => $"{output.Name}:{output.TypeName}")));
-        Assert.All(activity.GetOutputs(), output => Assert.False(string.IsNullOrEmpty(output.DisplayName)));
+        Assert.All(activity.GetOutputs(), output => Assert.False(string.IsNullOrEmpty(output.DisplayName?.Value)));
     }
 
     [Fact]

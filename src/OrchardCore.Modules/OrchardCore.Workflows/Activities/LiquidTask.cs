@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -31,8 +32,10 @@ public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs, IActivityP
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"]);
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("string", LocalizationSource.Create<LiquidTask>("The rendered template."))];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("string", S["The rendered template."])];
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -42,6 +45,8 @@ public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs, IActivityP
         return Outcome("Done");
     }
 
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "Result", TypeName = "string", DisplayName = LocalizationSource.Create<LiquidTask>("Result"), Description = LocalizationSource.Create<LiquidTask>("The text the template renders.") }];
+
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "string", DisplayName = S["Result"], Description = S["The text the template renders."] }];
+        => s_outputs;
 }

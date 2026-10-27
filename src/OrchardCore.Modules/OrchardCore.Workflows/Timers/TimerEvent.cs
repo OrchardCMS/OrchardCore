@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using NCrontab;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -50,8 +51,10 @@ public class TimerEvent : EventActivity, IActivityProvidedValues
         set => SetProperty(value);
     }
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("string", LocalizationSource.Create<TimerEvent>("The text TimerEvent."))];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("string", S["The text TimerEvent."])];
+        => s_providedValues;
 
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

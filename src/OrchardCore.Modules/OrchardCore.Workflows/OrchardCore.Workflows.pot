@@ -63,11 +63,6 @@ msgstr ""
 
 #: Activities/ExecuteWorkflowTask.cs
 msgctxt "OrchardCore.Workflows.Activities.ExecuteWorkflowTask"
-msgid "Primitives"
-msgstr ""
-
-#: Activities/ExecuteWorkflowTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ExecuteWorkflowTask"
 msgid "The outputs of the workflow it ran, by name, or its fault message when it failed."
 msgstr ""
 
@@ -314,11 +309,6 @@ msgstr ""
 #: Activities/SetVariableTask.cs
 msgctxt "OrchardCore.Workflows.Activities.SetVariableTask"
 msgid "Done"
-msgstr ""
-
-#: Activities/SetVariableTask.cs
-msgctxt "OrchardCore.Workflows.Activities.SetVariableTask"
-msgid "Primitives"
 msgstr ""
 
 #: Activities/SetVariableTask.cs
@@ -668,11 +658,6 @@ msgstr ""
 #: Events/StartedByWorkflowEvent.cs
 msgctxt "OrchardCore.Workflows.Events.StartedByWorkflowEvent"
 msgid "Done"
-msgstr ""
-
-#: Events/StartedByWorkflowEvent.cs
-msgctxt "OrchardCore.Workflows.Events.StartedByWorkflowEvent"
-msgid "Primitives"
 msgstr ""
 
 #: Events/StartedByWorkflowEvent.cs
@@ -5350,6 +5335,11 @@ msgstr ""
 #: WorkflowsLocalizationSources.cs
 msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
 msgid "All Workflow Types"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Primitives"
 msgstr ""
 
 #: WorkflowsLocalizationSources.cs

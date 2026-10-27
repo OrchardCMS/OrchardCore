@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -161,8 +162,10 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, 
         return outcomes;
     }
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("object", LocalizationSource.Create<HttpRequestTask>("The response: its body, headers and status."), WorkflowValueMembers.HttpResponse)];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("object", S["The response: its body, headers and status."], WorkflowValueMembers.HttpResponse(S))];
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -231,11 +234,13 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, 
             select int.Parse(code);
     }
 
+    private static readonly ActivityOutputDescriptor[] s_outputs =
+    [
+        new ActivityOutputDescriptor { Name = "Body", TypeName = "string", DisplayName = LocalizationSource.Create<HttpRequestTask>("Response body"), Description = LocalizationSource.Create<HttpRequestTask>("The body of the response, as text.") },
+        new ActivityOutputDescriptor { Name = "StatusCode", TypeName = "number", DisplayName = LocalizationSource.Create<HttpRequestTask>("Status code"), Description = LocalizationSource.Create<HttpRequestTask>("The HTTP status code of the response, such as 200.") },
+        new ActivityOutputDescriptor { Name = "Response", TypeName = "object", DisplayName = LocalizationSource.Create<HttpRequestTask>("Response"), Description = LocalizationSource.Create<HttpRequestTask>("The response: its status code, headers and body.") },
+    ];
+
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        =>
-        [
-            new ActivityOutputDescriptor { Name = "Body", TypeName = "string", DisplayName = S["Response body"], Description = S["The body of the response, as text."] },
-            new ActivityOutputDescriptor { Name = "StatusCode", TypeName = "number", DisplayName = S["Status code"], Description = S["The HTTP status code of the response, such as 200."] },
-            new ActivityOutputDescriptor { Name = "Response", TypeName = "object", DisplayName = S["Response"], Description = S["The response: its status code, headers and body."] },
-        ];
+        => s_outputs;
 }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Localization;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -89,8 +90,10 @@ public class CreateTenantTask : TenantTask, IActivityProvidedValues
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("any", LocalizationSource.Create<CreateTenantTask>("The settings of the tenant it created, or the validation errors when it failed."))];
+
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("any", S["The settings of the tenant it created, or the validation errors when it failed."])];
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

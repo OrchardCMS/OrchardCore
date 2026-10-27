@@ -22,6 +22,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Notifications;
@@ -85,6 +86,8 @@ public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Notifications"] = "fa-solid fa-bell");
+
         services.AddActivity<NotifyUserTask, NotifyUserTaskDisplayDriver>();
     }
 }

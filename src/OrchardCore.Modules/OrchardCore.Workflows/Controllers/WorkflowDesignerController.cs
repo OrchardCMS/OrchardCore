@@ -1088,7 +1088,7 @@ public sealed class WorkflowDesignerController : Controller
                 Kind = value.Kind.ToString(),
                 Name = value.Name,
                 TypeName = value.TypeName,
-                Description = string.IsNullOrEmpty(value.Description?.Value) ? null : value.Description.Value,
+                Description = Localize(value.Description),
                 LiquidPath = value.LiquidPath,
                 JavaScript = value.JavaScript,
                 Members = (value.Members ?? [])
@@ -1096,11 +1096,15 @@ public sealed class WorkflowDesignerController : Controller
                     {
                         Name = member.Name,
                         TypeName = member.TypeName,
-                        Description = string.IsNullOrEmpty(member.Description?.Value) ? null : member.Description.Value,
+                        Description = Localize(member.Description),
                     })
                     .ToList(),
             })
             .ToList();
+
+    // The translation of a value's description, or null when it has none.
+    private string Localize(LocalizationSource source)
+        => string.IsNullOrEmpty(source?.Value) ? null : _localizerFactory.Localize(source).Value;
 
     private List<WorkflowDesignerVariableType> VariableTypes()
         => _variableTypes.List()

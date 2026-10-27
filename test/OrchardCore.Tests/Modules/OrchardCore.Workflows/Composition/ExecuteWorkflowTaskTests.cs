@@ -81,8 +81,8 @@ public sealed class ExecuteWorkflowTaskTests
             Mock.Of<IClock>());
 
         var expressions = TestExpressions.CreateManager();
-        Register(() => new StartedByWorkflowEvent(new PassThroughStringLocalizer<StartedByWorkflowEvent>()));
-        Register(() => new ExecuteWorkflowTask(workflowTypeStore.Object, expressions, serviceProvider, new PassThroughStringLocalizer<ExecuteWorkflowTask>()));
+        Register(() => new StartedByWorkflowEvent(new PassThroughStringLocalizerFactory(), new PassThroughStringLocalizer<StartedByWorkflowEvent>()));
+        Register(() => new ExecuteWorkflowTask(workflowTypeStore.Object, expressions, serviceProvider, new PassThroughStringLocalizerFactory(), new PassThroughStringLocalizer<ExecuteWorkflowTask>()));
         Register(() => new DoubleTask());
         Register(() => new WaitTask());
         Register(() => new FailTask());

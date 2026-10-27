@@ -10,6 +10,7 @@ using OrchardCore.Sms.Activities;
 using OrchardCore.Sms.Drivers;
 using OrchardCore.Sms.Services;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 
 namespace OrchardCore.Sms;
 
@@ -63,6 +64,8 @@ public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Messaging"] = "fa-solid fa-envelope");
+
         services.AddActivity<SmsTask, SmsTaskDisplayDriver>();
     }
 }

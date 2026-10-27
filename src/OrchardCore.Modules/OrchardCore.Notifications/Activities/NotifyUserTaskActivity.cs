@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Localization;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -78,7 +79,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedVa
     /// Returns the values the activity provides: how many notifications it sent, as the last result.
     /// </summary>
     public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("number", S["How many notifications the activity sent."])];
+        => [ActivityProvidedValue.LastResult("number", LocalizationSource.Create<NotifyUserTaskActivity>("How many notifications the activity sent."))];
 
     /// <summary>
     /// Sends the configured notification message to each resolved user.

@@ -7,12 +7,15 @@ using OrchardCore.Workflows.Services;
 namespace OrchardCore.Workflows.BackgroundTasks;
 
 /// <summary>
-/// Runs the due retries of the tasks that faulted and are retried later by their retry policy.
+/// Runs the due retries of the tasks that faulted and are retried later by their retry policy. The task runs
+/// atomically: on a farm, the node that acquires its distributed lock runs the retries, and the others skip the run.
 /// </summary>
 [BackgroundTask(
     Title = "Workflow Retries",
     Schedule = "* * * * *",
-    Description = "Retries the workflow tasks that faulted, when their retry policy's delay is over.")]
+    Description = "Retries the workflow tasks that faulted, when their retry policy's delay is over.",
+    LockTimeout = 3_000,
+    LockExpiration = 300_000)]
 public sealed class WorkflowRetryBackgroundTask : IBackgroundTask
 {
     // The most instances retried in a run; the others are retried in the next runs.

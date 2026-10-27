@@ -210,7 +210,7 @@ A task can be retried by itself when it fails, for example when a service it cal
 How it runs:
 
 - **At once.** Without a delay, the task runs again right away, until it succeeds or the retries are spent.
-- **Later.** With a delay, the instance is faulted with a retry due, and its page says when the next retry is due. The **Workflow Retries** background task, which runs every minute, retries the due instances from the task, with their state, on the version they run on. A retry is due at the earliest when its delay is over, and runs within a minute of it. Waiting doesn't hold anything in memory, and survives a restart.
+- **Later.** With a delay, the instance is faulted with a retry due, and its page says when the next retry is due. The **Workflow Retries** background task, which runs every minute on one node of a farm at a time, retries the due instances from the task, with their state, on the version they run on. A retry is due at the earliest when its delay is over, and runs within a minute of it. Waiting doesn't hold anything in memory, and survives a restart.
 - **Spent.** Once the retries are spent, the instance is faulted as without retries: the workflows that start with a **Catch Workflow Fault Event** run then, not at each failed attempt, and the instance can be [retried by hand](#retrying-a-faulted-instance), which starts the retries again. With **Follow the Failed outcome**, the task shows a **Failed** outcome on the canvas instead, and the instance goes on with it, for example to notify someone or to call another service; the error is the task's [last result](#last-result).
 - **Journal.** Each failed attempt that is retried is recorded as **Retrying**, with its error, and a failure that follows the outcome as **Failed**. The card of a task that is retried shows how many times.
 
@@ -411,7 +411,7 @@ The page of a workflow instance lists its variables, with the values the instanc
 ### Variables for Developers
 
 - `WorkflowExecutionContext.Variables` reads and writes the declared variables with their types; a value that doesn't convert throws `WorkflowVariableException`.
-- An activity declares outputs by implementing `IActivityOutputs`, each with a `Name`, a `TypeName`, a `DisplayName` and an optional `Description`, and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
+- An activity declares outputs by implementing `IActivityOutputs`, each with a `Name`, a `TypeName`, a `DisplayName` and an optional `Description` (both `LocalizationSource`s), and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
 - A module adds a variable type by implementing `IWorkflowVariableType` and registering it with `services.AddWorkflowVariableType<TType>()`. Its name, display name and how the designer edits its default (`text`, `number`, `boolean`, `datetime`, `json` or `none`) are static members of the class, so the designer lists the types without creating them; `TryCoerce` converts values to it. Its values are persisted with the instance like other workflow properties, so it needs an `IWorkflowValueSerializer` if they don't serialize to JSON and back. A type registered with an existing name replaces it.
 - The built-in types cover most values. A type of its own is worth it for a value that needs its own conversion, editor or storage. For example, `contentItem` stores the id of the content item, and loads the item again when the instance resumes, so instances don't keep a copy of the item that goes stale.
 
@@ -621,33 +621,35 @@ Other activities leave the last result as it was.
 
 ### Available Data for Developers
 
-An activity lists the values it provides by implementing `IActivityProvidedValues`. `GetProvidedValues()` can use the activity's properties, for example to provide the property that it sets:
+An activity lists the values it provides by implementing `IActivityProvidedValues`. `GetProvidedValues()` can use the activity's properties, for example to provide a property whose name is a setting. The descriptions are `LocalizationSource`s, translated when the designer shows them, so values that don't depend on the activity's properties are created once, in static fields:
 
 ```csharp
 public sealed class AssignCustomerTask : TaskActivity<AssignCustomerTask>, IActivityProvidedValues
 {
+    private static readonly ActivityProvidedValue[] s_providedValues =
+    [
+        new ActivityProvidedValue
+        {
+            Source = WorkflowValueSource.Properties,
+            Name = "Customer",
+            TypeName = "object",
+            Description = LocalizationSource.Create<AssignCustomerTask>("The customer of the order."),
+            Members =
+            [
+                new ActivityProvidedValueMember { Name = "Email", TypeName = "string", Description = LocalizationSource.Create<AssignCustomerTask>("The email address.") },
+            ],
+        },
+    ];
+
     // ...
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        =>
-        [
-            new ActivityProvidedValue
-            {
-                Source = WorkflowValueSource.Properties,
-                Name = "Customer",
-                TypeName = "object",
-                Description = S["The customer of the order."],
-                Members =
-                [
-                    new ActivityProvidedValueMember { Name = "Email", TypeName = "string", Description = S["The email address."] },
-                ],
-            },
-        ];
+        => s_providedValues;
 }
 ```
 
 - **Sources.** `Input` (`input("name")`, `{{ Workflow.Input.name }}`), `Output` (`workflow().Output["name"]`, `{{ Workflow.Output.name }}`) or `Properties` (`property("name")`, `{{ Workflow.Properties.name }}`).
-- **Last result.** `ActivityProvidedValue.LastResult(typeName, description, members)` declares what the activity sets as the last result, for example `ActivityProvidedValue.LastResult("contentItem", S["The content item."], WorkflowValueMembers.ContentItem(S))`.
+- **Last result.** `ActivityProvidedValue.LastResult(typeName, description, members)` declares what the activity sets as the last result, for example `ActivityProvidedValue.LastResult("contentItem", LocalizationSource.Create<MyTask>("The content item."), WorkflowValueMembers.ContentItem)`.
 - **Types.** `TypeName` is the name of a [variable type](#variables-for-developers), or `any`.
 - **Fields.** `Members` lists the fields of the value. `WorkflowValueMembers` has the fields of a content item, a content event, a user, a workflow fault, a `Result` and an HTTP response. The Liquid expressions of the fields only work for types registered with `TemplateOptions.MemberAccessStrategy`.
 - **Its own expressions.** `AvailableToItself = true` lists the value for the activity itself too, when it sets the value before it evaluates its own expressions.
@@ -655,7 +657,7 @@ public sealed class AssignCustomerTask : TaskActivity<AssignCustomerTask>, IActi
 
 ```csharp
 services.AddActivity<MyTask, MyTaskDisplayDriver>(activity => activity
-    .Provides(WorkflowValueSource.Input, "Customer", "object", "The customer of the order.", [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }]));
+    .Provides(WorkflowValueSource.Input, "Customer", "object", LocalizationSource.Create<Startup>("The customer of the order."), [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }]));
 ```
 
 A module that adds a Liquid value to `TemplateOptions.Scope`, or a JavaScript method with `IGlobalMethodProvider`, lists it in the **Global** or **Functions** group with an `IWorkflowGlobalValueProvider`. A field name can be a path, such as `Identity.Name`.
@@ -663,17 +665,17 @@ A module that adds a Liquid value to `TemplateOptions.Scope`, or a JavaScript me
 ```csharp
 public sealed class StoreWorkflowGlobalValueProvider : IWorkflowGlobalValueProvider
 {
-    // ...
+    private static readonly WorkflowGlobalValue[] s_globalValues =
+    [
+        WorkflowGlobalValue.Liquid("Store", "object", LocalizationSource.Create<StoreWorkflowGlobalValueProvider>("The settings of the store."),
+        [
+            new ActivityProvidedValueMember { Name = "Currency", TypeName = "string", Description = LocalizationSource.Create<StoreWorkflowGlobalValueProvider>("The currency of the prices.") },
+        ]),
+        WorkflowGlobalValue.Function("formatPrice(amount)", "string", LocalizationSource.Create<StoreWorkflowGlobalValueProvider>("Formats an amount in the store's currency.")),
+    ];
 
     public IEnumerable<WorkflowGlobalValue> GetGlobalValues()
-        =>
-        [
-            WorkflowGlobalValue.Liquid("Store", "object", S["The settings of the store."],
-            [
-                new ActivityProvidedValueMember { Name = "Currency", TypeName = "string", Description = S["The currency of the prices."] },
-            ]),
-            WorkflowGlobalValue.Function("formatPrice(amount)", "string", S["Formats an amount in the store's currency."]),
-        ];
+        => s_globalValues;
 }
 ```
 
@@ -892,10 +894,16 @@ The designer renders the `Content` zone of these shapes, where `ActivityDisplayD
 
 ### Activity Icons
 
-The designer shows an icon for each activity, on the canvas and in the activities pane. An activity that doesn't declare one gets the default icon of its category, or a generic event or task icon. To declare one, set a Font Awesome class when registering the activity:
+The designer shows an icon for each activity, on the canvas and in the activities pane. An activity that doesn't declare one gets the icon of its category, or a generic event or task icon. To declare one, set a Font Awesome class when registering the activity:
 
 ```csharp
 services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
+```
+
+Each module sets the icons of the categories of its activities in `WorkflowOptions.CategoryIcons`, by the untranslated name of the category, and can change the icon of another module's category the same way:
+
+```csharp
+services.Configure<WorkflowOptions>(options => options.CategoryIcons["Messaging"] = "fa-solid fa-envelope");
 ```
 
 ### Expression Editors in Custom Activities
@@ -981,6 +989,30 @@ The validation errors that the driver's `UpdateAsync` adds are shown in the edit
 - `OnWorkflowResumedAsync`
 - `OnActivityExecutingAsync`
 - `OnActivityExecutedAsync`
+
+An activity can also implement `IActivityDescription`, which declares its name and category as static `LocalizationSource` members, `DisplayName` and `CategoryName`, so they are declared once, without a localizer. Its `DisplayText` and `Category` return their translations:
+
+```csharp
+public sealed class ApproveOrderTask : TaskActivity<ApproveOrderTask>, IActivityDescription
+{
+    private readonly IStringLocalizerFactory _localizerFactory;
+
+    public ApproveOrderTask(IStringLocalizerFactory localizerFactory)
+    {
+        _localizerFactory = localizerFactory;
+    }
+
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ApproveOrderTask>("Approve Order Task");
+
+    public static LocalizationSource CategoryName { get; } = LocalizationSource.Create<ApproveOrderTask>("Orders");
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
+
+    // ...
+}
+```
 
 The following is an example of a simple task activity implementation that displays a notification:
 

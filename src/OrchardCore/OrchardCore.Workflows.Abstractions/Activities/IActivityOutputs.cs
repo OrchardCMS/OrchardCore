@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Activities;
 
@@ -34,10 +34,10 @@ public sealed class ActivityOutputDescriptor
     /// <summary>
     /// The name shown in the designer.
     /// </summary>
-    public LocalizedString DisplayName { get; init; }
+    public LocalizationSource DisplayName { get; init; }
 
     /// <summary>
     /// What the output is, shown under its name in the designer, or <see langword="null"/>.
     /// </summary>
-    public LocalizedString Description { get; init; }
+    public LocalizationSource Description { get; init; }
 }
