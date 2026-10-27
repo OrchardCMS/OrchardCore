@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels;
@@ -19,13 +21,18 @@ public class WorkflowIndexViewModel
 
     public IList<WorkflowEntry> Workflows { get; set; }
     public WorkflowIndexOptions Options { get; set; }
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
     public string ReturnUrl { get; set; }
 
     /// <summary>
     /// The number of instances of each status filter, with the other filters applied.
     /// </summary>
     public IReadOnlyDictionary<WorkflowFilter, int> StatusCounts { get; set; } = new Dictionary<WorkflowFilter, int>();
+
+    /// <summary>
+    /// The data context for rendering the instances, the toolbar and the pager in the configured layout.
+    /// </summary>
+    public AdminListContext List { get; set; }
 }
 
 public class WorkflowIndexOptions
@@ -85,9 +92,14 @@ public class WorkflowEntry
     public bool IsPublishedVersion { get; set; }
 
     /// <summary>
-    /// The workflow type of the instance, on the page of every workflow's instances.
+    /// The workflow type of the instance.
     /// </summary>
     public WorkflowType WorkflowType { get; set; }
+
+    /// <summary>
+    /// Whether the row shows the workflow of the instance, on the page of every workflow's instances.
+    /// </summary>
+    public bool ShowWorkflowType { get; set; }
 }
 
 /// <summary>

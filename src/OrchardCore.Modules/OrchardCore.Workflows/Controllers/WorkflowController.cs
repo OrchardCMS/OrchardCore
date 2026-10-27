@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Localization;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
@@ -264,6 +265,7 @@ public sealed class WorkflowController : Controller
                         Workflow = x,
                         Id = x.Id,
                         WorkflowType = type,
+                        ShowWorkflowType = workflowType is null,
                         Version = x.WorkflowTypeVersionId is not null && versionNumbers.TryGetValue(x.WorkflowTypeVersionId, out var number) ? number : null,
                         IsPublishedVersion = x.WorkflowTypeVersionId is not null && x.WorkflowTypeVersionId == type?.VersionId,
                     };
@@ -316,6 +318,21 @@ public sealed class WorkflowController : Controller
             new SelectListItem(S["Cancel"], nameof(WorkflowBulkAction.Cancel)),
             new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
         ];
+
+        // The status, workflow, creation date and sort filters render at the end of the toolbar, next to the bulk actions.
+        var filters = await _shapeFactory.CreateAsync("WorkflowInstancesFilters", Arguments.From(new
+        {
+            Options = options,
+            ShowWorkflowTypes = workflowType is null,
+        }));
+
+        // The AdminList shape renders the instances with the configured layout (List, Grid, ...).
+        viewModel.List = new AdminListContext<WorkflowEntry>
+        {
+            Source = viewModel.Workflows,
+            ToolbarActions = filters,
+            Pager = viewModel.Pager,
+        };
 
         return viewModel;
     }

@@ -4438,15 +4438,6 @@ msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
 msgid "Workflows"
 msgstr ""
 
-#. Format arguments: {0}: count
-#: Views/Workflow/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid " / {0} item in total"
-msgid_plural " / {0} items in total"
-msgstr[0] ""
-msgstr[1] ""
-
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "<strong>Nothing here!</strong> There are no workflow instances that match these filters."
@@ -4469,61 +4460,12 @@ msgstr ""
 
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Are you sure you want to delete this workflow instance?"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Are you sure you want to restart this workflow instance?"
-msgstr ""
-
-#. Format arguments: {0}: @item.Text.ToLower()
-#: Views/Workflow/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Are you sure you want to {0} these items?"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Bulk Action"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Created"
-msgstr ""
-
-#. Format arguments: {0}: await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc))
-#: Views/Workflow/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Created {0}"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Delete"
 msgstr ""
 
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Faulted"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Filter by creation date"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Filter by status"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Filter by workflow"
 msgstr ""
 
 #: Views/Workflow/Index.cshtml
@@ -4546,25 +4488,6 @@ msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Instances by status"
 msgstr ""
 
-#. Format arguments: {0}: startIndex; {1}: endIndex
-#: Views/Workflow/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Items {0} to {1}"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Restart"
-msgstr ""
-
-#. Format arguments: {0}: entry.Workflow.PendingRetry.FailedAttempts; {1}: entry.Workflow.PendingRetry.MaxRetries; {2}: await DisplayAsync(await New.DateTime(Utc: entry.Workflow.PendingRetry.DueUtc, Format: "g"))
-#: Views/Workflow/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Retry {0} of {1} due {2}"
-msgstr ""
-
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Running"
@@ -4572,39 +4495,7 @@ msgstr ""
 
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Runs on an earlier version"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Runs on the published version"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Select All"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Sort"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Sort by"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Status"
-msgstr ""
-
-#. Format arguments: {0}: entry.Version
-#: Views/Workflow/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Version {0}"
 msgstr ""
 
 #: Views/Workflow/Index.cshtml
@@ -4621,15 +4512,6 @@ msgstr ""
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "selected"
 msgstr ""
-
-#. Format arguments: {0}: count
-#: Views/Workflow/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "{0} item"
-msgid_plural "{0} items"
-msgstr[0] ""
-msgstr[1] ""
 
 #: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
@@ -4781,9 +4663,33 @@ msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultMeta.SummaryAdmin"
 msgid "Created"
 msgstr ""
 
+#. Format arguments: {0}: workflow.PendingRetry.FailedAttempts; {1}: workflow.PendingRetry.MaxRetries; {2}: await DisplayAsync(await New.DateTime(Utc: workflow.PendingRetry.DueUtc, Format: "g"))
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Retry {0} of {1} due {2}"
+msgstr ""
+
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Runs on an earlier version"
+msgstr ""
+
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Runs on the published version"
+msgstr ""
+
 #: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
 msgid "Status"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Version
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Version {0}"
 msgstr ""
 
 #. Format arguments: {0}: Model.Label
@@ -4795,7 +4701,22 @@ msgstr ""
 
 #: Views/WorkflowInstancesFilters.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Created"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Filter by creation date"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
 msgid "Filter by status"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Filter by workflow"
 msgstr ""
 
 #: Views/WorkflowInstancesFilters.cshtml
@@ -4811,6 +4732,11 @@ msgstr ""
 #: Views/WorkflowInstancesFilters.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
 msgid "Status"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Workflow"
 msgstr ""
 
 #: Views/WorkflowTrimming.Fields.Edit.cshtml

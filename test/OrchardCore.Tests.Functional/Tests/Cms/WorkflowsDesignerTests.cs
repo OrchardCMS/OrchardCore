@@ -240,7 +240,7 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await page.ActivityForm().Locator("select[name='HttpRequestEvent.HttpMethod']").SelectOptionAsync("GET");
         await page.ActivityForm().Locator("#generate-url-button").ClickAsync();
 
-        var urlField = page.ActivityForm().Locator("#workflow-url-text");
+        var urlField = page.ActivityForm().Locator("[data-workflow-url-text]");
         await Assertions.Expect(urlField).ToHaveValueAsync(new Regex("/workflows/Invoke\\?token="));
         var url = await urlField.InputValueAsync();
         await Assertions.Expect(page.Activity(requestId).Locator(".wfd-node-body")).ToContainTextAsync("GET");
@@ -952,10 +952,10 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         // Deleted in bulk.
         await page.Locator("#select-all").CheckAsync();
         await page.Locator("#bulk-action-menu-button").ClickAsync();
-        await page.Locator("[data-cy=bulk-action-Delete]").ClickAsync();
+        await page.Locator("#actions [data-action=Delete]").ClickAsync();
         await page.Locator("#modalOkButton").ClickAsync();
 
-        await Assertions.Expect(page.Locator("[data-cy=instances-empty]")).ToBeVisibleAsync();
+        await Assertions.Expect(page.GetByText("There are no workflow instances that match these filters.")).ToBeVisibleAsync();
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
