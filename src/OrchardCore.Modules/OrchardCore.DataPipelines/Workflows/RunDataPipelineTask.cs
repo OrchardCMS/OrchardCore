@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -13,7 +14,7 @@ namespace OrchardCore.DataPipelines.Workflows;
 /// <see cref="SkipWhenActive"/>, it doesn't queue a run while one of the pipeline is queued or running, such as when a
 /// timer starts the workflow more often than a run lasts.
 /// </summary>
-public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
+public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>, IActivityDescription
 {
     /// <summary>
     /// The name of the input and output that holds the run.
@@ -23,23 +24,30 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
     private readonly DataPipelineManager _pipelineManager;
     private readonly DataPipelineRunManager _runManager;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
 
     public RunDataPipelineTask(
         DataPipelineManager pipelineManager,
         DataPipelineRunManager runManager,
         IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<RunDataPipelineTask> localizer)
     {
         _pipelineManager = pipelineManager;
         _runManager = runManager;
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Run Data Pipeline Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<RunDataPipelineTask>("Run Data Pipeline Task");
 
-    public override LocalizedString Category => S["Data"];
+    public static LocalizationSource CategoryName => DataPipelinesLocalizationSources.Data;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// Gets or sets the pipeline to run.

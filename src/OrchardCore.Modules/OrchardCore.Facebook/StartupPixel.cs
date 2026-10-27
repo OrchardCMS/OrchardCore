@@ -54,7 +54,7 @@ public sealed class StartupPixelWorkflows : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Meta"] = "fa-solid fa-tag");
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[FacebookLocalizationSources.Meta.Value] = "fa-solid fa-tag");
 
         services.AddActivity<MetaConversionsApiEventTask, MetaConversionsApiEventTaskDisplayDriver>();
     }

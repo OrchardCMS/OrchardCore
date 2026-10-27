@@ -86,7 +86,7 @@ public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Notifications"] = "fa-solid fa-bell");
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[NotificationsLocalizationSources.Notifications.Value] = "fa-solid fa-bell");
 
         services.AddActivity<NotifyUserTask, NotifyUserTaskDisplayDriver>();
     }

@@ -123,14 +123,14 @@ public sealed class Startup : StartupBase
         // The default icons of the categories of this module's activities. Other modules set the icons of theirs.
         services.Configure<WorkflowOptions>(options =>
         {
-            options.CategoryIcons["Background"] = "fa-solid fa-clock";
-            options.CategoryIcons["Content"] = "fa-solid fa-file-lines";
-            options.CategoryIcons["Control Flow"] = "fa-solid fa-diagram-project";
-            options.CategoryIcons["Exceptions"] = "fa-solid fa-bug";
-            options.CategoryIcons["HTTP"] = "fa-solid fa-globe";
-            options.CategoryIcons["Primitives"] = "fa-solid fa-cube";
-            options.CategoryIcons["Session"] = "fa-solid fa-database";
-            options.CategoryIcons["UI"] = "fa-solid fa-window-maximize";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.Background.Value] = "fa-solid fa-clock";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.Content.Value] = "fa-solid fa-file-lines";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.ControlFlow.Value] = "fa-solid fa-diagram-project";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.Exceptions.Value] = "fa-solid fa-bug";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.Http.Value] = "fa-solid fa-globe";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.Primitives.Value] = "fa-solid fa-cube";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.Session.Value] = "fa-solid fa-database";
+            options.CategoryIcons[ActivityCategoryLocalizationSources.UI.Value] = "fa-solid fa-window-maximize";
         });
 
         services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-bug");

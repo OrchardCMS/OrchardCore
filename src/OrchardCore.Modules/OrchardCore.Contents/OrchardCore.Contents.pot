@@ -2273,11 +2273,6 @@ msgstr ""
 
 #: Workflows/Activities/ContentActivity.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.ContentActivity"
-msgid "Content"
-msgstr ""
-
-#: Workflows/Activities/ContentActivity.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.ContentActivity"
 msgid "Done"
 msgstr ""
 
@@ -2328,11 +2323,6 @@ msgstr ""
 
 #: Workflows/Activities/CreateContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.CreateContentTask"
-msgid "Content"
-msgstr ""
-
-#: Workflows/Activities/CreateContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.CreateContentTask"
 msgid "Content item"
 msgstr ""
 
@@ -2373,11 +2363,6 @@ msgstr ""
 
 #: Workflows/Activities/DeleteContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.DeleteContentTask"
-msgid "Content"
-msgstr ""
-
-#: Workflows/Activities/DeleteContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.DeleteContentTask"
 msgid "Delete Content Task"
 msgstr ""
 
@@ -2393,11 +2378,6 @@ msgstr ""
 
 #: Workflows/Activities/PublishContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.PublishContentTask"
-msgid "Content"
-msgstr ""
-
-#: Workflows/Activities/PublishContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.PublishContentTask"
 msgid "Noop"
 msgstr ""
 
@@ -2409,11 +2389,6 @@ msgstr ""
 #: Workflows/Activities/PublishContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.PublishContentTask"
 msgid "Published"
-msgstr ""
-
-#: Workflows/Activities/RetrieveContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.RetrieveContentTask"
-msgid "Content"
 msgstr ""
 
 #: Workflows/Activities/RetrieveContentTask.cs
@@ -2443,11 +2418,6 @@ msgstr ""
 
 #: Workflows/Activities/UnpublishContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.UnpublishContentTask"
-msgid "Content"
-msgstr ""
-
-#: Workflows/Activities/UnpublishContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.UnpublishContentTask"
 msgid "Noop"
 msgstr ""
 
@@ -2459,11 +2429,6 @@ msgstr ""
 #: Workflows/Activities/UnpublishContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.UnpublishContentTask"
 msgid "Unpublished"
-msgstr ""
-
-#: Workflows/Activities/UpdateContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.UpdateContentTask"
-msgid "Content"
 msgstr ""
 
 #: Workflows/Activities/UpdateContentTask.cs

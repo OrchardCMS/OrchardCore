@@ -14,7 +14,7 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>
+public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>, IActivityDescription
 {
     private readonly ISession _session;
 
@@ -23,18 +23,21 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
        IWorkflowExpressionEvaluator expressionEvaluator,
        HtmlEncoder htmlEncoder,
        ILogger<NotifyContentOwnerTask> logger,
+       IStringLocalizerFactory localizerFactory,
        IStringLocalizer<NotifyContentOwnerTask> localizer,
        ISession session
    ) : base(notificationCoordinator,
        expressionEvaluator,
        htmlEncoder,
        logger,
-       localizer)
+       localizerFactory, localizer)
     {
         _session = session;
     }
 
-    public override LocalizedString DisplayText => S["Notify Content's Owner Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<NotifyContentOwnerTask>("Notify Content's Owner Task");
+
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     protected override async Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

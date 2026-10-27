@@ -6,15 +6,17 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class UserLoggedInEvent : UserEvent
+public class UserLoggedInEvent : UserEvent, IActivityDescription
 {
-    public UserLoggedInEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UserLoggedInEvent> localizer) : base(userService, scriptEvaluator, localizer)
+    public UserLoggedInEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<UserLoggedInEvent> localizer) : base(userService, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
     public override string Name => nameof(UserLoggedInEvent);
 
-    public override LocalizedString DisplayText => S["User Loggedin Event"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UserLoggedInEvent>("User Loggedin Event");
+
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<ActivityProvidedValue> GetProvidedValues()
         =>

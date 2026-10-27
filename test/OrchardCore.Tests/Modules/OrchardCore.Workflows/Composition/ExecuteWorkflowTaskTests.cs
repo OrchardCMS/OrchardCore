@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
+using OrchardCore.Localization;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
@@ -76,7 +77,7 @@ public sealed class ExecuteWorkflowTaskTests
             Mock.Of<IDistributedLock>(),
             Mock.Of<ILogger<WorkflowManager>>(),
             Mock.Of<ILogger<MissingActivity>>(),
-            Mock.Of<IStringLocalizer<MissingActivity>>(),
+            new NullStringLocalizerFactory(), Mock.Of<IStringLocalizer<MissingActivity>>(),
             Options.Create(jsonOptions),
             Mock.Of<IClock>());
 

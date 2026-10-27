@@ -350,6 +350,11 @@ msgctxt "OrchardCore.Tenants.Services.TenantValidator"
 msgid "The url prefix can not contain more than one segment."
 msgstr ""
 
+#: TenantsLocalizationSources.cs
+msgctxt "OrchardCore.Tenants.TenantsLocalizationSources"
+msgid "Tenant"
+msgstr ""
+
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Create"
 msgid "Cancel"
@@ -1152,11 +1157,6 @@ msgstr ""
 
 #: Workflows/Activities/CreateTenantTask.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
-msgid "Tenant"
-msgstr ""
-
-#: Workflows/Activities/CreateTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
 msgid "The settings of the tenant it created, or the validation errors when it failed."
 msgstr ""
 
@@ -1175,11 +1175,6 @@ msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
 msgid "Failed"
 msgstr ""
 
-#: Workflows/Activities/DisableTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
-msgid "Tenant"
-msgstr ""
-
 #: Workflows/Activities/EnableTenantTask.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
 msgid "Enable Tenant Task"
@@ -1193,11 +1188,6 @@ msgstr ""
 #: Workflows/Activities/EnableTenantTask.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
 msgid "Failed"
-msgstr ""
-
-#: Workflows/Activities/EnableTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
-msgid "Tenant"
 msgstr ""
 
 #: Workflows/Activities/SetupTenantTask.cs
@@ -1215,17 +1205,7 @@ msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
 msgid "Setup Tenant Task"
 msgstr ""
 
-#: Workflows/Activities/SetupTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
-msgid "Tenant"
-msgstr ""
-
 #: Workflows/Activities/TenantActivity.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.TenantActivity"
 msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/TenantActivity.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.TenantActivity"
-msgid "Tenant"
 msgstr ""

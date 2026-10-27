@@ -16,7 +16,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvidedValues
+public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvidedValues, IActivityDescription
 {
     private static readonly string s_emailConfirmationControllerName = typeof(Controllers.EmailConfirmationController).ControllerName();
     private readonly IUserService _userService;
@@ -28,6 +28,8 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly HtmlEncoder _htmlEncoder;
 
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     protected readonly IStringLocalizer S;
 
     public RegisterUserTask(
@@ -38,6 +40,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
         IHttpContextAccessor httpContextAccessor,
         IEmailService emailService,
         IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<RegisterUserTask> localizer,
         HtmlEncoder htmlEncoder)
     {
@@ -48,14 +51,19 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
         _httpContextAccessor = httpContextAccessor;
         _emailService = emailService;
         _updateModelAccessor = updateModelAccessor;
+        _localizerFactory = localizerFactory;
         S = localizer;
         _htmlEncoder = htmlEncoder;
     }
 
-    public override LocalizedString DisplayText => S["Register User Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<RegisterUserTask>("Register User Task");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.User;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
 
     // The category to which this activity belongs. The activity picker groups activities by this category.
-    public override LocalizedString Category => S["User"];
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     // The message to display.
     public bool SendConfirmationEmail

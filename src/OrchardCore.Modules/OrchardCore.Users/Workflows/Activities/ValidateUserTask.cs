@@ -9,20 +9,26 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class ValidateUserTask : TaskActivity<ValidateUserTask>, IActivityProvidedValues
+public class ValidateUserTask : TaskActivity<ValidateUserTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly string _roleClaimType;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public ValidateUserTask(IHttpContextAccessor httpContextAccessor, IOptions<IdentityOptions> optionsAccessor, IStringLocalizer<ValidateUserTask> localizer)
+    public ValidateUserTask(IHttpContextAccessor httpContextAccessor, IOptions<IdentityOptions> optionsAccessor, IStringLocalizerFactory localizerFactory, IStringLocalizer<ValidateUserTask> localizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString Category => S["User"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ValidateUserTask>("Validate User Task");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.User;
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public bool SetUserName
     {
@@ -36,7 +42,7 @@ public class ValidateUserTask : TaskActivity<ValidateUserTask>, IActivityProvide
         set => SetProperty(value);
     }
 
-    public override LocalizedString DisplayText => S["Validate User Task"];
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Anonymous"], S["Authenticated"], S["InRole"]);

@@ -16,7 +16,7 @@ using YesSql;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class UpdateContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues
+public class UpdateContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -28,10 +28,11 @@ public class UpdateContentTask : ContentTask, IActivityOutputs, IActivityProvide
         IUpdateModelAccessor updateModelAccessor,
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<UpdateContentTask> localizer,
         JavaScriptEncoder javaScriptEncoder,
         ISession session)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
         _updateModelAccessor = updateModelAccessor;
         _expressionEvaluator = expressionEvaluator;
@@ -41,9 +42,9 @@ public class UpdateContentTask : ContentTask, IActivityOutputs, IActivityProvide
 
     public override string Name => nameof(UpdateContentTask);
 
-    public override LocalizedString Category => S["Content"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UpdateContentTask>("Update Content Task");
 
-    public override LocalizedString DisplayText => S["Update Content Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public bool Publish
     {

@@ -6,19 +6,22 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class UserLoggedOutEvent : UserEvent
+public class UserLoggedOutEvent : UserEvent, IActivityDescription
 {
     public UserLoggedOutEvent(
         IUserService userService,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<UserLoggedOutEvent> localizer)
-        : base(userService, scriptEvaluator, localizer)
+        : base(userService, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
     public override string Name => nameof(UserLoggedOutEvent);
 
-    public override LocalizedString DisplayText => S["User Loggedout Event"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UserLoggedOutEvent>("User Loggedout Event");
+
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<ActivityProvidedValue> GetProvidedValues()
         =>

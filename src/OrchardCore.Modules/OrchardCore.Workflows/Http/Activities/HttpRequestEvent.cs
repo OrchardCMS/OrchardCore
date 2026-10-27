@@ -7,25 +7,32 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRequestEvent : EventActivity, IActivityProvidedValues
+public class HttpRequestEvent : EventActivity, IActivityProvidedValues, IActivityDescription
 {
     public static string EventName => nameof(HttpRequestEvent);
 
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public HttpRequestEvent(
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<HttpRequestEvent> localizer,
         IHttpContextAccessor httpContextAccessor
     )
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
         _httpContextAccessor = httpContextAccessor;
     }
 
     public override string Name => EventName;
-    public override LocalizedString DisplayText => S["Http Request Event"];
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<HttpRequestEvent>("Http Request Event");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public string HttpMethod
     {

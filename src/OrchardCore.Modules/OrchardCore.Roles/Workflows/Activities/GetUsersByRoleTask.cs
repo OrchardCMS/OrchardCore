@@ -12,22 +12,28 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Roles.Workflows.Activities;
 
-public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>, IActivityProvidedValues
+public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public GetUsersByRoleTask(UserManager<IUser> userManager, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<GetUsersByRoleTask> localizer)
+    public GetUsersByRoleTask(UserManager<IUser> userManager, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<GetUsersByRoleTask> localizer)
     {
         _userManager = userManager;
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Get Users by Role Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<GetUsersByRoleTask>("Get Users by Role Task");
 
-    public override LocalizedString Category => S["User"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.User;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> OutputKeyName
     {

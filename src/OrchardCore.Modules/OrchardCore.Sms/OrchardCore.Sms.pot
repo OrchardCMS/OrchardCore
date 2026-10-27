@@ -18,11 +18,6 @@ msgstr ""
 
 #: Activities/SmsTask.cs
 msgctxt "OrchardCore.Sms.Activities.SmsTask"
-msgid "Messaging"
-msgstr ""
-
-#: Activities/SmsTask.cs
-msgctxt "OrchardCore.Sms.Activities.SmsTask"
 msgid "SMS Task"
 msgstr ""
 

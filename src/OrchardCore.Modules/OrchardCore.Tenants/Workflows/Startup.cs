@@ -12,7 +12,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Tenant"] = "fa-solid fa-building");
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[TenantsLocalizationSources.Tenant.Value] = "fa-solid fa-building");
 
         services.AddActivity<DisableTenantTask, DisableTenantTaskDisplayDriver>();
         services.AddActivity<EnableTenantTask, EnableTenantTaskDisplayDriver>();

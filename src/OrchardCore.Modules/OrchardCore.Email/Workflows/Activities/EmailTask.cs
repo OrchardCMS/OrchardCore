@@ -9,29 +9,36 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Email.Workflows.Activities;
 
-public class EmailTask : TaskActivity<EmailTask>, IActivityProvidedValues
+public class EmailTask : TaskActivity<EmailTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly IEmailService _emailService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
     private readonly HtmlEncoder _htmlEncoder;
 
     public EmailTask(
         IEmailService emailService,
         IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<EmailTask> localizer,
         HtmlEncoder htmlEncoder
     )
     {
         _emailService = emailService;
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
         _htmlEncoder = htmlEncoder;
     }
 
-    public override LocalizedString DisplayText => S["Email Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<EmailTask>("Email Task");
 
-    public override LocalizedString Category => S["Messaging"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Messaging;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Author
     {

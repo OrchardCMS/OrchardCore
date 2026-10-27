@@ -1,26 +1,34 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class IfElseTask : TaskActivity<IfElseTask>
+public class IfElseTask : TaskActivity<IfElseTask>, IActivityDescription
 {
     private readonly IWorkflowExpressionManager _expressionManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public IfElseTask(
         IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<IfElseTask> localizer)
     {
         _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["If Else Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<IfElseTask>("If Else Task");
 
-    public override LocalizedString Category => S["Control Flow"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.ControlFlow;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// The condition: an expression evaluating to true or false.

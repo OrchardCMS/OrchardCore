@@ -6,6 +6,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Background"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Content"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Control Flow"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Exceptions"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "HTTP"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Messaging"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Primitives"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Session"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "UI"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "User"
+msgstr ""
+
+#: Activities/ActivityCategoryLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.Activities.ActivityCategoryLocalizationSources"
+msgid "Validation"
+msgstr ""
+
 #: Helpers/ActivityExtensions.cs
 msgctxt "OrchardCore.Workflows.Helpers.ActivityExtensions"
 msgid "Aborted"

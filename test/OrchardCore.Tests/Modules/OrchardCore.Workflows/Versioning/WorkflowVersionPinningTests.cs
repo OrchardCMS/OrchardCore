@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -158,7 +159,7 @@ public sealed class WorkflowVersionPinningTests : IAsyncLifetime
             Mock.Of<IDistributedLock>(),
             Mock.Of<ILogger<WorkflowManager>>(),
             Mock.Of<ILogger<MissingActivity>>(),
-            Mock.Of<IStringLocalizer<MissingActivity>>(),
+            new NullStringLocalizerFactory(), Mock.Of<IStringLocalizer<MissingActivity>>(),
             Options.Create(_database.JsonOptions),
             Mock.Of<IClock>(x => x.UtcNow == VersioningTestDatabase.Now));
 

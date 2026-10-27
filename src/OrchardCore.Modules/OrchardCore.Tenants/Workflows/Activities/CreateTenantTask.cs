@@ -11,7 +11,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tenants.Workflows.Activities;
 
-public class CreateTenantTask : TenantTask, IActivityProvidedValues
+public class CreateTenantTask : TenantTask, IActivityProvidedValues, IActivityDescription
 {
     private readonly ITenantValidator _tenantValidator;
 
@@ -21,17 +21,18 @@ public class CreateTenantTask : TenantTask, IActivityProvidedValues
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
         ITenantValidator tenantValidator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<CreateTenantTask> localizer)
-        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
+        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizerFactory, localizer)
     {
         _tenantValidator = tenantValidator;
     }
 
     public override string Name => nameof(CreateTenantTask);
 
-    public override LocalizedString Category => S["Tenant"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CreateTenantTask>("Create Tenant Task");
 
-    public override LocalizedString DisplayText => S["Create Tenant Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public WorkflowExpression<string> Description
     {

@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Localization;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Activities;
@@ -18,22 +19,22 @@ public sealed class ActivityOutputsTests
 {
     public static TheoryData<IActivityOutputs, string> DeclaredOutputs => new()
     {
-        { new ScriptTask(Mock.Of<IWorkflowScriptEvaluator>(), new PassThroughStringLocalizer<ScriptTask>()), "Result:any" },
-        { new LiquidTask(Mock.Of<IWorkflowExpressionEvaluator>(), new PassThroughStringLocalizer<LiquidTask>()), "Result:string" },
-        { new SetPropertyTask(TestExpressions.CreateManager(), new PassThroughStringLocalizer<SetPropertyTask>()), "Value:any" },
+        { new ScriptTask(Mock.Of<IWorkflowScriptEvaluator>(), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<ScriptTask>()), "Result:any" },
+        { new LiquidTask(Mock.Of<IWorkflowExpressionEvaluator>(), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<LiquidTask>()), "Result:string" },
+        { new SetPropertyTask(TestExpressions.CreateManager(), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<SetPropertyTask>()), "Value:any" },
         {
-            new HttpRequestTask(Mock.Of<IWorkflowExpressionEvaluator>(), UrlEncoder.Default, Mock.Of<IHttpClientFactory>(), new PassThroughStringLocalizer<HttpRequestTask>()),
+            new HttpRequestTask(Mock.Of<IWorkflowExpressionEvaluator>(), UrlEncoder.Default, Mock.Of<IHttpClientFactory>(), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<HttpRequestTask>()),
             "Body:string,StatusCode:number,Response:object"
         },
         {
-            new CreateContentTask(Mock.Of<IContentManager>(), Mock.Of<IWorkflowExpressionEvaluator>(), Mock.Of<IWorkflowScriptEvaluator>(), new PassThroughStringLocalizer<CreateContentTask>(), JavaScriptEncoder.Default, Mock.Of<ISession>()),
+            new CreateContentTask(Mock.Of<IContentManager>(), Mock.Of<IWorkflowExpressionEvaluator>(), Mock.Of<IWorkflowScriptEvaluator>(), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<CreateContentTask>(), JavaScriptEncoder.Default, Mock.Of<ISession>()),
             "ContentItem:contentItem"
         },
         {
-            new UpdateContentTask(Mock.Of<IContentManager>(), Mock.Of<IUpdateModelAccessor>(), Mock.Of<IWorkflowExpressionEvaluator>(), Mock.Of<IWorkflowScriptEvaluator>(), new PassThroughStringLocalizer<UpdateContentTask>(), JavaScriptEncoder.Default, Mock.Of<ISession>()),
+            new UpdateContentTask(Mock.Of<IContentManager>(), Mock.Of<IUpdateModelAccessor>(), Mock.Of<IWorkflowExpressionEvaluator>(), Mock.Of<IWorkflowScriptEvaluator>(), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<UpdateContentTask>(), JavaScriptEncoder.Default, Mock.Of<ISession>()),
             "ContentItem:contentItem"
         },
-        { new RetrieveContentTask(Mock.Of<IContentManager>(), Mock.Of<IWorkflowScriptEvaluator>(), new PassThroughStringLocalizer<RetrieveContentTask>()), "ContentItem:contentItem" },
+        { new RetrieveContentTask(Mock.Of<IContentManager>(), Mock.Of<IWorkflowScriptEvaluator>(), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<RetrieveContentTask>()), "ContentItem:contentItem" },
     };
 
     [Theory]
@@ -50,7 +51,7 @@ public sealed class ActivityOutputsTests
         var evaluator = new Mock<IWorkflowScriptEvaluator>();
         evaluator.Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<IGlobalMethodProvider[]>()))
             .ReturnsAsync(42d);
-        var task = new ScriptTask(evaluator.Object, new PassThroughStringLocalizer<ScriptTask>()) { Script = new WorkflowExpression<object>("21 * 2") };
+        var task = new ScriptTask(evaluator.Object, new NullStringLocalizerFactory(), new PassThroughStringLocalizer<ScriptTask>()) { Script = new WorkflowExpression<object>("21 * 2") };
         var (workflowContext, activityContext) = CreateContext(task);
 
         await task.ExecuteAsync(workflowContext, activityContext);
@@ -64,7 +65,7 @@ public sealed class ActivityOutputsTests
         var evaluator = new Mock<IWorkflowScriptEvaluator>();
         evaluator.Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<IGlobalMethodProvider[]>()))
             .ReturnsAsync("value");
-        var task = new SetPropertyTask(TestExpressions.CreateManager(evaluator.Object), new PassThroughStringLocalizer<SetPropertyTask>())
+        var task = new SetPropertyTask(TestExpressions.CreateManager(evaluator.Object), new NullStringLocalizerFactory(), new PassThroughStringLocalizer<SetPropertyTask>())
         {
             PropertyName = "name",
             Syntax = WorkflowScriptSyntax.JavaScript,

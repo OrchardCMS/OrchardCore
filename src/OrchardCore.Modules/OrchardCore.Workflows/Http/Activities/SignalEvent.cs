@@ -8,21 +8,27 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class SignalEvent : EventActivity, IActivityProvidedValues
+public class SignalEvent : EventActivity, IActivityProvidedValues, IActivityDescription
 {
     public static string EventName => nameof(SignalEvent);
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<SignalEvent> localizer)
+    public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<SignalEvent> localizer)
     {
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
     public override string Name => EventName;
-    public override LocalizedString DisplayText => S["Signal Event"];
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SignalEvent>("Signal Event");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> SignalName
     {

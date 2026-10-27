@@ -6,22 +6,29 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class SetOutputTask : TaskActivity<SetOutputTask>, IActivityProvidedValues
+public class SetOutputTask : TaskActivity<SetOutputTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly IWorkflowExpressionManager _expressionManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public SetOutputTask(
         IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<SetOutputTask> localizer)
     {
         _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Set Output Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SetOutputTask>("Set Output Task");
 
-    public override LocalizedString Category => S["Primitives"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Primitives;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public string OutputName
     {

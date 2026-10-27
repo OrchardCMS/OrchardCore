@@ -35,7 +35,7 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
 
     public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ExecuteWorkflowTask>("Execute Workflow Task");
 
-    public static LocalizationSource CategoryName => WorkflowsLocalizationSources.Primitives;
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Primitives;
 
     public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
 
