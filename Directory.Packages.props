@@ -58,6 +58,10 @@
     <PackageVersion Include="NJsonSchema" Version="11.6.1" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.1" />
     <PackageVersion Include="NodaTime" Version="3.3.5" />
+    <PackageVersion Include="OpenIddict.Client.AspNetCore" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Client.DataProtection" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Client.SystemNetHttp" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Client.WebIntegration" Version="7.7.1" />
     <PackageVersion Include="OpenIddict.Core" Version="7.7.1" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.7.1" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.7.1" />

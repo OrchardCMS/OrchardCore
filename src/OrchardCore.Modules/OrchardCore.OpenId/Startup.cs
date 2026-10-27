@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -11,25 +9,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using OpenIddict.Client;
+using OpenIddict.Client.AspNetCore;
+using OpenIddict.Client.DataProtection;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
-using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
-using OrchardCore.OpenId.ViewModels;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
@@ -39,8 +37,9 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
-using OrchardCore.Recipes;
+using OrchardCore.OpenId.ViewModels;
 using OrchardCore.RateLimits;
+using OrchardCore.Recipes;
 using OrchardCore.Secrets;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -75,23 +74,76 @@ public sealed class ClientStartup : StartupBase
     {
         services.AddNavigationProvider<ClientAdminMenu>();
         services.AddScoped<IJSLocalizer, OpenIdJSLocalizer>();
+        services.AddOpenIddict()
+            .AddClient(options =>
+            {
+                options.UseAspNetCore();
+                options.UseDataProtection();
+                options.UseSystemNetHttp();
+                options.UseWebProviders();
+            });
 
+        services.AddNavigationProvider<ClientAdminMenu>();
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.AddSiteDisplayDriver<OpenIdClientSettingsDisplayDriver>();
 
         services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
-        // Register the options initializers required by the OpenID Connect client handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers:
-            ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
 
-            // Built-in initializers:
-            ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
-        });
+        // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
+        // registering the client ASP.NET Core handler. Yet, it MUST NOT be registered at this stage
+        // as it is lazily registered by OpenIdClientConfiguration only after checking the OpenID client
+        // settings are valid and can be safely used in this tenant without causing runtime exceptions.
+        // To prevent that, the initializer is manually removed from the services collection of the tenant.
+        services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictClientAspNetCoreConfiguration>();
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictClientOptions>, OpenIdClientConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictClientAspNetCoreOptions>, OpenIdClientConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictClientDataProtectionOptions>, OpenIdClientConfiguration>());
+
+        services.TryAdd(OpenIdChallengeEventHandler.Descriptor.ServiceDescriptor);
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
+        if (settings is null)
+        {
+            return;
+        }
+
+        // Note: the redirection and post-logout redirection endpoints use the same default values
+        // as the Microsoft ASP.NET Core OpenID Connect handler, for compatibility reasons.
+        routes.MapAreaControllerRoute(
+            name: "Callback.LogInCallback",
+            areaName: typeof(Startup).Namespace,
+            pattern: settings.CallbackPath ?? "signin-oidc",
+            defaults: new { controller = "Callback", action = "LogInCallback" }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "Callback.LogOutCallback",
+            areaName: typeof(Startup).Namespace,
+            pattern: settings.SignedOutCallbackPath ?? "signout-callback-oidc",
+            defaults: new { controller = "Callback", action = "LogOutCallback" }
+        );
+
+        async Task<OpenIdClientSettings> GetClientSettingsAsync()
+        {
+            // Note: the OpenID client service is registered as a singleton service and thus can be
+            // safely used with the non-scoped/root service provider available at this stage.
+            var service = serviceProvider.GetRequiredService<IOpenIdClientService>();
+
+            var configuration = await service.GetSettingsAsync();
+            if ((await service.ValidateSettingsAsync(configuration)).Any(result => result != ValidationResult.Success))
+            {
+                return null;
+            }
+
+            return configuration;
+        }
     }
 }
 
@@ -128,11 +180,8 @@ public sealed class ServerStartup : StartupBase
         services.AddDisplayDriver<OpenIdServerSettings, OpenIdServerSettingsDisplayDriver>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
-            ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>());
 
         services.AddRecipeExecutionStep<OpenIdServerSettingsStep>()
             .AddRecipeExecutionStep<OpenIdApplicationStep>()
@@ -145,19 +194,16 @@ public sealed class ServerStartup : StartupBase
         // To prevent that, the initializer is manually removed from the services collection of the tenant.
         services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictServerAspNetCoreConfiguration>();
 
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdServerConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdServerConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>());
     }
 
     public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         var settings = await GetServerSettingsAsync();
-        if (settings == null)
+        if (settings is null)
         {
             return;
         }
@@ -292,13 +338,10 @@ public sealed class ValidationStartup : StartupBase
         // To prevent that, the initializer is manually removed from the services collection of the tenant.
         services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictValidationAspNetCoreConfiguration>();
 
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<ApiAuthorizationOptions>, OpenIdValidationConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>(),
-        });
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ApiAuthorizationOptions>, OpenIdValidationConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>());
     }
 }
 
@@ -323,29 +366,4 @@ public sealed class ManagementStartup : StartupBase
         services.AddDisplayDriver<OpenIdScopeEntry, OpenIdScopeDisplayDriver>();
 
     }
-}
-
-internal static class OpenIdServiceCollectionExtensions
-{
-    public static IServiceCollection RemoveAll(this IServiceCollection services, Type serviceType, Type implementationType)
-    {
-        Debug.Assert(services != null, "The services collection shouldn't be null.");
-        Debug.Assert(serviceType != null, "The service type shouldn't be null.");
-        Debug.Assert(implementationType != null, "The implementation type shouldn't be null.");
-
-        for (var index = services.Count - 1; index >= 0; index--)
-        {
-            var descriptor = services[index];
-            if (descriptor.ServiceType == serviceType && descriptor.GetImplementationType() == implementationType)
-            {
-                services.RemoveAt(index);
-            }
-        }
-
-        return services;
-    }
-
-    public static IServiceCollection RemoveAll<TService, TImplementation>(this IServiceCollection services)
-        where TImplementation : TService
-        => services.RemoveAll(typeof(TService), typeof(TImplementation));
 }
