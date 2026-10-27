@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -10,31 +11,38 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpResponseTask : TaskActivity<HttpResponseTask>
+public class HttpResponseTask : TaskActivity<HttpResponseTask>, IActivityDescription
 {
     private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
     private readonly UrlEncoder _urlEncoder;
 
     public HttpResponseTask(
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<HttpResponseTask> localizer,
         IHttpContextAccessor httpContextAccessor,
         IWorkflowExpressionEvaluator expressionEvaluator,
         UrlEncoder urlEncoder
     )
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
         _httpContextAccessor = httpContextAccessor;
         _expressionEvaluator = expressionEvaluator;
         _urlEncoder = urlEncoder;
     }
 
-    public override LocalizedString DisplayText => S["Http Response Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<HttpResponseTask>("Http Response Task");
 
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Content
     {

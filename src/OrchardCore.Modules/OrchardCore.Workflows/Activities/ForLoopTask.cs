@@ -6,22 +6,29 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ForLoopTask : TaskActivity<ForLoopTask>, IActivityProvidedValues
+public class ForLoopTask : TaskActivity<ForLoopTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly IWorkflowExpressionManager _expressionManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public ForLoopTask(
         IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<ForLoopTask> localizer)
     {
         _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["For Loop Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ForLoopTask>("For Loop Task");
 
-    public override LocalizedString Category => S["Control Flow"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.ControlFlow;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// An expression evaluating to the start value.

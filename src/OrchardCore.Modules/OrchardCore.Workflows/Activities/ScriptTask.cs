@@ -7,20 +7,26 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs, IActivityProvidedValues
+public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public ScriptTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ScriptTask> localizer)
+    public ScriptTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<ScriptTask> localizer)
     {
         _scriptEvaluator = scriptEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Script Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ScriptTask>("Script Task");
 
-    public override LocalizedString Category => S["Control Flow"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.ControlFlow;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public IList<string> AvailableOutcomes
     {

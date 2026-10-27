@@ -18,11 +18,6 @@ msgstr ""
 
 #: Activities/HttpRedirectToFormLocationTask.cs
 msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
-msgid "HTTP"
-msgstr ""
-
-#: Activities/HttpRedirectToFormLocationTask.cs
-msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
 msgid "Http Redirect To Form Location Task"
 msgstr ""
 
@@ -747,11 +742,6 @@ msgctxt "OrchardCore.Forms.Workflows.Activities.AddModelValidationErrorTask"
 msgid "Done"
 msgstr ""
 
-#: Workflows/Activities/AddModelValidationErrorTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.AddModelValidationErrorTask"
-msgid "Validation"
-msgstr ""
-
 #: Workflows/Activities/BindModelStateTask.cs
 msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
 msgid "Bind Model State Task"
@@ -760,11 +750,6 @@ msgstr ""
 #: Workflows/Activities/BindModelStateTask.cs
 msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
 msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/BindModelStateTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
-msgid "Validation"
 msgstr ""
 
 #: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
@@ -787,11 +772,6 @@ msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
 msgid "Validate Antiforgery Token Task"
 msgstr ""
 
-#: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
-msgid "Validation"
-msgstr ""
-
 #: Workflows/Activities/ValidateFormFieldTask.cs
 msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
 msgid "Done"
@@ -812,11 +792,6 @@ msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
 msgid "Validate Form Field Task"
 msgstr ""
 
-#: Workflows/Activities/ValidateFormFieldTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
-msgid "Validation"
-msgstr ""
-
 #: Workflows/Activities/ValidateFormTask.cs
 msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormTask"
 msgid "Invalid"
@@ -830,9 +805,4 @@ msgstr ""
 #: Workflows/Activities/ValidateFormTask.cs
 msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormTask"
 msgid "Validate Form Task"
-msgstr ""
-
-#: Workflows/Activities/ValidateFormTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormTask"
-msgid "Validation"
 msgstr ""

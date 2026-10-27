@@ -29,7 +29,7 @@ public class SetVariableTask : TaskActivity<SetVariableTask>, IActivityDescripti
 
     public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SetVariableTask>("Set Variable Task");
 
-    public static LocalizationSource CategoryName => WorkflowsLocalizationSources.Primitives;
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Primitives;
 
     public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
 

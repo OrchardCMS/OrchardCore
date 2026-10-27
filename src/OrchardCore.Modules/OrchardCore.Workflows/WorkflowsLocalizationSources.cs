@@ -15,7 +15,4 @@ internal static class WorkflowsLocalizationSources
 
     /// <summary>Gets the "Workflows" text.</summary>
     public static readonly LocalizationSource Workflows = LocalizationSource.Create("Workflows", typeof(WorkflowsLocalizationSources));
-
-    /// <summary>Gets the "Primitives" activity category.</summary>
-    public static readonly LocalizationSource Primitives = LocalizationSource.Create("Primitives", typeof(WorkflowsLocalizationSources));
 }

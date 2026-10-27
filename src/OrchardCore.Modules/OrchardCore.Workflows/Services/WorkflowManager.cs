@@ -37,6 +37,7 @@ public class WorkflowManager : IWorkflowManager
     private readonly IDistributedLock _distributedLock;
     private readonly ILogger _logger;
     private readonly ILogger<MissingActivity> _missingActivityLogger;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly IClock _clock;
@@ -60,6 +61,7 @@ public class WorkflowManager : IWorkflowManager
         IDistributedLock distributedLock,
         ILogger<WorkflowManager> logger,
         ILogger<MissingActivity> missingActivityLogger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<MissingActivity> missingActivityLocalizer,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IClock clock)
@@ -77,6 +79,7 @@ public class WorkflowManager : IWorkflowManager
         _distributedLock = distributedLock;
         _logger = logger;
         _missingActivityLogger = missingActivityLogger;
+        _localizerFactory = localizerFactory;
         _missingActivityLocalizer = missingActivityLocalizer;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         _clock = clock;
@@ -150,7 +153,7 @@ public class WorkflowManager : IWorkflowManager
         if (activity == null)
         {
             _logger.LogWarning("Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.", activityRecord.Name);
-            activity = new MissingActivity(_missingActivityLocalizer, _missingActivityLogger, activityRecord);
+            activity = new MissingActivity(_localizerFactory, _missingActivityLocalizer, _missingActivityLogger, activityRecord);
         }
 
         var context = new ActivityContext

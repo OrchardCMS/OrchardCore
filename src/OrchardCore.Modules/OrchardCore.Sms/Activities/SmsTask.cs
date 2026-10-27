@@ -8,26 +8,33 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Sms.Activities;
 
-public class SmsTask : TaskActivity<SmsTask>, IActivityProvidedValues
+public class SmsTask : TaskActivity<SmsTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly ISmsService _smsService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public SmsTask(
         ISmsService smsService,
         IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<SmsTask> stringLocalizer
     )
     {
         _smsService = smsService;
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
-    public override LocalizedString DisplayText => S["SMS Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SmsTask>("SMS Task");
 
-    public override LocalizedString Category => S["Messaging"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Messaging;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> PhoneNumber
     {

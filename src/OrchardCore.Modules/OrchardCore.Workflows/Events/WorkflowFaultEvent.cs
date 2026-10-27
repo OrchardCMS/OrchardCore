@@ -8,22 +8,29 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Events;
 
-public class WorkflowFaultEvent : EventActivity, IActivityProvidedValues
+public class WorkflowFaultEvent : EventActivity, IActivityProvidedValues, IActivityDescription
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer<WorkflowFaultEvent> S;
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
     public WorkflowFaultEvent(
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<WorkflowFaultEvent> stringLocalizer,
         IWorkflowScriptEvaluator scriptEvaluator)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
         _scriptEvaluator = scriptEvaluator;
     }
 
     public override string Name => nameof(WorkflowFaultEvent);
-    public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
-    public override LocalizedString Category => S["Background"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<WorkflowFaultEvent>("Catch Workflow Fault Event");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Background;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<bool> ErrorFilter
     {

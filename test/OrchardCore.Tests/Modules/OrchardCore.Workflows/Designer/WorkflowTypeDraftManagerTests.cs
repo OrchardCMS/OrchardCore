@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Options;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows;
@@ -52,7 +53,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
 
         _store.RegisterIndexes<WorkflowTypeDraftIndexProvider>();
 
-        Register(() => new ForkTask(new PassThroughStringLocalizer<ForkTask>()));
+        Register(() => new ForkTask(new NullStringLocalizerFactory(), new PassThroughStringLocalizer<ForkTask>()));
         Register(() => new DraftTestEvent());
         Register(() => new DraftTestTask());
 

@@ -498,11 +498,6 @@ msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
 msgid "The users in the selected roles: their ids, by user name."
 msgstr ""
 
-#: Workflows/Activities/GetUsersByRoleTask.cs
-msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
-msgid "User"
-msgstr ""
-
 #: Workflows/Activities/UnassignUserRoleTask.cs
 msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
 msgid "Done"
@@ -516,9 +511,4 @@ msgstr ""
 #: Workflows/Activities/UnassignUserRoleTask.cs
 msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
 msgid "Unassign User Role Task"
-msgstr ""
-
-#: Workflows/Activities/UnassignUserRoleTask.cs
-msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
-msgid "User"
 msgstr ""

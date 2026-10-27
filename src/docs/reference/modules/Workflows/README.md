@@ -900,10 +900,10 @@ The designer shows an icon for each activity, on the canvas and in the activitie
 services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
 ```
 
-Each module sets the icons of the categories of its activities in `WorkflowOptions.CategoryIcons`, by the untranslated name of the category, and can change the icon of another module's category the same way:
+Each module sets the icons of the categories of its activities in `WorkflowOptions.CategoryIcons`, by the untranslated name of the category, the `Value` of its `LocalizationSource`, and can change the icon of another module's category the same way:
 
 ```csharp
-services.Configure<WorkflowOptions>(options => options.CategoryIcons["Messaging"] = "fa-solid fa-envelope");
+services.Configure<WorkflowOptions>(options => options.CategoryIcons[ActivityCategoryLocalizationSources.Messaging.Value] = "fa-solid fa-envelope");
 ```
 
 ### Expression Editors in Custom Activities
@@ -990,7 +990,7 @@ The validation errors that the driver's `UpdateAsync` adds are shown in the edit
 - `OnActivityExecutingAsync`
 - `OnActivityExecutedAsync`
 
-An activity can also implement `IActivityDescription`, which declares its name and category as static `LocalizationSource` members, `DisplayName` and `CategoryName`, so they are declared once, without a localizer. Its `DisplayText` and `Category` return their translations:
+An activity can also implement `IActivityDescription`, which declares its name and category as static `LocalizationSource` members, `DisplayName` and `CategoryName`, so they are declared once, without a localizer. Its `DisplayText` and `Category` return their translations. Every built-in activity implements it:
 
 ```csharp
 public sealed class ApproveOrderTask : TaskActivity<ApproveOrderTask>, IActivityDescription
@@ -1014,18 +1014,24 @@ public sealed class ApproveOrderTask : TaskActivity<ApproveOrderTask>, IActivity
 }
 ```
 
+The categories of the built-in activities that several modules share, such as `Content`, `User`, `HTTP`, `Messaging`, `Validation`, `Primitives` or `Control Flow`, are declared once in `ActivityCategoryLocalizationSources`, so an activity of another module listed in one of them returns it, for example `public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Content;`. A base class can declare `CategoryName` for the activities that derive from it, as `ContentActivity`, `UserActivity` and `TenantActivity` do: a static member of the base class implements the interface for the derived classes.
+
+The outcomes of an activity remain `LocalizedString`s, translated by `GetPossibleOutcomes()`: many of them depend on the activity's properties, such as the branches of a fork, and they are listed for the current culture each time.
+
 The following is an example of a simple task activity implementation that displays a notification:
 
 ```csharp
-public class NotifyTask : TaskActivity
+public class NotifyTask : TaskActivity, IActivityDescription
 {
     private readonly INotifier _notifier;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
     private readonly IHtmlLocalizer H;
 
-    public NotifyTask(INotifier notifier, IStringLocalizer<NotifyTask> s, IHtmlLocalizer<NotifyTask> h)
+    public NotifyTask(INotifier notifier, IStringLocalizerFactory localizerFactory, IStringLocalizer<NotifyTask> s, IHtmlLocalizer<NotifyTask> h)
     {
         _notifier = notifier;
+        _localizerFactory = localizerFactory;
 
         S = s;
         H = h;
@@ -1034,11 +1040,15 @@ public class NotifyTask : TaskActivity
     // The technical name of the activity. Activities on a workflow definition reference this name.
     public override string Name => nameof(NotifyTask);
 
-    // The displayed name of the activity, so it can use localization.
-    public override LocalizedString DisplayText => S["Notify Task"];
+    // The displayed name of the activity, translated by DisplayText.
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<NotifyTask>("Notify Task");
 
     // The category to which this activity belongs. The activity picker groups activities by this category.
-    public override LocalizedString Category => S["UI"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.UI;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     // A description of this activity's purpose. 
     public override LocalizedString Description => S["Display a message."];

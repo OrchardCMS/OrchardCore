@@ -12,7 +12,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, IActivityProvidedValues
+public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
@@ -87,24 +87,32 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly UrlEncoder _urlEncoder;
 
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     protected readonly IStringLocalizer S;
 
     public HttpRequestTask(
         IWorkflowExpressionEvaluator expressionEvaluator,
         UrlEncoder urlEncoder,
         IHttpClientFactory httpClientFactory,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<HttpRequestTask> localizer
     )
     {
         _expressionEvaluator = expressionEvaluator;
         _urlEncoder = urlEncoder;
         _httpClientFactory = httpClientFactory;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Http Request Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<HttpRequestTask>("Http Request Task");
 
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Url
     {

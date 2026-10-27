@@ -8,18 +8,24 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.UserTasks.Activities;
 
-public class UserTaskEvent : EventActivity, IActivityProvidedValues
+public class UserTaskEvent : EventActivity, IActivityProvidedValues, IActivityDescription
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public UserTaskEvent(IStringLocalizer<UserTaskEvent> localizer)
+    public UserTaskEvent(IStringLocalizerFactory localizerFactory, IStringLocalizer<UserTaskEvent> localizer)
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
     public override string Name => nameof(UserTaskEvent);
-    public override LocalizedString DisplayText => S["User Task Event"];
-    public override LocalizedString Category => S["Content"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UserTaskEvent>("User Task Event");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Content;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public IList<string> Actions
     {

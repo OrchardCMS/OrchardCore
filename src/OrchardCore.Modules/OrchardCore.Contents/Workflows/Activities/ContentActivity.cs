@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -13,16 +14,22 @@ namespace OrchardCore.Contents.Workflows.Activities;
 
 public abstract class ContentActivity : Activity
 {
-
     protected readonly IStringLocalizer S;
+
+    /// <summary>
+    /// Gets the factory that translates the <see cref="LocalizationSource"/> descriptions of the activity.
+    /// </summary>
+    protected IStringLocalizerFactory LocalizerFactory { get; }
 
     protected ContentActivity(
         IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer)
     {
         ContentManager = contentManager;
         ScriptEvaluator = scriptEvaluator;
+        LocalizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -35,7 +42,9 @@ public abstract class ContentActivity : Activity
     /// </summary>
     protected ContentEventContext InlineEvent { get; private set; } = new ContentEventContext();
 
-    public override LocalizedString Category => S["Content"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Content;
+
+    public override LocalizedString Category => LocalizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// An expression that evaluates to an <see cref="IContent"/> item.

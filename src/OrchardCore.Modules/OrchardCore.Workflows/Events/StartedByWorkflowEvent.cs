@@ -26,7 +26,7 @@ public class StartedByWorkflowEvent : EventActivity, IActivityDescription
 
     public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<StartedByWorkflowEvent>("Started By Workflow Event");
 
-    public static LocalizationSource CategoryName => WorkflowsLocalizationSources.Primitives;
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Primitives;
 
     public override string Name => nameof(StartedByWorkflowEvent);
 

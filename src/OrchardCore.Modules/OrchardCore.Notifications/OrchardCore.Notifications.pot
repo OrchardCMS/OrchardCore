@@ -41,11 +41,6 @@ msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
 msgid "How many notifications the activity sent."
 msgstr ""
 
-#: Activities/NotifyUserTaskActivity.cs
-msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
-msgid "Notifications"
-msgstr ""
-
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "Mark as read"
@@ -140,6 +135,11 @@ msgstr ""
 #: Drivers/NotifyUserTaskDisplayDriver.cs
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskDisplayDriver"
 msgid "Please provide at least one username to notify."
+msgstr ""
+
+#: NotificationsLocalizationSources.cs
+msgctxt "OrchardCore.Notifications.NotificationsLocalizationSources"
+msgid "Notifications"
 msgstr ""
 
 #: Views/Admin/List.cshtml

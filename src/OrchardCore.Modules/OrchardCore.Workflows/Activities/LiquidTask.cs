@@ -6,22 +6,29 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs, IActivityProvidedValues
+public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public LiquidTask(
         IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<LiquidTask> localizer)
     {
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Liquid Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<LiquidTask>("Liquid Task");
 
-    public override LocalizedString Category => S["Control Flow"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.ControlFlow;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<object> Expression
     {

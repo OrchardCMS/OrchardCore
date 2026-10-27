@@ -23,11 +23,6 @@ msgstr ""
 
 #: Activities/CommitTransactionTask.cs
 msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
-msgid "Session"
-msgstr ""
-
-#: Activities/CommitTransactionTask.cs
-msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
 msgid "Valid"
 msgstr ""
 
@@ -39,11 +34,6 @@ msgstr ""
 #: Activities/CorrelateTask.cs
 msgctxt "OrchardCore.Workflows.Activities.CorrelateTask"
 msgid "Done"
-msgstr ""
-
-#: Activities/CorrelateTask.cs
-msgctxt "OrchardCore.Workflows.Activities.CorrelateTask"
-msgid "Primitives"
 msgstr ""
 
 #: Activities/ExecuteWorkflowTask.cs
@@ -68,11 +58,6 @@ msgstr ""
 
 #: Activities/ForEachTask.cs
 msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
-msgid "Control Flow"
-msgstr ""
-
-#: Activities/ForEachTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
 msgid "Done"
 msgstr ""
 
@@ -89,11 +74,6 @@ msgstr ""
 #: Activities/ForEachTask.cs
 msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
 msgid "The current item of the loop."
-msgstr ""
-
-#: Activities/ForLoopTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ForLoopTask"
-msgid "Control Flow"
 msgstr ""
 
 #: Activities/ForLoopTask.cs
@@ -118,17 +98,7 @@ msgstr ""
 
 #: Activities/ForkTask.cs
 msgctxt "OrchardCore.Workflows.Activities.ForkTask"
-msgid "Control Flow"
-msgstr ""
-
-#: Activities/ForkTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ForkTask"
 msgid "Fork Task"
-msgstr ""
-
-#: Activities/IfElseTask.cs
-msgctxt "OrchardCore.Workflows.Activities.IfElseTask"
-msgid "Control Flow"
 msgstr ""
 
 #: Activities/IfElseTask.cs
@@ -148,22 +118,12 @@ msgstr ""
 
 #: Activities/JoinTask.cs
 msgctxt "OrchardCore.Workflows.Activities.JoinTask"
-msgid "Control Flow"
-msgstr ""
-
-#: Activities/JoinTask.cs
-msgctxt "OrchardCore.Workflows.Activities.JoinTask"
 msgid "Join Task"
 msgstr ""
 
 #: Activities/JoinTask.cs
 msgctxt "OrchardCore.Workflows.Activities.JoinTask"
 msgid "Joined"
-msgstr ""
-
-#: Activities/LiquidTask.cs
-msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
-msgid "Control Flow"
 msgstr ""
 
 #: Activities/LiquidTask.cs
@@ -201,16 +161,6 @@ msgctxt "OrchardCore.Workflows.Activities.LogTask"
 msgid "Log Task"
 msgstr ""
 
-#: Activities/LogTask.cs
-msgctxt "OrchardCore.Workflows.Activities.LogTask"
-msgid "Primitives"
-msgstr ""
-
-#: Activities/MissingActivity.cs
-msgctxt "OrchardCore.Workflows.Activities.MissingActivity"
-msgid "Exceptions"
-msgstr ""
-
 #: Activities/MissingActivity.cs
 msgctxt "OrchardCore.Workflows.Activities.MissingActivity"
 msgid "Missing Activity"
@@ -224,16 +174,6 @@ msgstr ""
 #: Activities/NotifyTask.cs
 msgctxt "OrchardCore.Workflows.Activities.NotifyTask"
 msgid "Notify Task"
-msgstr ""
-
-#: Activities/NotifyTask.cs
-msgctxt "OrchardCore.Workflows.Activities.NotifyTask"
-msgid "UI"
-msgstr ""
-
-#: Activities/ScriptTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ScriptTask"
-msgid "Control Flow"
 msgstr ""
 
 #: Activities/ScriptTask.cs
@@ -263,11 +203,6 @@ msgstr ""
 
 #: Activities/SetOutputTask.cs
 msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
-msgid "Primitives"
-msgstr ""
-
-#: Activities/SetOutputTask.cs
-msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
 msgid "Set Output Task"
 msgstr ""
 
@@ -279,11 +214,6 @@ msgstr ""
 #: Activities/SetPropertyTask.cs
 msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
 msgid "Done"
-msgstr ""
-
-#: Activities/SetPropertyTask.cs
-msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
-msgid "Primitives"
 msgstr ""
 
 #: Activities/SetPropertyTask.cs
@@ -314,11 +244,6 @@ msgstr ""
 #: Activities/SetVariableTask.cs
 msgctxt "OrchardCore.Workflows.Activities.SetVariableTask"
 msgid "Set Variable Task"
-msgstr ""
-
-#: Activities/WhileLoopTask.cs
-msgctxt "OrchardCore.Workflows.Activities.WhileLoopTask"
-msgid "Control Flow"
 msgstr ""
 
 #: Activities/WhileLoopTask.cs
@@ -667,11 +592,6 @@ msgstr ""
 
 #: Events/WorkflowFaultEvent.cs
 msgctxt "OrchardCore.Workflows.Events.WorkflowFaultEvent"
-msgid "Background"
-msgstr ""
-
-#: Events/WorkflowFaultEvent.cs
-msgctxt "OrchardCore.Workflows.Events.WorkflowFaultEvent"
 msgid "Catch Workflow Fault Event"
 msgstr ""
 
@@ -741,22 +661,12 @@ msgstr ""
 
 #: Http/Activities/HttpRedirectTask.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.HttpRedirectTask"
-msgid "HTTP"
-msgstr ""
-
-#: Http/Activities/HttpRedirectTask.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpRedirectTask"
 msgid "Http Redirect Task"
 msgstr ""
 
 #: Http/Activities/HttpRequestEvent.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestEvent"
 msgid "Done"
-msgstr ""
-
-#: Http/Activities/HttpRequestEvent.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestEvent"
-msgid "HTTP"
 msgstr ""
 
 #: Http/Activities/HttpRequestEvent.cs
@@ -771,22 +681,12 @@ msgstr ""
 
 #: Http/Activities/HttpRequestFilterEvent.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestFilterEvent"
-msgid "HTTP"
-msgstr ""
-
-#: Http/Activities/HttpRequestFilterEvent.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestFilterEvent"
 msgid "Http Request Filter Event"
 msgstr ""
 
 #: Http/Activities/HttpRequestFilterEvent.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestFilterEvent"
 msgid "Matched"
-msgstr ""
-
-#: Http/Activities/HttpRequestTask.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
-msgid "HTTP"
 msgstr ""
 
 #: Http/Activities/HttpRequestTask.cs
@@ -841,22 +741,12 @@ msgstr ""
 
 #: Http/Activities/HttpResponseTask.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.HttpResponseTask"
-msgid "HTTP"
-msgstr ""
-
-#: Http/Activities/HttpResponseTask.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpResponseTask"
 msgid "Http Response Task"
 msgstr ""
 
 #: Http/Activities/SignalEvent.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.SignalEvent"
 msgid "Done"
-msgstr ""
-
-#: Http/Activities/SignalEvent.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.SignalEvent"
-msgid "HTTP"
 msgstr ""
 
 #: Http/Activities/SignalEvent.cs
@@ -2932,11 +2822,6 @@ msgstr ""
 
 #: Timers/TimerEvent.cs
 msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
-msgid "Background"
-msgstr ""
-
-#: Timers/TimerEvent.cs
-msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
 msgid "Done"
 msgstr ""
 
@@ -2958,11 +2843,6 @@ msgstr ""
 #: Trimming/AdminMenu.cs
 msgctxt "OrchardCore.Workflows.Trimming.AdminMenu"
 msgid "Workflow Trimming"
-msgstr ""
-
-#: UserTasks/Activities/UserTaskEvent.cs
-msgctxt "OrchardCore.Workflows.UserTasks.Activities.UserTaskEvent"
-msgid "Content"
 msgstr ""
 
 #: UserTasks/Activities/UserTaskEvent.cs
@@ -5335,11 +5215,6 @@ msgstr ""
 #: WorkflowsLocalizationSources.cs
 msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
 msgid "All Workflow Types"
-msgstr ""
-
-#: WorkflowsLocalizationSources.cs
-msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
-msgid "Primitives"
 msgstr ""
 
 #: WorkflowsLocalizationSources.cs

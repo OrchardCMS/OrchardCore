@@ -24,6 +24,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedVa
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
         ILogger logger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer
     )
     {
@@ -31,10 +32,18 @@ public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedVa
         _expressionEvaluator = expressionEvaluator;
         _htmlEncoder = htmlEncoder;
         _logger = logger;
+        LocalizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString Category => S["Notifications"];
+    /// <summary>
+    /// Gets the factory that translates the <see cref="LocalizationSource"/> descriptions of the activity.
+    /// </summary>
+    protected IStringLocalizerFactory LocalizerFactory { get; }
+
+    public static LocalizationSource CategoryName => NotificationsLocalizationSources.Notifications;
+
+    public override LocalizedString Category => LocalizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Subject
     {
@@ -150,8 +159,9 @@ public abstract class NotifyUserTaskActivity<TActivity> : NotifyUserTaskActivity
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
         ILogger logger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer)
-        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizer)
+        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizerFactory, localizer)
     {
     }
 

@@ -14,8 +14,9 @@ public abstract class ContentEvent : ContentActivity, IEvent, IActivityProvidedV
     protected ContentEvent(
         IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
     }
 

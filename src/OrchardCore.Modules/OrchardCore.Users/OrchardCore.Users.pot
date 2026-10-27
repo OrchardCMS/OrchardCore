@@ -3112,11 +3112,6 @@ msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
 msgid "Failed"
 msgstr ""
 
-#: Workflows/Activities/AssignUserRoleTask.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
-msgid "User"
-msgstr ""
-
 #: Workflows/Activities/RegisterUserTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
 msgid "Done"
@@ -3139,22 +3134,12 @@ msgstr ""
 
 #: Workflows/Activities/RegisterUserTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
-msgid "User"
-msgstr ""
-
-#: Workflows/Activities/RegisterUserTask.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
 msgid "Valid"
 msgstr ""
 
 #: Workflows/Activities/UserActivity.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.UserActivity"
 msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/UserActivity.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.UserActivity"
-msgid "User"
 msgstr ""
 
 #: Workflows/Activities/UserConfirmedEvent.cs
@@ -3255,11 +3240,6 @@ msgstr ""
 #: Workflows/Activities/ValidateUserTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
 msgid "The names of the user's roles, when the user is in one of the roles."
-msgstr ""
-
-#: Workflows/Activities/ValidateUserTask.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
-msgid "User"
 msgstr ""
 
 #: Workflows/Activities/ValidateUserTask.cs

@@ -12,7 +12,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<WorkflowOptions>(options => options.CategoryIcons["Social"] = "fa-solid fa-share-nodes");
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[TwitterLocalizationSources.Social.Value] = "fa-solid fa-share-nodes");
 
         services.AddActivity<UpdateTwitterStatusTask, UpdateTwitterStatusTaskDisplayDriver>();
     }

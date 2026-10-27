@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Variables;
 using OrchardCore.Workflows.Activities;
@@ -17,7 +18,7 @@ public sealed class ExpressionActivitiesTests
     [InlineData("false", "False")]
     public async Task IfElse_LiteralCondition_TakesItsOutcome(string condition, string outcome)
     {
-        var task = new IfElseTask(CreateManager(), Localizer<IfElseTask>())
+        var task = new IfElseTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<IfElseTask>())
         {
             Condition = new WorkflowExpression<bool>(condition, WorkflowExpressionSyntaxes.Literal),
         };
@@ -33,7 +34,7 @@ public sealed class ExpressionActivitiesTests
     public async Task IfElse_ConditionWithASyntax_IsUsedInsteadOfTheLegacyPair()
     {
         _liquidEvaluator.Setup(x => x.EvaluateAsync(It.Is<WorkflowExpression<bool>>(e => e.Expression == "{{ new }}"), It.IsAny<WorkflowExecutionContext>(), null)).ReturnsAsync(true);
-        var task = new IfElseTask(CreateManager(), Localizer<IfElseTask>())
+        var task = new IfElseTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<IfElseTask>())
         {
             Syntax = WorkflowScriptSyntax.JavaScript,
             Condition = new WorkflowExpression<bool>("{{ new }}", WorkflowExpressionSyntaxes.Liquid),
@@ -52,7 +53,7 @@ public sealed class ExpressionActivitiesTests
     public async Task IfElse_LegacyJavaScript_EvaluatesTheCondition()
     {
         _scriptEvaluator.Setup(x => x.EvaluateAsync(It.Is<WorkflowExpression<bool>>(e => e.Expression == "1 < 2"), It.IsAny<WorkflowExecutionContext>(), It.IsAny<IGlobalMethodProvider[]>())).ReturnsAsync(true);
-        var task = new IfElseTask(CreateManager(), Localizer<IfElseTask>())
+        var task = new IfElseTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<IfElseTask>())
         {
             Condition = new WorkflowExpression<bool>("1 < 2"),
         };
@@ -67,7 +68,7 @@ public sealed class ExpressionActivitiesTests
     [Fact]
     public async Task WhileLoop_LiteralCondition_IsDone()
     {
-        var task = new WhileLoopTask(CreateManager(), Localizer<WhileLoopTask>())
+        var task = new WhileLoopTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<WhileLoopTask>())
         {
             Condition = new WorkflowExpression<bool>("false", WorkflowExpressionSyntaxes.Literal),
         };
@@ -83,7 +84,7 @@ public sealed class ExpressionActivitiesTests
     public async Task ForLoop_LiteralBounds_Iterate()
     {
         using var context = CreateContext();
-        var task = new ForLoopTask(CreateManager(), Localizer<ForLoopTask>())
+        var task = new ForLoopTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<ForLoopTask>())
         {
             From = new WorkflowExpression<double>("2", WorkflowExpressionSyntaxes.Literal),
             To = new WorkflowExpression<double>("4", WorkflowExpressionSyntaxes.Literal),
@@ -100,7 +101,7 @@ public sealed class ExpressionActivitiesTests
     public async Task ForLoop_LegacyNumbers_AreReadWithoutAScript()
     {
         using var context = CreateContext();
-        var task = new ForLoopTask(CreateManager(), Localizer<ForLoopTask>())
+        var task = new ForLoopTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<ForLoopTask>())
         {
             From = new WorkflowExpression<double>("0"),
             To = new WorkflowExpression<double>("0"),
@@ -117,7 +118,7 @@ public sealed class ExpressionActivitiesTests
     public async Task ForEach_LiteralList_IteratesItsItems()
     {
         using var context = CreateContext();
-        var task = new ForEachTask(CreateManager(), Localizer<ForEachTask>())
+        var task = new ForEachTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<ForEachTask>())
         {
             Enumerable = new WorkflowExpression<IEnumerable<object>>("a, b", WorkflowExpressionSyntaxes.Literal),
         };
@@ -133,7 +134,7 @@ public sealed class ExpressionActivitiesTests
     {
         _liquidEvaluator.Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), It.IsAny<WorkflowExecutionContext>(), null)).ReturnsAsync("[\"x\", \"y\"]");
         using var context = CreateContext();
-        var task = new ForEachTask(CreateManager(), Localizer<ForEachTask>())
+        var task = new ForEachTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<ForEachTask>())
         {
             Enumerable = new WorkflowExpression<IEnumerable<object>>("{{ items | json }}", WorkflowExpressionSyntaxes.Liquid),
         };
@@ -147,12 +148,12 @@ public sealed class ExpressionActivitiesTests
     public async Task SetOutputAndSetProperty_LiteralValues_AreStored()
     {
         using var context = CreateContext();
-        var setOutput = new SetOutputTask(CreateManager(), Localizer<SetOutputTask>())
+        var setOutput = new SetOutputTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<SetOutputTask>())
         {
             OutputName = "Message",
             Value = new WorkflowExpression<object>("hello", WorkflowExpressionSyntaxes.Literal),
         };
-        var setProperty = new SetPropertyTask(CreateManager(), Localizer<SetPropertyTask>())
+        var setProperty = new SetPropertyTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<SetPropertyTask>())
         {
             PropertyName = "Name",
             Value = new WorkflowExpression<object>("world", WorkflowExpressionSyntaxes.Literal),
@@ -194,7 +195,7 @@ public sealed class ExpressionActivitiesTests
     {
         _liquidEvaluator.Setup(x => x.EvaluateAsync(It.Is<WorkflowExpression<string>>(e => e.Expression == "{{ id }}"), It.IsAny<WorkflowExecutionContext>(), null)).ReturnsAsync(" from-liquid ");
         using var context = CreateContext();
-        var legacy = new CorrelateTask(CreateManager(), Localizer<CorrelateTask>())
+        var legacy = new CorrelateTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<CorrelateTask>())
         {
             Syntax = WorkflowScriptSyntax.Liquid,
             Value = new WorkflowExpression<string>("{{ id }}"),
@@ -204,7 +205,7 @@ public sealed class ExpressionActivitiesTests
 
         Assert.Equal("from-liquid", context.CorrelationId);
 
-        var literal = new CorrelateTask(CreateManager(), Localizer<CorrelateTask>())
+        var literal = new CorrelateTask(CreateManager(), new NullStringLocalizerFactory(), Localizer<CorrelateTask>())
         {
             Value = new WorkflowExpression<string>(" order-1 ", WorkflowExpressionSyntaxes.Literal),
         };

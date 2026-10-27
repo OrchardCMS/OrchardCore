@@ -10,21 +10,22 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class RetrieveContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues
+public class RetrieveContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     public RetrieveContentTask(
         IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<RetrieveContentTask> localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
     public override string Name => nameof(RetrieveContentTask);
 
-    public override LocalizedString DisplayText => S["Retrieve Content Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<RetrieveContentTask>("Retrieve Content Task");
 
-    public override LocalizedString Category => S["Content"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Retrieved"]);

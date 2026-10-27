@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Activities;
