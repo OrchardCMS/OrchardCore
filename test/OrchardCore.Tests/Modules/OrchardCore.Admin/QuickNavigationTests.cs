@@ -1,20 +1,10 @@
-using System.Globalization;
-using System.Security.Claims;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.QuickNavigation;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -256,7 +246,7 @@ public class QuickNavigationTests
             It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
             .ReturnsAsync(AuthorizationResult.Failed());
         var manager = new NavigationManager(
-            [provider.Object], NullLogger<NavigationManager>.Instance, new ShellSettings(),
+            [provider.Object], NullLogger<NavigationManager>.Instance,
             Mock.Of<IUrlHelperFactory>(), authorization.Object);
         using var services = new ServiceCollection().BuildServiceProvider();
         var httpContext = new DefaultHttpContext
