@@ -49,9 +49,13 @@
       <LocalizationRazorCompilerPath Condition="'$(LocalizationRazorCompilerPath)' == '' and '$(RazorSdkDirectoryRoot)' != '' and Exists('$(RazorSdkDirectoryRoot)source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll')">$(RazorSdkDirectoryRoot)source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll</LocalizationRazorCompilerPath>
       <LocalizationRazorCompilerPath Condition="'$(LocalizationRazorCompilerPath)' == '' and '$(NetCoreRoot)' != '' and '$(NETCoreSdkVersion)' != '' and Exists('$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll')">$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll</LocalizationRazorCompilerPath>
     </PropertyGroup>
-    <!-- In the source tree, the worker is built when a template is updated, so that a normal build never depends on it. -->
-    <MSBuild Projects="$(_LocalizationToolsProject)" Targets="Restore" Properties="_LocalizationWorkerRestore=true;GenerateLocalizationCatalog=false" Condition="Exists('$(_LocalizationToolsProject)') and !Exists('$(_LocalizationToolsDirectory)obj/project.assets.json')" />
-    <MSBuild Projects="$(_LocalizationToolsProject)" Targets="Build" Properties="Configuration=$(Configuration);GenerateLocalizationCatalog=false" Condition="Exists('$(_LocalizationToolsProject)')" />
+    <!--
+      In the source tree, the worker is built when a template is updated, so that a normal build never depends on it.
+      It is built with the global properties of the solution build, without those of this project's inner build, so
+      that both reach the same project instance instead of writing the same output directory concurrently.
+    -->
+    <MSBuild Projects="$(_LocalizationToolsProject)" Targets="Restore" Properties="_LocalizationWorkerRestore=true" RemoveProperties="TargetFramework;RuntimeIdentifier;SelfContained" Condition="Exists('$(_LocalizationToolsProject)') and !Exists('$(_LocalizationToolsDirectory)obj/project.assets.json')" />
+    <MSBuild Projects="$(_LocalizationToolsProject)" Targets="Build" RemoveProperties="TargetFramework;RuntimeIdentifier;SelfContained" Condition="Exists('$(_LocalizationToolsProject)')" />
     <Error Code="OCLOC009" Condition="!Exists('$(LocalizationToolPath)')" Text="Localization worker not found: $(LocalizationToolPath). Build the tooling or reference OrchardCore.Localization.Build." />
     <Error Code="OCLOC009" Condition="'$(LocalizationRoslynDirectory)' == ''" Text="The Roslyn compiler of the .NET SDK was not found. Set LocalizationRoslynDirectory to the directory containing Microsoft.CodeAnalysis.dll." />
     <ItemGroup>
