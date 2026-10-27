@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace OrchardCore.Localization.Extraction;
 
-public sealed record LocalizationCall(IOperation Receiver, IOperation Key, IOperation? Plural = null, IOperation? PluralForms = null, IReadOnlyList<string?>? FormatArguments = null);
+public sealed record LocalizationCall(IOperation Receiver, IOperation Key, IOperation? Plural = null, IOperation? PluralForms = null, IReadOnlyList<string?>? FormatArguments = null, IOperation? Note = null);
 
 public interface ICSharpLocalizationAdapter
 {
@@ -123,7 +123,8 @@ public sealed class CSharpLocalizationExtractor
         }
 
         var plural = method.Name == "Plural" ? invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "plural")?.Value : null;
-        return new LocalizationCall(receiver, key ?? forms!, plural, forms, GetFormatArguments(invocation.Arguments, method.Name == "Plural"));
+        var note = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "note")?.Value;
+        return new LocalizationCall(receiver, key ?? forms!, plural, forms, GetFormatArguments(invocation.Arguments, method.Name == "Plural"), note);
     }
 
     private static List<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
@@ -131,7 +132,8 @@ public sealed class CSharpLocalizationExtractor
         var descriptions = new List<string?>();
         if (plural)
         {
-            descriptions.Add("count");
+            var count = arguments.FirstOrDefault(argument => argument.Parameter?.Name == "count")?.Value;
+            descriptions.Add(count is not null && TryGetArgumentName(Unwrap(count), out var name) && name is not null ? name : "count");
         }
 
         foreach (var argument in arguments.Where(argument => argument.Parameter?.Name == "arguments"))
@@ -139,19 +141,78 @@ public sealed class CSharpLocalizationExtractor
             var value = Unwrap(argument.Value);
             if (value is IArrayCreationOperation { Initializer: not null } array)
             {
-                descriptions.AddRange(array.Initializer.ElementValues.Select(element => Unwrap(element).Syntax.ToString()));
+                descriptions.AddRange(array.Initializer.ElementValues.Select(DescribeArgument));
             }
             else if (value is ICollectionExpressionOperation collection)
             {
-                descriptions.AddRange(collection.Elements.Select(element => Unwrap(element).Syntax.ToString()));
+                descriptions.AddRange(collection.Elements.Select(DescribeArgument));
             }
             else if (value.Type is not IArrayTypeSymbol)
             {
-                descriptions.Add(value.Syntax.ToString());
+                descriptions.Add(DescribeArgument(value));
             }
         }
 
         return descriptions;
+    }
+
+    private static string? DescribeArgument(IOperation operation)
+    {
+        operation = Unwrap(operation);
+        if (TryGetArgumentName(operation, out var name))
+        {
+            return name ?? ((IInvocationOperation)operation).Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 1)?.Value.Syntax.ToString();
+        }
+
+        return operation.Syntax.ToString();
+    }
+
+    /// <summary>
+    /// Gets the name given to a format argument with an <c>Arg(name, value)</c> helper, which returns its value
+    /// unchanged at runtime.
+    /// </summary>
+    private static bool TryGetArgumentName(IOperation operation, out string? name)
+    {
+        name = null;
+        if (operation is not IInvocationOperation { TargetMethod: { Name: "Arg", IsStatic: true, Arity: 1, Parameters.Length: 2 } method } invocation
+            || method.Parameters[0] is not { Name: "name", Type.SpecialType: SpecialType.System_String }
+            || method.Parameters[1].Name != "value"
+            || !SymbolEqualityComparer.Default.Equals(method.Parameters[1].Type, method.TypeArguments[0])
+            || !SymbolEqualityComparer.Default.Equals(method.ReturnType, method.TypeArguments[0]))
+        {
+            return false;
+        }
+
+        var argument = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 0);
+        name = argument is null ? null : GetConstant(argument.Value);
+        return true;
+    }
+
+    /// <summary>
+    /// Removes the <c>Note(note)</c> calls wrapping a localizer, which return the localizer unchanged at runtime, and
+    /// collects their notes.
+    /// </summary>
+    private static IOperation UnwrapNotes(IOperation receiver, List<IOperation> notes)
+    {
+        while (Unwrap(receiver) is IInvocationOperation { TargetMethod: { Name: "Note", IsExtensionMethod: true } method } invocation
+            && method.ContainingType.ToDisplayString() is "Microsoft.Extensions.Localization.StringLocalizerExtensions" or "Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizerExtensions")
+        {
+            var localizer = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 0)?.Value;
+            var note = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "note")?.Value;
+            if (localizer is null)
+            {
+                break;
+            }
+
+            if (note is not null)
+            {
+                notes.Add(note);
+            }
+
+            receiver = localizer;
+        }
+
+        return receiver;
     }
 
     private void ExtractCall(LocalizationCall call, SyntaxNode node, string? viewContext, SemanticModel model)
@@ -187,7 +248,33 @@ public sealed class CSharpLocalizationExtractor
             return;
         }
 
-        var context = ResolveContext(call.Receiver, viewContext, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
+        var noteOperations = new List<IOperation>();
+        if (call.Note is not null)
+        {
+            noteOperations.Add(call.Note);
+        }
+
+        var receiver = UnwrapNotes(call.Receiver, noteOperations);
+        var notes = new List<string>();
+        foreach (var noteOperation in noteOperations)
+        {
+            var note = GetConstant(noteOperation);
+            if (note is null)
+            {
+                _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", source));
+            }
+            else
+            {
+                notes.Add(note);
+            }
+        }
+
+        if (model.GetOperation(node) is { } operation && operation.Descendants().Any(child => TryGetArgumentName(child, out var name) && name is null))
+        {
+            _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", source));
+        }
+
+        var context = ResolveContext(receiver, viewContext, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
         if (context is null && model.GetEnclosingSymbol(node.SpanStart)?.ContainingType is { } containingType)
         {
             context = GetResourceName(containingType, allowGenericDefinition: true);
@@ -199,8 +286,9 @@ public sealed class CSharpLocalizationExtractor
             return;
         }
 
-        _catalog.Add(context, key, plural, source, GetComment(node), call.FormatArguments);
+        _catalog.Add(context, key, plural, source, GetComment(node), call.FormatArguments, notes);
     }
+
 
     internal static string? GetConstant(IOperation operation)
     {

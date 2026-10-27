@@ -423,4 +423,84 @@ public sealed class CSharpLocalizationExtractorTests
         Assert.Equal(2, entry.References.Count);
         Assert.Equal("A navigation label.", Assert.Single(entry.Comments));
     }
+
+    [Fact]
+    public void Extract_NoteAndArgumentNames_DescribePluralMessage()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using System;
+            using Microsoft.AspNetCore.Mvc.Localization;
+            using static OrchardCore.Localization.LocalizationMetadata;
+            namespace Example;
+            public class DateTimeHumanizer
+            {
+                public LocalizedHtmlString Get(IHtmlLocalizer<DateTimeHumanizer> H, TimeSpan time)
+                    => H.Plural(
+                        note: "Relative date shown for future dates.",
+                        count: Arg("years", (int)time.TotalDays / 365),
+                        singular: "in 1 year",
+                        plural: "in {0} years");
+            }
+            """, includePlurals: true);
+
+        Assert.Empty(catalog.Diagnostics);
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("Example.DateTimeHumanizer", message.Context);
+        Assert.Equal("in {0} years", message.Plural);
+        var output = PotWriter.Write(catalog, "Example");
+        Assert.Contains("""
+            #. Relative date shown for future dates.
+            #. Format arguments: {0}: years
+
+            """.ReplaceLineEndings("\n"), output);
+    }
+
+    [Fact]
+    public void Extract_NoteOnIndexerAndMethods_AddsTranslatorComments()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using Microsoft.Extensions.Localization;
+            using static OrchardCore.Localization.LocalizationMetadata;
+            namespace Example;
+            public class Owner
+            {
+                public string Get(IStringLocalizer<Owner> S, string user, int total)
+                    => S.Note("Greeting shown on the dashboard.")["Hello {0}, you have {1} messages", Arg("user name", user), Arg("message count", (object)total)]
+                        + S.Note("Toolbar button.").GetString("Save")
+                        + S.Note("Shown in the summary.").Plural(total, "One file", "{0} files")
+                        + S.Plural("Shown in the details.", total, "One item", "{0} items")
+                        + S["Unrelated {0}", total];
+            }
+            """, includePlurals: true);
+
+        Assert.Empty(catalog.Diagnostics);
+        Assert.All(catalog.Messages, message => Assert.Equal("Example.Owner", message.Context));
+        Assert.Equal("Greeting shown on the dashboard.", Assert.Single(catalog.Messages.Single(message => message.Text.StartsWith("Hello", StringComparison.Ordinal)).Comments));
+        Assert.Equal("Toolbar button.", Assert.Single(catalog.Messages.Single(message => message.Text == "Save").Comments));
+        Assert.Equal("Shown in the summary.", Assert.Single(catalog.Messages.Single(message => message.Text == "One file").Comments));
+        Assert.Equal("Shown in the details.", Assert.Single(catalog.Messages.Single(message => message.Text == "One item").Comments));
+        Assert.Empty(catalog.Messages.Single(message => message.Text == "Unrelated {0}").Comments);
+        var output = PotWriter.Write(catalog, "Example");
+        Assert.Contains("#. Format arguments: {0}: user name; {1}: message count\n", output);
+        Assert.Contains("#. Format arguments: {0}: total\n", output);
+    }
+
+    [Fact]
+    public void Extract_DynamicNoteOrArgumentName_ReportsAndKeepsMessage()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using Microsoft.Extensions.Localization;
+            using static OrchardCore.Localization.LocalizationMetadata;
+            public class Owner
+            {
+                public string Get(IStringLocalizer<Owner> S, string note, string name, string user)
+                    => S.Note(note)["Dynamic note"] + S["Hello {0}", Arg(name, user)];
+            }
+            """, includePlurals: true);
+
+        Assert.Equal(2, catalog.Messages.Count);
+        Assert.Equal(2, catalog.Diagnostics.Count);
+        Assert.All(catalog.Diagnostics, diagnostic => Assert.Equal("OCLOC010", diagnostic.Code));
+        Assert.Contains("#. Format arguments: {0}: user\n", PotWriter.Write(catalog, "Example"));
+    }
 }
