@@ -280,8 +280,10 @@ public sealed class RateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
-            options.AddRouteRateLimit(RateLimitRouteNames.ResendEmailConfirmation, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.EmailConfirmation, 2, TimeSpan.FromMinutes(1)));
+            // Users who sign in are anonymous, so these attempts can only be counted per IP address. The limit leaves room for
+            // the many users of an office who share an IP address, as the account lockout already protects each account.
+            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResendEmailConfirmation, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.EmailConfirmation, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetEmailConfirmationUser));
         });
     }
 }
@@ -340,8 +342,9 @@ public sealed class ExternalAuthenticationRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3));
-            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
+            // These limits share the budgets of the registration and login pages, so they must use the same values.
+            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
         });
     }
 }
@@ -498,7 +501,7 @@ public sealed class ChangeEmailDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailSettings, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
     }
 }
 
@@ -573,7 +576,7 @@ public sealed class RegistrationRateLimitsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3)));
+            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20)));
     }
 }
 
@@ -668,8 +671,8 @@ public sealed class ResetPasswordRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
-            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
         });
     }
 }

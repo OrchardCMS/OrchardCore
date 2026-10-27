@@ -13,12 +13,22 @@
 // - Searchable lists: a <select data-dp-select> becomes a bootstrap-select, configured by its data-* attributes, such
 //   as data-live-search and data-show-selected-tags. It's created when the designer injects the editor, and destroyed
 //   when the designer removes it. It raises the select's "change" event, so the designer applies the selection.
+// - Filter rows: a <div data-dp-filter-row> shows only the comparisons of its [data-dp-filter-operator] whose
+//   data-dp-types has the data-dp-type of the field chosen in its [data-dp-filter-field]. It shows the inputs of the
+//   values the comparison takes, typed for the field: a number, a date, a date and time, or a yes/no select. A value the
+//   typed input can't hold, such as a placeholder, is written as text, which [data-dp-filter-text] switches. The
+//   comparisons that take a list, "is one of" and "isn't one of", take values separated by commas, as text.
+// - Choosing a data set: [data-dp-dataset-open] raises a bubbling "dp:choose-data-set" event on its
+//   [data-dp-dataset-picker], whose detail has the current value of its [data-dp-dataset-input] and a choose(value)
+//   function. The designer answers it with its dialog of the data sets; choose sets the input and raises its "change"
+//   event, so the designer applies it.
 (function () {
     const lastFormulas = new WeakMap();
     const selectSelector = "select[data-dp-select]";
+    const filterRowSelector = "[data-dp-filter-row]";
 
     const initSelects = (node) => {
-        if (!window.Selectpicker || !(node instanceof Element)) {
+        if (!window.Selectpicker) {
             return;
         }
 
@@ -27,11 +37,194 @@
         selects.forEach((select) => window.Selectpicker.getOrCreateInstance(select));
     };
 
+    // The patterns of the values each typed input holds, as the steps store them.
+    const valuePatterns = {
+        days: /^\d+$/,
+        number: /^[-+]?(\d+(\.\d*)?|\.\d+)$/,
+        date: /^\d{4}-\d{2}-\d{2}$/,
+        "datetime-local": /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$/,
+        boolean: /^(true|false)$/i,
+    };
+
+    const fits = (kind, value) => !value || !valuePatterns[kind] || valuePatterns[kind].test(value.trim());
+
+    const getFilterState = (row) => {
+        const fieldType = row.querySelector("[data-dp-filter-field]")?.selectedOptions[0]?.dataset.dpType ?? "";
+        const operator = row.querySelector("[data-dp-filter-operator]")?.value ?? "";
+        const count = operator === "IsEmpty" || operator === "IsNotEmpty" ? 0 : operator === "Between" ? 2 : 1;
+        let kind = "text";
+
+        if (operator === "In" || operator === "NotIn") {
+            kind = "list";
+        } else if (operator === "InLastDays" || operator === "InNextDays") {
+            kind = "days";
+        } else if (fieldType === "Integer" || fieldType === "Decimal") {
+            kind = "number";
+        } else if (fieldType === "Date") {
+            kind = "date";
+        } else if (fieldType === "DateTime") {
+            kind = "datetime-local";
+        } else if (fieldType === "Boolean") {
+            kind = "boolean";
+        }
+
+        return { fieldType, operator, count, kind };
+    };
+
+    // Shows the comparisons that apply to the field. A field that changes keeps its comparison when it applies, and
+    // takes the first one that applies otherwise. When the editor is loaded, a saved comparison that doesn't apply stays,
+    // as the step reports it as an error.
+    const updateOperators = (row, fieldType, initial) => {
+        const select = row.querySelector("[data-dp-filter-operator]");
+
+        Array.from(select.options).forEach((option) => {
+            const applies = !fieldType || (option.dataset.dpTypes ?? "").split(" ").includes(fieldType);
+            const visible = applies || (initial && option.selected);
+
+            option.hidden = !visible;
+            option.disabled = !visible;
+        });
+
+        if (select.selectedOptions[0]?.disabled) {
+            const first = Array.from(select.options).find((option) => !option.disabled);
+
+            if (first) {
+                select.value = first.value;
+            }
+        }
+    };
+
+    const updateFilterRow = (row, initial) => {
+        updateOperators(row, getFilterState(row).fieldType, initial);
+
+        const { fieldType, count, kind } = getFilterState(row);
+        const value = row.querySelector("[data-dp-filter-value]");
+        const booleanValue = row.querySelector("[data-dp-filter-boolean]");
+        const second = row.querySelector("[data-dp-filter-second]");
+        const current = booleanValue.disabled ? value.value : booleanValue.value;
+        const typed = kind !== "text" && kind !== "list";
+
+        // A value the typed input can't hold, such as {Parameter:Since}, stays as text.
+        if (typed && count > 0 && (!fits(kind, current) || (count === 2 && !fits(kind, second.value)))) {
+            row.dataset.dpTextMode = "true";
+        }
+
+        const textMode = typed && row.dataset.dpTextMode === "true";
+        const useBoolean = kind === "boolean" && !textMode && count > 0;
+
+        if (useBoolean) {
+            booleanValue.value = current.trim().toLowerCase();
+        } else {
+            value.value = current;
+        }
+
+        booleanValue.hidden = !useBoolean;
+        booleanValue.disabled = !useBoolean;
+        value.hidden = count === 0 || useBoolean;
+        value.disabled = useBoolean;
+        second.hidden = count !== 2;
+
+        const type = !typed || textMode || kind === "boolean" ? "text" : kind === "days" ? "number" : kind;
+
+        value.placeholder = (kind === "list" ? value.dataset.dpListPlaceholder : value.dataset.dpValuePlaceholder) ?? value.placeholder;
+
+        [value, second].forEach((input) => {
+            input.type = type;
+
+            if (type === "number") {
+                input.step = kind === "days" || fieldType === "Integer" ? "1" : "any";
+            } else {
+                input.removeAttribute("step");
+            }
+
+            if (type === "number" && kind === "days") {
+                input.min = "1";
+            } else {
+                input.removeAttribute("min");
+            }
+        });
+
+        row.querySelector("[data-dp-filter-and]").hidden = count !== 2;
+        row.querySelector("[data-dp-filter-days]").hidden = kind !== "days" || count === 0;
+
+        const toggle = row.querySelector("[data-dp-filter-text]");
+
+        toggle.hidden = count === 0 || !typed;
+        toggle.classList.toggle("active", textMode);
+        toggle.setAttribute("aria-pressed", String(textMode));
+    };
+
+    // Switches the values of a row between text and their typed inputs. A value the typed input can't hold is cleared.
+    const toggleTextMode = (row) => {
+        const { kind } = getFilterState(row);
+        const textMode = row.dataset.dpTextMode !== "true";
+
+        row.dataset.dpTextMode = String(textMode);
+
+        if (!textMode) {
+            row.querySelectorAll("[data-dp-filter-value], [data-dp-filter-second]").forEach((input) => {
+                if (!fits(kind, input.value)) {
+                    input.value = "";
+                }
+            });
+        }
+
+        updateFilterRow(row, false);
+    };
+
+    // Asks the host of the editor, the designer, to choose the data set of a picker.
+    const requestDataSet = (picker) => {
+        const input = picker?.querySelector("[data-dp-dataset-input]");
+
+        if (!input) {
+            return;
+        }
+
+        picker.dispatchEvent(new CustomEvent("dp:choose-data-set", {
+            bubbles: true,
+            detail: {
+                current: input.value,
+                choose: (value) => {
+                    if (!input.isConnected || input.value === value) {
+                        return;
+                    }
+
+                    input.value = value;
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                },
+            },
+        }));
+    };
+
+    const initFilterRows = (node) => {
+        const rows = node.matches(filterRowSelector) ? [node] : node.querySelectorAll(filterRowSelector);
+
+        rows.forEach((row) => updateFilterRow(row, true));
+    };
+
+    const initEditors = (node) => {
+        if (!(node instanceof Element)) {
+            return;
+        }
+
+        initSelects(node);
+        initFilterRows(node);
+    };
+
     new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => mutation.addedNodes.forEach(initSelects));
+        mutations.forEach((mutation) => mutation.addedNodes.forEach(initEditors));
     }).observe(document.body ?? document.documentElement, { childList: true, subtree: true });
 
-    initSelects(document.body ?? document.documentElement);
+    initEditors(document.body ?? document.documentElement);
+
+    // The designer applies the form a moment after a change, so the row is up to date when it reads the form.
+    document.addEventListener("change", (event) => {
+        const row = event.target.closest?.("[data-dp-filter-field], [data-dp-filter-operator]")?.closest(filterRowSelector);
+
+        if (row) {
+            updateFilterRow(row, false);
+        }
+    });
 
     document.addEventListener("oc:editor-unmounting", (event) => {
         if (!window.Selectpicker || !(event.target instanceof Element)) {
@@ -192,6 +385,29 @@
 
             renumber(list);
             notifyChange(list);
+
+            return;
+        }
+
+        const openDataSet = event.target.closest("[data-dp-dataset-open]");
+
+        if (openDataSet) {
+            event.preventDefault();
+            requestDataSet(openDataSet.closest("[data-dp-dataset-picker]"));
+
+            return;
+        }
+
+        const textToggle = event.target.closest("[data-dp-filter-text]");
+
+        if (textToggle) {
+            event.preventDefault();
+
+            const row = textToggle.closest(filterRowSelector);
+
+            toggleTextMode(row);
+            row.querySelector("[data-dp-filter-value]:not([disabled]), [data-dp-filter-boolean]:not([disabled])")?.focus();
+            notifyChange(row);
 
             return;
         }

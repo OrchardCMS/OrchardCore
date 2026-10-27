@@ -98,7 +98,7 @@ public sealed class OpenIdClientSettingsTests : CmsTestBase<BlogFixture>, IClass
 
         var useCodeFlow = page.Locator(".openid-use-code-flow");
         var useIdTokenFlow = page.Locator(".openid-use-id-token-flow");
-        var clientSecretContainer = page.Locator(".openid-client-secret").Locator("xpath=ancestor::div[contains(@class, 'collapse')][1]");
+        var clientSecretContainer = page.Locator(".openid-client-secret").Locator("xpath=ancestor-or-self::div[contains(@class, 'collapse')][1]");
 
         // Start from a known state: the Implicit id_token flow selected, which does NOT
         // need a client secret - this is also the state whose "does the secret section
@@ -133,7 +133,7 @@ public sealed class OpenIdClientSettingsTests : CmsTestBase<BlogFixture>, IClass
         await ResetToNoFlowSelectedAsync(page);
 
         var useCodeFlow = page.Locator(".openid-use-code-flow");
-        var clientSecretContainer = page.Locator(".openid-client-secret").Locator("xpath=ancestor::div[contains(@class, 'collapse')][1]");
+        var clientSecretContainer = page.Locator(".openid-client-secret").Locator("xpath=ancestor-or-self::div[contains(@class, 'collapse')][1]");
 
         await Assertions.Expect(clientSecretContainer).Not.ToHaveClassAsync(new System.Text.RegularExpressions.Regex("\\bshow\\b"));
 

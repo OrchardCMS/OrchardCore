@@ -50,9 +50,6 @@ jobs:
     - name: Unit Tests
       run: |
         dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
-    - name: Localization Extraction Tests
-      run: |
-        dotnet test --project ./test/OrchardCore.Localization.Extraction.Tests/OrchardCore.Localization.Extraction.Tests.csproj -c Release --no-build
     - name: Cache Playwright Browsers
       if: matrix.os == 'ubuntu-24.04'
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -78,7 +75,7 @@ jobs:
         ORCHARD_TEST_DOCKER_SERVICES: "false"
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*" --hangdump --hangdump-timeout 15m --hangdump-type Heap
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: ${{ matrix.os == 'ubuntu-24.04' && !success() }}
       with:
         name: functional-test-failure
@@ -87,3 +84,34 @@ jobs:
           test/OrchardCore.Tests.Functional/traces
           TestResults
         retention-days: 3
+  localization:
+    # Extracting and verifying the translation templates doesn't depend on the OS, so it runs once, next to the other jobs.
+    runs-on: ubuntu-24.04
+    name: Localization
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Pin global.json SDK in CI
+      shell: pwsh
+      run: |
+        $globalJson = Get-Content global.json -Raw | ConvertFrom-Json
+        $version = $globalJson.sdk.version
+        $globalJson.sdk.PSObject.Properties.Remove('rollForward')
+        $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
+        Write-Host "Pinned global.json SDK for CI: $version"
+    - uses: ./.github/actions/setup-dotnet
+    - name: Check translation templates
+      shell: pwsh
+      run: |
+        # See the Build step of the build_test job for the reason why we disable NuGet audit warnings.
+        dotnet build -c Release -p:UpdateLocalizationCatalogs=true -p:NuGetAudit=false
+        $changes = git status --porcelain -- '*.pot'
+        if ($changes)
+        {
+            Write-Output 'The translation templates are out of date. Run `dotnet build OrchardCore.slnx -p:UpdateLocalizationCatalogs=true` and commit the .pot files, see https://docs.orchardcore.net/en/latest/reference/modules/Localize/#translation-templates.'
+            Write-Output $changes
+            git --no-pager diff -- '*.pot'
+            exit 1
+        }
+    - name: Localization Extraction Tests
+      run: |
+        dotnet test --project ./test/OrchardCore.Localization.Extraction.Tests/OrchardCore.Localization.Extraction.Tests.csproj -c Release --no-build

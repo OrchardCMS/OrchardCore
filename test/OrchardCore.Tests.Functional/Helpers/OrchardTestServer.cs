@@ -41,16 +41,21 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
     public static string CurrentConnectionString => s_currentConnectionString;
 
+    internal static bool IsPostgresConfigured =>
+        _originalDatabaseProvider == "Postgres" && !string.IsNullOrEmpty(_originalConnectionString);
+
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
+    private readonly string _postgresConnectionString;
 
     public string ServerAddress { get; }
 
-    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector)
+    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector, string postgresConnectionString = null)
     {
         _app = app;
         ServerAddress = serverAddress;
         _logCollector = logCollector;
+        _postgresConnectionString = postgresConnectionString;
     }
 
     /// <summary>
@@ -84,7 +89,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
         builder.Services.AddSingleton<IModuleNamesProvider, TestThemeModuleNamesProvider>();
 
-        ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        var postgresConnectionString = ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
         configure?.Invoke(builder);
 
         var app = builder.Build();
@@ -93,7 +98,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
+        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector, postgresConnectionString);
     }
 
     public static async Task<OrchardTestServer> StartMvcAsync(string contentRoot, string appDataPath)
@@ -172,12 +177,25 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         if (_app is not null)
         {
-            await _app.StopAsync();
-            await _app.DisposeAsync();
+            try
+            {
+                await _app.StopAsync();
+                await _app.DisposeAsync();
+            }
+            finally
+            {
+                if (_postgresConnectionString is not null)
+                {
+                    // Npgsql pools outlive hosts. Release this fixture's idle connections
+                    // without clearing pools belonging to other, still-running fixtures.
+                    using var connection = new Npgsql.NpgsqlConnection(_postgresConnectionString);
+                    Npgsql.NpgsqlConnection.ClearPool(connection);
+                }
+            }
         }
     }
 
-    private static void ConfigureServices(
+    private static string ConfigureServices(
         WebApplicationBuilder builder,
         string appDataPath,
         string instanceId,
@@ -200,11 +218,15 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // Ensure the per-fixture App_Data path exists before shell initialization persists settings.
         Directory.CreateDirectory(resolvedAppDataPath);
 
+        // Configure a per-fixture temporary directory, as the default unique one logs a warning.
+        builder.Configuration["OrchardCore:TempDirectory:Path"] = Path.Combine(resolvedAppDataPath, "Temp");
+
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
+        string connectionString = null;
         if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
         {
-            var connectionString = _originalConnectionString;
+            connectionString = _originalConnectionString;
 
             if (!string.IsNullOrEmpty(instanceId))
             {
@@ -244,6 +266,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Logging.AddFilter<FakeLoggerProvider>(level => level >= LogLevel.Warning);
         builder.Logging.AddProvider(loggerProvider);
+
+        return IsPostgresConfigured && !string.IsNullOrEmpty(instanceId) ? connectionString : null;
     }
 
     /// <summary>

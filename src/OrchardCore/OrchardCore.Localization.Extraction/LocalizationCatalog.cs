@@ -17,6 +17,34 @@ public sealed class LocalizationMessage
 
 public sealed class LocalizationCatalog
 {
+    /// <summary>
+    /// Collapses every run of whitespace, including line breaks, into a single space, so that a description taken
+    /// from source code is the same whatever the line endings of the checkout or the indentation of the code.
+    /// </summary>
+    internal static string NormalizeWhitespace(string value)
+    {
+        var builder = new System.Text.StringBuilder(value.Length);
+        var pendingSpace = false;
+        foreach (var character in value)
+        {
+            if (char.IsWhiteSpace(character))
+            {
+                pendingSpace = builder.Length > 0;
+                continue;
+            }
+
+            if (pendingSpace)
+            {
+                builder.Append(' ');
+                pendingSpace = false;
+            }
+
+            builder.Append(character);
+        }
+
+        return builder.ToString();
+    }
+
     private readonly Dictionary<(string Context, string Text), LocalizationMessage> _messages = [];
 
     public IReadOnlyCollection<LocalizationMessage> Messages => _messages.Values;
@@ -70,7 +98,7 @@ public sealed class LocalizationCatalog
                     existing.FormatArguments.Add(index, descriptions);
                 }
 
-                descriptions.Add(formatArguments[index]!);
+                descriptions.Add(NormalizeWhitespace(formatArguments[index]!));
             }
         }
     }

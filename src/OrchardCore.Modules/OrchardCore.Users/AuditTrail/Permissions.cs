@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users.AuditTrail;
@@ -6,19 +7,19 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ViewUserAuditTrailEvents = new(
         nameof(ViewUserAuditTrailEvents),
-        "View Audit Trail events about users",
+        LocalizationSource.Create<Permissions>("View Audit Trail events about users"),
         [],
         isSecurityCritical: true);
 
     public static readonly Permission ViewOwnUserAuditTrailEvents = new(
         nameof(ViewOwnUserAuditTrailEvents),
-        "View Audit Trail events about own user",
+        LocalizationSource.Create<Permissions>("View Audit Trail events about own user"),
         [ViewUserAuditTrailEvents],
         isSecurityCritical: true);
     
     public static readonly Permission ManageUserAuditTrailSettings = new(
         nameof(ManageUserAuditTrailSettings),
-        "Manage Audit Trail settings for user events",
+        LocalizationSource.Create<Permissions>("Manage Audit Trail settings for user events"),
         [],
         isSecurityCritical: true);
 

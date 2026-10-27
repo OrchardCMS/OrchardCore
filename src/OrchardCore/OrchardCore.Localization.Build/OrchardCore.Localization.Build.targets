@@ -1,12 +1,39 @@
 <Project>
-  <Target Name="OrchardCoreGenerateLocalizationCatalog"
-          BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="ResolveReferences;GenerateGlobalUsings"
-          Condition="'$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true' and '$(TargetFramework)' != ''">
+  <!--
+    A project keeps its translation template, <AssemblyName>.pot, next to its project file, where it is checked in
+    with the sources it describes. Every build embeds it as the <AssemblyName>.Localization.pot manifest resource.
+    The template is rewritten on demand, by the UpdateLocalizationCatalog target of one project, or by building with
+    UpdateLocalizationCatalogs=true, which updates every project of a solution or application.
+  -->
+
+  <Target Name="_OrchardCoreLocalizationCatalogProperties" Condition="'$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <LocalizationCatalogPath Condition="'$(LocalizationCatalogPath)' == ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(AssemblyName).pot'))</LocalizationCatalogPath>
+      <_LocalizationCachePath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Localization', '$(AssemblyName).pot'))</_LocalizationCachePath>
+      <_LocalizationRequestPath>$(_LocalizationCachePath).request</_LocalizationRequestPath>
+      <_LocalizationStampPath>$(_LocalizationCachePath).stamp.json</_LocalizationStampPath>
+      <!-- A multi-targeting project extracts its template from its first target framework. -->
+      <_LocalizationFirstTargetFramework Condition="'$(TargetFrameworks)' != ''">$(TargetFrameworks.Split(';')[0])</_LocalizationFirstTargetFramework>
+      <_LocalizationPrimaryTargetFramework Condition="'$(TargetFrameworks)' == '' or '$(TargetFramework)' == '$(_LocalizationFirstTargetFramework)'">true</_LocalizationPrimaryTargetFramework>
+    </PropertyGroup>
+  </Target>
+
+  <!-- Updates the template of the project, from the inner build of its first target framework when it multi-targets. -->
+  <Target Name="UpdateLocalizationCatalog" DependsOnTargets="_OrchardCoreUpdateLocalizationCatalogCrossTargeting;_OrchardCoreUpdateLocalizationCatalogCore" />
+
+  <Target Name="_OrchardCoreUpdateLocalizationCatalogCrossTargeting"
+          Condition="'$(GenerateLocalizationCatalog)' == 'true' and '$(TargetFramework)' == '' and '$(TargetFrameworks)' != ''">
+    <PropertyGroup>
+      <_LocalizationFirstTargetFramework>$(TargetFrameworks.Split(';')[0])</_LocalizationFirstTargetFramework>
+    </PropertyGroup>
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="UpdateLocalizationCatalog" Properties="TargetFramework=$(_LocalizationFirstTargetFramework)" />
+  </Target>
+
+  <Target Name="_OrchardCoreUpdateLocalizationCatalogCore"
+          DependsOnTargets="_OrchardCoreLocalizationCatalogProperties;ResolveReferences;GenerateGlobalUsings"
+          Condition="'$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(TargetFramework)' != ''">
     <PropertyGroup>
       <LocalizationToolPath Condition="'$(LocalizationToolPath)' == ''">$(_LocalizationToolsDirectory)bin/$(Configuration)/$(DefaultTargetFramework)/OrchardCore.Localization.Tools.dll</LocalizationToolPath>
-      <LocalizationCatalogPath Condition="'$(LocalizationCatalogPath)' == ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Localization', '$(AssemblyName).pot'))</LocalizationCatalogPath>
-      <_LocalizationRequestPath>$(LocalizationCatalogPath).request</_LocalizationRequestPath>
       <LocalizationViewPrefix Condition="'$(LocalizationViewPrefix)' == '' and '$(ModuleType)' != ''">$(AssemblyName)</LocalizationViewPrefix>
       <LocalizationDotNetHostPath Condition="'$(LocalizationDotNetHostPath)' == '' and '$(DotNetHostPath)' != ''">$(DotNetHostPath)</LocalizationDotNetHostPath>
       <LocalizationDotNetHostPath Condition="'$(LocalizationDotNetHostPath)' == '' and '$(NetCoreRoot)' != ''">$(NetCoreRoot)dotnet$(ExeExtension)</LocalizationDotNetHostPath>
@@ -22,6 +49,9 @@
       <LocalizationRazorCompilerPath Condition="'$(LocalizationRazorCompilerPath)' == '' and '$(RazorSdkDirectoryRoot)' != '' and Exists('$(RazorSdkDirectoryRoot)source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll')">$(RazorSdkDirectoryRoot)source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll</LocalizationRazorCompilerPath>
       <LocalizationRazorCompilerPath Condition="'$(LocalizationRazorCompilerPath)' == '' and '$(NetCoreRoot)' != '' and '$(NETCoreSdkVersion)' != '' and Exists('$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll')">$(NetCoreRoot)sdk/$(NETCoreSdkVersion)/Sdks/Microsoft.NET.Sdk.Razor/source-generators/Microsoft.CodeAnalysis.Razor.Compiler.dll</LocalizationRazorCompilerPath>
     </PropertyGroup>
+    <!-- In the source tree, the worker is built when a template is updated, so that a normal build never depends on it. -->
+    <MSBuild Projects="$(_LocalizationToolsProject)" Targets="Restore" Properties="_LocalizationWorkerRestore=true;GenerateLocalizationCatalog=false" Condition="Exists('$(_LocalizationToolsProject)') and !Exists('$(_LocalizationToolsDirectory)obj/project.assets.json')" />
+    <MSBuild Projects="$(_LocalizationToolsProject)" Targets="Build" Properties="Configuration=$(Configuration);GenerateLocalizationCatalog=false" Condition="Exists('$(_LocalizationToolsProject)')" />
     <Error Code="OCLOC009" Condition="!Exists('$(LocalizationToolPath)')" Text="Localization worker not found: $(LocalizationToolPath). Build the tooling or reference OrchardCore.Localization.Build." />
     <Error Code="OCLOC009" Condition="'$(LocalizationRoslynDirectory)' == ''" Text="The Roslyn compiler of the .NET SDK was not found. Set LocalizationRoslynDirectory to the directory containing Microsoft.CodeAnalysis.dll." />
     <ItemGroup>
@@ -30,6 +60,8 @@
       <_LocalizationLiquid Include="@(EmbeddedResource->WithMetadataValue('Extension', '.liquid'));@(Content->WithMetadataValue('Extension', '.liquid'));@(None->WithMetadataValue('Extension', '.liquid'));@(LocalizationLiquid)" />
       <_LocalizationReference Include="@(ReferencePath)" />
       <_LocalizationAnalyzer Include="@(Analyzer)" />
+      <!-- The template is the same whatever the configuration: strings in DEBUG or TRACE-only code are not extracted. -->
+      <_LocalizationDefine Include="$(DefineConstants)" Exclude="DEBUG;TRACE" />
     </ItemGroup>
     <RemoveDuplicates Inputs="@(_LocalizationLiquid)">
       <Output TaskParameter="Filtered" ItemName="_LocalizationUniqueLiquid" />
@@ -61,8 +93,10 @@
       <_LocalizationProperty Include="AllowUnsafe" Value="$(AllowUnsafeBlocks)" />
       <_LocalizationProperty Include="OutputType" Value="$(OutputType)" />
       <_LocalizationProperty Include="Strict" Value="$(LocalizationStrict)" />
-      <_LocalizationProperty Include="Defines" Value="$(DefineConstants)" />
+      <_LocalizationProperty Include="LineNumbers" Value="$(LocalizationCatalogLineNumbers)" />
+      <_LocalizationProperty Include="Defines" Value="@(_LocalizationDefine)" />
       <_LocalizationProperty Include="OutputPath" Value="$(LocalizationCatalogPath)" />
+      <_LocalizationProperty Include="StampPath" Value="$(_LocalizationStampPath)" />
       <_LocalizationProperty EncodedValue="$([MSBuild]::ConvertToBase64('%(_LocalizationProperty.Value)'))" />
     </ItemGroup>
     <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(_LocalizationRequestPath)'))" />
@@ -71,19 +105,39 @@
                       Encoding="UTF-8" Overwrite="true" WriteOnlyWhenDifferent="true" />
     <Exec Command="&quot;$(LocalizationDotNetHostPath)&quot; &quot;$(LocalizationToolPath)&quot; --request &quot;$(_LocalizationRequestPath)&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <ItemGroup>
-      <EmbeddedResource Include="$(LocalizationCatalogPath)" LogicalName="$(AssemblyName).Localization.pot" WithCulture="false" />
-      <LocalizationCatalog Include="$(LocalizationCatalogPath)" AssemblyName="$(AssemblyName)" LogicalName="$(AssemblyName).Localization.pot" TargetFramework="$(TargetFramework)" />
-      <FileWrites Include="$(LocalizationCatalogPath);$(LocalizationCatalogPath).stamp.json;$(_LocalizationRequestPath)" />
+      <FileWrites Include="$(_LocalizationRequestPath);$(_LocalizationStampPath)" />
     </ItemGroup>
   </Target>
+
+  <!-- With UpdateLocalizationCatalogs=true, the build of the first target framework rewrites the template before embedding it. -->
+  <Target Name="_OrchardCoreUpdateLocalizationCatalogOnBuild"
+          DependsOnTargets="_OrchardCoreLocalizationCatalogProperties"
+          Condition="'$(UpdateLocalizationCatalogs)' == 'true' and '$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(TargetFramework)' != ''">
+    <CallTarget Targets="_OrchardCoreUpdateLocalizationCatalogCore" Condition="'$(_LocalizationPrimaryTargetFramework)' == 'true'" />
+  </Target>
+
+  <!-- Embeds the checked-in template, when the project has one, as the <AssemblyName>.Localization.pot manifest resource. -->
+  <Target Name="OrchardCoreEmbedLocalizationCatalog"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="_OrchardCoreLocalizationCatalogProperties;_OrchardCoreUpdateLocalizationCatalogOnBuild"
+          Condition="'$(GenerateLocalizationCatalog)' == 'true' and '$(TargetFramework)' != ''">
+    <ItemGroup Condition="Exists('$(LocalizationCatalogPath)')">
+      <EmbeddedResource Remove="$(LocalizationCatalogPath)" />
+      <EmbeddedResource Include="$(LocalizationCatalogPath)" LogicalName="$(AssemblyName).Localization.pot" WithCulture="false" />
+      <LocalizationCatalog Include="$(LocalizationCatalogPath)" AssemblyName="$(AssemblyName)" LogicalName="$(AssemblyName).Localization.pot" TargetFramework="$(TargetFramework)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Copies the templates of the built projects into one directory, for translation platforms. -->
   <Target Name="OrchardCoreCollectLocalizationCatalog"
-          AfterTargets="OrchardCoreGenerateLocalizationCatalog"
-          Condition="'$(LocalizationCatalogOutputPath)' != '' and '$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true' and '$(TargetFramework)' != ''">
+          AfterTargets="OrchardCoreEmbedLocalizationCatalog"
+          Condition="'$(LocalizationCatalogOutputPath)' != '' and '$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(TargetFramework)' != '' and '@(LocalizationCatalog)' != ''">
     <PropertyGroup>
       <_LocalizationCatalogOutputDirectory>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(LocalizationCatalogOutputPath)', '$(TargetFramework)'))</_LocalizationCatalogOutputDirectory>
     </PropertyGroup>
     <MakeDir Directories="$(_LocalizationCatalogOutputDirectory)" />
     <Copy SourceFiles="@(LocalizationCatalog)" DestinationFiles="@(LocalizationCatalog->'$(_LocalizationCatalogOutputDirectory)/%(AssemblyName).pot')" SkipUnchangedFiles="true" />
   </Target>
-  <Target Name="GetLocalizationCatalogs" DependsOnTargets="OrchardCoreGenerateLocalizationCatalog" Returns="@(LocalizationCatalog)" />
+
+  <Target Name="GetLocalizationCatalogs" DependsOnTargets="OrchardCoreEmbedLocalizationCatalog" Returns="@(LocalizationCatalog)" />
 </Project>

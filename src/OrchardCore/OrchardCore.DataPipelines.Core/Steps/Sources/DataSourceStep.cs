@@ -123,7 +123,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
         foreach (var filter in settings.Filters)
         {
             var field = schema.FindField(filter.Field);
-            var values = filter.Values.Select(value => DataPipelineTemplate.Render(value, context.Run, now)).ToArray();
+            var values = filter.Values.SelectMany(value => RenderValues(filter.Operator, value, context.Run, now)).ToArray();
             var predicate = DataFilterPredicates.Build(filter.Operator, field.Type, values, today);
 
             if (predicate is null)
@@ -317,11 +317,18 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
         foreach (var filter in settings.Filters)
         {
-            if (schema.FindField(filter.Field) is null)
+            var field = schema.FindField(filter.Field);
+
+            if (field is null)
             {
                 errors.Add(S["The data set has no field named '{0}' to filter on.", filter.Field ?? string.Empty]);
 
                 continue;
+            }
+
+            if (!filter.Operator.AppliesTo(field.Type))
+            {
+                errors.Add(S["The filter on '{0}' can't use the {1} comparison on a {2} field. Choose another comparison.", field.Name, filter.Operator, field.Type]);
             }
 
             read.Add(filter.Field);
@@ -329,7 +336,7 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
         if (settings.MaxRows < 0)
         {
-            errors.Add(S["The number of rows to read can't be negative."]);
+            errors.Add(S["The maximum number of rows to read can't be negative."]);
         }
 
         DataField incremental = null;
@@ -354,11 +361,22 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSo
 
             if (settings.MaxRows > 0)
             {
-                errors.Add(S["A step that reads only the new rows reads all of them: remove the most rows to read."]);
+                errors.Add(S["A step that reads only the new rows reads all of them: set the maximum number of rows to 0."]);
             }
         }
 
         return new Plan(fields.ToArray(), settings.Fields.Count == 0 ? [] : read, incremental);
+    }
+
+    // A placeholder in a list of values, such as {Parameter:Regions} for "is one of", can give several values,
+    // separated by commas.
+    private static List<string> RenderValues(DataFilterOperator filterOperator, string value, DataPipelineRunContext run, DateTime now)
+    {
+        var rendered = DataPipelineTemplate.Render(value, run, now);
+
+        return filterOperator is DataFilterOperator.In or DataFilterOperator.NotIn && rendered != value
+            ? DataFilterValueList.Parse(rendered)
+            : [rendered];
     }
 
     // Keeps every tick of a date, so the next run doesn't read the last row again.

@@ -10,9 +10,11 @@
     <_LocalizationPackDependsOn Condition="'$(NoBuild)' != 'true'">Build</_LocalizationPackDependsOn>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../OrchardCore.Localization.Tools/OrchardCore.Localization.Tools.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" AdditionalProperties="GenerateLocalizationCatalog=false" />
+    <ProjectReference Include="../OrchardCore.Localization.Tools/OrchardCore.Localization.Tools.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
     <None Update="OrchardCore.Localization.Build.props" Pack="true" PackagePath="build/OrchardCore.Localization.Build.props" />
     <None Update="OrchardCore.Localization.Build.targets" Pack="true" PackagePath="build/OrchardCore.Localization.Build.targets" />
+    <None Update="buildMultiTargeting/OrchardCore.Localization.Build.props" Pack="true" PackagePath="buildMultiTargeting/OrchardCore.Localization.Build.props" />
+    <None Update="buildMultiTargeting/OrchardCore.Localization.Build.targets" Pack="true" PackagePath="buildMultiTargeting/OrchardCore.Localization.Build.targets" />
   </ItemGroup>
   <Target Name="CollectLocalizationWorker" BeforeTargets="_GetPackageFiles" DependsOnTargets="$(_LocalizationPackDependsOn)">
     <Error Condition="!Exists('$(_LocalizationWorkerOutput)OrchardCore.Localization.Tools.dll')" Text="Build the localization worker before packing without a build." />

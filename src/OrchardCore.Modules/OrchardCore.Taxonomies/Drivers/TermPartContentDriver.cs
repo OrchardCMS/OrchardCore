@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -17,20 +18,22 @@ namespace OrchardCore.Taxonomies.Drivers;
 
 public sealed class TermPartContentDriver : ContentDisplayDriver
 {
-    private readonly IContentsTaxonomyListQueryService _contentsTaxonomyListQueryService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AutorouteOptions _autorouteOptions;
     private readonly PagerOptions _pagerOptions;
     private readonly IContentManager _contentManager;
 
+    private IContentsTaxonomyListQueryService _contentsTaxonomyListQueryService;
+
     public TermPartContentDriver(
         IOptions<PagerOptions> pagerOptions,
         IHttpContextAccessor httpContextAccessor,
         IOptions<AutorouteOptions> autorouteOptions,
-        IContentsTaxonomyListQueryService contentsTaxonomyListQueryService,
+        IServiceProvider serviceProvider,
         IContentManager contentManager)
     {
-        _contentsTaxonomyListQueryService = contentsTaxonomyListQueryService;
+        _serviceProvider = serviceProvider;
         _httpContextAccessor = httpContextAccessor;
         _autorouteOptions = autorouteOptions.Value;
         _pagerOptions = pagerOptions.Value;
@@ -69,6 +72,9 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
 
     private async Task<(int, IEnumerable<ContentItem>)> QueryTermItemsAsync(TermPart termPart, Pager pager)
     {
+        // Resolved on demand as the driver is built for every displayed content item, while only terms are queried.
+        _contentsTaxonomyListQueryService ??= _serviceProvider.GetRequiredService<IContentsTaxonomyListQueryService>();
+
         var query = await _contentsTaxonomyListQueryService.QueryAsync(termPart, pager);
 
         var totalItems = await query.CountAsync();

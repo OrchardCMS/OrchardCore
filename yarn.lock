@@ -2958,6 +2958,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/miniprofiler@workspace:src/OrchardCore.Modules/OrchardCore.MiniProfiler/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/miniprofiler@workspace:src/OrchardCore.Modules/OrchardCore.MiniProfiler/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/notifications@workspace:src/OrchardCore.Modules/OrchardCore.Notifications/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/notifications@workspace:src/OrchardCore.Modules/OrchardCore.Notifications/Assets"

@@ -14,10 +14,10 @@ public class PermissionsLocalizationDataProviderTests
     {
         // Arrange
         var provider = CreateProvider(
-            new Permission("ViewThings", "View things"),
-            new Permission("ViewArticles", "View Article by others"),
-            new Permission("ViewThingsAgain", "View things"),
-            new Permission("EditThing_{0}", "Edit {0}"),
+            PermissionHelpers.Create("ViewThings", "View things"),
+            PermissionHelpers.Create("ViewArticles", "View Article by others"),
+            PermissionHelpers.Create("ViewThingsAgain", "View things"),
+            PermissionHelpers.Create("EditThing_{0}", "Edit {0}"),
             new Permission("NoDescription"));
 
         // Act
@@ -33,7 +33,7 @@ public class PermissionsLocalizationDataProviderTests
         // Arrange
         var provider = CreateProvider(
             new Permission("ManageThings", LocalizationSource.Create<PermissionsLocalizationDataProviderTests>("Manage things")),
-            new Permission("ViewThings", "View things"));
+            new Permission("ViewThings", LocalizationSource.Create("View things")));
 
         // Act
         var descriptors = await provider.GetDescriptorsAsync();

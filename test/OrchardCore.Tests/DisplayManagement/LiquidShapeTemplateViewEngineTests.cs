@@ -50,6 +50,7 @@ public class LiquidShapeTemplateViewEngineTests
                 .AddSingleton(HtmlEncoder.Default)
                 .AddSingleton(CreateLocalClock())
                 .AddScoped<ViewContextAccessor>()
+                .AddScoped<LiquidTemplateContextAccessor>()
                 .AddScoped<LiquidShapeTemplateViewEngine>()
                 .AddScoped(sp => (RazorShapeTemplateViewEngine)null)
                 .Configure<TemplateOptions>(options =>

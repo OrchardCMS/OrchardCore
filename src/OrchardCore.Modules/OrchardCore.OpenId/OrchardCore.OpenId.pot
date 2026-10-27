@@ -1,0 +1,1852 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.OpenId\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: ViewModels/OpenIdClientSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Authority is required"
+msgstr ""
+
+#: ViewModels/OpenIdClientSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "ClientId is required"
+msgstr ""
+
+#: ViewModels/OpenIdClientSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid SignedOut redirect url"
+msgstr ""
+
+#: ViewModels/OpenIdClientSettingsViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid path"
+msgstr ""
+
+#. Format arguments: {0}
+#: ViewModels/CreateOpenIdApplicationViewModel.cs
+#: ViewModels/EditOpenIdApplicationViewModel.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} is not well-formed"
+msgstr ""
+
+#. Format arguments: {0}
+#: ViewModels/OpenIdClientSettingsViewModel.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} is required"
+msgstr ""
+
+#: ClientAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ClientAdminMenu"
+msgid "Authentication Client"
+msgstr ""
+
+#: ServerAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ClientAdminMenu"
+msgid "Authorization Server"
+msgstr ""
+
+#: ClientAdminMenu.cs
+#: ServerAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ClientAdminMenu"
+msgid "OpenID Connect"
+msgstr ""
+
+#: ClientAdminMenu.cs
+#: ServerAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ClientAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Controllers/ApplicationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
+msgid "No client secret can be set for public applications."
+msgstr ""
+
+#: Controllers/ApplicationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
+msgid "OpenID Connect settings are not properly configured."
+msgstr ""
+
+#: Controllers/ApplicationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
+msgid "Setting a new client secret is required."
+msgstr ""
+
+#: Controllers/ApplicationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
+msgid "The client identifier is already taken by another application."
+msgstr ""
+
+#: Controllers/ApplicationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
+msgid "The client secret is required for confidential applications."
+msgstr ""
+
+#: Controllers/ApplicationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
+msgid "There are no registered services to provide roles."
+msgstr ""
+
+#: Controllers/ScopeController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ScopeController"
+msgid "The name is already taken by another scope."
+msgstr ""
+
+#. Format arguments: {0}: OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
+#: Controllers/ScopeController.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Controllers.ScopeController"
+msgid "The resources field cannot contain the value: {0}."
+msgstr ""
+
+#: Controllers/ServerConfigurationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ServerConfigurationController"
+msgid "OpenID server configuration successfully updated."
+msgstr ""
+
+#: Controllers/ValidationConfigurationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ValidationConfigurationController"
+msgid "OpenID validation configuration successfully updated."
+msgstr ""
+
+#: Drivers/OpenIdClientSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSecretMigrationDisplayDriver"
+msgid "Client secret"
+msgstr ""
+
+#: Drivers/OpenIdClientSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSecretMigrationDisplayDriver"
+msgid "OpenID Connect"
+msgstr ""
+
+#: Drivers/OpenIdClientSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSecretMigrationDisplayDriver"
+msgid "OpenID Connect: Client secret"
+msgstr ""
+
+#: Drivers/OpenIdClientSettingsDisplayDriver.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSettingsDisplayDriver"
+msgid "The parameters are written in an incorrect format."
+msgstr ""
+
+#: ManagementAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ManagementAdminMenu"
+msgid "Access Control"
+msgstr ""
+
+#: ManagementAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ManagementAdminMenu"
+msgid "Applications"
+msgstr ""
+
+#: ManagementAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ManagementAdminMenu"
+msgid "OpenID Connect"
+msgstr ""
+
+#: ManagementAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ManagementAdminMenu"
+msgid "Scopes"
+msgstr ""
+
+#: OpenIdLocalizationSources.cs
+msgctxt "OrchardCore.OpenId.OpenIdLocalizationSources"
+msgid "OpenID Connect"
+msgstr ""
+
+#: Services/OpenIdClientService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
+msgid "The authority cannot be null or empty."
+msgstr ""
+
+#: Services/OpenIdClientService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
+msgid "The authority cannot contain a query string or a fragment."
+msgstr ""
+
+#: Services/OpenIdClientService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
+msgid "The authority must be a valid absolute URL."
+msgstr ""
+
+#: Services/OpenIdClientService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
+msgid "The response mode cannot be null or empty."
+msgstr ""
+
+#: Services/OpenIdClientService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
+msgid "The response type cannot be null or empty."
+msgstr ""
+
+#: Services/OpenIdClientService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
+msgid "Unknown response mode."
+msgstr ""
+
+#: Services/OpenIdClientService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
+msgid "Unknown response type ."
+msgstr ""
+
+#. Format arguments: {0}: "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"
+#: Services/OpenIdJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "A JSON representation of the allowed values, e.g. {0}"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Add a parameter"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Cancel"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Edit Data"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Enter a parameter"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Enter a value"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "OK"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Parameter Name"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Parameters"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Remove parameter from list"
+msgstr ""
+
+#: Services/OpenIdJSLocalizer.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
+msgid "Value"
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "Access token encryption can only be disabled when using JWT tokens."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "At least one OpenID Connect flow must be enabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The authority cannot contain a query string or a fragment."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The authority must be a valid absolute URL."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The certificate cannot be found."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The certificate doesn't contain the required private key."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The certificate is not valid because it is marked as archived."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The certificate is not valid for current date."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The client credentials flow cannot be enabled when the token endpoint is disabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The hybrid flow cannot be enabled when the authorization and token endpoints are disabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The implicit flow cannot be enabled when the authorization endpoint is disabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The password flow cannot be enabled when the token endpoint is disabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The pushed authorization endpoint can only be enabled when the authorization endpoint is enabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The pushed authorization endpoint must be enabled when enforcing pushed authorization requests."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The refresh token flow cannot be enabled when the token endpoint is disabled."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "An audience must be set when configuring the authority."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "Either a tenant or an authority must be registered."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "No appropriate scope was found."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "No audience can be set when using another tenant."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "No metatada address can be set when using another tenant."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "Selecting a server tenant for which reference access tokens are enabled is currently not supported."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "The audience cannot start with the special 'oct:' prefix."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "The authority cannot contain a query string or a fragment."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "The metadata address cannot contain a query string or a fragment."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "The specified authority is not valid."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "The specified metadata address is not valid."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "The specified tenant is not valid."
+msgstr ""
+
+#: Services/OpenIdValidationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdValidationService"
+msgid "Token type validation can only be disabled for remote servers."
+msgstr ""
+
+#: ValidationAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ValidationAdminMenu"
+msgid "OpenID Connect"
+msgstr ""
+
+#: ValidationAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ValidationAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: ValidationAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ValidationAdminMenu"
+msgid "Token Validation"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel"
+msgid "d"
+msgstr ""
+
+#: Views/Access/Authorize.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
+msgid "Authorization"
+msgstr ""
+
+#. Format arguments: {0}: Model.ApplicationName; {1}: Model.Scope
+#: Views/Access/Authorize.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
+msgid "Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})"
+msgstr ""
+
+#: Views/Access/Error.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Error"
+msgid "Ooooops, something went really bad! :("
+msgstr ""
+
+#: Views/Access/Logout.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Logout"
+msgid "Are you sure you want to log out?"
+msgstr ""
+
+#: Views/Access/Logout.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Logout"
+msgid "Log out"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow Authorization Code Flow"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow Client Credentials Flow"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow End Session Endpoint"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow Hybrid Flow"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow Implicit Flow"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow Password Flow"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow Refresh Token Flow"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allowed Scopes"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Applications"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"
+#: Views/Application/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://tools.ietf.org/html/rfc6749#section-1.3.4"
+#: Views/Application/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"
+#: Views/Application/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"
+#: Views/Application/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://tools.ietf.org/html/rfc6749#section-1.3.3"
+#: Views/Application/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Password Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens"
+#: Views/Application/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Refresh Token Flow."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click here to copy the value"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click here to generate new value"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click here toggle secret visibility"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Client Credentials Roles"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Client Id"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Client Secret"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Confidential client"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Consent type"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Create a new application"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Display Name"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Ensure that the client application and OAuth or OIDC library being used supports PAR before enabling this option."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Ensure that the client application and OAuth or OIDC library being used supports PKCE before enabling this option."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Explicit consent"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "External consent"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Flows"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Implicit consent"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Post-Logout Redirect Uris"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Public client"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Recommended Parameters:"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Redirect Uris"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Require Proof Key for Code Exchange"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Require Pushed Authorization Requests"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Space delimited list of post-logout redirect URIs."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Space delimited list of redirect URIs."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "The consent type affects the way authorization requests are handled."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Type"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "When the consent is explicit, the authorization request must be approved by the end user. <strong>This is the recommended option.</strong>"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "When the consent is external, the authorization request is rejected unless a pre-existing authorization (granted programmatically) already exists."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "When the consent is implicit, the authorization request is assumed to be pre-approved and no consent form is displayed."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Authorization Code Flow"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Client Credentials Flow"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow End Session Endpoint"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Hybrid Flow"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Implicit Flow"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Introspection Endpoint"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Password Flow"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Refresh Token Flow"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Revocation Endpoint"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allowed Scopes"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Applications"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"
+#: Views/Application/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://tools.ietf.org/html/rfc6749#section-1.3.4"
+#: Views/Application/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"
+#: Views/Application/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"
+#: Views/Application/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://tools.ietf.org/html/rfc6749#section-1.3.3"
+#: Views/Application/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Password Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens"
+#: Views/Application/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Refresh Token Flow."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click here to copy the value"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click here to generate new value"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click here toggle secret visibility"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Client Credentials Roles"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Client Id"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Client Secret"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Confidential client"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Consent type"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Edit an application"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Ensure that the client/client library supports PAR before enabling this option."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Ensure that the client/client library supports PKCE before enabling this option."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Explicit consent"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "External consent"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Flows"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Implicit consent"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Post-Logout Redirect Uris"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Public client"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Recommended Parameters:"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Redirect Uris"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Require Proof Key for Code Exchange"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Require Pushed Authorization Requests"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Space delimited list of post-logout redirect URIs."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Space delimited list of redirect URIs."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "The consent type affects the way authorization requests are handled."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Type"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "When the consent is explicit, the authorization request must be approved by the end user. <strong>This is the recommended option.</strong>"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "When the consent is external, the authorization request is rejected unless a pre-existing authorization (granted programmatically) already exists."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "When the consent is implicit, the authorization request is assumed to be pre-approved and no consent form is displayed."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "enter a new value to replace the existing secret"
+msgstr ""
+
+#: Views/Application/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Index"
+msgid "<strong>Nothing here!</strong> There are no applications at the moment."
+msgstr ""
+
+#: Views/Application/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Application/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Index"
+msgid "Applications"
+msgstr ""
+
+#: Views/Application/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Index"
+msgid "Clear"
+msgstr ""
+
+#: Views/Application/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Index"
+msgid "Display name"
+msgstr ""
+
+#: Views/Application/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Index"
+msgid "New application"
+msgstr ""
+
+#: Views/Application/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Items/OpenIdServerDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdServerDeploymentStep.Edit"
+msgid "OpenID Server Settings"
+msgstr ""
+
+#: Views/Items/OpenIdServerDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdServerDeploymentStep.Summary"
+msgid "Adds OpenID Server settings to the plan."
+msgstr ""
+
+#: Views/Items/OpenIdServerDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdServerDeploymentStep.Summary"
+msgid "OpenID Server Settings"
+msgstr ""
+
+#: Views/Items/OpenIdServerDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdServerDeploymentStep.Thumbnail"
+msgid "Exports the OpenID Server settings."
+msgstr ""
+
+#: Views/Items/OpenIdServerDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdServerDeploymentStep.Thumbnail"
+msgid "OpenID Server Settings"
+msgstr ""
+
+#: Views/Items/OpenIdValidationDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdValidationDeploymentStep.Edit"
+msgid "OpenID Validation Settings"
+msgstr ""
+
+#: Views/Items/OpenIdValidationDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdValidationDeploymentStep.Summary"
+msgid "Adds OpenID Validation settings to the plan."
+msgstr ""
+
+#: Views/Items/OpenIdValidationDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdValidationDeploymentStep.Summary"
+msgid "OpenID Validation Settings"
+msgstr ""
+
+#: Views/Items/OpenIdValidationDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdValidationDeploymentStep.Thumbnail"
+msgid "Exports the OpenID Validation settings."
+msgstr ""
+
+#: Views/Items/OpenIdValidationDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdValidationDeploymentStep.Thumbnail"
+msgid "OpenID Validation Settings"
+msgstr ""
+
+#: Views/OpenIdApplicationEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdApplicationEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/OpenIdApplicationEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdApplicationEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#. Format arguments: {0}: "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "A JSON representation of the allowed values, e.g. {0}"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Add a parameter"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Advanced Parameters"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Advanced parameters that can be sent with the authorization request."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Authority"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Authority URL for OpenID Connect Requests"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "CallbackPath"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Cancel"
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample", "http://openid.net/specs/openid-connect-core-1_0.html#code-id_tokenExample", "http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample", "http://openid.net/specs/openid-connect-core-1_0.html#codeExample", "http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample", "http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for an example."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Client Secret"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "ClientId"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Code Authentication Flow"
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Configure Response Mode. Click <a href=\"{0}\" target=\"_blank\">here</a> for more info."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Edit Data"
+msgstr ""
+
+#. Format arguments: {0}: "https://openid.net/specs/openid-connect-rpinitiated-1_0.html#RedirectionAfterLogout"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "For more information about 'post_logout_redirect_uri', visit: <a href=\"{0}\" target=\"_blank\">OpenID Connect RP-Initiated Logout 1.0</a>"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Hybrid Authentication Flow"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Implicit Authentication Flow"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "OK"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Parameter Name"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Remove parameter from list"
+msgstr ""
+
+#. Format arguments: {0}: OpenIddictConstants.Scopes.OpenId; {1}: OpenIddictConstants.Scopes.Profile
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Request additional scopes beyond '{0}' and '{1}'."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Response Mode"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Scopes"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "SignedOut CallbackPath"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "SignedOut Redirect Uri"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Store external authentication tokens for future use."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Store tokens?"
+msgstr ""
+
+#. Format arguments: {0}: "client_id", "client_secret"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "The '{0}' assigned by the identity provider."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "The URI to which the user-agent will be redirected after the application signs out from the identity provider. This redirect occurs following the invocation of the SignedOutCallbackPath."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "The request path within the application's base path where the user-agent will be redirected after signing out from the identity provider."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "The request path, relative to the application's base path, where the user-agent will be redirected. The middleware will handle this request upon arrival."
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Use 'code' response type"
+msgstr ""
+
+#. Format arguments: {0}: "code id_token token", "code id_token", "code token", "id_token token", "id_token"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Use <code>{0}</code> response type"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "User-Friendly Display Name of the identity provider"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "form_post"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "query"
+msgstr ""
+
+#: Views/OpenIdScopeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/OpenIdScopeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/OpenIdScopeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.DefaultTags.SummaryAdmin"
+msgid "Name"
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Encryption Key Secret"
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "RSA Keys from Secrets"
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Select an RSA key or X.509 certificate secret to use for encrypting access tokens."
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Select an RSA key or X.509 certificate secret to use for signing JWT tokens."
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Signing Key Secret"
+msgstr ""
+
+#: Views/OpenIdSecretSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdSecretSettings.Edit"
+msgid "Use RSA keys stored in Secrets instead of managed certificates. When set, these take precedence over the certificate store options."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "A certificate must be added to your server to set up the OpenID Connect module."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "A global setting that enforces PAR for all registered clients, regardless of whether the 'Require PAR' option is enabled for individual client applications."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "A global setting that enforces PKCE for all registered clients, regardless of whether the 'Require PKCE' option is enabled for individual client applications."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "ASP.NET Core Data Protection"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Advanced Options"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Allow Authorization Code Flow"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Allow Client Credentials Flow"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Allow Hybrid Flow"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Allow Implicit Flow"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Allow Password Flow"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Allow Refresh Token Flow"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Authority"
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"
+#: Views/OpenIdServerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://tools.ietf.org/html/rfc6749#section-1.3.4"
+#: Views/OpenIdServerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"
+#: Views/OpenIdServerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"
+#: Views/OpenIdServerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://tools.ietf.org/html/rfc6749#section-1.3.3"
+#: Views/OpenIdServerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Password Flow."
+msgstr ""
+
+#. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens"
+#: Views/OpenIdServerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Refresh Token Flow."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Disable Access Token Encryption (only for JWT tokens)"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Disable Rolling Refresh Tokens"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable Authorization Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable End Session Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable Introspection Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable Pushed Authorization Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable Revocation Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable Token Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable User Info Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enables the endpoint:"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Encryption Certificate"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Encryption Certificate Store Location"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Encryption Certificate Store Name"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Endpoints"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Flows"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "JSON Web Token (JWT)"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "No Friendly Name"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Proof Key for Code Exchange"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Pushed Authorization Requests"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Require Proof Key for Code Exchange"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Require Pushed Authorization Requests"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Require logout confirmation"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Select the encryption certificate location."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Select the encryption certificate store."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Select the encryption certificate."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Select the signing certificate location."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Select the signing certificate store."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Select the signing certificate."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Signing Certificate"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Signing Certificate Store Location"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Signing Certificate Store Name"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "The base URL of the identity server (this site). If not provided, a default value will be automatically generated based on the site host."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "The following options are optional and intended for advanced use only."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Token Format"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Use Reference Access Tokens"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "When enabled, JWT access tokens are not encrypted."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "When enabled, access tokens are stored in the database, and fixed-size tokens are returned to the client. This can be useful for handling a large number of claims. Note: This option cannot be enabled if other tenants are configured to use this server."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "When this option is enabled, refresh tokens are not marked as redeemed and can be reused until they expire."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "When unchecked, end-users are signed out without a confirmation prompt if a valid id_token_hint matching the current session is provided."
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "You need to add a certificate to your server for setting up OpenID Connect module."
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "Audience"
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "Authority"
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "Authorization server tenant"
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "Disable token type validation"
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "OpenID Connect Metadata Address"
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "The URL of the remote OpenID Connect server. Using HTTPS is highly recommended for security."
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "The unique name associated with this tenant. If not specified, the tenant name will be used as the default audience."
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "The well-formed URI for the OpenID Connect Metadata Address endpoint. This is intended for advanced scenarios where metadata is not available from the standard authority endpoint. Note: This option cannot be used with a Tenant configuration, and HTTPS is strongly recommended."
+msgstr ""
+
+#: Views/OpenIdValidationSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "To be able to validate tokens issued by a separate tenant, you must register a custom scope in the server options of the tenant hosting the authorization server."
+msgstr ""
+
+#. Format arguments: {0}: "at+jwt"
+#: Views/OpenIdValidationSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
+msgid "Token type validation can be disabled to accept JWT tokens from servers that do not support the '{0}' type header."
+msgstr ""
+
+#. Format arguments: {0}: OpenIdConstants.Prefixes.Tenant
+#: Views/Scope/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "A space-separated list of values is required. To utilize another active tenant as a resource, specify it using the format <code>{0}{{tenant_name}}</code>."
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Additional resources (API audiences)"
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Create a new scope"
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Description"
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Display Name"
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/Scope/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Create"
+msgid "Scopes"
+msgstr ""
+
+#. Format arguments: {0}: OpenIdConstants.Prefixes.Tenant
+#: Views/Scope/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "A space-separated list of values is required. To utilize another active tenant as a resource, specify it using the format <code>{0}{{tenant_name}}</code>."
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Additional resources (API audiences)"
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Edit a scope"
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Scope/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
+msgid "Scopes"
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "<strong>Nothing here!</strong> There are no scopes at the moment."
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "Clear"
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "Display name"
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "New scope"
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "Scopes"
+msgstr ""
+
+#: Views/Scope/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.Scope.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/ServerConfiguration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ServerConfiguration.Index"
+msgid "Configure OpenID Connect server settings"
+msgstr ""
+
+#: Views/ServerConfiguration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ServerConfiguration.Index"
+msgid "Save"
+msgstr ""
+
+#: Views/ServerConfiguration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ServerConfiguration.Index"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: Views/ValidationConfiguration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ValidationConfiguration.Index"
+msgid "Configure OpenID Connect validation settings"
+msgstr ""
+
+#: Views/ValidationConfiguration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ValidationConfiguration.Index"
+msgid "Save"
+msgstr ""
+
+#: Views/ValidationConfiguration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ValidationConfiguration.Index"
+msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""

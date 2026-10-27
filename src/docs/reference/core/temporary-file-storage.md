@@ -17,14 +17,24 @@ The base location is controlled globally by the `OrchardCore:TempDirectory` conf
   "OrchardCore": {
     "TempDirectory": {
       // Base path under which tenant-scoped temporary files are stored.
-      // When omitted, the operating system temporary directory (Path.GetTempPath()) is used.
+      // When omitted, OrchardCore/Temp under the user's local application data directory is preferred.
       "Path": "/mnt/shared/temp"
     }
   }
 }
 ```
 
-Files are laid out as `{Path}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. On Unix-like operating systems, a newly created tenant directory uses owner-only permissions (`700`), matching `Directory.CreateTempSubdirectory()`. When `Path` is not set, the store falls back to the operating system temporary directory, preserving the previous behavior.
+When `Path` is set, files are laid out as `{Path}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. On Unix-like operating systems, a newly created tenant directory uses owner-only permissions (`700`).
+
+When `Path` is not set, the provider uses `OrchardCore/Temp` under `Environment.SpecialFolder.LocalApplicationData`, creating the directory if necessary. This is a stable, per-user location, so it does not need a random name and no warning is logged. Tenant directories are stored beneath it as `{LocalApplicationData}/OrchardCore/Temp/{TenantName}`. The user's local application data directory must be private to that user.
+
+If the local application data location cannot be determined or its temporary directory cannot be created because of a filesystem or permission error, the provider falls back to `Directory.CreateTempSubdirectory("OrchardCore-")` under `Path.GetTempPath()`. This fallback uses a random directory name and logs a warning containing the generated path and any creation error. The fallback path changes when the provider is recreated; configure `Path` when temporary files must remain accessible across tenant restarts or application instances. If the fallback cannot be created either, the error is propagated.
+
+On Windows, `Path.GetTempPath()` normally resolves to the current user's local temporary folder, such as `%LOCALAPPDATA%\Temp`. .NET uses the operating system's `GetTempPath2` API when available, and falls back to `GetTempPath` otherwise. For a process running as SYSTEM, `GetTempPath2` defaults to `C:\Windows\SystemTemp`. Environment variables can override these locations, and neither API guarantees that the returned directory is private or writable.
+
+On Linux and macOS, `Path.GetTempPath()` uses `TMPDIR` when set, or `/tmp` otherwise. macOS normally sets `TMPDIR` to a per-user temporary directory. Using shared `/tmp` is safe for this provider when it has the standard ownership and sticky-bit permissions (`1777`): `Directory.CreateTempSubdirectory()` atomically creates a unique directory with owner-only permissions (`700`), and the sticky bit prevents other unprivileged users from removing or replacing it. The provider therefore does not trust a predictable tenant directory directly under shared `/tmp`. This does not protect against root or an administrator, and operators must ensure that any overridden temporary location has appropriate permissions.
+
+The sticky bit does **not** prevent another user from creating a predictable directory before the application starts. For example, an attacker could create `/tmp/OrchardCore/Default` first and retain ownership of it. `Directory.CreateDirectory()` accepts an existing directory, and specifying mode `700` does not change an existing directory's permissions or ownership. For this reason, the provider uses `Directory.CreateTempSubdirectory()` to generate a random name and atomically create a new directory, retrying if the name already exists. Random naming and exclusive creation prevent pre-creation attacks; owner-only permissions and the parent's sticky bit protect the directory after creation.
 
 This one setting applies to every temporary file consumer: media chunked uploads, TUS uploads, deployment and recipe imports/exports, and tenant recipe uploads.
 

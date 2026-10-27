@@ -3,30 +3,42 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="data-pipelines-editors" at="Foot"></script>
 
+@{
+    var selectedDataSet = Model.SelectedDataSet;
+    var dataSetId = Html.IdFor(model => model.DataSet);
+}
+
 <div class="ocat-wrapper" asp-validation-class-for="DataSet">
-    <label asp-for="DataSet" class="ocat-label ocat-label-required">@T["Data set"]</label>
-    <div class="ocat-end">
-        <select asp-for="DataSet" data-dp-select data-live-search="true" data-width="100%">
-            <option value="">@T["Choose a data set"]</option>
-            @foreach (var group in Model.DataSets.GroupBy(option => option.Group))
+    <label for="@(dataSetId)_Choose" class="ocat-label ocat-label-required">@T["Data set"]</label>
+    @* The designer opens its dialog of the data sets when the button is clicked, see data-pipelines-editors.js. *@
+    <div class="ocat-end" data-dp-dataset-picker>
+        <input type="hidden" asp-for="DataSet" data-dp-dataset-input />
+        <div class="d-flex align-items-center gap-2 border rounded p-2">
+            @if (string.IsNullOrEmpty(Model.DataSet))
             {
-                <optgroup label="@group.Key">
-                    @foreach (var option in group)
-                    {
-                        <option value="@option.Value" selected="@(option.Value == Model.DataSet)">@option.Text</option>
-                    }
-                </optgroup>
+                <span class="flex-grow-1 text-muted" data-dp-dataset-summary>@T["No data set is chosen."]</span>
             }
-        </select>
+            else
+            {
+                <i class="fa-solid fa-table fa-fw text-primary" aria-hidden="true"></i>
+                <div class="flex-grow-1 text-truncate" data-dp-dataset-summary>
+                    <div class="fw-semibold text-truncate">@(selectedDataSet?.Text ?? Model.DataSetName)</div>
+                    <div class="small text-muted text-truncate">@(selectedDataSet?.Source ?? Model.SourceName)@(string.IsNullOrEmpty(selectedDataSet?.Description) ? null : " · " + selectedDataSet.Description)</div>
+                </div>
+            }
+            <button type="button" id="@(dataSetId)_Choose" class="btn btn-sm @(string.IsNullOrEmpty(Model.DataSet) ? "btn-primary" : "btn-outline-secondary") text-nowrap" data-dp-dataset-open>
+                @(string.IsNullOrEmpty(Model.DataSet) ? T["Choose a data set"] : T["Change"])
+            </button>
+        </div>
         <span asp-validation-for="DataSet"></span>
-        <span class="hint">@T["The data is read with the access of the user who publishes the pipeline."]</span>
+        <span class="hint">@T["The data is read with the access of the user who publishes the pipeline. Choosing another data set clears the fields and the filters."]</span>
     </div>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.DataSet))
 {
     <div class="ocat-wrapper">
-        <label asp-for="Fields" class="ocat-label">@T["Fields"]</label>
+        <label asp-for="Fields" class="ocat-label">@T["Fields to read"]</label>
         <div class="ocat-end">
             <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every field"]">
                 @foreach (var group in Model.AvailableFields.GroupBy(field => field.Group ?? string.Empty))
@@ -56,12 +68,12 @@
                 }
             </div>
             <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a filter"]</button>
-            <span class="hint">@T["Only the rows that match every filter are read. Write dates as yyyy-MM-dd; they are compared in UTC."]</span>
+            <span class="hint">@T["Only the rows that match every filter are read. Dates and times are compared in UTC. To use a placeholder, such as {0}, or a date without a time on a date and time field, which covers the whole day, write the value as text.", "{Parameter:Since}"]</span>
         </div>
     </div>
 
     <div class="ocat-limited-wrapper" asp-validation-class-for="MaxRows">
-        <label asp-for="MaxRows" class="ocat-label">@T["Most rows"]</label>
+        <label asp-for="MaxRows" class="ocat-label">@T["Maximum number of rows"]</label>
         <div class="ocat-limited">
             <input asp-for="MaxRows" type="number" min="0" class="form-control" />
             <span asp-validation-for="MaxRows"></span>

@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.CustomSettings\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.CustomSettings.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: CustomSettingsLocalizationSources.cs
+msgctxt "OrchardCore.CustomSettings.CustomSettingsLocalizationSources"
+msgid "Custom Settings"
+msgstr ""
+
+#. Format arguments: {0}
+#: Permissions.cs
+#, csharp-format
+msgctxt "OrchardCore.CustomSettings.Permissions"
+msgid "Manage Custom Settings - {0}"
+msgstr ""
+
+#: Services/CustomSettingsStereotypesProvider.cs
+msgctxt "OrchardCore.CustomSettings.Services.CustomSettingsStereotypesProvider"
+msgid "Custom Settings"
+msgstr ""
+
+#: Views/Items/CustomSettingsDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "Include all custom settings."
+msgstr ""
+
+#: Views/Items/CustomSettingsDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Edit"
+msgid "The custom settings to add as part of the plan."
+msgstr ""
+
+#: Views/Items/CustomSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr ""
+
+#: Views/Items/CustomSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "Custom Settings"
+msgstr ""
+
+#: Views/Items/CustomSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Summary"
+msgid "No custom settings selected."
+msgstr ""
+
+#: Views/Items/CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Custom Settings"
+msgstr ""
+
+#: Views/Items/CustomSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.CustomSettings.Views.Items.CustomSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified custom settings."
+msgstr ""

@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Roles.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: DefaultSystemRoleProvider.cs
+msgctxt "OrchardCore.Roles.DefaultSystemRoleProvider"
+msgid "A system role representing all authenticated users."
+msgstr ""
+
+#: DefaultSystemRoleProvider.cs
+msgctxt "OrchardCore.Roles.DefaultSystemRoleProvider"
+msgid "A system role representing all non-authenticated users."
+msgstr ""
+
+#: DefaultSystemRoleProvider.cs
+msgctxt "OrchardCore.Roles.DefaultSystemRoleProvider"
+msgid "A system role that grants all permissions to the assigned users."
+msgstr ""
+
+#: RolesPermissions.cs
+msgctxt "OrchardCore.Roles.RolesPermissions"
+msgid "Manage Roles"
+msgstr ""
+
+#: RolesPermissions.cs
+msgctxt "OrchardCore.Roles.RolesPermissions"
+msgid "View Roles"
+msgstr ""

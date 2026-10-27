@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Widgets\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Services/WidgetStereotypesProvider.cs
+msgctxt "OrchardCore.Widgets.Services.WidgetStereotypesProvider"
+msgid "Widget"
+msgstr ""
+
+#: Views/ContentCard-WidgetsListPart.Edit.cshtml
+msgctxt "OrchardCore.Widgets.Views.ContentCard-WidgetsListPart.Edit"
+msgid "Are you sure you want to remove this item?"
+msgstr ""
+
+#: Views/ContentCard-WidgetsListPart.Edit.cshtml
+msgctxt "OrchardCore.Widgets.Views.ContentCard-WidgetsListPart.Edit"
+msgid "Delete"
+msgstr ""
+
+#: Views/ContentCard-WidgetsListPart.Edit.cshtml
+msgctxt "OrchardCore.Widgets.Views.ContentCard-WidgetsListPart.Edit"
+msgid "Insert Widget"
+msgstr ""
+
+#. Format arguments: {0}: contentItemDisplayText; {1}: contentTypeDisplayText
+#: Views/ContentCard.Preview.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Widgets.Views.ContentCard.Preview"
+msgid "{0} {1}"
+msgstr ""
+
+#: Views/Widget.DetailAdmin.cshtml
+msgctxt "OrchardCore.Widgets.Views.Widget.DetailAdmin"
+msgid "Manage Content"
+msgstr ""
+
+#: Views/Widget.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Widgets.Views.Widget.SummaryAdmin"
+msgid "Actions"
+msgstr ""
+
+#: Views/WidgetsListPart.Edit.cshtml
+msgctxt "OrchardCore.Widgets.Views.WidgetsListPart.Edit"
+msgid "Add Widget"
+msgstr ""
+
+#: Views/WidgetsListPart.Option.cshtml
+msgctxt "OrchardCore.Widgets.Views.WidgetsListPart.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/WidgetsPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Widgets.Views.WidgetsPartSettings.Edit"
+msgid "A comma separated list of values, representing the available zones for widgets."
+msgstr ""
+
+#: Views/WidgetsPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Widgets.Views.WidgetsPartSettings.Edit"
+msgid "Available widgets zones"
+msgstr ""

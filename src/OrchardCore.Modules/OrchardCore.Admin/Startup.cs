@@ -46,10 +46,13 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IQuickNavigationIndex, QuickNavigationIndex>();
         services.AddScoped<QuickNavigationSource, AdminMenuItemNavigationSource>();
 
+        // The filters are resolved from the container instead of being activated by reflection on each request.
+        services.AddTransient<AdminFilter>();
+        services.AddTransient<AdminMenuFilter>();
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add<AdminFilter>();
-            options.Filters.Add<AdminMenuFilter>();
+            options.Filters.AddService<AdminFilter>();
+            options.Filters.AddService<AdminMenuFilter>();
 
             // Ordered to be called before any global filter.
             options.Filters.Add<AdminZoneFilter>(-1000);

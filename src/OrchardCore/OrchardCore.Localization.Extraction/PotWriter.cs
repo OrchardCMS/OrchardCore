@@ -5,7 +5,15 @@ namespace OrchardCore.Localization.Extraction;
 
 public static class PotWriter
 {
-    public static string Write(LocalizationCatalog catalog, string assemblyName)
+    /// <summary>
+    /// Writes the catalog as a gettext template, deterministically: entries, references and flags are sorted, and
+    /// nothing depends on the time or the machine.
+    /// </summary>
+    /// <param name="catalog">The extracted messages.</param>
+    /// <param name="assemblyName">The project the template describes.</param>
+    /// <param name="lineNumbers">Whether the source references carry line numbers. Without them, a template only
+    /// changes when a message, its context or the files declaring it change, which suits a template that is checked in.</param>
+    public static string Write(LocalizationCatalog catalog, string assemblyName, bool lineNumbers = true)
     {
         var output = new StringBuilder();
         output.Append("msgid \"\"\nmsgstr \"\"\n");
@@ -40,7 +48,7 @@ public static class PotWriter
                     output.Append('{').Append(index.ToString(CultureInfo.InvariantCulture)).Append('}');
                     if (message.FormatArguments.TryGetValue(index, out var descriptions) && descriptions.Count > 0)
                     {
-                        output.Append(": ").AppendJoin(", ", descriptions.Select(description => description.Replace('\r', ' ').Replace('\n', ' ').Trim()));
+                        output.Append(": ").AppendJoin(", ", descriptions.Select(LocalizationCatalog.NormalizeWhitespace));
                     }
                     else if (index == 0 && message.Plural is not null)
                     {
@@ -51,7 +59,10 @@ public static class PotWriter
                 output.Append('\n');
             }
 
-            foreach (var reference in message.References.OrderBy(reference => reference.Path, StringComparer.Ordinal).ThenBy(reference => reference.Line))
+            var references = lineNumbers
+                ? message.References
+                : message.References.Select(reference => new SourceReference(reference.Path)).Distinct();
+            foreach (var reference in references.OrderBy(reference => reference.Path, StringComparer.Ordinal).ThenBy(reference => reference.Line))
             {
                 var path = reference.Path.Any(char.IsWhiteSpace) ? "\u2068" + reference.Path + "\u2069" : reference.Path;
                 output.Append("#: ").Append(path);

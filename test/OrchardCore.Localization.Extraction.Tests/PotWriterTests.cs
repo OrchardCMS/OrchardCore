@@ -76,7 +76,21 @@ public sealed class PotWriterTests
         var catalog = new LocalizationCatalog();
         catalog.Add("Context", "Value {0}", null, new SourceReference("Messages.cs"), formatArguments: ["GetValue(\n  item)"]);
 
-        Assert.Contains("#. Format arguments: {0}: GetValue(   item)\n#: Messages.cs", PotWriter.Write(catalog, "Example"));
+        Assert.Contains("#. Format arguments: {0}: GetValue( item)\n#: Messages.cs", PotWriter.Write(catalog, "Example"));
+    }
+
+    [Fact]
+    public void Write_ArgumentLineEndings_ProduceTheSameTemplate()
+    {
+        var unix = new LocalizationCatalog();
+        unix.Add("Context", "Value {0}", null, new SourceReference("Messages.cs"), formatArguments: ["Call(\n    item,\n    other)"]);
+        var windows = new LocalizationCatalog();
+        windows.Add("Context", "Value {0}", null, new SourceReference("Messages.cs"), formatArguments: ["Call(\r\n    item,\r\n    other)"]);
+
+        var output = PotWriter.Write(unix, "Example");
+
+        Assert.Equal(output, PotWriter.Write(windows, "Example"));
+        Assert.Contains("#. Format arguments: {0}: Call( item, other)\n", output);
     }
 
     [Fact]

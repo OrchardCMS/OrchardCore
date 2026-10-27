@@ -9,9 +9,8 @@ namespace OrchardCore.Menu;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly Permission s_listMenuContent = ContentTypePermissionsHelper.CreateDynamicPermission(
-        ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name],
-        "Menu");
+    private static readonly Permission s_listMenuContent = ContentTypePermissionsHelper
+        .CreateDynamicPermissionOf(CommonPermissions.ListContent.Name, "Menu");
 
     private static readonly RouteValueDictionary s_routeValues = new()
     {

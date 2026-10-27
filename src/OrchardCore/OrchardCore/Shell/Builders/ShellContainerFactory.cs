@@ -19,6 +19,7 @@ public class ShellContainerFactory : IShellContainerFactory
     private readonly IServiceProvider _serviceProvider;
     private readonly IServiceCollection _applicationServices;
     private readonly ILogger _logger;
+    private readonly Lock _lock = new();
 
     public ShellContainerFactory(
         IHostEnvironment hostingEnvironment,
@@ -154,7 +155,7 @@ public class ShellContainerFactory : IShellContainerFactory
     {
         if (_applicationFeature is null)
         {
-            lock (this)
+            lock (_lock)
             {
                 _applicationFeature ??= _extensionManager.GetFeatures()
                         .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);

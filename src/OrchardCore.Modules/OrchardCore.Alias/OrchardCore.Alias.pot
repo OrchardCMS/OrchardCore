@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Alias\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: GraphQL/AliasInputObjectType.cs
+msgctxt "OrchardCore.Alias.GraphQL.AliasInputObjectType"
+msgid "the alias of the content item"
+msgstr ""
+
+#: GraphQL/AliasInputObjectType.cs
+msgctxt "OrchardCore.Alias.GraphQL.AliasInputObjectType"
+msgid "the alias part of the content item"
+msgstr ""
+
+#: GraphQL/AliasQueryObjectType.cs
+msgctxt "OrchardCore.Alias.GraphQL.AliasQueryObjectType"
+msgid "Alternative path for the content item"
+msgstr ""
+
+#. Format arguments: {0}: part.Alias
+#: Models/AliasPartExtensions.cs
+#, csharp-format
+msgctxt "OrchardCore.Alias.Models.AliasPartExtensions"
+msgid "Your alias is already in use. \"{0}\""
+msgstr ""
+
+#. Format arguments: {0}: AliasPart.MaxAliasLength; {1}: part.Alias
+#: Models/AliasPartExtensions.cs
+#, csharp-format
+msgctxt "OrchardCore.Alias.Models.AliasPartExtensions"
+msgid "Your alias is too long. The alias can only be up to {0} characters. \"{1}\""
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", errors)
+#: Settings/AliasPartSettingsDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Alias.Settings.AliasPartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Views/AliasPart.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "Alias"
+msgstr ""
+
+#: Views/AliasPart.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "Leave empty to re-generate it."
+msgstr ""
+
+#: Views/AliasPart.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
+msgid "The alias of the content item."
+msgstr ""
+
+#: Views/AliasPart.Option.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPart.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/AliasPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Alias is editable"
+msgstr ""
+
+#: Views/AliasPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Alias is generated and input is disabled"
+msgstr ""
+
+#: Views/AliasPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Options"
+msgstr ""
+
+#: Views/AliasPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "Pattern"
+msgstr ""
+
+#: Views/AliasPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Alias.Views.AliasPartSettings.Edit"
+msgid "The pattern used to render the alias of this content type."
+msgstr ""

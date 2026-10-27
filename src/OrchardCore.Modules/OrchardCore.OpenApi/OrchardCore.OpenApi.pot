@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.OpenApi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.OpenApi.AdminMenu"
+msgid "OpenApi"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.OpenApi.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "API Documentation UIs"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "API Schema Access"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Allow anonymous access to the API schema"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Disabled"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Enable or disable API documentation UIs via the Features page."
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Interactive API explorer at"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Modern API reference at"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "ReDoc UI"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Read-only API documentation at"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Scalar UI"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "Swagger UI"
+msgstr ""
+
+#: Views/OpenApiSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+msgid "When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication."
+msgstr ""

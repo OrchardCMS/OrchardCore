@@ -13,8 +13,8 @@ namespace OrchardCore.DynamicCache.EventHandlers;
 /// </summary>
 public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
 {
-    private readonly Dictionary<string, CacheContext> _cached = [];
-    private readonly Stack<CacheContext> _activeCacheContexts = [];
+    private Dictionary<string, CacheContext> _cached;
+    private Stack<CacheContext> _activeCacheContexts;
 
     private readonly IDynamicCacheService _dynamicCacheService;
     private readonly ICacheScopeManager _cacheScopeManager;
@@ -45,7 +45,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
         {
             var cacheContext = context.Shape.Metadata.Cache();
             _cacheScopeManager.EnterScope(cacheContext);
-            _activeCacheContexts.Push(cacheContext);
+            (_activeCacheContexts ??= new Stack<CacheContext>()).Push(cacheContext);
 
             var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
@@ -53,13 +53,13 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             {
                 // The contents of this shape was found in the cache.
                 // Add the cacheContext to _cached so that we don't try to cache the content again in the DisplayedAsync method.
-                _cached[cacheContext.CacheId] = cacheContext;
+                (_cached ??= [])[cacheContext.CacheId] = cacheContext;
                 context.ChildContent = new HtmlString(cachedContent);
             }
         }
         else
         {
-            _activeCacheContexts.Push(null);
+            (_activeCacheContexts ??= new Stack<CacheContext>()).Push(null);
         }
     }
 
@@ -71,7 +71,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
         }
 
         // If the shape is not configured to be cached, continue as usual.
-        if (!_activeCacheContexts.TryPeek(out var cacheContext) || cacheContext == null)
+        if (_activeCacheContexts is null || !_activeCacheContexts.TryPeek(out var cacheContext) || cacheContext == null)
         {
             context.ChildContent ??= HtmlString.Empty;
 
@@ -85,7 +85,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
 
         // If the ChildContent was retrieved form the cache, then the Cache Context will be present in the _cached collection (see the DisplayingAsync method in this class).
         // So, if the cache context is not present in the _cached collection, we need to insert the ChildContent value into the cache:
-        if (!_cached.Remove(cacheContext.CacheId) && context.ChildContent != null)
+        if ((_cached is null || !_cached.Remove(cacheContext.CacheId)) && context.ChildContent != null)
         {
             // The content is pre-encoded in the cache so we don't have to do it every time it's rendered.
             using var sw = new ZStringWriter();
@@ -136,7 +136,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             return Task.CompletedTask;
         }
 
-        if (_activeCacheContexts.TryPop(out var cacheContext) && cacheContext != null)
+        if (_activeCacheContexts is not null && _activeCacheContexts.TryPop(out var cacheContext) && cacheContext != null)
         {
             _cacheScopeManager.ExitScope();
         }

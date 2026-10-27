@@ -17,7 +17,13 @@ public class PagerOptionsConfiguration : IPostConfigureOptions<PagerOptions>
         var site = _siteService.GetSiteSettings();
 
         options.MaxPageSize = site.MaxPageSize;
-        options.MaxPagedCount = site.MaxPagedCount;
+
+        // A site without a paged count keeps the one configured in 'OrchardCore:Navigation:PagerOptions'.
+        if (site.MaxPagedCount > 0)
+        {
+            options.MaxPagedCount = site.MaxPagedCount;
+        }
+
         options.PageSize = site.PageSize;
         options.AllowPageSizeSelection = site.AllowPageSizeSelection;
         options.PageSizeOptions = site.PageSizeOptions;

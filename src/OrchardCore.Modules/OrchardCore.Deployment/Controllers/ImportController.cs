@@ -84,7 +84,9 @@ public sealed class ImportController : Controller
 
                 if (!fileCreatingResult.Succeeded)
                 {
+#pragma warning disable OCLOC104 // The error message comes from the file creation service, which localizes it.
                     await _notifier.ErrorAsync(H[fileCreatingResult.ErrorMessage ?? $"The uploaded file '{importedPackage.FileName}' was rejected."]);
+#pragma warning restore OCLOC104
 
                     return RedirectToAction(nameof(Index));
                 }

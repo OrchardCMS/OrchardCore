@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Liquid;
@@ -6,7 +7,7 @@ public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageLiquidTemplates = new(
         "ManageLiquidTemplates",
-        "Manage Liquid templates",
+        LocalizationSource.Create<Permissions>("Manage Liquid templates"),
         isSecurityCritical: true);
 
     private readonly IEnumerable<Permission> _allPermissions =

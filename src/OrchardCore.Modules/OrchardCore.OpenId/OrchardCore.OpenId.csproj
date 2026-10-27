@@ -30,6 +30,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Roles.Core\OrchardCore.Roles.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Secrets.Abstractions\OrchardCore.Secrets.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
   </ItemGroup>
 
@@ -41,6 +42,7 @@
     <PackageReference Include="OpenIddict.Validation.AspNetCore" />
     <PackageReference Include="OpenIddict.Validation.DataProtection" />
     <PackageReference Include="OpenIddict.Validation.SystemNetHttp" />
+    <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
 </Project>

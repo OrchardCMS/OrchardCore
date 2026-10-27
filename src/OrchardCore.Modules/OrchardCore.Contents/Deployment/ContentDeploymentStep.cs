@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,15 +9,13 @@ namespace OrchardCore.Contents.Deployment;
 /// </summary>
 public class ContentDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentDeploymentStep>("Content Management");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<ContentDeploymentStep>("Content Types");
+    public override string Name => "ContentDeploymentStep";
 
-    public ContentDeploymentStep()
-    {
-        Name = "ContentDeploymentStep";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => ContentsLocalizationSources.ContentTypes;
 
     public string[] ContentTypes { get; set; }
     public bool ExportAsSetupRecipe { get; set; }

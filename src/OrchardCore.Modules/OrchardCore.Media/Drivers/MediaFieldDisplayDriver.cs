@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -15,19 +16,26 @@ namespace OrchardCore.Media.Drivers;
 
 public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
 {
-    private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
+
+    private AttachedMediaFieldFileService _attachedMediaFieldFileService;
 
     internal readonly IStringLocalizer S;
 
-    public MediaFieldDisplayDriver(AttachedMediaFieldFileService attachedMediaFieldFileService,
+    public MediaFieldDisplayDriver(
+        IServiceProvider serviceProvider,
         IStringLocalizer<MediaFieldDisplayDriver> localizer,
         ILogger<MediaFieldDisplayDriver> logger)
     {
-        _attachedMediaFieldFileService = attachedMediaFieldFileService;
+        _serviceProvider = serviceProvider;
         S = localizer;
         _logger = logger;
     }
+
+    // Resolved on demand as it is only used by the editor, while the driver is built for every displayed media field.
+    private AttachedMediaFieldFileService AttachedMediaFieldFileService
+        => _attachedMediaFieldFileService ??= _serviceProvider.GetRequiredService<AttachedMediaFieldFileService>();
 
     public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
     {
@@ -73,7 +81,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             }
 
             model.Paths = JConvert.SerializeObject(itemPaths, JOptions.CamelCase);
-            model.TempUploadFolder = _attachedMediaFieldFileService.GetMediaFieldsTempSubFolder();
+            model.TempUploadFolder = AttachedMediaFieldFileService.GetMediaFieldsTempSubFolder();
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
@@ -99,7 +107,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             try
             {
                 field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
-                await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
+                await AttachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
             }
             catch (AggregateException e)
             {
