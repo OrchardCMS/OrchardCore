@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation;
@@ -60,6 +61,9 @@ public class NavigationManager : INavigationManager
 
         // Keep only menu items with an Href, or that have child items with an Href.
         menuItems = Reduce(menuItems);
+
+        // Add breadcrumbs-like classes to each node.
+        AddNavigationClasses(menuItems, "oc-navigation-" + name.HtmlClassifyPascalCase());
 
         return menuItems;
     }
@@ -279,5 +283,15 @@ public class NavigationManager : INavigationManager
         }
 
         return item.Items.Any(HasHrefOrChildHref);
+    }
+    
+    private static void AddNavigationClasses(List<MenuItem> menuItems, string classPrefix)
+    {
+        foreach (var menuItem in menuItems)
+        {
+            var className = $"{classPrefix}-{menuItem.Text.Name.HtmlClassifyPascalCase()}";
+            menuItem.Classes.Add(className);
+            AddNavigationClasses(menuItem.Items, className);
+        }
     }
 }
