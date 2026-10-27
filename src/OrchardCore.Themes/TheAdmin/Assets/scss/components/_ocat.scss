@@ -27,6 +27,8 @@
 .ocat-label-required::after {
     color: var(--bs-danger);
     content: "*";
+    // Keep the indicator out of the accessible name of the labeled field.
+    content: "*" / "";
     padding-inline-start: 0.25rem;
     vertical-align: middle;
 }

@@ -196,6 +196,7 @@ a:hover {
 .ocat-label-required::after {
   color: var(--bs-danger);
   content: "*";
+  content: "*"/"";
   padding-inline-start: 0.25rem;
   vertical-align: middle;
 }
