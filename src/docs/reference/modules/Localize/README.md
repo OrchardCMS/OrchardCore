@@ -263,6 +263,74 @@ The analyzers run in the IDE and in every build, and `dotnet build -warnaserror`
 This module also provides support for pluralization.
 It is necessary to reference the `OrchardCore.Localization.Abstractions` package in order to be able to use it.
 
+### Culture-specific rules
+
+`DefaultPluralRuleProvider` first looks for a rule for the requested culture, then checks each `CultureInfo.Parent` until it finds a rule. For example, `zh-Hans-CN` falls back through `zh-Hans` to `zh`. The invariant culture and cultures without a registered ancestor have no rule in this provider.
+
+The built-in provider implements all explicit non-root locales in the [CLDR 49 cardinal rules](https://www.unicode.org/cldr/charts/49/supplemental/language_plural_rules.html) for the integer counts accepted by `PluralizationRuleDelegate`. All its rules use the absolute value of the count, including `int.MinValue`. Decimal and compact-exponent operands are not represented by this API. Categories that require fractional operands, such as Czech and Slovak `many`, do not need an integer translation index.
+
+CLDR category names do not prescribe gettext numeric indexes. Orchard Core preserves established category indexes where possible and appends newly supported categories. The following table lists categories in translation-index order, starting at `msgstr[0]`:
+
+| Cultures or rule group | Categories in index order |
+| --- | --- |
+| Single-form rules, including `jv`, `yo`, `yue` | `other` |
+| Ordinary two-form rules, including `en`, `fa`, `vi`, `fil`, `tr`, `uz` | `one`, `other` |
+| `fr`, `pt`, `ca`, `es`, `gl`, `it`, `lld`, `scn`, `vec` (and `pt-PT`) | `one`, `other`, `many` |
+| `he`, `iu`, `naq`, `sat`, `se`, `sma`, `smi`, `smj`, `smn`, `sms` | `one`, `other`, `two` |
+| `lv`, `prg` | `one`, `other`, `zero` |
+| `blo`, `cv`, `ksh`, `lag` | `zero`, `one`, `other` |
+| `bs`, `hr`, `sr`, `cs`, `sk`, `lt`, `ro`, `shi` | `one`, `few`, `other` |
+| `be`, `pl`, `ru`, `uk` | `one`, `few`, `many` |
+| `gd`, `gv`, `sgs` | `one`, `two`, `few`, `other` |
+| `sl`, `dsb`, `hsb` | `other`, `one`, `two`, `few` |
+| `br` | `one`, `other`, `two`, `few`, `many` |
+| `mt` | `one`, `few`, `many`, `other`, `two` |
+| `ga` | `one`, `two`, `few`, `many`, `other` |
+| `cy`, `kw` | `one`, `two`, `few`, `other`, `zero`, `many` |
+| `ar`, `ars` | `zero`, `one`, `two`, `few`, `many`, `other` |
+
+The listed CLDR legacy codes (`in`, `iw`, `ji`, `jw`, `mo`, `sh`, `tl`) have explicit registrations too. This is not a general CLDR locale-alias resolver: other aliases depend on .NET culture normalization or a custom provider.
+
+The older registrations `ach`, `anp`, `arn`, `ay`, `csb`, `gun`, `hne`, `mai`, `mfe`, `mi`, `mni`, `mnk`, `nap`, `oc`, `pms`, `rw`, `sco`, `son`, and `tt` are retained, but do not have explicit cardinal entries in CLDR 49. Their existing partitions are preserved, with the same absolute-count handling. Unsupported cultures return no rule; the localization manager ultimately uses its English-style fallback unless another provider supplies a rule.
+
+#### Million-multiple categories and Portuguese fallback
+
+French and Portuguese use `one` for zero and one; Catalan, Spanish, Galician, Italian, Ladin, Sicilian, Venetian, and `pt-PT` use it only for one. Their `many` category applies to nonzero integer multiples of 1,000,000. The translation indexes are:
+
+| Index | Category | `pt` and `pt-BR` | `pt-PT` |
+| --- | --- | --- | --- |
+| `0` | `one` | Zero and one | One |
+| `1` | `other` | All remaining counts | All remaining counts |
+| `2` | `many` | Nonzero multiples of 1,000,000 | Nonzero multiples of 1,000,000 |
+
+CLDR's [component-specific parent locales](https://unicode.org/reports/tr35/tr35.html#Parent_Locales) replace, rather than merge with, the general parent table. CLDR 49 declares an empty override table for plurals. Consequently, `pt-AO`, `pt-CH`, `pt-CV`, `pt-FR`, `pt-GQ`, `pt-GW`, `pt-LU`, `pt-MO`, `pt-MZ`, `pt-ST`, and `pt-TL` fall back to `pt` for plural rules, even though the general locale-data parent table assigns them to `pt-PT`. Only `pt-PT` has the Portuguese zero-is-`other` override.
+
+#### Migrating plural catalogs
+
+!!! warning
+    Review PO catalogs when upgrading these rules. Update both the `Plural-Forms` header and every affected entry's `msgstr[index]` translations. Orchard Core selects array indexes using the provider, not the header formula. Missing indexes throw `PluralFormNotFoundException`; a complete but differently ordered catalog can silently select the wrong translation. Do not automatically reorder translations or invent translations for new categories. Additional or legacy rules can be supplied through `IPluralRuleProvider`.
+
+In particular:
+
+- Add `many` at index `2` for `fr`, `pt`, `ca`, `es`, `gl`, and `it` catalogs (including regional fallbacks). These are integer-relevant forms, not decimal-only forms.
+- Add `two` at index `2` for `he`, `sat`, and `se`; add it at index `4` for `mt`. Breton now needs five categories, and Welsh and Cornish need six, in the order above.
+- Split the old single-form catalogs for `fa`, `vi`, `cgg`, `ka`, `kk`, `ky`, and `ug`. Conversely, `jv` and `yo` now use only `other` at index `0`; migrate the appropriate plural translation into that index.
+- Review zero-count translations for `as`, `bn`, `doi`, `ff`, `gu`, `hi`, `hy`, `kn`, `nso`, `pa`, and `si` (now `one`), and `tr` and `uz` (now `other`). General Portuguese includes zero in `one`; a legacy `plural=(n != 1)` header does not match.
+- Review Filipino last-digit groups, Macedonian ending-11 exceptions, Lithuanian `few` counts ending in `5` through `9`, and Latvian `zero` counts ending in `0` or with last two digits `11` through `19`. Maltese `102` is `other`, not `few`.
+- Negative counts now select the same category as their positive magnitude in every built-in rule. Custom provider delegates are not normalized by the localization manager.
+
+For nonnegative integer counts, matching PO headers are:
+
+```po
+# fr, pt, pt-BR, and Portuguese locales other than pt-PT
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : (n != 0 && n % 1000000 == 0) ? 2 : 1;\n"
+```
+
+```po
+# ca, es, gl, it, lld, scn, vec, and pt-PT
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : (n != 0 && n % 1000000 == 0) ? 2 : 1;\n"
+```
+
 ### Sample PO file
 
 ```
