@@ -14,6 +14,7 @@ using OrchardCore.Templates.ViewModels;
 using OrchardCore.Templates.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Templates.Settings;
+using OrchardCore.Templates.Models;
 
 namespace OrchardCore.Templates;
 
@@ -39,6 +40,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, TemplateContentTypePartDefinitionDriver>();
 
         services.AddDeployment<AllTemplatesDeploymentSource, AllTemplatesDeploymentStep, AllTemplatesDeploymentStepDriver>();
+
+        // Lists the templates of the active theme, and of other sources, to view and override them.
+        services.AddScoped<ShapeTemplateFiles>();
+        services.AddScoped<SourceTemplatesService>();
+        services.AddScoped<ITemplateSource, ThemeTemplateSource>();
+        services.AddDisplayDriver<SourceTemplateEntry, SourceTemplateEntryDisplayDriver>();
 
         services.AddScoped<AdminTemplatesManager>();
         services.AddPermissionProvider<AdminTemplatesPermissions>();

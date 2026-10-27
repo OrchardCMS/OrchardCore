@@ -1,0 +1,59 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<SourceTemplateEntry>
+
+@{
+    var entry = Model.Value;
+}
+
+@if (entry.Template.IsLiquid)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template can be cloned as a local template."]">
+        <i class="fa-solid fa-code text-secondary" aria-hidden="true"></i>
+        @T["Liquid"]
+    </span>
+}
+else
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template can be viewed, but not cloned, as local templates are written in Liquid."]">
+        <i class="fa-solid fa-eye text-secondary" aria-hidden="true"></i>
+        @T["Razor"]
+    </span>
+}
+
+@if (!entry.IsOverridden)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template of the source is used."]">
+        <i class="fa-regular fa-file text-secondary" aria-hidden="true"></i>
+        @T["Not overridden"]
+    </span>
+}
+else if (!entry.IsCloned)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["A local template overrides it. It was not cloned from the source, so its changes are not monitored."]">
+        <i class="fa-solid fa-pen-to-square text-primary" aria-hidden="true"></i>
+        @T["Overridden"]
+    </span>
+}
+else if (entry.IsModified)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The local template was edited since it was cloned."]">
+        <i class="fa-solid fa-pen text-primary" aria-hidden="true"></i>
+        @T["Edited"]
+    </span>
+}
+else
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The local template is the same as the template it was cloned from."]">
+        <i class="fa-solid fa-copy text-success" aria-hidden="true"></i>
+        @T["Cloned"]
+    </span>
+}
+
+@if (entry.IsSourceChanged)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The template of the source changed since it was cloned, e.g. after an update. Review it, or reset the local template to it."]">
+        <i class="fa-solid fa-triangle-exclamation text-warning" aria-hidden="true"></i>
+        @T["Source changed"]
+    </span>
+}

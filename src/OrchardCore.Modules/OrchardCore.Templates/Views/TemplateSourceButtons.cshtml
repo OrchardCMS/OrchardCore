@@ -1,0 +1,14 @@
+@* The buttons of a template source list, passed to the AdminList shape as its 'Actions' so the layout places it. *@
+@inject OrchardCore.Templates.Services.SourceTemplatesService SourceTemplatesService
+@{
+    var adminTemplates = Model.AdminTemplates != null && (bool)Model.AdminTemplates;
+    var currentSource = ViewContext.RouteData.Values["source"]?.ToString();
+}
+
+<div class="btn-group" role="group" aria-label="@T["Template sources"]">
+    @foreach (var source in SourceTemplatesService.Sources)
+    {
+        var isCurrent = string.Equals(source.Name, currentSource, StringComparison.OrdinalIgnoreCase);
+        <a asp-action="Index" asp-controller="TemplateSource" asp-route-source="@source.Name" asp-route-options.admintemplates="@adminTemplates" class="btn btn-secondary @(isCurrent ? "active" : null)" aria-current="@(isCurrent ? "page" : null)" role="button">@source.DisplayName</a>
+    }
+</div>

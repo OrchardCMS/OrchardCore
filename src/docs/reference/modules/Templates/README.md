@@ -2,6 +2,67 @@
 
 The templates module allows editors to create custom Liquid templates.
 
+## Theme Templates
+
+The **Theme Templates** button of the **Design > Templates** page lists the templates used by the active site theme, and those of the themes it is based on. The same button of the **Design > Admin Templates** page lists the templates used by the active admin theme. Each template is shown with the file it comes from, e.g. `TheBlogTheme` `Views/Content-BlogPost.liquid`, and the name of the template that overrides it, e.g. `Content__BlogPost`.
+
+From this list, without changing the theme, you can:
+
+- **View** the content of any template of the theme.
+- **Clone** a Liquid template as a local template with the same name, which then overrides it, and **Edit** it like any other template.
+- **Reset** a local template to the template of the theme, which replaces its content.
+- **Delete** a local template, so that the template of the theme is used again.
+
+The same actions are available as bulk actions on the selected templates.
+
+Razor (`.cshtml`) templates can only be viewed, as local templates are written in Liquid: use them as a reference to write a Liquid template with the same name, with the **Create override** button.
+
+The status of each template shows whether it is overridden, and monitors the templates cloned from this list:
+
+| Status | Description |
+|--------|-------------|
+| Not overridden | The template of the theme is used. |
+| Cloned | The local template is the same as the template it was cloned from. |
+| Edited | The local template was edited since it was cloned. |
+| Overridden | A local template overrides it, but it was not cloned from this list, so its changes are not monitored. |
+| Source changed | The template of the theme changed since it was cloned, e.g. after the theme was updated. Review it, or reset the local template to it. |
+
+The list can be filtered by these statuses. The clone records are stored by tenant next to the templates, but are not part of their recipes and deployments, so the templates imported in another tenant are shown as **Overridden**.
+
+### Template sources
+
+The templates are listed by template sources, each shown as a button of the templates list. A module can list the templates of other extensions by registering an `ITemplateSource`:
+
+```csharp
+public sealed class MyTemplateSource : ITemplateSource
+{
+    private readonly ShapeTemplateFiles _shapeTemplateFiles;
+
+    public MyTemplateSource(ShapeTemplateFiles shapeTemplateFiles, IStringLocalizer<MyTemplateSource> S)
+    {
+        _shapeTemplateFiles = shapeTemplateFiles;
+        DisplayName = S["My Templates"];
+    }
+
+    // The name in the URL of the list, e.g. '/Admin/TemplateSources/My'.
+    public string Name => "My";
+
+    public LocalizedString DisplayName { get; }
+
+    public async Task<IEnumerable<SourceTemplate>> GetTemplatesAsync(bool adminTemplates)
+    {
+        // The templates rendering the shapes of a theme, by the theme or a module.
+        var templates = await _shapeTemplateFiles.GetTemplatesAsync("TheTheme");
+
+        return templates.Where(template => template.ExtensionId == "My.Module");
+    }
+}
+```
+
+```csharp
+services.AddScoped<ITemplateSource, MyTemplateSource>();
+```
+
 ## Available templates
 
 Templates can be defined using the web editor, or in a theme. Templates are distinguished by their name.  

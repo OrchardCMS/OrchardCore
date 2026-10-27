@@ -1,0 +1,22 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<SourceTemplateEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list: to the local template when there is one. *@
+@if (Model.Value.IsOverridden)
+{
+    <a asp-action="Edit"
+       asp-controller="Template"
+       asp-route-name="@Model.Value.Template.Name"
+       asp-route-admintemplates="@Model.Value.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath">@Model.Value.Template.Name</a>
+}
+else
+{
+    <a asp-action="Display"
+       asp-controller="TemplateSource"
+       asp-route-source="@Model.Value.Source"
+       asp-route-name="@Model.Value.Template.Name"
+       asp-route-admintemplates="@Model.Value.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath">@Model.Value.Template.Name</a>
+}
