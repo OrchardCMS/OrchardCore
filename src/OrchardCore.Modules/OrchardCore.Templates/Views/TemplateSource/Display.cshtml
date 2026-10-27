@@ -12,7 +12,7 @@
 <zone Name="Title">
     <breadcrumb name="TemplateSourcesDisplay" title="@(new OrchardCore.DisplayManagement.Html.HtmlContentString(template.Name ?? string.Empty))">
         <breadcrumb-item id="Templates" action="@(entry.AdminTemplates ? "Admin" : "Index")" controller="Template" area="OrchardCore.Templates" permission="@(entry.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name)">@(entry.AdminTemplates ? T["Admin Templates"] : T["Templates"])</breadcrumb-item>
-        <breadcrumb-item id="TemplateSources" href="@returnUrl">@Model.Source.DisplayName</breadcrumb-item>
+        <breadcrumb-item id="TemplateSources" url="@returnUrl" permission="@(entry.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name)">@Model.Source.DisplayName</breadcrumb-item>
     </breadcrumb>
 </zone>
 
