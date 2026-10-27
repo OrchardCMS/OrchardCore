@@ -4,7 +4,7 @@ The Secrets module provides a secure, centralized way to store and manage sensit
 
 The following video explains why the Secrets module exists, walks through each of its features, and shows how to adopt it in your own modules.
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DmAkNFIj33Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DmAkNFIj33Y?si=_ESl2HjZPHxqE1jK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Why Use the Secrets Module?
 
