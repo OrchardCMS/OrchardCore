@@ -264,8 +264,8 @@ When adding a customizable service or an extensibility point (types, providers, 
   - It has a global scope: it's used across modules, and its interface belongs in an abstractions project.
   - It depends on other services through DI.
   - It can't be a singleton, because it's scoped or transient, or keeps state.
-- Options don't add services to the container, nor resolve them from the scope every time they are used. Don't register a type in DI only to list or create it.
-- Document an options-based extension point as taking no dependencies and keeping no state, since one instance is shared.
+- Options don't add services to the container or resolve them from the scope every time they are used. Don't register a type in DI only to list or create it.
+- Document an options-based extension point as having no dependencies and keeping no state, since one instance is shared.
 
 ### Async Conventions
 
