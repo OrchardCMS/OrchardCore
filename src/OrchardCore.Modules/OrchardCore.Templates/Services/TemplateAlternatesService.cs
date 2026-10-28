@@ -56,7 +56,7 @@ public sealed class TemplateAlternatesService
             return alternates;
         }
 
-        var all = new List<TemplateAlternate>();
+        List<TemplateAlternate> all = [];
 
         foreach (var provider in _providers)
         {
@@ -69,6 +69,7 @@ public sealed class TemplateAlternatesService
             .Select(group =>
             {
                 var first = group.First();
+                var sameDisplayType = group.All(alternate => string.Equals(alternate.DisplayType, first.DisplayType, StringComparison.OrdinalIgnoreCase));
                 var sameContentType = group.All(alternate => string.Equals(alternate.ContentType, first.ContentType, StringComparison.OrdinalIgnoreCase));
 
                 // E.g. two text fields of a content type share [ContentType]__TextField.
@@ -78,7 +79,8 @@ public sealed class TemplateAlternatesService
                 {
                     Name = first.Name,
                     ShapeType = first.ShapeType,
-                    DisplayType = first.DisplayType,
+                    // E.g. [ContentType]__HtmlBodyPart, generated for each display type, applies to all of them.
+                    DisplayType = sameDisplayType ? first.DisplayType : null,
                     ContentType = sameContentType ? first.ContentType : null,
                     Element = sameElement ? first.Element : null,
                 };

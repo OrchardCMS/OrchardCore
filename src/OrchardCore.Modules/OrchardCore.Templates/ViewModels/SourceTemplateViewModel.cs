@@ -3,6 +3,9 @@ using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.ViewModels;
 
+/// <summary>
+/// The page viewing a template of a template source, with its content.
+/// </summary>
 public class SourceTemplateViewModel
 {
     /// <summary>

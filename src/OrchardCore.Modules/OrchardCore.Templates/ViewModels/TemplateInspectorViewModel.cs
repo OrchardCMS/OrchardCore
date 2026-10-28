@@ -4,6 +4,9 @@ using OrchardCore.Templates.Models;
 
 namespace OrchardCore.Templates.ViewModels;
 
+/// <summary>
+/// The Inspect Content page: the content item to inspect, and the shapes it renders with their templates and alternates.
+/// </summary>
 public class TemplateInspectorViewModel
 {
     /// <summary>

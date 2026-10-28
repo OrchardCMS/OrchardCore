@@ -439,9 +439,11 @@ msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
 msgid "View"
 msgstr ""
 
+#. Format arguments: {0}: entry.ClonedFrom
 #: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
 msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
-msgid "A local template overrides it. It was cloned from another theme, which was likely active before, so it is not compared to this template."
+msgid "A local template overrides it. It was cloned from a template of {0}, not from this one, so it is not compared to this template."
 msgstr ""
 
 #: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
@@ -717,11 +719,30 @@ msgctxt "OrchardCore.Templates.Views.Template.Index"
 msgid "selected"
 msgstr ""
 
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "All content types, all display types"
+msgstr ""
+
 #. Format arguments: {0}: alternate.DisplayType
 #: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
 msgid "All content types, {0} display type"
+msgstr ""
+
+#. Format arguments: {0}: alternate.ContentType
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "{0}, all display types"
+msgstr ""
+
+#. Format arguments: {0}: alternate.ContentType; {1}: alternate.Element
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "{0}, all display types, <code>{1}</code>"
 msgstr ""
 
 #. Format arguments: {0}: alternate.ContentType; {1}: alternate.DisplayType

@@ -585,7 +585,7 @@ public sealed class TemplateSourceController : Controller
             return Forbid();
         }
 
-        if (!await _sourceTemplatesService.DeleteAsync(name, adminTemplates))
+        if (string.IsNullOrEmpty(name) || !await _sourceTemplatesService.DeleteAsync(name, adminTemplates))
         {
             return NotFound();
         }

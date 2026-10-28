@@ -190,6 +190,28 @@ public sealed class SourceTemplatesTests : IDisposable
     }
 
     [Fact]
+    public async Task ForgetClonesAsync_DeletedClone_TemplateWrittenByHandLaterIsNotCloned()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+        var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+        Assert.True(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: false));
+
+        // The clone is deleted from the Templates list, which doesn't know the clone records, then written by hand.
+        _templates.Templates.Remove("Layout");
+        await service.ForgetClonesAsync(["Layout"], adminTemplates: false);
+        _templates.Templates["Layout"] = new Template { Content = "by hand" };
+
+        entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+
+        Assert.Empty(_overrides.Overrides);
+        Assert.True(entry.IsOverridden);
+        Assert.False(entry.IsCloned || entry.IsModified || entry.IsSourceChanged);
+    }
+
+    [Fact]
     public async Task GetEntriesAsync_ClonedFromThemeActiveBefore_IsNotComparedToTheActiveTheme()
     {
         AddExtension("SiteTheme");

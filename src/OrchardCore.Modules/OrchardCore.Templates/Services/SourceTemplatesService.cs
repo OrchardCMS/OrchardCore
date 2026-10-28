@@ -61,7 +61,7 @@ public sealed class SourceTemplatesService
         var localTemplates = await GetTemplatesDocumentAsync(adminTemplates);
         var overrides = await GetOverridesDocumentAsync(adminTemplates);
 
-        var entries = new List<SourceTemplateEntry>();
+        List<SourceTemplateEntry> entries = [];
 
         foreach (var template in templates.OrderBy(template => template.Name, StringComparer.OrdinalIgnoreCase))
         {
@@ -250,6 +250,28 @@ public sealed class SourceTemplatesService
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Forgets where local templates were cloned from, once they are deleted or renamed, so that a template
+    /// created later with one of these names is not taken for a clone.
+    /// </summary>
+    /// <param name="names">The names of the local templates.</param>
+    /// <param name="adminTemplates">Whether they are admin templates.</param>
+    public async Task ForgetClonesAsync(IEnumerable<string> names, bool adminTemplates)
+    {
+        var overrides = await LoadOverridesDocumentAsync(adminTemplates);
+        var removed = false;
+
+        foreach (var name in names)
+        {
+            removed |= overrides.Overrides.Remove(name);
+        }
+
+        if (removed)
+        {
+            await UpdateOverridesDocumentAsync(overrides, adminTemplates);
+        }
     }
 
     private static bool IsClonedFrom(TemplateOverride record, SourceTemplate template)

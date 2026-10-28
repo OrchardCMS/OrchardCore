@@ -41,7 +41,7 @@ public sealed class ShapeTemplateFiles
         var shapeTable = await _shapeTableManager.GetShapeTableAsync(themeId);
 
         var extensions = GetExtensionsByPath();
-        var templates = new List<SourceTemplate>();
+        List<SourceTemplate> templates = [];
 
         foreach (var (bindingName, binding) in shapeTable.Bindings)
         {

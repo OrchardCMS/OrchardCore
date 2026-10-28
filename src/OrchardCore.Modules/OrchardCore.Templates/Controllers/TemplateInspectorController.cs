@@ -80,7 +80,6 @@ public sealed class TemplateInspectorController : Controller
             ContentItemId = contentItemId,
             DisplayType = displayType,
             DisplayTypes = displayTypes.Select(type => new SelectListItem(type, type, type == displayType)).ToList(),
-            ContentItems = await GetRecentContentItemsAsync(contentItemId),
         };
 
         if (!string.IsNullOrEmpty(contentItemId))
@@ -108,6 +107,8 @@ public sealed class TemplateInspectorController : Controller
             model.SourceTemplates = await GetSourceTemplatesAsync(model.Shapes, adminTemplates);
         }
 
+        model.ContentItems = await GetRecentContentItemsAsync(model.ContentItem);
+
         return View(model);
     }
 
@@ -133,16 +134,25 @@ public sealed class TemplateInspectorController : Controller
         return sourceTemplates;
     }
 
-    // The latest content items, the most recently modified first, grouped by content type in the picker.
-    private async Task<IReadOnlyList<SelectListItem>> GetRecentContentItemsAsync(string selectedId)
+    // The latest content items, the most recently modified first, grouped by content type in the picker, with the
+    // inspected one, which can be older, so that inspecting it in another display type keeps it.
+    private async Task<IReadOnlyList<SelectListItem>> GetRecentContentItemsAsync(ContentItem selected)
     {
-        var contentItems = await _session.Query<ContentItem, ContentItemIndex>(index => index.Latest)
+        var contentItems = (await _session.Query<ContentItem, ContentItemIndex>(index => index.Latest)
             .OrderByDescending(index => index.ModifiedUtc)
             .Take(RecentContentItemsCount)
-            .ListAsync();
+            .ListAsync())
+            .ToList();
+
+        if (selected != null && !contentItems.Any(item => item.ContentItemId == selected.ContentItemId))
+        {
+            contentItems.Add(selected);
+        }
+
+        var selectedId = selected?.ContentItemId;
 
         var groups = new Dictionary<string, SelectListGroup>(StringComparer.OrdinalIgnoreCase);
-        var items = new List<SelectListItem>();
+        List<SelectListItem> items = [];
 
         foreach (var contentItem in contentItems.OrderBy(item => item.ContentType, StringComparer.OrdinalIgnoreCase))
         {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -283,6 +284,11 @@ public sealed class TemplateController : Controller
                 : _templatesManager.UpdateTemplateAsync(model.Name, template)
                 );
 
+            if (!string.Equals(sourceName, model.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                await ForgetClonesAsync([sourceName], model.AdminTemplates);
+            }
+
             if (submit != "SaveAndContinue")
             {
                 return RedirectToReturnUrlOrIndex(returnUrl);
@@ -319,6 +325,8 @@ public sealed class TemplateController : Controller
                 ? _adminTemplatesManager.RemoveTemplateAsync(name)
                 : _templatesManager.RemoveTemplateAsync(name));
 
+        await ForgetClonesAsync([name], adminTemplates);
+
         await _notifier.SuccessAsync(H["Template deleted successfully."]);
 
         return RedirectToReturnUrlOrIndex(returnUrl);
@@ -344,7 +352,8 @@ public sealed class TemplateController : Controller
                         ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
                         : await _templatesManager.LoadTemplatesDocumentAsync();
                     var checkedContentItemIds = templatesDocument.Templates.Keys
-                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase);
+                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase)
+                        .ToList();
 
                     foreach (var id in checkedContentItemIds)
                     {
@@ -352,6 +361,8 @@ public sealed class TemplateController : Controller
                             ? _adminTemplatesManager.RemoveTemplateAsync(id)
                             : _templatesManager.RemoveTemplateAsync(id));
                     }
+
+                    await ForgetClonesAsync(checkedContentItemIds, options.AdminTemplates);
 
                     await _notifier.SuccessAsync(H["Templates successfully removed."]);
                 }
@@ -420,4 +431,9 @@ public sealed class TemplateController : Controller
             ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
         }
     }
+
+    // The Assisted Templates feature records where the cloned templates come from: a template that is deleted or
+    // renamed is no longer a clone.
+    private Task ForgetClonesAsync(IEnumerable<string> names, bool adminTemplates)
+        => HttpContext.RequestServices.GetService<SourceTemplatesService>()?.ForgetClonesAsync(names, adminTemplates) ?? Task.CompletedTask;
 }

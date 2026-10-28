@@ -47,6 +47,10 @@ public class TemplateAlternatesTests
         var alternates = await CreateService().GetAlternatesAsync("HtmlBodyPart", adminTemplates: false);
 
         Assert.Contains(alternates, alternate => alternate.Name == "BlogPost__HtmlBodyPart" && alternate.ContentType == "BlogPost" && alternate.Element == "HtmlBodyPart");
+
+        // Generated for every display type, it applies to all of them.
+        Assert.Null(Assert.Single(alternates, alternate => alternate.Name == "BlogPost__HtmlBodyPart").DisplayType);
+        Assert.Equal("Summary", Assert.Single(alternates, alternate => alternate.Name == "BlogPost_Summary__HtmlBodyPart").DisplayType);
         Assert.Contains(alternates, alternate => alternate.Name == "BlogPost_Summary__HtmlBodyPart");
 
         // Both content types have the part, so its display type alternate applies to all of them.

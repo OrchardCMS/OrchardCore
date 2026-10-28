@@ -6,6 +6,9 @@ using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.ViewModels;
 
+/// <summary>
+/// The page listing the templates of a template source, e.g. the Theme Templates.
+/// </summary>
 public class SourceTemplatesIndexViewModel
 {
     /// <summary>
@@ -29,6 +32,9 @@ public class SourceTemplatesIndexViewModel
     public SourceTemplatesOptions Options { get; set; } = new();
 }
 
+/// <summary>
+/// The options of the list of the templates of a template source: its scope, search, filters and bulk action.
+/// </summary>
 public class SourceTemplatesOptions
 {
     public bool AdminTemplates { get; set; }
@@ -119,8 +125,12 @@ public enum SourceTemplatesArea
     Admin,
 }
 
+/// <summary>
+/// The bulk actions of the list of the templates of a template source.
+/// </summary>
 public enum SourceTemplatesBulkAction
 {
+    /// <summary>No bulk action.</summary>
     None,
 
     /// <summary>Clones the Liquid templates without a local override.</summary>

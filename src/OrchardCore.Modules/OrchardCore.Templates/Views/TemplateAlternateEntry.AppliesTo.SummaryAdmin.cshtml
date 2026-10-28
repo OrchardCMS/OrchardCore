@@ -7,7 +7,22 @@
 }
 
 <div class="admin-list-secondary">
-    @if (alternate.ContentType == null)
+    @if (alternate.DisplayType == null)
+    {
+        @if (alternate.ContentType == null)
+        {
+            @T["All content types, all display types"]
+        }
+        else if (alternate.Element == null)
+        {
+            @T["{0}, all display types", alternate.ContentType]
+        }
+        else
+        {
+            @T["{0}, all display types, <code>{1}</code>", alternate.ContentType, alternate.Element]
+        }
+    }
+    else if (alternate.ContentType == null)
     {
         @T["All content types, {0} display type", alternate.DisplayType]
     }

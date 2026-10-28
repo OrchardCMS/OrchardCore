@@ -30,7 +30,7 @@ else
 }
 else if (entry.ClonedFrom != null)
 {
-    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["A local template overrides it. It was cloned from another theme, which was likely active before, so it is not compared to this template."]">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["A local template overrides it. It was cloned from a template of {0}, not from this one, so it is not compared to this template.", entry.ClonedFrom]">
         <i class="fa-solid fa-code-branch text-warning" aria-hidden="true"></i>
         @T["Cloned from {0}", entry.ClonedFrom]
     </span>

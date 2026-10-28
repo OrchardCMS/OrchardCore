@@ -76,7 +76,7 @@
     <ul class="list-group mb-3">
         @foreach (var shape in Model.Shapes)
         {
-            <li class="list-group-item" style="padding-inline-start: @(shape.Depth * 1.5 + 1)rem">
+            <li class="list-group-item" style="padding-inline-start: @((shape.Depth * 1.5 + 1).ToString(CultureInfo.InvariantCulture))rem">
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <code class="fs-6">@shape.Type</code>
                     @if (!string.IsNullOrEmpty(shape.Differentiator))

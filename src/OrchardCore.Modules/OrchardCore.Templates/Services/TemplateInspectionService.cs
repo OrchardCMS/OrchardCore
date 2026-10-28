@@ -61,8 +61,6 @@ public sealed class TemplateInspectionService
     /// <returns>The shapes, each one before the shapes it renders, or an error when the content item could not be rendered.</returns>
     public async Task<(IReadOnlyList<InspectedShape> Shapes, string Error)> InspectAsync(ContentItem contentItem, string displayType, bool adminTemplates)
     {
-        var shape = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
-
         IReadOnlyList<InspectedShape> shapes;
         string error = null;
 
@@ -72,6 +70,8 @@ public sealed class TemplateInspectionService
 
         try
         {
+            var shape = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
+
             await _shapeHtmlRenderer.RenderAsync(shape);
         }
         catch (Exception ex) when (!ex.IsFatal())

@@ -111,7 +111,7 @@ public sealed class ThemeTemplateSource : ITemplateSource
     // The theme and the themes it is based on, the theme first.
     private List<string> GetThemeIds(string themeId)
     {
-        var themeIds = new List<string>();
+        List<string> themeIds = [];
 
         while (!string.IsNullOrEmpty(themeId) && !themeIds.Contains(themeId, StringComparer.OrdinalIgnoreCase))
         {

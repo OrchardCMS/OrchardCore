@@ -26,7 +26,7 @@ public sealed class ContentTemplateAlternatesProvider : ITemplateAlternatesProvi
 
     public async Task<IEnumerable<TemplateAlternate>> GetAlternatesAsync(bool adminTemplates)
     {
-        var alternates = new List<TemplateAlternate>();
+        List<TemplateAlternate> alternates = [];
         var displayTypes = adminTemplates ? s_adminDisplayTypes : s_frontEndDisplayTypes;
 
         foreach (var typeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
