@@ -69,6 +69,8 @@ Sources: `LocalizationSource.Create<Owner>("Hello {0}", note: "...")`, then `fac
 
 Liquid: `{{ "in {0} years" | t: years: time.years, note: "Relative date shown for future dates." }}`. Notes and names must be constants (`OCLOC010` otherwise).
 
+When a plural count is certainly bounded, declare it with `Range(min, max, count)` (also a no-op, combinable with `Arg`), written as the gettext `range` flag: `H.Plural(Arg("hours", Range(0, 23, time.Hours)), "1 hour ago", "{0} hours ago")`. Bounds must be constants with `0 <= min <= max` and `Range` only applies to a `Plural` count (`OCLOC011` otherwise); different ranges for one message widen to their union. Only declare a range the code guarantees.
+
 ### Step 3: Reuse shared sources for strings declared without a localizer
 
 Strings declared before a localizer is available, such as deployment step categories and titles, are `LocalizationSource` instances translated at display time with `IStringLocalizerFactory.Localize()`. Don't declare them in the class that uses them:

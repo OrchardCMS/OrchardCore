@@ -80,32 +80,32 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (time.TotalMinutes > 60)
         {
-            return H.Plural(Arg("hours", time.Hours), "1 hour ago", "{0} hours ago");
+            return H.Plural(Arg("hours", Range(0, 23, time.Hours)), "1 hour ago", "{0} hours ago");
         }
 
         if (time.TotalMinutes < -60)
         {
-            return H.Plural(Arg("hours", -time.Hours), "in 1 hour", "in {0} hours");
+            return H.Plural(Arg("hours", Range(0, 23, -time.Hours)), "in 1 hour", "in {0} hours");
         }
 
         if (time.TotalSeconds > 60)
         {
-            return H.Plural(Arg("minutes", time.Minutes), "1 minute ago", "{0} minutes ago");
+            return H.Plural(Arg("minutes", Range(0, 59, time.Minutes)), "1 minute ago", "{0} minutes ago");
         }
 
         if (time.TotalSeconds < -60)
         {
-            return H.Plural(Arg("minutes", -time.Minutes), "in 1 minute", "in {0} minutes");
+            return H.Plural(Arg("minutes", Range(0, 59, -time.Minutes)), "in 1 minute", "in {0} minutes");
         }
 
         if (time.TotalSeconds > 10)
         {
-            return H.Plural(Arg("seconds", time.Seconds), "1 second ago", "{0} seconds ago"); // Aware that the singular won't be used.
+            return H.Plural(Arg("seconds", Range(0, 59, time.Seconds)), "1 second ago", "{0} seconds ago"); // Aware that the singular won't be used.
         }
 
         if (time.TotalSeconds < -10)
         {
-            return H.Plural(Arg("seconds", -time.Seconds), "in 1 second", "in {0} seconds");
+            return H.Plural(Arg("seconds", Range(0, 59, -time.Seconds)), "in 1 second", "in {0} seconds");
         }
 
         return time.TotalMilliseconds > 0
@@ -150,7 +150,7 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (seconds > 0)
         {
-            return H.Plural(Arg("seconds", seconds), "1 second", "{0} seconds");
+            return H.Plural(Arg("seconds", Range(1, 59, seconds)), "1 second", "{0} seconds");
         }
 
         return H["less than a second"];
@@ -174,10 +174,10 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (timeSpan.Hours == totalHours)
         {
-            return H.Plural(Arg("hours", timeSpan.Hours), "1 hour", "{0} hours");
+            return H.Plural(Arg("hours", Range(1, 23, timeSpan.Hours)), "1 hour", "{0} hours");
         }
 
-        return H.Plural(Arg("hours", (int)Math.Round(totalHours)), "approximately an hour", "approximately {0} hours");
+        return H.Plural(Arg("hours", Range(1, 24, (int)Math.Round(totalHours))), "approximately an hour", "approximately {0} hours");
     }
 
     private LocalizedHtmlString GetDurationInMinutes(TimeSpan timeSpan)
@@ -186,10 +186,10 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (timeSpan.Minutes == totalMinutes)
         {
-            return H.Plural(Arg("minutes", timeSpan.Minutes), "1 minute", "{0} minutes");
+            return H.Plural(Arg("minutes", Range(1, 59, timeSpan.Minutes)), "1 minute", "{0} minutes");
         }
 
-        return H.Plural(Arg("minutes", (int)Math.Round(totalMinutes)), "approximately a minute", "approximately {0} minutes");
+        return H.Plural(Arg("minutes", Range(1, 60, (int)Math.Round(totalMinutes))), "approximately a minute", "approximately {0} minutes");
     }
 }
 

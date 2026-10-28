@@ -26,7 +26,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 1..23
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "1 hour"
 msgid_plural "{0} hours"
@@ -35,7 +35,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 0..23
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "1 hour ago"
 msgid_plural "{0} hours ago"
@@ -44,7 +44,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 1..59
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "1 minute"
 msgid_plural "{0} minutes"
@@ -53,7 +53,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 0..59
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "1 minute ago"
 msgid_plural "{0} minutes ago"
@@ -71,7 +71,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: seconds
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 1..59
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "1 second"
 msgid_plural "{0} seconds"
@@ -80,7 +80,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: seconds
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 0..59
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "1 second ago"
 msgid_plural "{0} seconds ago"
@@ -121,7 +121,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 1..60
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "approximately a minute"
 msgid_plural "approximately {0} minutes"
@@ -130,7 +130,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 1..24
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "approximately an hour"
 msgid_plural "approximately {0} hours"
@@ -154,7 +154,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: hours
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 0..23
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "in 1 hour"
 msgid_plural "in {0} hours"
@@ -163,7 +163,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: minutes
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 0..59
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "in 1 minute"
 msgid_plural "in {0} minutes"
@@ -181,7 +181,7 @@ msgstr[1] ""
 
 #. Format arguments: {0}: seconds
 #: Shapes/DateTimeShapes.cs
-#, csharp-format
+#, csharp-format, range: 0..59
 msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
 msgid "in 1 second"
 msgid_plural "in {0} seconds"
