@@ -46,15 +46,15 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers a variable type, as a scoped service. It replaces a type registered earlier with the same name.
+    /// Registers a variable type in the <see cref="WorkflowVariableTypeOptions"/>, which hold the one instance of the
+    /// type, so it is not a service and has no dependencies. It replaces a type registered earlier with the same name.
     /// </summary>
     /// <typeparam name="TType">The variable type.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection.</returns>
     public static IServiceCollection AddWorkflowVariableType<TType>(this IServiceCollection services)
-        where TType : class, IWorkflowVariableType
+        where TType : class, IWorkflowVariableType, new()
     {
-        services.TryAddScoped<TType>();
         services.Configure<WorkflowVariableTypeOptions>(options => options.Add(WorkflowVariableTypeDescriptor.Create<TType>()));
 
         return services;

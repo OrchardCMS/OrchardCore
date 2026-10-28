@@ -17,7 +17,7 @@ public interface IWorkflowVariableTypeProvider
     WorkflowVariableTypeDescriptor GetDescriptor(string name);
 
     /// <summary>
-    /// Returns the type with the given name (ignoring case), resolved from the services, or <see langword="null"/>.
+    /// Returns the instance of the type with the given name (ignoring case), or <see langword="null"/>.
     /// </summary>
     /// <param name="name">The <see cref="IWorkflowVariableType.Name"/>.</param>
     IWorkflowVariableType Get(string name);

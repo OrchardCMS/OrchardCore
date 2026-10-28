@@ -83,7 +83,7 @@ public sealed class Startup : StartupBase
         services.AddWorkflowVariableType<ObjectVariableType>();
         services.AddWorkflowVariableType<ArrayVariableType>();
         services.AddWorkflowVariableType<AnyVariableType>();
-        services.AddScoped<IWorkflowVariableTypeProvider, WorkflowVariableTypeProvider>();
+        services.AddSingleton<IWorkflowVariableTypeProvider, WorkflowVariableTypeProvider>();
         services.AddScoped<WorkflowVariableValidator>();
         services.AddScoped<IWorkflowStore, WorkflowStore>();
         services.AddScoped<IWorkflowManager, WorkflowManager>();

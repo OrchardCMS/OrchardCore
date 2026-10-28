@@ -31,7 +31,7 @@ internal static class TestVariableTypes
     {
         var services = new ServiceCollection();
         register(services);
-        services.AddScoped<IWorkflowVariableTypeProvider, WorkflowVariableTypeProvider>();
+        services.AddSingleton<IWorkflowVariableTypeProvider, WorkflowVariableTypeProvider>();
 
         return services.BuildServiceProvider().GetRequiredService<IWorkflowVariableTypeProvider>();
     }

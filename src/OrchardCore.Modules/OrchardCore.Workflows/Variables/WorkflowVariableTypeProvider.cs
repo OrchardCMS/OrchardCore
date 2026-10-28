@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.Services;
@@ -7,23 +6,20 @@ namespace OrchardCore.Workflows.Variables;
 
 /// <summary>
 /// The default <see cref="IWorkflowVariableTypeProvider"/>, built from the types of
-/// <see cref="WorkflowVariableTypeOptions"/>. It lists them from their descriptors, and resolves a type from the
-/// services of the scope only when a value is converted.
+/// <see cref="WorkflowVariableTypeOptions"/>. The types need no services, so the options hold the one instance of
+/// each type and the provider is a singleton.
 /// </summary>
 public sealed class WorkflowVariableTypeProvider : IWorkflowVariableTypeProvider
 {
     // The order the designer offers the built-in types in; other types come after them, by name, and 'any' last.
     private static readonly string[] s_order = ["string", "number", "boolean", "datetime", "object", "array"];
 
-    private readonly IServiceProvider _serviceProvider;
     private readonly IReadOnlyList<WorkflowVariableTypeDescriptor> _types;
     private readonly Dictionary<string, WorkflowVariableTypeDescriptor> _typesByName = new(StringComparer.OrdinalIgnoreCase);
 
-    public WorkflowVariableTypeProvider(IOptions<WorkflowVariableTypeOptions> options, IServiceProvider serviceProvider)
+    public WorkflowVariableTypeProvider(IOptions<WorkflowVariableTypeOptions> options)
     {
         ArgumentNullException.ThrowIfNull(options);
-
-        _serviceProvider = serviceProvider;
 
         // The options keep the last registration of a name, so a module can replace a built-in type.
         foreach (var type in options.Value.Types)
@@ -49,9 +45,7 @@ public sealed class WorkflowVariableTypeProvider : IWorkflowVariableTypeProvider
     /// <inheritdoc />
     public IWorkflowVariableType Get(string name)
     {
-        return GetDescriptor(name) is { } descriptor
-            ? (IWorkflowVariableType)_serviceProvider.GetRequiredService(descriptor.Type)
-            : null;
+        return GetDescriptor(name)?.Instance;
     }
 
     private static int Rank(WorkflowVariableTypeDescriptor type)

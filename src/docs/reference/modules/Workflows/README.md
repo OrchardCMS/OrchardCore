@@ -433,7 +433,7 @@ public sealed class PhoneNumberVariableType : IWorkflowVariableType
 services.AddWorkflowVariableType<PhoneNumberVariableType>();
 ```
 
-`IWorkflowVariableTypeProvider` lists the types (`WorkflowVariableTypeDescriptor`), and resolves a type from the services when a value is converted.
+A variable type isn't a service: `WorkflowVariableTypeOptions` holds one instance of each type, created with its parameterless constructor and shared by every request, so a type has no dependencies and keeps no state. `IWorkflowVariableTypeProvider`, a singleton, lists the types (`WorkflowVariableTypeDescriptor`) and returns the instance of a type when a value is converted.
 
 ## Vocabulary
 

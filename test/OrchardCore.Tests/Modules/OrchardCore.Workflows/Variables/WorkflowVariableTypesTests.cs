@@ -1,5 +1,6 @@
 using System.Dynamic;
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Contents.Workflows.Variables;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Services;
@@ -141,6 +142,18 @@ public sealed class WorkflowVariableTypesTests
             .AddWorkflowVariableType<NumberVariableType>());
 
         Assert.Equal(["string", "number", "boolean", "array", "contentItem", "any"], provider.List().Select(type => type.Name));
+    }
+
+    [Fact]
+    public void Get_RegisteredType_ReturnsTheSameInstanceWithoutRegisteringAService()
+    {
+        var services = new ServiceCollection().AddWorkflowVariableType<StringVariableType>();
+        var provider = TestVariableTypes.Create(registered => registered.AddWorkflowVariableType<StringVariableType>());
+
+        Assert.DoesNotContain(services, service => service.ServiceType == typeof(StringVariableType));
+        Assert.IsType<StringVariableType>(provider.Get("STRING"));
+        Assert.Same(provider.Get("string"), provider.Get("string"));
+        Assert.Null(provider.Get("unknown"));
     }
 
     private static object Coerce(IWorkflowVariableType type, object value)
