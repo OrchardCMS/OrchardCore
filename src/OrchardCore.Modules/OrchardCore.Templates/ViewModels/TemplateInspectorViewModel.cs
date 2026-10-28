@@ -38,6 +38,12 @@ public class TemplateInspectorViewModel
     public ISet<string> LocalTemplates { get; set; } = new HashSet<string>();
 
     /// <summary>
+    /// The templates of the sources, e.g. of the active theme, by the shape type or alternate they are bound to,
+    /// to view or clone them.
+    /// </summary>
+    public IReadOnlyDictionary<string, InspectedSourceTemplate> SourceTemplates { get; set; } = new Dictionary<string, InspectedSourceTemplate>();
+
+    /// <summary>
     /// Why the content item could not be rendered, if it could not.
     /// </summary>
     public string Error { get; set; }

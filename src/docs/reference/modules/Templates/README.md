@@ -52,6 +52,8 @@ Modules can suggest the alternates of other shapes by registering an `ITemplateA
 
 The **Inspect Content** button of the **Templates** and **Admin Templates** pages, and the **Inspect templates** action of the content items of the **Content Items** list, show the shapes a content item renders in a display type: each shape, indented under the shape rendering it, with the template that renders it and all its alternates, the most specific first, including those of this content item only, e.g. `Content__Alias__[Alias]` or `Content__Slug__[Slug]`. The alternate the template is bound to is checked, and each alternate opens the editor of the local template with its name.
 
+When a template of the active theme or of a feature renders the shape, or is bound to one of its alternates, **View** shows its content and **Clone** copies it as a local template, for a Liquid template, to customize it. A Razor template can only be viewed, and its alternate creates a new Liquid template with its name.
+
 The templates are resolved as the front end does, with the active site theme and the templates, on the **Templates** page, and as the admin does, with the active admin theme and the admin templates, on the **Admin Templates** page. The content item is rendered in the admin to find its shapes, so the shapes that a template of the site theme renders in its own markup are not listed.
 
 ### Template sources

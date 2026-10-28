@@ -1,6 +1,21 @@
 @model TemplateInspectorViewModel
 @{
     var permission = Model.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name;
+
+    // Views a template of a source, e.g. of the active theme, and clones it as a local template when it's a Liquid one.
+    Func<InspectedSourceTemplate, object> sourceTemplateActions = @<text>
+        <a asp-action="Display" asp-controller="TemplateSource" asp-route-source="@item.Source" asp-route-name="@item.Template.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath"
+           class="btn btn-outline-secondary btn-sm py-0" title="@T["View the template of {0}", item.Template.ExtensionId]">
+            <i class="fa-solid fa-eye" aria-hidden="true"></i> @T["View"]
+        </a>
+        @if (item.Template.CanClone)
+        {
+            <a asp-action="Clone" asp-controller="TemplateSource" asp-route-source="@item.Source" asp-route-name="@item.Template.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath"
+               class="btn btn-outline-primary btn-sm py-0" data-url-af="UnsafeUrl" title="@T["Clone the template of {0} as a local template", item.Template.ExtensionId]">
+                <i class="fa-solid fa-clone" aria-hidden="true"></i> @T["Clone"]
+            </a>
+        }
+    </text>;
 }
 
 <zone Name="Title">
@@ -85,6 +100,11 @@
                             @shape.ExtensionId
                         </span>
                         <code class="small">@shape.Source</code>
+
+                        @if (Model.SourceTemplates.TryGetValue(shape.RenderedWith ?? shape.Type, out var renderingTemplate))
+                        {
+                            @sourceTemplateActions(renderingTemplate)
+                        }
                     }
                     else if (shape.Source != null)
                     {
@@ -103,9 +123,14 @@
                             var isUsed = string.Equals(alternate, shape.RenderedWith, StringComparison.OrdinalIgnoreCase);
                             var isLocal = Model.LocalTemplates.Contains(alternate);
 
+                            // The template rendering the shape has its actions next to its extension, above.
+                            Model.SourceTemplates.TryGetValue(alternate, out var sourceTemplate);
+                            var hasSourceActions = !isLocal && !isUsed && sourceTemplate != null;
+
+                            <span class="d-inline-flex flex-wrap align-items-center gap-1 @(hasSourceActions ? "me-2" : null)">
                             <a asp-action="@(isLocal ? "Edit" : "Create")" asp-controller="Template" asp-route-name="@alternate" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath"
                                class="badge ta-badge fw-normal text-decoration-none @(isUsed ? "border-success" : null)"
-                               title="@(isUsed ? T["The template rendering the shape is bound to this name"] : isLocal ? T["Edit the local template"] : T["Create a template with this name"])">
+                               title="@(isUsed ? T["The template rendering the shape is bound to this name"] : isLocal ? T["Edit the local template"] : sourceTemplate != null ? T["{0} has a template with this name, create a local template with this name", sourceTemplate.Template.ExtensionId] : T["Create a template with this name"])">
                                 @if (isUsed)
                                 {
                                     <i class="fa-solid fa-check text-success" aria-hidden="true"></i>
@@ -114,8 +139,17 @@
                                 {
                                     <i class="fa-solid fa-pen-to-square text-primary" aria-hidden="true"></i>
                                 }
+                                @if (hasSourceActions)
+                                {
+                                    <i class="fa-solid fa-layer-group text-secondary" aria-hidden="true"></i>
+                                }
                                 @alternate
                             </a>
+                            @if (hasSourceActions)
+                            {
+                                @sourceTemplateActions(sourceTemplate)
+                            }
+                            </span>
                         }
                     </div>
                 }

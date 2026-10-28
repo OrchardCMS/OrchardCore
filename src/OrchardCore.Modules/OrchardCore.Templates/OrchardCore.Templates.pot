@@ -823,6 +823,18 @@ msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Clone"
+msgstr ""
+
+#. Format arguments: {0}: item.Template.ExtensionId
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Clone the template of {0} as a local template"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Code"
 msgstr ""
 
@@ -902,6 +914,18 @@ msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "View"
+msgstr ""
+
+#. Format arguments: {0}: item.Template.ExtensionId
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "View the template of {0}"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "rendered by"
 msgstr ""
 
@@ -910,6 +934,13 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "{0} ({1}), {2} display type"
+msgstr ""
+
+#. Format arguments: {0}: sourceTemplate.Template.ExtensionId
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "{0} has a template with this name, create a local template with this name"
 msgstr ""
 
 #: Views/TemplateInspectorAction_SummaryAdmin.cshtml

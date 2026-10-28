@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
+using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 using OrchardCore.Templates.ViewModels;
 using YesSql;
@@ -26,6 +27,7 @@ public sealed class TemplateInspectorController : Controller
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
     private readonly TemplateInspectionService _templateInspectionService;
+    private readonly SourceTemplatesService _sourceTemplatesService;
     private readonly TemplatesManager _templatesManager;
     private readonly AdminTemplatesManager _adminTemplatesManager;
 
@@ -37,6 +39,7 @@ public sealed class TemplateInspectorController : Controller
         IContentDefinitionManager contentDefinitionManager,
         ISession session,
         TemplateInspectionService templateInspectionService,
+        SourceTemplatesService sourceTemplatesService,
         TemplatesManager templatesManager,
         AdminTemplatesManager adminTemplatesManager,
         IStringLocalizer<TemplateInspectorController> stringLocalizer)
@@ -46,6 +49,7 @@ public sealed class TemplateInspectorController : Controller
         _contentDefinitionManager = contentDefinitionManager;
         _session = session;
         _templateInspectionService = templateInspectionService;
+        _sourceTemplatesService = sourceTemplatesService;
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
         S = stringLocalizer;
@@ -99,9 +103,32 @@ public sealed class TemplateInspectorController : Controller
             (model.Shapes, model.Error) = await _templateInspectionService.InspectAsync(contentItem, displayType, adminTemplates);
             model.ContentItem = contentItem;
             model.LocalTemplates = new HashSet<string>(localTemplates.Templates.Keys, StringComparer.OrdinalIgnoreCase);
+            model.SourceTemplates = await GetSourceTemplatesAsync(model.Shapes, adminTemplates);
         }
 
         return View(model);
+    }
+
+    // The templates of the sources, e.g. of the active theme, bound to the types or the alternates of the shapes,
+    // to view or clone them. The sources are in their registration order, the theme before the features, as the
+    // template of the theme wins when both have one.
+    private async Task<IReadOnlyDictionary<string, InspectedSourceTemplate>> GetSourceTemplatesAsync(IEnumerable<InspectedShape> shapes, bool adminTemplates)
+    {
+        var names = new HashSet<string>(shapes.SelectMany(shape => shape.Alternates.Append(shape.Type)), StringComparer.OrdinalIgnoreCase);
+        var sourceTemplates = new Dictionary<string, InspectedSourceTemplate>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var source in _sourceTemplatesService.Sources)
+        {
+            foreach (var template in await source.GetTemplatesAsync(adminTemplates, null))
+            {
+                if (names.Contains(template.Name))
+                {
+                    sourceTemplates.TryAdd(template.Name, new InspectedSourceTemplate { Source = source.Name, Template = template });
+                }
+            }
+        }
+
+        return sourceTemplates;
     }
 
     // The latest content items, the most recently modified first, grouped by content type in the picker.
