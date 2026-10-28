@@ -21,7 +21,7 @@ with the documentation of the Secrets module. Read it before writing a new one.
 | Recording | Chromium at 1536x864 CSS pixels, device scale 1.25, light color scheme, en-US, shown at 1728x972 in a green frame |
 | Branding | Dark background with green glows, Orchard Core logo (white name, green symbol), Open Sans from `src/docs/reference/branding/assets/fonts` |
 | Colors | Green `#41B670` (accents, frame, highlights, cursor clicks), dark green `#1D5B36`, charcoal `#404041`, gray `#C6C6C6`, white |
-| Voice | `en-US-AndrewMultilingualNeural`, rate `+2%`, through `edge-tts` |
+| Voice | `en-US-AndrewMultilingualNeural`, rate `+2%`, through `edge-tts`, or Azure Speech |
 | Structure | Opening card, numbered chapters (chapter card + slides or recordings), closing card |
 | Captions | WebVTT and SRT, from the narration, at most about 13 words each |
 
@@ -32,7 +32,9 @@ The full specification, with every value and the reasons behind them, is in `ref
 - Python 3.11+ with `pip install pillow pygments imageio-ffmpeg edge-tts` (ffmpeg comes with `imageio-ffmpeg`).
 - .NET 10 SDK, for the recorder (Playwright for .NET; run `pwsh <bin>/playwright.ps1 install chromium` once).
 - A throwaway local Orchard Core site to record: see `references/recording.md`.
-- Internet access for the voice (`edge-tts` calls the Microsoft Edge speech service).
+- Internet access for the voice (`edge-tts` calls the Microsoft Edge speech service). When that service rejects
+  `edge-tts`, set `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` to use an Azure Speech resource instead (its free tier
+  is enough): `narrate.py` then synthesizes the same voice through the Azure Speech REST API.
 
 ## Workflow
 

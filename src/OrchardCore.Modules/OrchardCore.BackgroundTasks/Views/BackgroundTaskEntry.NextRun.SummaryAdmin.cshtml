@@ -1,0 +1,35 @@
+@using OrchardCore
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@{
+    var state = Model.Value.State;
+
+    // In the grid, the header of the column already names the value.
+    var showLabel = Model.Metadata.DisplayType != OrchardCoreConstants.DisplayType.SummaryAdminGrid;
+}
+
+@if (state is not null)
+{
+    <span class="badge ta-badge fw-normal" data-next-run title="@(state.NextStartTime is null ? null : await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G")))">
+        <i class="fa-regular fa-clock text-secondary" aria-hidden="true"></i>
+        @if (showLabel)
+        {
+            <span class="fw-bold">@T["Next run"]</span>
+        }
+        @if (state.NextStartTime is not null)
+        {
+            @await DisplayAsync(await New.TimeSpan(Utc: state.NextStartTime.Value))
+        }
+        else if (Model.Value.Enable)
+        {
+            @T["invalid schedule"]
+        }
+        else
+        {
+            @T["not scheduled"]
+        }
+    </span>
+}

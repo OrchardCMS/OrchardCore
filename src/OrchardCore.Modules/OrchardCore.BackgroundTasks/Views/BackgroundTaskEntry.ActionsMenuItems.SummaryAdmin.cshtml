@@ -1,0 +1,18 @@
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@* Bare items, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
+@if (Model.Value.IsMonitored)
+{
+    if (Model.Value.State?.Status == BackgroundTaskStatus.Idle)
+    {
+        <a asp-action="Run" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-url-af="UnsafeUrl" data-run-task>@T["Run now"]</a>
+    }
+    else
+    {
+        <a class="dropdown-item disabled" aria-disabled="true" role="button" data-run-task>@T["Run now"]</a>
+    }
+}
+<a asp-action="Details" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name" class="dropdown-item">@T["Details"]</a>

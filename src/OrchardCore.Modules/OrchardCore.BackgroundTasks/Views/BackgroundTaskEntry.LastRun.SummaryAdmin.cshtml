@@ -1,0 +1,47 @@
+@using OrchardCore
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@{
+    var lastRun = Model.Value.State?.LastRun;
+
+    // In the grid, the header of the column already names the value.
+    var showLabel = Model.Metadata.DisplayType != OrchardCoreConstants.DisplayType.SummaryAdminGrid;
+}
+
+@if (Model.Value.State is not null)
+{
+    if (lastRun is null)
+    {
+        <span class="badge ta-badge fw-normal" data-last-run>
+            <i class="fa-solid fa-circle-minus text-secondary" aria-hidden="true"></i>
+            @if (showLabel)
+            {
+                <span class="fw-bold">@T["Last run"]</span>
+            }
+            @T["never"]
+        </span>
+    }
+    else
+    {
+        var (badgeClasses, icon) = lastRun.Result switch
+        {
+            BackgroundTaskRunResult.Succeeded => ("text-success-emphasis bg-success-subtle border border-success-subtle", "fa-circle-check"),
+            BackgroundTaskRunResult.Failed => ("text-danger-emphasis bg-danger-subtle border border-danger-subtle", "fa-circle-xmark"),
+            _ => ("ta-badge", "fa-circle-stop"),
+        };
+
+        <span class="badge fw-normal @badgeClasses" data-last-run data-run-result="@lastRun.Result" title="@await DisplayAsync(await New.DateTime(Utc: lastRun.StartTime, Format: "G"))">
+            <i class="fa-solid @icon" aria-hidden="true"></i>
+            @if (showLabel)
+            {
+                <span class="fw-bold">@T["Last run"]</span>
+            }
+            <span class="visually-hidden"><partial name="_BackgroundTaskRunResult" model="lastRun.Result" /></span>
+            @await DisplayAsync(await New.TimeSpan(Utc: lastRun.StartTime))
+            &middot; <partial name="_BackgroundTaskDuration" model="lastRun.Duration" />
+        </span>
+    }
+}
