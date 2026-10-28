@@ -88,7 +88,7 @@
             <form method="post" asp-action="Index" asp-controller="TwoFactorAuthentication">
                 <label asp-for="PreferredProvider" class="form-label">@T["Preferred Two-Factor Method"]</label>
                 <div class="d-flex gap-2">
-                    <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
+                    <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select" required>
                         @if (string.IsNullOrEmpty(Model.PreferredProvider))
                         {
                             <option value="">@T["Select the method"]</option>

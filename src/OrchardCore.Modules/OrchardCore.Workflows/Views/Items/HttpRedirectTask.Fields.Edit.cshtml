@@ -2,7 +2,7 @@
 @model HttpRedirectTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Location">
-    <label asp-for="Location" class="ocat-label">@T["Location"]</label>
+    <label asp-for="Location" class="ocat-label ocat-label-required">@T["Location"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="Location" class="form-control code" />
         <span asp-validation-for="Location"></span>

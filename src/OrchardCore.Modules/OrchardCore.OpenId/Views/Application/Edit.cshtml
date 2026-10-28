@@ -25,7 +25,7 @@
     <input type="hidden" asp-for="Id" />
 
     <div class="ocat-wrapper" asp-validation-class-for="DisplayName">
-        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
         <div class="ocat-end">
             <input asp-for="DisplayName" class="form-control" autofocus />
             <span asp-validation-for="DisplayName" class="text-danger"></span>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="ClientId">
-        <label asp-for="ClientId" class="ocat-label">@T["Client Id"]</label>
+        <label asp-for="ClientId" class="ocat-label ocat-label-required">@T["Client Id"]</label>
         <div class="ocat-end">
             <div class="input-group">
                 <input asp-for="ClientId" class="form-control" autocomplete="new-password" data-openid-field="ClientId" />

@@ -22,7 +22,7 @@
     <div class="tab-content" id="tabs">
         <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
             <div class="ocat-wrapper" asp-validation-class-for="Name">
-                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+                <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
                 <div class="ocat-end">
                     <input asp-for="Name" class="form-control" autofocus />
                     <span asp-validation-for="Name" class="text-danger"></span>

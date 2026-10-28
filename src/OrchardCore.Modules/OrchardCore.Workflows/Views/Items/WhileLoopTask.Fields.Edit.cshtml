@@ -20,7 +20,7 @@
 </div>
 
 <div id="@(Html.IdFor(m => m.ConditionExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="ConditionExpression">
-    <label asp-for="ConditionExpression" class="ocat-label">@T["Condition Expression"]</label>
+    <label asp-for="ConditionExpression" class="ocat-label ocat-label-required">@T["Condition Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="ConditionExpression" class="form-control code" autofocus />
         <span asp-validation-for="ConditionExpression"></span>
@@ -29,7 +29,7 @@
 </div>
 
 <div id="@(Html.IdFor(m => m.LiquidConditionExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidConditionExpression">
-    <label asp-for="LiquidConditionExpression" class="ocat-label">@T["Condition Expression"]</label>
+    <label asp-for="LiquidConditionExpression" class="ocat-label ocat-label-required">@T["Condition Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="LiquidConditionExpression" class="form-control code" />
         <span asp-validation-for="LiquidConditionExpression"></span>

@@ -42,6 +42,7 @@ public static class LiquidCoreServices
         services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
 
         // Liquid shape templates are rendered directly, not through their Razor pages like Liquid views.
+        services.AddScoped<LiquidTemplateContextAccessor>();
         services.AddScoped<LiquidShapeTemplateViewEngine>();
         services.AddScoped<IShapeTemplateViewEngine>(sp => sp.GetRequiredService<LiquidShapeTemplateViewEngine>());
 

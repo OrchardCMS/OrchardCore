@@ -342,6 +342,22 @@ Built-in group limits are matched by:
 
 If an endpoint belongs to multiple groups, every matching built-in group limit and every matching enabled tenant group policy is combined with the rest of the active limiters for that request.
 
+### Rejection responses
+
+A rejected request gets a `429 Too Many Requests` response with no body. An endpoint whose clients expect errors in another format can register a rejection handler for its route name, which writes the response of every rejected request to that route, whichever limiter rejected it:
+
+```csharp
+services.Configure<RateLimitsOptions>(options =>
+{
+    options.AddRouteRejectionHandler("ExportReport", async (context, cancellationToken) =>
+    {
+        await context.HttpContext.Response.WriteAsJsonAsync(new { error = "too_many_requests" }, cancellationToken);
+    });
+});
+```
+
+The status code is set to `429` before the handler runs, and the handler can change it. The OpenID token endpoint uses a rejection handler to return an OAuth 2.0 `slow_down` error, with a `Retry-After` header, so that token clients can handle it.
+
 ### Limits registered by Orchard Core features
 
 | Feature | Endpoint | Limit | Counted against |
@@ -355,7 +371,7 @@ If an endpoint belongs to multiple groups, every matching built-in group limit a
 | Users: Two-Factor Authentication | `POST` two-factor code | 5 per minute | User who passed the password check |
 | Users: Two-Factor Authentication | `POST` recovery code | 3 per minute | User who passed the password check |
 | Users: Email and SMS Authenticators | `POST` send code | 2 per minute | User who passed the password check, shared by both authenticators |
-| OpenID: Authorization Server | `POST` token, password grant only | 100 per minute | IP address, shared with the login |
+| OpenID: Authorization Server | `POST` token, password grant only | 100 per minute | IP address, shared with the login. A rejected request gets an OAuth 2.0 `slow_down` error |
 
 The login, registration, and password recovery limits apply to anonymous requests, so they can only be counted per IP address. They stop a single host from sending a flood of requests while leaving room for the users of a shared network, and other protections cover each account:
 

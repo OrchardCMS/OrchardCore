@@ -15,7 +15,7 @@
 
 <div id="Azure_Provider_Settings" class="collapse@(Model.IsEnabled ? " show" : string.Empty)">
     <div class="ocat-wrapper" asp-validation-class-for="PhoneNumber">
-        <label asp-for="PhoneNumber" class="ocat-label">@T["Phone Number"]</label>
+        <label asp-for="PhoneNumber" class="ocat-label ocat-label-required">@T["Phone Number"]</label>
         <div class="ocat-end">
             <input asp-for="PhoneNumber" class="form-control" />
             <span asp-validation-for="PhoneNumber"></span>
@@ -24,7 +24,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="ConnectionString">
-        <label asp-for="ConnectionString" class="ocat-label">@T["Connection String"]</label>
+        <label asp-for="ConnectionString" class="ocat-label ocat-label-required">@T["Connection String"]</label>
         <div class="ocat-end">
             <secret-input asp-for="ConnectionString" secret-name="@AzureSmsConstants.SecretNames.ConnectionString" placeholder="@T["Enter the connection string"].Value" />
             <span asp-validation-for="ConnectionString"></span>

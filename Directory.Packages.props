@@ -7,8 +7,8 @@
     <PackageVersion Include="Acornima" Version="1.8.0" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
     <PackageVersion Include="AngleSharp" Version="1.8.5" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.104.1" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.1" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.104.2" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.2" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Core" Version="1.63.0" />
@@ -16,9 +16,9 @@
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.4" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="Azure.Search.Documents" Version="12.0.0" />
-    <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.11.0" />
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.29.2" />
-    <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.27.1" />
+    <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.11.2" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.30.1" />
+    <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.28.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="Cyqwel" Version="0.4.0" />
@@ -35,14 +35,14 @@
     <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="10.11.0" />
     <PackageVersion Include="Parlot" Version="1.5.9" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.40" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.41" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00018" />
     <PackageVersion Include="MailKit" Version="4.18.1" />
-    <PackageVersion Include="Markdig" Version="1.3.2" />
+    <PackageVersion Include="Markdig" Version="1.4.0" />
     <PackageVersion Include="Microsoft.Azure.SignalR" Version="1.33.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.14.1" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.16.0" />
@@ -50,10 +50,10 @@
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.HangDump" Version="2.4.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.HangDump" Version="2.5.1" />
     <PackageVersion Include="MimeKit" Version="4.18.1" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
-    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="Moq" Version="4.21.0" />
     <PackageVersion Include="ncrontab" Version="3.4.0" />
     <PackageVersion Include="NJsonSchema" Version="11.6.1" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.1" />
@@ -66,20 +66,20 @@
     <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.7.1" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.13" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.14" />
     <PackageVersion Include="Shortcodes" Version="1.3.6" />
     <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="NetVips" Version="3.2.0" />
     <PackageVersion Include="NetVips.Native" Version="8.18.7" />
     <PackageVersion Include="StackExchange.Redis" Version="3.4.5" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="10.2.3" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.2.3" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="10.3.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.3.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.3.0" />
     <PackageVersion Include="Testcontainers" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.Azurite" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.LocalStack" Version="4.16.0" />
-    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.2" />
     <PackageVersion Include="YesSql" Version="6.0.0" />
     <PackageVersion Include="YesSql.Abstractions" Version="6.0.0" />
     <PackageVersion Include="YesSql.Core" Version="6.0.0" />
@@ -122,7 +122,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Playwright" Version="1.62.0" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.63.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.12" />
@@ -133,18 +133,18 @@
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="System.IO.Hashing" Version="10.0.12" />
-    <PackageVersion Include="tusdotnet" Version="2.11.2" />
+    <PackageVersion Include="tusdotnet" Version="2.12.0" />
     <PackageVersion Include="System.Text.Json" Version="10.0.12" />
   </ItemGroup>
   <ItemGroup>
     <!-- Aspire Packages -->
     <!-- When updating Aspire package versions, also update the corresponding SDK version in '<Project Sdk="Aspire.AppHost.Sdk/13.4.4">'
     within 'src/OrchardCore.AspireHost/OrchardCore.AspireHost.csproj'. -->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.5.4" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.6.1" />
   </ItemGroup>
   <ItemGroup>
     <!-- Transitive Packages -->
-    <PackageVersion Include="MessagePack" Version="3.1.10" />
+    <PackageVersion Include="MessagePack" Version="3.1.11" />
     <!-- Pinned to versions that are not affected by known vulnerabilities (NU1902, NU1903). -->
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
     <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.13" />

@@ -136,7 +136,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 }
 
                 // Now find the actual binding to render, taking alternates into account.
-                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.HasAlternates ? shapeMetadata.Alternates : AlternatesCollection.Empty, shapeTable);
 
                 if (actualBinding == null)
                 {
@@ -150,7 +150,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             }
 
             // Process wrappers.
-            if (shapeMetadata.Wrappers.Count > 0)
+            if (shapeMetadata.HasWrappers)
             {
                 foreach (var frameType in shapeMetadata.Wrappers)
                 {

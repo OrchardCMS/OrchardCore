@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement;
 
@@ -13,11 +12,9 @@ public class ResourceRequiredContext
 
     public void WriteTo(TextWriter writer, string appPath)
     {
-        var tagBuilder = Resource.GetTagBuilder(Settings, appPath, FileVersionProvider);
-
         if (string.IsNullOrEmpty(Settings.Condition))
         {
-            tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
+            Resource.WriteTo(writer, Settings, appPath, FileVersionProvider);
             return;
         }
 
@@ -30,7 +27,7 @@ public class ResourceRequiredContext
             writer.Write("<!--[if " + Settings.Condition + "]>");
         }
 
-        tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
+        Resource.WriteTo(writer, Settings, appPath, FileVersionProvider);
 
         if (Settings.Condition == NotIE)
         {

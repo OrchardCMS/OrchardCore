@@ -9,6 +9,10 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 permissions:
   contents: read
+# All branches publish to the same feed; don't interrupt or overlap feed updates.
+concurrency:
+  group: preview-publish
+  cancel-in-progress: false
 jobs:
   test:
     # To enable this workflow on a fork, comment out:
@@ -60,7 +64,7 @@ jobs:
         ORCHARD_TEST_DOCKER_SERVICES: "false"
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: failure()
       with:
         name: Functional Test failure
@@ -69,14 +73,44 @@ jobs:
           src/OrchardCore.Mvc.Web/App_Data_Tests/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
-    - name: Deploy preview NuGet packages
+    - name: Pack preview NuGet packages
+      id: pack
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
-        dotnet pack -c Release --no-build
-        dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.CLOUDSMITH_API_KEY}} -n -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+        dotnet pack -c Release --no-build --output "$RUNNER_TEMP/preview-packages"
+    - name: Deploy preview NuGet packages to Cloudsmith
+      if: ${{ !cancelled() && steps.pack.outcome == 'success' }}
+      env:
+        CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      run: |
+        dotnet nuget push "$RUNNER_TEMP/preview-packages/*.nupkg" -t 600 -k "$CLOUDSMITH_API_KEY" -n -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+    - name: Deploy preview NuGet packages to Cloudflare R2
+      if: ${{ !cancelled() && steps.pack.outcome == 'success' }}
+      timeout-minutes: 20
+      env:
+        SLEET_FEED_TYPE: s3
+        SLEET_FEED_BUCKETNAME: ${{ vars.R2_BUCKET_NAME }}
+        SLEET_FEED_SERVICEURL: ${{ vars.R2_SERVICE_URL }}
+        SLEET_FEED_PATH: ${{ vars.R2_FEED_URL }}
+        SLEET_FEED_BASEURI: ${{ vars.R2_FEED_URL }}
+        SLEET_FEED_DISABLEPAYLOADSIGNING: "true"
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
+        AWS_RESPONSE_CHECKSUM_VALIDATION: WHEN_REQUIRED
+      run: |
+        : "${SLEET_FEED_BUCKETNAME:?Set the R2_BUCKET_NAME repository variable}"
+        : "${SLEET_FEED_SERVICEURL:?Set the R2_SERVICE_URL repository variable}"
+        : "${SLEET_FEED_BASEURI:?Set the R2_FEED_URL repository variable}"
+        : "${AWS_ACCESS_KEY_ID:?Set the R2_ACCESS_KEY_ID repository secret}"
+        : "${AWS_SECRET_ACCESS_KEY:?Set the R2_SECRET_ACCESS_KEY repository secret}"
+        dotnet tool install sleet --version 7.2.0 --tool-path "$RUNNER_TEMP/sleet"
+        "$RUNNER_TEMP/sleet/sleet" push "$RUNNER_TEMP/preview-packages" --config none --skip-existing
+        "$RUNNER_TEMP/sleet/sleet" retention settings --stable 1 --prerelease 5 --config none
+        "$RUNNER_TEMP/sleet/sleet" retention prune --config none
     - name: Set up Docker Buildx
       if: steps.check-publish.outputs.should-publish == 'true'
-      uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
     - name: Login to DockerHub
       if: steps.check-publish.outputs.should-publish == 'true'
       uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0

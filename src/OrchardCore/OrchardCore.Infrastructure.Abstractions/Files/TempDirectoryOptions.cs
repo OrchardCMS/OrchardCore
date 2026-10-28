@@ -7,8 +7,9 @@ namespace OrchardCore.FileStorage;
 public class TempDirectoryOptions
 {
     /// <summary>
-    /// The base path under which tenant-scoped temporary files are stored. When not set, the operating system
-    /// temporary directory (<see cref="System.IO.Path.GetTempPath"/>) is used.
+    /// The base path under which tenant-scoped temporary files are stored. When not set, OrchardCore/Temp under
+    /// <see cref="System.Environment.SpecialFolder.LocalApplicationData"/> is used. If that location is unavailable,
+    /// a unique directory under <see cref="System.IO.Path.GetTempPath"/> is created and a warning is logged.
     /// </summary>
     /// <remarks>
     /// Point this to a larger or shared volume (for example a mounted Azure Files or AWS EFS share) to avoid
