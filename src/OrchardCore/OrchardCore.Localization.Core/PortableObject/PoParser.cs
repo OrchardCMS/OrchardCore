@@ -28,6 +28,10 @@ public static class PoParser
     /// <param name="reader">The <see cref="TextReader"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>A list of culture records.</returns>
+    /// <remarks>
+    /// The pluralization rule defined by the <c>Plural-Forms</c> header of the file, if any, is set as the
+    /// <see cref="CultureDictionaryRecord.PluralRule"/> of every record.
+    /// </remarks>
     public static async IAsyncEnumerable<CultureDictionaryRecord> ParseAsync(
         TextReader reader,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -62,6 +66,10 @@ public static class PoParser
     /// </summary>
     /// <param name="reader">The <see cref="TextReader"/>.</param>
     /// <returns>A list of culture records.</returns>
+    /// <remarks>
+    /// The pluralization rule defined by the <c>Plural-Forms</c> header of the file, if any, is set as the
+    /// <see cref="CultureDictionaryRecord.PluralRule"/> of every record.
+    /// </remarks>
     public static IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
     {
         var entryBuilder = new DictionaryRecordBuilder();
@@ -176,9 +184,13 @@ public static class PoParser
 
     private sealed class DictionaryRecordBuilder
     {
+        private const string PluralFormsHeader = "Plural-Forms";
+
         private readonly List<string> _values;
         private IEnumerable<string> _validValues => _values.Where(value => !string.IsNullOrEmpty(value));
         private PoContext _context;
+        private bool _headerProcessed;
+        private PluralizationRuleDelegate _pluralRule;
 
         public string MessageId { get; private set; }
         public string MessageContext { get; private set; }
@@ -195,6 +207,11 @@ public static class PoParser
 
         public void Set(PoContext context, string text)
         {
+            if (!_headerProcessed && (context == PoContext.MessageId || context == PoContext.MessageContext))
+            {
+                ReadHeader();
+            }
+
             switch (context)
             {
                 case PoContext.MessageId:
@@ -232,6 +249,27 @@ public static class PoParser
             }
         }
 
+        // The header is the first entry of the file, with an empty msgid, and its msgstr contains the header fields.
+        private void ReadHeader()
+        {
+            if (MessageId == null || MessageId.Length > 0 || MessageContext != null || _values.Count == 0)
+            {
+                return;
+            }
+
+            _headerProcessed = true;
+
+            foreach (var field in _values[0].Split('\n'))
+            {
+                var separatorIndex = field.IndexOf(':');
+                if (separatorIndex > 0 && field.AsSpan(0, separatorIndex).Trim().Equals(PluralFormsHeader, StringComparison.OrdinalIgnoreCase))
+                {
+                    _pluralRule = PluralFormsParser.Parse(field[(separatorIndex + 1)..]);
+                    break;
+                }
+            }
+        }
+
         public CultureDictionaryRecord BuildRecordAndReset()
         {
             if (!IsValid)
@@ -239,7 +277,9 @@ public static class PoParser
                 return null;
             }
 
-            var result = new CultureDictionaryRecord(MessageId, MessageContext, _validValues.ToArray());
+            _headerProcessed = true;
+
+            var result = new CultureDictionaryRecord(MessageId, MessageContext, _validValues.ToArray(), _pluralRule);
 
             MessageId = null;
             MessageContext = null;
