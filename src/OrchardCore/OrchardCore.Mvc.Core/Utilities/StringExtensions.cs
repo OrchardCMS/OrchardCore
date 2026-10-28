@@ -74,7 +74,10 @@ public static class StringExtensions
         return trimmed + ellipsis;
     }
 
-    public static string HtmlClassify(this string text)
+    public static string HtmlClassify(this string text) =>
+        text.HtmlClassify(separator: '-');
+
+    public static string HtmlClassify(this string text, char separator)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -94,7 +97,7 @@ public static class StringExtensions
             {
                 if (previousIsNotLetter && i != 0 && cursor > 0)
                 {
-                    result[cursor++] = '-';
+                    result[cursor++] = separator;
                 }
 
                 result[cursor++] = char.ToLowerInvariant(current);
@@ -107,23 +110,6 @@ public static class StringExtensions
         }
 
         return new string(result, 0, cursor);
-    }
-
-    /// <summary>
-    /// First calls <see cref="HtmlClassify"/>, then converts each of the words separated by dashes into a single
-    /// pascalCase word. The output is suitable as a component in a class name in the <see cref="HtmlClassify"/> format. 
-    /// </summary>
-    public static string HtmlClassifyPascalCase(this string text)
-    {
-        var words = text
-            .HtmlClassify()
-            .Split('-')
-            .Where(word => !string.IsNullOrEmpty(word))
-            .Select((word, index) => index == 0 
-                ? word.ToLowerInvariant() 
-                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
-
-        return string.Join(string.Empty, words);
     }
 
     public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)

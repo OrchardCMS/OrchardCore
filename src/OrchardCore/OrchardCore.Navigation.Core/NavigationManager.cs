@@ -63,7 +63,7 @@ public class NavigationManager : INavigationManager
         menuItems = Reduce(menuItems);
 
         // Add breadcrumbs-like classes to each node.
-        AddNavigationClasses(menuItems, "oc-navigation-" + name.HtmlClassifyPascalCase());
+        AddNavigationClasses(menuItems, "oc-navigation-" + name.HtmlClassify(separator: '_'));
 
         return menuItems;
     }
@@ -289,7 +289,7 @@ public class NavigationManager : INavigationManager
     {
         foreach (var menuItem in menuItems)
         {
-            var className = $"{classPrefix}-{menuItem.Text.Name.HtmlClassifyPascalCase()}";
+            var className = $"{classPrefix}-{menuItem.Text.Name.HtmlClassify(separator: '_')}";
             menuItem.Classes.Add(className);
             AddNavigationClasses(menuItem.Items, className);
         }
