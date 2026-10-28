@@ -23,7 +23,7 @@
     }
 
     <div class="ocat-wrapper" asp-validation-class-for="ShapeType">
-        <label asp-for="ShapeType" class="ocat-label">@T["Shape type"]</label>
+        <label asp-for="ShapeType" class="ocat-label @(Model.Creating ? "ocat-label-required" : null)">@T["Shape type"]</label>
         <div class="ocat-end">
         <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
         <span asp-validation-for="ShapeType"></span>

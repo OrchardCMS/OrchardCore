@@ -1,7 +1,7 @@
 @model UrlRedirectRuleViewModel
 
 <div class="ocat-wrapper">
-    <label asp-for="Pattern" class="ocat-label">@T["Match URL Pattern"]</label>
+    <label asp-for="Pattern" class="ocat-label ocat-label-required">@T["Match URL Pattern"]</label>
     <div class="ocat-end">
     <input asp-for="Pattern" class="form-control" />
     <span class="hint">@T["Specifies a pattern using regular expressions to match incoming URLs, following the syntax defined in ECMA-262."]</span>
@@ -33,7 +33,7 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label asp-for="SubstitutionPattern" class="ocat-label">@T["The Substitution URL Pattern"]</label>
+    <label asp-for="SubstitutionPattern" class="ocat-label ocat-label-required">@T["The Substitution URL Pattern"]</label>
     <div class="ocat-end">
     <input asp-for="SubstitutionPattern" class="form-control" />
     <span asp-validation-for="SubstitutionPattern"></span>

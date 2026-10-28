@@ -2,7 +2,7 @@
 @model ButtonPartEditViewModel
 
 <div class="ocat-wrapper">
-    <label asp-for="Text" class="ocat-label">@T["Text"]</label>
+    <label asp-for="Text" class="ocat-label ocat-label-required">@T["Text"]</label>
     <div class="ocat-end">
         <input asp-for="Text" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The text to display on the button."]</span>

@@ -20,7 +20,7 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label asp-for="ContainedContentTypes" class="ocat-label">@T["Contained Content Types"]</label>
+    <label asp-for="ContainedContentTypes" class="ocat-label ocat-label-required">@T["Contained Content Types"]</label>
     <div class="ocat-end">
         <span class="hint">@T["The content types that this list can contain, e.g. Blog Post for a Blog."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })

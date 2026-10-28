@@ -255,6 +255,18 @@ For detailed patterns including Content Parts, Content Part Drivers, Content Fie
 - When renaming a section that has been released, keep supporting its legacy name by binding `GetSectionCompat("New:Name", "OrchardCore_Legacy")`, with a `// The 'OrchardCore_Legacy' section is deprecated and will be removed in a future major version, use 'New:Name' instead.` comment above it. The values of the new section win, and its arrays replace the legacy ones. Don't bind the two sections one after the other, as arrays would be appended.
 - Describe the sections read by a project in a `ConfigurationSchema.json` file at the project root, which is packed with a `JsonSchemaSegment` to provide IntelliSense in `appsettings.json` files.
 
+### Extensibility Points: Options or Dependency Injection
+
+When adding a customizable service or an extensibility point (types, providers, strategies a module can plug in), choose how implementations are registered from their scope, lifetime and dependencies. Dependency injection is for services with a global scope, not for services local to a module or feature. Apply this to new features, refactorings and reviews.
+
+- **Options** by default for a service local to a module or feature, or to one named instance of it. A service whose interface isn't defined in an abstractions project is likely local to its module. Store the instances in the feature's options, e.g. `services.Configure<FeatureOptions>(o => o.Add<TType>())` behind an `AddFeatureType<TType>()` extension, and read them through `IOptions<FeatureOptions>`, or `IOptionsMonitor<FeatureOptions>.Get(name)` for a named instance. Options also let different instances of the same feature use different implementations, and suit simple implementations supplied directly by the consumer. ASP.NET Core does the same with `CookieAuthenticationOptions.SessionStore`.
+- **Dependency injection** only when the service can't be in options:
+  - It has a global scope: it's used across modules, and its interface belongs in an abstractions project.
+  - It depends on other services through DI.
+  - It can't be a singleton, because it's scoped or transient, or keeps state.
+- Options don't add services to the container or resolve them from the scope every time they are used. Don't register a type in DI only to list or create it.
+- Document an options-based extension point as having no dependencies and keeping no state, since one instance is shared.
+
 ### Async Conventions
 
 - Suffix async methods with `Async`
@@ -445,6 +457,8 @@ services.AddSingleton<IYourSingleton, YourSingleton>();
 services.AddTransient<IYourTransient, YourTransient>();
 ```
 
+Register a service in DI only when its scope is global. For a service local to a module or feature, without dependencies and that can be a singleton, use the feature's options instead, see [Extensibility Points: Options or Dependency Injection](#extensibility-points-options-or-dependency-injection).
+
 ### Event Handlers
 
 ```csharp
@@ -582,6 +596,24 @@ This applies to admin-facing Razor edit views such as:
 </div>
 ```
 
+### Required fields
+
+Every field that is validated as required carries `ocat-label-required` on its label, next to `ocat-label`. A field is required when its editor rejects an empty value: a `[Required]` attribute on the bound property, a model error added by the driver, controller or validator when the value is null or empty, or an HTML `required` attribute. When you add or change such validation, update the label in the same change.
+
+- When the field is only required in some states, add the class conditionally, from the same condition as the validation: `class="ocat-label @(settings.Required ? "ocat-label-required" : null)"`, `@(Model.IsNew ? "ocat-label-required" : null)`.
+- When the row is only visible while the field is required, for example a section shown for one option, add the class unconditionally.
+- Don't mark a field whose empty value is accepted, even when it gets generated or defaulted (e.g. the Autoroute permalink), a read-only input, or a checkbox.
+
+```cshtml
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+    </div>
+</div>
+```
+
 ### Limited-width field example (number inputs)
 
 ```cshtml
@@ -635,6 +667,7 @@ Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to 
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
 - Using `ocat-limited-wrapper` for text inputs, selects, paths, IDs, or other non-number fields unless the user explicitly requests compact width
 - Mixing `ocat-end` and `ocat-end-offset` in the same row; choose exactly one based on whether the row has a left-column label
+- A required field without `ocat-label-required` on its label, or an asterisk typed into the label text
 
 ## Admin Index View Conventions
 

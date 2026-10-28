@@ -17,7 +17,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="DisplayName">
-    <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+    <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
     <div class="ocat-end">
         <input asp-for="DisplayName" class="form-control" />
         <span asp-validation-for="DisplayName"></span>
@@ -26,7 +26,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="AppId">
-    <label asp-for="AppId" class="ocat-label">@T["AppId"]</label>
+    <label asp-for="AppId" class="ocat-label ocat-label-required">@T["AppId"]</label>
     <div class="ocat-end">
         <input asp-for="AppId" class="form-control" />
         <span asp-validation-for="AppId"></span>
@@ -35,7 +35,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="TenantId">
-    <label asp-for="TenantId" class="ocat-label">@T["TenantId"]</label>
+    <label asp-for="TenantId" class="ocat-label ocat-label-required">@T["TenantId"]</label>
     <div class="ocat-end">
         <input asp-for="TenantId" class="form-control" />
         <span asp-validation-for="TenantId"></span>

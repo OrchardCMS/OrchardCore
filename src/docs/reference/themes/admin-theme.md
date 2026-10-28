@@ -14,7 +14,7 @@ By default, the `ocat-*` classes render a stacked (vertical) form layout equival
 |-----------|---------|---------------|
 | `ocat-wrapper` | Outer wrapper for each form field group | `margin-bottom: 1rem` |
 | `ocat-label` | Label element styling | Same as Bootstrap `.form-label` |
-| `ocat-label-required` | Additional class for required field labels | Appends red `*` indicator |
+| `ocat-label-required` | Additional class for required field labels | Appends a `*` indicator in the `--bs-danger` color, separated from the text by a `0.25rem` inline-start padding so it reads well in LTR and RTL |
 | `ocat-end` | Container for the input and hint content | _(no additional styles)_ |
 | `ocat-end-offset` | Container for input content when no label exists (e.g., standalone checkboxes) | _(no additional styles)_ |
 | `ocat-start` | Leading element container (for push/alignment) | _(no additional styles)_ |

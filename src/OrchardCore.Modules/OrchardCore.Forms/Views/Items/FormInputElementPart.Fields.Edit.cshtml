@@ -2,7 +2,7 @@
 @model FormInputElementPartEditViewModel
 
 <div class="ocat-wrapper">
-    <label asp-for="Name" class="ocat-label">@T["HTML Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["HTML Name"]</label>
     <div class="ocat-end">
         <input asp-for="Name" type="text" class="form-control content-preview-text content-caption-text" />
         <span class="hint">@T["The valid characters for the HTML input name attribute are letters (a-z, A-Z), digits (0-9), hyphen (-), underscore (_), period (.), and square brackets ([ ])."]</span>

@@ -1,7 +1,7 @@
 @model EditRewriteRuleViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Name">
-    <label asp-for="Name" class="ocat-label">@T["Display Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Display Name"]</label>
     <div class="ocat-end">
     <input type="text" asp-for="Name" class="form-control text-muted" autofocus />
     <span asp-validation-for="Name"></span>

@@ -40,7 +40,7 @@
     <input type="hidden" asp-for="AdminTemplates" />
 
     <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end">
         <input asp-for="Name" class="form-control template-name" autofocus />
         <span asp-validation-for="Name"></span>
@@ -57,7 +57,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="Content">
-        <label asp-for="Content" class="ocat-label">@T["Content"]</label>
+        <label asp-for="Content" class="ocat-label ocat-label-required">@T["Content"]</label>
         <div class="ocat-end">
         <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control template-editor" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Content" class="content-preview-text template-editor-value" hidden></textarea>
