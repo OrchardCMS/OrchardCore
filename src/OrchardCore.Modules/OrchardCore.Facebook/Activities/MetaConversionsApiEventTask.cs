@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Facebook.Models;
 using OrchardCore.Facebook.Services;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -13,26 +15,33 @@ namespace OrchardCore.Facebook.Activities;
 /// completed order or a captured lead directly from the server, independently of (and optionally
 /// deduplicated with) the browser-side Meta Pixel.
 /// </summary>
-public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsApiEventTask>
+public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsApiEventTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly IMetaConversionsApiService _metaConversionsApiService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
 
     internal readonly IStringLocalizer S;
 
     public MetaConversionsApiEventTask(
         IMetaConversionsApiService metaConversionsApiService,
         IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<MetaConversionsApiEventTask> stringLocalizer)
     {
         _metaConversionsApiService = metaConversionsApiService;
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
-    public override LocalizedString DisplayText => S["Meta Conversions API Event Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<MetaConversionsApiEventTask>("Meta Conversions API Event Task");
 
-    public override LocalizedString Category => S["Meta"];
+    public static LocalizationSource CategoryName => FacebookLocalizationSources.Meta;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> EventName
     {
@@ -60,6 +69,11 @@ public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsAp
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
+
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("object", LocalizationSource.Create<MetaConversionsApiEventTask>("The result of sending the event."), WorkflowValueMembers.Result)];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

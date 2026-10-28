@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Localization;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -10,7 +11,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Notifications.Activities;
 
-public abstract class NotifyUserTaskActivity : TaskActivity
+public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedValues
 {
     protected readonly INotificationService _notificationService;
     protected readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -23,6 +24,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
         ILogger logger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer
     )
     {
@@ -30,10 +32,18 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         _expressionEvaluator = expressionEvaluator;
         _htmlEncoder = htmlEncoder;
         _logger = logger;
+        LocalizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString Category => S["Notifications"];
+    /// <summary>
+    /// Gets the factory that translates the <see cref="LocalizationSource"/> descriptions of the activity.
+    /// </summary>
+    protected IStringLocalizerFactory LocalizerFactory { get; }
+
+    public static LocalizationSource CategoryName => NotificationsLocalizationSources.Notifications;
+
+    public override LocalizedString Category => LocalizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Subject
     {
@@ -73,6 +83,12 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     /// <returns>The possible workflow outcomes.</returns>
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"], S["Failed: no user found"]);
+
+    /// <summary>
+    /// Returns the values the activity provides: how many notifications it sent, as the last result.
+    /// </summary>
+    public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("number", LocalizationSource.Create<NotifyUserTaskActivity>("How many notifications the activity sent."))];
 
     /// <summary>
     /// Sends the configured notification message to each resolved user.
@@ -143,8 +159,9 @@ public abstract class NotifyUserTaskActivity<TActivity> : NotifyUserTaskActivity
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
         ILogger logger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer)
-        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizer)
+        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizerFactory, localizer)
     {
     }
 

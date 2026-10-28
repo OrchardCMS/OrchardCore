@@ -11,6 +11,11 @@ msgctxt "OrchardCore.Notifications.Activities.NotifyContentOwnerTask"
 msgid "Notify Content's Owner Task"
 msgstr ""
 
+#: Activities/NotifyContentOwnerTask.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyContentOwnerTask"
+msgid "The owner of the content item, a user."
+msgstr ""
+
 #: Activities/NotifyUserTask.cs
 msgctxt "OrchardCore.Notifications.Activities.NotifyUserTask"
 msgid "Notify Specific Users Task"
@@ -33,7 +38,7 @@ msgstr ""
 
 #: Activities/NotifyUserTaskActivity.cs
 msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
-msgid "Notifications"
+msgid "How many notifications the activity sent."
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -130,6 +135,11 @@ msgstr ""
 #: Drivers/NotifyUserTaskDisplayDriver.cs
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskDisplayDriver"
 msgid "Please provide at least one username to notify."
+msgstr ""
+
+#: NotificationsLocalizationSources.cs
+msgctxt "OrchardCore.Notifications.NotificationsLocalizationSources"
+msgid "Notifications"
 msgstr ""
 
 #: Views/Admin/List.cshtml
