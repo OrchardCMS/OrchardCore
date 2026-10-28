@@ -35,11 +35,10 @@ without database translations, and filter by assembly, identifier,
 context, override text, or extracted comments, flags and source references. Identifiers and contexts
 are case-sensitive. Entries with the same identifier in different contexts remain independent.
 
-The UI uses the same Vue translation editor as **Dynamic Translations**, with live search,
-an assembly/category selector, **Missing only**, per-group translated counts, **Auto-save**
-(enabled by default, after two seconds of inactivity), and a batch **Save** button.
-Assemblies form the primary groups and exact gettext contexts form the sub-groups;
-source identifiers, plural identifiers and expandable metadata appear beside the inputs.
+The UI uses the same Vue translation editor as **Dynamic Translations** (see [Translation Editor](#translation-editor)).
+Assemblies form the collapsible sections and exact gettext contexts form the row groups of
+their tables; source identifiers, plural identifiers, available placeholders and expandable
+metadata appear beside the inputs, with one input per plural form labeled by an example count.
 The counts and **Missing only** refer to database overrides, not deployed PO coverage.
 
 Changing culture loads its translations in place. Unsaved edits prompt before they are
@@ -76,13 +75,14 @@ Culture-specific translators without the view permission can browse and export o
 authorized cultures.
 All mutation endpoints require anti-forgery tokens.
 
-**Export overrides** downloads a UTF-8 PO file containing only the selected culture's
+**Actions → Export overrides** downloads a UTF-8 PO file containing only the selected culture's
 database overrides, preserving contexts and plural identifiers. Import targets the selected
 culture and merges entries, leaving other overrides untouched. A wholly empty `msgstr`
 entry removes its override. All entries are validated before any changes are stored:
 unknown identifiers/contexts, mismatched plural sources, duplicate entries, fuzzy entries,
 malformed fields, invalid format strings and incomplete plural translations reject the
 entire import. Imports are limited to 2 MB.
+**Actions → Import overrides…** opens a dialog to select the PO file.
 Import uses the same editor's notifications and reloads the selected culture in place after
 success; pending edits prompt before import. Export is unavailable while there are unsaved
 edits or a request is in progress, so its contents always reflect saved overrides.
@@ -111,19 +111,24 @@ so HTML localizers encode them.
 
 ### Translation Editor
 
-The translation editor displays all translatable strings grouped by category:
+The translation editor displays all translatable strings grouped by category (or assembly
+for UI translations), following the layout of the other admin lists:
 
-- **Culture Selector**: Choose which culture to edit translations for
-- **Search**: Filter strings by original text or translation
-- **Category Filter**: Focus on a specific category
-- **Auto-save**: Toggle automatic saving (enabled by default, saves after 2 seconds of inactivity)
-- **Save Button**: Manually save all changes
+- **Command bar**: A sticky bar with the live **Search** box, the **Save** button (also
+  <kbd>Ctrl</kbd>+<kbd>S</kbd>) with an unsaved-changes indicator, and an **Actions** menu
+  holding secondary actions: **Export overrides** and **Import overrides…** for UI
+  translations, **Statistics** for dynamic translations, and **Expand all** / **Collapse all**.
+- **Filters**: The **Culture** and **Category** (or **Assembly**) selectors, the
+  **Missing only** switch, the **Auto-save** switch (enabled by default, saves after
+  2 seconds of inactivity), and a count of the shown, total and translated strings.
 
-Each category is displayed as an accordion section showing:
+Each category is a collapsible section whose header shows its translated/total count and a
+progress bar. Large catalogs initially expand only the first section; searching or filtering
+expands every section with matches. The section's table lists, per row:
 
-- The original string (key)
-- An input field for the translated value
-- Translation progress indicators
+- The original string (key), grouped under its context when present
+- An input for the translated value, or one per plural form
+- A status icon (translated, missing or unsaved) and, for UI translations, **Restore fallback**
 
 ### Statistics Dashboard
 

@@ -97,6 +97,11 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "All Categories"
 msgstr ""
 
@@ -127,7 +132,22 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Category"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Close"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Collapse all"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -138,6 +158,11 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Dynamic Translations"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Expand all"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -172,7 +197,17 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Import overrides…"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Loading..."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Missing"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -197,12 +232,27 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "PO file"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Plural:"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Restore fallback"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Save"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Save (Ctrl+S)"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -232,7 +282,17 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Supply every required plural form, or restore fallback."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translated"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -243,6 +303,11 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Translation for count"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translation progress"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -267,6 +332,11 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Unsaved"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Unsaved changes"
 msgstr ""
 
@@ -287,12 +357,14 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
-msgid "strings"
+msgid "translated"
 msgstr ""
 
+#. Format arguments: {0}; {1}; {2}
 #: Views/Admin/Index.cshtml
+#, csharp-format
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
-msgid "translated"
+msgid "{0} of {1} strings shown, {2} translated"
 msgstr ""
 
 #: Views/Admin/Statistics.cshtml

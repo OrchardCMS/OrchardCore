@@ -51,7 +51,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
 
             await Assertions.Expect(editor).ToBeVisibleAsync();
             await Assertions.Expect(page.Locator("#translation-editor[v-cloak]")).ToHaveCountAsync(0);
-            await Assertions.Expect(editor.Locator("table tbody tr").First).ToBeVisibleAsync();
+            await Assertions.Expect(editor.Locator("tr.translation-row").First).ToBeVisibleAsync();
             await Assertions.Expect(editor).Not.ToContainTextAsync("{{");
             Assert.Empty(consoleErrors);
         }
@@ -79,7 +79,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         // row renders first. Enabling OrchardCore.Roles/Contents/ContentTypes (implicit
         // via the recipe's own admin-user/content-type setup) guarantees at least one
         // ILocalizationDataProvider yields translatable strings on a stock setup.
-        var visibleRows = editor.Locator("table tbody tr");
+        var visibleRows = editor.Locator("tr.translation-row");
         Assert.Empty(consoleErrors);
         await Assertions.Expect(visibleRows).Not.ToHaveCountAsync(0);
 
@@ -113,7 +113,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         // silent search-filter mismatch (e.g. no rows matching) leaves the locator free
         // to resolve to a completely unrelated element later in the DOM - which is
         // exactly what produced a confusing failure here previously.
-        var editedRow = page.Locator("#translation-editor table tbody tr")
+        var editedRow = page.Locator("#translation-editor tr.translation-row")
             .Filter(new LocatorFilterOptions { HasText = originalKey });
         await Assertions.Expect(editedRow).ToHaveCountAsync(1);
 
@@ -169,7 +169,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         var editor = page.Locator("#translation-editor");
         await Assertions.Expect(editor).ToHaveAttributeAsync("data-ui-localization", "true");
         await Assertions.Expect(editor.Locator("#auto-save-toggle")).ToBeCheckedAsync();
-        await Assertions.Expect(editor.Locator("fieldset.translations-list")).Not.ToHaveCountAsync(0);
+        await Assertions.Expect(editor.Locator(".translations-list")).Not.ToHaveCountAsync(0);
         var row = UiRow(page, "OrchardCore.DataLocalization.Views.Admin.Index", "UI Translations");
         await Assertions.Expect(row).ToHaveCountAsync(1);
         const string text = "<img src=x onerror=alert(1)>";
@@ -180,9 +180,9 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         await Assertions.Expect(editor.Locator("button.save")).ToBeDisabledAsync();
 
         await editor.Locator("#search-box").FillAsync(text);
-        await Assertions.Expect(editor.Locator("tbody tr")).ToHaveCountAsync(1);
+        await Assertions.Expect(editor.Locator("tr.translation-row")).ToHaveCountAsync(1);
         await editor.Locator("#missing-only-toggle").CheckAsync();
-        await Assertions.Expect(editor.Locator("tbody tr")).ToHaveCountAsync(0);
+        await Assertions.Expect(editor.Locator("tr.translation-row")).ToHaveCountAsync(0);
         await editor.Locator("#missing-only-toggle").UncheckAsync();
         await editor.Locator("#search-box").FillAsync("UI Translations");
         await Assertions.Expect(page.Locator("img[onerror]")).ToHaveCountAsync(0);
@@ -192,6 +192,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         await Assertions.Expect(page.Locator("img[onerror]")).ToHaveCountAsync(0);
 
         var downloadTask = page.WaitForDownloadAsync();
+        await editor.GetByRole(AriaRole.Button, new() { Name = "Actions", Exact = true }).ClickAsync();
         await editor.GetByRole(AriaRole.Link, new() { Name = "Export overrides" }).ClickAsync();
         var download = await downloadTask;
         var export = await File.ReadAllTextAsync(await download.PathAsync(), TestContext.Current.CancellationToken);
@@ -202,12 +203,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         await Assertions.Expect(editor.Locator("button.save")).ToBeDisabledAsync();
         await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync("");
 
-        await editor.Locator("#import-file").SetInputFilesAsync(new FilePayload
-        {
-            Name = "overrides.po",
-            MimeType = "text/plain",
-            Buffer = System.Text.Encoding.UTF8.GetBytes(export),
-        });
+        await OpenImportDialogAsync();
         responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Import") && response.Request.Method == "POST");
         await editor.GetByRole(AriaRole.Button, new() { Name = "Import", Exact = true }).ClickAsync();
         Assert.True((await responseTask).Ok);
@@ -220,6 +216,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
             ContentType = "application/json",
             Body = """{"message":"Reload unavailable."}""",
         }));
+        await OpenImportDialogAsync();
         await editor.GetByRole(AriaRole.Button, new() { Name = "Import", Exact = true }).ClickAsync();
         await Assertions.Expect(page.GetByText("Reload unavailable.", new() { Exact = true })).ToBeVisibleAsync();
         await Assertions.Expect(row.Locator("textarea")).ToBeDisabledAsync();
@@ -301,7 +298,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         var plural = UiRow(page, source[0], source[1]);
         await Assertions.Expect(plural.Locator("textarea")).ToHaveCountAsync(6);
         await Assertions.Expect(plural.GetByText("Available placeholders:")).ToBeVisibleAsync();
-        await Assertions.Expect(plural.Locator("label.ocat-label")).ToHaveTextAsync([
+        await Assertions.Expect(plural.Locator("label.plural-form-label")).ToHaveTextAsync([
             "Translation for count 0", "Translation for count 1", "Translation for count 2",
             "Translation for count 3", "Translation for count 11", "Translation for count 100",
         ]);
@@ -331,13 +328,26 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
             }
         }
 
+        async Task OpenImportDialogAsync()
+        {
+            await editor.GetByRole(AriaRole.Button, new() { Name = "Actions", Exact = true }).ClickAsync();
+            await editor.GetByRole(AriaRole.Button, new() { Name = "Import overrides…" }).ClickAsync();
+            await Assertions.Expect(editor.Locator("#import-modal")).ToBeVisibleAsync();
+            await editor.Locator("#import-file").SetInputFilesAsync(new FilePayload
+            {
+                Name = "overrides.po",
+                MimeType = "text/plain",
+                Buffer = System.Text.Encoding.UTF8.GetBytes(export),
+            });
+        }
+
         async void DismissDialog(object sender, IDialog dialog) => await dialog.DismissAsync();
         async void AcceptDialog(object sender, IDialog dialog) => await dialog.AcceptAsync();
     }
 
     private static ILocator UiRow(IPage page, string context, string key)
-        => page.Locator("#translation-editor .ms-3")
-            .Filter(new LocatorFilterOptions { Has = page.Locator("h6").Filter(new LocatorFilterOptions { HasText = context }) })
-            .Locator("tbody tr")
+        => page.Locator("#translation-editor tbody.translation-group")
+            .Filter(new LocatorFilterOptions { Has = page.Locator("th[scope='rowgroup']").Filter(new LocatorFilterOptions { HasText = context }) })
+            .Locator("tr.translation-row")
             .Filter(new LocatorFilterOptions { Has = page.GetByText(key, new PageGetByTextOptions { Exact = true }) });
 }

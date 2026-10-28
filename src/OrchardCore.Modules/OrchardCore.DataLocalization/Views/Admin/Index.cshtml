@@ -16,6 +16,9 @@
         importError = T["Failed to import translations."].Value,
         imported = T["Translations imported successfully."].Value,
         importFileRequired = T["Select a PO file no larger than 2 MB."].Value,
+        summary = T["{0} of {1} strings shown, {2} translated"].Value,
+        translation = T["Translation"].Value,
+        translationForCount = T["Translation for count"].Value,
     }, JOptions.CamelCase);
 }
 
@@ -55,198 +58,271 @@
 
     @Html.AntiForgeryToken()
 
-    <!-- Filters -->
-    <div class="row g-3">
-        <div class="ocat-wrapper col-xl-3 col-sm-6">
-            <label class="ocat-label" for="culture-select">@T["Culture"]</label>
-            <div class="ocat-end">
-                <select id="culture-select" class="form-select" v-model="currentCulture" @@change="onCultureChange">
-                    <option v-for="culture in cultures" :key="culture.name" :value="culture.name">
-                        {{ culture.displayName }} ({{ culture.name }})
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="ocat-wrapper col-xl-3 col-sm-6">
-            <label class="ocat-label" for="filter-select">@(Model.IsUiLocalization ? T["Assembly"] : T["Category"])</label>
-            <div class="ocat-end">
-                <select id="filter-select" class="form-select" v-model="categoryFilter">
-                    <option value="">@(Model.IsUiLocalization ? T["All assemblies"] : T["All Categories"])</option>
-                    <option v-for="provider in providers" :key="provider.name" :value="provider.name">
-                        {{ provider.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="ocat-wrapper col-xl-4 col-sm-8">
-            <label class="ocat-label" for="search-box">@T["Search"]</label>
-            <div class="ocat-end">
-                <div class="input-group filter-options">
-                    <input id="search-box" type="search" class="form-control" v-model="searchQuery" placeholder="@T["Search translations"]" autocomplete="off" />
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-2 gy-2 align-items-center">
+                <div class="col-12 col-md">
+                    <div class="input-group" role="search">
+                        <input id="search-box" type="search" class="form-control" v-model="searchQuery" ref="searchBox"
+                               placeholder="@T["Search translations"]" aria-label="@T["Search translations"]" autocomplete="off" />
+                        <button type="button" class="btn btn-outline-secondary" title="@T["Search"]" @@click="$refs.searchBox.focus()">
+                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            <span class="visually-hidden">@T["Search"]</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-sm-4">
-            <div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="missing-only-toggle" v-model="showMissingOnly">
-                    <label class="form-check-label" for="missing-only-toggle">@T["Missing only"]</label>
-                </div>
-                <div class="form-check" v-if="!isReadOnly">
-                    <input class="form-check-input" type="checkbox" id="auto-save-toggle" v-model="autoSave">
-                    <label class="form-check-label" for="auto-save-toggle">@T["Auto-save"]</label>
+                <div class="col-12 col-md-auto ms-md-auto d-flex flex-wrap align-items-center justify-content-end gap-2">
+                    <span v-if="isDirty && !isReadOnly" class="badge text-bg-warning" role="status">@T["Unsaved changes"]</span>
+                    <button v-if="!isReadOnly" type="button" class="btn btn-primary save" @@click="saveTranslations" :disabled="!isDirty || isSaving"
+                            title="@T["Save (Ctrl+S)"]">
+                        <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        @T["Save"]
+                    </button>
+                    <div class="dropdown">
+                        <button id="translation-actions" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="translation-actions">
+                            @if (Model.IsUiLocalization)
+                            {
+                                <li>
+                                    <a class="dropdown-item" :href="exportUrl + '?culture=' + encodeURIComponent(loadedCulture)"
+                                       :class="{ disabled: isDirty || isLoading || isSaving }" :aria-disabled="isDirty || isLoading || isSaving"
+                                       @@click="(isDirty || isLoading || isSaving) && $event.preventDefault()">
+                                        <i class="fa-solid fa-file-export fa-fw me-1" aria-hidden="true"></i>@T["Export overrides"]
+                                    </a>
+                                </li>
+                                <li v-if="!isReadOnly">
+                                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#import-modal" :disabled="isSaving || isLoading">
+                                        <i class="fa-solid fa-file-import fa-fw me-1" aria-hidden="true"></i>@T["Import overrides…"]
+                                    </button>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                            }
+                            else if (!Model.IsReadOnly)
+                            {
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">
+                                        <i class="fa-solid fa-chart-simple fa-fw me-1" aria-hidden="true"></i>@T["Statistics"]
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                            }
+                            <li>
+                                <button type="button" class="dropdown-item" @@click="setAllExpanded(true)">
+                                    <i class="fa-solid fa-angles-down fa-fw me-1" aria-hidden="true"></i>@T["Expand all"]
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item" @@click="setAllExpanded(false)">
+                                    <i class="fa-solid fa-angles-up fa-fw me-1" aria-hidden="true"></i>@T["Collapse all"]
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    @if (Model.IsUiLocalization)
-    {
-        <div class="ocat-wrapper">
-            <div class="ocat-end-offset">
-                <p class="hint">@T["Overrides are plain text. HTML is encoded when displayed. Supply every plural form, or restore fallback."]</p>
-                <a class="btn btn-secondary" :href="exportUrl + '?culture=' + encodeURIComponent(loadedCulture)"
-                   :class="{ disabled: isDirty || isLoading || isSaving }" :aria-disabled="isDirty || isLoading || isSaving"
-                   @@click="(isDirty || isLoading || isSaving) && $event.preventDefault()">@T["Export overrides"]</a>
-            </div>
-        </div>
-        <div class="ocat-wrapper" v-if="!isReadOnly">
-            <label for="import-file" class="ocat-label">@T["Import overrides"]</label>
-            <div class="ocat-end">
-                <div class="input-group">
-                    <input id="import-file" type="file" accept=".po" class="form-control" @@change="onImportFileChange" :disabled="isSaving || isLoading" />
-                    <button type="button" class="btn btn-secondary" @@click="importTranslations" :disabled="!importFile || isSaving || isLoading">@T["Import"]</button>
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <div class="row gx-3 gy-2 align-items-center">
+                <div class="col-12 col-sm-6 col-lg-auto">
+                    <div class="input-group input-group-sm">
+                        <label class="input-group-text" for="culture-select">@T["Culture"]</label>
+                        <select id="culture-select" class="form-select" v-model="currentCulture" @@change="onCultureChange">
+                            <option v-for="culture in cultures" :key="culture.name" :value="culture.name">
+                                {{ culture.displayName }} ({{ culture.name }})
+                            </option>
+                        </select>
+                    </div>
                 </div>
-                <span class="hint">@T["UTF-8 PO file, up to 2 MB. The entire file is validated before saving. Empty translations remove overrides."]</span>
+                <div class="col-12 col-sm-6 col-lg-auto">
+                    <div class="input-group input-group-sm">
+                        <label class="input-group-text" for="filter-select">@(Model.IsUiLocalization ? T["Assembly"] : T["Category"])</label>
+                        <select id="filter-select" class="form-select" v-model="categoryFilter">
+                            <option value="">@(Model.IsUiLocalization ? T["All assemblies"] : T["All Categories"])</option>
+                            <option v-for="provider in providers" :key="provider.name" :value="provider.name">
+                                {{ provider.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch" id="missing-only-toggle" v-model="showMissingOnly">
+                        <label class="form-check-label" for="missing-only-toggle">@T["Missing only"]</label>
+                    </div>
+                </div>
+                <div class="col-auto" v-if="!isReadOnly">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch" id="auto-save-toggle" v-model="autoSave">
+                        <label class="form-check-label" for="auto-save-toggle">@T["Auto-save"]</label>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-auto ms-lg-auto text-body-secondary small" aria-live="polite">
+                    {{ summary }}
+                </div>
             </div>
-        </div>
-    }
-
-    <!-- Status indicator -->
-    <div class="mb-3" v-if="isDirty && !isReadOnly">
-        <div>
-            <span class="badge text-bg-warning">@T["Unsaved changes"]</span>
+            @if (Model.IsUiLocalization)
+            {
+                <div class="form-text mt-2 mb-0">
+                    <i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>@T["Overrides are plain text. HTML is encoded when displayed. Supply every plural form, or restore fallback."]
+                </div>
+            }
         </div>
     </div>
 
-    <!-- Loading state -->
     <div v-if="isLoading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">@T["Loading..."]</span>
         </div>
     </div>
 
-    <!-- Translation groups -->
     <div v-if="!isLoading">
-        <fieldset class="translations-list mb-3" v-for="(provider, index) in filteredProviders" :key="provider.name">
-            <legend>
-                <span class="me-1">{{ provider.name }}</span>
-                <span class="hint">({{ getTotalStringsCount(provider) }} @T["strings"]<span v-if="getTotalTranslatedCount(provider) > 0">, {{ getTotalTranslatedCount(provider) }} @T["translated"]</span>)</span>
-            </legend>
-
-            <!-- Ungrouped strings (no sub-groups) -->
-            <table v-if="getFilteredStrings(provider.strings).length > 0" class="table">
-                <thead>
-                    <tr>
-                        <th class="col-5">@T["Original"]</th>
-                        <th class="col-7">@T["Translation"]</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="str in getFilteredStrings(provider.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
-                        <td class="col-5">
-                            <code>{{ str.key }}</code>
-                        </td>
-                        <td class="col-7">
-                            <input type="text" class="form-control"
-                                   v-model="str.value"
-                                   :disabled="isReadOnly || isLoading"
-                                   :placeholder="str.key"
-                                   @@input="onTranslationChange(str)" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Sub-groups -->
-            <div v-for="subGroup in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
-                <h6 class="text-muted border-bottom pb-1">
-                    {{ subGroup.name }}
-                    <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T["strings"])</span>
-                </h6>
-                <table class="table table-sm">
+        <section class="card mb-3 translations-list" v-for="(provider, index) in filteredProviders" :key="provider.name"
+                 :aria-labelledby="'provider-heading-' + index">
+            <div class="card-header translations-list-header">
+                <h2 class="h6 mb-0" :id="'provider-heading-' + index">
+                    <button type="button" class="btn btn-link translations-list-toggle" @@click="toggleExpanded(provider)"
+                            :aria-expanded="isExpanded(provider)" :aria-controls="'provider-body-' + index">
+                        <i class="fa-solid fa-chevron-right fa-fw translations-list-chevron" aria-hidden="true"></i>
+                        <span class="text-truncate">{{ provider.name }}</span>
+                    </button>
+                </h2>
+                <div class="translations-list-progress">
+                    <span class="badge rounded-pill bg-body-secondary text-body border">
+                        {{ getTotalTranslatedCount(provider) }} / {{ getTotalStringsCount(provider) }}
+                        <span class="visually-hidden">@T["translated"]</span>
+                    </span>
+                    <div class="progress" role="progressbar" aria-label="@T["Translation progress"]"
+                         :aria-valuenow="getProgress(provider)" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-success" :style="{ width: getProgress(provider) + '%' }"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive" :id="'provider-body-' + index">
+                <table v-if="isExpanded(provider)" class="table table-sm table-hover align-middle mb-0 translation-table">
                     <thead>
                         <tr>
-                            <th class="col-5">@T["Original"]</th>
-                            <th class="col-7">@T["Translation"]</th>
+                            <th scope="col" class="translation-source">@T["Original"]</th>
+                            <th scope="col">@T["Translation"]</th>
+                            <th scope="col" class="translation-status"><span class="visually-hidden">@T["Status"]</span></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="str in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
-                            <td class="col-5">
-                                <code>{{ str.key }}</code>
+                    <tbody class="translation-group" v-for="group in getFilteredGroups(provider)" :key="group.name">
+                        <tr v-if="group.name" class="translation-group-header">
+                            <th scope="rowgroup" colspan="3">
+                                <span class="text-break">{{ group.name }}</span>
+                                <span class="badge rounded-pill text-bg-secondary ms-1">{{ group.strings.length }}</span>
+                            </th>
+                        </tr>
+                        <tr v-for="str in group.strings" :key="str.context + '|' + str.key" class="translation-row"
+                            :class="{ 'translation-row-changed': str.changed }" :data-text="str.key.toLowerCase()">
+                            <td class="translation-source">
+                                <code class="text-break">{{ str.key }}</code>
                                 @if (Model.IsUiLocalization)
                                 {
-                                    <div v-if="str.plural" class="hint">{{ str.plural }}</div>
-                                    <div v-for="argument in str.formatArguments" :key="argument" class="hint">@T["Available placeholders:"] <code>{{ argument }}</code></div>
-                                    <details>
-                                        <summary>@T["Source metadata"]</summary>
-                                        <pre>{{ (str.metadata || []).join('\n') }}</pre>
+                                    <div v-if="str.plural" class="small text-body-secondary">
+                                        <span class="visually-hidden">@T["Plural:"]</span><code class="text-break">{{ str.plural }}</code>
+                                    </div>
+                                    <div v-if="str.formatArguments && str.formatArguments.length" class="small text-body-secondary mt-1">
+                                        <span>@T["Available placeholders:"]</span>
+                                        <code v-for="argument in str.formatArguments" :key="argument" class="badge bg-body-secondary text-body border ms-1">{{ argument }}</code>
+                                    </div>
+                                    <details v-if="str.metadata && str.metadata.length" class="small mt-1">
+                                        <summary class="text-body-secondary">@T["Source metadata"]</summary>
+                                        <pre class="mb-0 small">{{ str.metadata.join('\n') }}</pre>
                                     </details>
                                 }
                             </td>
-                            <td class="col-7">
+                            <td>
                                 @if (Model.IsUiLocalization)
                                 {
-                                    <div v-for="(value, form) in str.values" :key="form" class="ocat-wrapper">
-                                        <label :for="'translation-' + index + '-' + subGroup.name + '-' + str.key + '-' + form" class="ocat-label">
-                                            <span v-if="str.plural">@T["Translation for count"] {{ pluralFormExamples[form] }}</span>
-                                            <span v-else>@T["Translation"]</span>
-                                        </label>
-                                        <div class="ocat-end">
-                                            <textarea :id="'translation-' + index + '-' + subGroup.name + '-' + str.key + '-' + form"
-                                                      class="form-control" rows="2" v-model="str.values[form]" :disabled="isReadOnly || isImporting || isLoading"
-                                                      :placeholder="form === 0 ? str.key : str.plural"
-                                                      @@input="onTranslationChange(str)"></textarea>
-                                        </div>
+                                    <div v-for="(value, form) in str.values" :key="form" class="translation-form"
+                                         :class="{ 'input-group input-group-sm': str.plural }">
+                                        <label v-if="str.plural" class="input-group-text plural-form-label"
+                                               :for="'translation-' + index + '-' + group.name + '-' + str.key + '-' + form"
+                                               :title="messages.translationForCount + ' ' + pluralFormExamples[form]"><span class="visually-hidden">@T["Translation for count"] </span>{{ pluralFormExamples[form] }}</label>
+                                        <textarea :id="'translation-' + index + '-' + group.name + '-' + str.key + '-' + form"
+                                                  class="form-control form-control-sm" rows="1" v-model="str.values[form]"
+                                                  :aria-label="str.plural ? null : messages.translation"
+                                                  :disabled="isReadOnly || isImporting || isLoading"
+                                                  :placeholder="form === 0 ? str.key : str.plural"
+                                                  @@input="onTranslationChange(str)"></textarea>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-secondary" v-if="!isReadOnly && str.values.some(value => value)" :disabled="isImporting || isLoading" @@click="restoreFallback(str)">@T["Restore fallback"]</button>
                                 }
                                 else
                                 {
                                     <input type="text" class="form-control form-control-sm"
                                            v-model="str.value"
-                                           :disabled="isReadOnly"
+                                           aria-label="@T["Translation"]"
+                                           :disabled="isReadOnly || isLoading"
                                            :placeholder="str.key"
                                            @@input="onTranslationChange(str)" />
                                 }
+                            </td>
+                            <td class="translation-status">
+                                <div class="d-flex align-items-center justify-content-end gap-1">
+                                    <span v-if="str.changed" class="text-warning" title="@T["Unsaved"]">
+                                        <i class="fa-solid fa-pen fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Unsaved"]</span>
+                                    </span>
+                                    <span v-else-if="hasTranslation(str)" class="text-success" title="@T["Translated"]">
+                                        <i class="fa-solid fa-circle-check fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Translated"]</span>
+                                    </span>
+                                    <span v-else class="text-body-tertiary" title="@T["Missing"]">
+                                        <i class="fa-regular fa-circle fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Missing"]</span>
+                                    </span>
+                                    @if (Model.IsUiLocalization)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-link text-body-secondary p-0" v-if="!isReadOnly && str.values.some(value => value)"
+                                                :disabled="isImporting || isLoading" @@click="restoreFallback(str)"
+                                                aria-label="@T["Restore fallback"]" title="@T["Restore fallback"]">
+                                            <i class="fa-solid fa-rotate-left fa-fw" aria-hidden="true"></i>
+                                        </button>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </fieldset>
+        </section>
     </div>
 
-    <!-- Empty state -->
     <div v-if="!isLoading && filteredProviders.length === 0" class="alert alert-info">
         @T["No translatable strings found matching your criteria."]
     </div>
 
-    <!-- Action buttons -->
-    <div class="mb-3" v-if="!isReadOnly">
-        <div>
-            <button type="button" class="btn btn-primary save me-2" @@click="saveTranslations" :disabled="!isDirty || isSaving">
-                <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                @T["Save"]
-            </button>
-            @if (!Model.IsUiLocalization)
-            {
-                <a class="btn btn-secondary" role="button" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Statistics"]</a>
-            }
+    @if (Model.IsUiLocalization)
+    {
+        <div class="modal fade" id="import-modal" ref="importModal" tabindex="-1" aria-labelledby="import-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="import-modal-title">@T["Import overrides"]</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T["Close"]"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="import-file" class="form-label">@T["PO file"]</label>
+                        <input id="import-file" ref="importFileInput" type="file" accept=".po" class="form-control" aria-describedby="import-file-hint"
+                               @@change="onImportFileChange" :disabled="isReadOnly || isSaving || isLoading" />
+                        <div id="import-file-hint" class="form-text">@T["UTF-8 PO file, up to 2 MB. The entire file is validated before saving. Empty translations remove overrides."]</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                        <button type="button" class="btn btn-primary" @@click="importTranslations" :disabled="isReadOnly || !importFile || isSaving || isLoading">
+                            <span v-if="isImporting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            @T["Import"]
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    }
 </div>
 
+<style asp-src="~/OrchardCore.DataLocalization/Styles/translation-editor.min.css" debug-src="~/OrchardCore.DataLocalization/Styles/translation-editor.css" at="Head"></style>
 <script asp-name="vuejs" at="Foot"></script>
 <script asp-src="~/OrchardCore.DataLocalization/Scripts/translation-editor/translation-editor.min.js" debug-src="~/OrchardCore.DataLocalization/Scripts/translation-editor/translation-editor.js" depends-on="vuejs" at="Foot" type="module"></script>

@@ -42,6 +42,9 @@ interface TranslationMessages {
     importError: string;
     imported: string;
     importFileRequired: string;
+    summary: string;
+    translation: string;
+    translationForCount: string;
 }
 
 interface EditorInstance {
@@ -67,7 +70,14 @@ interface EditorInstance {
     isLoading: boolean;
     isSaving: boolean;
     autoSaveTimeout: ReturnType<typeof setTimeout> | null;
+    collapsed: Record<string, boolean>;
     canEditCurrentCulture: boolean;
+    filteredProviders: TranslationProvider[];
+    $refs: { importModal?: HTMLElement; importFileInput?: HTMLInputElement };
+    getTotalStringsCount(provider: TranslationProvider): number;
+    getTotalTranslatedCount(provider: TranslationProvider): number;
+    getFilteredGroups(provider: TranslationProvider): TranslationSubGroup[];
+    resetImport(): void;
     scheduleAutoSave(): void;
     getFilteredStrings(strings: TranslationString[]): TranslationString[];
     getFilteredSubGroups(provider: TranslationProvider): TranslationSubGroup[];
@@ -104,6 +114,14 @@ if (editorEl) {
         return input ? input.value : "";
     };
 
+    // Large catalogs start with only the first section expanded, collapsed sections aren't rendered.
+    const totalStrings = providers.reduce(
+        (sum, p) => sum + (p.strings || []).length + (p.subGroups || []).reduce((count, g) => count + g.strings.length, 0),
+        0,
+    );
+    const initialCollapsed: Record<string, boolean> =
+        totalStrings > 500 ? Object.fromEntries(providers.slice(1).map(p => [p.name, true])) : {};
+
     const { createApp } = Vue;
 
     const app = createApp({
@@ -131,6 +149,8 @@ if (editorEl) {
                 isLoading: false,
                 isSaving: false,
                 autoSaveTimeout: null as ReturnType<typeof setTimeout> | null,
+                collapsed: initialCollapsed,
+                messages,
             };
         },
         mounted(this: EditorInstance) {
@@ -140,6 +160,13 @@ if (editorEl) {
                     event.returnValue = "";
                 }
             });
+            document.addEventListener("keydown", event => {
+                if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "s" && !this.isReadOnly) {
+                    event.preventDefault();
+                    this.saveTranslations();
+                }
+            });
+            this.$refs.importModal?.addEventListener("hidden.bs.modal", () => this.resetImport());
         },
         computed: {
             filteredProviders(this: EditorInstance) {
@@ -157,6 +184,24 @@ if (editorEl) {
             canEditCurrentCulture(this: EditorInstance) {
                 const culture = this.cultures.find((c: Culture) => c.name === this.currentCulture);
                 return culture && culture.canEdit;
+            },
+            totalCount(this: EditorInstance) {
+                return this.providers.reduce((sum, p) => sum + this.getTotalStringsCount(p), 0);
+            },
+            translatedCount(this: EditorInstance) {
+                return this.providers.reduce((sum, p) => sum + this.getTotalTranslatedCount(p), 0);
+            },
+            shownCount(this: EditorInstance) {
+                return this.filteredProviders.reduce(
+                    (sum, p) => sum + this.getFilteredGroups(p).reduce((count, g) => count + g.strings.length, 0),
+                    0,
+                );
+            },
+            summary(this: EditorInstance & { shownCount: number; totalCount: number; translatedCount: number }) {
+                return (messages.summary ?? "")
+                    .replace("{0}", String(this.shownCount))
+                    .replace("{1}", String(this.totalCount))
+                    .replace("{2}", String(this.translatedCount));
             },
         },
         methods: {
@@ -187,6 +232,34 @@ if (editorEl) {
                 if (!provider.subGroups) return [];
 
                 return provider.subGroups.filter((sg) => this.getFilteredStrings(sg.strings).length > 0);
+            },
+            getFilteredGroups(this: EditorInstance, provider: TranslationProvider) {
+                const groups: TranslationSubGroup[] = [];
+                const strings = this.getFilteredStrings(provider.strings);
+                if (strings.length > 0) {
+                    groups.push({ name: "", strings });
+                }
+                for (const group of provider.subGroups || []) {
+                    const filtered = this.getFilteredStrings(group.strings);
+                    if (filtered.length > 0) {
+                        groups.push({ name: group.name, strings: filtered });
+                    }
+                }
+                return groups;
+            },
+            isExpanded(this: EditorInstance, provider: TranslationProvider) {
+                // Filtering shows every match, so collapsed sections don't hide search results.
+                return Boolean(this.searchQuery || this.showMissingOnly || this.categoryFilter) || !this.collapsed[provider.name];
+            },
+            toggleExpanded(this: EditorInstance & { isExpanded(p: TranslationProvider): boolean }, provider: TranslationProvider) {
+                this.collapsed = { ...this.collapsed, [provider.name]: this.isExpanded(provider) };
+            },
+            setAllExpanded(this: EditorInstance, expanded: boolean) {
+                this.collapsed = expanded ? {} : Object.fromEntries(this.providers.map(p => [p.name, true]));
+            },
+            getProgress(this: EditorInstance, provider: TranslationProvider) {
+                const total = this.getTotalStringsCount(provider);
+                return total === 0 ? 0 : Math.round((this.getTotalTranslatedCount(provider) * 100) / total);
             },
             getTotalStringsCount(provider: TranslationProvider) {
                 let count = (provider.strings || []).length;
@@ -340,6 +413,12 @@ if (editorEl) {
                     this.isLoading = false;
                 }
             },
+            resetImport(this: EditorInstance) {
+                this.importFile = null;
+                if (this.$refs.importFileInput) {
+                    this.$refs.importFileInput.value = "";
+                }
+            },
             onImportFileChange(this: EditorInstance, event: Event) {
                 this.importFile = (event.target as HTMLInputElement).files?.[0] ?? null;
             },
@@ -360,6 +439,10 @@ if (editorEl) {
                 try {
                     const response = await fetch(this.importUrl ?? "", { method: "POST", body: form });
                     await readResponse(response, messages.importError);
+                    if (this.$refs.importModal) {
+                        bootstrap.Modal.getOrCreateInstance(this.$refs.importModal).hide();
+                    }
+                    this.resetImport();
                     this.showNotification(messages.imported, "success");
                     this.isDirty = false;
                     if (!await this.loadCulture(this.loadedCulture)) {

@@ -1,5 +1,11 @@
 [
   {
+    "action": "sass",
+    "name": "translation-editor-style",
+    "source": "Assets/scss/translation-editor.scss",
+    "tags": ["admin", "dashboard", "css"]
+  },
+  {
     "action": "parcel",
     "name": "translations-deployment-step",
     "source": "Assets/ts/translations-deployment-step.ts",
