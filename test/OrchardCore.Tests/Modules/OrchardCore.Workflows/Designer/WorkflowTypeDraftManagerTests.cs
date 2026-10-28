@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Localization;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows;
@@ -25,6 +27,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     private static readonly DateTime s_now = new(2026, 10, 2, 12, 0, 0, DateTimeKind.Utc);
 
     private readonly Mock<IWorkflowTypeStore> _workflowTypeStore = new();
+    private readonly Mock<IWorkflowTypeVersionStore> _versionStore = new();
     private readonly Mock<IActivityLibrary> _activityLibrary = new();
     private readonly Mock<IWorkflowDesignerNotifier> _notifier = new();
     private readonly Dictionary<string, Func<IActivity>> _activities = [];
@@ -180,6 +183,24 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
         Assert.Equal(WorkflowTypeDraftStatus.Conflict, result.Status);
         Assert.Equal(0, result.Revision);
         Assert.Null(await CreateManager().GetAsync(_workflowType.WorkflowTypeId));
+    }
+
+    [Fact]
+    public async Task SaveGraphAsync_LiveDefinitionPublishedSinceLoaded_ReturnsConflictAndCreatesNoDraft()
+    {
+        // The client loaded version 2; version 3 was published since.
+        _workflowType.VersionId = "v3";
+        _versionStore.Setup(x => x.GetAsync("v3")).ReturnsAsync(new WorkflowTypeVersion { VersionId = "v3", Version = 3 });
+
+        var stale = await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, -1, GraphOf(_workflowType));
+        var noDraft = await CreateManager().GetAsync(_workflowType.WorkflowTypeId);
+        var current = await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, -2, GraphOf(_workflowType));
+
+        Assert.Equal(WorkflowTypeDraftStatus.Conflict, stale.Status);
+        Assert.Equal(-2, stale.Revision);
+        Assert.Null(noDraft);
+        Assert.Equal(WorkflowTypeDraftStatus.Succeeded, current.Status);
+        Assert.Equal(1, current.Revision);
     }
 
     [Fact]
@@ -652,9 +673,15 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
                 "Test")),
         };
 
+        var distributedLock = new Mock<IDistributedLock>();
+        distributedLock.Setup(x => x.TryAcquireLockAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan?>()))
+            .ReturnsAsync((Mock.Of<ILocker>(), true));
+
         return new WorkflowTypeDraftManager(
             session,
             _workflowTypeStore.Object,
+            _versionStore.Object,
+            distributedLock.Object,
             workflowManager.Object,
             _activityLibrary.Object,
             activityIdGenerator.Object,

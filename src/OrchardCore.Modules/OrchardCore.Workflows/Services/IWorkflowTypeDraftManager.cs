@@ -21,6 +21,13 @@ public interface IWorkflowTypeDraftManager
     Task<WorkflowTypeDraft> GetAsync(string workflowTypeId);
 
     /// <summary>
+    /// Returns the revision of the live definition of a workflow type: the revision a client that loaded it, while the
+    /// type had no draft, sends with its first change. It changes when a new version is published.
+    /// </summary>
+    /// <param name="workflowType">The live workflow type.</param>
+    Task<int> GetLiveRevisionAsync(WorkflowType workflowType);
+
+    /// <summary>
     /// Saves positions, start flags, transitions, removed and restored activities into the draft. Removed
     /// activities are kept aside so they can be restored with their properties. Transitions whose source or
     /// destination activity doesn't exist are dropped.

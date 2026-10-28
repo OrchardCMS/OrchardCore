@@ -29,7 +29,7 @@ const setup = async (definition: Partial<DesignerDefinition> = {}, api: Partial<
         getDefinition: vi.fn(() => Promise.resolve(structuredClone(loaded))),
         getLibrary: vi.fn().mockResolvedValue({ categories: [] }),
         save: vi.fn((payload: { revision: number }) => Promise.resolve({ revision: payload.revision + 1, issues: [] })),
-        publish: vi.fn().mockResolvedValue({ issues: [], publishedUtc: "2026-10-02T10:00:00Z" }),
+        publish: vi.fn().mockResolvedValue({ issues: [], publishedUtc: "2026-10-02T10:00:00Z", revision: -1 }),
         discard: vi.fn().mockResolvedValue({}),
         getEditor: vi.fn().mockResolvedValue({ valid: true, content: "", scripts: "", styles: "" }),
         ...api,
@@ -75,7 +75,7 @@ describe("draft flow", () => {
         expect(api.publish).toHaveBeenCalledWith(2);
         expect(wrapper.find("[data-cy=publish-confirm-dialog]").exists()).toBe(false);
         expect(store.state.hasDraft).toBe(false);
-        expect(store.state.revision).toBe(0);
+        expect(store.state.revision).toBe(-1);
         expect(useToasts().map((toast) => toast.variant)).toEqual(["success"]);
         // Publish is disabled now, so the focus goes to the canvas instead of being lost.
         expect(document.activeElement?.getAttribute("data-cy")).toBe("canvas-surface");

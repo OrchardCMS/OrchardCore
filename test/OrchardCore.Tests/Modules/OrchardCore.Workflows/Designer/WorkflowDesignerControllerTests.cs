@@ -1168,6 +1168,29 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Instance_FollowingAllTransitions_CountsEveryTransitionOfAnOutcome()
+    {
+        var (id, workflowTypeId) = await WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(
+            _fixture.Context,
+            [Activity("start", "HttpRequestEvent", isStart: true), Activity("a", "NotifyTask"), Activity("b", "NotifyTask")],
+            [Transition("start", "Done", "a"), Transition("start", "Done", "b")],
+            WorkflowBranchingMode.All);
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(workflow.WorkflowId,
+        [
+            Record(workflow, 1, "start", WorkflowExecutionRecordStatus.Completed, "Done"),
+            Record(workflow, 2, "a", WorkflowExecutionRecordStatus.Completed, "Done"),
+            Record(workflow, 3, "b", WorkflowExecutionRecordStatus.Faulted),
+        ]));
+
+        var instance = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={workflow.Id}"))["instance"];
+
+        var transitions = instance["executedTransitionCounts"].AsObject().ToDictionary(x => x.Key, x => x.Value.GetValue<int>());
+        Assert.Equal(new Dictionary<string, int> { ["start:Done:a"] = 1, ["start:Done:b"] = 1 }, transitions);
+    }
+
+    [Fact]
     public async Task JournalData_RecordOfTheInstance_ReturnsItsDataWhenItHasSome()
     {
         var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
@@ -1660,7 +1683,14 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
         await PublishWithNotifyAtAsync(id, x: 40);
 
-        using (var restored = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Restore", new { revision = 0, versionId = firstVersionId }))
+        // The live definition is at version 2, whose revision is -1: a client that loaded version 1 is stale.
+        using (var staleLive = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Restore", new { revision = 0, versionId = firstVersionId }))
+        {
+            Assert.Equal(HttpStatusCode.Conflict, staleLive.StatusCode);
+            Assert.Equal(-1, (await ReadJsonAsync(staleLive))["currentRevision"].GetValue<int>());
+        }
+
+        using (var restored = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Restore", new { revision = -1, versionId = firstVersionId }))
         {
             Assert.Equal(HttpStatusCode.OK, restored.StatusCode);
             Assert.Equal(1, (await ReadJsonAsync(restored))["revision"].GetValue<int>());
@@ -1901,13 +1931,18 @@ public sealed class WorkflowDesignerSiteFixture : IAsyncLifetime
     public static async Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(SiteContext context, params ActivityRecord[] activities)
         => await CreateWorkflowTypeAsync(context, activities, []);
 
-    public static async Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(SiteContext context, ActivityRecord[] activities, Transition[] transitions)
+    public static async Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(
+        SiteContext context,
+        ActivityRecord[] activities,
+        Transition[] transitions,
+        WorkflowBranchingMode branchingMode = WorkflowBranchingMode.FirstOnly)
     {
         var workflowType = new WorkflowType
         {
             WorkflowTypeId = Guid.NewGuid().ToString("n"),
             Name = "Designer test",
             IsEnabled = true,
+            BranchingMode = branchingMode,
             Activities = activities,
             Transitions = transitions,
         };

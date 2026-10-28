@@ -396,6 +396,8 @@ export interface PublishResult {
     publishedUtc: string;
     // The version the publish created (or the published one, when nothing that runs changed).
     version?: DesignerVersion | null;
+    // The revision of the live definition, which the next change sends.
+    revision: number;
 }
 
 // RFC 9457 ProblemDetails with the workflow designer extensions.

@@ -18,7 +18,8 @@ public sealed class WorkflowDesignerDefinition
     public string WorkflowTypeId { get; init; }
 
     /// <summary>
-    /// The draft revision, or 0 when there is no draft.
+    /// The draft revision, or the revision of the live definition when there is no draft (see
+    /// <see cref="Services.IWorkflowTypeDraftManager.GetLiveRevisionAsync"/>).
     /// </summary>
     public int Revision { get; set; }
 

@@ -26,6 +26,18 @@ public static class DistributedLockExtensions
     }
 
     /// <summary>
+    /// Tries to acquire the lock of this workflow instance, even if it isn't an atomic workflow, before a change that
+    /// mustn't happen at the same time as another one, such as retrying or canceling the instance.
+    /// </summary>
+    public static Task<(ILocker locker, bool locked)> TryAcquireWorkflowExclusiveLockAsync(
+        this IDistributedLock distributedLock,
+        Workflow workflow)
+        => distributedLock.TryAcquireLockAsync(
+            "WFI_" + workflow.WorkflowId + "_LOCK",
+            TimeSpan.FromMilliseconds(workflow.IsAtomic ? workflow.LockTimeout : 20_000),
+            TimeSpan.FromMilliseconds(workflow.IsAtomic ? workflow.LockExpiration : 20_000));
+
+    /// <summary>
     /// Tries to acquire a lock before starting an instance of this workflow type, if it is
     /// a singleton or if the event is exclusive, or a lock per correlation id if it runs one instance
     /// per correlation id (<see cref="WorkflowType.IsSingletonPerCorrelation"/>), otherwise returns

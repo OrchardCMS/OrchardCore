@@ -937,6 +937,14 @@ public class WorkflowManagerTests
             .ReturnsAsync(false);
         workflowStore.Setup(x => x.ListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync([]);
+
+        // The store keeps the instances it saves, which a retry reads again.
+        var workflows = new Dictionary<long, Workflow>();
+        workflowStore.Setup(x => x.SaveAsync(It.IsAny<Workflow>()))
+            .Callback((Workflow workflow) => workflows[workflow.Id] = workflow)
+            .Returns(Task.CompletedTask);
+        workflowStore.Setup(x => x.GetAsync(It.IsAny<long>()))
+            .ReturnsAsync((long id) => workflows.GetValueOrDefault(id));
         configureWorkflowStore?.Invoke(workflowStore);
 
         return workflowManager;
@@ -1425,6 +1433,34 @@ public class WorkflowManagerTests
         Assert.Equal(
             [WorkflowExecutionRecordStatus.Completed, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Completed],
             saved.Select(record => record.Status));
+    }
+
+    [Fact]
+    public async Task RunDueRetryAsync_InstanceRetriedMeanwhile_DoesntRunIt()
+    {
+        var now = new DateTime(2026, 10, 8, 12, 0, 0, DateTimeKind.Utc);
+        var clock = new Mock<IClock>();
+        clock.SetupGet(x => x.UtcNow).Returns(() => now);
+        var (workflowManager, workflowType, saved) = CreateRetryWorkflow(() => true, new ActivityRetryPolicy { MaxRetries = 3, DelaySeconds = 30 }, clock: clock.Object);
+
+        var workflow = (await workflowManager.StartWorkflowAsync(workflowType)).Workflow;
+
+        // The copy the background task loaded, before a retry by hand ran the instance.
+        var stale = new Workflow
+        {
+            WorkflowId = workflow.WorkflowId,
+            WorkflowTypeId = workflow.WorkflowTypeId,
+            Status = WorkflowStatus.Faulted,
+            PendingRetry = workflow.PendingRetry,
+        };
+        workflow.Status = WorkflowStatus.Finished;
+        workflow.PendingRetry = null;
+        var recorded = saved.Count;
+
+        now = now.AddSeconds(30);
+
+        Assert.Null(await workflowManager.RunDueRetryAsync(stale));
+        Assert.Equal(recorded, saved.Count);
     }
 
     [Fact]

@@ -167,6 +167,21 @@ public sealed class ExecuteWorkflowTaskTests
     }
 
     [Fact]
+    public async Task ResumeParentOfStoppedChildAsync_WaitingChildCanceled_ResumesTheParentWithTheFailedOutcome()
+    {
+        AddChild(wait: true);
+        var parentType = AddParent();
+        var parent = await _manager.StartWorkflowAsync(parentType);
+        var child = Assert.Single(_instances.Values, workflow => workflow.WorkflowTypeId == "child");
+        child.Status = WorkflowStatus.Aborted;
+
+        await _manager.ResumeParentOfStoppedChildAsync(child, "Canceled");
+
+        Assert.Equal(WorkflowStatus.Finished, _instances[parent.WorkflowId].Status);
+        Assert.Equal<(string, object)>([("failed", null)], _flags);
+    }
+
+    [Fact]
     public async Task Execute_WithoutWaiting_TakesDoneAtOnceAndTheChildDoesNotResumeIt()
     {
         AddChild(wait: true);

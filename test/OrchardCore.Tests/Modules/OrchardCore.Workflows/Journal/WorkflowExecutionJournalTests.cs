@@ -53,6 +53,14 @@ public sealed class WorkflowExecutionJournalTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task SaveAsync_RunLongerThanTheMaximum_SavesOnlyTheMostRecentRecords()
+    {
+        await SaveWithMaximumAsync("workflow-1", 2, 1, 2, 3, 4, 5);
+
+        Assert.Equal([4, 5], (await ListAsync("workflow-1")).Select(record => record.Sequence));
+    }
+
+    [Fact]
     public async Task DeleteAsync_Instances_DeletesOnlyTheirRecords()
     {
         await SaveAsync("workflow-1", 1, 2);

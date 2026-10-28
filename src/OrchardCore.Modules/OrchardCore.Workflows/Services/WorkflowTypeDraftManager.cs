@@ -2,6 +2,8 @@ using System.Security.Claims;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -19,8 +21,13 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     // The number of removed activities a draft keeps so that undo can restore them.
     private const int MaxRemovedActivities = 100;
 
+    // How long a change waits for, and holds, the lock on the creation of a draft.
+    private static readonly TimeSpan s_draftCreationLockTimeout = TimeSpan.FromSeconds(10);
+
     private readonly ISession _session;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _versionStore;
+    private readonly IDistributedLock _distributedLock;
     private readonly IWorkflowManager _workflowManager;
     private readonly IActivityLibrary _activityLibrary;
     private readonly IActivityIdGenerator _activityIdGenerator;
@@ -34,6 +41,8 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     public WorkflowTypeDraftManager(
         ISession session,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowTypeVersionStore versionStore,
+        IDistributedLock distributedLock,
         IWorkflowManager workflowManager,
         IActivityLibrary activityLibrary,
         IActivityIdGenerator activityIdGenerator,
@@ -45,6 +54,8 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         _session = session;
         _workflowTypeStore = workflowTypeStore;
+        _versionStore = versionStore;
+        _distributedLock = distributedLock;
         _workflowManager = workflowManager;
         _activityLibrary = activityLibrary;
         _activityIdGenerator = activityIdGenerator;
@@ -60,8 +71,22 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentException.ThrowIfNullOrEmpty(workflowTypeId);
 
+        // The oldest draft, should another one have been created before drafts were created under a lock.
         return _session.Query<WorkflowTypeDraft, WorkflowTypeDraftIndex>(index => index.WorkflowTypeId == workflowTypeId)
+            .OrderBy(index => index.Id)
             .FirstOrDefaultAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task<int> GetLiveRevisionAsync(WorkflowType workflowType)
+    {
+        ArgumentNullException.ThrowIfNull(workflowType);
+
+        var version = string.IsNullOrEmpty(workflowType.VersionId) ? null : await _versionStore.GetAsync(workflowType.VersionId);
+
+        // 0 for the first version, then -1, -2...: it changes on every publish, and never equals a draft's revision,
+        // which is positive.
+        return version is null ? 0 : Math.Min(0, 1 - version.Version);
     }
 
     /// <inheritdoc />
@@ -616,12 +641,33 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         }
 
         var draft = await GetAsync(workflowTypeId);
+        ILocker creationLocker = null;
 
-        // Without a draft, the caller saw the live definition, which is revision 0.
-        if ((draft?.Revision ?? 0) != expectedRevision)
+        if (draft is null)
+        {
+            // Two first changes would each create a draft: the lock lets one create it, and the other see it.
+            (creationLocker, var locked) = await _distributedLock.TryAcquireLockAsync(
+                $"WFTD_{workflowTypeId}_LOCK",
+                s_draftCreationLockTimeout,
+                s_draftCreationLockTimeout);
+
+            if (!locked)
+            {
+                return new WorkflowTypeDraftResult { Status = WorkflowTypeDraftStatus.Conflict, Revision = expectedRevision };
+            }
+
+            draft = await GetAsync(workflowTypeId);
+        }
+
+        await using var _ = creationLocker;
+
+        // Without a draft, the caller saw the live definition, whose revision changes when it's published.
+        var revision = draft?.Revision ?? await GetLiveRevisionAsync(workflowType);
+
+        if (revision != expectedRevision)
         {
             return draft is null
-                ? new WorkflowTypeDraftResult { Status = WorkflowTypeDraftStatus.Conflict, Revision = 0 }
+                ? new WorkflowTypeDraftResult { Status = WorkflowTypeDraftStatus.Conflict, Revision = revision }
                 : Conflict(draft);
         }
 

@@ -291,12 +291,12 @@ export const createDesignerStore = () => {
 
         /**
          * Records a successful publish: the draft is gone, so the next change starts a new one from the live
-         * type (revision 0), and undo can't restore what the draft's trash held.
+         * type (at the revision the publish returned), and undo can't restore what the draft's trash held.
          */
-        markPublished(issues: DesignIssue[], version: DesignerVersion | null = null) {
+        markPublished(issues: DesignIssue[], revision: number, version: DesignerVersion | null = null) {
             Object.assign(state, {
                 publishedVersion: version ?? state.publishedVersion,
-                revision: 0,
+                revision,
                 hasDraft: false,
                 draftModifiedBy: null,
                 draftModifiedByUserId: null,

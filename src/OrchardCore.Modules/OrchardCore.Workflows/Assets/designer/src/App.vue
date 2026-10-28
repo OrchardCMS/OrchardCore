@@ -352,7 +352,7 @@ const doPublish = async () => {
         await mutate(async (revision) => {
             const result = await props.api.publish(revision);
 
-            props.store.markPublished(result.issues, result.version ?? null);
+            props.store.markPublished(result.issues, result.revision, result.version ?? null);
         });
 
         showToast({ message: state.publishedVersion ? t("PublishedVersion", state.publishedVersion.version) : t("Published"), variant: "success" });

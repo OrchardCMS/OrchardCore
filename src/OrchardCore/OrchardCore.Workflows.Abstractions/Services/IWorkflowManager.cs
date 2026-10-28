@@ -89,7 +89,8 @@ public interface IWorkflowManager
     /// </summary>
     /// <param name="workflow">The faulted instance.</param>
     /// <param name="activityId">The <see cref="ActivityRecord.ActivityId"/> to run from.</param>
-    /// <returns>The context of the run, or <see langword="null"/> when the instance's lock couldn't be acquired.</returns>
+    /// <returns>The context of the run, or <see langword="null"/> when the instance's lock couldn't be acquired, or the
+    /// instance wasn't faulted any more once it was.</returns>
     /// <exception cref="InvalidOperationException">The instance isn't faulted, or its workflow type doesn't exist.</exception>
     /// <exception cref="ArgumentException">The definition doesn't have the activity.</exception>
     Task<WorkflowExecutionContext> RetryActivityAsync(Workflow workflow, string activityId);
@@ -100,9 +101,17 @@ public interface IWorkflowManager
     /// the attempts made before.
     /// </summary>
     /// <param name="workflow">The faulted instance.</param>
-    /// <returns>The context of the run, or <see langword="null"/> when the instance has no due retry or its lock
-    /// couldn't be acquired.</returns>
+    /// <returns>The context of the run, or <see langword="null"/> when the instance has no due retry, its lock
+    /// couldn't be acquired, or the retry wasn't due any more once it was.</returns>
     Task<WorkflowExecutionContext> RunDueRetryAsync(Workflow workflow);
+
+    /// <summary>
+    /// Resumes the instance that runs <paramref name="child"/> as an activity (Execute Workflow), when it waits on it,
+    /// once the child was canceled or deleted before it ended: the task follows its Failed outcome.
+    /// </summary>
+    /// <param name="child">The child instance, canceled (<see cref="WorkflowStatus.Aborted"/>) or deleted.</param>
+    /// <param name="reason">Why the child didn't end, which the task sets as its last result.</param>
+    Task ResumeParentOfStoppedChildAsync(Workflow child, string reason);
 
     /// <summary>
     /// Executes the specified workflow starting at the specified activity.

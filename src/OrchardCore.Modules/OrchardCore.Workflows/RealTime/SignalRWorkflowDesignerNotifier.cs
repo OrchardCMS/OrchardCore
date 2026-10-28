@@ -7,15 +7,21 @@ namespace OrchardCore.Workflows.RealTime;
 
 /// <summary>
 /// Sends the changes of workflow types and instances to the clients of <see cref="WorkflowsHub"/>, once the
-/// changes of the current shell scope are committed, so clients that reload see them.
+/// changes of the current shell scope are committed, so clients that reload see them. The changes of a scope are
+/// sent together, with the last change of each instance only.
 /// </summary>
 public sealed class SignalRWorkflowDesignerNotifier : IWorkflowDesignerNotifier
 {
+    private readonly List<WorkflowTypeChange> _typeChanges = [];
+    private readonly Dictionary<string, WorkflowInstanceChange> _instanceChanges = new(StringComparer.Ordinal);
+    private bool _isSendDeferred;
+
     public Task WorkflowTypeChangedAsync(WorkflowTypeChange change)
     {
         ArgumentNullException.ThrowIfNull(change);
 
-        ShellScope.AddDeferredTask(scope => SendAsync(scope.ServiceProvider.GetRequiredService<IHubContext<WorkflowsHub>>(), change));
+        _typeChanges.Add(change);
+        DeferSend();
 
         return Task.CompletedTask;
     }
@@ -24,9 +30,45 @@ public sealed class SignalRWorkflowDesignerNotifier : IWorkflowDesignerNotifier
     {
         ArgumentNullException.ThrowIfNull(change);
 
-        ShellScope.AddDeferredTask(scope => SendAsync(scope.ServiceProvider.GetRequiredService<IHubContext<WorkflowsHub>>(), change));
+        // Saving an instance several times in a scope sends only what it ended up as.
+        _instanceChanges[change.WorkflowId] = change;
+        DeferSend();
 
         return Task.CompletedTask;
+    }
+
+    private void DeferSend()
+    {
+        if (_isSendDeferred || ShellScope.Current is null)
+        {
+            return;
+        }
+
+        _isSendDeferred = true;
+        ShellScope.AddDeferredTask(SendChangesAsync);
+    }
+
+    private async Task SendChangesAsync(ShellScope scope)
+    {
+        var typeChanges = _typeChanges.ToArray();
+        var instanceChanges = _instanceChanges.Values.ToArray();
+
+        // A change made after the send is sent with the next deferred task.
+        _typeChanges.Clear();
+        _instanceChanges.Clear();
+        _isSendDeferred = false;
+
+        var hub = scope.ServiceProvider.GetRequiredService<IHubContext<WorkflowsHub>>();
+
+        foreach (var change in typeChanges)
+        {
+            await SendAsync(hub, change);
+        }
+
+        foreach (var change in instanceChanges)
+        {
+            await SendAsync(hub, change);
+        }
     }
 
     /// <summary>

@@ -45,7 +45,7 @@ const setup = async (definition: Partial<DesignerDefinition> = {}, config: Parti
         getDefinition: vi.fn(() => Promise.resolve(structuredClone(loaded))),
         getLibrary: vi.fn().mockResolvedValue({ categories: [] }),
         save: vi.fn((payload: { revision: number }) => Promise.resolve({ revision: payload.revision + 1, issues: [] })),
-        publish: vi.fn().mockResolvedValue({ issues: [], publishedUtc: "2026-10-06T11:00:00Z", version: version(3, { isPublished: true }) }),
+        publish: vi.fn().mockResolvedValue({ issues: [], publishedUtc: "2026-10-06T11:00:00Z", version: version(3, { isPublished: true }), revision: -2 }),
         getVersions: vi.fn().mockResolvedValue(versions),
         restore: vi.fn((_: string, revision: number) => Promise.resolve({ revision: revision + 1, issues: [] })),
     };

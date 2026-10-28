@@ -514,6 +514,11 @@ public sealed class WorkflowController : Controller
                 {
                     await _workflowStore.DeleteAsync(workflow);
                     deletedWorkflowIds.Add(workflow.Id.ToString(CultureInfo.InvariantCulture));
+
+                    if (!HasEnded(workflow))
+                    {
+                        await _workflowManager.ResumeParentOfStoppedChildAsync(workflow, $"The workflow '{workflow.WorkflowId}' was deleted.");
+                    }
                 }
 
                 if (deletedWorkflowIds.Count > 0)
@@ -563,13 +568,37 @@ public sealed class WorkflowController : Controller
             case WorkflowBulkAction.Cancel:
                 var canceled = 0;
 
-                foreach (var workflow in workflows.Where(workflow => workflow.Status is not (WorkflowStatus.Finished or WorkflowStatus.Aborted)))
+                foreach (var loaded in workflows.Where(workflow => workflow.Status is not (WorkflowStatus.Finished or WorkflowStatus.Aborted)))
                 {
+                    // An instance that runs holds its lock: it's canceled once it stops.
+                    (var locker, var locked) = await _distributedLock.TryAcquireWorkflowExclusiveLockAsync(loaded);
+
+                    if (!locked)
+                    {
+                        continue;
+                    }
+
+                    await using var acquiredLock = locker;
+
+                    var workflow = await _workflowStore.GetAsync(loaded.Id);
+
+                    if (workflow is null || workflow.Status is WorkflowStatus.Finished or WorkflowStatus.Aborted)
+                    {
+                        continue;
+                    }
+
+                    var hadEnded = HasEnded(workflow);
+
                     workflow.Status = WorkflowStatus.Aborted;
                     workflow.BlockingActivities.Clear();
                     workflow.PendingRetry = null;
                     await _workflowStore.SaveAsync(workflow);
                     canceled++;
+
+                    if (!hadEnded)
+                    {
+                        await _workflowManager.ResumeParentOfStoppedChildAsync(workflow, $"The workflow '{workflow.WorkflowId}' was canceled.");
+                    }
                 }
 
                 if (canceled > 0)
@@ -582,4 +611,10 @@ public sealed class WorkflowController : Controller
 
         return null;
     }
+
+    // Whether an instance ended, which already resumed the instance that runs it as an activity, if any: a faulted
+    // instance that's retried later hasn't.
+    private static bool HasEnded(Workflow workflow)
+        => workflow.Status is WorkflowStatus.Finished or WorkflowStatus.Aborted ||
+            (workflow.Status == WorkflowStatus.Faulted && workflow.PendingRetry is null);
 }

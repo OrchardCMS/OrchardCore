@@ -17,7 +17,8 @@ public sealed class ChildWorkflowResult
     public string WorkflowId { get; init; }
 
     /// <summary>
-    /// <see cref="WorkflowStatus.Finished"/> or <see cref="WorkflowStatus.Faulted"/>.
+    /// <see cref="WorkflowStatus.Finished"/>, <see cref="WorkflowStatus.Faulted"/>, or <see cref="WorkflowStatus.Aborted"/>
+    /// when the child was canceled or deleted.
     /// </summary>
     public WorkflowStatus Status { get; init; }
 

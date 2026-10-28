@@ -32,34 +32,31 @@ public sealed class WorkflowExecutionJournal : IWorkflowExecutionJournal
         ArgumentException.ThrowIfNullOrEmpty(workflowId);
         ArgumentNullException.ThrowIfNull(records);
 
-        var saved = 0;
+        var batch = records.ToList();
 
-        foreach (var record in records)
+        if (batch.Count == 0)
+        {
+            return;
+        }
+
+        // The sequence numbers of an instance's records increase by one: the records to keep are the ones after the
+        // last sequence number minus the maximum, which the records of a long run aren't saved to be deleted.
+        var oldestKept = _options.MaxRecordsPerInstance > 0 ? batch.Max(record => record.Sequence) - _options.MaxRecordsPerInstance + 1 : 0;
+
+        foreach (var record in batch.Where(record => record.Sequence >= oldestKept))
         {
             await _session.SaveAsync(record, collection: WorkflowExecutionRecord.Collection);
-            saved++;
         }
 
-        if (saved == 0 || _options.MaxRecordsPerInstance <= 0)
+        if (oldestKept <= 1)
         {
             return;
         }
 
-        var count = await _session.QueryIndex<WorkflowExecutionRecordIndex>(index => index.WorkflowId == workflowId, collection: WorkflowExecutionRecord.Collection)
-            .CountAsync();
-        var excess = count - _options.MaxRecordsPerInstance;
-
-        if (excess <= 0)
-        {
-            return;
-        }
-
-        var oldest = await _session.Query<WorkflowExecutionRecord, WorkflowExecutionRecordIndex>(index => index.WorkflowId == workflowId, collection: WorkflowExecutionRecord.Collection)
-            .OrderBy(index => index.Sequence)
-            .Take(excess)
+        var older = await _session.Query<WorkflowExecutionRecord, WorkflowExecutionRecordIndex>(index => index.WorkflowId == workflowId && index.Sequence < oldestKept, collection: WorkflowExecutionRecord.Collection)
             .ListAsync();
 
-        foreach (var record in oldest)
+        foreach (var record in older)
         {
             _session.Delete(record, collection: WorkflowExecutionRecord.Collection);
         }

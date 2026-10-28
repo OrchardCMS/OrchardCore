@@ -383,7 +383,7 @@ public class WorkflowManager : IWorkflowManager
         var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == activityId)
             ?? throw new ArgumentException($"The definition of the workflow '{workflow.WorkflowId}' doesn't have the activity '{activityId}'.", nameof(activityId));
 
-        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
+        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowExclusiveLockAsync(workflow);
 
         if (!locked)
         {
@@ -393,6 +393,15 @@ public class WorkflowManager : IWorkflowManager
         }
 
         await using var acquiredLock = locker;
+
+        // Another retry, by hand or scheduled, may have run the instance while this one waited for the lock.
+        workflow = await _workflowStore.GetAsync(workflow.Id);
+
+        if (workflow?.Status != WorkflowStatus.Faulted ||
+            (isScheduled && (workflow.PendingRetry is not { } retry || retry.ActivityId != activityId || retry.DueUtc > _clock.UtcNow)))
+        {
+            return null;
+        }
 
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow);
         workflow.FaultMessage = null;
@@ -582,6 +591,25 @@ public class WorkflowManager : IWorkflowManager
             var isResuming = workflowContext.Status == WorkflowStatus.Resuming;
             var isFirstPass = true;
 
+            // Adds the activities this run blocked on to the instance, which a resume or a retry of the instance
+            // finds there.
+            List<ActivityRecord> AddBlockingActivities()
+            {
+                // Apply Distinct() as two paths could block on the same activity.
+                var blockingActivities = blocking.Distinct().ToList();
+
+                foreach (var blockingActivity in blockingActivities)
+                {
+                    // Workflows containing event activities could end up being blocked on the same activity.
+                    if (!workflowContext.Workflow.BlockingActivities.Any(x => x.ActivityId == blockingActivity.ActivityId))
+                    {
+                        workflowContext.Workflow.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
+                    }
+                }
+
+                return blockingActivities;
+            }
+
             workflowContext.Status = WorkflowStatus.Executing;
             scheduled.Push(activity);
 
@@ -723,7 +751,10 @@ public class WorkflowManager : IWorkflowManager
                         DecrementRecursion(workflowContext.Workflow);
                         recursionDecremented = true;
 
-                        return blocking.Distinct();
+                        // The retry runs the task again, then what follows it, while the instance keeps the activities
+                        // this run blocked on. The other branches still scheduled in this run (of a fork, for example)
+                        // aren't kept: they don't run.
+                        return AddBlockingActivities();
                     }
 
                     workflowContext.Workflow.PendingRetry = null;
@@ -740,7 +771,8 @@ public class WorkflowManager : IWorkflowManager
 
                         await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
 
-                        return blocking.Distinct();
+                        // A retry by hand finds the activities this run blocked on in the instance.
+                        return AddBlockingActivities();
                     }
 
                     // The attempts are spent: the task produces its failed outcome, with the error as its result.
@@ -780,19 +812,9 @@ public class WorkflowManager : IWorkflowManager
                 isFirstPass = false;
             }
 
-            // Apply Distinct() as two paths could block on the same activity.
-            var blockingActivities = blocking.Distinct().ToList();
+            var blockingActivities = AddBlockingActivities();
 
             workflowContext.Status = blockingActivities.Count > 0 || workflowContext.Workflow.BlockingActivities.Count > 0 ? WorkflowStatus.Halted : WorkflowStatus.Finished;
-
-            foreach (var blockingActivity in blockingActivities)
-            {
-                // Workflows containing event activities could end up being blocked on the same activity.
-                if (!workflowContext.Workflow.BlockingActivities.Any(x => x.ActivityId == blockingActivity.ActivityId))
-                {
-                    workflowContext.Workflow.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
-                }
-            }
 
             return blockingActivities;
         }
@@ -826,6 +848,30 @@ public class WorkflowManager : IWorkflowManager
             return;
         }
 
+        await ResumeParentAsync(child, ChildWorkflowResult.From(childContext));
+    }
+
+    /// <inheritdoc />
+    public Task ResumeParentOfStoppedChildAsync(Workflow child, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(child);
+
+        if (string.IsNullOrEmpty(child.ParentWorkflowId))
+        {
+            return Task.CompletedTask;
+        }
+
+        return ResumeParentAsync(child, new ChildWorkflowResult
+        {
+            WorkflowId = child.WorkflowId,
+            Status = WorkflowStatus.Aborted,
+            FaultMessage = reason,
+        });
+    }
+
+    // Resumes the activity of the parent that waits on the child, with the child's result.
+    private async Task ResumeParentAsync(Workflow child, ChildWorkflowResult result)
+    {
         var parent = await _workflowStore.GetAsync(child.ParentWorkflowId);
         var blockingActivity = parent?.BlockingActivities.FirstOrDefault(x => x.ActivityId == child.ParentActivityId);
 
@@ -847,7 +893,7 @@ public class WorkflowManager : IWorkflowManager
 
         await ResumeWorkflowAsync(parent, blockingActivity, new Dictionary<string, object>
         {
-            [ChildWorkflowResult.InputKey] = ChildWorkflowResult.From(childContext),
+            [ChildWorkflowResult.InputKey] = result,
         });
     }
 

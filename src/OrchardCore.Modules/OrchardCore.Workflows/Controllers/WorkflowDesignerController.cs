@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Helpers;
@@ -58,6 +59,7 @@ public sealed class WorkflowDesignerController : Controller
     private readonly IWorkflowVariableTypeProvider _variableTypes;
     private readonly IWorkflowExecutionJournal _journal;
     private readonly WorkflowVariableValidator _variableValidator;
+    private readonly IDistributedLock _distributedLock;
 
     internal readonly IStringLocalizer S;
 
@@ -76,6 +78,7 @@ public sealed class WorkflowDesignerController : Controller
         IWorkflowVariableTypeProvider variableTypes,
         WorkflowVariableValidator variableValidator,
         IWorkflowExecutionJournal journal,
+        IDistributedLock distributedLock,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -92,6 +95,7 @@ public sealed class WorkflowDesignerController : Controller
         _variableTypes = variableTypes;
         _journal = journal;
         _variableValidator = variableValidator;
+        _distributedLock = distributedLock;
         S = stringLocalizer;
     }
 
@@ -121,7 +125,7 @@ public sealed class WorkflowDesignerController : Controller
 
         var model = await BuildDefinitionAsync(workflowType, source);
 
-        model.Revision = draft?.Revision ?? 0;
+        model.Revision = draft?.Revision ?? await _draftManager.GetLiveRevisionAsync(workflowType);
         model.HasDraft = draft is not null;
         model.DraftModifiedBy = draft?.ModifiedByUserName;
         model.DraftModifiedByUserId = draft?.ModifiedByUserId;
@@ -164,6 +168,16 @@ public sealed class WorkflowDesignerController : Controller
         {
             return Problem(title: S["Only a published workflow that starts with Started by Workflow runs with inputs."], statusCode: StatusCodes.Status400BadRequest);
         }
+
+        // As the other ways to start an instance do, a singleton is checked and started under the lock of its type.
+        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+
+        if (!locked)
+        {
+            return Problem(title: S["This workflow runs one instance at a time, and one is running."], statusCode: StatusCodes.Status409Conflict);
+        }
+
+        await using var acquiredLock = locker;
 
         if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
         {
@@ -781,6 +795,7 @@ public sealed class WorkflowDesignerController : Controller
             issues = result.Issues,
             publishedUtc = _clock.UtcNow,
             version = await PublishedVersionAsync(result.WorkflowType ?? workflowType),
+            revision = await _draftManager.GetLiveRevisionAsync(result.WorkflowType ?? workflowType),
         });
     }
 
@@ -1016,7 +1031,8 @@ public sealed class WorkflowDesignerController : Controller
             PublishedVersion = await PublishedVersionAsync(workflowType),
         };
 
-    // The transitions the journal's outcomes took, as the engine follows them: the first transition of each outcome.
+    // The transitions the journal's outcomes took, as the engine follows them: the first transition of each outcome,
+    // or all of them (WorkflowBranchingMode.All).
     private static Dictionary<string, int> ExecutedTransitionCounts(IReadOnlyList<WorkflowExecutionRecord> journal, WorkflowType definition)
     {
         var counts = new Dictionary<string, int>();
@@ -1025,9 +1041,14 @@ public sealed class WorkflowDesignerController : Controller
         {
             foreach (var outcome in record.Outcomes ?? [])
             {
-                var transition = definition.Transitions.FirstOrDefault(x => x.SourceActivityId == record.ActivityId && x.SourceOutcomeName == outcome);
+                var transitions = definition.Transitions.Where(x => x.SourceActivityId == record.ActivityId && x.SourceOutcomeName == outcome);
 
-                if (transition is not null)
+                if (definition.BranchingMode == WorkflowBranchingMode.FirstOnly)
+                {
+                    transitions = transitions.Take(1);
+                }
+
+                foreach (var transition in transitions)
                 {
                     var key = WorkflowDesignIssue.GetTransitionKey(transition);
                     counts[key] = counts.GetValueOrDefault(key) + 1;
