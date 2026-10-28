@@ -743,7 +743,8 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await page.EditActivityAsync("datapublished");
         var picker = page.ActivityForm().Locator(".bootstrap-select");
         await picker.Locator(".dropdown-toggle").ClickAsync();
-        await picker.Locator("[role=option]", new() { HasText = "Article" }).ClickAsync();
+        // The open list is moved to the body, so the panel doesn't clip it.
+        await page.Locator("body > .bs-container .dropdown-menu.show [role=option]", new() { HasText = "Article" }).ClickAsync();
         await page.Keyboard.PressAsync("Escape");
         await Assertions.Expect(picker.Locator(".bs-selected-item")).ToHaveCountAsync(1);
         await page.WaitForSavedAsync();
