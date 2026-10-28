@@ -112,12 +112,27 @@ msgstr ""
 
 #: Controllers/TemplateSourceController.cs
 msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Liquid"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Liquid and Razor"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
 msgid "Not overridden"
 msgstr ""
 
 #: Controllers/TemplateSourceController.cs
 msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
 msgid "Overridden"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Razor"
 msgstr ""
 
 #: Controllers/TemplateSourceController.cs
@@ -1145,12 +1160,22 @@ msgstr ""
 
 #: Views/TemplateSourceFilters.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Filter by language"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
 msgid "Filter by status"
 msgstr ""
 
 #: Views/TemplateSourceFilters.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
 msgid "Filter by what they render"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Language"
 msgstr ""
 
 #: Views/TemplateSourceFilters.cshtml

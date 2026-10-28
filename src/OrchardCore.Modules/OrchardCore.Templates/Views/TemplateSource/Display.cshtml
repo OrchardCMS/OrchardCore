@@ -32,7 +32,10 @@
             {
                 <a asp-action="Edit" asp-controller="Template" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary">@T["Edit override"]</a>
             }
-            <a asp-action="Alternates" asp-route-source="@entry.Source" asp-route-scope="@entry.Scope" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" class="btn btn-secondary">@T["Alternates"]</a>
+            @if (entry.HasAlternates)
+            {
+                <a asp-action="Alternates" asp-route-source="@entry.Source" asp-route-scope="@entry.Scope" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" class="btn btn-secondary">@T["Alternates"]</a>
+            }
             <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Back"]</a>
         </div>
     </div>

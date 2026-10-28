@@ -45,6 +45,11 @@ public class SourceTemplatesOptions
     /// and the admin on the admin templates by default.
     /// </summary>
     public SourceTemplatesArea? Area { get; set; }
+
+    /// <summary>
+    /// Filters the templates by their language, Liquid or Razor.
+    /// </summary>
+    public SourceTemplatesLanguage Language { get; set; }
     public SourceTemplatesBulkAction BulkAction { get; set; }
 
     [BindNever]
@@ -58,6 +63,24 @@ public class SourceTemplatesOptions
 
     [BindNever]
     public List<SelectListItem> Areas { get; set; }
+
+    [BindNever]
+    public List<SelectListItem> Languages { get; set; }
+}
+
+/// <summary>
+/// Filters the templates of a source by their language.
+/// </summary>
+public enum SourceTemplatesLanguage
+{
+    /// <summary>All the templates.</summary>
+    All,
+
+    /// <summary>The Liquid templates, which can be cloned.</summary>
+    Liquid,
+
+    /// <summary>The Razor templates, which can only be viewed.</summary>
+    Razor,
 }
 
 /// <summary>

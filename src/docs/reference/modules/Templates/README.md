@@ -34,7 +34,7 @@ The status of each template shows whether it is overridden, and monitors the tem
 | Cloned from _theme_ | A local template overrides it, cloned from the template of another theme, e.g. the theme that was active before. It is not compared to this template: review it, reset it to this template, or delete it. |
 | Source changed | The template of the theme changed since it was cloned, e.g. after the theme was updated. Review it, or reset the local template to it. |
 
-The list can be filtered by these statuses. The clone records are stored by tenant next to the templates, but are not part of their recipes and deployments, so the templates imported in another tenant are shown as **Overridden**.
+The list can be filtered by these statuses, and by language with the **Liquid** and **Razor** options, in the **Theme Templates** and **Feature Templates** lists. The clone records are stored by tenant next to the templates, but are not part of their recipes and deployments, so the templates imported in another tenant are shown as **Overridden**.
 
 ## Feature Templates
 
@@ -46,7 +46,7 @@ Features don't tell which of their templates render the admin, so the list guess
 
 ## Alternates
 
-An alternate is a more specific name of a shape, which renders it only in some cases, e.g. `Content_Summary__BlogPost` renders the `Content` shape of the blog posts in the `Summary` display type, while `Content` keeps rendering the others. The **Alternates** button of a template in the **Theme Templates** and **Feature Templates** lists shows the alternates of its shape for the content types of the site: those of the content items (`Content`, or the stereotype of the content type, e.g. `Widget`), of their parts and of their fields, in the `Detail` and `Summary` display types on the **Templates** page, and in the `DetailAdmin` and `SummaryAdmin` display types on the **Admin Templates** page. They are the alternates the content display drivers add, described in [Available templates](#available-templates).
+An alternate is a more specific name of a shape, which renders it only in some cases, e.g. `Content_Summary__BlogPost` renders the `Content` shape of the blog posts in the `Summary` display type, while `Content` keeps rendering the others. The **Alternates** button of a template in the **Theme Templates** and **Feature Templates** lists, and of the page viewing a template, shows the alternates of its shape for the content types of the site, when it has some: those of the content items (`Content`, or the stereotype of the content type, e.g. `Widget`), of their parts and of their fields, in the `Detail` and `Summary` display types on the **Templates** page, and in the `DetailAdmin` and `SummaryAdmin` display types on the **Admin Templates** page. They are the alternates the content display drivers add, described in [Available templates](#available-templates).
 
 Each alternate shows whether a local template has its name, and whether the theme or a feature already has a template rendering it. Its **Create** button opens the editor of a new template with this name. When the template of the list is a Liquid template of the active theme, its **Clone** button creates the template with its content, as a starting point; when the theme already has a template for the alternate, its **View** button shows this template, to clone it instead.
 

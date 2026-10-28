@@ -31,6 +31,7 @@ public sealed class TemplateSourceController : Controller
     private const string _optionsAdminTemplates = "Options.AdminTemplates";
     private const string _optionsScope = "Options.Scope";
     private const string _optionsArea = "Options.Area";
+    private const string _optionsLanguage = "Options.Language";
 
     private readonly IAuthorizationService _authorizationService;
     private readonly SourceTemplatesService _sourceTemplatesService;
@@ -141,6 +142,13 @@ public sealed class TemplateSourceController : Controller
             _ => entries,
         };
 
+        entries = options.Language switch
+        {
+            SourceTemplatesLanguage.Liquid => entries.Where(entry => entry.Template.IsLiquid),
+            SourceTemplatesLanguage.Razor => entries.Where(entry => !entry.Template.IsLiquid),
+            _ => entries,
+        };
+
         var filteredEntries = entries.ToList();
         var pager = new Pager(pagerParameters, _pagerOptions);
 
@@ -168,6 +176,11 @@ public sealed class TemplateSourceController : Controller
             routeData.Values.TryAdd(_optionsArea, options.Area);
         }
 
+        if (options.Language != SourceTemplatesLanguage.All)
+        {
+            routeData.Values.TryAdd(_optionsLanguage, options.Language);
+        }
+
         var pagerShape = await _shapeFactory.PagerAsync(pager, filteredEntries.Count, routeData);
 
         options.Filters =
@@ -177,6 +190,13 @@ public sealed class TemplateSourceController : Controller
             new SelectListItem(S["Overridden"], nameof(SourceTemplatesFilter.Overridden)),
             new SelectListItem(S["Edited since cloned"], nameof(SourceTemplatesFilter.Modified)),
             new SelectListItem(S["Source changed since cloned"], nameof(SourceTemplatesFilter.SourceChanged)),
+        ];
+
+        options.Languages =
+        [
+            new SelectListItem(S["Liquid and Razor"], nameof(SourceTemplatesLanguage.All)),
+            new SelectListItem(S["Liquid"], nameof(SourceTemplatesLanguage.Liquid)),
+            new SelectListItem(S["Razor"], nameof(SourceTemplatesLanguage.Razor)),
         ];
 
         var currentScope = scopes.FirstOrDefault(scope => IsScope(scope, options.Scope));
@@ -252,6 +272,7 @@ public sealed class TemplateSourceController : Controller
             { _optionsSearch, model.Options.Search },
             { _optionsFilter, model.Options.Filter },
             { _optionsArea, model.Options.Area },
+            { _optionsLanguage, model.Options.Language },
         });
 
     [HttpPost, ActionName(nameof(Index))]
@@ -334,6 +355,8 @@ public sealed class TemplateSourceController : Controller
 
         var entry = (await _sourceTemplatesService.GetEntriesAsync(templateSource, adminTemplates, scope))
             .First(entry => string.Equals(entry.Template.Name, template.Name, StringComparison.OrdinalIgnoreCase));
+
+        entry.HasAlternates = (await _templateAlternatesService.GetTemplatesWithAlternatesAsync(adminTemplates)).Contains(template.Name);
 
         ViewData["ReturnUrl"] = returnUrl;
 
