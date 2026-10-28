@@ -26,7 +26,7 @@
 {
     <form asp-action="Index" method="get" id="source-store-form">
         <div class="ocat-wrapper" asp-validation-class-for="SourceStore">
-            <label for="source-store" class="ocat-label">@T["Source store"]</label>
+            <label for="source-store" class="ocat-label ocat-label-required">@T["Source store"]</label>
             <div class="ocat-end">
                 <select id="source-store" name="sourceStore" class="form-select" data-submit-on-change>
                     @foreach (var store in Model.AvailableStores)

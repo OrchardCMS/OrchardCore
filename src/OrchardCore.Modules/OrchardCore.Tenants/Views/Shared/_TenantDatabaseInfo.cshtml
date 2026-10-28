@@ -67,7 +67,7 @@ else
 else
 {
     <div class="ocat-wrapper tablePrefixField">
-        <label asp-for="TablePrefix" class="ocat-label">@T["Table Prefix"]</label>
+        <label asp-for="TablePrefix" class="ocat-label @(tablePrefixRequired ? "ocat-label-required" : null)">@T["Table Prefix"]</label>
         <div class="ocat-end" asp-validation-class-for="TablePrefix">
             <input asp-for="TablePrefix" class="form-control" required="@(tablePrefixRequired ? "required" : null)" data-require-table-prefix="@Model.RequireTablePrefix.ToString().ToLowerInvariant()" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
             <span asp-validation-for="TablePrefix" class="text-danger"></span>

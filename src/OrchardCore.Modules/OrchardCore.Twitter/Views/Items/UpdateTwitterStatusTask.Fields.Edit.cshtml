@@ -3,7 +3,7 @@
 @model UpdateTwitterStatusTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="StatusTemplate">
-    <label asp-for="StatusTemplate" class="ocat-label">@T["Template for updating X (Twitter) status"]</label>
+    <label asp-for="StatusTemplate" class="ocat-label ocat-label-required">@T["Template for updating X (Twitter) status"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="StatusTemplate" class="form-control code" />
         <span asp-validation-for="StatusTemplate"></span>

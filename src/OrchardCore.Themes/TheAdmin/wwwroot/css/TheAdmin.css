@@ -194,8 +194,11 @@ a:hover {
 }
 
 .ocat-label-required::after {
-  color: var(--bs-danger-text-emphasis);
-  content: " *";
+  color: var(--bs-danger);
+  content: "*";
+  content: "*"/"";
+  padding-inline-start: 0.25rem;
+  vertical-align: middle;
 }
 
 /*

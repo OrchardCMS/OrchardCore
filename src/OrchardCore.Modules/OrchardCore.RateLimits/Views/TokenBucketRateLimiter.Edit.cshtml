@@ -1,7 +1,7 @@
 @model OrchardCore.RateLimits.ViewModels.TokenBucketRateLimiterViewModel
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="TokenLimit">
-    <label asp-for="TokenLimit" class="ocat-label">@T["Token limit"]</label>
+    <label asp-for="TokenLimit" class="ocat-label ocat-label-required">@T["Token limit"]</label>
     <div class="ocat-limited">
         <input asp-for="TokenLimit" type="number" min="1" class="form-control" />
         <span asp-validation-for="TokenLimit"></span>
@@ -10,7 +10,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="TokensPerPeriod">
-    <label asp-for="TokensPerPeriod" class="ocat-label">@T["Tokens per period"]</label>
+    <label asp-for="TokensPerPeriod" class="ocat-label ocat-label-required">@T["Tokens per period"]</label>
     <div class="ocat-limited">
         <input asp-for="TokensPerPeriod" type="number" min="1" class="form-control" />
         <span asp-validation-for="TokensPerPeriod"></span>
@@ -19,7 +19,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="ReplenishmentPeriodSeconds">
-    <label asp-for="ReplenishmentPeriodSeconds" class="ocat-label">@T["Replenishment seconds"]</label>
+    <label asp-for="ReplenishmentPeriodSeconds" class="ocat-label ocat-label-required">@T["Replenishment seconds"]</label>
     <div class="ocat-limited">
         <input asp-for="ReplenishmentPeriodSeconds" type="number" min="1" class="form-control" />
         <span asp-validation-for="ReplenishmentPeriodSeconds"></span>

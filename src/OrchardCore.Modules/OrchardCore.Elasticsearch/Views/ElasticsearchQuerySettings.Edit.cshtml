@@ -23,7 +23,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="DefaultQuery" id="DefaultQueryContainer">
-    <label asp-for="DefaultQuery" class="ocat-label">@T["Query"]</label>
+    <label asp-for="DefaultQuery" class="ocat-label ocat-label-required">@T["Query"]</label>
     <div class="ocat-end">
     <textarea asp-for="DefaultQuery" class="form-control" rows="10"></textarea>
     <span asp-validation-for="DefaultQuery"></span>
