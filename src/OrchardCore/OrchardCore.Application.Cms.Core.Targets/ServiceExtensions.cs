@@ -22,7 +22,7 @@ public static class ServiceExtensions
             .AddEmailAddressValidator()
             .AddPhoneFormatValidator()
             .AddHtmlSanitizer()
-            .AddSetupFeatures("OrchardCore.Setup")
+            .AddSetupFeatures("OrchardCore.Setup", "OrchardCore.Recipes.Default")
 
             .AddDataAccess()
             .AddDataStorage()

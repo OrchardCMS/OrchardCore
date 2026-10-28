@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
         services.AddScoped<IRecipeHarvester, RecipeHarvester>();
+        services.AddScoped<IRecipeHarvester, RegisteredRecipeHarvester>();
         services.AddTransient<IRecipeExecutor, RecipeExecutor>();
         services.AddScoped<IRecipeMigrator, RecipeMigrator>();
         services.AddScoped<IRecipeReader, RecipeReader>();

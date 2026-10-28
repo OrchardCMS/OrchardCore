@@ -20,6 +20,18 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Recipes.Default",
+    Name = "Default Tenant Recipes",
+    Description = "Provides the recipes that are only available to the Default tenant, like the SaaS setup recipe.",
+    Dependencies =
+    [
+        "OrchardCore.Recipes",
+    ],
+    Category = "Infrastructure",
+    DefaultTenantOnly = true
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Recipes.Core",
     Name = "Recipes Core Services",
     Description = "Provides recipe core services.",

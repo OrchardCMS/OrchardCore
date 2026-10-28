@@ -497,7 +497,7 @@ public sealed class TenantApiController : ControllerBase
         }
         else
         {
-            var setupRecipes = await _setupService.GetSetupRecipesAsync();
+            var setupRecipes = await _setupService.GetSetupRecipesAsync(shellSettings);
             recipeDescriptor = setupRecipes.FirstOrDefault(x => string.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
 
             if (recipeDescriptor == null)

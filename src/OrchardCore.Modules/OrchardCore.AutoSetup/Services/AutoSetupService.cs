@@ -81,7 +81,7 @@ public class AutoSetupService : IAutoSetupService
 
     public async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ShellSettings shellSettings)
     {
-        var recipe = (await _setupService.GetSetupRecipesAsync())
+        var recipe = (await _setupService.GetSetupRecipesAsync(shellSettings))
             .SingleOrDefault(r => r.Name == options.RecipeName);
 
         var setupContext = new SetupContext

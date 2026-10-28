@@ -8,7 +8,7 @@ The `OrchardCore.Recipes` module allows you to automate Orchard Core tenant setu
 
 ## What is a Recipe?
 
-A recipe is a `.recipe.json` file placed in a Recipes folder within your module or theme. Recipes are picked up by Orchard Core and can be executed via the admin panel or automatically during tenant setup.
+A recipe is a `.recipe.json` file of a module, a theme, or the application, [registered](#registering-recipes) by a feature. Recipes can be executed via the admin panel, from other recipes, or automatically during tenant setup.
 
 ### Key Properties
 
@@ -48,6 +48,54 @@ A recipe is a `.recipe.json` file placed in a Recipes folder within your module 
 
 !!! note
     Recipes, despite being JSON files, may contain comments: `// This is a comment.`
+
+## Registering Recipes
+
+A recipe file is registered with `AddRecipe()` from the startup of a feature. The path is relative to the root of the module or theme holding the file, whose files are all embedded in its assembly.
+
+```csharp
+[Feature("MyCompany.Blog.Samples")]
+public sealed class SamplesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipe("Recipes/Samples/blog-samples.recipe.json");
+    }
+}
+```
+
+A registered recipe is only available to the tenants where the feature registering it is enabled. For instance, the `MenuAddPermissions` recipe of the `OrchardCore.Menu` module is only listed on the **Configuration** > **Recipes** admin page of the tenants where the Menu feature is enabled, and grouped under this feature.
+
+- The file must not be located directly in the `Recipes` folder of the extension, since this folder is scanned regardless of the enabled features (see [Recipes Folders](#recipes-folders)). Put it in a sub folder instead, e.g. `Recipes/Samples/`. A registered recipe found directly in the `Recipes` folder is ignored, and a warning is logged.
+- `AddRecipe(path, extensionId)` registers a recipe file of another extension, which is then available while the calling feature is enabled. This allows a feature to expose the setup recipes of a theme, for instance.
+- When the application registers a recipe outside of a feature startup, for instance on the host service collection, the path is relative to the content root of the application.
+- A missing or invalid recipe file is ignored, and the error is logged.
+
+### Setup Recipes
+
+The setup screen of a tenant, its AutoSetup, and the recipe lists of the Tenants module run in the setup shell of the tenant. This shell is only composed of the setup features of the application, added with `AddSetupFeatures()`, of its global features, added with `AddGlobalFeatures()`, and of their dependencies. So a setup recipe, one with `"issetuprecipe": true`, has to be registered by one of these features to be offered when setting up a tenant.
+
+This lets each application decide which setup recipes it offers, for instance a different set per environment:
+
+```csharp
+builder.Services
+    .AddOrchardCms()
+    .AddSetupFeatures("MyCompany.Recipes.Marketing");
+```
+
+A setup feature allowed on the Default tenant only, with `DefaultTenantOnly = true`, is not part of the setup shell of the other tenants, so its setup recipes are only offered when setting up the Default tenant.
+
+When creating a tenant, the Tenants module lists the setup recipes that the setup screen of this tenant would offer. Use `ISetupService.GetSetupRecipesAsync(shellSettings)` to do the same from your own code.
+
+### Default Tenant Recipes
+
+The `OrchardCore.Recipes.Default` feature provides the recipes that are only available to the Default tenant, like the **SaaS** setup recipe used to set up a multi-tenant site. It is allowed on the Default tenant only, added as a setup feature by `AddOrchardCms()`, and enabled by the SaaS recipe.
+
+### Recipes Folders
+
+The `.recipe.json` files located directly in the `Recipes` folder of a module or theme, or in the `Recipes` folder of the application content root, are still found by convention. These recipes are available to every tenant, regardless of the features enabled on it, and every setup recipe found this way is offered when setting up any tenant.
+
+This convention is kept for backward compatibility. Prefer registering your recipes with `AddRecipe()`, so that their availability depends on your features. To migrate a recipe, move its file to a sub folder, e.g. from `Recipes/blog.recipe.json` to `Recipes/Setup/blog.recipe.json`, and register it from the startup of the feature it belongs to, or from a setup feature for a setup recipe.
 
 
 ## Recipe Helpers
