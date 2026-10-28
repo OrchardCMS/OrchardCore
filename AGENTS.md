@@ -583,6 +583,24 @@ This applies to admin-facing Razor edit views such as:
 </div>
 ```
 
+### Required fields
+
+Every field that is validated as required carries `ocat-label-required` on its label, next to `ocat-label`. A field is required when its editor rejects an empty value: a `[Required]` attribute on the bound property, a model error added by the driver, controller or validator when the value is null or empty, or an HTML `required` attribute. When you add or change such validation, update the label in the same change.
+
+- When the field is only required in some states, add the class conditionally, from the same condition as the validation: `class="ocat-label @(settings.Required ? "ocat-label-required" : null)"`, `@(Model.IsNew ? "ocat-label-required" : null)`.
+- When the row is only visible while the field is required, for example a section shown for one option, add the class unconditionally.
+- Don't mark a field whose empty value is accepted, even when it gets generated or defaulted (e.g. the Autoroute permalink), a read-only input, or a checkbox.
+
+```cshtml
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+    </div>
+</div>
+```
+
 ### Limited-width field example (number inputs)
 
 ```cshtml
@@ -636,6 +654,7 @@ Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to 
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
 - Using `ocat-limited-wrapper` for text inputs, selects, paths, IDs, or other non-number fields unless the user explicitly requests compact width
 - Mixing `ocat-end` and `ocat-end-offset` in the same row; choose exactly one based on whether the row has a left-column label
+- A required field without `ocat-label-required` on its label, or an asterisk typed into the label text
 
 ## Admin Index View Conventions
 

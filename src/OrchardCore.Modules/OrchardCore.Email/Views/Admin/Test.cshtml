@@ -17,7 +17,7 @@
     @Html.ValidationSummary()
 
     <div class="ocat-wrapper">
-        <label asp-for="Provider" class="ocat-label">@T["Provider"]</label>
+        <label asp-for="Provider" class="ocat-label ocat-label-required">@T["Provider"]</label>
         <div class="ocat-end">
             <select class="form-select" asp-for="Provider" asp-items="Model.Providers">
                 <option value="">@T["Select a provider"]</option>
@@ -26,7 +26,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="To">
-        <label asp-for="To" class="ocat-label">@T["To"]</label>
+        <label asp-for="To" class="ocat-label ocat-label-required">@T["To"]</label>
         <div class="ocat-end">
             <input asp-for="To" class="form-control" type="text" />
             <span asp-validation-for="To"></span>
@@ -67,7 +67,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="Subject">
-        <label asp-for="Subject" class="ocat-label">@T["Subject"]</label>
+        <label asp-for="Subject" class="ocat-label ocat-label-required">@T["Subject"]</label>
         <div class="ocat-end">
             <input asp-for="Subject" class="form-control" type="text" required />
             <span asp-validation-for="Subject"></span>
@@ -75,7 +75,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="Body">
-        <label asp-for="Body" class="ocat-label">@T["Body"]</label>
+        <label asp-for="Body" class="ocat-label ocat-label-required">@T["Body"]</label>
         <div class="ocat-end">
             <textarea asp-for="Body" class="form-control" rows="5"></textarea>
             <span asp-validation-for="Body"></span>

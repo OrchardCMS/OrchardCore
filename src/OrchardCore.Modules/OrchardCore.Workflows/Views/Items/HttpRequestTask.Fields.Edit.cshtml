@@ -2,7 +2,7 @@
 @model HttpRequestTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Url">
-    <label asp-for="Url" class="ocat-label">@T["URL"]</label>
+    <label asp-for="Url" class="ocat-label ocat-label-required">@T["URL"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="Url" class="form-control code" />
         <span asp-validation-for="Url"></span>
@@ -11,7 +11,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="HttpMethod">
-    <label asp-for="HttpMethod" class="ocat-label">@T["HTTP Method"]</label>
+    <label asp-for="HttpMethod" class="ocat-label ocat-label-required">@T["HTTP Method"]</label>
     <div class="ocat-end">
         <select asp-for="HttpMethod" class="form-select">
             <option value="GET">GET</option>

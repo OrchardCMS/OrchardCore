@@ -39,7 +39,7 @@
         var selectStore = Model.IsNew && Model.AvailableStores.Count > 1;
     }
     <div class="ocat-wrapper" asp-validation-class-for="Store">
-        <label for="@(selectStore ? Html.IdFor(m => m.Store) : "store-display")" class="ocat-label">@T["Store"]</label>
+        <label for="@(selectStore ? Html.IdFor(m => m.Store) : "store-display")" class="ocat-label @(selectStore ? "ocat-label-required" : null)">@T["Store"]</label>
         <div class="ocat-end">
             @if (selectStore)
             {

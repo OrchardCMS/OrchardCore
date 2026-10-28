@@ -9,7 +9,7 @@
 
 <div class="ocat-limited-wrapper">
     <div class="ocat-limited" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end">
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name"></span>
@@ -19,7 +19,7 @@
 </div>
 
 <div class="ocat-wrapper monaco-json-model-editor" asp-validation-class-for="FeatureRules" data-model-uri="x://orchardcore.tenants.featureprofiles.json" data-schema-uri="x://orchardcore.tenants.featureprofiles.schema.json" data-schema="@schema">
-    <label asp-for="FeatureRules" class="ocat-label">@T["Rules"]</label>
+    <label asp-for="FeatureRules" class="ocat-label ocat-label-required">@T["Rules"]</label>
     <div class="ocat-end">
         <div class="form-control" style="min-height: 400px;">
             <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" style="min-height: 385px;" dir="@Orchard.CultureDir()" class="monaco-json-model-editor-container"></div>

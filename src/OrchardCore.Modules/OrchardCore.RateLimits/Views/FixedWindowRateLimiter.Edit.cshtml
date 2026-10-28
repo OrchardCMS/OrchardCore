@@ -1,7 +1,7 @@
 @model OrchardCore.RateLimits.ViewModels.FixedWindowRateLimiterViewModel
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="PermitLimit">
-    <label asp-for="PermitLimit" class="ocat-label">@T["Permit limit"]</label>
+    <label asp-for="PermitLimit" class="ocat-label ocat-label-required">@T["Permit limit"]</label>
     <div class="ocat-limited">
         <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
         <span asp-validation-for="PermitLimit"></span>
@@ -10,7 +10,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="WindowSeconds">
-    <label asp-for="WindowSeconds" class="ocat-label">@T["Window seconds"]</label>
+    <label asp-for="WindowSeconds" class="ocat-label ocat-label-required">@T["Window seconds"]</label>
     <div class="ocat-limited">
         <input asp-for="WindowSeconds" type="number" min="1" class="form-control" />
         <span asp-validation-for="WindowSeconds"></span>
