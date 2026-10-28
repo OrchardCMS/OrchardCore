@@ -3,7 +3,7 @@ namespace OrchardCore.Workflows.Models;
 /// <summary>
 /// The workflow type properties that can be edited in a <see cref="WorkflowTypeDraft"/>.
 /// </summary>
-public sealed class WorkflowTypeDraftSettings
+public sealed class WorkflowTypeDraftSettings : IWorkflowTypeExecutionSettings
 {
     /// <summary>
     /// See <see cref="WorkflowType.Name"/>.

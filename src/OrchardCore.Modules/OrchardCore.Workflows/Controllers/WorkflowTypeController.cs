@@ -303,22 +303,17 @@ public sealed class WorkflowTypeController : Controller
             return NotFound();
         }
 
-        return View(new WorkflowTypePropertiesViewModel
+        var viewModel = new WorkflowTypePropertiesViewModel
         {
             Id = id,
-            IsSingleton = workflowType.IsSingleton,
-            IsSingletonPerCorrelation = workflowType.IsSingletonPerCorrelation,
-            LockTimeout = workflowType.LockTimeout,
-            LockExpiration = workflowType.LockExpiration,
             Name = "Copy-" + workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
-            DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
-            IsActivity = workflowType.IsActivity,
-            BranchingMode = workflowType.BranchingMode,
-            FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
-            RecordActivityData = workflowType.RecordActivityData,
             ReturnUrl = returnUrl,
-        });
+        };
+
+        workflowType.CopyExecutionSettingsTo(viewModel);
+
+        return View(viewModel);
     }
 
     [HttpPost]
@@ -360,15 +355,7 @@ public sealed class WorkflowTypeController : Controller
     {
         workflowType.Name = viewModel.Name?.Trim();
         workflowType.IsEnabled = viewModel.IsEnabled;
-        workflowType.IsSingleton = viewModel.IsSingleton;
-        workflowType.IsSingletonPerCorrelation = viewModel.IsSingletonPerCorrelation;
-        workflowType.LockTimeout = viewModel.LockTimeout;
-        workflowType.LockExpiration = viewModel.LockExpiration;
-        workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
-        workflowType.IsActivity = viewModel.IsActivity;
-        workflowType.BranchingMode = viewModel.BranchingMode;
-        workflowType.FaultOnScriptErrors = viewModel.FaultOnScriptErrors;
-        workflowType.RecordActivityData = viewModel.RecordActivityData;
+        viewModel.CopyExecutionSettingsTo(workflowType);
     }
 
     /// <summary>

@@ -14,7 +14,6 @@ import type {
     WorkflowSettings,
 } from "../api/types";
 import type { Presence, WorkflowTypeChangedMessage } from "../realtime/realtime";
-import type { Command } from "@bloom/designer/core/history";
 import { createGraphHistory, createServerNodeIds } from "@bloom/designer/graph/graphHistory";
 import { danglingEdges } from "@bloom/designer/graph/rules";
 import { createWorkflowModel, type Graph } from "./commands";
@@ -158,6 +157,15 @@ export const createDesignerStore = () => {
         state.draftModifiedUtc = new Date().toISOString();
     };
 
+    /**
+     * Records the revision and issues returned by a successful server change.
+     */
+    const applyServerChange = (revision: number, issues: DesignIssue[]) => {
+        state.revision = revision;
+        state.issues = issues;
+        touchDraft();
+    };
+
     return {
         state,
         graph,
@@ -201,12 +209,12 @@ export const createDesignerStore = () => {
         /**
          * Applies a command and records it in the history.
          */
-        execute: (command: Command) => execute(command),
+        execute,
 
         /**
          * Records a command whose effect is already applied, for example a drag.
          */
-        record: (command: Command) => record(command),
+        record,
 
         undo,
         redo,
@@ -216,9 +224,7 @@ export const createDesignerStore = () => {
          */
         registerServerNode(node: DesignerNode, revision: number, issues: DesignIssue[]) {
             serverActivityIds.add(node.id);
-            state.revision = revision;
-            state.issues = issues;
-            touchDraft();
+            applyServerChange(revision, issues);
         },
 
         /**
@@ -252,11 +258,7 @@ export const createDesignerStore = () => {
         /**
          * Records the revision and issues returned by a successful server change.
          */
-        applyServerChange(revision: number, issues: DesignIssue[]) {
-            state.revision = revision;
-            state.issues = issues;
-            touchDraft();
-        },
+        applyServerChange,
 
         /**
          * The body of a Save request for the current graph.

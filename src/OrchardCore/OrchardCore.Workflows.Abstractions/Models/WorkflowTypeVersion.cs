@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Models;
 /// <see cref="WorkflowType.Name"/> and <see cref="WorkflowType.IsEnabled"/> belong to the workflow type only;
 /// changing them doesn't create a version.
 /// </remarks>
-public sealed class WorkflowTypeVersion
+public sealed class WorkflowTypeVersion : IWorkflowTypeExecutionSettings
 {
     /// <summary>
     /// The document identifier.

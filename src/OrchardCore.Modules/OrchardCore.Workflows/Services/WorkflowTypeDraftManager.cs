@@ -65,29 +65,6 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     }
 
     /// <inheritdoc />
-    public async Task<WorkflowTypeDraft> GetOrCreateAsync(WorkflowType workflowType)
-    {
-        ArgumentNullException.ThrowIfNull(workflowType);
-
-        var draft = await GetAsync(workflowType.WorkflowTypeId);
-
-        if (draft is not null)
-        {
-            return draft;
-        }
-
-        var now = _clock.UtcNow;
-
-        draft = workflowType.CreateDraft();
-        draft.CreatedUtc = now;
-        draft.ModifiedUtc = now;
-
-        await _session.SaveAsync(draft, checkConcurrency: true);
-
-        return draft;
-    }
-
-    /// <inheritdoc />
     public Task<WorkflowTypeDraftResult> SaveGraphAsync(string workflowTypeId, int expectedRevision, WorkflowGraphUpdate update)
     {
         ArgumentNullException.ThrowIfNull(update);
@@ -230,15 +207,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         {
             draft.Name = settings.Name?.Trim();
             draft.IsEnabled = settings.IsEnabled;
-            draft.IsSingleton = settings.IsSingleton;
-            draft.IsSingletonPerCorrelation = settings.IsSingletonPerCorrelation;
-            draft.LockTimeout = settings.LockTimeout;
-            draft.LockExpiration = settings.LockExpiration;
-            draft.DeleteFinishedWorkflows = settings.DeleteFinishedWorkflows;
-            draft.IsActivity = settings.IsActivity;
-            draft.BranchingMode = settings.BranchingMode;
-            draft.FaultOnScriptErrors = settings.FaultOnScriptErrors;
-            draft.RecordActivityData = settings.RecordActivityData;
+            settings.CopyExecutionSettingsTo(draft);
 
             return Task.FromResult(new ChangeOutcome());
         });
@@ -298,15 +267,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
                 return Task.FromResult(ChangeOutcome.Rejected(WorkflowTypeDraftStatus.NotFound));
             }
 
-            draft.IsSingleton = version.IsSingleton;
-            draft.IsSingletonPerCorrelation = version.IsSingletonPerCorrelation;
-            draft.LockTimeout = version.LockTimeout;
-            draft.LockExpiration = version.LockExpiration;
-            draft.DeleteFinishedWorkflows = version.DeleteFinishedWorkflows;
-            draft.IsActivity = version.IsActivity;
-            draft.BranchingMode = version.BranchingMode;
-            draft.FaultOnScriptErrors = version.FaultOnScriptErrors;
-            draft.RecordActivityData = version.RecordActivityData;
+            version.CopyExecutionSettingsTo(draft);
             draft.Activities = version.Activities.Select(activity => activity.Clone()).ToList();
             draft.Transitions = version.Transitions.Select(transition => transition.Clone()).ToList();
             draft.Variables = version.Variables.Select(variable => variable.Clone()).ToList();
@@ -381,23 +342,25 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowTypeDraft draft)
-    {
-        ArgumentNullException.ThrowIfNull(draft);
-
-        var issues = Validate(draft.WorkflowTypeId, draft.BranchingMode, draft.Activities, draft.Transitions, draft.Variables);
-        await ValidateActivitySettingsAsync(draft.Activities, issues);
-
-        return issues;
-    }
-
-    /// <inheritdoc />
-    public async Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowType workflowType)
+    public Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowType workflowType)
     {
         ArgumentNullException.ThrowIfNull(workflowType);
 
-        var issues = Validate(workflowType.WorkflowTypeId, workflowType.BranchingMode, workflowType.Activities, workflowType.Transitions, workflowType.Variables);
-        await ValidateActivitySettingsAsync(workflowType.Activities, issues);
+        return ValidateAsync(workflowType.WorkflowTypeId, workflowType.BranchingMode, workflowType.Activities, workflowType.Transitions, workflowType.Variables);
+    }
+
+    private Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowTypeDraft draft)
+        => ValidateAsync(draft.WorkflowTypeId, draft.BranchingMode, draft.Activities, draft.Transitions, draft.Variables);
+
+    private async Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(
+        string workflowTypeId,
+        WorkflowBranchingMode branchingMode,
+        IList<ActivityRecord> activities,
+        IList<Transition> transitions,
+        IList<WorkflowVariableDefinition> variables)
+    {
+        var issues = Validate(workflowTypeId, branchingMode, activities, transitions, variables);
+        await ValidateActivitySettingsAsync(activities, issues);
 
         return issues;
     }
@@ -546,7 +509,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         foreach (var activity in activities.Where(activity => activity.Name == nameof(ExecuteWorkflowTask)))
         {
-            var target = activity.Properties?[nameof(ExecuteWorkflowTask.WorkflowTypeId)] is JsonValue value && value.TryGetValue<string>(out var id) ? id : null;
+            var target = activity.Properties?[nameof(ExecuteWorkflowTask.WorkflowTypeId)].Value<string>();
 
             if (string.IsNullOrEmpty(target))
             {
@@ -583,8 +546,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         foreach (var activity in activities)
         {
             if (activity.Name == nameof(SetVariableTask) &&
-                activity.Properties?[nameof(SetVariableTask.VariableName)] is JsonValue nameValue &&
-                nameValue.TryGetValue<string>(out var variableName) &&
+                activity.Properties?[nameof(SetVariableTask.VariableName)].Value<string>() is { } variableName &&
                 !string.IsNullOrWhiteSpace(variableName) &&
                 !declared.ContainsKey(variableName))
             {

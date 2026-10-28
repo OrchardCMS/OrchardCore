@@ -2,10 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
     DEFAULT_NODE_HEIGHT,
     NODE_WIDTH,
-    bezierControlPoints,
-    bezierPoint,
     boundsOf,
-    closestSide,
     edgeGeometry,
     findFreeSpot,
     nodeRect,
@@ -35,34 +32,6 @@ describe("geometry", () => {
 
         expect(portAnchor(node, undefined, "A", 0, 2)).toEqual({ x: NODE_WIDTH, y: DEFAULT_NODE_HEIGHT / 3 });
         expect(portAnchor(node, undefined, "B", 1, 2)).toEqual({ x: NODE_WIDTH, y: (DEFAULT_NODE_HEIGHT * 2) / 3 });
-    });
-
-    it("closestSide_PointAroundRect_PicksFacingSide", () => {
-        const rect = { x: 100, y: 100, width: 200, height: 100 };
-
-        expect(closestSide(rect, { x: 0, y: 150 })).toEqual({ side: "left", point: { x: 100, y: 150 } });
-        expect(closestSide(rect, { x: 400, y: 160 })).toEqual({ side: "right", point: { x: 300, y: 150 } });
-        expect(closestSide(rect, { x: 200, y: 0 })).toEqual({ side: "top", point: { x: 200, y: 100 } });
-        expect(closestSide(rect, { x: 210, y: 400 })).toEqual({ side: "bottom", point: { x: 200, y: 200 } });
-    });
-
-    it("bezierControlPoints_Distance_ClampsHandleLength", () => {
-        const [near1, near2] = bezierControlPoints({ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 20, y: 0 }, { x: -1, y: 0 });
-        const [far1] = bezierControlPoints({ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1000, y: 0 }, { x: -1, y: 0 });
-        const [mid1] = bezierControlPoints({ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 200, y: 0 }, { x: -1, y: 0 });
-
-        expect(near1).toEqual({ x: 40, y: 0 });
-        expect(near2).toEqual({ x: -20, y: 0 });
-        expect(far1).toEqual({ x: 160, y: 0 });
-        expect(mid1).toEqual({ x: 100, y: 0 });
-    });
-
-    it("bezierPoint_Ends_ReturnsEndpoints", () => {
-        const p0 = { x: 0, y: 0 };
-        const p3 = { x: 100, y: 50 };
-
-        expect(bezierPoint(0, p0, { x: 10, y: 0 }, { x: 90, y: 50 }, p3)).toEqual(p0);
-        expect(bezierPoint(1, p0, { x: 10, y: 0 }, { x: 90, y: 50 }, p3)).toEqual(p3);
     });
 
     // A source card at the origin, its port on its right side.

@@ -13,24 +13,19 @@ internal static class WorkflowTypeDraftExtensions
     {
         ArgumentNullException.ThrowIfNull(workflowType);
 
-        return new WorkflowTypeDraft
+        var draft = new WorkflowTypeDraft
         {
             WorkflowTypeId = workflowType.WorkflowTypeId,
             Name = workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
-            IsSingleton = workflowType.IsSingleton,
-            IsSingletonPerCorrelation = workflowType.IsSingletonPerCorrelation,
-            LockTimeout = workflowType.LockTimeout,
-            LockExpiration = workflowType.LockExpiration,
-            DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
-            IsActivity = workflowType.IsActivity,
-            BranchingMode = workflowType.BranchingMode,
-            FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
-            RecordActivityData = workflowType.RecordActivityData,
-            Activities = workflowType.Activities.Select(Clone).ToList(),
-            Transitions = workflowType.Transitions.Select(Clone).ToList(),
+            Activities = workflowType.Activities.Select(activity => activity.Clone()).ToList(),
+            Transitions = workflowType.Transitions.Select(transition => transition.Clone()).ToList(),
             Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
         };
+
+        workflowType.CopyExecutionSettingsTo(draft);
+
+        return draft;
     }
 
     /// <summary>
@@ -43,17 +38,9 @@ internal static class WorkflowTypeDraftExtensions
 
         workflowType.Name = draft.Name;
         workflowType.IsEnabled = draft.IsEnabled;
-        workflowType.IsSingleton = draft.IsSingleton;
-        workflowType.IsSingletonPerCorrelation = draft.IsSingletonPerCorrelation;
-        workflowType.LockTimeout = draft.LockTimeout;
-        workflowType.LockExpiration = draft.LockExpiration;
-        workflowType.DeleteFinishedWorkflows = draft.DeleteFinishedWorkflows;
-        workflowType.IsActivity = draft.IsActivity;
-        workflowType.BranchingMode = draft.BranchingMode;
-        workflowType.FaultOnScriptErrors = draft.FaultOnScriptErrors;
-        workflowType.RecordActivityData = draft.RecordActivityData;
-        workflowType.Activities = draft.Activities.Select(Clone).ToList();
-        workflowType.Transitions = draft.Transitions.Select(Clone).ToList();
+        draft.CopyExecutionSettingsTo(workflowType);
+        workflowType.Activities = draft.Activities.Select(activity => activity.Clone()).ToList();
+        workflowType.Transitions = draft.Transitions.Select(transition => transition.Clone()).ToList();
         workflowType.Variables = draft.Variables.Select(variable => variable.Clone()).ToList();
     }
 
@@ -76,24 +63,4 @@ internal static class WorkflowTypeDraftExtensions
 
         return transient;
     }
-
-    public static ActivityRecord Clone(this ActivityRecord record)
-        => new()
-        {
-            ActivityId = record.ActivityId,
-            Name = record.Name,
-            X = record.X,
-            Y = record.Y,
-            IsStart = record.IsStart,
-            Properties = record.Properties?.DeepClone().AsObject() ?? [],
-        };
-
-    public static Transition Clone(this Transition transition)
-        => new()
-        {
-            Id = transition.Id,
-            SourceActivityId = transition.SourceActivityId,
-            SourceOutcomeName = transition.SourceOutcomeName,
-            DestinationActivityId = transition.DestinationActivityId,
-        };
 }

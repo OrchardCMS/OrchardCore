@@ -24,7 +24,7 @@ public static class ActivityOutputBindingExtensions
         {
             foreach (var (output, variable) in stored)
             {
-                if (variable is JsonValue value && value.TryGetValue<string>(out var name) && !string.IsNullOrWhiteSpace(name))
+                if (variable.Value<string>() is { } name && !string.IsNullOrWhiteSpace(name))
                 {
                     bindings[output] = name;
                 }

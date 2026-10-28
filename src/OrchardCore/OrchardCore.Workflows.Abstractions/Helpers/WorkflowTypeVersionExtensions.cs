@@ -20,7 +20,7 @@ public static class WorkflowTypeVersionExtensions
         ArgumentNullException.ThrowIfNull(version);
         ArgumentNullException.ThrowIfNull(workflowType);
 
-        return new WorkflowType
+        var result = new WorkflowType
         {
             Id = workflowType.Id,
             WorkflowTypeId = workflowType.WorkflowTypeId,
@@ -28,36 +28,13 @@ public static class WorkflowTypeVersionExtensions
             Name = workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
             Properties = workflowType.Properties?.DeepClone().AsObject() ?? [],
-            IsSingleton = version.IsSingleton,
-            IsSingletonPerCorrelation = version.IsSingletonPerCorrelation,
-            LockTimeout = version.LockTimeout,
-            LockExpiration = version.LockExpiration,
-            DeleteFinishedWorkflows = version.DeleteFinishedWorkflows,
-            IsActivity = version.IsActivity,
-            BranchingMode = version.BranchingMode,
-            FaultOnScriptErrors = version.FaultOnScriptErrors,
-            RecordActivityData = version.RecordActivityData,
-            Activities = version.Activities
-                .Select(activity => new ActivityRecord
-                {
-                    ActivityId = activity.ActivityId,
-                    Name = activity.Name,
-                    X = activity.X,
-                    Y = activity.Y,
-                    IsStart = activity.IsStart,
-                    Properties = activity.Properties?.DeepClone().AsObject() ?? [],
-                })
-                .ToList(),
+            Activities = version.Activities.Select(activity => activity.Clone()).ToList(),
             Variables = version.Variables.Select(variable => variable.Clone()).ToList(),
-            Transitions = version.Transitions
-                .Select(transition => new Transition
-                {
-                    Id = transition.Id,
-                    SourceActivityId = transition.SourceActivityId,
-                    SourceOutcomeName = transition.SourceOutcomeName,
-                    DestinationActivityId = transition.DestinationActivityId,
-                })
-                .ToList(),
+            Transitions = version.Transitions.Select(transition => transition.Clone()).ToList(),
         };
+
+        version.CopyExecutionSettingsTo(result);
+
+        return result;
     }
 }

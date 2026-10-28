@@ -10,8 +10,6 @@ namespace OrchardCore.Workflows.Services;
 /// </summary>
 internal sealed class ActivityDataRecorder
 {
-    private const string Ellipsis = "…";
-
     private readonly WorkflowExecutionContext _workflowContext;
     private readonly ActivityContext _activityContext;
     private readonly Dictionary<string, string> _propertiesBefore;
@@ -100,8 +98,7 @@ internal sealed class ActivityDataRecorder
         {
             if (path is not null &&
                 jsonObject.TryGetPropertyValue(nameof(WorkflowExpression<object>.Expression), out var text) &&
-                text is JsonValue value &&
-                value.TryGetValue<string>(out var candidate) &&
+                text.Value<string>() is { } candidate &&
                 Matches(candidate, expression))
             {
                 return path;
@@ -132,7 +129,8 @@ internal sealed class ActivityDataRecorder
     // An expression that was cut matches the start of the property's.
     private static bool Matches(string candidate, string expression)
         => string.Equals(candidate, expression, StringComparison.Ordinal) ||
-            (expression.EndsWith(Ellipsis, StringComparison.Ordinal) && candidate.StartsWith(expression[..^Ellipsis.Length], StringComparison.Ordinal));
+            (expression.EndsWith(WorkflowExecutionData.Ellipsis, StringComparison.Ordinal) &&
+                candidate.StartsWith(expression[..^WorkflowExecutionData.Ellipsis.Length], StringComparison.Ordinal));
 
     // Keeps the values within MaxDataLength, in this order: the last result, the outputs, the variables, the evaluations
     // and the other properties. The values left out are marked.

@@ -140,22 +140,6 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetOrCreateAsync_NoDraft_DeepCopiesLiveType()
-    {
-        var manager = CreateManager();
-
-        var draft = await manager.GetOrCreateAsync(_workflowType);
-        draft.Activities.Single(x => x.ActivityId == "fork").Properties["Forks"] = new JsonArray("C");
-        draft.Activities.Single(x => x.ActivityId == "start").X = 999;
-        draft.Transitions.Clear();
-
-        Assert.Equal(0, draft.Revision);
-        Assert.Equal(["A", "B"], ForksOf(_workflowType));
-        Assert.Equal(10, _workflowType.Activities.Single(x => x.ActivityId == "start").X);
-        Assert.Equal(3, _workflowType.Transitions.Count);
-    }
-
-    [Fact]
     public async Task SaveGraphAsync_MatchingRevision_IncrementsRevisionAndPersists()
     {
         var first = await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, 0, GraphOf(_workflowType, ("a", 410, 10)));

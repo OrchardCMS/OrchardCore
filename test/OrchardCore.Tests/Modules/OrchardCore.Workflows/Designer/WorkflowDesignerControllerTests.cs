@@ -164,11 +164,9 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Theory]
-    [InlineData("Designer/Index", "")]
-    [InlineData("Designer/Index?activityId=notify", "?activityId=notify")]
     [InlineData("Activity/notify/Edit", "?activityId=notify")]
     [InlineData("Activity/NotifyTask/Add", "")]
-    public async Task OldUrls_DesignerAndActivityPages_RedirectToTheDesigner(string path, string expectedQuery)
+    public async Task OldUrls_ActivityPages_RedirectToTheDesigner(string path, string expectedQuery)
     {
         var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
 

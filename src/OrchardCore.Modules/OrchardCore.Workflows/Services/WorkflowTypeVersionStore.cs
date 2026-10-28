@@ -94,7 +94,8 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
 
         var latest = await GetLatestAsync(workflowType.WorkflowTypeId);
 
-        if (latest is not null && Fingerprint(latest) == Fingerprint(workflowType))
+        if (latest is not null && Fingerprint(latest, latest.Activities, latest.Transitions, latest.Variables) ==
+            Fingerprint(workflowType, workflowType.Activities, workflowType.Transitions, workflowType.Variables))
         {
             workflowType.VersionId = latest.VersionId;
 
@@ -112,19 +113,12 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             CreatedByUserId = user?.FindFirstValue(ClaimTypes.NameIdentifier),
             CreatedByUserName = user?.Identity?.Name,
             Name = workflowType.Name,
-            IsSingleton = workflowType.IsSingleton,
-            IsSingletonPerCorrelation = workflowType.IsSingletonPerCorrelation,
-            LockTimeout = workflowType.LockTimeout,
-            LockExpiration = workflowType.LockExpiration,
-            DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
-            IsActivity = workflowType.IsActivity,
-            BranchingMode = workflowType.BranchingMode,
-            FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
-            RecordActivityData = workflowType.RecordActivityData,
             Activities = workflowType.Activities.Select(activity => activity.Clone()).ToList(),
             Transitions = workflowType.Transitions.Select(transition => transition.Clone()).ToList(),
             Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
         };
+
+        workflowType.CopyExecutionSettingsTo(version);
 
         await _session.SaveAsync(version);
         workflowType.VersionId = version.VersionId;
@@ -192,64 +186,19 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
     }
 
     // What a version holds besides its metadata: two definitions with the same fingerprint run the same way.
+    // The settings are serialized as their declared interface, so only the execution settings are compared.
     private string Fingerprint(
-        bool isSingleton,
-        bool isSingletonPerCorrelation,
-        int lockTimeout,
-        int lockExpiration,
-        bool deleteFinishedWorkflows,
-        bool isActivity,
-        WorkflowBranchingMode branchingMode,
-        bool faultOnScriptErrors,
-        bool recordActivityData,
+        IWorkflowTypeExecutionSettings settings,
         IList<ActivityRecord> activities,
         IList<Transition> transitions,
         IList<WorkflowVariableDefinition> variables)
         => JsonSerializer.Serialize(
             new
             {
-                IsSingleton = isSingleton,
-                IsSingletonPerCorrelation = isSingletonPerCorrelation,
-                LockTimeout = lockTimeout,
-                LockExpiration = lockExpiration,
-                DeleteFinishedWorkflows = deleteFinishedWorkflows,
-                IsActivity = isActivity,
-                BranchingMode = branchingMode,
-                FaultOnScriptErrors = faultOnScriptErrors,
-                RecordActivityData = recordActivityData,
+                Settings = settings,
                 Activities = activities,
                 Transitions = transitions,
                 Variables = variables,
             },
             _jsonSerializerOptions);
-
-    private string Fingerprint(WorkflowType workflowType)
-        => Fingerprint(
-            workflowType.IsSingleton,
-            workflowType.IsSingletonPerCorrelation,
-            workflowType.LockTimeout,
-            workflowType.LockExpiration,
-            workflowType.DeleteFinishedWorkflows,
-            workflowType.IsActivity,
-            workflowType.BranchingMode,
-            workflowType.FaultOnScriptErrors,
-            workflowType.RecordActivityData,
-            workflowType.Activities,
-            workflowType.Transitions,
-            workflowType.Variables);
-
-    private string Fingerprint(WorkflowTypeVersion version)
-        => Fingerprint(
-            version.IsSingleton,
-            version.IsSingletonPerCorrelation,
-            version.LockTimeout,
-            version.LockExpiration,
-            version.DeleteFinishedWorkflows,
-            version.IsActivity,
-            version.BranchingMode,
-            version.FaultOnScriptErrors,
-            version.RecordActivityData,
-            version.Activities,
-            version.Transitions,
-            version.Variables);
 }

@@ -20,7 +20,10 @@ public sealed class WorkflowExecutionData
     /// </summary>
     public const int MaxDataLength = 32_000;
 
-    private const string Ellipsis = "…";
+    /// <summary>
+    /// The marker that ends a value that was cut.
+    /// </summary>
+    public const string Ellipsis = "…";
 
     /// <summary>
     /// The expressions the activity evaluated, in order.
@@ -76,6 +79,19 @@ public sealed class WorkflowExecutionData
         {
             text = JConvert.SerializeObject(value.ToString(), JOptions.Default);
         }
+
+        return Truncate(text, out truncated);
+    }
+
+    /// <summary>
+    /// Returns a text cut to <see cref="MaxValueLength"/> characters and ended with <see cref="Ellipsis"/>, or the text
+    /// itself when it isn't longer.
+    /// </summary>
+    /// <param name="text">The text.</param>
+    /// <param name="truncated">Whether the text was cut.</param>
+    public static string Truncate(string text, out bool truncated)
+    {
+        ArgumentNullException.ThrowIfNull(text);
 
         truncated = text.Length > MaxValueLength;
 

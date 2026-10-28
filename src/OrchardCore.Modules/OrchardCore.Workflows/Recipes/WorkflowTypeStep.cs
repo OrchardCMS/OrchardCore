@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Controllers;
 using OrchardCore.Workflows.Http.Models;
@@ -69,15 +70,7 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
                 // instances keep running on the versions they started on.
                 existing.Name = workflow.Name;
                 existing.IsEnabled = workflow.IsEnabled;
-                existing.IsSingleton = workflow.IsSingleton;
-                existing.IsSingletonPerCorrelation = workflow.IsSingletonPerCorrelation;
-                existing.LockTimeout = workflow.LockTimeout;
-                existing.LockExpiration = workflow.LockExpiration;
-                existing.DeleteFinishedWorkflows = workflow.DeleteFinishedWorkflows;
-                existing.IsActivity = workflow.IsActivity;
-                existing.BranchingMode = workflow.BranchingMode;
-                existing.FaultOnScriptErrors = workflow.FaultOnScriptErrors;
-                existing.RecordActivityData = workflow.RecordActivityData;
+                workflow.CopyExecutionSettingsTo(existing);
                 existing.Activities = workflow.Activities;
                 existing.Transitions = workflow.Transitions;
                 existing.Variables = workflow.Variables;

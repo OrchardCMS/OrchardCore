@@ -501,13 +501,34 @@ const onWorkflowTypeChanged = (change: WorkflowTypeChangedMessage) => {
     state.remoteChange = change;
 };
 
+// Changes of a running instance come in bursts: one reload runs at a time, and the changes that come during it
+// cause a single reload after it.
+let instanceReloading = false;
+let instanceChangedAgain = false;
+
 const onInstanceChanged = async () => {
+    if (instanceReloading) {
+        instanceChangedAgain = true;
+
+        return;
+    }
+
+    instanceReloading = true;
+
     try {
-        props.store.loadDefinition(await props.api.getDefinition());
-        await nextTick();
-        canvas.value?.reveal(state.instance?.blockingActivityIds ?? []);
-    } catch {
-        // The next change tries again.
+        do {
+            instanceChangedAgain = false;
+
+            try {
+                props.store.loadDefinition(await props.api.getDefinition());
+                await nextTick();
+                canvas.value?.reveal(state.instance?.blockingActivityIds ?? []);
+            } catch {
+                // The next change tries again.
+            }
+        } while (instanceChangedAgain && !unmounted);
+    } finally {
+        instanceReloading = false;
     }
 };
 

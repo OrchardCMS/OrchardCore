@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Helpers;
@@ -35,7 +34,8 @@ public sealed class WorkflowDesignerController : Controller
     // The number of journal records the instance viewer shows.
     private const int JournalRecordCount = 500;
 
-    private static readonly WorkflowStatus[] s_runningStatuses =
+    // The statuses of the instances that haven't finished, halted ones included.
+    private static readonly WorkflowStatus[] s_unfinishedStatuses =
     [
         WorkflowStatus.Idle,
         WorkflowStatus.Starting,
@@ -56,10 +56,8 @@ public sealed class WorkflowDesignerController : Controller
     private readonly ISession _session;
     private readonly IClock _clock;
     private readonly IWorkflowVariableTypeProvider _variableTypes;
-    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IWorkflowExecutionJournal _journal;
     private readonly WorkflowVariableValidator _variableValidator;
-    private readonly IEnumerable<IWorkflowGlobalValueProvider> _globalValueProviders;
 
     internal readonly IStringLocalizer S;
 
@@ -78,8 +76,6 @@ public sealed class WorkflowDesignerController : Controller
         IWorkflowVariableTypeProvider variableTypes,
         WorkflowVariableValidator variableValidator,
         IWorkflowExecutionJournal journal,
-        IEnumerable<IWorkflowGlobalValueProvider> globalValueProviders,
-        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -96,17 +92,8 @@ public sealed class WorkflowDesignerController : Controller
         _variableTypes = variableTypes;
         _journal = journal;
         _variableValidator = variableValidator;
-        _globalValueProviders = globalValueProviders;
-        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
-
-    /// <summary>
-    /// The designer's first URL; the designer is now at <c>WorkflowType/Edit</c>.
-    /// </summary>
-    [HttpGet]
-    public IActionResult Index(long workflowTypeId, string activityId = null)
-        => RedirectToAction("Edit", "WorkflowType", new { area = "OrchardCore.Workflows", id = workflowTypeId, activityId });
 
     [HttpGet]
     public async Task<IActionResult> Definition(long workflowTypeId)
@@ -125,35 +112,25 @@ public sealed class WorkflowDesignerController : Controller
 
         var draft = await _draftManager.GetAsync(workflowType.WorkflowTypeId);
         var source = draft?.ToTransientWorkflowType(workflowType) ?? workflowType;
-        var issues = draft is null
-            ? await _draftManager.ValidateAsync(workflowType)
-            : await _draftManager.ValidateAsync(draft);
+        var issues = await _draftManager.ValidateAsync(source);
 
         var runningInstanceCount = await _session.QueryIndex<WorkflowIndex>(index =>
                 index.WorkflowTypeId == workflowType.WorkflowTypeId &&
-                index.WorkflowStatus.IsIn(s_runningStatuses))
+                index.WorkflowStatus.IsIn(s_unfinishedStatuses))
             .CountAsync();
 
-        return Ok(new WorkflowDesignerDefinition
-        {
-            Id = workflowType.Id,
-            WorkflowTypeId = workflowType.WorkflowTypeId,
-            Revision = draft?.Revision ?? 0,
-            HasDraft = draft is not null,
-            DraftModifiedBy = draft?.ModifiedByUserName,
-            DraftModifiedByUserId = draft?.ModifiedByUserId,
-            DraftModifiedUtc = draft?.ModifiedUtc,
-            Settings = SettingsOf(source),
-            Nodes = await _modelBuilder.BuildNodesAsync(source),
-            Transitions = source.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
-            Variables = [.. source.Variables ?? []],
-            VariableTypes = VariableTypes(),
-            GlobalValues = GlobalValues(),
-            Issues = issues,
-            RunningInstanceCount = runningInstanceCount,
-            PublishedVersion = await PublishedVersionAsync(workflowType),
-            Run = RunOf(workflowType),
-        });
+        var model = await BuildDefinitionAsync(workflowType, source);
+
+        model.Revision = draft?.Revision ?? 0;
+        model.HasDraft = draft is not null;
+        model.DraftModifiedBy = draft?.ModifiedByUserName;
+        model.DraftModifiedByUserId = draft?.ModifiedByUserId;
+        model.DraftModifiedUtc = draft?.ModifiedUtc;
+        model.Issues = issues;
+        model.RunningInstanceCount = runningInstanceCount;
+        model.Run = RunOf(workflowType);
+
+        return Ok(model);
     }
 
     /// <summary>
@@ -180,17 +157,17 @@ public sealed class WorkflowDesignerController : Controller
 
         if (!run.IsEnabled)
         {
-            return ProblemResult(StatusCodes.Status400BadRequest, S["The workflow is disabled. Enable it to run it."]);
+            return Problem(title: S["The workflow is disabled. Enable it to run it."], statusCode: StatusCodes.Status400BadRequest);
         }
 
         if (run.Mode != WorkflowDesignerRun.InputsMode)
         {
-            return ProblemResult(StatusCodes.Status400BadRequest, S["Only a published workflow that starts with Started by Workflow runs with inputs."]);
+            return Problem(title: S["Only a published workflow that starts with Started by Workflow runs with inputs."], statusCode: StatusCodes.Status400BadRequest);
         }
 
         if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
         {
-            return ProblemResult(StatusCodes.Status409Conflict, S["This workflow runs one instance at a time, and one is running."]);
+            return Problem(title: S["This workflow runs one instance at a time, and one is running."], statusCode: StatusCodes.Status409Conflict);
         }
 
         var input = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
@@ -217,7 +194,7 @@ public sealed class WorkflowDesignerController : Controller
 
         if (invalid.Count > 0)
         {
-            return ProblemResult(StatusCodes.Status400BadRequest, S["These inputs don't have a value of their type: {0}.", string.Join(", ", invalid)]);
+            return Problem(title: S["These inputs don't have a value of their type: {0}.", string.Join(", ", invalid)], statusCode: StatusCodes.Status400BadRequest);
         }
 
         var start = workflowType.Activities.First(activity => activity.ActivityId == run.ActivityId);
@@ -282,10 +259,9 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiForbidProblem();
         }
 
-        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-        var workflow = workflowType is null ? null : await _workflowStore.GetAsync(instanceId);
+        var (_, workflow) = await GetInstanceAsync(workflowTypeId, instanceId);
 
-        if (workflow is null || workflow.WorkflowTypeId != workflowType.WorkflowTypeId)
+        if (workflow is null)
         {
             return this.ApiNotFoundProblem();
         }
@@ -307,10 +283,9 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiForbidProblem();
         }
 
-        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-        var workflow = workflowType is null ? null : await _workflowStore.GetAsync(instanceId);
+        var (workflowType, workflow) = await GetInstanceAsync(workflowTypeId, instanceId);
 
-        if (workflow is null || workflow.WorkflowTypeId != workflowType.WorkflowTypeId)
+        if (workflow is null)
         {
             return this.ApiNotFoundProblem();
         }
@@ -338,39 +313,29 @@ public sealed class WorkflowDesignerController : Controller
             record.ChildInstanceUrl = linkedInstanceUrls.GetValueOrDefault(record.ChildWorkflowId);
         }
 
-        return Ok(new WorkflowDesignerDefinition
+        var model = await BuildDefinitionAsync(workflowType, definition);
+
+        model.Version = WorkflowDesignerVersion.From(version, workflowType);
+        model.Instance = new WorkflowDesignerInstance
         {
-            Id = workflowType.Id,
-            WorkflowTypeId = workflowType.WorkflowTypeId,
-            Settings = SettingsOf(definition),
-            Nodes = await _modelBuilder.BuildNodesAsync(definition),
-            Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
-            Variables = [.. definition.Variables ?? []],
-            VariableTypes = VariableTypes(),
-            GlobalValues = GlobalValues(),
-            PublishedVersion = await PublishedVersionAsync(workflowType),
-            Version = WorkflowDesignerVersion.From(version, workflowType),
-            Instance = new WorkflowDesignerInstance
-            {
-                Id = workflow.Id,
-                WorkflowId = workflow.WorkflowId,
-                Status = workflow.Status.ToString(),
-                BlockingActivityIds = workflow.BlockingActivities.Select(activity => activity.ActivityId).Distinct().ToList(),
-                VariableValues = VariableValuesOf(workflow, definition.Variables),
-                FaultMessage = workflow.FaultMessage,
-                FaultedActivityId = workflow.Status == WorkflowStatus.Faulted
-                    ? workflow.PendingRetry?.ActivityId ?? journal.LastOrDefault(record => record.Status == WorkflowExecutionRecordStatus.Faulted)?.ActivityId
-                    : null,
-                PendingRetry = workflow.Status == WorkflowStatus.Faulted ? workflow.PendingRetry : null,
-                ParentWorkflowId = workflow.ParentWorkflowId,
-                ParentInstanceUrl = string.IsNullOrEmpty(workflow.ParentWorkflowId) ? null : linkedInstanceUrls.GetValueOrDefault(workflow.ParentWorkflowId),
-                Journal = journalRecords,
-                ExecutedActivityCounts = journal
-                    .GroupBy(record => record.ActivityId)
-                    .ToDictionary(group => group.Key, group => group.Count()),
-                ExecutedTransitionCounts = ExecutedTransitionCounts(journal, definition),
-            },
-        });
+            Id = workflow.Id,
+            WorkflowId = workflow.WorkflowId,
+            Status = workflow.Status.ToString(),
+            BlockingActivityIds = workflow.BlockingActivities.Select(activity => activity.ActivityId).Distinct().ToList(),
+            VariableValues = VariableValuesOf(workflow, definition.Variables),
+            FaultMessage = workflow.FaultMessage,
+            FaultedActivityId = workflow.Status == WorkflowStatus.Faulted ? workflow.GetFaultedActivityId(journal) : null,
+            PendingRetry = workflow.Status == WorkflowStatus.Faulted ? workflow.PendingRetry : null,
+            ParentWorkflowId = workflow.ParentWorkflowId,
+            ParentInstanceUrl = string.IsNullOrEmpty(workflow.ParentWorkflowId) ? null : linkedInstanceUrls.GetValueOrDefault(workflow.ParentWorkflowId),
+            Journal = journalRecords,
+            ExecutedActivityCounts = journal
+                .GroupBy(record => record.ActivityId)
+                .ToDictionary(group => group.Key, group => group.Count()),
+            ExecutedTransitionCounts = ExecutedTransitionCounts(journal, definition),
+        };
+
+        return Ok(model);
     }
 
     /// <summary>
@@ -389,17 +354,16 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiBadRequestProblem();
         }
 
-        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-        var workflow = workflowType is null ? null : await _workflowStore.GetAsync(request.InstanceId);
+        var (_, workflow) = await GetInstanceAsync(workflowTypeId, request.InstanceId);
 
-        if (workflow is null || workflow.WorkflowTypeId != workflowType.WorkflowTypeId)
+        if (workflow is null)
         {
             return this.ApiNotFoundProblem();
         }
 
         if (workflow.Status != WorkflowStatus.Faulted)
         {
-            return ProblemResult(StatusCodes.Status400BadRequest, S["Only a faulted instance can be retried."]);
+            return Problem(title: S["Only a faulted instance can be retried."], statusCode: StatusCodes.Status400BadRequest);
         }
 
         WorkflowExecutionContext workflowContext;
@@ -410,12 +374,12 @@ public sealed class WorkflowDesignerController : Controller
         }
         catch (ArgumentException)
         {
-            return ProblemResult(StatusCodes.Status400BadRequest, S["The instance's definition doesn't have this activity."]);
+            return Problem(title: S["The instance's definition doesn't have this activity."], statusCode: StatusCodes.Status400BadRequest);
         }
 
         if (workflowContext is null)
         {
-            return ProblemResult(StatusCodes.Status409Conflict, S["The instance is running. Try again in a moment."]);
+            return Problem(title: S["The instance is running. Try again in a moment."], statusCode: StatusCodes.Status409Conflict);
         }
 
         return Ok(new
@@ -640,19 +604,11 @@ public sealed class WorkflowDesignerController : Controller
 
         if (errors.Count > 0)
         {
-            var problem = ProblemDetailsFactory.CreateProblemDetails(
-                HttpContext,
-                StatusCodes.Status400BadRequest,
-                S["The variables can't be saved."],
-                detail: S["Fix the errors listed in the variable errors first."]);
-
-            problem.Extensions["variableErrors"] = errors;
-
-            return new ObjectResult(problem)
-            {
-                StatusCode = StatusCodes.Status400BadRequest,
-                ContentTypes = { "application/problem+json" },
-            };
+            return Problem(
+                title: S["The variables can't be saved."],
+                detail: S["Fix the errors listed in the variable errors first."],
+                statusCode: StatusCodes.Status400BadRequest,
+                extensions: new Dictionary<string, object> { ["variableErrors"] = errors });
         }
 
         var result = await _draftManager.UpdateVariablesAsync(workflowType.WorkflowTypeId, request.Revision, request.Variables);
@@ -726,24 +682,19 @@ public sealed class WorkflowDesignerController : Controller
         var draft = await _draftManager.GetAsync(workflowType.WorkflowTypeId);
         var source = draft?.ToTransientWorkflowType(workflowType) ?? workflowType;
 
+        var model = new WorkflowTypePropertiesViewModel
+        {
+            Id = workflowType.Id,
+            Name = source.Name,
+            IsEnabled = source.IsEnabled,
+        };
+
+        source.CopyExecutionSettingsTo(model);
+
         return Fragment(new WorkflowDesignerFragmentViewModel
         {
             PartialName = SettingsPartialName,
-            PartialModel = new WorkflowTypePropertiesViewModel
-            {
-                Id = workflowType.Id,
-                Name = source.Name,
-                IsEnabled = source.IsEnabled,
-                IsSingleton = source.IsSingleton,
-                IsSingletonPerCorrelation = source.IsSingletonPerCorrelation,
-                LockTimeout = source.LockTimeout,
-                LockExpiration = source.LockExpiration,
-                DeleteFinishedWorkflows = source.DeleteFinishedWorkflows,
-                IsActivity = source.IsActivity,
-                BranchingMode = source.BranchingMode,
-                FaultOnScriptErrors = source.FaultOnScriptErrors,
-                RecordActivityData = source.RecordActivityData,
-            },
+            PartialModel = model,
             WorkflowTypeId = workflowType.Id,
         });
     }
@@ -781,16 +732,9 @@ public sealed class WorkflowDesignerController : Controller
         {
             Name = model.Name,
             IsEnabled = model.IsEnabled,
-            IsSingleton = model.IsSingleton,
-            IsSingletonPerCorrelation = model.IsSingletonPerCorrelation,
-            LockTimeout = model.LockTimeout,
-            LockExpiration = model.LockExpiration,
-            DeleteFinishedWorkflows = model.DeleteFinishedWorkflows,
-            IsActivity = model.IsActivity,
-            BranchingMode = model.BranchingMode,
-            FaultOnScriptErrors = model.FaultOnScriptErrors,
-            RecordActivityData = model.RecordActivityData,
         };
+
+        model.CopyExecutionSettingsTo(settings);
 
         var result = await _draftManager.UpdateSettingsAsync(workflowType.WorkflowTypeId, revision, settings);
 
@@ -859,19 +803,22 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiNotFoundProblem();
         }
 
-        var instanceCounts = (await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync())
-            .Where(index => !string.IsNullOrEmpty(index.WorkflowTypeVersionId))
-            .GroupBy(index => index.WorkflowTypeVersionId)
-            .ToDictionary(group => group.Key, group => group.Count());
-
         var versions = await _versionStore.ListAsync(workflowType.WorkflowTypeId);
         var draft = await _draftManager.GetAsync(workflowType.WorkflowTypeId);
 
+        // The versions are few, while their instances can be many: count them rather than loading them.
+        var versionModels = new List<WorkflowDesignerVersion>();
+
+        foreach (var version in versions)
+        {
+            var instanceCount = await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeVersionId == version.VersionId).CountAsync();
+
+            versionModels.Add(WorkflowDesignerVersion.From(version, workflowType, instanceCount));
+        }
+
         return Ok(new
         {
-            versions = versions
-                .Select(version => WorkflowDesignerVersion.From(version, workflowType, instanceCounts.GetValueOrDefault(version.VersionId)))
-                .ToList(),
+            versions = versionModels,
             draft = draft is null
                 ? null
                 : new
@@ -895,9 +842,9 @@ public sealed class WorkflowDesignerController : Controller
         }
 
         var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-        var version = workflowType is null || string.IsNullOrEmpty(versionId) ? null : await _versionStore.GetAsync(versionId);
+        var version = workflowType is null ? null : await GetVersionAsync(workflowType, versionId);
 
-        if (version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId)
+        if (version is null)
         {
             return this.ApiNotFoundProblem();
         }
@@ -952,9 +899,9 @@ public sealed class WorkflowDesignerController : Controller
         }
 
         var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-        var version = workflowType is null || string.IsNullOrEmpty(request?.VersionId) ? null : await _versionStore.GetAsync(request.VersionId);
+        var version = workflowType is null ? null : await GetVersionAsync(workflowType, request?.VersionId);
 
-        if (version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId)
+        if (version is null)
         {
             return this.ApiNotFoundProblem();
         }
@@ -994,20 +941,17 @@ public sealed class WorkflowDesignerController : Controller
     }
 
     private static WorkflowTypeDraftSettings SettingsOf(WorkflowType workflowType)
-        => new()
+    {
+        var settings = new WorkflowTypeDraftSettings
         {
             Name = workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
-            IsSingleton = workflowType.IsSingleton,
-            IsSingletonPerCorrelation = workflowType.IsSingletonPerCorrelation,
-            LockTimeout = workflowType.LockTimeout,
-            LockExpiration = workflowType.LockExpiration,
-            DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
-            IsActivity = workflowType.IsActivity,
-            BranchingMode = workflowType.BranchingMode,
-            FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
-            RecordActivityData = workflowType.RecordActivityData,
         };
+
+        workflowType.CopyExecutionSettingsTo(settings);
+
+        return settings;
+    }
 
     private async Task<WorkflowDesignerVersion> PublishedVersionAsync(WorkflowType workflowType)
         => string.IsNullOrEmpty(workflowType.VersionId)
@@ -1032,28 +976,44 @@ public sealed class WorkflowDesignerController : Controller
             return (draft?.ToTransientWorkflowType(workflowType), null);
         }
 
-        var version = string.IsNullOrEmpty(id) ? null : await _versionStore.GetAsync(id);
+        var version = await GetVersionAsync(workflowType, id);
 
-        return version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId
-            ? (null, null)
-            : (ToDefinition(version, workflowType), version);
+        return version is null ? (null, null) : (ToDefinition(version, workflowType), version);
+    }
+
+    // A version of the workflow type, or null when it doesn't have one with this id.
+    private async Task<WorkflowTypeVersion> GetVersionAsync(WorkflowType workflowType, string versionId)
+    {
+        var version = string.IsNullOrEmpty(versionId) ? null : await _versionStore.GetAsync(versionId);
+
+        return version?.WorkflowTypeId == workflowType.WorkflowTypeId ? version : null;
     }
 
     // A definition that is only shown: a version, or the draft (when version is null).
     private async Task<WorkflowDesignerDefinition> ReadOnlyDefinitionAsync(WorkflowType workflowType, WorkflowType definition, WorkflowTypeVersion version)
+    {
+        var model = await BuildDefinitionAsync(workflowType, definition);
+
+        model.HasDraft = version is null;
+        model.Version = WorkflowDesignerVersion.From(version, workflowType);
+
+        return model;
+    }
+
+    // What every view of a definition of the workflow type shows: its settings, graph and variables, and the values
+    // its expressions can use. The definition is the live type, a draft or a version.
+    private async Task<WorkflowDesignerDefinition> BuildDefinitionAsync(WorkflowType workflowType, WorkflowType definition)
         => new()
         {
             Id = workflowType.Id,
             WorkflowTypeId = workflowType.WorkflowTypeId,
-            HasDraft = version is null,
             Settings = SettingsOf(definition),
             Nodes = await _modelBuilder.BuildNodesAsync(definition),
             Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
             Variables = [.. definition.Variables ?? []],
-            VariableTypes = VariableTypes(),
-            GlobalValues = GlobalValues(),
+            VariableTypes = _modelBuilder.BuildVariableTypes(),
+            GlobalValues = _modelBuilder.BuildGlobalValues(),
             PublishedVersion = await PublishedVersionAsync(workflowType),
-            Version = WorkflowDesignerVersion.From(version, workflowType),
         };
 
     // The transitions the journal's outcomes took, as the engine follows them: the first transition of each outcome.
@@ -1077,44 +1037,6 @@ public sealed class WorkflowDesignerController : Controller
 
         return counts;
     }
-
-    private List<WorkflowDesignerGlobalValue> GlobalValues()
-        => _globalValueProviders
-            .SelectMany(provider => provider.GetGlobalValues())
-            .OrderBy(value => value.Kind)
-            .ThenBy(value => value.Name, StringComparer.OrdinalIgnoreCase)
-            .Select(value => new WorkflowDesignerGlobalValue
-            {
-                Kind = value.Kind.ToString(),
-                Name = value.Name,
-                TypeName = value.TypeName,
-                Description = Localize(value.Description),
-                LiquidPath = value.LiquidPath,
-                JavaScript = value.JavaScript,
-                Members = (value.Members ?? [])
-                    .Select(member => new WorkflowDesignerProvidedValue
-                    {
-                        Name = member.Name,
-                        TypeName = member.TypeName,
-                        Description = Localize(member.Description),
-                    })
-                    .ToList(),
-            })
-            .ToList();
-
-    // The translation of a value's description, or null when it has none.
-    private string Localize(LocalizationSource source)
-        => string.IsNullOrEmpty(source?.Value) ? null : _localizerFactory.Localize(source).Value;
-
-    private List<WorkflowDesignerVariableType> VariableTypes()
-        => _variableTypes.List()
-            .Select(type => new WorkflowDesignerVariableType
-            {
-                Name = type.Name,
-                DisplayName = type.DisplayName is null ? type.Name : _localizerFactory.Localize(type.DisplayName).Value,
-                Editor = type.Editor,
-            })
-            .ToList();
 
     // The stored values of the declared variables. Values live in the workflow properties, which the state stores
     // as JSON.
@@ -1204,6 +1126,17 @@ public sealed class WorkflowDesignerController : Controller
     private Task<bool> CanManageAsync()
         => _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows);
 
+    // An instance of the workflow type, or a null workflow when the type doesn't have one with this id.
+    private async Task<(WorkflowType WorkflowType, Workflow Workflow)> GetInstanceAsync(long workflowTypeId, long instanceId)
+    {
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+        var workflow = workflowType is null ? null : await _workflowStore.GetAsync(instanceId);
+
+        return workflow is null || workflow.WorkflowTypeId != workflowType.WorkflowTypeId
+            ? (workflowType, null)
+            : (workflowType, workflow);
+    }
+
     private async Task<(WorkflowType WorkflowType, ActivityContext ActivityContext)> GetActivityAsync(long workflowTypeId, string activityId)
     {
         var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -1237,52 +1170,28 @@ public sealed class WorkflowDesignerController : Controller
         return result;
     }
 
-    private ObjectResult ProblemResult(int status, string title)
-    {
-        var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext, status, title);
-
-        return new ObjectResult(problem)
-        {
-            StatusCode = status,
-            ContentTypes = { "application/problem+json" },
-        };
-    }
-
     private ObjectResult FailureResult(WorkflowTypeDraftResult result)
     {
         switch (result.Status)
         {
             case WorkflowTypeDraftStatus.Conflict:
-                var conflict = ProblemDetailsFactory.CreateProblemDetails(
-                    HttpContext,
-                    StatusCodes.Status409Conflict,
-                    S["The workflow was changed in the meantime."],
-                    detail: S["Reload the workflow to get the latest changes, or overwrite them with yours."]);
-
-                conflict.Extensions["currentRevision"] = result.Revision;
-                conflict.Extensions["modifiedBy"] = result.ModifiedByUserName;
-                conflict.Extensions["modifiedUtc"] = result.ModifiedUtc;
-
-                return new ObjectResult(conflict)
-                {
-                    StatusCode = StatusCodes.Status409Conflict,
-                    ContentTypes = { "application/problem+json" },
-                };
+                return Problem(
+                    title: S["The workflow was changed in the meantime."],
+                    detail: S["Reload the workflow to get the latest changes, or overwrite them with yours."],
+                    statusCode: StatusCodes.Status409Conflict,
+                    extensions: new Dictionary<string, object>
+                    {
+                        ["currentRevision"] = result.Revision,
+                        ["modifiedBy"] = result.ModifiedByUserName,
+                        ["modifiedUtc"] = result.ModifiedUtc,
+                    });
 
             case WorkflowTypeDraftStatus.Invalid when result.Issues.Count > 0:
-                var invalid = ProblemDetailsFactory.CreateProblemDetails(
-                    HttpContext,
-                    StatusCodes.Status400BadRequest,
-                    S["The workflow can't be published."],
-                    detail: S["Fix the errors listed in the issues first."]);
-
-                invalid.Extensions["issues"] = result.Issues;
-
-                return new ObjectResult(invalid)
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ContentTypes = { "application/problem+json" },
-                };
+                return Problem(
+                    title: S["The workflow can't be published."],
+                    detail: S["Fix the errors listed in the issues first."],
+                    statusCode: StatusCodes.Status400BadRequest,
+                    extensions: new Dictionary<string, object> { ["issues"] = result.Issues });
 
             case WorkflowTypeDraftStatus.NotFound:
                 return this.ApiNotFoundProblem();

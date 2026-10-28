@@ -29,6 +29,8 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly WorkflowOptions _workflowOptions;
     private readonly IEnumerable<IActivityPresetProvider> _presetProviders;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowVariableTypeProvider _variableTypes;
+    private readonly IEnumerable<IWorkflowGlobalValueProvider> _globalValueProviders;
     private readonly IStringLocalizerFactory _localizerFactory;
 
     internal readonly IStringLocalizer S;
@@ -43,6 +45,8 @@ public sealed class WorkflowDesignerModelBuilder
         IOptions<WorkflowOptions> workflowOptions,
         IEnumerable<IActivityPresetProvider> presetProviders,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowVariableTypeProvider variableTypes,
+        IEnumerable<IWorkflowGlobalValueProvider> globalValueProviders,
         IStringLocalizerFactory localizerFactory,
         IStringLocalizer<WorkflowDesignerModelBuilder> stringLocalizer)
     {
@@ -55,6 +59,8 @@ public sealed class WorkflowDesignerModelBuilder
         _workflowOptions = workflowOptions.Value;
         _presetProviders = presetProviders;
         _workflowTypeStore = workflowTypeStore;
+        _variableTypes = variableTypes;
+        _globalValueProviders = globalValueProviders;
         _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
@@ -106,9 +112,12 @@ public sealed class WorkflowDesignerModelBuilder
         using var workflowContext = await CreateWorkflowContextAsync(workflowType);
         var nodes = new List<WorkflowDesignerNode>(workflowType.Activities.Count);
 
+        // Several tasks can run the same workflow.
+        var workflowTypeNames = new Dictionary<string, string>();
+
         foreach (var record in workflowType.Activities)
         {
-            nodes.Add(await BuildNodeAsync(workflowContext, workflowContext.GetActivity(record.ActivityId)));
+            nodes.Add(await BuildNodeAsync(workflowContext, workflowContext.GetActivity(record.ActivityId), workflowTypeNames));
         }
 
         return nodes;
@@ -124,7 +133,7 @@ public sealed class WorkflowDesignerModelBuilder
 
         using var workflowContext = await CreateWorkflowContextAsync(workflowType);
 
-        return await BuildNodeAsync(workflowContext, workflowContext.GetActivity(activityId));
+        return await BuildNodeAsync(workflowContext, workflowContext.GetActivity(activityId), []);
     }
 
     /// <summary>
@@ -171,6 +180,39 @@ public sealed class WorkflowDesignerModelBuilder
 
         return new WorkflowDesignerLibrary { Categories = categories };
     }
+
+    /// <summary>
+    /// Builds the global values expressions can use, by kind then by name.
+    /// </summary>
+    public List<WorkflowDesignerGlobalValue> BuildGlobalValues()
+        => _globalValueProviders
+            .SelectMany(provider => provider.GetGlobalValues())
+            .OrderBy(value => value.Kind)
+            .ThenBy(value => value.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(value => new WorkflowDesignerGlobalValue
+            {
+                Kind = value.Kind.ToString(),
+                Name = value.Name,
+                TypeName = value.TypeName,
+                Description = Localize(value.Description),
+                LiquidPath = value.LiquidPath,
+                JavaScript = value.JavaScript,
+                Members = BuildMembers(value.Members),
+            })
+            .ToList();
+
+    /// <summary>
+    /// Builds the types variables can be declared with.
+    /// </summary>
+    public List<WorkflowDesignerVariableType> BuildVariableTypes()
+        => _variableTypes.List()
+            .Select(type => new WorkflowDesignerVariableType
+            {
+                Name = type.Name,
+                DisplayName = type.DisplayName is null ? type.Name : _localizerFactory.Localize(type.DisplayName).Value,
+                Editor = type.Editor,
+            })
+            .ToList();
 
     // The presets are listed after the activities of their category, or in a category of their own.
     private async Task AddPresetsAsync(List<WorkflowDesignerCategory> categories, List<IActivity> activities)
@@ -231,13 +273,13 @@ public sealed class WorkflowDesignerModelBuilder
         return await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
     }
 
-    private async Task<WorkflowDesignerNode> BuildNodeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    private async Task<WorkflowDesignerNode> BuildNodeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, Dictionary<string, string> workflowTypeNames)
     {
         var record = activityContext.ActivityRecord;
         var activity = activityContext.Activity;
         var outcomes = await GetOutcomesAsync(workflowContext, activityContext, S["Failed"]);
         var shape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, "Design");
-        var displayText = await GetDisplayTextAsync(activity);
+        var displayText = await GetDisplayTextAsync(activity, workflowTypeNames);
         var title = activity.TryGet<ActivityMetadata>(out var metadata) && !string.IsNullOrWhiteSpace(metadata.Title)
             ? metadata.Title
             : displayText;
@@ -284,34 +326,41 @@ public sealed class WorkflowDesignerModelBuilder
                     Name = value.Name,
                     TypeName = value.TypeName,
                     Description = Localize(value.Description),
-                    Members = (value.Members ?? [])
-                        .Select(member => new WorkflowDesignerProvidedValue
-                        {
-                            Name = member.Name,
-                            TypeName = member.TypeName,
-                            Description = Localize(member.Description),
-                        })
-                        .ToList(),
+                    Members = BuildMembers(value.Members),
                     AvailableToItself = value.AvailableToItself,
                 })
                 .ToList(),
         };
     }
 
+    private List<WorkflowDesignerProvidedValue> BuildMembers(IEnumerable<ActivityProvidedValueMember> members)
+        => (members ?? [])
+            .Select(member => new WorkflowDesignerProvidedValue
+            {
+                Name = member.Name,
+                TypeName = member.TypeName,
+                Description = Localize(member.Description),
+            })
+            .ToList();
+
     // The translation of a value's description or name, or null when it has none.
     private string Localize(LocalizationSource source)
         => string.IsNullOrEmpty(source?.Value) ? null : _localizerFactory.Localize(source).Value;
 
     // A task that runs a workflow usable as an activity is shown as that workflow, as the activities pane lists it.
-    private async Task<string> GetDisplayTextAsync(IActivity activity)
+    private async Task<string> GetDisplayTextAsync(IActivity activity, Dictionary<string, string> workflowTypeNames)
     {
         if (activity is ExecuteWorkflowTask executeWorkflow && !string.IsNullOrEmpty(executeWorkflow.WorkflowTypeId))
         {
-            var workflowType = await _workflowTypeStore.GetAsync(executeWorkflow.WorkflowTypeId);
-
-            if (!string.IsNullOrWhiteSpace(workflowType?.Name))
+            if (!workflowTypeNames.TryGetValue(executeWorkflow.WorkflowTypeId, out var name))
             {
-                return workflowType.Name;
+                name = (await _workflowTypeStore.GetAsync(executeWorkflow.WorkflowTypeId))?.Name;
+                workflowTypeNames[executeWorkflow.WorkflowTypeId] = name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                return name;
             }
         }
 

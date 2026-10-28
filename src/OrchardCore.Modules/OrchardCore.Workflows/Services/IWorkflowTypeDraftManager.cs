@@ -21,12 +21,6 @@ public interface IWorkflowTypeDraftManager
     Task<WorkflowTypeDraft> GetAsync(string workflowTypeId);
 
     /// <summary>
-    /// Returns the draft of a workflow type, creating it as a deep copy of the live type when it has none.
-    /// </summary>
-    /// <param name="workflowType">The live workflow type.</param>
-    Task<WorkflowTypeDraft> GetOrCreateAsync(WorkflowType workflowType);
-
-    /// <summary>
     /// Saves positions, start flags, transitions, removed and restored activities into the draft. Removed
     /// activities are kept aside so they can be restored with their properties. Transitions whose source or
     /// destination activity doesn't exist are dropped.
@@ -108,13 +102,7 @@ public interface IWorkflowTypeDraftManager
     Task DiscardAsync(string workflowTypeId);
 
     /// <summary>
-    /// Returns the validation issues of a draft.
-    /// </summary>
-    /// <param name="draft">The draft to validate.</param>
-    Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowTypeDraft draft);
-
-    /// <summary>
-    /// Returns the validation issues of a live workflow type.
+    /// Returns the validation issues of a workflow type, which can be a transient type built from a draft.
     /// </summary>
     /// <param name="workflowType">The workflow type to validate.</param>
     Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowType workflowType);

@@ -43,7 +43,6 @@ public sealed class WorkflowController : Controller
     private readonly ISession _session;
     private readonly IWorkflowManager _workflowManager;
     private readonly IWorkflowTypeStore _workflowTypeStore;
-    private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -61,7 +60,6 @@ public sealed class WorkflowController : Controller
         ISession session,
         IWorkflowManager workflowManager,
         IWorkflowTypeStore workflowTypeStore,
-        IWorkflowTypeVersionStore workflowTypeVersionStore,
         IWorkflowStore workflowStore,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
@@ -77,7 +75,6 @@ public sealed class WorkflowController : Controller
         _session = session;
         _workflowManager = workflowManager;
         _workflowTypeStore = workflowTypeStore;
-        _workflowTypeVersionStore = workflowTypeVersionStore;
         _workflowStore = workflowStore;
         _authorizationService = authorizationService;
         _notifier = notifier;
@@ -242,11 +239,17 @@ public sealed class WorkflowController : Controller
             ? new Dictionary<string, WorkflowType> { [workflowType.WorkflowTypeId] = workflowType }
             : (await _workflowTypeStore.ListAsync()).ToDictionary(type => type.WorkflowTypeId);
 
+        var versionIds = workflows
+            .Select(workflow => workflow.WorkflowTypeVersionId)
+            .Where(versionId => versionId is not null)
+            .Distinct()
+            .ToArray();
+
         var versionNumbers = new Dictionary<string, int>();
 
-        foreach (var typeId in workflows.Select(workflow => workflow.WorkflowTypeId).Distinct())
+        if (versionIds.Length > 0)
         {
-            foreach (var version in await _workflowTypeVersionStore.ListAsync(typeId))
+            foreach (var version in await _session.QueryIndex<WorkflowTypeVersionIndex>(index => index.VersionId.IsIn(versionIds)).ListAsync())
             {
                 versionNumbers[version.VersionId] = version.Version;
             }
@@ -526,9 +529,7 @@ public sealed class WorkflowController : Controller
 
                 foreach (var workflow in workflows.Where(workflow => workflow.Status == WorkflowStatus.Faulted))
                 {
-                    // The activity the instance faulted at: the one its retry policy retries, or the journal's.
-                    var activityId = workflow.PendingRetry?.ActivityId
-                        ?? (await _journal.ListAsync(workflow.WorkflowId)).LastOrDefault(record => record.Status == WorkflowExecutionRecordStatus.Faulted)?.ActivityId;
+                    var activityId = await _journal.GetFaultedActivityIdAsync(workflow);
 
                     try
                     {

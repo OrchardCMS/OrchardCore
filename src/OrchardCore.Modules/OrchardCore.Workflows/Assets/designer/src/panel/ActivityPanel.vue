@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from "vue";
 import type { DesignerApi } from "../api/designerApi";
-import { DesignerApiError } from "../api/designerApi";
+import type { DesignerApiError } from "../api/designerApi";
 import type { EditorApplied, RetryResult } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { clearSelection, showActivity } from "../canvas/useConnect";
@@ -16,6 +16,7 @@ import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
 import { showToast } from "@bloom/designer/ui/toasts";
 import { confirmAction } from "@bloom/designer/ui/confirm";
 import { readPreference, writePreference } from "../ui/preferences";
+import { reportPanelError, settleForm, tabIndexForKey } from "./panelForms";
 import { t } from "../i18n";
 
 // The tabs of the selected activity: its settings, the variables that store its outputs, and the data its
@@ -184,26 +185,7 @@ const isBlocking = computed(() => !!editingNode.value && !!state.instance?.block
  * Applies the pending changes of the activity's settings. When they are invalid, asks whether to discard them;
  * resolves to false when the user wants to keep editing.
  */
-const settle = async () => {
-    const host = activityHost.value;
-
-    if (!host || (await host.apply()) || !host.isInvalid()) {
-        return true;
-    }
-
-    const discard = await confirmAction({
-        title: t("DiscardChangesTitle"),
-        message: t("DiscardChangesMessage"),
-        okText: t("Discard"),
-        cancelText: t("KeepEditing"),
-    });
-
-    if (discard) {
-        host.discard();
-    }
-
-    return discard;
-};
+const settle = () => settleForm(activityHost.value);
 
 watch(selectedId, async (next) => {
     if (next === editingId.value) {
@@ -307,35 +289,18 @@ const onKeyDown = (event: KeyboardEvent) => {
 // The tabs follow the ARIA tabs pattern: one tab stop, arrow keys (mirrored in RTL), Home and End.
 const onTabKeyDown = async (event: KeyboardEvent) => {
     const items = tabs.value;
-    const index = items.indexOf(tab.value);
-    const rtl = !!tabList.value && getComputedStyle(tabList.value).direction === "rtl";
-    let next: number;
+    const next = tabIndexForKey(event, items.indexOf(tab.value), items.length, tabList.value);
 
-    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-        next = index + ((event.key === "ArrowRight") !== rtl ? 1 : -1);
-    } else if (event.key === "Home") {
-        next = 0;
-    } else if (event.key === "End") {
-        next = items.length - 1;
-    } else {
+    if (next === null) {
         return;
     }
 
-    event.preventDefault();
-    tab.value = items[(next + items.length) % items.length];
+    tab.value = items[next];
     await nextTick();
     tabList.value?.querySelector<HTMLElement>(`[data-cy=activity-tab-${tab.value}]`)?.focus();
 };
 
-const onError = (error: unknown) => {
-    if (error instanceof DesignerApiError && error.isConflict) {
-        emit("conflict", error);
-
-        return;
-    }
-
-    showToast({ message: t("ApplyFailed"), variant: "danger" });
-};
+const onError = (error: unknown) => reportPanelError(error, (conflict) => emit("conflict", conflict));
 
 const loadActivity = () => props.api.getEditor(editingId.value!);
 

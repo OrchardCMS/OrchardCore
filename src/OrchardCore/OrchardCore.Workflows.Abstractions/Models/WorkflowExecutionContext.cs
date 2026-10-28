@@ -86,17 +86,16 @@ public sealed class WorkflowExecutionContext : IDisposable
         }
 
         // The result is formatted now, as an object it refers to can change later in the run.
-        var text = expression.Length > WorkflowExecutionData.MaxValueLength ? expression[..WorkflowExecutionData.MaxValueLength] + "…" : expression;
-        _dataTruncated |= text.Length != expression.Length;
+        var text = WorkflowExecutionData.Truncate(expression, out var expressionTruncated);
 
         _evaluations.Add(new WorkflowExpressionEvaluation
         {
             Syntax = syntax,
             Expression = text,
-            Result = WorkflowExecutionData.FormatValue(result, out var truncated),
+            Result = WorkflowExecutionData.FormatValue(result, out var resultTruncated),
         });
 
-        _dataTruncated |= truncated;
+        _dataTruncated |= expressionTruncated || resultTruncated;
     }
 
     /// <summary>

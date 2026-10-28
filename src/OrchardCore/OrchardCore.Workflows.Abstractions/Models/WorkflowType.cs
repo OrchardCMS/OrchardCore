@@ -5,7 +5,7 @@ namespace OrchardCore.Workflows.Models;
 /// <summary>
 /// Represents a workflow type.
 /// </summary>
-public class WorkflowType : Entity
+public class WorkflowType : Entity, IWorkflowTypeExecutionSettings
 {
     public long Id { get; set; }
 

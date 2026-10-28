@@ -4,7 +4,7 @@ namespace OrchardCore.Workflows.Models;
 /// A server-side working copy of a <see cref="WorkflowType"/> that the designer saves into. A draft never
 /// executes; publishing it applies its content to the live workflow type.
 /// </summary>
-public sealed class WorkflowTypeDraft
+public sealed class WorkflowTypeDraft : IWorkflowTypeExecutionSettings
 {
     /// <summary>
     /// The document identifier.

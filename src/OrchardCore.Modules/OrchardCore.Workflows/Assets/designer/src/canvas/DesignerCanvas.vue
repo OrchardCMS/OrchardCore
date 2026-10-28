@@ -56,7 +56,6 @@ const { collapsed, hidden, hiddenCounts, countHiddenBy, collapse, expand, expand
 const highlighted = computed(() => new Set(props.highlightedIds));
 
 // The activities the instance shown by the viewer waits on.
-// TODO: Phase 5 records the executed activities; highlight the executed path here then.
 const blockingIds = computed(() => new Set(state.instance?.blockingActivityIds ?? []));
 
 // What the instance shown by the viewer ran, from its journal.

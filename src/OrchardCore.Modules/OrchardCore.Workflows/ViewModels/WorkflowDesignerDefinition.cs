@@ -20,27 +20,27 @@ public sealed class WorkflowDesignerDefinition
     /// <summary>
     /// The draft revision, or 0 when there is no draft.
     /// </summary>
-    public int Revision { get; init; }
+    public int Revision { get; set; }
 
     /// <summary>
     /// Whether the graph comes from a draft.
     /// </summary>
-    public bool HasDraft { get; init; }
+    public bool HasDraft { get; set; }
 
     /// <summary>
     /// The name of the user who last changed the draft.
     /// </summary>
-    public string DraftModifiedBy { get; init; }
+    public string DraftModifiedBy { get; set; }
 
     /// <summary>
     /// The identifier of the user who last changed the draft.
     /// </summary>
-    public string DraftModifiedByUserId { get; init; }
+    public string DraftModifiedByUserId { get; set; }
 
     /// <summary>
     /// When the draft was last changed.
     /// </summary>
-    public DateTime? DraftModifiedUtc { get; init; }
+    public DateTime? DraftModifiedUtc { get; set; }
 
     /// <summary>
     /// The workflow type properties.
@@ -60,17 +60,17 @@ public sealed class WorkflowDesignerDefinition
     /// <summary>
     /// The validation issues.
     /// </summary>
-    public IReadOnlyList<WorkflowDesignIssue> Issues { get; init; } = [];
+    public IReadOnlyList<WorkflowDesignIssue> Issues { get; set; } = [];
 
     /// <summary>
     /// The number of instances of this type that haven't completed.
     /// </summary>
-    public int RunningInstanceCount { get; init; }
+    public int RunningInstanceCount { get; set; }
 
     /// <summary>
     /// The instance shown by the read-only instance viewer, or <see langword="null"/> in the designer.
     /// </summary>
-    public WorkflowDesignerInstance Instance { get; init; }
+    public WorkflowDesignerInstance Instance { get; set; }
 
     /// <summary>
     /// The variables the definition declares.
@@ -95,13 +95,13 @@ public sealed class WorkflowDesignerDefinition
     /// <summary>
     /// How the designer runs the published version, in the designer.
     /// </summary>
-    public WorkflowDesignerRun Run { get; init; }
+    public WorkflowDesignerRun Run { get; set; }
 
     /// <summary>
     /// The version shown: the one a read-only version page shows, or the one the instance of the instance
     /// viewer runs on. <see langword="null"/> in the designer, and for instances created before versions existed.
     /// </summary>
-    public WorkflowDesignerVersion Version { get; init; }
+    public WorkflowDesignerVersion Version { get; set; }
 }
 
 /// <summary>

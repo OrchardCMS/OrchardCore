@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, useId } from "vue";
 import type { DesignerApi } from "../api/designerApi";
-import { DesignerApiError } from "../api/designerApi";
+import type { DesignerApiError } from "../api/designerApi";
 import type { DesignIssue, SettingsApplied } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { showActivity } from "../canvas/useConnect";
@@ -12,10 +12,9 @@ import VariablesTab from "./VariablesTab.vue";
 import JournalTab from "./JournalTab.vue";
 import type { FormApplyResult } from "@bloom/designer/panel/formApply";
 import type { RevisionTask } from "@bloom/designer/core/revisionQueue";
-import { showToast } from "@bloom/designer/ui/toasts";
-import { confirmAction } from "@bloom/designer/ui/confirm";
 import { usePeek } from "@bloom/designer/ui/usePeek";
 import { readPreference, writePreference } from "../ui/preferences";
+import { reportPanelError, settleForm, tabIndexForKey } from "./panelForms";
 import { t } from "../i18n";
 
 // What concerns the whole workflow; the selected activity has its own panel, below the canvas.
@@ -114,26 +113,7 @@ const setCollapsed = (value: boolean) => {
  * Applies the pending changes of the workflow's settings. When they are invalid, asks whether to discard them;
  * resolves to false when the user wants to keep editing.
  */
-const settle = async () => {
-    const host = tab.value === "workflow" ? settingsHost.value : null;
-
-    if (!host || (await host.apply()) || !host.isInvalid()) {
-        return true;
-    }
-
-    const discard = await confirmAction({
-        title: t("DiscardChangesTitle"),
-        message: t("DiscardChangesMessage"),
-        okText: t("Discard"),
-        cancelText: t("KeepEditing"),
-    });
-
-    if (discard) {
-        host.discard();
-    }
-
-    return discard;
-};
+const settle = () => settleForm(tab.value === "workflow" ? settingsHost.value : null);
 
 const selectTab = async (next: Tab) => {
     if (next !== tab.value && (await settle())) {
@@ -184,36 +164,18 @@ const onBodyKeyDown = (event: KeyboardEvent) => {
 
 // The tabs follow the ARIA tabs pattern: one tab stop, arrow keys (mirrored in RTL), Home and End.
 const onTabKeyDown = async (event: KeyboardEvent) => {
-    const index = tabs.value.indexOf(tab.value);
-    const rtl = !!tabList.value && getComputedStyle(tabList.value).direction === "rtl";
-    let next: number;
+    const next = tabIndexForKey(event, tabs.value.indexOf(tab.value), tabs.value.length, tabList.value);
 
-    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-        next = index + ((event.key === "ArrowRight") !== rtl ? 1 : -1);
-    } else if (event.key === "Home") {
-        next = 0;
-    } else if (event.key === "End") {
-        next = tabs.value.length - 1;
-    } else {
+    if (next === null) {
         return;
     }
 
-    event.preventDefault();
-    next = (next + tabs.value.length) % tabs.value.length;
     await selectTab(tabs.value[next]);
     await nextTick();
     tabList.value?.querySelector<HTMLElement>(`[data-cy=panel-tab-${tab.value}]`)?.focus();
 };
 
-const onError = (error: unknown) => {
-    if (error instanceof DesignerApiError && error.isConflict) {
-        emit("conflict", error);
-
-        return;
-    }
-
-    showToast({ message: t("ApplyFailed"), variant: "danger" });
-};
+const onError = (error: unknown) => reportPanelError(error, (conflict) => emit("conflict", conflict));
 
 const loadSettings = () => props.api.getSettings();
 

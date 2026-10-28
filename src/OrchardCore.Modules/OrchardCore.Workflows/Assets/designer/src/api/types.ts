@@ -2,13 +2,12 @@
 // OrchardCore.Workflows/ViewModels/WorkflowDesigner*.cs and Models/WorkflowDesignIssue.cs.
 
 import type { ProblemDetails as DraftProblemDetails } from "@bloom/designer/core/api";
+import type { DesignIssue as BloomDesignIssue } from "@bloom/designer/core/types";
 
-export type IssueSeverity = "Error" | "Warning";
+export type { IssueSeverity } from "@bloom/designer/core/types";
 
-export interface DesignIssue {
-    severity: IssueSeverity;
+export interface DesignIssue extends BloomDesignIssue {
     code: string;
-    message: string;
     activityId?: string | null;
     transitionKey?: string | null;
 }

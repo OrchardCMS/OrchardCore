@@ -339,18 +339,7 @@ public class WorkflowManager : IWorkflowManager
 
         // Resume the workflow at the specified blocking activity.
         await ExecuteWorkflowAsync(workflowContext, activityRecord);
-
-        if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
-        {
-            await _workflowStore.DeleteAsync(workflowContext.Workflow);
-            await NotifyInstanceChangedAsync(workflowContext, isDeleted: true);
-        }
-        else
-        {
-            await PersistAsync(workflowContext);
-        }
-
-        await ResumeParentAsync(workflowContext);
+        await CompleteRunAsync(workflowContext, workflowType);
 
         return workflowContext;
     }
@@ -414,10 +403,18 @@ public class WorkflowManager : IWorkflowManager
         }
 
         await ExecuteWorkflowAsync(workflowContext, activity);
+        await CompleteRunAsync(workflowContext, workflowType);
 
+        return workflowContext;
+    }
+
+    // Once a resumed or retried instance ran: deletes it when it finished and its type deletes finished instances,
+    // otherwise saves it, then resumes the instance that runs it as an activity, if any.
+    private async Task CompleteRunAsync(WorkflowExecutionContext workflowContext, WorkflowType workflowType)
+    {
         if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
         {
-            await _workflowStore.DeleteAsync(workflow);
+            await _workflowStore.DeleteAsync(workflowContext.Workflow);
             await NotifyInstanceChangedAsync(workflowContext, isDeleted: true);
         }
         else
@@ -426,8 +423,6 @@ public class WorkflowManager : IWorkflowManager
         }
 
         await ResumeParentAsync(workflowContext);
-
-        return workflowContext;
     }
 
     public async Task<WorkflowExecutionContext> RestartWorkflowAsync(WorkflowType workflowType, IDictionary<string, object> input = null, string correlationId = null)
@@ -612,6 +607,10 @@ public class WorkflowManager : IWorkflowManager
                 // What the activity evaluates, sets and changes, when the workflow records it.
                 var dataRecorder = ActivityDataRecorder.Start(workflowContext, activityContext);
 
+                // Records the execution in the journal, as it completes now.
+                void Record(WorkflowExecutionRecordStatus status, IEnumerable<string> recordedOutcomes, string error)
+                    => workflowContext.RecordExecution(activityContext, status, recordedOutcomes, startedUtc, _clock.UtcNow, resumed, error, dataRecorder?.Collect());
+
                 try
                 {
                     ActivityExecutionResult result;
@@ -654,7 +653,7 @@ public class WorkflowManager : IWorkflowManager
 
                             // Block on this activity.
                             blocking.Add(activity);
-                            workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Halted, [], startedUtc, _clock.UtcNow, resumed, haltedScriptError, dataRecorder?.Collect());
+                            Record(WorkflowExecutionRecordStatus.Halted, [], haltedScriptError);
                             ClearPendingRetry(workflowContext, activity);
 
                             continue;
@@ -680,15 +679,10 @@ public class WorkflowManager : IWorkflowManager
                         ApplyOutputBindings(workflowContext, activityContext);
                     }
 
-                    workflowContext.RecordExecution(
-                        activityContext,
+                    Record(
                         result.IsHalted ? WorkflowExecutionRecordStatus.Halted : WorkflowExecutionRecordStatus.Completed,
                         result.IsHalted ? [] : outcomes,
-                        startedUtc,
-                        _clock.UtcNow,
-                        resumed,
-                        scriptError,
-                        dataRecorder?.Collect());
+                        scriptError);
 
                     ClearPendingRetry(workflowContext, activity);
                 }
@@ -704,7 +698,7 @@ public class WorkflowManager : IWorkflowManager
                         // faulted with a retry due.
                         var delay = retryPolicy.GetDelay(failedAttempts);
 
-                        workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Retrying, [], startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
+                        Record(WorkflowExecutionRecordStatus.Retrying, [], ex.Message);
                         workflowContext.Workflow.PendingRetry = new WorkflowPendingRetry
                         {
                             ActivityId = activity.ActivityId,
@@ -736,7 +730,7 @@ public class WorkflowManager : IWorkflowManager
 
                     if (retryPolicy?.FollowsFailedOutcome != true)
                     {
-                        workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Faulted, [], startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
+                        Record(WorkflowExecutionRecordStatus.Faulted, [], ex.Message);
 
                         _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
                         workflowContext.Fault(ex, activityContext);
@@ -752,7 +746,7 @@ public class WorkflowManager : IWorkflowManager
                     // The attempts are spent: the task produces its failed outcome, with the error as its result.
                     outcomes = [ActivityRetryPolicy.FailedOutcome];
                     workflowContext.LastResult = ex.Message;
-                    workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Failed, outcomes, startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
+                    Record(WorkflowExecutionRecordStatus.Failed, outcomes, ex.Message);
 
                     _logger.LogWarning(ex, "The activity '{ActivityId}' of the workflow '{WorkflowId}' failed, and follows its '{Outcome}' outcome.", activity.ActivityId, workflowContext.WorkflowId, ActivityRetryPolicy.FailedOutcome);
                 }

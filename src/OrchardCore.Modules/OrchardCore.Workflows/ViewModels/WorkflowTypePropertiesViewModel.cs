@@ -3,7 +3,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels;
 
-public class WorkflowTypePropertiesViewModel
+public class WorkflowTypePropertiesViewModel : IWorkflowTypeExecutionSettings
 {
     public long Id { get; set; }
 

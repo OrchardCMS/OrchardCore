@@ -58,62 +58,6 @@ export const portAnchor = (node: Point, layout: NodeLayout | undefined, outcome:
     return { x: rect.x + rect.width, y: rect.y + (rect.height * (index + 1)) / (count + 1) };
 };
 
-/**
- * The side of `rect` facing `from`, and the middle point of that side, where an incoming edge ends.
- */
-export const closestSide = (rect: Rect, from: Point): { side: Side; point: Point } => {
-    const centerX = rect.x + rect.width / 2;
-    const centerY = rect.y + rect.height / 2;
-    const dx = (from.x - centerX) / (rect.width / 2 || 1);
-    const dy = (from.y - centerY) / (rect.height / 2 || 1);
-
-    if (Math.abs(dx) >= Math.abs(dy)) {
-        return dx < 0
-            ? { side: "left", point: { x: rect.x, y: centerY } }
-            : { side: "right", point: { x: rect.x + rect.width, y: centerY } };
-    }
-
-    return dy < 0
-        ? { side: "top", point: { x: centerX, y: rect.y } }
-        : { side: "bottom", point: { x: centerX, y: rect.y + rect.height } };
-};
-
-export const sideDirection = (side: Side): Point => {
-    switch (side) {
-        case "left":
-            return { x: -1, y: 0 };
-        case "right":
-            return { x: 1, y: 0 };
-        case "top":
-            return { x: 0, y: -1 };
-        default:
-            return { x: 0, y: 1 };
-    }
-};
-
-/**
- * The two control points of a cubic Bézier leaving `start` along `startDirection` and entering `end`
- * against `endDirection`. The handle length grows with the distance, within limits.
- */
-export const bezierControlPoints = (start: Point, startDirection: Point, end: Point, endDirection: Point): [Point, Point] => {
-    const distance = Math.hypot(end.x - start.x, end.y - start.y);
-    const handle = Math.min(160, Math.max(40, distance / 2));
-
-    return [
-        { x: start.x + startDirection.x * handle, y: start.y + startDirection.y * handle },
-        { x: end.x + endDirection.x * handle, y: end.y + endDirection.y * handle },
-    ];
-};
-
-export const bezierPoint = (t: number, p0: Point, p1: Point, p2: Point, p3: Point): Point => {
-    const u = 1 - t;
-
-    return {
-        x: u * u * u * p0.x + 3 * u * u * t * p1.x + 3 * u * t * t * p2.x + t * t * t * p3.x,
-        y: u * u * u * p0.y + 3 * u * u * t * p1.y + 3 * u * t * t * p2.y + t * t * t * p3.y,
-    };
-};
-
 export interface EdgeGeometry {
     start: Point;
     end: Point;

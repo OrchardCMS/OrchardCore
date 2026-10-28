@@ -2,6 +2,8 @@
 // editor, an input or a text area. The editors' scripts aren't changed: Monaco lists its editors, and CodeMirror
 // hangs on its element. A "change" event then tells the form host that the form changed.
 
+import { dispatchFieldChange } from "@bloom/helpers/editorLifecycle";
+
 interface MonacoEditorLike {
     getContainerDomNode(): HTMLElement;
     getSelection(): unknown;
@@ -20,8 +22,6 @@ interface CodeMirrorLike {
 
 const TEXT_INPUT_TYPES = new Set(["", "text", "search", "url", "email", "tel"]);
 
-const notifyChange = (element: Element) => element.dispatchEvent(new Event("change", { bubbles: true }));
-
 const insertInMonaco = async (target: Element, text: string) => {
     const ready = window.__orchardCoreMonacoReady;
 
@@ -29,7 +29,7 @@ const insertInMonaco = async (target: Element, text: string) => {
         return false;
     }
 
-    const monaco = (await ready) as Partial<MonacoWithEditors>;
+    const monaco = (await ready) as unknown as Partial<MonacoWithEditors>;
     const editor = monaco.editor?.getEditors?.().find((candidate) => candidate.getContainerDomNode().contains(target));
 
     if (!editor) {
@@ -38,7 +38,7 @@ const insertInMonaco = async (target: Element, text: string) => {
 
     editor.executeEdits("workflow-designer", [{ range: editor.getSelection(), text, forceMoveMarkers: true }]);
     editor.focus();
-    notifyChange(editor.getContainerDomNode());
+    dispatchFieldChange(editor.getContainerDomNode());
 
     return true;
 };
@@ -78,7 +78,7 @@ export const insertAtCursor = async (target: Element | null | undefined, text: s
     if (codeMirror) {
         codeMirror.replaceSelection(text);
         codeMirror.focus();
-        notifyChange(target.closest(".CodeMirror")!);
+        dispatchFieldChange(target.closest<HTMLElement>(".CodeMirror")!);
 
         return true;
     }
@@ -98,7 +98,7 @@ export const insertAtCursor = async (target: Element | null | undefined, text: s
     field.setRangeText(text, start, end, "end");
     field.focus();
     field.dispatchEvent(new Event("input", { bubbles: true }));
-    notifyChange(field);
+    dispatchFieldChange(field);
 
     return true;
 };

@@ -1,3 +1,4 @@
+import waitForMonaco from "@bloom/helpers/monaco";
 import type { VariableDefinition, VariableType } from "../api/types";
 import type { AvailableValue } from "../available/availableData";
 import { typeDisplayName } from "./variableValues";
@@ -51,12 +52,6 @@ export interface CompletionSource {
     types: VariableType[];
     // The values the activities on a path to the edited activity provide.
     values?: (AvailableValue & { activityTitle?: string })[];
-}
-
-declare global {
-    interface Window {
-        __orchardCoreMonacoReady?: Promise<unknown>;
-    }
 }
 
 // The completion replaces what was typed of it: the identifier (JavaScript) or member chain (Liquid) before
@@ -176,25 +171,26 @@ export const startVariableCompletions = (getSource: () => CompletionSource, inte
     let stopped = false;
     let timer: ReturnType<typeof setInterval> | null = null;
 
-    const attach = (ready: Promise<unknown>) => {
-        void ready.then(
+    const attach = () => {
+        void waitForMonaco().then(
             (monaco) => {
                 if (!stopped) {
-                    registration = registerVariableCompletions(monaco as MonacoLike, getSource);
+                    registration = registerVariableCompletions(monaco as unknown as MonacoLike, getSource);
                 }
             },
             () => undefined,
         );
     };
 
+    // bloom's helper rejects while Monaco isn't on the page, so wait for it to announce itself.
     if (window.__orchardCoreMonacoReady) {
-        attach(window.__orchardCoreMonacoReady);
+        attach();
     } else {
         timer = setInterval(() => {
             if (window.__orchardCoreMonacoReady) {
                 clearInterval(timer!);
                 timer = null;
-                attach(window.__orchardCoreMonacoReady);
+                attach();
             }
         }, interval);
     }
