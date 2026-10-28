@@ -967,7 +967,8 @@ public sealed class WorkflowDesignerController : Controller
         sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeVersionId), configuration.Schema);
         sqlBuilder.AddSelector($", COUNT(*) AS {dialect.QuoteForColumnName(nameof(VersionInstanceCount.InstanceCount))}");
         sqlBuilder.Table(nameof(WorkflowIndex), alias: null, configuration.Schema);
-        sqlBuilder.WhereAnd($"{versionIdColumn} IN @VersionIds");
+        // The dialect writes the list parameter for its database, e.g. '= ANY(@VersionIds)' with PostgreSQL.
+        sqlBuilder.WhereAnd($"{versionIdColumn} {dialect.InOperator("@VersionIds")}");
         sqlBuilder.GroupBy(versionIdColumn);
 
         // Use the session's connection. Do not dispose it.
