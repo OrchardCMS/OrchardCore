@@ -1,3 +1,4 @@
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Workflows.Models;
@@ -66,5 +67,19 @@ public static class DistributedLockExtensions
         }
 
         return Task.FromResult<(ILocker, bool)>((null, true));
+    }
+
+    /// <summary>
+    /// Releases the lock once the changes of the current shell scope are committed, instead of when the caller is done
+    /// with it. A lock that guards a check of what is stored, such as a singleton instance, must be held until what it
+    /// guards is committed: otherwise a request that gets the lock next doesn't see it. If the scope ends without the
+    /// deferred task running, the lock expires.
+    /// </summary>
+    public static void ReleaseAfterCommit(this ILocker locker)
+    {
+        if (locker is not null)
+        {
+            ShellScope.AddDeferredTask(_ => locker.DisposeAsync().AsTask());
+        }
     }
 }

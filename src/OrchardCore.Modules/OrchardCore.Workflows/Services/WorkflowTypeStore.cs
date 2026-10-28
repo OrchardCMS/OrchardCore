@@ -14,6 +14,11 @@ public class WorkflowTypeStore : IWorkflowTypeStore
     private readonly IEnumerable<IWorkflowTypeEventHandler> _handlers;
     private readonly ILogger _logger;
 
+    // The designer asks for the same workflow types for every task that runs one, and a background task resumes many
+    // instances of the same types: they are loaded once per scope. A save or a delete clears them.
+    private readonly Dictionary<string, WorkflowType> _byWorkflowTypeId = new(StringComparer.Ordinal);
+    private IList<WorkflowType> _all;
+
     public WorkflowTypeStore(
         ISession session,
         IWorkflowTypeVersionStore versionStore,
@@ -38,14 +43,30 @@ public class WorkflowTypeStore : IWorkflowTypeStore
         return _session.GetAsync<WorkflowType>(ids.ToArray());
     }
 
-    public Task<WorkflowType> GetAsync(string workflowTypeId)
+    public async Task<WorkflowType> GetAsync(string workflowTypeId)
     {
-        return _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync();
+        if (string.IsNullOrEmpty(workflowTypeId))
+        {
+            return await _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync();
+        }
+
+        if (!_byWorkflowTypeId.TryGetValue(workflowTypeId, out var workflowType))
+        {
+            workflowType = _all?.FirstOrDefault(x => x.WorkflowTypeId == workflowTypeId)
+                ?? await _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync();
+
+            if (workflowType is not null)
+            {
+                _byWorkflowTypeId[workflowTypeId] = workflowType;
+            }
+        }
+
+        return workflowType;
     }
 
     public async Task<IEnumerable<WorkflowType>> ListAsync()
     {
-        return await _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
+        return _all ??= (await _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToList();
     }
 
     public async Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName)
@@ -60,6 +81,7 @@ public class WorkflowTypeStore : IWorkflowTypeStore
     public async Task SaveAsync(WorkflowType workflowType)
     {
         var isNew = workflowType.Id == 0;
+        Clear();
 
         // Every change to what runs creates a version, so the workflow type is always its latest version.
         await _versionStore.CreateIfChangedAsync(workflowType);
@@ -79,6 +101,8 @@ public class WorkflowTypeStore : IWorkflowTypeStore
 
     public async Task DeleteAsync(WorkflowType workflowType)
     {
+        Clear();
+
         // Delete workflows first.
         var workflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync();
 
@@ -94,5 +118,11 @@ public class WorkflowTypeStore : IWorkflowTypeStore
         _session.Delete(workflowType);
         var context = new WorkflowTypeDeletedContext(workflowType);
         await _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
+    }
+
+    private void Clear()
+    {
+        _byWorkflowTypeId.Clear();
+        _all = null;
     }
 }

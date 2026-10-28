@@ -152,7 +152,8 @@ public sealed class HttpWorkflowController : Controller
             (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
             if (locked)
             {
-                await using var acquiredLock = locker;
+                // Held until the instance is committed, so a concurrent request sees it when it checks for a singleton.
+                locker.ReleaseAfterCommit();
 
                 // Check if this is not a workflow singleton or there's not already an halted instance on any activity.
                 if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))

@@ -62,6 +62,15 @@ public class TimerEvent : EventActivity, IActivityProvidedValues, IActivityDescr
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
         => s_providedValues;
 
+    public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        // The timer starts when the workflow starts waiting on it, not when the background task first looks at it, so the
+        // first run of the task after the timer is due resumes the workflow, and a run before that has nothing to save.
+        StartedUtc ??= _clock.UtcNow;
+
+        return base.Execute(workflowContext, activityContext);
+    }
+
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         return StartedUtc == null || await IsExpiredAsync();

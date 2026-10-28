@@ -179,6 +179,48 @@ public sealed class Migrations : DataMigration
     }
 
     /// <summary>
+    /// The indexes of the tables YesSql joins to the documents begin with <c>DocumentId</c>, which the queries that
+    /// filter on a status, a workflow type, a version or a workflow don't use: they scanned the whole table. These
+    /// indexes begin with the filtered columns.
+    /// </summary>
+    public async Task<int> UpdateFrom8Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
+        {
+            table.DropIndex("IDX_WorkflowIndex_WorkflowTypeVersionId");
+            table.DropIndex("IDX_WorkflowIndex_RetryDueUtc");
+        });
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
+        {
+            table.CreateIndex("IDX_WorkflowIndex_Status", "WorkflowStatus", "CreatedUtc");
+            table.CreateIndex("IDX_WorkflowIndex_Type_Status", "WorkflowTypeId", "WorkflowStatus", "CreatedUtc");
+            table.CreateIndex("IDX_WorkflowIndex_Version", "WorkflowTypeVersionId");
+            table.CreateIndex("IDX_WorkflowIndex_RetryDue", nameof(WorkflowIndex.RetryDueUtc), "WorkflowStatus");
+        });
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table =>
+        {
+            table.CreateIndex("IDX_WFBlockingActivities_Type_Activity", "WorkflowTypeId", "ActivityId");
+            table.CreateIndex("IDX_WFBlockingActivities_Name_Correlation", "ActivityName", "WorkflowCorrelationId");
+        });
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeVersionIndex>(table =>
+        {
+            table.CreateIndex("IDX_WorkflowTypeVersionIndex_VersionId", "VersionId");
+            table.CreateIndex("IDX_WorkflowTypeVersionIndex_Type_Version", "WorkflowTypeId", "Version");
+        });
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowExecutionRecordIndex>(table => table
+            .CreateIndex("IDX_WorkflowExecutionRecordIndex_Workflow_Sequence",
+                nameof(WorkflowExecutionRecordIndex.WorkflowId),
+                nameof(WorkflowExecutionRecordIndex.Sequence)),
+            collection: WorkflowExecutionRecord.Collection);
+
+        return 9;
+    }
+
+    /// <summary>
     /// Creates the first version of the workflow types that have none, without raising the workflow type
     /// handlers. Returns the number of workflow types it versioned.
     /// </summary>
