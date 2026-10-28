@@ -2,6 +2,10 @@
 
 The templates module allows editors to create custom Liquid templates.
 
+## Assisted Templates
+
+The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists, the alternates of a shape, and **Inspect Content**. It is not enabled by default: enable it in **Configuration > Features**.
+
 ## Theme Templates
 
 The **Theme Templates** button of the **Design > Templates** page lists the templates of the site themes, and the same button of the **Design > Admin Templates** page those of the admin themes. A dropdown selects the theme whose templates are listed, the active theme by default; the templates of a theme include those of the themes it is based on. Each template is shown with the file it comes from, e.g. `TheBlogTheme` `Views/Content-BlogPost.liquid`, and the name of the template that overrides it, e.g. `Content__BlogPost`.

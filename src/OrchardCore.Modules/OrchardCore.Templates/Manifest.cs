@@ -22,3 +22,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = ["OrchardCore.Templates"],
     Category = "Development"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Templates.Assisted",
+    Name = "Assisted Templates",
+    Description = "Lists the templates of the themes and features to view and clone them, suggests alternates and inspects the shapes of content items, from the Templates and Admin Templates lists.",
+    Dependencies = ["OrchardCore.Templates"],
+    Category = "Development"
+)]

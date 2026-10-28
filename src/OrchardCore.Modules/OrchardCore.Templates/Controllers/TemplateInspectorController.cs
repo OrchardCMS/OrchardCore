@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
+using OrchardCore.Modules;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
@@ -17,6 +18,7 @@ namespace OrchardCore.Templates.Controllers;
 /// <summary>
 /// Inspects a content item: lists the shapes it renders, their alternates and the templates that render them.
 /// </summary>
+[Feature("OrchardCore.Templates.Assisted")]
 [Admin("TemplateInspector/{action}", "TemplateInspector.{action}")]
 public sealed class TemplateInspectorController : Controller
 {

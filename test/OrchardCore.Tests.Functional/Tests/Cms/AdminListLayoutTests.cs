@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 // Exercises view-defined lists, provider overrides, layout preferences and persisted contained-item ordering.
 public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixture>, IClassFixture<AdminListLayoutTestsFixture>
 {
-    // The lists of the features the Blog recipe enables.
+    // The lists of the features the Blog recipe enables, and of the Assisted Templates feature, enabled by the test.
     private static readonly string[] _lists =
     [
         "/Admin/Users/Index",
@@ -135,6 +135,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
         await page.LoginAsync();
         var consoleErrors = page.CollectConsoleErrors();
 
+        await page.EnableFeatureAsync(string.Empty, "OrchardCore.Templates.Assisted");
         await page.SetAdminListSettingsAsync("Grid", allowUserSelection: false);
 
         foreach (var url in _lists)

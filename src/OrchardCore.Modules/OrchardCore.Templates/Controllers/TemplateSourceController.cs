@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Modules;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -21,6 +22,7 @@ namespace OrchardCore.Templates.Controllers;
 /// Lists the templates of a template source, e.g. the active theme, to view them and to clone, reset or delete
 /// their local overrides.
 /// </summary>
+[Feature("OrchardCore.Templates.Assisted")]
 [Admin("TemplateSources/{source}/{action}", "TemplateSources.{action}")]
 public sealed class TemplateSourceController : Controller
 {

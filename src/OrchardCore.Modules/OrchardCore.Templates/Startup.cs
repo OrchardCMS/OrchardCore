@@ -43,6 +43,29 @@ public sealed class Startup : StartupBase
 
         services.AddDeployment<AllTemplatesDeploymentSource, AllTemplatesDeploymentStep, AllTemplatesDeploymentStepDriver>();
 
+        services.AddScoped<AdminTemplatesManager>();
+        services.AddPermissionProvider<AdminTemplatesPermissions>();
+    }
+}
+
+[Feature("OrchardCore.AdminTemplates")]
+public sealed class AdminTemplatesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IShapeBindingResolver, AdminTemplatesShapeBindingResolver>();
+        services.AddScoped<AdminPreviewTemplatesProvider>();
+        services.AddNavigationProvider<AdminTemplatesAdminMenu>();
+        services.AddRecipeExecutionStep<AdminTemplateStep>();
+        services.AddDeployment<AllAdminTemplatesDeploymentSource, AllAdminTemplatesDeploymentStep, AllAdminTemplatesDeploymentStepDriver>();
+    }
+}
+
+[Feature("OrchardCore.Templates.Assisted")]
+public sealed class AssistedTemplatesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
         // Lists the templates of the active theme, and of other sources, to view and override them.
         services.AddScoped<ShapeTemplateFiles>();
         services.AddScoped<SourceTemplatesService>();
@@ -59,22 +82,5 @@ public sealed class Startup : StartupBase
         services.AddScoped<TemplateInspectionService>();
         services.AddScoped<IContentDisplayDriver, TemplateInspectorContentDisplayDriver>();
         services.AddDisplayDriver<SourceTemplateEntry, SourceTemplateEntryDisplayDriver>();
-
-        services.AddScoped<AdminTemplatesManager>();
-        services.AddPermissionProvider<AdminTemplatesPermissions>();
-
-    }
-}
-
-[Feature("OrchardCore.AdminTemplates")]
-public sealed class AdminTemplatesStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddScoped<IShapeBindingResolver, AdminTemplatesShapeBindingResolver>();
-        services.AddScoped<AdminPreviewTemplatesProvider>();
-        services.AddNavigationProvider<AdminTemplatesAdminMenu>();
-        services.AddRecipeExecutionStep<AdminTemplateStep>();
-        services.AddDeployment<AllAdminTemplatesDeploymentSource, AllAdminTemplatesDeploymentStep, AllAdminTemplatesDeploymentStepDriver>();
     }
 }
