@@ -257,11 +257,14 @@ For detailed patterns including Content Parts, Content Part Drivers, Content Fie
 
 ### Extensibility Points: Options or Dependency Injection
 
-When adding a customizable service or an extensibility point (types, providers, strategies a module can plug in), choose how implementations are registered from their scope, lifetime and dependencies. Apply this to new features, refactorings and reviews.
+When adding a customizable service or an extensibility point (types, providers, strategies a module can plug in), choose how implementations are registered from their scope, lifetime and dependencies. Dependency injection is for services with a global scope, not for services local to a module or feature. Apply this to new features, refactorings and reviews.
 
-- **Options** when the extension belongs to one feature, or to one named instance of it, and isn't composed from other services: it has no dependencies of its own, keeps no state, and one instance can be shared (a singleton). Store the instances, or descriptors that create them, in the feature's options, e.g. `services.Configure<FeatureOptions>(o => o.Add<TType>())` behind an `AddFeatureType<TType>()` extension, and read them through `IOptions<FeatureOptions>`. Options also let different instances of the same feature use different implementations, and suit simple implementations supplied directly by the consumer. ASP.NET Core does the same with `CookieAuthenticationOptions.SessionStore`.
-- **Dependency injection** when the extension is an application-wide service used across modules (its interface then belongs in an abstractions project), needs an explicit lifetime (singleton, scoped or transient), or has dependencies of its own that DI must resolve.
-- Options are as customizable as DI, but don't add services to the container, nor resolve them from the scope every time they are used. Don't register a type in DI only to list or create it.
+- **Options** by default for a service local to a module or feature, or to one named instance of it. A service whose interface isn't defined in an abstractions project is likely local to its module. Store the instances in the feature's options, e.g. `services.Configure<FeatureOptions>(o => o.Add<TType>())` behind an `AddFeatureType<TType>()` extension, and read them through `IOptions<FeatureOptions>`, or `IOptionsMonitor<FeatureOptions>.Get(name)` for a named instance. Options also let different instances of the same feature use different implementations, and suit simple implementations supplied directly by the consumer. ASP.NET Core does the same with `CookieAuthenticationOptions.SessionStore`.
+- **Dependency injection** only when the service can't be in options:
+  - It has a global scope: it's used across modules, and its interface belongs in an abstractions project.
+  - It depends on other services through DI.
+  - It can't be a singleton, because it's scoped or transient, or keeps state.
+- Options don't add services to the container, nor resolve them from the scope every time they are used. Don't register a type in DI only to list or create it.
 - Document an options-based extension point as taking no dependencies and keeping no state, since one instance is shared.
 
 ### Async Conventions
@@ -442,7 +445,7 @@ services.AddSingleton<IYourSingleton, YourSingleton>();
 services.AddTransient<IYourTransient, YourTransient>();
 ```
 
-For an extension that belongs to one feature and has no dependencies, use the feature's options instead, see [Extensibility Points: Options or Dependency Injection](#extensibility-points-options-or-dependency-injection).
+Register a service in DI only when its scope is global. For a service local to a module or feature, without dependencies and that can be a singleton, use the feature's options instead, see [Extensibility Points: Options or Dependency Injection](#extensibility-points-options-or-dependency-injection).
 
 ### Event Handlers
 
