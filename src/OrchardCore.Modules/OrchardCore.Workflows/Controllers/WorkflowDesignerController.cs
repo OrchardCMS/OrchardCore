@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -821,15 +822,10 @@ public sealed class WorkflowDesignerController : Controller
         var versions = await _versionStore.ListAsync(workflowType.WorkflowTypeId);
         var draft = await _draftManager.GetAsync(workflowType.WorkflowTypeId);
 
-        // The versions are few, while their instances can be many: count them rather than loading them.
-        var versionModels = new List<WorkflowDesignerVersion>();
-
-        foreach (var version in versions)
-        {
-            var instanceCount = await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeVersionId == version.VersionId).CountAsync();
-
-            versionModels.Add(WorkflowDesignerVersion.From(version, workflowType, instanceCount));
-        }
+        var instanceCounts = await CountInstancesByVersionAsync(versions.Select(version => version.VersionId).ToList());
+        var versionModels = versions
+            .Select(version => WorkflowDesignerVersion.From(version, workflowType, instanceCounts.GetValueOrDefault(version.VersionId)))
+            .ToList();
 
         return Ok(new
         {
@@ -953,6 +949,32 @@ public sealed class WorkflowDesignerController : Controller
         await _draftManager.DiscardAsync(workflowType.WorkflowTypeId);
 
         return Ok(new { });
+    }
+
+    // The instances can be many: they are counted in one grouped query rather than loaded, or counted per version.
+    private async Task<Dictionary<string, int>> CountInstancesByVersionAsync(List<string> versionIds)
+    {
+        if (versionIds.Count == 0)
+        {
+            return [];
+        }
+
+        var configuration = _session.Store.Configuration;
+        var dialect = configuration.SqlDialect;
+        var versionIdColumn = dialect.QuoteForColumnName(nameof(WorkflowIndex.WorkflowTypeVersionId));
+        var sqlBuilder = dialect.CreateBuilder(configuration.TablePrefix);
+        sqlBuilder.Select();
+        sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeVersionId), configuration.Schema);
+        sqlBuilder.AddSelector($", COUNT(*) AS {dialect.QuoteForColumnName(nameof(VersionInstanceCount.InstanceCount))}");
+        sqlBuilder.Table(nameof(WorkflowIndex), alias: null, configuration.Schema);
+        sqlBuilder.WhereAnd($"{versionIdColumn} IN @VersionIds");
+        sqlBuilder.GroupBy(versionIdColumn);
+
+        // Use the session's connection. Do not dispose it.
+        var connection = await _session.CreateConnectionAsync();
+        var counts = await connection.QueryAsync<VersionInstanceCount>(sqlBuilder.ToSqlString(), new { VersionIds = versionIds }, _session.CurrentTransaction);
+
+        return counts.ToDictionary(count => count.WorkflowTypeVersionId, count => (int)count.InstanceCount);
     }
 
     private static WorkflowTypeDraftSettings SettingsOf(WorkflowType workflowType)
@@ -1220,5 +1242,12 @@ public sealed class WorkflowDesignerController : Controller
             default:
                 return this.ApiBadRequestProblem();
         }
+    }
+
+    private sealed class VersionInstanceCount
+    {
+        public string WorkflowTypeVersionId { get; set; }
+
+        public long InstanceCount { get; set; }
     }
 }

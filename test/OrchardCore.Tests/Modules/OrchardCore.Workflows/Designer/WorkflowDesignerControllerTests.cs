@@ -1619,6 +1619,32 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Versions_InstancesOnSeveralVersions_CountsTheInstancesOfEach()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+
+        // The live definition is at version 2, whose revision is -1.
+        await SaveNotifyAtAsync(id, x: 80, revision: -1);
+        using (var published = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Publish", new { revision = 1 }))
+        {
+            Assert.Equal(HttpStatusCode.OK, published.StatusCode);
+        }
+
+        var thirdVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Halted, "notify");
+        await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Finished);
+        await _fixture.CreatePinnedInstanceAsync(workflowTypeId, thirdVersionId, WorkflowStatus.Halted, "notify");
+        await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "notify");
+
+        var versions = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Versions"))["versions"].AsArray();
+
+        Assert.Equal(new[] { 3, 2, 1 }, versions.Select(version => version["version"].GetValue<int>()));
+        Assert.Equal(new[] { 1, 0, 2 }, versions.Select(version => version["instanceCount"].GetValue<int>()));
+    }
+
+    [Fact]
     public async Task Version_EarlierVersion_ReturnsItsGraph()
     {
         var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
