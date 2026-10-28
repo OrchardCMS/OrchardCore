@@ -257,12 +257,16 @@ For detailed patterns including Content Parts, Content Part Drivers, Content Fie
 
 ### Extensibility Points: Options or Dependency Injection
 
-When adding a customizable service or an extensibility point (types, providers, strategies a module can plug in), choose how implementations are registered from their scope, lifetime and dependencies. Apply this to new features, refactorings and reviews.
+When adding a customizable service or an extensibility point (types, providers, strategies a module can plug in), choose how implementations are registered from their scope, lifetime and dependencies. Apply this to new features and reviews, and to refactorings within the limits below.
 
-- **Options** when the extension belongs to one feature, or to one named instance of it, and isn't composed from other services: it has no dependencies of its own, keeps no state, and one instance can be shared (a singleton). Store the instances, or descriptors that create them, in the feature's options, e.g. `services.Configure<FeatureOptions>(o => o.Add<TType>())` behind an `AddFeatureType<TType>()` extension, and read them through `IOptions<FeatureOptions>`. Options also let different instances of the same feature use different implementations, and suit simple implementations supplied directly by the consumer. ASP.NET Core does the same with `CookieAuthenticationOptions.SessionStore`.
-- **Dependency injection** when the extension is an application-wide service used across modules (its interface then belongs in an abstractions project), needs an explicit lifetime (singleton, scoped or transient), or has dependencies of its own that DI must resolve.
-- Options are as customizable as DI, but don't add services to the container, nor resolve them from the scope every time they are used. Don't register a type in DI only to list or create it.
-- Document an options-based extension point as taking no dependencies and keeping no state, since one instance is shared.
+- **Options** when the extension belongs to one feature, or to one named instance of it. Register it in the feature's options behind an `IServiceCollection` extension, in one of two forms:
+  - **A type**, which the feature creates when it needs it with `serviceProvider.CreateInstance<T>(type)`, so its constructor dependencies are resolved without registering it in DI. `AddActivity<TActivity, TDriver>()` configures `WorkflowOptions` this way, and `AddMediaFileTextProvider<TProvider>(".pdf")` configures `MediaFileIndexingOptions`, whose `PdfMediaFileTextProvider` takes an `ITempDirectoryProvider`. ASP.NET Core does the same with `MvcOptions.Filters.Add<TFilter>()`.
+  - **An instance**, when the implementation has no dependencies and no mutable state, so one instance can be shared by every request, e.g. `JsonSerializerOptions.Converters`. Document such an extension point as taking no dependencies and keeping no mutable state.
+- **Dependency injection** when the extension is an application-wide service used across modules (its interface then belongs in an abstractions project), when other modules must be able to replace or decorate it, or when it needs a lifetime managed by the container (a scoped service, or one that must be disposed).
+- Read options configured for a named instance with `IOptionsMonitor<TOptions>.Get(name)` or `IOptionsSnapshot<TOptions>.Get(name)`; `IOptions<TOptions>` only returns the default, unnamed, options.
+- The container doesn't track implementations stored in or created from options, so they are never disposed: they must not own disposable resources.
+- Options don't add services to the container, nor resolve them from the scope every time they are used, but they can't be replaced or decorated through DI. Don't register a type in DI only to list or create it.
+- Don't move a released extension point from DI to options without keeping the implementations registered in DI working: they would be silently ignored, without a compilation error. Treat it as a breaking change and describe it in the release notes.
 
 ### Async Conventions
 
@@ -442,7 +446,7 @@ services.AddSingleton<IYourSingleton, YourSingleton>();
 services.AddTransient<IYourTransient, YourTransient>();
 ```
 
-For an extension that belongs to one feature and has no dependencies, use the feature's options instead, see [Extensibility Points: Options or Dependency Injection](#extensibility-points-options-or-dependency-injection).
+For an extension that belongs to one feature, register it in the feature's options instead, as a type the feature creates or as a shared instance without dependencies or mutable state, see [Extensibility Points: Options or Dependency Injection](#extensibility-points-options-or-dependency-injection).
 
 ### Event Handlers
 
