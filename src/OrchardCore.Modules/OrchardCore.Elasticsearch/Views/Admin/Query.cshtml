@@ -21,7 +21,7 @@
 <form asp-action="Query" method="post">
     <div asp-validation-summary="All"></div>
     <div class="ocat-wrapper">
-        <label asp-for="Id" class="ocat-label">@T["Index"]</label>
+        <label asp-for="Id" class="ocat-label ocat-label-required">@T["Index"]</label>
         <div class="ocat-end">
         <select asp-for="Id" class="form-control" asp-items="Model.Indexes">
             <option value="">@T["Select an index"]</option>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="ocat-wrapper">
-        <label asp-for="DecodedQuery" class="ocat-label">@T["Query"]</label>
+        <label asp-for="DecodedQuery" class="ocat-label ocat-label-required">@T["Query"]</label>
         <div class="ocat-end">
         <textarea asp-for="DecodedQuery" rows="12" class="form-control codemirror-query-editor" data-options='{"json":true}'></textarea>
         <span class="hint">@T["You can use the <a href=\"{0}\">Match all query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Elasticsearch", query = Model.MatchAllQuery, id = Model.Id }))]</span>

@@ -55,7 +55,7 @@ else
         @if (Model.AvailableStores.Count > 1)
         {
             <div class="ocat-wrapper" asp-validation-class-for="Store">
-                <label asp-for="Store" class="ocat-label">@T["Destination store"]</label>
+                <label asp-for="Store" class="ocat-label ocat-label-required">@T["Destination store"]</label>
                 <div class="ocat-end">
                     <select asp-for="Store" asp-items="@(new SelectList(Model.AvailableStores))" class="form-select"></select>
                     <span asp-validation-for="Store"></span>

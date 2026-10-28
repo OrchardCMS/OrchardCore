@@ -52,7 +52,7 @@
     <div class="row">
         <div class="col-12 col-md-6">
             <div class="ocat-wrapper" asp-validation-class-for="Name">
-                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+                <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
                 <div class="ocat-end">
                 <input asp-for="Name" class="form-control" autofocus />
                 <span asp-validation-for="Name"></span>
@@ -110,7 +110,7 @@
         </div>
         <div class="col-12">
             <div class="ocat-wrapper" asp-validation-class-for="Content">
-                <label asp-for="Content" class="ocat-label">@T["Content"]</label>
+                <label asp-for="Content" class="ocat-label ocat-label-required">@T["Content"]</label>
                 <div class="ocat-end">
                 <textarea asp-for="Content" rows="10" class="form-control"></textarea>
                 <span asp-validation-for="Content"></span>

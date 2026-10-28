@@ -1,7 +1,7 @@
 @model SearchPartViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Placeholder">
-    <label asp-for="Placeholder" class="ocat-label">@T["Placeholder"]</label>
+    <label asp-for="Placeholder" class="ocat-label ocat-label-required">@T["Placeholder"]</label>
     <div class="ocat-end">
         <input type="text" class="form-control" asp-for="Placeholder" required />
         <span class="hint">@T["The placeholder text to use in the search bar."]</span>

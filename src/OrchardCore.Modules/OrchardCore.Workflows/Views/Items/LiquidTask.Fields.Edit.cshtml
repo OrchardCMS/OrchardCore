@@ -3,7 +3,7 @@
 
 <div data-task-editor="liquid" data-expression-id="@Html.IdFor(m => m.Expression)">
     <div class="ocat-wrapper" asp-validation-class-for="Expression">
-        <label asp-for="Expression" class="ocat-label">@T["Expression"]</label>
+        <label asp-for="Expression" class="ocat-label ocat-label-required">@T["Expression"]</label>
         <div class="ocat-end">
             <textarea asp-for="Expression" class="form-control"></textarea>
             <span asp-validation-for="Expression"></span>

@@ -3,7 +3,7 @@
 @model EditIndexProfileViewModel
 
 <div class="ocat-wrapper @(Model.IsNew ? "index-profile-technical-name-generator" : "")" asp-validation-class-for="IndexName" data-display-id="@Html.IdFor(m => m.IndexName)" data-name-id="@Html.IdFor(m => m.Name)">
-    <label asp-for="IndexName" class="ocat-label">@T["Index Name"]</label>
+    <label asp-for="IndexName" class="ocat-label @(Model.IsNew ? "ocat-label-required" : null)">@T["Index Name"]</label>
     <div class="ocat-end">
     <input asp-for="IndexName" class="form-control" asp-is-disabled="!Model.IsNew" />
     <span asp-validation-for="IndexName" class="text-danger"></span>
@@ -11,7 +11,7 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
     <div class="ocat-end">
     <input asp-for="Name" class="form-control" />
     <span asp-validation-for="Name" class="text-danger"></span>

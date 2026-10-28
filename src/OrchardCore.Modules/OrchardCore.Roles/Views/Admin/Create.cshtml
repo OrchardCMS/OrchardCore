@@ -12,7 +12,7 @@
 
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="ocat-wrapper" asp-validation-class-for="RoleName">
-        <label asp-for="RoleName" class="ocat-label">@T["Name"]</label>
+        <label asp-for="RoleName" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end">
         <input asp-for="RoleName" class="form-control" autofocus />
         <span asp-validation-for="RoleName" class="text-danger"></span>

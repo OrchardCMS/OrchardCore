@@ -35,7 +35,7 @@
     @if (typePart.PartDefinition.IsReusable())
     {
         <div class="ocat-limited-wrapper">
-            <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+            <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
             <div class="ocat-limited">
                 <input asp-for="DisplayName" class="form-control" />
                 <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
