@@ -127,7 +127,7 @@ A faulted instance that waits for a retry shows when the retry is due.
 Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, its variables, and the **Instances at a time**, lock, **Delete finished workflows**, **Outcomes with several transitions** and **Fault the workflow on script errors** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.
 
 - **Instances run on their version.** A new instance starts on the published version, and keeps running on it until it finishes, even when newer versions are published. Changing or removing the activities an instance waits on doesn't affect it.
-- **Instances created before versions existed** (on a site upgraded from an earlier release) keep running on the current definition, as they did before. Upgrading turns each existing workflow into its version 1.
+- **Instances created before versions existed** (on a site upgraded from an earlier release) keep running on the current definition, as they did before. Upgrading turns each existing workflow into its version 1. Such an instance has no executed path or journal in its page, and a faulted one is retried by selecting the activity to run again.
 - **Restarting** an instance starts a new one on the published version.
 
 **Versions**, in the designer's toolbar, lists the versions with when and by whom they were published, and how many instances run on each:
