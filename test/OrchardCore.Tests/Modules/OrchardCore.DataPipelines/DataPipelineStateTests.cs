@@ -74,7 +74,7 @@ public sealed class DataPipelineStateTests
         // Arrange: the media library rejects CSV files by default, so the run fails after the source read its rows.
         using var context = await CreateContextAsync();
         await context.CreateContentItem("BlogPost", builder => builder.DisplayText = "First post");
-        var pipelineId = await CreatePipelineAsync(context, "csv");
+        var pipelineId = await CreatePipelineAsync(context, "json");
 
         // Act
         var run = await RunAsync(context, pipelineId);
