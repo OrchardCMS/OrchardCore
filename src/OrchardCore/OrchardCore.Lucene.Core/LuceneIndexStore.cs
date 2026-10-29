@@ -116,18 +116,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
             return;
         }
 
-        IndexReaderPool.IndexReaderLease reader;
-
-        try
-        {
-            reader = GetReader(index);
-        }
-        catch (IndexNotFoundException)
-        {
-            return;
-        }
-
-        using (reader)
+        using (var reader = GetReader(index))
         {
             var indexSearcher = new IndexSearcher(reader.IndexReader);
             await searcher(indexSearcher);
@@ -178,14 +167,14 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                         if (action is not null)
                         {
                             action.Invoke(writer);
+                        }
 
-                            writer.Commit();
+                        writer.Commit();
 
-                            if (_indexPools.TryRemove(index.Id, out var pool))
-                            {
-                                pool.MakeDirty();
-                                pool.Release();
-                            }
+                        if (_indexPools.TryRemove(index.Id, out var pool))
+                        {
+                            pool.MakeDirty();
+                            pool.Release();
                         }
 
                         writer.Dispose();

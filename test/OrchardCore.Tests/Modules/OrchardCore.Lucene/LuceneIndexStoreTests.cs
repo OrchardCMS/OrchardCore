@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Lucene;
 public sealed class LuceneIndexStoreTests
 {
     [Fact]
-    public async Task SearchAsync_WithUncommittedWriter_UsesNearRealTimeReader()
+    public async Task SearchAsync_AfterCreatingEmptyIndex_OpensEmptyReader()
     {
         var rootPath = Path.Combine(Path.GetTempPath(), "oc-lucene-index-store-tests", Guid.NewGuid().ToString("N"));
 
@@ -42,7 +42,7 @@ public sealed class LuceneIndexStoreTests
                 IndexFullName = "index",
             };
 
-            await store.WriteAsync(index, null);
+            await store.WriteAndClose(index);
 
             var searchCompleted = false;
 
