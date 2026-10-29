@@ -49,8 +49,10 @@ public static class StringExtensions
         return sb.ToString();
     }
 
+    [Obsolete("Use the Ellipsize extension methods in OrchardCore.Mvc.Utilities instead.")]
     public static string Ellipsize(this string text, int characterCount) => text.Ellipsize(characterCount, "\u00A0\u2026");
 
+    [Obsolete("Use the Ellipsize extension methods in OrchardCore.Mvc.Utilities instead.")]
     public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -63,9 +65,9 @@ public static class StringExtensions
             return text;
         }
 
-        // search beginning of word
+        // search beginning of word, unless the cut already falls at the end of one
         var backup = characterCount;
-        while (characterCount > 0 && char.IsLetter(text[characterCount - 1]))
+        while (characterCount > 0 && char.IsLetter(text[characterCount]))
         {
             characterCount--;
         }
