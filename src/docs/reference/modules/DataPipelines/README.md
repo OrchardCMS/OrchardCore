@@ -345,6 +345,7 @@ To save these files to the media library, add their extensions to the `AllowedFi
         ".odt",
         ".xls",
         ".xlsx",
+        ".csv",
         ".psd",
         ".mp3",
         ".m4a",
@@ -359,7 +360,6 @@ To save these files to the media library, add their extensions to the `AllowedFi
         ".ogv",
         ".3gp",
         ".webm",
-        ".csv",
         ".json",
         ".jsonl",
         ".zip"
