@@ -3727,6 +3727,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "JohnyKid123",
+      "name": "Alex Venkov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97468479?v=4",
+      "profile": "https://github.com/JohnyKid123",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
