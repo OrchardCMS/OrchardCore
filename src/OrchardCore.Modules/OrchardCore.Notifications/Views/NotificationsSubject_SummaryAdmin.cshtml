@@ -1,15 +1,33 @@
 @using OrchardCore.Entities
-@using OrchardCore.Notifications.Models
-
+@using OrchardCore.Notifications.Endpoints.Management
 @model NotificationViewModel
 
 @{
-    var readInfo = Model.Notification.GetOrCreate<NotificationReadInfo>();
+    var notification = Model.Notification;
+    string href = null;
+
+    if (!string.IsNullOrEmpty(notification.Url))
+    {
+        href = Url.RouteUrl(OpenNotificationEndpoints.RouteName, new { notificationId = notification.NotificationId });
+    }
+    else if (notification.TryGet<NotificationBodyInfo>(out var body) && (!string.IsNullOrWhiteSpace(body.HtmlBody) || !string.IsNullOrWhiteSpace(body.TextBody)))
+    {
+        href = Url.Action("Display", "Admin", new { notificationId = notification.NotificationId });
+    }
 }
 
-<div class="mark-notification-as-read" data-message-id="@Model.Notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()">
-    <p class="m-0 f6 flex-auto @(readInfo.IsRead ? string.Empty : "fw-bold")">@Model.Notification.Subject</p>
+<div class="mark-notification-as-read" data-message-id="@notification.NotificationId" data-is-read="@Model.IsRead.ToString().ToLowerInvariant()">
+    <p class="m-0 f6 flex-auto @(Model.IsRead ? string.Empty : "fw-bold")">
+        @if (href != null)
+        {
+            <a href="@href">@notification.Subject</a>
+        }
+        else
+        {
+            @notification.Subject
+        }
+    </p>
     <p class="m-0 text-normal pr-2 pr-md-0">
-        <small>@Html.Raw(Model.Notification.Summary)</small>
+        <small>@Html.Raw(notification.Summary)</small>
     </p>
 </div>

@@ -14,4 +14,9 @@ public class NotifyUserTaskActivityViewModel
     public string HtmlBody { get; set; }
 
     public bool IsHtmlPreferred { get; set; }
+
+    public string Url { get; set; }
+
+    [MaxLength(NotificationConstants.NotificationTypeLength)]
+    public string NotificationType { get; set; }
 }

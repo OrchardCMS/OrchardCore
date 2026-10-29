@@ -1,0 +1,7 @@
+@model NotificationViewModel
+
+<div class="mark-notification-as-read" data-message-id="@Model.Notification.NotificationId" data-is-read="@Model.IsRead.ToString().ToLowerInvariant()">
+    <p class="m-0 fst-italic text-body-secondary">
+        <i class="fa-solid fa-lock" aria-hidden="true"></i> @T["You no longer have access to this notification."]
+    </p>
+</div>

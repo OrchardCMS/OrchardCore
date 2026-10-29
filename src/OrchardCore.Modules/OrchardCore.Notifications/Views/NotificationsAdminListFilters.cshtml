@@ -1,6 +1,12 @@
 @model ListNotificationOptions
 
 <div class="btn-group filter">
+    @if (Model.Types?.Count > 0)
+    {
+        <select asp-for="Type" asp-items="@Model.Types" class="selectpicker show-tick me-2" data-header="@T["Filter by type"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Type"]" data-style="btn-sm">
+            <option value="">@T["All types"]</option>
+        </select>
+    }
     <select asp-for="Status" asp-items="@Model.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Show"]" data-style="btn-sm">
         <option value="">@T["All"]</option>
     </select>

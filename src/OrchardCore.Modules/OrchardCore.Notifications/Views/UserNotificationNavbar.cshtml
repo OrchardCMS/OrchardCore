@@ -16,7 +16,7 @@
             @if (Model.TotalUnread > 0)
             {
                 LocalizedHtmlString title;
-                if (Model.TotalUnread > Model.MaxVisibleNotifications)
+                if (Model.TotalUnread > Model.MaxVisibleNotifications || Model.IsTotalUnreadCapped)
                 {
                     title = T["You have more than {0} unread notifications", Model.MaxVisibleNotifications];
                 }
@@ -27,7 +27,7 @@
 
                 <i class="fa-solid fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@title"></i>
 
-                <span class="position-absolute start-50 translate-middle badge rounded-pill text-bg-danger" id="UnreadNotificationBadge">@Model.TotalUnread</span>
+                <span class="position-absolute start-50 translate-middle badge rounded-pill text-bg-danger" id="UnreadNotificationBadge" data-capped="@Model.IsTotalUnreadCapped.ToString().ToLowerInvariant()">@Model.TotalUnread@(Model.IsTotalUnreadCapped ? "+" : null)</span>
             }
             else
             {

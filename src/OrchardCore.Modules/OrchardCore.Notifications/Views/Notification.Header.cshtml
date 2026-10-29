@@ -1,12 +1,4 @@
-@using OrchardCore.ContentManagement
-@using Microsoft.AspNetCore.Html
-@using OrchardCore.Notifications.Models
 @using OrchardCore.Entities
-@using Microsoft.AspNetCore.Authorization
-@using OrchardCore.Contents
-
-@inject IContentManager ContentManager
-@inject IAuthorizationService AuthorizationService
 @{
     Notification notification = Model.Notification;
 
@@ -18,8 +10,23 @@
     var readInfo = notification.GetOrCreate<NotificationReadInfo>();
 }
 
+@* The drivers place the subject and summary in the Content zone, the received date and the type in the Meta zone,
+   and a module can add its own fields, badges and buttons to these zones and to the Actions zone, for a notification type. *@
 <div data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2 @(readInfo.IsRead ? "notification-is-read": "notification-is-unread")">
-    <div aria-hidden="false">
-        @Html.Raw(notification.Summary)
-    </div>
+    @if (Model.Content != null)
+    {
+        @await DisplayAsync(Model.Content)
+    }
+    @if (Model.Meta != null)
+    {
+        <div class="d-flex flex-wrap align-items-center gap-1 mt-1">
+            @await DisplayAsync(Model.Meta)
+        </div>
+    }
+    @if (Model.Actions != null)
+    {
+        <div class="d-flex flex-wrap gap-1 mt-2">
+            @await DisplayAsync(Model.Actions)
+        </div>
+    }
 </div>

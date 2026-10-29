@@ -132,6 +132,20 @@ msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
 msgid "Text Body field does not contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
+#. Format arguments: {0}: NotificationConstants.NotificationTypeLength
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "The type cannot be longer than {0} characters."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', urlErrors)
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "URL field does not contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
 #: Drivers/NotifyUserTaskDisplayDriver.cs
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskDisplayDriver"
 msgid "Please provide at least one username to notify."
@@ -140,6 +154,16 @@ msgstr ""
 #: NotificationsLocalizationSources.cs
 msgctxt "OrchardCore.Notifications.NotificationsLocalizationSources"
 msgid "Notifications"
+msgstr ""
+
+#: Views/Admin/Display.cshtml
+msgctxt "OrchardCore.Notifications.Views.Admin.Display"
+msgid "Notification"
+msgstr ""
+
+#: Views/Admin/Display.cshtml
+msgctxt "OrchardCore.Notifications.Views.Admin.Display"
+msgid "Notification Center"
 msgstr ""
 
 #: Views/Admin/List.cshtml
@@ -264,7 +288,27 @@ msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "The optional kind of notification, used to filter the notification center and for the preferences of users, for example Approval."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "The optional page the notification opens, for example ~/blog. Start a page of this site with ~/. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
 msgid "This optional text body does not support HTML. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "Type"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "URL"
 msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
@@ -285,6 +329,41 @@ msgstr ""
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
 msgid "You may use Liquid syntax. Html is supported."
+msgstr ""
+
+#: Views/NotificationsActions_DetailAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
+msgid "Are you sure you want to delete this notification?"
+msgstr ""
+
+#: Views/NotificationsActions_DetailAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/NotificationsActions_DetailAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
+msgid "Delete a notification"
+msgstr ""
+
+#: Views/NotificationsActions_DetailAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
+msgid "Mark as unread"
+msgstr ""
+
+#: Views/NotificationsActions_DetailAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
+msgid "No"
+msgstr ""
+
+#: Views/NotificationsActions_DetailAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
+msgid "Open"
+msgstr ""
+
+#: Views/NotificationsActions_DetailAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
+msgid "Yes"
 msgstr ""
 
 #: Views/NotificationsActions_SummaryAdmin.cshtml
@@ -366,7 +445,17 @@ msgstr ""
 
 #: Views/NotificationsAdminListFilters.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "All types"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
 msgid "Filter by status"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "Filter by type"
 msgstr ""
 
 #: Views/NotificationsAdminListFilters.cshtml
@@ -382,6 +471,11 @@ msgstr ""
 #: Views/NotificationsAdminListFilters.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
 msgid "Sort by"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "Type"
 msgstr ""
 
 #: Views/NotificationsAdminListSearch.cshtml
@@ -456,7 +550,17 @@ msgstr ""
 
 #: Views/NotificationsButtonActions_SummaryAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "View"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
 msgid "Yes"
+msgstr ""
+
+#: Views/NotificationsRestricted_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsRestricted_SummaryAdmin"
+msgid "You no longer have access to this notification."
 msgstr ""
 
 #: Views/UserNotificationNavbar.cshtml
@@ -497,6 +601,11 @@ msgstr[1] ""
 
 #: Views/UserNotificationPreferencesPart.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
+msgid "Choose how you receive each type of notification. A method turned off above stays off for every type."
+msgstr ""
+
+#: Views/UserNotificationPreferencesPart.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
 msgid "From the list above, you can sort the notification priority where the most important method is on the top."
 msgstr ""
 
@@ -507,5 +616,22 @@ msgstr ""
 
 #: Views/UserNotificationPreferencesPart.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
+msgid "Notification Types"
+msgstr ""
+
+#. Format arguments: {0}: type.DisplayName; {1}: method.Text
+#: Views/UserNotificationPreferencesPart.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
+msgid "Receive {0} with {1}"
+msgstr ""
+
+#: Views/UserNotificationPreferencesPart.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
 msgid "Select all notification methods to receive."
+msgstr ""
+
+#: Views/UserNotificationPreferencesPart.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
+msgid "Type"
 msgstr ""

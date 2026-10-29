@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -10,9 +11,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Entities;
-using OrchardCore.Environment.Cache;
-using OrchardCore.Modules;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Indexes;
@@ -30,13 +29,16 @@ public sealed class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
-    private readonly ITagCache _tagCache;
+    private readonly INotificationManager _notificationManager;
+    private readonly INotificationVisibilityEvaluator _visibilityEvaluator;
+    private readonly IDisplayManager<Notification> _notificationDisplayManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
+    private readonly NotificationTypeOptions _notificationTypeOptions;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
-    private readonly IClock _clock;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -44,25 +46,31 @@ public sealed class AdminController : Controller, IUpdateModel
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
-        ITagCache tagCache,
+        INotificationManager notificationManager,
+        INotificationVisibilityEvaluator visibilityEvaluator,
+        IDisplayManager<Notification> notificationDisplayManager,
+        IStringLocalizerFactory localizerFactory,
+        IOptions<NotificationTypeOptions> notificationTypeOptions,
         IOptions<PagerOptions> pagerOptions,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
         IDisplayManager<ListNotificationOptions> notificationOptionsDisplayManager,
         INotifier notifier,
-        IClock clock,
         IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
         _authorizationService = authorizationService;
         _session = session;
-        _tagCache = tagCache;
+        _notificationManager = notificationManager;
+        _visibilityEvaluator = visibilityEvaluator;
+        _notificationDisplayManager = notificationDisplayManager;
+        _localizerFactory = localizerFactory;
+        _notificationTypeOptions = notificationTypeOptions.Value;
         _notificationsAdminListQueryService = notificationsAdminListQueryService;
         _notificationOptionsDisplayManager = notificationOptionsDisplayManager;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
-        _clock = clock;
 
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -98,6 +106,10 @@ public sealed class AdminController : Controller, IUpdateModel
             new(S["Recently created"], nameof(NotificationOrder.Latest)),
             new(S["Previously created"], nameof(NotificationOrder.Oldest)),
         ];
+        options.Types = _notificationTypeOptions.Types.Values
+            .Select(type => new SelectListItem(_localizerFactory.Localize(type.DisplayName), type.Name))
+            .OrderBy(item => item.Text)
+            .ToList();
         options.BulkActions =
         [
             new(S["Mark as read"], nameof(NotificationBulkAction.Read)),
@@ -172,7 +184,6 @@ public sealed class AdminController : Controller, IUpdateModel
         if (itemIds?.Any() == true)
         {
             var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
-            var utcNow = _clock.UtcNow;
             var counter = 0;
 
             switch (options.BulkAction)
@@ -180,55 +191,37 @@ public sealed class AdminController : Controller, IUpdateModel
                 case NotificationBulkAction.Unread:
                     foreach (var notification in notifications)
                     {
-                        var readPart = notification.GetOrCreate<NotificationReadInfo>();
-                        if (readPart.IsRead)
+                        if (await _notificationManager.MarkAsUnreadAsync(notification))
                         {
-                            readPart.IsRead = false;
-                            readPart.ReadAtUtc = null;
-
-                            notification.Put(readPart);
-
-                            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
                             counter++;
                         }
                     }
                     if (counter > 0)
                     {
-                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} unread successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
                 case NotificationBulkAction.Read:
                     foreach (var notification in notifications)
                     {
-                        var readPart = notification.GetOrCreate<NotificationReadInfo>();
-
-                        if (!readPart.IsRead)
+                        if (await _notificationManager.MarkAsReadAsync(notification))
                         {
-                            readPart.IsRead = true;
-                            readPart.ReadAtUtc = null;
-
-                            notification.Put(readPart);
-
-                            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
                             counter++;
                         }
                     }
                     if (counter > 0)
                     {
-                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
                 case NotificationBulkAction.Remove:
                     foreach (var notification in notifications)
                     {
-                        _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
+                        await _notificationManager.DeleteAsync(notification);
                         counter++;
                     }
                     if (counter > 0)
                     {
-                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} removed successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
@@ -247,25 +240,10 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
-
-        var utcNow = _clock.UtcNow;
-        var counter = 0;
-        foreach (var notification in notifications)
-        {
-            var readPart = notification.GetOrCreate<NotificationReadInfo>();
-
-            readPart.IsRead = true;
-            readPart.ReadAtUtc = utcNow;
-
-            notification.Put(readPart);
-            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
-            counter++;
-        }
+        var counter = await _notificationManager.MarkAsReadAsync(new NotificationFilter { UserId = CurrentUserId() });
 
         if (counter > 0)
         {
-            await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
             await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
         }
 
@@ -279,29 +257,17 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (!string.IsNullOrWhiteSpace(notificationId))
+        var notification = await FindCurrentUserNotificationAsync(notificationId);
+
+        if (notification != null)
         {
-            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
-
-            if (notification != null)
+            if (markAsRead)
             {
-                var readPart = notification.GetOrCreate<NotificationReadInfo>();
-
-                if (markAsRead)
-                {
-                    readPart.IsRead = true;
-                    readPart.ReadAtUtc = _clock.UtcNow;
-                }
-                else
-                {
-                    readPart.IsRead = false;
-                    readPart.ReadAtUtc = null;
-                }
-
-                notification.Put(readPart);
-
-                await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
-                await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
+                await _notificationManager.MarkAsReadAsync(notification);
+            }
+            else
+            {
+                await _notificationManager.MarkAsUnreadAsync(notification);
             }
         }
 
@@ -315,18 +281,49 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (!string.IsNullOrWhiteSpace(notificationId))
-        {
-            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+        var notification = await FindCurrentUserNotificationAsync(notificationId);
 
-            if (notification != null)
-            {
-                _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
-                await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
-            }
+        if (notification != null)
+        {
+            await _notificationManager.DeleteAsync(notification);
         }
 
         return RedirectTo(returnUrl);
+    }
+
+    [Admin("notifications/{notificationId}", "DisplayNotification")]
+    public async Task<IActionResult> Display(string notificationId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
+        {
+            return Forbid();
+        }
+
+        var notification = await FindCurrentUserNotificationAsync(notificationId);
+
+        if (notification == null ||
+            await _visibilityEvaluator.EvaluateAsync(notification, HttpContext.User) == NotificationVisibility.Hidden)
+        {
+            return NotFound();
+        }
+
+        await _notificationManager.MarkAsReadAsync(notification);
+
+        var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, OrchardCoreConstants.DisplayType.DetailAdmin);
+
+        return View(shape);
+    }
+
+    private async Task<Notification> FindCurrentUserNotificationAsync(string notificationId)
+    {
+        if (string.IsNullOrWhiteSpace(notificationId))
+        {
+            return null;
+        }
+
+        var notification = await _notificationManager.FindByIdAsync(notificationId);
+
+        return notification?.UserId == CurrentUserId() ? notification : null;
     }
 
     private IActionResult RedirectTo(string returnUrl)

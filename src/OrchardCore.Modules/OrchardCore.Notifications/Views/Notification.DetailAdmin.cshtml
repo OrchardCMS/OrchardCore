@@ -1,0 +1,31 @@
+@{
+    Notification notification = Model.Notification;
+
+    if (notification == null)
+    {
+        return;
+    }
+}
+
+@* The drivers place the summary and body in the Content zone, the received date and the type in the Meta zone, and the
+   buttons in the Actions zone. A module can add its own fields, badges and buttons to these zones, for a notification type. *@
+<div class="card notification-detail">
+    <div class="card-body">
+        @if (Model.Meta != null)
+        {
+            <div class="d-flex flex-wrap align-items-center gap-1 mb-3">
+                @await DisplayAsync(Model.Meta)
+            </div>
+        }
+        @if (Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)
+        }
+    </div>
+    @if (Model.Actions != null)
+    {
+        <div class="card-footer d-flex flex-wrap gap-2">
+            @await DisplayAsync(Model.Actions)
+        </div>
+    }
+</div>

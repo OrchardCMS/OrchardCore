@@ -1,0 +1,9 @@
+@using OrchardCore.Localization
+@using Microsoft.Extensions.Localization
+@model NotificationViewModel
+
+@inject IStringLocalizerFactory LocalizerFactory
+
+<span class="badge ta-badge fw-normal notification-type" data-notification-type="@Model.TypeDescriptor.Name">
+    <i class="fa-solid fa-tag text-secondary" aria-hidden="true"></i> @LocalizerFactory.Localize(Model.TypeDescriptor.DisplayName)
+</span>

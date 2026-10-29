@@ -1,0 +1,26 @@
+@using OrchardCore.Entities
+@using OrchardCore.Infrastructure.Html
+@model NotificationViewModel
+
+@inject IHtmlSanitizerService HtmlSanitizerService
+
+@{
+    var notification = Model.Notification;
+    notification.TryGet<NotificationBodyInfo>(out var body);
+}
+
+@if (!string.IsNullOrWhiteSpace(notification.Summary))
+{
+    <p class="lead">@Html.Raw(notification.Summary)</p>
+}
+
+@if (!string.IsNullOrWhiteSpace(body?.HtmlBody))
+{
+    <div class="notification-body">
+        @Html.Raw(HtmlSanitizerService.Sanitize(body.HtmlBody))
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(body?.TextBody))
+{
+    <div class="notification-body" style="white-space: pre-wrap;">@body.TextBody</div>
+}
