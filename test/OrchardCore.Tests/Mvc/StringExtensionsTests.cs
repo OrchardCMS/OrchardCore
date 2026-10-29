@@ -15,6 +15,7 @@ public class StringExtensionsTests
     [InlineData("Orchard Core Framework", 12, $"Orchard Core{DefaultEllipsis}")]
     [InlineData("Orchard Core Framework", 13, $"Orchard Core{DefaultEllipsis}")]
     [InlineData("Orchard Core Framework", 14, $"Orchard Core{DefaultEllipsis}")]
+    [InlineData("Crème brûlée", 9, $"Crème{DefaultEllipsis}")]
     public void Ellipsize_Default_TrimsString(string text, int characterCount, string expected)
     {
         var result = text.Ellipsize(characterCount);

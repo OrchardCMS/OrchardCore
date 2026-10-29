@@ -32,7 +32,9 @@ public class StringExtensionsTests
     public void Ellipsize_Default_TrimsString(string text, int characterCount, string expected)
     {
         // Arrange & Act
+#pragma warning disable CS0618 // Type or member is obsolete
         var result = StringExtensions.Ellipsize(text, characterCount);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
         Assert.Equal(expected, result);
@@ -53,7 +55,9 @@ public class StringExtensionsTests
     public void Ellipsize_CustomEllipsisString_TrimssString(string text, int characterCount, string ellipsis, bool wordBoundary, string expected)
     {
         // Arrange & Act
+#pragma warning disable CS0618 // Type or member is obsolete
         var result = StringExtensions.Ellipsize(text, characterCount, ellipsis, wordBoundary);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
         Assert.Equal(expected, result);
