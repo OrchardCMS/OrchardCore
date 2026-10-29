@@ -14,7 +14,7 @@ public class HtmlSanitizerService : IHtmlSanitizerService
 
     // An entry that is not read for this long is evicted, so fragments that are no longer displayed, or that
     // belong to a tenant that was released or is idle, don't stay in memory.
-    private static readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan s_slidingExpiration = TimeSpan.FromMinutes(10);
 
     // The entries are evicted at the latest after this long, even if they are read continuously. This might seem
     // useless since the sliding expiration already evicts unused entries, but it lets other fragments get a turn
@@ -62,7 +62,7 @@ public class HtmlSanitizerService : IHtmlSanitizerService
         _cache.Set(key, sanitized, new MemoryCacheEntryOptions
         {
             Size = html.Length + sanitized.Length,
-            SlidingExpiration = _slidingExpiration,
+            SlidingExpiration = s_slidingExpiration,
             AbsoluteExpirationRelativeToNow = _absoluteExpiration,
         });
 
