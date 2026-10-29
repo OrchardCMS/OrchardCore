@@ -395,6 +395,59 @@ The source's `Value` is the singular PO `msgid`, exactly like `Localize`. `count
 
 For a context-bearing source (`Type` set), the extension resolves `factory.Create(source.Type)` and delegates to the existing `IStringLocalizer.Plural`/`IHtmlLocalizer.Plural` extension, so the culture's PO `PluralRule` always decides the translated form, including languages with a dedicated zero form or more than two plural forms. For a context-free source (`Type` null, no PO lookup possible), the extension falls back to the English rule — singular only when `count == 1` — without resolving a factory, matching the existing context-free behavior of `Localize`. A null source returns `null` without resolving a factory, same as `Localize`.
 
+### Notes and argument names for translators
+
+A localized string can carry metadata for translators: a note explaining the meaning or usage of the message, and a name for each of its format arguments. The extraction writes them as comments of the message in the translation template. They are ignored at runtime, don't change the translation lookup, and changing them doesn't invalidate existing translations.
+
+In C# and Razor, name a format argument with the `Arg(name, value)` helper, which returns its value unchanged. It is a static method of `OrchardCore.Localization.LocalizationMetadata`, provided by `OrchardCore.Abstractions`, and of the Orchard Core Razor base page, so views can call it directly. Pass a note with the `note` parameter of the `Plural` extensions, or call `Note(note)` on the localizer, which returns the same localizer, for the indexer and the other methods:
+
+```csharp
+using static OrchardCore.Localization.LocalizationMetadata;
+
+return H.Plural(
+    note: "Relative date shown for future dates.",
+    count: Arg("years", years),
+    singular: "in 1 year",
+    plural: "in {0} years");
+
+return S.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user.Name)];
+```
+
+```razor
+<p>@T.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user.Name)]</p>
+```
+
+In Liquid, the `t` filter accepts named arguments, which are passed as format arguments in their order and whose names describe their placeholders, and a `note` argument, which is not a format argument:
+
+```liquid
+{{ "in {0} years" | t: years: time.years, note: "Relative date shown for future dates." }}
+```
+
+Both examples produce the same template entry, besides its context:
+
+```po
+#. Relative date shown for future dates.
+#. Format arguments: {0}: years
+#, csharp-format
+msgctxt "OrchardCore.Example.DateTimeHumanizer"
+msgid "in 1 year"
+msgid_plural "in {0} years"
+msgstr[0] ""
+msgstr[1] ""
+```
+
+A `LocalizationSource` takes its note when it is declared, with the `note` parameter of `LocalizationSource.Create` and of its constructor. The note is not stored in the source, so it doesn't change its value or its equality. The names of its format arguments are given where it is formatted, with `Arg` in the arguments of `Localize` and `Plural`:
+
+```csharp
+public static readonly LocalizationSource Greeting = LocalizationSource.Create<Owner>(
+    "Hello {0}",
+    note: "Greeting shown on the dashboard.");
+
+var text = stringLocalizerFactory.Localize(Greeting, Arg("user name", user.Name));
+```
+
+A format argument without a name is described by its C# expression, and the `count` of a plural by `count`. A comment starting with `// TRANSLATORS:` on the line above a C# call is added as a note too. Notes and argument names must be compile-time constants, or literal strings in Liquid, to be extracted.
+
 ### Translation templates
 
 Every project keeps its translation template, a gettext `.pot` file named `<AssemblyName>.pot` next to its project file, checked in with the sources it describes, like built assets are. A normal build embeds the template in the assembly as the `<AssemblyName>.Localization.pot` manifest resource, and does nothing else: extracting the strings is a separate, on-demand operation, so building never pays for it.
@@ -458,6 +511,7 @@ An update reports what it could not extract as diagnostics with an `OCLOC` prefi
 | `OCLOC007` | Error | A Liquid file could not be parsed. |
 | `OCLOC008` | Error or warning | The extraction compilation reported a C# error, a source generator failed, or a generator assembly could not be loaded (warning). |
 | `OCLOC009` | Error | The worker was not found, the SDK's compiler was not found, the extraction was canceled, or it failed unexpectedly. |
+| `OCLOC010` | Warning | A translator note or a format argument name is not a compile-time constant string, or a Liquid `note` argument is not a literal string. The message is still extracted, without it. |
 
 Liquid files are discovered from evaluated embedded-resource, content, and none items. Additional inputs can be supplied explicitly:
 

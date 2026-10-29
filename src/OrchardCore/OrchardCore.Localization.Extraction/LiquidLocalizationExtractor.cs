@@ -110,6 +110,9 @@ public sealed class LiquidLocalizationExtractor
 
     private sealed class LocalizationVisitor : AstVisitor
     {
+        // Matches the named argument the 't' filter ignores at runtime.
+        private const string NoteArgumentName = "note";
+
         private readonly string _context;
         private readonly SourceReference _source;
         private readonly LocalizationCatalog _catalog;
@@ -132,7 +135,28 @@ public sealed class LiquidLocalizationExtractor
             {
                 if (expression.Input is LiteralExpression { Value: StringValue value })
                 {
-                    _catalog.Add(_context, value.ToStringValue(), null, _source);
+                    var notes = new List<string>();
+                    var formatArguments = new List<string?>();
+                    foreach (var parameter in expression.Parameters)
+                    {
+                        if (parameter.Name == NoteArgumentName)
+                        {
+                            if (parameter.Expression is LiteralExpression { Value: StringValue note })
+                            {
+                                notes.Add(note.ToStringValue());
+                            }
+                            else
+                            {
+                                _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC010", "The Liquid translator note is not a literal string.", _source));
+                            }
+                        }
+                        else
+                        {
+                            formatArguments.Add(parameter.Name);
+                        }
+                    }
+
+                    _catalog.Add(_context, value.ToStringValue(), null, _source, formatArguments: formatArguments, notes: notes);
                 }
                 else
                 {
