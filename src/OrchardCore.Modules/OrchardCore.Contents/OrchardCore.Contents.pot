@@ -580,6 +580,16 @@ msgstr ""
 
 #: Views/Content.PublishButton.cshtml
 msgctxt "OrchardCore.Contents.Views.Content.PublishButton"
+msgid "Publish actions"
+msgstr ""
+
+#: Views/Content.PublishButton.cshtml
+msgctxt "OrchardCore.Contents.Views.Content.PublishButton"
+msgid "Publish and continue"
+msgstr ""
+
+#: Views/Content.PublishButton.cshtml
+msgctxt "OrchardCore.Contents.Views.Content.PublishButton"
 msgid "Toggle Dropdown"
 msgstr ""
 
@@ -591,6 +601,16 @@ msgstr ""
 #: Views/Content.SaveDraftButton.cshtml
 msgctxt "OrchardCore.Contents.Views.Content.SaveDraftButton"
 msgid "Save Draft"
+msgstr ""
+
+#: Views/Content.SaveDraftButton.cshtml
+msgctxt "OrchardCore.Contents.Views.Content.SaveDraftButton"
+msgid "Save Draft and continue"
+msgstr ""
+
+#: Views/Content.SaveDraftButton.cshtml
+msgctxt "OrchardCore.Contents.Views.Content.SaveDraftButton"
+msgid "Save actions"
 msgstr ""
 
 #: Views/Content.SaveDraftButton.cshtml
@@ -611,6 +631,16 @@ msgstr ""
 #: Views/Content.UnpublishButton.cshtml
 msgctxt "OrchardCore.Contents.Views.Content.UnpublishButton"
 msgid "Unpublish"
+msgstr ""
+
+#: Views/Content.UnpublishButton.cshtml
+msgctxt "OrchardCore.Contents.Views.Content.UnpublishButton"
+msgid "Unpublish actions"
+msgstr ""
+
+#: Views/Content.UnpublishButton.cshtml
+msgctxt "OrchardCore.Contents.Views.Content.UnpublishButton"
+msgid "Unpublish and continue"
 msgstr ""
 
 #: Views/Content.UnpublishButton.cshtml
