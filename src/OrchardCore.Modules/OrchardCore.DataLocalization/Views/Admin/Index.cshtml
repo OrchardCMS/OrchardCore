@@ -72,12 +72,6 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-auto ms-md-auto d-flex flex-wrap align-items-center justify-content-end gap-2">
-                    <span v-if="isDirty && !isReadOnly" class="badge text-bg-warning" role="status">@T["Unsaved changes"]</span>
-                    <button v-if="!isReadOnly" type="button" class="btn btn-primary save" @@click="saveTranslations" :disabled="!isDirty || isSaving"
-                            title="@T["Save (Ctrl+S)"]">
-                        <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                        @T["Save"]
-                    </button>
                     <div class="dropdown">
                         <button id="translation-actions" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             @T["Actions"]
@@ -321,6 +315,14 @@
             </div>
         </div>
     }
+
+    <div class="action-bar-bottom" v-if="!isReadOnly">
+        <button type="button" class="btn btn-primary save" @@click="saveTranslations" :disabled="!isDirty || isSaving" title="@T["Save (Ctrl+S)"]">
+            <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            @T["Save"]
+        </button>
+        <span v-if="isDirty" class="badge text-bg-warning align-self-center" role="status">@T["Unsaved changes"]</span>
+    </div>
 </div>
 
 <style asp-src="~/OrchardCore.DataLocalization/Styles/translation-editor.min.css" debug-src="~/OrchardCore.DataLocalization/Styles/translation-editor.css" at="Head"></style>

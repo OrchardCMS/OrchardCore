@@ -197,6 +197,16 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.Admin.Edit"
 msgid "Shape type"
 msgstr ""
 

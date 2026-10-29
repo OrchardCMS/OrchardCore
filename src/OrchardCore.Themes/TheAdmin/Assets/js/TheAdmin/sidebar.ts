@@ -1,6 +1,5 @@
-import { setCompactExplicit, getAdminPreferences, setAdminPreferences } from '../constants';
+import { setCompactExplicit, getAdminPreferences, setAdminPreferences, persistAdminPreferences } from '../adminPreferences';
 import { getTenantName, getAdminPrefix } from '@orchardcore/bloom/helpers/globals';
-import { persistAdminPreferences } from './userPreferencesPersistor';
 
 let menuInitialized = false;
 

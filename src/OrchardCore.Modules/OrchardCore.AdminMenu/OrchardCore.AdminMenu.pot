@@ -538,6 +538,16 @@ msgstr ""
 
 #: Views/Node/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/Node/Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
 msgid "Selection Priority"
 msgstr ""
 

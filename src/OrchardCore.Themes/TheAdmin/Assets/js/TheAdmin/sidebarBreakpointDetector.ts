@@ -1,4 +1,4 @@
-import { setSidebarOpen, syncCompactState } from './menu';
+import { setSidebarOpen, syncCompactState } from './sidebar';
 
 // Below 768px the menu is an off canvas drawer, above it is a sidebar that can be
 // compacted. Anything left open by one layout has to be closed when switching to the other.

@@ -1,6 +1,13 @@
 import { getTenantName } from '@orchardcore/bloom/helpers/globals';
 import Cookies from 'js-cookie';
 
+export interface AdminPreferences {
+    leftSidebarCompact: boolean;
+    isCompactExplicit: boolean;
+    actionGroups?: Record<string, string>;
+    [key: string]: unknown;
+}
+
 let isCompactExplicit = false;
 
 const setCompactExplicit = (value: boolean) => {
@@ -9,18 +16,18 @@ const setCompactExplicit = (value: boolean) => {
 
 const getAdminPreferenceKey = () => getTenantName() + '-adminPreferences';
 
-const getAdminPreferences = () => {
+const getAdminPreferences = (): AdminPreferences => {
     const storedValue = localStorage.getItem(getAdminPreferenceKey());
 
     if (!storedValue) {
-        return {};
+        return {} as AdminPreferences;
     }
 
     try {
-        return JSON.parse(storedValue);
+        return JSON.parse(storedValue) as AdminPreferences;
     } catch (ex) {
         console.error('Error retrieving admin preferences', ex);
-        return {};
+        return {} as AdminPreferences;
     }
 };
 
@@ -40,10 +47,22 @@ const setAdminPreferences = (adminPreferences: object | null) => {
     }
 };
 
+// Snapshots the current UI state and writes it to storage.
+// Merges into the stored preferences, since they also hold the selected menu item,
+// the collapsed menu groups and the action groups.
+const persistAdminPreferences = () => {
+    setTimeout(() => {
+        const adminPreferences = getAdminPreferences();
+        adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact');
+        adminPreferences.isCompactExplicit = isCompactExplicit;
+        setAdminPreferences(adminPreferences);
+    }, 200);
+}
+
 export {
     isCompactExplicit,
     setCompactExplicit,
     getAdminPreferences,
-    setAdminPreferences
+    setAdminPreferences,
+    persistAdminPreferences,
 }
-

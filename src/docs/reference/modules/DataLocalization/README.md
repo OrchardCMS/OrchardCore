@@ -114,10 +114,12 @@ so HTML localizers encode them.
 The translation editor displays all translatable strings grouped by category (or assembly
 for UI translations), following the layout of the other admin lists:
 
-- **Command bar**: A sticky bar with the live **Search** box, the **Save** button (also
-  <kbd>Ctrl</kbd>+<kbd>S</kbd>) with an unsaved-changes indicator, and an **Actions** menu
+- **Command bar**: A sticky bar with the live **Search** box and an **Actions** menu
   holding secondary actions: **Export overrides** and **Import overrides…** for UI
   translations, **Statistics** for dynamic translations, and **Expand all** / **Collapse all**.
+- **Action bar**: The **Save** button (also <kbd>Ctrl</kbd>+<kbd>S</kbd>) and an
+  unsaved-changes indicator, in the bar fixed to the bottom of the page like the other
+  admin editors.
 - **Filters**: The **Culture** and **Category** (or **Assembly**) selectors, the
   **Missing only** switch, the **Auto-save** switch (enabled by default, saves after
   2 seconds of inactivity), and a count of the shown, total and translated strings.
