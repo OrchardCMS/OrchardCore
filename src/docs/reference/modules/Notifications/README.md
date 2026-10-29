@@ -111,7 +111,7 @@ A message has these properties, of which only the `Subject` is required:
 
 ## Using the notification center as the inbox of a module
 
-A module that notifies users about events aimed at them, such as "you were mentioned in a comment", "a task was assigned to you" or "your approval is needed", can use the notification center as its inbox instead of building its own page. The rest of this section uses a module with comments that notifies the users mentioned in a comment as an example.
+A module that notifies users about events aimed at them, such as "you were mentioned in a comment", "a task was assigned to you" or "your approval is needed", can use the notification center as its inbox instead of building its own page. The rest of this section uses a module with comments that notifies the users mentioned in a comment as an example. For a step-by-step guide to adding a type of your own, see [Creating a custom notification type](#creating-a-custom-notification-type).
 
 ### Linking a notification to a page
 
@@ -155,7 +155,7 @@ services.AddNotificationType("Mention", LocalizationSource.Create("Mentions", ty
 });
 ```
 
-A registered type is shown as a badge on its notifications, is listed in the **Type** filter of the notification center, and appears in the notification preferences of the users. The notification center also accepts the type in its search text, so a link such as "View all my mentions" can open it already filtered:
+The display name of a registered type is shown on its notifications, as a badge in the notification center and in the line under the summary in the navbar. The type is listed in the **Type** filter of the notification center, and appears in the notification preferences of the users. The notification center also accepts the type in its search text, so a link such as "View all my mentions" can open it already filtered:
 
 ```text
 /Admin/notifications?q=type:Mention
@@ -217,6 +217,21 @@ A notification is displayed by `IDisplayManager<Notification>`, with its display
 | `SummaryAdmin` | A row of the notification center, in the `List` layout. | `Checkbox`, `Content`, `Tags`, `Meta`, `Actions`, `ActionsMenu` |
 | `SummaryAdminGrid` | A row of the notification center, in the `Grid` layout. | `Select`, `Subject`, `Received`, `Actions`, `ActionsMenu` |
 | `DetailAdmin` | The page of a notification in the notification center. | `Content`, `Meta`, `Actions` |
+
+These built-in shapes fill the zones, and can be moved or hidden with placement, or overridden by a template of the same name:
+
+| Shape | Display types | Zone |
+|---|---|---|
+| `NotificationsSubject_Header` | `Header` | `Content` |
+| `NotificationsSubject_SummaryAdmin` | `SummaryAdmin`, `SummaryAdminGrid` | `Content`, `Subject` |
+| `NotificationsBody_DetailAdmin` | `DetailAdmin` | `Content` |
+| `NotificationsRestricted_SummaryAdmin` | All, when the notification is restricted | `Content`, `Subject` |
+| `NotificationsType_Header` | `Header` | `Meta` |
+| `NotificationsType_SummaryAdmin` | `SummaryAdmin`, `SummaryAdminGrid`, `DetailAdmin` | `Tags`, `Subject`, `Meta` |
+| `NotificationsMeta_Header` | `Header` | `Meta` |
+| `NotificationsMeta_SummaryAdmin` | `SummaryAdmin`, `SummaryAdminGrid`, `DetailAdmin` | `Meta`, `Received` |
+| `NotificationsActions_SummaryAdmin`, `NotificationsButtonActions_SummaryAdmin` | `SummaryAdmin`, `SummaryAdminGrid` | `Actions`, `ActionsMenu` |
+| `NotificationsActions_DetailAdmin` | `DetailAdmin` | `Actions` |
 
 To add fields, badges or buttons to the notifications of a type, add a display driver that only handles that type:
 
@@ -318,6 +333,178 @@ services.AddNotificationType("Approval", LocalizationSource.Create("Approvals", 
 ```
 
 The preferences only store the choices that differ from the defaults of the type, so a change of the defaults applies to the users who did not choose. The notification itself is always stored in the notification center: the preferences choose the methods that also send it.
+
+## Creating a custom notification type
+
+The notification module doesn't know about mentions, approvals or any other kind of notification: each module registers the types it sends. A type gets, without more code, a label on its notifications, a value in the **Type** filter of the notification center, links that open the notification center filtered on it, and a row in the notification preferences of the users. Every other part described below is optional, and several modules can register their own types side by side.
+
+This walkthrough adds a `TaskAssigned` type to a module that manages tasks, to notify a user when a task is assigned to them.
+
+### 1. Register the type
+
+Register the type in the startup of the feature that sends it. The name is stored on the notifications, so keep it in a constant and don't change it once notifications were sent.
+
+```csharp
+public static class TaskNotificationConstants
+{
+    public const string TaskAssigned = "TaskAssigned";
+}
+```
+
+```csharp
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNotificationType(TaskNotificationConstants.TaskAssigned, LocalizationSource.Create("Assigned tasks", typeof(Startup)), type =>
+        {
+            type.Description = LocalizationSource.Create("When a task is assigned to you.", typeof(Startup));
+
+            // Optional: only send these notifications by SMS when the user asks for it.
+            type.DisabledMethods.Add("SMS");
+        });
+    }
+}
+```
+
+| Option | Description |
+|---|---|
+| Display name | The label of the type, in the notification center, the navbar and the preferences. |
+| `Description` | Shown under the type in the notification preferences of the users. |
+| `DisabledMethods` | The notification methods, for example `Email` or `SMS`, that are off for this type until a user turns them on. Every other method is on. |
+
+### 2. Send notifications of the type
+
+Set the `Type` of the message, the `ReferenceId` of the record it is about, and a `Url` to open. Data the display of the type needs can be stored on the message with `Put()`: it is copied to the stored notification.
+
+```csharp
+public sealed class TaskAssignedInfo
+{
+    public string ProjectName { get; set; }
+    public string AssignedBy { get; set; }
+    public DateTime? DueUtc { get; set; }
+}
+```
+
+```csharp
+var message = new NotificationMessage
+{
+    Subject = $"{currentUserName} assigned you a task",
+    Summary = task.DisplayText,
+    Url = $"~/tasks/{task.ContentItemId}",
+    Type = TaskNotificationConstants.TaskAssigned,
+    ReferenceId = task.ContentItemId,
+};
+
+message.Put(new TaskAssignedInfo
+{
+    ProjectName = project.DisplayText,
+    AssignedBy = currentUserName,
+    DueUtc = dueUtc,
+});
+
+await _notificationService.SendAsync(assignee, message);
+```
+
+A workflow can send notifications of the type too: the **Notify User** and **Notify Content's Owner** tasks have a **Type** and a **URL** field. See [Workflow Activities](#workflow-activities).
+
+### 3. Show the data of the type
+
+Add a display driver that only handles notifications of the type, and place its shapes in the display types where they should show. The display types and their zones are listed in [Customizing how a notification is shown](#customizing-how-a-notification-is-shown).
+
+```csharp
+public sealed class TaskAssignedNotificationDisplayDriver : DisplayDriver<Notification>
+{
+    public override bool CanHandleModel(Notification notification)
+        => notification.Type == TaskNotificationConstants.TaskAssigned;
+
+    public override IDisplayResult Display(Notification notification, BuildDisplayContext context)
+    {
+        if (!notification.TryGet<TaskAssignedInfo>(out var info))
+        {
+            return null;
+        }
+
+        return Combine(
+            View("TaskAssignedNotificationProject", info)
+                .Location(NotificationConstants.DisplayTypes.Header, "Meta:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Subject:10")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Meta:5"),
+            View("TaskAssignedNotificationDue", info)
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5")
+        );
+    }
+}
+```
+
+```csharp
+services.AddDisplayDriver<Notification, TaskAssignedNotificationDisplayDriver>();
+```
+
+With a template for each shape, in the `Views` folder of the module:
+
+```cshtml title="TaskAssignedNotificationProject.cshtml"
+@model TaskAssignedInfo
+
+<span class="small text-body-secondary">@Model.ProjectName &middot; @T["by {0}", Model.AssignedBy]</span>
+```
+
+```cshtml title="TaskAssignedNotificationDue.cshtml"
+@model TaskAssignedInfo
+
+@if (Model.DueUtc != null)
+{
+    <p>@T["Due on {0}", await DisplayAsync(await New.DateTime(Utc: Model.DueUtc, Format: "D"))]</p>
+}
+```
+
+In the navbar, the `Meta` zone is one line of small muted text, with a dot between its shapes: render plain text there rather than badges, and keep buttons for the `Actions` zone.
+
+To render the notifications of the type with a template of your own instead, override `Notification-TaskAssigned.Header.cshtml`, `Notification-TaskAssigned.SummaryAdmin.cshtml` or `Notification-TaskAssigned.DetailAdmin.cshtml`, in the module or in a theme.
+
+### 4. Keep the notifications in sync with the record
+
+When the record changes, update the notifications sent about it with `INotificationManager`, using the type and the reference id. For example, from a content handler of the tasks:
+
+```csharp
+public sealed class TaskNotificationsContentHandler : ContentHandlerBase
+{
+    private readonly INotificationManager _notificationManager;
+
+    public TaskNotificationsContentHandler(INotificationManager notificationManager)
+    {
+        _notificationManager = notificationManager;
+    }
+
+    // The assignments of a deleted task go away.
+    public override async Task RemovedAsync(RemoveContentContext context)
+    {
+        if (context.ContentItem.ContentType == "Task")
+        {
+            await _notificationManager.DeleteAsync(new NotificationFilter
+            {
+                Type = TaskNotificationConstants.TaskAssigned,
+                ReferenceId = context.ContentItem.ContentItemId,
+            });
+        }
+    }
+}
+```
+
+`MarkAsReadAsync()` fits a task that was completed, and `ListAsync()` with `UpdateAsync()` a task that was renamed. See [Managing sent notifications](#managing-sent-notifications).
+
+### 5. Hide the notifications the user can no longer see (optional)
+
+When a user can lose access to the records of the type, for example when they leave the project of the task, register an `INotificationVisibilityHandler` that hides or restricts the notifications of the type. See [Hiding notifications the user can no longer see](#hiding-notifications-the-user-can-no-longer-see).
+
+### 6. Link to the notifications of the type
+
+Link to the notification center filtered on the type, for example from the page of the module, to give users a list of their notifications of that type:
+
+```cshtml
+<a href="@Url.Content("~/Admin/notifications?q=type:TaskAssigned")">@T["My assigned tasks"]</a>
+```
 
 ## UI notifications with `INotifier`
 
