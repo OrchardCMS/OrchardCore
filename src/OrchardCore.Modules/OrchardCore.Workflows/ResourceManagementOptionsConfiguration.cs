@@ -12,6 +12,8 @@ public sealed class ResourceManagementOptionsConfiguration
     {
         s_manifest = new ResourceManifest();
 
+        // Obsolete: the workflow designer no longer uses jsPlumb. The resources are kept for third parties
+        // and will be removed in a future major version.
         s_manifest
             .DefineScript("jsplumb")
             .SetUrl(
@@ -45,24 +47,6 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("2.15.5");
 
         s_manifest
-            .DefineScript("workflow-editor")
-            .SetDependencies("jsplumb", "bootstrap")
-            .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.min.js",
-                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.js"
-            )
-            .SetVersion("1.0.0");
-
-        s_manifest
-            .DefineScript("workflow-viewer")
-            .SetDependencies("jsplumb", "bootstrap")
-            .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.min.js",
-                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.js"
-            )
-            .SetVersion("1.0.0");
-
-        s_manifest
             .DefineScript("workflow-url-generator")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.min.js",
@@ -76,6 +60,34 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.min.js",
                 "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.js"
             )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflows-designer")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/designer/workflows-designer.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/designer/workflows-designer.js"
+            )
+            .SetAttribute("type", "module")
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineStyle("workflows-designer")
+            // After Bootstrap, so the designer's rules win over the Bootstrap classes they refine.
+            .SetDependencies("bootstrap")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Styles/workflows-designer.min.css",
+                "~/OrchardCore.Workflows/Styles/workflows-designer.css"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-expression-editor")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/expression-editor/workflow-expression-editor.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/expression-editor/workflow-expression-editor.js"
+            )
+            .SetAttribute("type", "module")
             .SetVersion("1.0.0");
 
         s_manifest

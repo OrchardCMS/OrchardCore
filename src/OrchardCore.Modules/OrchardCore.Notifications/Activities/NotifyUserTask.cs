@@ -1,9 +1,11 @@
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Localization;
 using OrchardCore.Users;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
@@ -11,7 +13,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
+public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>, IActivityDescription
 {
     private readonly ISession _session;
 
@@ -20,18 +22,21 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
        IWorkflowExpressionEvaluator expressionEvaluator,
        HtmlEncoder htmlEncoder,
        ILogger<NotifyUserTask> logger,
+       IStringLocalizerFactory localizerFactory,
        IStringLocalizer<NotifyUserTask> stringLocalizer,
        ISession session
    ) : base(notificationCoordinator,
        expressionEvaluator,
        htmlEncoder,
        logger,
-       stringLocalizer)
+       localizerFactory, stringLocalizer)
     {
         _session = session;
     }
 
-    public override LocalizedString DisplayText => S["Notify Specific Users Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<NotifyUserTask>("Notify Specific Users Task");
+
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public WorkflowExpression<string> UserNames
     {

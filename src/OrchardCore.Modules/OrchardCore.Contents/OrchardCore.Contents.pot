@@ -2269,9 +2269,36 @@ msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Default
 msgid "Select all"
 msgstr ""
 
-#: Workflows/Activities/ContentActivity.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.ContentActivity"
-msgid "Content"
+#: Views/Shared/Components/SelectContentTypes/Picker.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Picker"
+msgid "Any content type"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Picker.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Picker"
+msgid "Deselect all"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/Shared/Components/SelectContentTypes/Picker.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Picker"
+msgid "No content type matches {0}"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Picker.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Picker"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Picker.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Picker"
+msgid "Search content types"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Picker.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Picker"
+msgid "Select all"
 msgstr ""
 
 #: Workflows/Activities/ContentActivity.cs
@@ -2292,6 +2319,16 @@ msgstr ""
 #: Workflows/Activities/ContentDraftSavedEvent.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.ContentDraftSavedEvent"
 msgid "Content Save Draft Event"
+msgstr ""
+
+#: Workflows/Activities/ContentEvent.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.ContentEvent"
+msgid "The content event."
+msgstr ""
+
+#: Workflows/Activities/ContentEvent.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.ContentEvent"
+msgid "The content item of the event."
 msgstr ""
 
 #: Workflows/Activities/ContentPublishedEvent.cs
@@ -2316,7 +2353,7 @@ msgstr ""
 
 #: Workflows/Activities/CreateContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.CreateContentTask"
-msgid "Content"
+msgid "Content item"
 msgstr ""
 
 #: Workflows/Activities/CreateContentTask.cs
@@ -2339,9 +2376,19 @@ msgctxt "OrchardCore.Contents.Workflows.Activities.CreateContentTask"
 msgid "Failed"
 msgstr ""
 
-#: Workflows/Activities/DeleteContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.DeleteContentTask"
-msgid "Content"
+#: Workflows/Activities/CreateContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.CreateContentTask"
+msgid "The content item the activity created, or the validation result when it failed."
+msgstr ""
+
+#: Workflows/Activities/CreateContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.CreateContentTask"
+msgid "The content item the activity created."
+msgstr ""
+
+#: Workflows/Activities/CreateContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.CreateContentTask"
+msgid "The content item the task created."
 msgstr ""
 
 #: Workflows/Activities/DeleteContentTask.cs
@@ -2361,11 +2408,6 @@ msgstr ""
 
 #: Workflows/Activities/PublishContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.PublishContentTask"
-msgid "Content"
-msgstr ""
-
-#: Workflows/Activities/PublishContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.PublishContentTask"
 msgid "Noop"
 msgstr ""
 
@@ -2381,7 +2423,7 @@ msgstr ""
 
 #: Workflows/Activities/RetrieveContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.RetrieveContentTask"
-msgid "Content"
+msgid "Content item"
 msgstr ""
 
 #: Workflows/Activities/RetrieveContentTask.cs
@@ -2394,9 +2436,14 @@ msgctxt "OrchardCore.Contents.Workflows.Activities.RetrieveContentTask"
 msgid "Retrieved"
 msgstr ""
 
-#: Workflows/Activities/UnpublishContentTask.cs
-msgctxt "OrchardCore.Contents.Workflows.Activities.UnpublishContentTask"
-msgid "Content"
+#: Workflows/Activities/RetrieveContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.RetrieveContentTask"
+msgid "The content item the activity retrieved."
+msgstr ""
+
+#: Workflows/Activities/RetrieveContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.RetrieveContentTask"
+msgid "The content item the task retrieved."
 msgstr ""
 
 #: Workflows/Activities/UnpublishContentTask.cs
@@ -2416,7 +2463,7 @@ msgstr ""
 
 #: Workflows/Activities/UpdateContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.UpdateContentTask"
-msgid "Content"
+msgid "Content item"
 msgstr ""
 
 #: Workflows/Activities/UpdateContentTask.cs
@@ -2436,7 +2483,47 @@ msgstr ""
 
 #: Workflows/Activities/UpdateContentTask.cs
 msgctxt "OrchardCore.Contents.Workflows.Activities.UpdateContentTask"
+msgid "The content item the activity updated, or the validation result when it failed."
+msgstr ""
+
+#: Workflows/Activities/UpdateContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.UpdateContentTask"
+msgid "The content item the activity updated."
+msgstr ""
+
+#: Workflows/Activities/UpdateContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.UpdateContentTask"
+msgid "The content item the task updated."
+msgstr ""
+
+#: Workflows/Activities/UpdateContentTask.cs
+msgctxt "OrchardCore.Contents.Workflows.Activities.UpdateContentTask"
 msgid "Update Content Task"
+msgstr ""
+
+#: Workflows/ContentWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Contents.Workflows.ContentWorkflowGlobalValueProvider"
+msgid "The content item versions, by version id."
+msgstr ""
+
+#: Workflows/ContentWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Contents.Workflows.ContentWorkflowGlobalValueProvider"
+msgid "The content items, by id."
+msgstr ""
+
+#: Workflows/ContentWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Contents.Workflows.ContentWorkflowGlobalValueProvider"
+msgid "The latest versions, by handle: Content.Latest[\"alias:about\"]."
+msgstr ""
+
+#: Workflows/ContentWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Contents.Workflows.ContentWorkflowGlobalValueProvider"
+msgid "The published content items, by handle: Content[\"alias:about\"]."
+msgstr ""
+
+#: Workflows/Variables/ContentItemVariableType.cs
+msgctxt "OrchardCore.Contents.Workflows.Variables.ContentItemVariableType"
+msgid "Content item"
 msgstr ""
 
 #: QuickNavigation/ContentQuickNavigationSettings.cs

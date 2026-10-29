@@ -35,6 +35,9 @@ public sealed class AllWorkflowTypeDeploymentSource
 
             // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
             objectData.Remove(nameof(workflowType.Id));
+
+            // Versions belong to this site: an imported definition becomes a version of the importing site.
+            objectData.Remove(nameof(workflowType.VersionId));
             data.Add(objectData);
         }
 
