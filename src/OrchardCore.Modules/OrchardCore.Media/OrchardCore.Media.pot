@@ -1365,6 +1365,16 @@ msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Save actions"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/MediaProfiles/Create.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
 msgid "Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,80'."
 msgstr ""
 
@@ -1481,6 +1491,16 @@ msgstr ""
 #: Views/MediaProfiles/Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
 msgid "Save"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Save actions"
+msgstr ""
+
+#: Views/MediaProfiles/Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
+msgid "Save and continue"
 msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml

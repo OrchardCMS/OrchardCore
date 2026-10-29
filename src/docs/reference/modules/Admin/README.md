@@ -564,6 +564,38 @@ The submit buttons of admin edit pages, such as **Publish**, **Save** and **Canc
 
 Mark every action other than the main ones with the `action-bar-secondary` class. A secondary action can be a single button or a whole control group, for example the date input and the button of **Publish Later**. When the **Actions layout** setting resolves to `Menu`, the admin theme moves the secondary actions into a single menu opened by an ellipsis button, and keeps only the main actions visible. On small screens the secondary actions are always moved into this menu, whatever the setting. The page content is padded so the bar never hides the end of the form.
 
+#### Remembering the last used action
+
+A split button offering an alternative action, such as **Save** with **Save and continue** in its dropdown, can remember which of the two the user chose last. When the alternative was used, the next page with the same group shows it as the main button, and moves the default action into the dropdown. Add these attributes to the `btn-group` element, which contains one submit button and one `dropdown-item` submit button:
+
+| Attribute | Description |
+| --- | --- |
+| `data-action-group` | The key under which the last used action is stored. Pages sharing a key share the choice, such as the create and edit pages of a template. |
+| `data-action-default` | The `value` of the default submit button. |
+| `data-label-default` | The text of the default action. |
+| `data-action-alt` | The `value` of the alternative submit button. |
+| `data-label-alt` | The text of the alternative action shown on the main button, such as **Save and continue**. |
+
+```cshtml
+<div class="btn-group"
+     role="group"
+     aria-label="@T["Save actions"]"
+     data-action-group="oc-template-save-action"
+     data-action-default="Save"
+     data-label-default="@T["Save"]"
+     data-action-alt="SaveAndContinue"
+     data-label-alt="@T["Save and continue"]">
+    <button type="submit" name="submit" value="Save" class="btn btn-primary save">@T["Save"]</button>
+    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+    </button>
+    <div class="dropdown-menu">
+        <button type="submit" name="submit" value="SaveAndContinue" class="dropdown-item save-continue">@T["and continue"]</button>
+    </div>
+</div>
+```
+
+The choice is stored per tenant in the browser's admin preferences. Both buttons must have an explicit `value`, since they swap their values.
 ### Declaring the columns of a list
 
 Declare the columns in the view that renders the list. Their names are unique, ignoring case.
