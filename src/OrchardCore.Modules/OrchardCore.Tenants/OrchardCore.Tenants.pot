@@ -530,6 +530,16 @@ msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfil
 msgid "Save"
 msgstr ""
 
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "Save actions"
+msgstr ""
+
+#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+msgid "Save and continue"
+msgstr ""
+
 #. Format arguments: {0}: "OrchardCore.Flows"
 #: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
 #, csharp-format
