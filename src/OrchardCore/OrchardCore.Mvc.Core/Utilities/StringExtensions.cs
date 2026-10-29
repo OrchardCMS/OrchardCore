@@ -74,7 +74,10 @@ public static class StringExtensions
         return trimmed + ellipsis;
     }
 
-    public static string HtmlClassify(this string text)
+    public static string HtmlClassify(this string text) =>
+        text.HtmlClassify(separator: '-');
+
+    public static string HtmlClassify(this string text, char separator)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -94,7 +97,7 @@ public static class StringExtensions
             {
                 if (previousIsNotLetter && i != 0 && cursor > 0)
                 {
-                    result[cursor++] = '-';
+                    result[cursor++] = separator;
                 }
 
                 result[cursor++] = char.ToLowerInvariant(current);
