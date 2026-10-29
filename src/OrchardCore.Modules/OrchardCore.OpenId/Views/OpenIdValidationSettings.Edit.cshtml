@@ -20,7 +20,7 @@
 </div>
 
 <div id="AuthorityField" class="ocat-wrapper" asp-validation-class-for="Authority">
-    <label asp-for="Authority" class="ocat-label">@T["Authority"]</label>
+    <label asp-for="Authority" class="ocat-label ocat-label-required">@T["Authority"]</label>
     <div class="ocat-end">
         <input asp-for="Authority" class="form-control openid-validation-authority" />
         <span asp-validation-for="Authority"></span>
@@ -38,7 +38,7 @@
 </div>
 
 <div id="AudienceField" class="ocat-wrapper" asp-validation-class-for="Audience">
-    <label asp-for="Audience" class="ocat-label">@T["Audience"]</label>
+    <label asp-for="Audience" class="ocat-label ocat-label-required">@T["Audience"]</label>
     <div class="ocat-end">
         <input asp-for="Audience" class="form-control openid-validation-audience" />
         <span asp-validation-for="Audience"></span>

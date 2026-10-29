@@ -1,0 +1,1019 @@
+{
+  "name": "WorkflowsDesignerTests",
+  "displayName": "WorkflowsDesignerTests",
+  "description": "Testing the OrchardCore.Workflows designer: the canvas, the properties panel, drafts and publishing, and the read-only instance viewer.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Workflows",
+        "OrchardCore.Workflows.Http",
+        "OrchardCore.Workflows.Timers",
+        "WorkflowsSample",
+        "OrchardCore.SignalR",
+
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheAdmin"
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "WorkflowViewer",
+          "Description": "Can open the admin, but can't manage workflows.",
+          "Permissions": [ "AccessAdminPanel" ]
+        },
+        {
+          "Name": "WorkflowEditor",
+          "Description": "Can manage workflows.",
+          "Permissions": [ "AccessAdminPanel", "ManageWorkflows" ]
+        }
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Article",
+          "DisplayName": "Article",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Article",
+              "Name": "Article",
+              "Settings": {}
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    },
+    {
+      "name": "WorkflowType",
+      "data": [
+        {
+          "WorkflowTypeId": "wfdseededapproval",
+          "Name": "Seeded approval",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "seededrequest",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Article submitted"
+                },
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "seedednotify",
+              "Name": "NotifyTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Notify the editors"
+                },
+                "Message": {
+                  "Expression": "An article is waiting for review."
+                }
+              }
+            },
+            {
+              "ActivityId": "seededsignal",
+              "Name": "SignalEvent",
+              "X": 360,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Wait for approval"
+                },
+                "SignalName": {
+                  "Expression": "approve"
+                }
+              }
+            },
+            {
+              "ActivityId": "seededapproved",
+              "Name": "NotifyTask",
+              "X": 680,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Notify the author"
+                },
+                "Message": {
+                  "Expression": "Your article was approved."
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "seededrequest",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "seedednotify"
+            },
+            {
+              "SourceActivityId": "seedednotify",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "seededsignal"
+            },
+            {
+              "SourceActivityId": "seededsignal",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "seededapproved"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdversionedapproval",
+          "Name": "Versioned approval",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "versionstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Approval requested"
+                },
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "versionrespond",
+              "Name": "HttpResponseTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Return the approval URL"
+                },
+                "Content": {
+                  "Expression": "{{ 'approve' | signal_url }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            },
+            {
+              "ActivityId": "versionwait",
+              "Name": "SignalEvent",
+              "X": 360,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Wait for the approval"
+                },
+                "SignalName": {
+                  "Expression": "approve"
+                }
+              }
+            },
+            {
+              "ActivityId": "versiondone",
+              "Name": "NotifyTask",
+              "X": 680,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Notify the requester"
+                },
+                "Message": {
+                  "Expression": "Approved."
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "versionstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "versionrespond"
+            },
+            {
+              "SourceActivityId": "versionrespond",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "versionwait"
+            },
+            {
+              "SourceActivityId": "versionwait",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "versiondone"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdvariablesgreeting",
+          "Name": "Variables greeting",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "greetstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Greeting requested"
+                },
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "greetscript",
+              "Name": "ScriptTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Compose the greeting"
+                },
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "setOutcome('Done'); 'hello ' + 21 * 2;"
+                }
+              }
+            },
+            {
+              "ActivityId": "greetrespond",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Return the greeting"
+                },
+                "Content": {
+                  "Expression": "{{ Workflow.Variables.greeting }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "greetstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "greetscript"
+            },
+            {
+              "SourceActivityId": "greetscript",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "greetrespond"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdexpressionsyntaxes",
+          "Name": "Expression syntaxes",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "name",
+              "TypeName": "string"
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "syntaxstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Name requested"
+                },
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "syntaxset",
+              "Name": "SetVariableTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "VariableName": "name",
+                "Value": {
+                  "Expression": "'from script'"
+                },
+                "LiquidValue": {
+                  "Expression": "{{ 'legacy' }}"
+                },
+                "Syntax": "Liquid"
+              }
+            },
+            {
+              "ActivityId": "syntaxrespond",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "{{ Workflow.Variables.name }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "syntaxstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "syntaxset"
+            },
+            {
+              "SourceActivityId": "syntaxset",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "syntaxrespond"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdtransientfailure",
+          "Name": "Transient failure",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "faultstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "faultcall",
+              "Name": "TransientFailureTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {}
+            },
+            {
+              "ActivityId": "faultdone",
+              "Name": "SetPropertyTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "PropertyName": "Done",
+                "Value": {
+                  "Expression": "yes",
+                  "Syntax": "Literal"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "faultstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "faultcall"
+            },
+            {
+              "SourceActivityId": "faultcall",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "faultdone"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdliveapproval",
+          "Name": "Live approval",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "livestart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "liverespond",
+              "Name": "HttpResponseTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "{{ 'approve' | signal_url }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            },
+            {
+              "ActivityId": "livewait",
+              "Name": "SignalEvent",
+              "X": 360,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "SignalName": {
+                  "Expression": "approve"
+                }
+              }
+            },
+            {
+              "ActivityId": "livedone",
+              "Name": "NotifyTask",
+              "X": 680,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "Message": {
+                  "Expression": "Approved."
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "livestart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "liverespond"
+            },
+            {
+              "SourceActivityId": "liverespond",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "livewait"
+            },
+            {
+              "SourceActivityId": "livewait",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "livedone"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdchilddoubler",
+          "Name": "Doubler",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "IsActivity": true,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "amount",
+              "TypeName": "number",
+              "IsInput": true
+            },
+            {
+              "Name": "doubled",
+              "TypeName": "number",
+              "Description": "Twice the amount",
+              "IsOutput": true
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "doublerstart",
+              "Name": "StartedByWorkflowEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {}
+            },
+            {
+              "ActivityId": "doublerset",
+              "Name": "SetVariableTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "VariableName": "doubled",
+                "Value": {
+                  "Expression": "variable('amount') * 2",
+                  "Syntax": "JavaScript"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "doublerstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "doublerset"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdcomposeddoubling",
+          "Name": "Composed doubling",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "result",
+              "TypeName": "number"
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "composestart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "composeexec",
+              "Name": "ExecuteWorkflowTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "WorkflowTypeId": "wfdchilddoubler",
+                "WaitForCompletion": true,
+                "Inputs": {
+                  "amount": {
+                    "Expression": "21",
+                    "Syntax": "Literal"
+                  }
+                },
+                "Outputs": [
+                  {
+                    "Name": "doubled",
+                    "TypeName": "number",
+                    "Description": "Twice the amount"
+                  }
+                ],
+                "OutputBindings": {
+                  "doubled": "result"
+                }
+              }
+            },
+            {
+              "ActivityId": "composerespond",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "{{ Workflow.Variables.result }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "composestart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "composeexec"
+            },
+            {
+              "SourceActivityId": "composeexec",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "composerespond"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdimplicitbranches",
+          "Name": "Implicit branches",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "BranchingMode": "All",
+          "Activities": [
+            {
+              "ActivityId": "branchstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "brancha",
+              "Name": "NotifyTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Message": {
+                  "Expression": "First branch"
+                }
+              }
+            },
+            {
+              "ActivityId": "branchb",
+              "Name": "NotifyTask",
+              "X": 360,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "Message": {
+                  "Expression": "Second branch"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "branchstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "brancha"
+            },
+            {
+              "SourceActivityId": "branchstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "branchb"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdversionedhistory",
+          "Name": "Versioned history",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "historystart",
+              "Name": "SignalEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "SignalName": {
+                  "Expression": "go"
+                }
+              }
+            },
+            {
+              "ActivityId": "historynotify",
+              "Name": "NotifyTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Message": {
+                  "Expression": "Hello."
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "historystart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "historynotify"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdavailabledata",
+          "Name": "Available data",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "datapublished",
+              "Name": "ContentPublishedEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ContentTypeFilter": []
+              }
+            },
+            {
+              "ActivityId": "dataretrieve",
+              "Name": "RetrieveContentTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "input('ContentItem')"
+                }
+              }
+            },
+            {
+              "ActivityId": "datalog",
+              "Name": "LogTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "LogLevel": "Information",
+                "Text": {
+                  "Expression": ""
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "datapublished",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "dataretrieve"
+            },
+            {
+              "SourceActivityId": "dataretrieve",
+              "SourceOutcomeName": "Retrieved",
+              "DestinationActivityId": "datalog"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdscripterrors",
+          "Name": "Script errors",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "errstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "errscript",
+              "Name": "ScriptTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "setOutcome('Done'); var total = input('Order').Total;"
+                }
+              }
+            },
+            {
+              "ActivityId": "errdone",
+              "Name": "SetPropertyTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "PropertyName": "Done",
+                "Value": {
+                  "Expression": "yes",
+                  "Syntax": "Literal"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "errstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "errscript"
+            },
+            {
+              "SourceActivityId": "errscript",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "errdone"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdrecordeddata",
+          "Name": "Recorded condition",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "RecordActivityData": true,
+          "Activities": [
+            {
+              "ActivityId": "recstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "reccheck",
+              "Name": "IfElseTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Is it big?"
+                },
+                "Condition": {
+                  "Expression": "6 * 7 > 40",
+                  "Syntax": "JavaScript"
+                }
+              }
+            },
+            {
+              "ActivityId": "recreply",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "big"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "recstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "reccheck"
+            },
+            {
+              "SourceActivityId": "reccheck",
+              "SourceOutcomeName": "True",
+              "DestinationActivityId": "recreply"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdretriedscript",
+          "Name": "Retried call",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "retrystart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "retrycall",
+              "Name": "TransientFailureTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Call the service"
+                },
+                "ActivityRetryPolicy": {
+                  "MaxRetries": 1,
+                  "DelaySeconds": 0,
+                  "Backoff": 0,
+                  "OnFailure": 1
+                },
+                "Failures": 2
+              }
+            },
+            {
+              "ActivityId": "retryfallback",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "fallback"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "retrystart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "retrycall"
+            },
+            {
+              "SourceActivityId": "retrycall",
+              "SourceOutcomeName": "Failed",
+              "DestinationActivityId": "retryfallback"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

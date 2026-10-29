@@ -2,7 +2,7 @@
 @model ValidateFormFieldTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="FieldName">
-    <label asp-for="FieldName" class="ocat-label">@T["Field Name"]</label>
+    <label asp-for="FieldName" class="ocat-label ocat-label-required">@T["Field Name"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="FieldName" class="form-control" />
         <span asp-validation-for="FieldName"></span>
@@ -11,7 +11,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="ErrorMessage">
-    <label asp-for="ErrorMessage" class="ocat-label">@T["Error Message"]</label>
+    <label asp-for="ErrorMessage" class="ocat-label ocat-label-required">@T["Error Message"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="ErrorMessage" class="form-control" />
         <span asp-validation-for="ErrorMessage"></span>

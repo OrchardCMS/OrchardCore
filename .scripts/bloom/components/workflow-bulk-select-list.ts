@@ -4,15 +4,16 @@
 // WorkflowType skips confirmation entirely for its "Export" bulk action. Kept as its own small
 // component rather than extending the widely-used generic one, to avoid any risk to its other
 // 9 consumers for a shape only these 2 files need.
+// Both pages render the AdminList toolbar, which hides the bulk actions with the d-none class.
 const show = (element: HTMLElement | null) => {
     if (element) {
-        element.style.display = "";
+        element.classList.remove("d-none");
     }
 };
 
 const hide = (element: HTMLElement | null) => {
     if (element) {
-        element.style.display = "none";
+        element.classList.add("d-none");
     }
 };
 

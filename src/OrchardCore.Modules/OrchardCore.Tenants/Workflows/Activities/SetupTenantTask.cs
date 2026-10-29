@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Setup.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -15,7 +16,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tenants.Workflows.Activities;
 
-public class SetupTenantTask : TenantTask
+public class SetupTenantTask : TenantTask, IActivityDescription
 {
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -32,8 +33,9 @@ public class SetupTenantTask : TenantTask
         ISetupService setupService,
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<SetupTenantTask> localizer)
-        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
+        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizerFactory, localizer)
     {
         SetupService = setupService;
         _clock = clock;
@@ -46,9 +48,9 @@ public class SetupTenantTask : TenantTask
 
     public override string Name => nameof(SetupTenantTask);
 
-    public override LocalizedString Category => S["Tenant"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SetupTenantTask>("Setup Tenant Task");
 
-    public override LocalizedString DisplayText => S["Setup Tenant Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public WorkflowExpression<string> SiteName
     {

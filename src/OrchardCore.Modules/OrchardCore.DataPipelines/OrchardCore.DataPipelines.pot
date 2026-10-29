@@ -3047,11 +3047,6 @@ msgstr ""
 
 #: Workflows/DataPipelineRunCompletedEvent.cs
 msgctxt "OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent"
-msgid "Data"
-msgstr ""
-
-#: Workflows/DataPipelineRunCompletedEvent.cs
-msgctxt "OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent"
 msgid "Data Pipeline Run Completed Event"
 msgstr ""
 
@@ -3065,11 +3060,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
 msgid "A run of the data pipeline '{0}' is already queued or running."
-msgstr ""
-
-#: Workflows/RunDataPipelineTask.cs
-msgctxt "OrchardCore.DataPipelines.Workflows.RunDataPipelineTask"
-msgid "Data"
 msgstr ""
 
 #: Workflows/RunDataPipelineTask.cs

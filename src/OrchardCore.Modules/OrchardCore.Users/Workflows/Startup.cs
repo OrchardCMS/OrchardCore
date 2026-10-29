@@ -5,7 +5,9 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.Drivers;
 using OrchardCore.Users.Workflows.Handlers;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 
 namespace OrchardCore.Users.Workflows;
 
@@ -14,6 +16,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[ActivityCategoryLocalizationSources.User.Value] = "fa-solid fa-user");
+
         services.AddActivity<UserCreatedEvent, UserCreatedEventDisplayDriver>();
         services.AddActivity<UserDeletedEvent, UserDeletedEventDisplayDriver>();
         services.AddActivity<UserEnabledEvent, UserEnabledEventDisplayDriver>();

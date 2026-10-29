@@ -2,6 +2,7 @@ using OrchardCore.Email;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -23,6 +24,7 @@ public class EmailTaskTests
         var task = new EmailTask(
             emailService,
             new SimpleWorkflowExpressionEvaluator(),
+            new NullStringLocalizerFactory(),
             Mock.Of<IStringLocalizer<EmailTask>>(),
             HtmlEncoder.Default)
         {

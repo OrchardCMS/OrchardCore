@@ -42,11 +42,17 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
             var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
 
             // Some types cannot be cast (e.g., null to bool), so we need to catch the exception and return the default value.
-            return (T)await _scriptingManager.EvaluateAsync(directive, null, null, methodProviders, workflowContext.CancellationToken);
+            var result = (T)await _scriptingManager.EvaluateAsync(directive, null, null, methodProviders, workflowContext.CancellationToken);
+            workflowContext.ReportEvaluation(WorkflowExpressionSyntaxes.JavaScript, expression.Expression, result);
+
+            return result;
         }
         catch (Exception ex) when (!IsStoppedEvaluation(ex))
         {
             _logger.LogError(ex, "An error occurred while evaluating the expression: {Expression}", expression.Expression);
+
+            // The run goes on with the default value; the error shows on the activity that evaluated the script.
+            workflowContext?.ReportScriptError(ex.Message);
         }
 
         return default;

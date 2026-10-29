@@ -7,6 +7,7 @@ using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 
@@ -18,46 +19,67 @@ public class WorkflowManager : IWorkflowManager
     // Workflow execution can trigger (directly or transitively) without reaching a blocking activity.
     private const int MaxRecursionDepth = 100;
 
+    /// <summary>
+    /// How many levels deep workflows can run workflows in a run (<see cref="StartChildWorkflowAsync"/>).
+    /// </summary>
+    public const int MaxChildWorkflowDepth = 16;
+
     private readonly IActivityLibrary _activityLibrary;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
+    private readonly IWorkflowVariableTypeProvider _variableTypeProvider;
     private readonly IWorkflowStore _workflowStore;
+    private readonly IWorkflowExecutionJournal _journal;
+    private readonly IWorkflowDesignerNotifier _notifier;
     private readonly IWorkflowIdGenerator _workflowIdGenerator;
     private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
     private readonly IWorkflowFaultHandler _workflowFaultHandler;
     private readonly IDistributedLock _distributedLock;
     private readonly ILogger _logger;
     private readonly ILogger<MissingActivity> _missingActivityLogger;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly IClock _clock;
 
     private readonly Dictionary<string, int> _recursions = [];
     private int _currentRecursionDepth;
+    private int _childWorkflowDepth;
 
     public WorkflowManager
     (
         IActivityLibrary activityLibrary,
         IWorkflowTypeStore workflowTypeRepository,
+        IWorkflowTypeVersionStore workflowTypeVersionStore,
+        IWorkflowVariableTypeProvider variableTypeProvider,
         IWorkflowStore workflowRepository,
+        IWorkflowExecutionJournal journal,
+        IWorkflowDesignerNotifier notifier,
         IWorkflowIdGenerator workflowIdGenerator,
         Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
         IWorkflowFaultHandler workflowFaultHandler,
         IDistributedLock distributedLock,
         ILogger<WorkflowManager> logger,
         ILogger<MissingActivity> missingActivityLogger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<MissingActivity> missingActivityLocalizer,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IClock clock)
     {
         _activityLibrary = activityLibrary;
         _workflowTypeStore = workflowTypeRepository;
+        _workflowTypeVersionStore = workflowTypeVersionStore;
+        _variableTypeProvider = variableTypeProvider;
         _workflowStore = workflowRepository;
+        _journal = journal;
+        _notifier = notifier;
         _workflowIdGenerator = workflowIdGenerator;
         _workflowValueSerializers = workflowValueSerializers;
         _workflowFaultHandler = workflowFaultHandler;
         _distributedLock = distributedLock;
         _logger = logger;
         _missingActivityLogger = missingActivityLogger;
+        _localizerFactory = localizerFactory;
         _missingActivityLocalizer = missingActivityLocalizer;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         _clock = clock;
@@ -70,6 +92,9 @@ public class WorkflowManager : IWorkflowManager
         var workflow = new Workflow
         {
             WorkflowTypeId = workflowType.WorkflowTypeId,
+
+            // The instance runs this version until it finishes, even when a new one is published.
+            WorkflowTypeVersionId = workflowType.VersionId,
             Status = WorkflowStatus.Idle,
             State = JObject.FromObject(new WorkflowState
             {
@@ -108,7 +133,15 @@ public class WorkflowManager : IWorkflowManager
         var lastResult = await DeserializeAsync(state.LastResult);
         var executedActivities = state.ExecutedActivities;
 
-        return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
+        var workflowContext = new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _variableTypeProvider)
+        {
+            ExecutionSequence = state.ExecutionSequence,
+        };
+
+        // Declared variables that have no value yet start with their default value.
+        workflowContext.Variables.ApplyDefaults();
+
+        return workflowContext;
     }
 
     public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JsonObject properties)
@@ -120,7 +153,7 @@ public class WorkflowManager : IWorkflowManager
         if (activity == null)
         {
             _logger.LogWarning("Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.", activityRecord.Name);
-            activity = new MissingActivity(_missingActivityLocalizer, _missingActivityLogger, activityRecord);
+            activity = new MissingActivity(_localizerFactory, _missingActivityLocalizer, _missingActivityLogger, activityRecord);
         }
 
         var context = new ActivityContext
@@ -205,7 +238,7 @@ public class WorkflowManager : IWorkflowManager
             }
 
             // If a singleton or the event is exclusive, try to acquire a lock per workflow type.
-            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, isExclusive);
+            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, isExclusive, correlationId);
             if (!locked)
             {
                 continue;
@@ -215,6 +248,15 @@ public class WorkflowManager : IWorkflowManager
 
             // Check if this is a workflow singleton and there's already an halted instance on any activity.
             if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+            {
+                continue;
+            }
+
+            // Check if the workflow runs one instance per correlation id and one with this correlation id waits.
+            if (!workflowType.IsSingleton &&
+                workflowType.IsSingletonPerCorrelation &&
+                !string.IsNullOrEmpty(correlationId) &&
+                await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId, correlationId))
             {
                 continue;
             }
@@ -246,9 +288,28 @@ public class WorkflowManager : IWorkflowManager
 
         ArgumentNullException.ThrowIfNull(awaitingActivity);
 
-        var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+        // The instance resumes on the version it started on.
+        var workflowType = await _workflowTypeVersionStore.GetWorkflowTypeAsync(
+            await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId),
+            workflow.WorkflowTypeVersionId);
+
         var activityRecord = workflowType.Activities.SingleOrDefault(x => x.ActivityId == awaitingActivity.ActivityId);
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
+
+        if (activityRecord is null)
+        {
+            // For example an instance that started before versions existed, waiting on an activity that was removed since.
+            _logger.LogWarning(
+                "The workflow '{WorkflowId}' is waiting on the activity '{ActivityId}', which its definition doesn't have. Putting the workflow in the faulted state.",
+                workflow.WorkflowId,
+                awaitingActivity.ActivityId);
+
+            workflowContext.Status = WorkflowStatus.Faulted;
+            workflow.FaultMessage = $"The activity '{awaitingActivity.ActivityId}' the workflow is waiting on doesn't exist in its definition.";
+            await PersistAsync(workflowContext);
+
+            return workflowContext;
+        }
 
         workflowContext.Status = WorkflowStatus.Resuming;
 
@@ -278,17 +339,99 @@ public class WorkflowManager : IWorkflowManager
 
         // Resume the workflow at the specified blocking activity.
         await ExecuteWorkflowAsync(workflowContext, activityRecord);
+        await CompleteRunAsync(workflowContext, workflowType);
 
+        return workflowContext;
+    }
+
+    /// <inheritdoc />
+    public Task<WorkflowExecutionContext> RetryActivityAsync(Workflow workflow, string activityId)
+    {
+        ArgumentNullException.ThrowIfNull(workflow);
+        ArgumentException.ThrowIfNullOrEmpty(activityId);
+
+        return RetryCoreAsync(workflow, activityId, isScheduled: false);
+    }
+
+    /// <inheritdoc />
+    public Task<WorkflowExecutionContext> RunDueRetryAsync(Workflow workflow)
+    {
+        ArgumentNullException.ThrowIfNull(workflow);
+
+        if (workflow.Status != WorkflowStatus.Faulted || workflow.PendingRetry is not { } retry || retry.DueUtc > _clock.UtcNow)
+        {
+            return Task.FromResult<WorkflowExecutionContext>(null);
+        }
+
+        return RetryCoreAsync(workflow, retry.ActivityId, isScheduled: true);
+    }
+
+    // Runs a faulted instance again from an activity. A retry by hand starts the attempts of the task's retry policy
+    // again; a scheduled one counts the attempts made before.
+    private async Task<WorkflowExecutionContext> RetryCoreAsync(Workflow workflow, string activityId, bool isScheduled)
+    {
+        if (workflow.Status != WorkflowStatus.Faulted)
+        {
+            throw new InvalidOperationException($"The workflow '{workflow.WorkflowId}' isn't faulted, so it can't be retried.");
+        }
+
+        var currentType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId)
+            ?? throw new InvalidOperationException($"The workflow type '{workflow.WorkflowTypeId}' of the workflow '{workflow.WorkflowId}' doesn't exist.");
+
+        // The instance runs again on the version it started on.
+        var workflowType = await _workflowTypeVersionStore.GetWorkflowTypeAsync(currentType, workflow.WorkflowTypeVersionId);
+        var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == activityId)
+            ?? throw new ArgumentException($"The definition of the workflow '{workflow.WorkflowId}' doesn't have the activity '{activityId}'.", nameof(activityId));
+
+        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowExclusiveLockAsync(workflow);
+
+        if (!locked)
+        {
+            _logger.LogWarning("The workflow '{WorkflowId}' wasn't retried: another process holds its lock.", workflow.WorkflowId);
+
+            return null;
+        }
+
+        await using var acquiredLock = locker;
+
+        // Another retry, by hand or scheduled, may have run the instance while this one waited for the lock.
+        workflow = await _workflowStore.GetAsync(workflow.Id);
+
+        if (workflow?.Status != WorkflowStatus.Faulted ||
+            (isScheduled && (workflow.PendingRetry is not { } retry || retry.ActivityId != activityId || retry.DueUtc > _clock.UtcNow)))
+        {
+            return null;
+        }
+
+        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow);
+        workflow.FaultMessage = null;
+
+        if (!isScheduled)
+        {
+            workflow.PendingRetry = null;
+        }
+
+        await ExecuteWorkflowAsync(workflowContext, activity);
+        await CompleteRunAsync(workflowContext, workflowType);
+
+        return workflowContext;
+    }
+
+    // Once a resumed or retried instance ran: deletes it when it finished and its type deletes finished instances,
+    // otherwise saves it, then resumes the instance that runs it as an activity, if any.
+    private async Task CompleteRunAsync(WorkflowExecutionContext workflowContext, WorkflowType workflowType)
+    {
         if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
         {
             await _workflowStore.DeleteAsync(workflowContext.Workflow);
+            await NotifyInstanceChangedAsync(workflowContext, isDeleted: true);
         }
         else
         {
             await PersistAsync(workflowContext);
         }
 
-        return workflowContext;
+        await ResumeParentAsync(workflowContext);
     }
 
     public async Task<WorkflowExecutionContext> RestartWorkflowAsync(WorkflowType workflowType, IDictionary<string, object> input = null, string correlationId = null)
@@ -304,6 +447,7 @@ public class WorkflowManager : IWorkflowManager
         // Create a workflow context.
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
         workflowContext.Status = WorkflowStatus.Starting;
+        ApplyInputs(workflowContext, input);
 
         // Signal every activity that the workflow is about to start.
         // This should be called prior OnInputReceivedAsync.
@@ -348,12 +492,56 @@ public class WorkflowManager : IWorkflowManager
         startActivity ??= workflowType.Activities?.FirstOrDefault(x => x.IsStart)
             ?? throw new InvalidOperationException($"Workflow with ID {workflowType.Id} does not have a start activity.");
 
+        return await StartWorkflowCoreAsync(workflowType, startActivity, input, correlationId, initialize: null);
+    }
+
+    /// <inheritdoc />
+    public async Task<WorkflowExecutionContext> StartChildWorkflowAsync(WorkflowType workflowType, WorkflowExecutionContext parentContext, string parentActivityId, IDictionary<string, object> input = null)
+    {
+        ArgumentNullException.ThrowIfNull(workflowType);
+        ArgumentNullException.ThrowIfNull(parentContext);
+        ArgumentException.ThrowIfNullOrEmpty(parentActivityId);
+
+        if (_childWorkflowDepth >= MaxChildWorkflowDepth)
+        {
+            throw new InvalidOperationException($"Workflows can run other workflows {MaxChildWorkflowDepth} levels deep at most.");
+        }
+
+        var startActivity = workflowType.Activities?.FirstOrDefault(x => x.IsStart && x.Name == nameof(StartedByWorkflowEvent))
+            ?? workflowType.Activities?.FirstOrDefault(x => x.IsStart)
+            ?? throw new InvalidOperationException($"The workflow '{workflowType.Name}' doesn't have a start activity.");
+
+        _childWorkflowDepth++;
+
+        try
+        {
+            return await StartWorkflowCoreAsync(workflowType, startActivity, input, correlationId: null, workflow =>
+            {
+                workflow.ParentWorkflowId = parentContext.WorkflowId;
+                workflow.ParentActivityId = parentActivityId;
+            });
+        }
+        finally
+        {
+            _childWorkflowDepth--;
+        }
+    }
+
+    private async Task<WorkflowExecutionContext> StartWorkflowCoreAsync(
+        WorkflowType workflowType,
+        ActivityRecord startActivity,
+        IDictionary<string, object> input,
+        string correlationId,
+        Action<Workflow> initialize)
+    {
         // Create a new workflow instance.
         var workflow = NewWorkflow(workflowType, correlationId);
+        initialize?.Invoke(workflow);
 
         // Create a workflow context.
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
         workflowContext.Status = WorkflowStatus.Starting;
+        ApplyInputs(workflowContext, input);
 
         // Signal every activity about available input.
         await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
@@ -403,6 +591,25 @@ public class WorkflowManager : IWorkflowManager
             var isResuming = workflowContext.Status == WorkflowStatus.Resuming;
             var isFirstPass = true;
 
+            // Adds the activities this run blocked on to the instance, which a resume or a retry of the instance
+            // finds there.
+            List<ActivityRecord> AddBlockingActivities()
+            {
+                // Apply Distinct() as two paths could block on the same activity.
+                var blockingActivities = blocking.Distinct().ToList();
+
+                foreach (var blockingActivity in blockingActivities)
+                {
+                    // Workflows containing event activities could end up being blocked on the same activity.
+                    if (!workflowContext.Workflow.BlockingActivities.Any(x => x.ActivityId == blockingActivity.ActivityId))
+                    {
+                        workflowContext.Workflow.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
+                    }
+                }
+
+                return blockingActivities;
+            }
+
             workflowContext.Status = WorkflowStatus.Executing;
             scheduled.Push(activity);
 
@@ -421,6 +628,16 @@ public class WorkflowManager : IWorkflowManager
                 }
 
                 var outcomes = Enumerable.Empty<string>();
+                var startedUtc = _clock.UtcNow;
+                var resumed = isResuming;
+                var scriptErrorCount = workflowContext.ScriptErrors.Count;
+
+                // What the activity evaluates, sets and changes, when the workflow records it.
+                var dataRecorder = ActivityDataRecorder.Start(workflowContext, activityContext);
+
+                // Records the execution in the journal, as it completes now.
+                void Record(WorkflowExecutionRecordStatus status, IEnumerable<string> recordedOutcomes, string error)
+                    => workflowContext.RecordExecution(activityContext, status, recordedOutcomes, startedUtc, _clock.UtcNow, resumed, error, dataRecorder?.Collect());
 
                 try
                 {
@@ -455,8 +672,17 @@ public class WorkflowManager : IWorkflowManager
                         }
                         else
                         {
+                            var haltedScriptError = ScriptErrorsSince(workflowContext, scriptErrorCount);
+
+                            if (haltedScriptError is not null && workflowType.FaultOnScriptErrors)
+                            {
+                                throw new WorkflowScriptException(haltedScriptError);
+                            }
+
                             // Block on this activity.
                             blocking.Add(activity);
+                            Record(WorkflowExecutionRecordStatus.Halted, [], haltedScriptError);
+                            ClearPendingRetry(workflowContext, activity);
 
                             continue;
                         }
@@ -465,18 +691,96 @@ public class WorkflowManager : IWorkflowManager
                     {
                         outcomes = result.Outcomes;
                     }
+
+                    // A script of the activity failed: the run goes on with what the script fell back to, unless the
+                    // workflow faults on script errors.
+                    var scriptError = ScriptErrorsSince(workflowContext, scriptErrorCount);
+
+                    if (scriptError is not null && workflowType.FaultOnScriptErrors)
+                    {
+                        throw new WorkflowScriptException(scriptError);
+                    }
+
+                    // Once the activity has run, its bound outputs are written to their variables.
+                    if (!result.IsHalted)
+                    {
+                        ApplyOutputBindings(workflowContext, activityContext);
+                    }
+
+                    Record(
+                        result.IsHalted ? WorkflowExecutionRecordStatus.Halted : WorkflowExecutionRecordStatus.Completed,
+                        result.IsHalted ? [] : outcomes,
+                        scriptError);
+
+                    ClearPendingRetry(workflowContext, activity);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
-                    workflowContext.Fault(ex, activityContext);
+                    var retryPolicy = activityContext.Activity.GetRetryPolicy();
+                    var pendingRetry = workflowContext.Workflow.PendingRetry;
+                    var failedAttempts = (pendingRetry?.ActivityId == activity.ActivityId ? pendingRetry.FailedAttempts : 0) + 1;
 
-                    DecrementRecursion(workflowContext.Workflow);
-                    recursionDecremented = true;
+                    if (retryPolicy is not null && failedAttempts <= retryPolicy.MaxRetries)
+                    {
+                        // The task's retry policy retries it: at once, in this run, or later, while the instance is
+                        // faulted with a retry due.
+                        var delay = retryPolicy.GetDelay(failedAttempts);
 
-                    await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
+                        Record(WorkflowExecutionRecordStatus.Retrying, [], ex.Message);
+                        workflowContext.Workflow.PendingRetry = new WorkflowPendingRetry
+                        {
+                            ActivityId = activity.ActivityId,
+                            FailedAttempts = failedAttempts,
+                            MaxRetries = retryPolicy.MaxRetries,
+                            DueUtc = _clock.UtcNow + delay,
+                        };
 
-                    return blocking.Distinct();
+                        _logger.LogWarning(ex, "The activity '{ActivityId}' of the workflow '{WorkflowId}' failed, and is retried in {Delay} (retry {Retry} of {MaxRetries}).", activity.ActivityId, workflowContext.WorkflowId, delay, failedAttempts, retryPolicy.MaxRetries);
+
+                        if (delay == TimeSpan.Zero)
+                        {
+                            // The retry executes the task, as a retry by hand does.
+                            isResuming = false;
+                            scheduled.Push(activity);
+
+                            continue;
+                        }
+
+                        workflowContext.Fault(ex, activityContext);
+
+                        DecrementRecursion(workflowContext.Workflow);
+                        recursionDecremented = true;
+
+                        // The retry runs the task again, then what follows it, while the instance keeps the activities
+                        // this run blocked on. The other branches still scheduled in this run (of a fork, for example)
+                        // aren't kept: they don't run.
+                        return AddBlockingActivities();
+                    }
+
+                    workflowContext.Workflow.PendingRetry = null;
+
+                    if (retryPolicy?.FollowsFailedOutcome != true)
+                    {
+                        Record(WorkflowExecutionRecordStatus.Faulted, [], ex.Message);
+
+                        _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
+                        workflowContext.Fault(ex, activityContext);
+
+                        DecrementRecursion(workflowContext.Workflow);
+                        recursionDecremented = true;
+
+                        await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
+
+                        // A retry by hand finds the activities this run blocked on in the instance.
+                        return AddBlockingActivities();
+                    }
+
+                    // The attempts are spent: the task produces its failed outcome, with the error as its result.
+                    outcomes = [ActivityRetryPolicy.FailedOutcome];
+                    workflowContext.LastResult = ex.Message;
+                    Record(WorkflowExecutionRecordStatus.Failed, outcomes, ex.Message);
+
+                    _logger.LogWarning(ex, "The activity '{ActivityId}' of the workflow '{WorkflowId}' failed, and follows its '{Outcome}' outcome.", activity.ActivityId, workflowContext.WorkflowId, ActivityRetryPolicy.FailedOutcome);
                 }
 
                 // Signal every activity that the activity is executed.
@@ -484,12 +788,18 @@ public class WorkflowManager : IWorkflowManager
 
                 foreach (var outcome in outcomes)
                 {
-                    // Look for next activity in the graph.
-                    var transition = workflowType.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome);
+                    // Look for the next activities in the graph: the first transition of the outcome, or all of them.
+                    var transitions = workflowType.Transitions.Where(x => x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome).ToList();
 
-                    if (transition != null)
+                    if (workflowType.BranchingMode == WorkflowBranchingMode.FirstOnly && transitions.Count > 1)
                     {
-                        var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
+                        transitions.RemoveRange(1, transitions.Count - 1);
+                    }
+
+                    // The last one pushed runs first, so the transitions run in the order they were added.
+                    for (var i = transitions.Count - 1; i >= 0; i--)
+                    {
+                        var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transitions[i].DestinationActivityId);
 
                         // Check that the activity doesn't point to itself.
                         if (destinationActivity != activity)
@@ -502,19 +812,9 @@ public class WorkflowManager : IWorkflowManager
                 isFirstPass = false;
             }
 
-            // Apply Distinct() as two paths could block on the same activity.
-            var blockingActivities = blocking.Distinct().ToList();
+            var blockingActivities = AddBlockingActivities();
 
             workflowContext.Status = blockingActivities.Count > 0 || workflowContext.Workflow.BlockingActivities.Count > 0 ? WorkflowStatus.Halted : WorkflowStatus.Finished;
-
-            foreach (var blockingActivity in blockingActivities)
-            {
-                // Workflows containing event activities could end up being blocked on the same activity.
-                if (!workflowContext.Workflow.BlockingActivities.Any(x => x.ActivityId == blockingActivity.ActivityId))
-                {
-                    workflowContext.Workflow.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
-                }
-            }
 
             return blockingActivities;
         }
@@ -524,6 +824,119 @@ public class WorkflowManager : IWorkflowManager
             {
                 // Decrement the workflow scope recursion.
                 DecrementRecursion(workflowContext.Workflow);
+            }
+        }
+    }
+
+    // A child instance (StartChildWorkflowAsync) that finished or faulted in a later run than the one that started it
+    // resumes its parent's activity, when the parent waits on it.
+    private async Task ResumeParentAsync(WorkflowExecutionContext childContext)
+    {
+        var child = childContext.Workflow;
+
+        // A child that's retried later hasn't ended yet.
+        if (string.IsNullOrEmpty(child.ParentWorkflowId) ||
+            childContext.Status is not (WorkflowStatus.Finished or WorkflowStatus.Faulted) ||
+            child.PendingRetry is not null)
+        {
+            return;
+        }
+
+        // The parent runs in this scope: its activity reads the result itself.
+        if (_recursions.TryGetValue(child.ParentWorkflowId, out var count) && count > 0)
+        {
+            return;
+        }
+
+        await ResumeParentAsync(child, ChildWorkflowResult.From(childContext));
+    }
+
+    /// <inheritdoc />
+    public Task ResumeParentOfStoppedChildAsync(Workflow child, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(child);
+
+        if (string.IsNullOrEmpty(child.ParentWorkflowId))
+        {
+            return Task.CompletedTask;
+        }
+
+        return ResumeParentAsync(child, new ChildWorkflowResult
+        {
+            WorkflowId = child.WorkflowId,
+            Status = WorkflowStatus.Aborted,
+            FaultMessage = reason,
+        });
+    }
+
+    // Resumes the activity of the parent that waits on the child, with the child's result.
+    private async Task ResumeParentAsync(Workflow child, ChildWorkflowResult result)
+    {
+        var parent = await _workflowStore.GetAsync(child.ParentWorkflowId);
+        var blockingActivity = parent?.BlockingActivities.FirstOrDefault(x => x.ActivityId == child.ParentActivityId);
+
+        if (blockingActivity is null)
+        {
+            return;
+        }
+
+        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(parent);
+
+        if (!locked)
+        {
+            _logger.LogWarning("The workflow '{WorkflowId}' wasn't resumed when its child '{ChildWorkflowId}' ended: another process holds its lock.", parent.WorkflowId, child.WorkflowId);
+
+            return;
+        }
+
+        await using var acquiredLock = locker;
+
+        await ResumeWorkflowAsync(parent, blockingActivity, new Dictionary<string, object>
+        {
+            [ChildWorkflowResult.InputKey] = result,
+        });
+    }
+
+    // The run completed or halted the task a retry was pending for: its attempts are over.
+    private static void ClearPendingRetry(WorkflowExecutionContext workflowContext, ActivityRecord activity)
+    {
+        if (workflowContext.Workflow.PendingRetry?.ActivityId == activity.ActivityId)
+        {
+            workflowContext.Workflow.PendingRetry = null;
+        }
+    }
+
+    // The errors of the scripts the running activity evaluated, or null.
+    private static string ScriptErrorsSince(WorkflowExecutionContext workflowContext, int count)
+        => workflowContext.ScriptErrors.Count > count ? string.Join(" ", workflowContext.ScriptErrors.Skip(count)) : null;
+
+    // The input variables take the input values of the same name.
+    private void ApplyInputs(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
+    {
+        foreach (var name in workflowContext.Variables.ApplyInputs(input))
+        {
+            _logger.LogWarning("The input '{Name}' of the workflow '{WorkflowId}' doesn't convert to the type of its variable, which keeps its default value.", name, workflowContext.Workflow.WorkflowId);
+        }
+    }
+
+    // Writes the outputs the activity set to the variables they are bound to. A value that doesn't convert to its
+    // variable's type throws, which faults the workflow.
+    private static void ApplyOutputBindings(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var bindings = activityContext.Activity.Properties.GetOutputBindings();
+
+        if (bindings.Count == 0)
+        {
+            return;
+        }
+
+        var outputs = workflowContext.GetActivityOutputs(activityContext.ActivityRecord.ActivityId);
+
+        foreach (var (output, variable) in bindings)
+        {
+            if (outputs.TryGetValue(output, out var value))
+            {
+                workflowContext.Variables.Set(variable, value);
             }
         }
     }
@@ -550,12 +963,32 @@ public class WorkflowManager : IWorkflowManager
         state.Output = await SerializeAsync(workflowContext.Output);
         state.Properties = await SerializeAsync(workflowContext.Properties);
         state.LastResult = await SerializeAsync(workflowContext.LastResult);
-        state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
+        // Oldest first, so the stack built from it on the next run has the most recent entry on top.
+        state.ExecutedActivities = workflowContext.ExecutedActivities.Reverse().ToList();
+        state.ExecutionSequence = workflowContext.ExecutionSequence;
         state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
         workflowContext.Workflow.State = JObject.FromObject(state, _jsonSerializerOptions);
         await _workflowStore.SaveAsync(workflowContext.Workflow);
+
+        if (_journal.IsEnabled && workflowContext.JournalRecords.Count > 0)
+        {
+            await _journal.SaveAsync(workflowContext.Workflow.WorkflowId, workflowContext.JournalRecords.ToList());
+        }
+
+        workflowContext.JournalRecords.Clear();
+
+        await NotifyInstanceChangedAsync(workflowContext, isDeleted: false);
     }
+
+    private Task NotifyInstanceChangedAsync(WorkflowExecutionContext workflowContext, bool isDeleted)
+        => _notifier.InstanceChangedAsync(new WorkflowInstanceChange
+        {
+            WorkflowId = workflowContext.Workflow.WorkflowId,
+            WorkflowTypeId = workflowContext.Workflow.WorkflowTypeId,
+            Status = workflowContext.Status,
+            IsDeleted = isDeleted,
+        });
 
     /// <summary>
     /// Executes a specific action on all the activities of a workflow.

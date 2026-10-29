@@ -70,7 +70,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" id="patternEditor" data-generated-types="@nameof(FieldBehaviorType.GeneratedDisabled),@nameof(FieldBehaviorType.GeneratedHidden)">
-    <label asp-for="Pattern" class="ocat-label">@T["Pattern"]</label>
+    <label asp-for="Pattern" class="ocat-label ocat-label-required">@T["Pattern"]</label>
     <div class="ocat-limited">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to generate the value for this field. With Liquid support."]</span>

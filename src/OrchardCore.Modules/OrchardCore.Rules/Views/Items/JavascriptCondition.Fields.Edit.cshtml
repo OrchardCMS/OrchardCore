@@ -14,7 +14,7 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 
 <div class="ocat-wrapper">
-    <label asp-for="Script" class="ocat-label">@T["Script"]</label>
+    <label asp-for="Script" class="ocat-label ocat-label-required">@T["Script"]</label>
     <div class="ocat-end">
         <textarea asp-for="Script" rows="5" class="form-control javascript-condition-editor"></textarea>
         <span class="hint">@T["The script must return true or false."]</span>

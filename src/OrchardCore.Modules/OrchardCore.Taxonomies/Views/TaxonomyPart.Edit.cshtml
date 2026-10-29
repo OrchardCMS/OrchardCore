@@ -23,7 +23,7 @@
     var index = 0;
 }
 <div class="ocat-wrapper" asp-validation-class-for="TermContentType">
-    <label asp-for="TermContentType" class="ocat-label">@T["Term Content Type"]</label>
+    <label asp-for="TermContentType" class="ocat-label ocat-label-required">@T["Term Content Type"]</label>
     <div class="ocat-end">
         <select asp-for="TermContentType" class="form-select" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
             <option value="">@T["Select a term content type"]</option>
