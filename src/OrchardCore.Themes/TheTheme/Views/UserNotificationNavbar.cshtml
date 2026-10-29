@@ -77,11 +77,74 @@
         top:5px;
     }
     .notification-navbar {
-        max-width: 20rem;
+        width: 22rem;
+        max-width: calc(100vw - 2rem);
     }
 
-        .notification-navbar .notification-is-unread {
-            font-weight: 600 !important;
+        .notification-navbar .notification-item {
+            position: relative;
+            padding: .625rem 1rem .625rem 1.75rem;
+            font-size: .875rem;
+            line-height: 1.35;
+            white-space: normal;
+        }
+
+        .notification-navbar .notification-is-unread::before {
+            content: "";
+            position: absolute;
+            top: 1rem;
+            left: .75rem;
+            width: .5rem;
+            height: .5rem;
+            border-radius: 50%;
+            background-color: var(--bs-primary);
+        }
+
+        .notification-navbar .notification-subject {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .notification-navbar .notification-is-unread .notification-subject {
+            font-weight: 600;
+        }
+
+        .notification-navbar .notification-summary {
+            margin-top: .125rem;
+            color: var(--bs-secondary-color);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+            .notification-navbar .notification-summary a,
+            .notification-navbar .notification-actions {
+                position: relative;
+                z-index: 2;
+            }
+
+        .notification-navbar .notification-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .25rem;
+            margin-top: .25rem;
+            font-size: .75rem;
+            color: var(--bs-secondary-color);
+        }
+
+            .notification-navbar .notification-meta > * + *::before {
+                content: "\00B7";
+                margin-right: .25rem;
+            }
+
+        .notification-navbar .notification-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .25rem;
+            margin-top: .5rem;
         }
 
     .dropdown-menu.scrollable {

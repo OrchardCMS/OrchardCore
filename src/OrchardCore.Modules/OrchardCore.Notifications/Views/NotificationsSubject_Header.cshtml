@@ -3,18 +3,16 @@
 
 @if (!string.IsNullOrEmpty(Model.Notification.Url))
 {
-    <a class="d-block text-reset text-decoration-none notification-link" href="@Url.RouteUrl(OpenNotificationEndpoints.RouteName, new { notificationId = Model.Notification.NotificationId })">
-        <span class="d-block @(Model.IsRead ? null : "fw-semibold")">@Model.Notification.Subject</span>
-    </a>
+    <a class="notification-subject notification-link stretched-link" href="@Url.RouteUrl(OpenNotificationEndpoints.RouteName, new { notificationId = Model.Notification.NotificationId })">@Model.Notification.Subject</a>
 }
 else
 {
-    <span class="d-block @(Model.IsRead ? null : "fw-semibold")">@Model.Notification.Subject</span>
+    <span class="notification-subject">@Model.Notification.Subject</span>
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.Notification.Summary))
 {
-    <div class="small text-body-secondary">
+    <div class="notification-summary">
         @Html.Raw(Model.Notification.Summary)
     </div>
 }

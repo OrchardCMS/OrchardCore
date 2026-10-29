@@ -69,8 +69,9 @@ public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
             CreateShape("NotificationsMeta_SummaryAdmin", model)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20")
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Received:20")
-                .Location(NotificationConstants.DisplayTypes.Header, "Meta:20")
                 .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Meta:20"),
+            CreateShape("NotificationsMeta_Header", model)
+                .Location(NotificationConstants.DisplayTypes.Header, "Meta:20"),
             CreateShape("NotificationsActions_DetailAdmin", model)
                 .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Actions:5"),
             CreateShape("NotificationsActions_SummaryAdmin", model)
@@ -102,8 +103,9 @@ public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
                 results.Add(CreateShape("NotificationsType_SummaryAdmin", model)
                     .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5")
                     .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Subject:5")
-                    .Location(NotificationConstants.DisplayTypes.Header, "Meta:10")
                     .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Meta:10"));
+                results.Add(CreateShape("NotificationsType_Header", model)
+                    .Location(NotificationConstants.DisplayTypes.Header, "Meta:10"));
             }
 
             results.Add(CreateShape("NotificationsBody_DetailAdmin", model)
