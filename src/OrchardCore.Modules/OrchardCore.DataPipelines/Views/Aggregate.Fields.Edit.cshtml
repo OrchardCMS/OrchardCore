@@ -6,7 +6,7 @@
 <div class="ocat-wrapper">
     <label asp-for="GroupBy" class="ocat-label">@T["Group by"]</label>
     <div class="ocat-end">
-        <select asp-for="GroupBy" multiple data-dp-select data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["No grouping"]">
+        <select asp-for="GroupBy" multiple data-dp-select data-live-search="true" data-actions-box="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["No grouping"]">
             @foreach (var field in Model.AvailableFields)
             {
                 <option value="@field.Name" selected="@Model.GroupBy.Contains(field.Name)">@field.Name (@field.Type)</option>
