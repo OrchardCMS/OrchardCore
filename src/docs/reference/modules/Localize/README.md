@@ -263,6 +263,27 @@ The analyzers run in the IDE and in every build, and `dotnet build -warnaserror`
 This module also provides support for pluralization.
 It is necessary to reference the `OrchardCore.Localization.Abstractions` package in order to be able to use it.
 
+### Plural rules of PO files
+
+The translations of a PO file select their plural form with the `Plural-Forms` header of the file, when it has one:
+
+```po
+msgid ""
+msgstr ""
+"Language: cs\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+```
+
+The rule of a file only applies to its own translations, as a culture dictionary merges the PO files of all the modules and of the application. When the same entry is defined by several files, the rule of the file whose translation is used applies.
+
+The `plural` expression supports the gettext syntax: the `n` count, integer literals, parentheses and the `?:`, `||`, `&&`, `!`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `+`, `-`, `*`, `/` and `%` C operators. It is interpreted with the absolute value of the count. A division or a modulo by zero evaluates to `0`, and a form outside of the `0` to `nplurals - 1` range selects the first form, like gettext does.
+
+The rule of the culture, provided by the `IPluralRuleProvider` services described below, applies to:
+
+- The translations of a PO file without a `Plural-Forms` header, or with an invalid or unsupported one.
+- The translations that are not loaded from a PO file, such as the data translations.
+- The plural forms passed to `Plural` when no translation exists.
+
 ### Culture-specific rules
 
 `DefaultPluralRuleProvider` first looks for a rule for the requested culture, then checks each `CultureInfo.Parent` until it finds a rule. For example, `zh-Hans-CN` falls back through `zh-Hans` to `zh`. The invariant culture and cultures without a registered ancestor have no rule in this provider.
@@ -308,9 +329,9 @@ CLDR's [component-specific parent locales](https://unicode.org/reports/tr35/tr35
 #### Migrating plural catalogs
 
 !!! warning
-    Review PO catalogs when upgrading these rules. Update both the `Plural-Forms` header and every affected entry's `msgstr[index]` translations. Orchard Core selects array indexes using the provider, not the header formula. Missing indexes throw `PluralFormNotFoundException`; a complete but differently ordered catalog can silently select the wrong translation. Do not automatically reorder translations or invent translations for new categories. Additional or legacy rules can be supplied through `IPluralRuleProvider`.
+    PO catalogs with a valid `Plural-Forms` header keep selecting their translations with their own rule, whatever the rules of the provider. Review the catalogs without a header, as the provider selects their `msgstr[index]` translations. When adopting the rules of the provider in a catalog, update both the `Plural-Forms` header and every affected entry's `msgstr[index]` translations. Missing indexes throw `PluralFormNotFoundException`; a complete but differently ordered catalog can silently select the wrong translation. Do not automatically reorder translations or invent translations for new categories. Additional or legacy rules can be supplied through `IPluralRuleProvider`.
 
-In particular:
+In particular, for catalogs using the rules of the provider:
 
 - Add `many` at index `2` for `fr`, `pt`, `ca`, `es`, `gl`, and `it` catalogs (including regional fallbacks). These are integer-relevant forms, not decimal-only forms.
 - Add `two` at index `2` for `he`, `sat`, and `se`; add it at index `4` for `mt`. Breton now needs five categories, and Welsh and Cornish need six, in the order above.

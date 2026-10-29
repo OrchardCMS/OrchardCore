@@ -114,7 +114,7 @@ msgstr[0] "{0} livre"
 msgstr[1] "{0} livres"
 ```
 
-Plural-Forms header in the PO sets how many forms and the selection expression, e.g. Arabic uses `nplurals=6`.
+Plural-Forms header in the PO sets how many forms and the selection expression, e.g. Arabic uses `nplurals=6`. Orchard Core evaluates it (`PluralFormsParser`) for the translations of that file; files without a valid header use the culture's `IPluralRuleProvider` rule.
 
 ## PO file discovery order
 

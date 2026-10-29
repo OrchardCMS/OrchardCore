@@ -247,7 +247,7 @@ For configuration properties, custom Liquid inputs, extraction diagnostics, and 
 - Add a culture to `SupportedCultures` before content can be translated into it.
 - DataAnnotations need `AddDataAnnotationsPortableObjectLocalization()` (the Localization module registers it).
 - Ordinary builds do not refresh POT templates; always explicitly update and commit them with string/context changes.
-- A gettext source plural has exactly two constant forms; translated PO files can have more forms, selected by the culture's plural rule.
+- A gettext source plural has exactly two constant forms; translated PO files can have more forms, selected by the file's `Plural-Forms` header, or by the culture's plural rule (`IPluralRuleProvider`) when the file has no valid header.
 - Set `GenerateLocalizationCatalog=false` only when intentionally disabling both embedding and updating, not as a fix for extraction errors.
 
 ## References
