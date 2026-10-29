@@ -1193,12 +1193,22 @@ msgstr ""
 
 #: Views/Aggregate.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "Deselect all"
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
 msgid "Group by"
 msgstr ""
 
 #: Views/Aggregate.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
 msgid "No grouping"
+msgstr ""
+
+#: Views/Aggregate.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Edit"
+msgid "Select all"
 msgstr ""
 
 #: Views/Aggregate.Fields.Edit.cshtml
@@ -1292,6 +1302,11 @@ msgstr ""
 
 #: Views/ConvertTimeZone.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Deselect all"
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
 msgid "Every date and time"
 msgstr ""
 
@@ -1318,6 +1333,11 @@ msgstr ""
 #: Views/ConvertTimeZone.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
 msgid "Orchard Core stores dates in UTC: convert them from UTC to show local dates and times, and convert local dates and times, such as the ones of a file, to UTC to save them."
+msgstr ""
+
+#: Views/ConvertTimeZone.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
+msgid "Select all"
 msgstr ""
 
 #: Views/ConvertTimeZone.Fields.Edit.cshtml
@@ -1494,6 +1514,11 @@ msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Deselect all"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
 msgid "Each successful run keeps the largest value of the field it read, and the next run reads only the rows with a larger value, such as the items modified since the last run. Use a field that grows whenever a row is added or changed. A preview reads every row."
 msgstr ""
 
@@ -1546,6 +1571,11 @@ msgstr ""
 
 #: Views/DataSource.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
+msgid "Select all"
+msgstr ""
+
+#: Views/DataSource.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataSource.Fields.Edit"
 msgid "The data is read with the access of the user who publishes the pipeline. Choosing another data set clears the fields and the filters."
 msgstr ""
 
@@ -1583,7 +1613,17 @@ msgstr ""
 
 #: Views/Distinct.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Edit"
+msgid "Deselect all"
+msgstr ""
+
+#: Views/Distinct.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Edit"
 msgid "Every field"
+msgstr ""
+
+#: Views/Distinct.Fields.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Distinct.Fields.Edit"
+msgid "Select all"
 msgstr ""
 
 #: Views/Filter.Fields.Design.cshtml
