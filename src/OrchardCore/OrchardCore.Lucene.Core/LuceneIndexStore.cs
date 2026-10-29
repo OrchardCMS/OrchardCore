@@ -116,7 +116,18 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
             return;
         }
 
-        using (var reader = GetReader(index))
+        IndexReaderPool.IndexReaderLease reader;
+
+        try
+        {
+            reader = GetReader(index);
+        }
+        catch (IndexNotFoundException)
+        {
+            return;
+        }
+
+        using (reader)
         {
             var indexSearcher = new IndexSearcher(reader.IndexReader);
             await searcher(indexSearcher);
