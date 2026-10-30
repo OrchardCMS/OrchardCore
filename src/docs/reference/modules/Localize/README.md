@@ -386,9 +386,9 @@ In this example
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 
-private static readonly LocalizationSource _item = LocalizationSource.Create<MyMessages>("{0} item for {1}");
+private static readonly LocalizationSource s_item = LocalizationSource.Create<MyMessages>("{0} item for {1}");
 
-var result = stringLocalizerFactory.Plural(count, _item, "{0} items for {1}", ownerName);
+var result = stringLocalizerFactory.Plural(count, s_item, "{0} items for {1}", ownerName);
 ```
 
 The source's `Value` is the singular PO `msgid`, exactly like `Localize`. `count` is always inserted automatically as the first format argument (`{0}`); any additional arguments you pass, such as `ownerName`, follow it (`{1}`, `{2}`, ...). The HTML factory extension has the same signature and semantics, deferring HTML encoding of the arguments to render time, like `Localize`.

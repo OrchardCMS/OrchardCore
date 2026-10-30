@@ -26,7 +26,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class GetTusFileInfoEndpointTests
 {
-    private static readonly MethodInfo _handleAsyncMethod = typeof(GetTusFileInfoEndpoint)
+    private static readonly MethodInfo s_handleAsyncMethod = typeof(GetTusFileInfoEndpoint)
         .GetMethod("HandleAsync", BindingFlags.NonPublic | BindingFlags.Static);
 
     [Fact]
@@ -181,7 +181,7 @@ public class GetTusFileInfoEndpointTests
             var contentTypeProvider = new FileExtensionContentTypeProvider();
             var fileVersionProvider = Mock.Of<IFileVersionProvider>();
 
-            var task = (Task<IResult>)_handleAsyncMethod.Invoke(
+            var task = (Task<IResult>)s_handleAsyncMethod.Invoke(
                 null,
                 [httpContext, authorizationService, FileStore, contentTypeProvider, fileVersionProvider, TusMetadataStore, uploadId]);
 
