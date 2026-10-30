@@ -21,19 +21,19 @@ public class HtmlSanitizerService : IHtmlSanitizerService
     // once the cache capacity is filled. For instance a big fragment that is displayed once every 10 minutes is
     // cached and, without an absolute expiration, would keep its place and prevent other fragments from being
     // cached, even those that are displayed thousands of times per second.
-    private static readonly TimeSpan _absoluteExpiration = TimeSpan.FromHours(1);
+    private static readonly TimeSpan s_absoluteExpiration = TimeSpan.FromHours(1);
 
     // Content is sanitized each time it is displayed, while it rarely changes, so the result for a given fragment
     // can be reused, which avoids parsing and serializing the same fragments again on each request. The cache is
     // shared by all the tenants so that its size doesn't grow with the number of tenants, which is why the entries
     // are keyed by the service that created them: each tenant has its own sanitizer configuration, so the result
     // of one tenant must never be served to another.
-    private static readonly MemoryCache _cache = new(new MemoryCacheOptions { SizeLimit = CacheSizeLimit });
+    private static readonly MemoryCache s_cache = new(new MemoryCacheOptions { SizeLimit = CacheSizeLimit });
 
-    private static long _lastId;
+    private static long s_lastId;
 
     private readonly HtmlSanitizer _sanitizer = new();
-    private readonly long _id = Interlocked.Increment(ref _lastId);
+    private readonly long _id = Interlocked.Increment(ref s_lastId);
 
     public HtmlSanitizerService(IOptions<HtmlSanitizerOptions> options)
     {
@@ -52,18 +52,18 @@ public class HtmlSanitizerService : IHtmlSanitizerService
 
         var key = new CacheKey(_id, html);
 
-        if (_cache.TryGetValue(key, out string sanitized))
+        if (s_cache.TryGetValue(key, out string sanitized))
         {
             return sanitized;
         }
 
         sanitized = _sanitizer.Sanitize(html);
 
-        _cache.Set(key, sanitized, new MemoryCacheEntryOptions
+        s_cache.Set(key, sanitized, new MemoryCacheEntryOptions
         {
             Size = html.Length + sanitized.Length,
             SlidingExpiration = s_slidingExpiration,
-            AbsoluteExpirationRelativeToNow = _absoluteExpiration,
+            AbsoluteExpirationRelativeToNow = s_absoluteExpiration,
         });
 
         return sanitized;
