@@ -370,6 +370,8 @@ The following configuration values are used by default and can be customized:
         ".xls",
         // Microsoft Excel Document
         ".xlsx",
+        ".csv",
+        // Comma-Separated Values
         ".psd",
         // Adobe Photoshop Document
 
