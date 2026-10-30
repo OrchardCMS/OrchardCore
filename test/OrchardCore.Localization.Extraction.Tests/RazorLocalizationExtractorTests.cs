@@ -94,4 +94,31 @@ public sealed class RazorLocalizationExtractorTests
         Assert.Empty(catalog.Diagnostics);
         Assert.Equal("Active branch", Assert.Single(catalog.Messages).Text);
     }
+
+    [Fact]
+    public void Extract_NoteAndArgumentNamesInRazor_DescribeMessages()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options("Module");
+        options.References.Add(typeof(LocalizationMetadata).Assembly.Location);
+        options.References.Add(typeof(PluralizationArgument).Assembly.Location);
+        var view = workspace.Write("Views/Index.cshtml", """
+            @using Microsoft.AspNetCore.Mvc.Localization
+            @using static OrchardCore.Localization.LocalizationMetadata
+            @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+            @{ var years = 2; var user = "Ada"; }
+            <p>@T.Plural(note: "Relative date shown for future dates.", count: Arg("years", years), singular: "in 1 year", plural: "in {0} years")</p>
+            <p>@T.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user)]</p>
+            """);
+        options.RazorFiles.Add(new ExtractionFile(view, "Views/Index.cshtml"));
+
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+
+        Assert.Empty(catalog.Diagnostics);
+        Assert.Equal(2, catalog.Messages.Count);
+        Assert.All(catalog.Messages, message => Assert.Equal("Module.Views.Index", message.Context));
+        var output = PotWriter.Write(catalog, "Module");
+        Assert.Contains("#. Relative date shown for future dates.\n#. Format arguments: {0}: years\n", output);
+        Assert.Contains("#. Greeting shown on the dashboard.\n#. Format arguments: {0}: user name\n", output);
+    }
 }

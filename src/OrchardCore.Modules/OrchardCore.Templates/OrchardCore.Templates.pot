@@ -584,6 +584,16 @@ msgstr ""
 
 #: Views/Template/Create.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/Template/Create.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Create"
 msgid "Templates"
 msgstr ""
 
@@ -655,6 +665,16 @@ msgstr ""
 #: Views/Template/Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Edit"
 msgid "Save"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Template/Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.Template.Edit"
+msgid "Save and continue"
 msgstr ""
 
 #: Views/Template/Edit.cshtml

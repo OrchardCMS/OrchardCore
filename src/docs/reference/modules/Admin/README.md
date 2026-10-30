@@ -541,7 +541,7 @@ Most lists share their first and last columns, so `AdminListColumns` declares th
 
 ### Row actions
 
-The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → List actions layout**. `AdminSettings.ListActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
+The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → Actions layout**. `AdminSettings.ActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
 
 | Layout    | Description                                                                                                   |
 | --------- | ------------------------------------------------------------------------------------------------------------- |
@@ -550,6 +550,52 @@ The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListAct
 
 Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Grid` layout renders it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. Themes can override the Buttons or Menu templates, including per list, but option shapes do not register additional choices. For example, override the Buttons presentation to render icon buttons without adding a third selectable mode.
 
+### Edit page action bar
+
+The submit buttons of admin edit pages, such as **Publish**, **Save** and **Cancel**, are rendered in a bar fixed to the bottom of the viewport, so they are always reachable without scrolling. Views opt in by wrapping their buttons in an element with the `action-bar-bottom` class, typically the last child of the form:
+
+```cshtml
+<div class="action-bar-bottom">
+    <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+    <a class="btn btn-danger action-bar-secondary" asp-action="Delete">@T["Delete"]</a>
+    <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
+</div>
+```
+
+Mark every action other than the main ones with the `action-bar-secondary` class. A secondary action can be a single button or a whole control group, for example the date input and the button of **Publish Later**. When the **Actions layout** setting resolves to `Menu`, the admin theme moves the secondary actions into a single menu opened by an ellipsis button, and keeps only the main actions visible. On small screens the secondary actions are always moved into this menu, whatever the setting. The page content is padded so the bar never hides the end of the form.
+
+#### Remembering the last used action
+
+A split button offering an alternative action, such as **Save** with **Save and continue** in its dropdown, can remember which of the two the user chose last. When the alternative was used, the next page with the same group shows it as the main button, and moves the default action into the dropdown. Add these attributes to the `btn-group` element, which contains one submit button and one `dropdown-item` submit button:
+
+| Attribute | Description |
+| --- | --- |
+| `data-action-group` | The key under which the last used action is stored. Pages sharing a key share the choice, such as the create and edit pages of a template. |
+| `data-action-default` | The `value` of the default submit button. |
+| `data-label-default` | The text of the default action. |
+| `data-action-alt` | The `value` of the alternative submit button. |
+| `data-label-alt` | The text of the alternative action shown on the main button, such as **Save and continue**. |
+
+```cshtml
+<div class="btn-group"
+     role="group"
+     aria-label="@T["Save actions"]"
+     data-action-group="oc-template-save-action"
+     data-action-default="Save"
+     data-label-default="@T["Save"]"
+     data-action-alt="SaveAndContinue"
+     data-label-alt="@T["Save and continue"]">
+    <button type="submit" name="submit" value="Save" class="btn btn-primary save">@T["Save"]</button>
+    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+    </button>
+    <div class="dropdown-menu">
+        <button type="submit" name="submit" value="SaveAndContinue" class="dropdown-item save-continue">@T["and continue"]</button>
+    </div>
+</div>
+```
+
+The choice is stored per tenant in the browser's admin preferences. Both buttons must have an explicit `value`, since they swap their values.
 ### Declaring the columns of a list
 
 Declare the columns in the view that renders the list. Their names are unique, ignoring case.

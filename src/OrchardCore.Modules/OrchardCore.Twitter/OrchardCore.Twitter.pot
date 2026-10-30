@@ -111,6 +111,11 @@ msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
 msgid "ConsumerSecret is required"
 msgstr ""
 
+#: TwitterLocalizationSources.cs
+msgctxt "OrchardCore.Twitter.TwitterLocalizationSources"
+msgid "Social"
+msgstr ""
+
 #: Views/Items/UpdateTwitterStatusTask.Fields.Design.cshtml
 msgctxt "OrchardCore.Twitter.Views.Items.UpdateTwitterStatusTask.Fields.Design"
 msgid "Update X (Twitter) Status"
@@ -234,11 +239,6 @@ msgstr ""
 #: Workflows/Activities/UpdateTwitterStatusTask.cs
 msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
 msgid "Failed"
-msgstr ""
-
-#: Workflows/Activities/UpdateTwitterStatusTask.cs
-msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
-msgid "Social"
 msgstr ""
 
 #: Workflows/Activities/UpdateTwitterStatusTask.cs

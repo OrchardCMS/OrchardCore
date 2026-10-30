@@ -32,9 +32,9 @@ public sealed class AdminListOptionsConfiguration : IConfigureOptions<AdminListO
             options.DefaultLayout = settings.ListLayout.Value;
         }
 
-        if (settings.ListActionsLayout.HasValue)
+        if (settings.ActionsLayout.HasValue)
         {
-            options.DefaultActionsLayout = settings.ListActionsLayout.Value;
+            options.DefaultActionsLayout = settings.ActionsLayout.Value;
         }
 
         options.AllowUserSelection = settings.AllowUserListLayoutSelection;

@@ -114,8 +114,3 @@ msgstr ""
 msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
 msgid "Validate ReCaptcha Task"
 msgstr ""
-
-#: Workflows/ValidateReCaptchaTask.cs
-msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
-msgid "Validation"
-msgstr ""

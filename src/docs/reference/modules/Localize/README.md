@@ -263,6 +263,95 @@ The analyzers run in the IDE and in every build, and `dotnet build -warnaserror`
 This module also provides support for pluralization.
 It is necessary to reference the `OrchardCore.Localization.Abstractions` package in order to be able to use it.
 
+### Plural rules of PO files
+
+The translations of a PO file select their plural form with the `Plural-Forms` header of the file, when it has one:
+
+```po
+msgid ""
+msgstr ""
+"Language: cs\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+```
+
+The rule of a file only applies to its own translations, as a culture dictionary merges the PO files of all the modules and of the application. When the same entry is defined by several files, the rule of the file whose translation is used applies.
+
+The `plural` expression supports the gettext syntax: the `n` count, integer literals, parentheses and the `?:`, `||`, `&&`, `!`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `+`, `-`, `*`, `/` and `%` C operators. It is interpreted with the absolute value of the count. A division or a modulo by zero evaluates to `0`, and a form outside of the `0` to `nplurals - 1` range selects the first form, like gettext does.
+
+The rule of the culture, provided by the `IPluralRuleProvider` services described below, applies to:
+
+- The translations of a PO file without a `Plural-Forms` header, or with an invalid or unsupported one.
+- The translations that are not loaded from a PO file, such as the data translations.
+- The plural forms passed to `Plural` when no translation exists.
+
+### Culture-specific rules
+
+`DefaultPluralRuleProvider` first looks for a rule for the requested culture, then checks each `CultureInfo.Parent` until it finds a rule. For example, `zh-Hans-CN` falls back through `zh-Hans` to `zh`. The invariant culture and cultures without a registered ancestor have no rule in this provider.
+
+The built-in provider implements all explicit non-root locales in the [CLDR 49 cardinal rules](https://www.unicode.org/cldr/charts/49/supplemental/language_plural_rules.html) for the integer counts accepted by `PluralizationRuleDelegate`. All its rules use the absolute value of the count, including `int.MinValue`. Decimal and compact-exponent operands are not represented by this API. Categories that require fractional operands, such as Czech and Slovak `many`, do not need an integer translation index.
+
+CLDR category names do not prescribe gettext numeric indexes. Orchard Core preserves established category indexes where possible and appends newly supported categories. The following table lists categories in translation-index order, starting at `msgstr[0]`:
+
+| Cultures or rule group | Categories in index order |
+| --- | --- |
+| Single-form rules, including `jv`, `yo`, `yue` | `other` |
+| Ordinary two-form rules, including `en`, `fa`, `vi`, `fil`, `tr`, `uz` | `one`, `other` |
+| `fr`, `pt`, `ca`, `es`, `gl`, `it`, `lld`, `scn`, `vec` (and `pt-PT`) | `one`, `other`, `many` |
+| `he`, `iu`, `naq`, `sat`, `se`, `sma`, `smi`, `smj`, `smn`, `sms` | `one`, `other`, `two` |
+| `lv`, `prg` | `one`, `other`, `zero` |
+| `blo`, `cv`, `ksh`, `lag` | `zero`, `one`, `other` |
+| `bs`, `hr`, `sr`, `cs`, `sk`, `lt`, `ro`, `shi` | `one`, `few`, `other` |
+| `be`, `pl`, `ru`, `uk` | `one`, `few`, `many` |
+| `gd`, `gv`, `sgs` | `one`, `two`, `few`, `other` |
+| `sl`, `dsb`, `hsb` | `other`, `one`, `two`, `few` |
+| `br` | `one`, `other`, `two`, `few`, `many` |
+| `mt` | `one`, `few`, `many`, `other`, `two` |
+| `ga` | `one`, `two`, `few`, `many`, `other` |
+| `cy`, `kw` | `one`, `two`, `few`, `other`, `zero`, `many` |
+| `ar`, `ars` | `zero`, `one`, `two`, `few`, `many`, `other` |
+
+The listed CLDR legacy codes (`in`, `iw`, `ji`, `jw`, `mo`, `sh`, `tl`) have explicit registrations too. This is not a general CLDR locale-alias resolver: other aliases depend on .NET culture normalization or a custom provider.
+
+The older registrations `ach`, `anp`, `arn`, `ay`, `csb`, `gun`, `hne`, `mai`, `mfe`, `mi`, `mni`, `mnk`, `nap`, `oc`, `pms`, `rw`, `sco`, `son`, and `tt` are retained, but do not have explicit cardinal entries in CLDR 49. Their existing partitions are preserved, with the same absolute-count handling. Unsupported cultures return no rule; the localization manager ultimately uses its English-style fallback unless another provider supplies a rule.
+
+#### Million-multiple categories and Portuguese fallback
+
+French and Portuguese use `one` for zero and one; Catalan, Spanish, Galician, Italian, Ladin, Sicilian, Venetian, and `pt-PT` use it only for one. Their `many` category applies to nonzero integer multiples of 1,000,000. The translation indexes are:
+
+| Index | Category | `pt` and `pt-BR` | `pt-PT` |
+| --- | --- | --- | --- |
+| `0` | `one` | Zero and one | One |
+| `1` | `other` | All remaining counts | All remaining counts |
+| `2` | `many` | Nonzero multiples of 1,000,000 | Nonzero multiples of 1,000,000 |
+
+CLDR's [component-specific parent locales](https://unicode.org/reports/tr35/tr35.html#Parent_Locales) replace, rather than merge with, the general parent table. CLDR 49 declares an empty override table for plurals. Consequently, `pt-AO`, `pt-CH`, `pt-CV`, `pt-FR`, `pt-GQ`, `pt-GW`, `pt-LU`, `pt-MO`, `pt-MZ`, `pt-ST`, and `pt-TL` fall back to `pt` for plural rules, even though the general locale-data parent table assigns them to `pt-PT`. Only `pt-PT` has the Portuguese zero-is-`other` override.
+
+#### Migrating plural catalogs
+
+!!! warning
+    PO catalogs with a valid `Plural-Forms` header keep selecting their translations with their own rule, whatever the rules of the provider. Review the catalogs without a header, as the provider selects their `msgstr[index]` translations. When adopting the rules of the provider in a catalog, update both the `Plural-Forms` header and every affected entry's `msgstr[index]` translations. Missing indexes throw `PluralFormNotFoundException`; a complete but differently ordered catalog can silently select the wrong translation. Do not automatically reorder translations or invent translations for new categories. Additional or legacy rules can be supplied through `IPluralRuleProvider`.
+
+In particular, for catalogs using the rules of the provider:
+
+- Add `many` at index `2` for `fr`, `pt`, `ca`, `es`, `gl`, and `it` catalogs (including regional fallbacks). These are integer-relevant forms, not decimal-only forms.
+- Add `two` at index `2` for `he`, `sat`, and `se`; add it at index `4` for `mt`. Breton now needs five categories, and Welsh and Cornish need six, in the order above.
+- Split the old single-form catalogs for `fa`, `vi`, `cgg`, `ka`, `kk`, `ky`, and `ug`. Conversely, `jv` and `yo` now use only `other` at index `0`; migrate the appropriate plural translation into that index.
+- Review zero-count translations for `as`, `bn`, `doi`, `ff`, `gu`, `hi`, `hy`, `kn`, `nso`, `pa`, and `si` (now `one`), and `tr` and `uz` (now `other`). General Portuguese includes zero in `one`; a legacy `plural=(n != 1)` header does not match.
+- Review Filipino last-digit groups, Macedonian ending-11 exceptions, Lithuanian `few` counts ending in `5` through `9`, and Latvian `zero` counts ending in `0` or with last two digits `11` through `19`. Maltese `102` is `other`, not `few`.
+- Negative counts now select the same category as their positive magnitude in every built-in rule. Custom provider delegates are not normalized by the localization manager.
+
+For nonnegative integer counts, matching PO headers are:
+
+```po
+# fr, pt, pt-BR, and Portuguese locales other than pt-PT
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : (n != 0 && n % 1000000 == 0) ? 2 : 1;\n"
+```
+
+```po
+# ca, es, gl, it, lld, scn, vec, and pt-PT
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : (n != 0 && n % 1000000 == 0) ? 2 : 1;\n"
+```
+
 ### Sample PO file
 
 ```
@@ -305,6 +394,59 @@ var result = stringLocalizerFactory.Plural(count, _item, "{0} items for {1}", ow
 The source's `Value` is the singular PO `msgid`, exactly like `Localize`. `count` is always inserted automatically as the first format argument (`{0}`); any additional arguments you pass, such as `ownerName`, follow it (`{1}`, `{2}`, ...). The HTML factory extension has the same signature and semantics, deferring HTML encoding of the arguments to render time, like `Localize`.
 
 For a context-bearing source (`Type` set), the extension resolves `factory.Create(source.Type)` and delegates to the existing `IStringLocalizer.Plural`/`IHtmlLocalizer.Plural` extension, so the culture's PO `PluralRule` always decides the translated form, including languages with a dedicated zero form or more than two plural forms. For a context-free source (`Type` null, no PO lookup possible), the extension falls back to the English rule — singular only when `count == 1` — without resolving a factory, matching the existing context-free behavior of `Localize`. A null source returns `null` without resolving a factory, same as `Localize`.
+
+### Notes and argument names for translators
+
+A localized string can carry metadata for translators: a note explaining the meaning or usage of the message, and a name for each of its format arguments. The extraction writes them as comments of the message in the translation template. They are ignored at runtime, don't change the translation lookup, and changing them doesn't invalidate existing translations.
+
+In C# and Razor, name a format argument with the `Arg(name, value)` helper, which returns its value unchanged. It is a static method of `OrchardCore.Localization.LocalizationMetadata`, provided by `OrchardCore.Abstractions`, and of the Orchard Core Razor base page, so views can call it directly. Pass a note with the `note` parameter of the `Plural` extensions, or call `Note(note)` on the localizer, which returns the same localizer, for the indexer and the other methods:
+
+```csharp
+using static OrchardCore.Localization.LocalizationMetadata;
+
+return H.Plural(
+    note: "Relative date shown for future dates.",
+    count: Arg("years", years),
+    singular: "in 1 year",
+    plural: "in {0} years");
+
+return S.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user.Name)];
+```
+
+```razor
+<p>@T.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user.Name)]</p>
+```
+
+In Liquid, the `t` filter accepts named arguments, which are passed as format arguments in their order and whose names describe their placeholders, and a `note` argument, which is not a format argument:
+
+```liquid
+{{ "in {0} years" | t: years: time.years, note: "Relative date shown for future dates." }}
+```
+
+Both examples produce the same template entry, besides its context:
+
+```po
+#. Relative date shown for future dates.
+#. Format arguments: {0}: years
+#, csharp-format
+msgctxt "OrchardCore.Example.DateTimeHumanizer"
+msgid "in 1 year"
+msgid_plural "in {0} years"
+msgstr[0] ""
+msgstr[1] ""
+```
+
+A `LocalizationSource` takes its note when it is declared, with the `note` parameter of `LocalizationSource.Create` and of its constructor. The note is not stored in the source, so it doesn't change its value or its equality. The names of its format arguments are given where it is formatted, with `Arg` in the arguments of `Localize` and `Plural`:
+
+```csharp
+public static readonly LocalizationSource Greeting = LocalizationSource.Create<Owner>(
+    "Hello {0}",
+    note: "Greeting shown on the dashboard.");
+
+var text = stringLocalizerFactory.Localize(Greeting, Arg("user name", user.Name));
+```
+
+A format argument without a name is described by its C# expression, and the `count` of a plural by `count`. A comment starting with `// TRANSLATORS:` on the line above a C# call is added as a note too. Notes and argument names must be compile-time constants, or literal strings in Liquid, to be extracted.
 
 ### Translation templates
 
@@ -369,6 +511,7 @@ An update reports what it could not extract as diagnostics with an `OCLOC` prefi
 | `OCLOC007` | Error | A Liquid file could not be parsed. |
 | `OCLOC008` | Error or warning | The extraction compilation reported a C# error, a source generator failed, or a generator assembly could not be loaded (warning). |
 | `OCLOC009` | Error | The worker was not found, the SDK's compiler was not found, the extraction was canceled, or it failed unexpectedly. |
+| `OCLOC010` | Warning | A translator note or a format argument name is not a compile-time constant string, or a Liquid `note` argument is not a literal string. The message is still extracted, without it. |
 
 Liquid files are discovered from evaluated embedded-resource, content, and none items. Additional inputs can be supplied explicitly:
 

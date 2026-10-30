@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -7,21 +8,27 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class SignalEvent : EventActivity
+public class SignalEvent : EventActivity, IActivityProvidedValues, IActivityDescription
 {
     public static string EventName => nameof(SignalEvent);
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<SignalEvent> localizer)
+    public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<SignalEvent> localizer)
     {
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
     public override string Name => EventName;
-    public override LocalizedString DisplayText => S["Signal Event"];
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SignalEvent>("Signal Event");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> SignalName
     {
@@ -40,4 +47,9 @@ public class SignalEvent : EventActivity
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome("Done");
+
+    private static readonly ActivityProvidedValue[] s_providedValues = [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Signal", TypeName = "string", Description = LocalizationSource.Create<SignalEvent>("The name of the signal.") }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 }

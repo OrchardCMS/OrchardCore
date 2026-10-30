@@ -20,7 +20,7 @@ public class AdminSettingsViewModel
 
     public AdminListLayout? ListLayout { get; set; }
 
-    public AdminListActionsLayout? ListActionsLayout { get; set; }
+    public AdminListActionsLayout? ActionsLayout { get; set; }
 
     public bool AllowUserListLayoutSelection { get; set; }
 }

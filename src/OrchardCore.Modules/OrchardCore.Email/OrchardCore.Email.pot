@@ -273,7 +273,7 @@ msgstr ""
 
 #: Workflows/Activities/EmailTask.cs
 msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
-msgid "Messaging"
+msgid "The result of sending the email."
 msgstr ""
 
 #: ViewModels/EmailTestViewModel.cs

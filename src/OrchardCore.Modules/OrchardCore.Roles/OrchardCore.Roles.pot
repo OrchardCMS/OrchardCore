@@ -195,6 +195,16 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin.Edit"
 msgid "Toggle Dropdown"
 msgstr ""
 
@@ -495,7 +505,7 @@ msgstr ""
 
 #: Workflows/Activities/GetUsersByRoleTask.cs
 msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
-msgid "User"
+msgid "The users in the selected roles: their ids, by user name."
 msgstr ""
 
 #: Workflows/Activities/UnassignUserRoleTask.cs
@@ -511,9 +521,4 @@ msgstr ""
 #: Workflows/Activities/UnassignUserRoleTask.cs
 msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
 msgid "Unassign User Role Task"
-msgstr ""
-
-#: Workflows/Activities/UnassignUserRoleTask.cs
-msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
-msgid "User"
 msgstr ""
