@@ -352,6 +352,256 @@ For nonnegative integer counts, matching PO headers are:
 "Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : (n != 0 && n % 1000000 == 0) ? 2 : 1;\n"
 ```
 
+#### Plural forms of each rule
+
+The tables below list, for each built-in rule, the cultures registered with it and the condition selecting each translation index, in index order. A culture that isn't listed uses the rule of its closest listed parent culture. The tables are generated from the `PluralRuleDescriptor` metadata, available through `DefaultPluralRuleProvider.Rules` and `DefaultPluralRuleProvider.TryGetRuleDescriptor()`. The examples are computed by evaluating the runtime rules, and automated tests validate the conditions against the rules. Like the rules, the conditions apply to the absolute value of the count, and an ending such as `01` includes leading zeros, so it matches 1 and 101 but not 11.
+
+<!-- plural-rules:start -->
+**1 form:** `ay`, `bm`, `bo`, `dz`, `hnj`, `id`, `ig`, `ii`, `in`, `ja`, `jbo`, `jv`, `jw`, `kde`, `kea`, `km`, `ko`, `lkt`, `lo`, `ms`, `my`, `nqo`, `osa`, `sah`, `ses`, `sg`, `su`, `th`, `to`, `tpi`, `tt`, `wo`, `yo`, `yue`, `zh`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | All counts | 0, 1, 2, 3 |
+
+**2 forms:** `ach`, `ak`, `am`, `arn`, `as`, `bho`, `bn`, `csw`, `doi`, `fa`, `ff`, `gu`, `gun`, `guw`, `hi`, `hy`, `kab`, `kn`, `kok`, `kok-Latn`, `ln`, `mfe`, `mg`, `mi`, `nso`, `oc`, `pa`, `pcm`, `si`, `tg`, `ti`, `vi`, `wa`, `zu`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 0 or 1 | 0, 1 |
+| `msgstr[1]` | All remaining counts | 2, 3, 4, 5 |
+
+**2 forms:** `af`, `an`, `anp`, `asa`, `ast`, `az`, `bal`, `bem`, `bez`, `bg`, `brx`, `ce`, `cgg`, `chr`, `ckb`, `da`, `de`, `dv`, `ee`, `el`, `en`, `eo`, `et`, `eu`, `fi`, `fo`, `fur`, `fy`, `gsw`, `ha`, `haw`, `hne`, `hu`, `ia`, `ie`, `io`, `jgo`, `ji`, `jmc`, `ka`, `kaj`, `kcg`, `kk`, `kkj`, `kl`, `ks`, `ksb`, `ku`, `ky`, `lb`, `lg`, `lij`, `mai`, `mas`, `mgo`, `ml`, `mn`, `mni`, `mr`, `nah`, `nap`, `nb`, `nd`, `ne`, `nl`, `nn`, `nnh`, `no`, `nr`, `ny`, `nyn`, `om`, `or`, `os`, `pap`, `pms`, `ps`, `rm`, `rof`, `rw`, `rwk`, `saq`, `sc`, `sco`, `sd`, `sdh`, `seh`, `sn`, `so`, `son`, `sq`, `ss`, `ssy`, `st`, `sv`, `sw`, `syr`, `ta`, `te`, `teo`, `tig`, `tk`, `tn`, `tr`, `ts`, `ug`, `ur`, `uz`, `ve`, `vo`, `vun`, `wae`, `xh`, `xog`, `yi`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | All remaining counts | 0, 2, 3, 4 |
+
+**2 forms:** `tzm`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 0 or 1, or from 11 to 99 | 0, 1, 11, 99 |
+| `msgstr[1]` | All remaining counts | 2, 3, 10, 100 |
+
+**3 forms:** `fr`, `pt`, `pt-BR`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 0 or 1 | 0, 1 |
+| `msgstr[1]` | All remaining counts | 2, 3, 4, 5 |
+| `msgstr[2]` | Multiple of 1,000,000, except 0 | 1,000,000, 2,000,000, 3,000,000, 4,000,000 |
+
+**3 forms:** `ca`, `es`, `es-AR`, `gl`, `it`, `lld`, `pt-PT`, `scn`, `vec`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | All remaining counts | 0, 2, 3, 4 |
+| `msgstr[2]` | Multiple of 1,000,000, except 0 | 1,000,000, 2,000,000, 3,000,000, 4,000,000 |
+
+**2 forms:** `is`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1, except 11 | 1, 21, 31, 41 |
+| `msgstr[1]` | All remaining counts | 0, 2, 20, 22 |
+
+**2 forms:** `mk`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1, except 11 | 1, 21, 31, 41 |
+| `msgstr[1]` | All remaining counts | 0, 2, 20, 22 |
+
+**2 forms:** `ceb`, `fil`, `tl`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | All remaining counts | 0, 3, 5, 7 |
+| `msgstr[1]` | Ends in 4, 6 or 9 | 4, 6, 9, 14 |
+
+**3 forms:** `be`, `bs`, `hr`, `ru`, `sh`, `sr`, `uk`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1, except 11 | 1, 21, 31, 41 |
+| `msgstr[1]` | Ends in 2-4, except 12-14 | 2, 4, 22, 24 |
+| `msgstr[2]` | All remaining counts | 0, 5, 20, 25 |
+
+**3 forms:** `lt`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1, except 11-19 | 1, 21, 31, 41 |
+| `msgstr[1]` | Ends in 2-9, except 11-19 | 2, 9, 22, 29 |
+| `msgstr[2]` | All remaining counts | 0, 10, 20, 30 |
+
+**3 forms:** `cs`, `sk`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | From 2 to 4 | 2, 3, 4 |
+| `msgstr[2]` | All remaining counts | 0, 5, 6, 7 |
+
+**3 forms:** `csb`, `pl`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | Ends in 2-4, except 12-14 | 2, 4, 22, 24 |
+| `msgstr[2]` | All remaining counts | 0, 5, 21, 25 |
+
+**3 forms:** `lv`, `prg`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1, except 11 | 1, 21, 31, 41 |
+| `msgstr[1]` | All remaining counts | 2, 9, 22, 29 |
+| `msgstr[2]` | Ends in 0 or 11-19 | 0, 10, 20, 30 |
+
+**3 forms:** `blo`, `cv`, `ksh`, `lag`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 0 | 0 |
+| `msgstr[1]` | Exactly 1 | 1 |
+| `msgstr[2]` | All remaining counts | 2, 3, 4, 5 |
+
+**3 forms:** `mnk`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 0 | 0 |
+| `msgstr[1]` | Exactly 1 | 1 |
+| `msgstr[2]` | All remaining counts | 2, 3, 4, 5 |
+
+**3 forms:** `he`, `iu`, `iw`, `naq`, `sat`, `se`, `sma`, `smi`, `smj`, `smn`, `sms`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | All remaining counts | 0, 3, 4, 5 |
+| `msgstr[2]` | Exactly 2 | 2 |
+
+**3 forms:** `shi`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 0 or 1 | 0, 1 |
+| `msgstr[1]` | From 2 to 10 | 2, 3, 4, 10 |
+| `msgstr[2]` | All remaining counts | 11, 12, 13, 14 |
+
+**3 forms:** `mo`, `ro`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | Exactly 0, or ends in 01-19, except exactly 1 | 0, 2, 19, 101 |
+| `msgstr[2]` | All remaining counts | 20, 100, 120, 200 |
+
+**6 forms:** `cy`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | Exactly 2 | 2 |
+| `msgstr[2]` | Exactly 3 | 3 |
+| `msgstr[3]` | All remaining counts | 4, 5, 7, 8 |
+| `msgstr[4]` | Exactly 0 | 0 |
+| `msgstr[5]` | Exactly 6 | 6 |
+
+**4 forms:** `gd`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 or 11 | 1, 11 |
+| `msgstr[1]` | Exactly 2 or 12 | 2, 12 |
+| `msgstr[2]` | From 3 to 19, except 11 or 12 | 3, 10, 13, 19 |
+| `msgstr[3]` | All remaining counts | 0, 20, 21, 22 |
+
+**6 forms:** `kw`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | Ends in 02, 22, 42, 62, 82, 40000, 60000, 80000 or 100000, or ends in 01000-20000 and multiple of 1,000 | 2, 22, 42, 62 |
+| `msgstr[2]` | Ends in 03, 23, 43, 63 or 83 | 3, 23, 43, 63 |
+| `msgstr[3]` | All remaining counts | 4, 20, 24, 40 |
+| `msgstr[4]` | Exactly 0 | 0 |
+| `msgstr[5]` | Ends in 01, 21, 41, 61 or 81, except exactly 1 | 21, 41, 61, 81 |
+
+**5 forms:** `mt`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | Exactly 0, or ends in 03-10 | 0, 3, 10, 103 |
+| `msgstr[2]` | Ends in 11-19 | 11, 19, 111, 119 |
+| `msgstr[3]` | All remaining counts | 20, 102, 120, 202 |
+| `msgstr[4]` | Exactly 2 | 2 |
+
+**4 forms:** `dsb`, `hsb`, `sl`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | All remaining counts | 0, 5, 100, 105 |
+| `msgstr[1]` | Ends in 01 | 1, 101, 201, 301 |
+| `msgstr[2]` | Ends in 02 | 2, 102, 202, 302 |
+| `msgstr[3]` | Ends in 03 or 04 | 3, 4, 103, 104 |
+
+**4 forms:** `sgs`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1, except 11 | 1, 21, 31, 41 |
+| `msgstr[1]` | Exactly 2 | 2 |
+| `msgstr[2]` | Ends in 2-9, except 11-19, and except exactly 2 | 3, 9, 22, 29 |
+| `msgstr[3]` | All remaining counts | 0, 10, 20, 30 |
+
+**5 forms:** `br`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1, except 11, 71 or 91 | 1, 21, 31, 41 |
+| `msgstr[1]` | All remaining counts | 0, 5, 8, 10 |
+| `msgstr[2]` | Ends in 2, except 12, 72 or 92 | 2, 22, 32, 42 |
+| `msgstr[3]` | Ends in 3, 4 or 9, except 10-19, 70-79 or 90-99 | 3, 4, 9, 23 |
+| `msgstr[4]` | Multiple of 1,000,000, except 0 | 1,000,000, 2,000,000, 3,000,000, 4,000,000 |
+
+**5 forms:** `ga`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 1 | 1 |
+| `msgstr[1]` | Exactly 2 | 2 |
+| `msgstr[2]` | From 3 to 6 | 3, 4, 5, 6 |
+| `msgstr[3]` | From 7 to 10 | 7, 8, 9, 10 |
+| `msgstr[4]` | All remaining counts | 0, 11, 12, 13 |
+
+**4 forms:** `gv`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Ends in 1 | 1, 11, 21, 31 |
+| `msgstr[1]` | Ends in 2 | 2, 12, 22, 32 |
+| `msgstr[2]` | Ends in 00, 20, 40, 60 or 80 | 0, 20, 40, 60 |
+| `msgstr[3]` | All remaining counts | 3, 10, 13, 19 |
+
+**6 forms:** `ar`, `ars`
+
+| Translation | Condition | Examples |
+| --- | --- | --- |
+| `msgstr[0]` | Exactly 0 | 0 |
+| `msgstr[1]` | Exactly 1 | 1 |
+| `msgstr[2]` | Exactly 2 | 2 |
+| `msgstr[3]` | Ends in 03-10 | 3, 10, 103, 110 |
+| `msgstr[4]` | Ends in 11-99 | 11, 99, 111, 199 |
+| `msgstr[5]` | All remaining counts | 100, 102, 200, 202 |
+
+<!-- plural-rules:end -->
+
 ### Sample PO file
 
 ```
@@ -377,6 +627,7 @@ In this example
 
 !!! warning
     You should not hardcode a number in the singular or plural forms because different languages have different rules about when each form is used.
+
 
 ### Pluralizing a deferred `LocalizationSource`
 
