@@ -20,4 +20,22 @@ public static class LocalizationMetadata
 
         return value;
     }
+
+    /// <summary>
+    /// Declares the range of values the count of a plural message can take, so that the extracted template carries
+    /// the gettext <c>range</c> flag, for example <c>S.Plural(Range(0, 23, hours), "1 hour", "{0} hours")</c>. It can be
+    /// combined with <see cref="Arg{T}(string, T)"/>, for example <c>Arg("hours", Range(0, 23, hours))</c>.
+    /// </summary>
+    /// <param name="min">The smallest value of the count. Must be a non-negative compile-time constant to be extracted.</param>
+    /// <param name="max">The largest value of the count. Must be a compile-time constant, not smaller than
+    /// <paramref name="min"/>, to be extracted.</param>
+    /// <param name="count">The count of the plural message.</param>
+    /// <returns><paramref name="count"/>, unchanged.</returns>
+    public static int Range(int min, int max, int count)
+    {
+        _ = min;
+        _ = max;
+
+        return count;
+    }
 }

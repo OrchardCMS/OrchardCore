@@ -448,6 +448,30 @@ var text = stringLocalizerFactory.Localize(Greeting, Arg("user name", user.Name)
 
 A format argument without a name is described by its C# expression, and the `count` of a plural by `count`. A comment starting with `// TRANSLATORS:` on the line above a C# call is added as a note too. Notes and argument names must be compile-time constants, or literal strings in Liquid, to be extracted.
 
+#### Range of a plural count
+
+When the count of a plural message can only take a known range of values, declare it with the `Range(min, max, count)` helper, which returns the count unchanged. The extraction writes it as the gettext `range` flag, which lets translators and tools know which plural forms are used, for example a language whose plural rule distinguishes counts above 100 doesn't need that form for hours. Like `Arg`, it is a static method of `OrchardCore.Localization.LocalizationMetadata` and of the Orchard Core Razor base page, and the two helpers can wrap each other:
+
+```csharp
+using static OrchardCore.Localization.LocalizationMetadata;
+
+return H.Plural(Arg("hours", Range(0, 23, time.Hours)), "1 hour ago", "{0} hours ago");
+
+var text = stringLocalizerFactory.Plural(Range(1, 7, days), DaysSource, "{0} days");
+```
+
+```po
+#. Format arguments: {0}: hours
+#, csharp-format, range: 0..23
+msgctxt "OrchardCore.DisplayManagement.Shapes.DateTimeShapes"
+msgid "1 hour ago"
+msgid_plural "{0} hours ago"
+msgstr[0] ""
+msgstr[1] ""
+```
+
+The bounds must be compile-time constants with `0 <= min <= max`, and `Range` only applies to the `count` of a `Plural` call; otherwise the extraction reports `OCLOC011` and extracts the message without the flag. When several calls declare different ranges for the same message, the template carries the smallest range containing all of them; calls without a range don't change it. The Liquid `t` filter doesn't support plurals, so it has no range.
+
 ### Translation templates
 
 Every project keeps its translation template, a gettext `.pot` file named `<AssemblyName>.pot` next to its project file, checked in with the sources it describes, like built assets are. A normal build embeds the template in the assembly as the `<AssemblyName>.Localization.pot` manifest resource, and does nothing else: extracting the strings is a separate, on-demand operation, so building never pays for it.
@@ -512,6 +536,7 @@ An update reports what it could not extract as diagnostics with an `OCLOC` prefi
 | `OCLOC008` | Error or warning | The extraction compilation reported a C# error, a source generator failed, or a generator assembly could not be loaded (warning). |
 | `OCLOC009` | Error | The worker was not found, the SDK's compiler was not found, the extraction was canceled, or it failed unexpectedly. |
 | `OCLOC010` | Warning | A translator note or a format argument name is not a compile-time constant string, or a Liquid `note` argument is not a literal string. The message is still extracted, without it. |
+| `OCLOC011` | Warning | A plural `Range` has bounds that are not compile-time constants with `0 <= min <= max`, or is not the `count` of a `Plural` call. The message is still extracted, without the `range` flag. |
 
 Liquid files are discovered from evaluated embedded-resource, content, and none items. Additional inputs can be supplied explicitly:
 
