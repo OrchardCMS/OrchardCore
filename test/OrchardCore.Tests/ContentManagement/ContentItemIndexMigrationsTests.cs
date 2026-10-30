@@ -44,8 +44,8 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
     {
         var version = await RunAsync(migrations => migrations.CreateAsync());
 
-        Assert.Equal(7, version);
-        Assert.Equal(["ContentItemId", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync());
+        Assert.Equal(8, version);
+        Assert.Equal(["ContentItemId", "Published", "DocumentId", "Latest"], await GetIndexColumnsAsync());
     }
 
     [Fact]
@@ -67,6 +67,36 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
 
         Assert.Equal(7, version);
         Assert.Equal("ContentItemId", (await GetIndexColumnsAsync()).FirstOrDefault());
+    }
+
+    [Fact]
+    public async Task UpdateFrom7Async_ReplacesTheIndexWithPublishedBeforeDocumentId()
+    {
+        // The index as the previous step created it.
+        await RunAsync(migrations => migrations.CreateAsync());
+        await using (var connection = _store.Configuration.ConnectionFactory.CreateConnection())
+        {
+            await connection.OpenAsync(TestContext.Current.CancellationToken);
+            var name = await GetIndexNameAsync();
+            await using var drop = connection.CreateCommand();
+            drop.CommandText = $"DROP INDEX {name}; CREATE INDEX {name} ON {await GetTableNameAsync()} (ContentItemId, DocumentId, Published, Latest)";
+            await drop.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
+        }
+
+        var version = await RunAsync(migrations => migrations.UpdateFrom7Async());
+
+        Assert.Equal(8, version);
+        Assert.Equal(["ContentItemId", "Published", "DocumentId", "Latest"], await GetIndexColumnsAsync());
+    }
+
+    private async Task<string> GetTableNameAsync()
+    {
+        await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT tbl_name FROM sqlite_master WHERE type = 'index' AND name LIKE '%IDX_ContentItemIndex_ContentItemId'";
+
+        return (string)await command.ExecuteScalarAsync(TestContext.Current.CancellationToken);
     }
 
     private async Task<int> RunAsync(Func<ContentMigrations, Task<int>> step)
