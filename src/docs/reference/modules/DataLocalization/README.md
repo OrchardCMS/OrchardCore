@@ -8,6 +8,7 @@ This module provides a database-backed localization system for translating dynam
 
 ## Features
 
+- **UI Localization Overrides** (`OrchardCore.DataLocalization.Ui`): Optional database overrides for UI strings discovered from embedded POT catalogs
 - **Translation Editor**: Vue3-based admin UI to edit translations per culture
 - **Statistics Dashboard**: Track translation progress by culture and category
 - **Per-Culture Permissions**: Assign translation rights to specific cultures
@@ -21,23 +22,115 @@ This module provides a database-backed localization system for translating dynam
 4. Edit translations for each category (Permissions, Content Types, etc.)
 5. Use the **Statistics** page to track translation progress
 
+## UI Localization Overrides
+
+Enable **UI Localization Overrides** in addition to Data Localization, and open
+**Settings → Localization → UI Translations**. Application and module assemblies must
+be built with localization extraction enabled. The editor discovers
+`{AssemblyName}.Localization.pot` resources in these assemblies and their references;
+external PO files do not define the editable catalog.
+
+Choose a configured supported culture. Browse all extracted entries, including entries
+without database translations, and filter by assembly, identifier,
+context, override text, or extracted comments, flags and source references. Identifiers and contexts
+are case-sensitive. Entries with the same identifier in different contexts remain independent.
+
+The UI uses the same Vue translation editor as **Dynamic Translations** (see [Translation Editor](#translation-editor)).
+Assemblies form the collapsible sections and exact gettext contexts form the row groups of
+their tables; source identifiers, plural identifiers, available placeholders and expandable
+metadata appear beside the inputs, with one input per plural form labeled by an example count.
+The counts and **Missing only** refer to database overrides, not deployed PO coverage.
+
+Changing culture loads its translations in place. Unsaved edits prompt before they are
+discarded, and a cancelled or failed culture switch retains the previous culture and edits.
+Saving sends only changed UI entries, so editing a filtered subset never removes other
+overrides. Edits made while a save is in flight remain unsaved until a subsequent save.
+
+Saving an override replaces the PO translation for that culture and context.
+**Restore fallback** clears all of the entry's forms and marks the removal for auto-save
+or the batch **Save** button, restoring the standard PO, parent-culture (when enabled),
+and source-string fallback. Existing culture fallback order is preserved: an exact-culture
+PO translation still wins over a parent-culture override. UI overrides are stored separately
+from dynamic data translations and do not change the `d` Liquid filter.
+
+The feature uses the existing localization manager and localizers, so string, HTML, Razor,
+DataAnnotations and Liquid `t` localization share the overrides. Overrides are **plain text**:
+HTML localizers encode translation text and continue encoding format arguments. This does not
+change the existing HTML behavior of trusted deployed PO translations. Composite-format
+translations cannot introduce arguments absent from the extracted source.
+
+Plural entries require all forms selected by Orchard's configured integer plural rule, in
+zero-based rule order. The editor provides the culture-specific number of inputs, not the
+two placeholder forms in the POT file. Partial or empty forms are rejected; remove the
+entire override to restore fallback.
+Auto-save waits until a changed plural entry has every required form filled, or every form
+cleared for removal. A manual save reports incomplete forms without losing the edits.
+
+### Permissions and transfer
+
+The feature reuses Data Localization permissions. `ViewDynamicTranslations` grants catalog
+and export access; `ManageTranslations` grants edits/imports for all cultures, and
+`ManageTranslations_{culture}` grants edits/imports for that configured culture.
+Culture-specific translators without the view permission can browse and export only their
+authorized cultures.
+All mutation endpoints require anti-forgery tokens.
+
+**Actions → Export overrides** downloads a UTF-8 PO file containing only the selected culture's
+database overrides, preserving contexts and plural identifiers. Import targets the selected
+culture and merges entries, leaving other overrides untouched. A wholly empty `msgstr`
+entry removes its override. All entries are validated before any changes are stored:
+unknown identifiers/contexts, mismatched plural sources, duplicate entries, fuzzy entries,
+malformed fields, invalid format strings and incomplete plural translations reject the
+entire import. Imports are limited to 2 MB.
+**Actions → Import overrides…** opens a dialog to select the PO file.
+Import uses the same editor's notifications and reloads the selected culture in place after
+success; pending edits prompt before import. Export is unavailable while there are unsaved
+edits or a request is in progress, so its contents always reflect saved overrides.
+If the import succeeds but reloading fails, the editor becomes read-only to prevent stale
+inputs from overwriting imported values. Reload the page or successfully switch culture to
+resume editing.
+
+### Storage, caching and extension points
+
+`UiTranslationsDocument` uses Orchard's tenant-scoped document manager, including immutable
+snapshots, concurrency checks and distributed-cache versioning. The runtime pins a committed
+snapshot for each shell scope and caches overlaid dictionaries by snapshot and fallback
+dictionary identity. Subsequent scopes see committed updates and removals through the
+document manager's normal invalidation mechanism; no application restart is required.
+
+Use `IUiLocalizationCatalog` to discover available identifiers and metadata, and
+`IUiTranslationsManager` to validate, update, import and export translations from automation
+or other admin workflows. These services do not bypass catalog validation. The framework's
+`ITranslationOverrideProvider` hook applies versioned overlays after standard providers
+without modifying shared PO dictionaries or replacing core localizers. Disabling the
+feature leaves the documents stored but stops applying overrides.
+Custom overlays must mark untrusted values in `CultureDictionary.PlainTextTranslations`
+so HTML localizers encode them.
+
 ## Admin UI
 
 ### Translation Editor
 
-The translation editor displays all translatable strings grouped by category:
+The translation editor displays all translatable strings grouped by category (or assembly
+for UI translations), following the layout of the other admin lists:
 
-- **Culture Selector**: Choose which culture to edit translations for
-- **Search**: Filter strings by original text or translation
-- **Category Filter**: Focus on a specific category
-- **Auto-save**: Toggle automatic saving (enabled by default, saves after 2 seconds of inactivity)
-- **Save Button**: Manually save all changes
+- **Command bar**: A sticky bar with the live **Search** box and an **Actions** menu
+  holding secondary actions: **Export overrides** and **Import overrides…** for UI
+  translations, **Statistics** for dynamic translations, and **Expand all** / **Collapse all**.
+- **Action bar**: The **Save** button (also <kbd>Ctrl</kbd>+<kbd>S</kbd>) and an
+  unsaved-changes indicator, in the bar fixed to the bottom of the page like the other
+  admin editors.
+- **Filters**: The **Culture** and **Category** (or **Assembly**) selectors, the
+  **Missing only** switch, the **Auto-save** switch (enabled by default, saves after
+  2 seconds of inactivity), and a count of the shown, total and translated strings.
 
-Each category is displayed as an accordion section showing:
+Each category is a collapsible section whose header shows its translated/total count and a
+progress bar. Large catalogs initially expand only the first section; searching or filtering
+expands every section with matches. The section's table lists, per row:
 
-- The original string (key)
-- An input field for the translated value
-- Translation progress indicators
+- The original string (key), grouped under its context when present
+- An input for the translated value, or one per plural form
+- A status icon (translated, missing or unsaved) and, for UI translations, **Restore fallback**
 
 ### Statistics Dashboard
 

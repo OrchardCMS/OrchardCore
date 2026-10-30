@@ -1,0 +1,133 @@
+#translation-editor {
+    .translations-list-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem 1rem;
+        padding-top: 0.375rem;
+        padding-bottom: 0.375rem;
+    }
+
+    .translations-list-header h2 {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .translations-list-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        max-width: 100%;
+        padding: 0;
+        color: var(--bs-body-color);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .translations-list-chevron {
+        transition: transform 0.15s ease-in-out;
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+    }
+
+    .translations-list-toggle[aria-expanded="true"] .translations-list-chevron {
+        transform: rotate(90deg);
+    }
+
+    .translations-list-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .progress {
+            width: 6rem;
+            height: 0.375rem;
+        }
+    }
+
+    .translation-table {
+        table-layout: fixed;
+
+        > thead > tr > th {
+            font-size: 0.875em;
+            font-weight: 600;
+            color: var(--bs-secondary-color);
+            white-space: nowrap;
+        }
+
+        th,
+        td {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .translation-source {
+            width: 40%;
+        }
+
+        .translation-status {
+            width: 4.5rem;
+            text-align: end;
+        }
+
+        code,
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    }
+
+    .translation-group-header > th {
+        --bs-table-bg-state: var(--bs-tertiary-bg);
+        font-size: 0.875em;
+        font-weight: 600;
+    }
+
+    .translation-row-changed > td {
+        --bs-table-bg-state: var(--bs-warning-bg-subtle);
+    }
+
+    .translation-form + .translation-form {
+        margin-top: 0.25rem;
+    }
+
+    .plural-form-label {
+        justify-content: center;
+        min-width: 3rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    textarea.form-control {
+        min-height: calc(1.5em + 0.5rem + calc(var(--bs-border-width) * 2));
+        field-sizing: content;
+        resize: vertical;
+    }
+
+    @media (max-width: 767.98px) {
+        .translation-table {
+            table-layout: auto;
+
+            thead {
+                display: none;
+            }
+
+            tr.translation-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+            }
+
+            tr.translation-row > td {
+                width: auto;
+                border-bottom: 0;
+            }
+
+            tr.translation-row > td:nth-child(2) {
+                grid-column: 1 / -1;
+                grid-row: 2;
+            }
+        }
+    }
+}

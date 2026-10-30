@@ -8,6 +8,11 @@ interface TranslationString {
     context: string;
     key: string;
     value: string;
+    plural?: string | null;
+    values?: string[];
+    metadata?: string[];
+    formatArguments?: string[];
+    changed?: boolean;
 }
 
 interface TranslationSubGroup {
@@ -33,15 +38,30 @@ interface TranslationMessages {
     savingError: string;
     discardConfirm: string;
     loadError: string;
+    incompletePlural: string;
+    importError: string;
+    imported: string;
+    importFileRequired: string;
+    summary: string;
+    translation: string;
+    translationForCount: string;
 }
 
 interface EditorInstance {
     cultures: Culture[];
     currentCulture: string;
+    loadedCulture: string;
     providers: TranslationProvider[];
+    pluralFormExamples: number[];
     isReadOnly: boolean;
     saveUrl?: string;
     getStringsUrl?: string;
+    importUrl?: string;
+    exportUrl?: string;
+    isUiLocalization: boolean;
+    isImporting: boolean;
+    importFile: File | null;
+    editRevision: number;
     searchQuery: string;
     categoryFilter: string;
     showMissingOnly: boolean;
@@ -50,11 +70,24 @@ interface EditorInstance {
     isLoading: boolean;
     isSaving: boolean;
     autoSaveTimeout: ReturnType<typeof setTimeout> | null;
+    collapsed: Record<string, boolean>;
     canEditCurrentCulture: boolean;
+    filteredProviders: TranslationProvider[];
+    $refs: { importModal?: HTMLElement; importFileInput?: HTMLInputElement };
+    getTotalStringsCount(provider: TranslationProvider): number;
+    getTotalTranslatedCount(provider: TranslationProvider): number;
+    getFilteredGroups(provider: TranslationProvider): TranslationSubGroup[];
+    resetImport(): void;
     scheduleAutoSave(): void;
     getFilteredStrings(strings: TranslationString[]): TranslationString[];
     getFilteredSubGroups(provider: TranslationProvider): TranslationSubGroup[];
     getAllStrings(): TranslationString[];
+    getEntries(): TranslationString[];
+    hasTranslation(str: TranslationString): boolean;
+    hasInvalidChanges(): boolean;
+    onTranslationChange(str: TranslationString): void;
+    cancelAutoSave(): void;
+    loadCulture(culture: string): Promise<boolean>;
     saveTranslations(): Promise<void>;
     showNotification(message: string, type: string): void;
     createToastContainer(): HTMLElement;
@@ -62,15 +95,32 @@ interface EditorInstance {
 
 const editorEl = document.getElementById("translation-editor");
 
+const readResponse = async (response: Response, fallbackMessage: string) => {
+    if (!response.ok || response.redirected) {
+        const body = response.headers.get("Content-Type")?.includes("application/json") ? await response.json() : null;
+        throw new Error(body?.message || fallbackMessage);
+    }
+    return response.json();
+};
+
 if (editorEl) {
     const cultures = getDatasetJson<Culture[]>(editorEl, "cultures") ?? [];
     const providers = getDatasetJson<TranslationProvider[]>(editorEl, "providers") ?? [];
+    const pluralFormExamples = getDatasetJson<number[]>(editorEl, "pluralFormExamples") ?? [];
     const messages = getDatasetJson<TranslationMessages>(editorEl, "messages") ?? ({} as TranslationMessages);
 
     const getAntiForgeryToken = () => {
         const input = editorEl.querySelector<HTMLInputElement>('input[name="__RequestVerificationToken"]');
         return input ? input.value : "";
     };
+
+    // Large catalogs start with only the first section expanded, collapsed sections aren't rendered.
+    const totalStrings = providers.reduce(
+        (sum, p) => sum + (p.strings || []).length + (p.subGroups || []).reduce((count, g) => count + g.strings.length, 0),
+        0,
+    );
+    const initialCollapsed: Record<string, boolean> =
+        totalStrings > 500 ? Object.fromEntries(providers.slice(1).map(p => [p.name, true])) : {};
 
     const { createApp } = Vue;
 
@@ -79,11 +129,19 @@ if (editorEl) {
             return {
                 cultures,
                 currentCulture: editorEl.dataset.currentCulture || "",
+                loadedCulture: editorEl.dataset.currentCulture || "",
                 providers,
+                pluralFormExamples,
                 isReadOnly: editorEl.dataset.isReadOnly === "true",
                 saveUrl: editorEl.dataset.saveUrl,
                 getStringsUrl: editorEl.dataset.getStringsUrl,
-                searchQuery: "",
+                importUrl: editorEl.dataset.importUrl,
+                exportUrl: editorEl.dataset.exportUrl,
+                isUiLocalization: editorEl.dataset.uiLocalization === "true",
+                isImporting: false,
+                importFile: null as File | null,
+                editRevision: 0,
+                searchQuery: editorEl.dataset.search || "",
                 categoryFilter: "",
                 showMissingOnly: false,
                 autoSave: true,
@@ -91,7 +149,24 @@ if (editorEl) {
                 isLoading: false,
                 isSaving: false,
                 autoSaveTimeout: null as ReturnType<typeof setTimeout> | null,
+                collapsed: initialCollapsed,
+                messages,
             };
+        },
+        mounted(this: EditorInstance) {
+            window.addEventListener("beforeunload", event => {
+                if (this.isDirty) {
+                    event.preventDefault();
+                    event.returnValue = "";
+                }
+            });
+            document.addEventListener("keydown", event => {
+                if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "s" && !this.isReadOnly) {
+                    event.preventDefault();
+                    this.saveTranslations();
+                }
+            });
+            this.$refs.importModal?.addEventListener("hidden.bs.modal", () => this.resetImport());
         },
         computed: {
             filteredProviders(this: EditorInstance) {
@@ -110,6 +185,24 @@ if (editorEl) {
                 const culture = this.cultures.find((c: Culture) => c.name === this.currentCulture);
                 return culture && culture.canEdit;
             },
+            totalCount(this: EditorInstance) {
+                return this.providers.reduce((sum, p) => sum + this.getTotalStringsCount(p), 0);
+            },
+            translatedCount(this: EditorInstance) {
+                return this.providers.reduce((sum, p) => sum + this.getTotalTranslatedCount(p), 0);
+            },
+            shownCount(this: EditorInstance) {
+                return this.filteredProviders.reduce(
+                    (sum, p) => sum + this.getFilteredGroups(p).reduce((count, g) => count + g.strings.length, 0),
+                    0,
+                );
+            },
+            summary(this: EditorInstance & { shownCount: number; totalCount: number; translatedCount: number }) {
+                return (messages.summary ?? "")
+                    .replace("{0}", String(this.shownCount))
+                    .replace("{1}", String(this.totalCount))
+                    .replace("{2}", String(this.translatedCount));
+            },
         },
         methods: {
             getFilteredStrings(this: EditorInstance, strings: TranslationString[]) {
@@ -117,14 +210,19 @@ if (editorEl) {
                 let result = strings;
 
                 if (this.showMissingOnly) {
-                    result = result.filter((s: TranslationString) => !s.value || s.value.trim() === "");
+                    result = result.filter((s: TranslationString) => !this.hasTranslation(s));
                 }
 
                 if (this.searchQuery) {
                     const query = this.searchQuery.toLowerCase();
                     result = result.filter(
                         (s: TranslationString) =>
-                            s.key.toLowerCase().includes(query) || (s.value && s.value.toLowerCase().includes(query)),
+                            s.key.toLowerCase().includes(query) || (s.value && s.value.toLowerCase().includes(query)) ||
+                            (this.isUiLocalization && (
+                                s.context.toLowerCase().includes(query) || s.plural?.toLowerCase().includes(query) ||
+                                s.values?.some(value => value?.toLowerCase().includes(query)) ||
+                                s.metadata?.some(value => value.toLowerCase().includes(query))
+                            )),
                     );
                 }
 
@@ -135,6 +233,34 @@ if (editorEl) {
 
                 return provider.subGroups.filter((sg) => this.getFilteredStrings(sg.strings).length > 0);
             },
+            getFilteredGroups(this: EditorInstance, provider: TranslationProvider) {
+                const groups: TranslationSubGroup[] = [];
+                const strings = this.getFilteredStrings(provider.strings);
+                if (strings.length > 0) {
+                    groups.push({ name: "", strings });
+                }
+                for (const group of provider.subGroups || []) {
+                    const filtered = this.getFilteredStrings(group.strings);
+                    if (filtered.length > 0) {
+                        groups.push({ name: group.name, strings: filtered });
+                    }
+                }
+                return groups;
+            },
+            isExpanded(this: EditorInstance, provider: TranslationProvider) {
+                // Filtering shows every match, so collapsed sections don't hide search results.
+                return Boolean(this.searchQuery || this.showMissingOnly || this.categoryFilter) || !this.collapsed[provider.name];
+            },
+            toggleExpanded(this: EditorInstance & { isExpanded(p: TranslationProvider): boolean }, provider: TranslationProvider) {
+                this.collapsed = { ...this.collapsed, [provider.name]: this.isExpanded(provider) };
+            },
+            setAllExpanded(this: EditorInstance, expanded: boolean) {
+                this.collapsed = expanded ? {} : Object.fromEntries(this.providers.map(p => [p.name, true]));
+            },
+            getProgress(this: EditorInstance, provider: TranslationProvider) {
+                const total = this.getTotalStringsCount(provider);
+                return total === 0 ? 0 : Math.round((this.getTotalTranslatedCount(provider) * 100) / total);
+            },
             getTotalStringsCount(provider: TranslationProvider) {
                 let count = (provider.strings || []).length;
                 if (provider.subGroups) {
@@ -142,17 +268,28 @@ if (editorEl) {
                 }
                 return count;
             },
-            getTotalTranslatedCount(provider: TranslationProvider) {
-                let count = (provider.strings || []).filter((s) => s.value && s.value.trim() !== "").length;
+            getTotalTranslatedCount(this: EditorInstance, provider: TranslationProvider) {
+                let count = (provider.strings || []).filter((s) => this.hasTranslation(s)).length;
                 if (provider.subGroups) {
                     count += provider.subGroups.reduce(
-                        (sum, sg) => sum + (sg.strings || []).filter((s) => s.value && s.value.trim() !== "").length,
+                        (sum, sg) => sum + (sg.strings || []).filter((s) => this.hasTranslation(s)).length,
                         0,
                     );
                 }
                 return count;
             },
-            onTranslationChange(this: EditorInstance) {
+            hasTranslation(this: EditorInstance, str: TranslationString) {
+                return this.isUiLocalization
+                    ? Boolean(str.values?.every(value => value?.length > 0))
+                    : Boolean(str.value?.trim());
+            },
+            hasInvalidChanges(this: EditorInstance) {
+                return this.isUiLocalization && this.getEntries().some(str =>
+                    str.changed && str.values?.some(value => value?.length > 0) && !this.hasTranslation(str));
+            },
+            onTranslationChange(this: EditorInstance, str: TranslationString) {
+                str.changed = true;
+                this.editRevision++;
                 this.isDirty = true;
 
                 if (this.autoSave && !this.isReadOnly && this.canEditCurrentCulture) {
@@ -160,40 +297,53 @@ if (editorEl) {
                 }
             },
             scheduleAutoSave(this: EditorInstance) {
-                if (this.autoSaveTimeout) {
-                    clearTimeout(this.autoSaveTimeout);
-                }
+                this.cancelAutoSave();
 
                 this.autoSaveTimeout = setTimeout(() => {
-                    this.saveTranslations();
+                    if (this.autoSave && !this.hasInvalidChanges()) {
+                        this.saveTranslations();
+                    }
                 }, 2000);
             },
-            getAllStrings(this: EditorInstance) {
-                const translations: TranslationString[] = [];
-                for (const provider of this.providers as TranslationProvider[]) {
-                    if (provider.strings) {
-                        for (const str of provider.strings) {
-                            translations.push({ context: str.context, key: str.key, value: str.value || "" });
-                        }
-                    }
-                    if (provider.subGroups) {
-                        for (const subGroup of provider.subGroups) {
-                            if (subGroup.strings) {
-                                for (const str of subGroup.strings) {
-                                    translations.push({ context: str.context, key: str.key, value: str.value || "" });
-                                }
-                            }
-                        }
-                    }
+            cancelAutoSave(this: EditorInstance) {
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                    this.autoSaveTimeout = null;
                 }
-                return translations;
+            },
+            restoreFallback(this: EditorInstance, str: TranslationString) {
+                if (this.isReadOnly || !str.values) return;
+                str.values = str.values.map(() => "");
+                this.onTranslationChange(str);
+            },
+            getEntries(this: EditorInstance) {
+                return this.providers.flatMap(provider => [
+                    ...provider.strings,
+                    ...(provider.subGroups || []).flatMap(group => group.strings),
+                ]);
+            },
+            getAllStrings(this: EditorInstance) {
+                return this.getEntries().filter(str => !this.isUiLocalization || str.changed).map(str =>
+                    this.isUiLocalization
+                        ? { context: str.context, key: str.key, plural: str.plural, value: "",
+                            values: str.values?.every(value => !value) ? [] : [...(str.values || [])] }
+                        : { context: str.context, key: str.key, value: str.value || "" });
             },
             async saveTranslations(this: EditorInstance) {
-                if (this.isReadOnly || !this.canEditCurrentCulture || this.isSaving) {
+                if (this.isReadOnly || !this.canEditCurrentCulture || this.isSaving || this.isLoading || !this.isDirty) {
+                    return;
+                }
+                this.cancelAutoSave();
+                if (this.hasInvalidChanges()) {
+                    this.showNotification(messages.incompletePlural, "danger");
                     return;
                 }
 
                 this.isSaving = true;
+                const revision = this.editRevision;
+                const changes = this.getEntries().filter(str => str.changed).map(str => ({
+                    str, snapshot: JSON.stringify(str.values ?? str.value),
+                }));
 
                 try {
                     const translations = this.getAllStrings();
@@ -207,46 +357,103 @@ if (editorEl) {
                         body: JSON.stringify({ culture: this.currentCulture, translations }),
                     });
 
-                    if (response.ok) {
-                        this.isDirty = false;
-                        this.showNotification(messages.saved, "success");
-                    } else {
-                        const error = await response.json();
-                        this.showNotification(error.message || messages.failedDefault, "danger");
+                    await readResponse(response, messages.failedDefault);
+                    for (const { str, snapshot } of changes) {
+                        if (snapshot === JSON.stringify(str.values ?? str.value)) {
+                            str.changed = false;
+                        }
                     }
+                    this.isDirty = this.editRevision !== revision;
+                    this.showNotification(messages.saved, "success");
                 } catch (error) {
                     console.error("Save error:", error);
-                    this.showNotification(messages.savingError, "danger");
+                    this.showNotification(error instanceof Error ? error.message : messages.savingError, "danger");
                 } finally {
                     this.isSaving = false;
+                    if (this.editRevision !== revision && this.autoSave) this.scheduleAutoSave();
                 }
             },
-            async onCultureChange(this: EditorInstance) {
-                if (this.isDirty) {
-                    if (!confirm(messages.discardConfirm)) {
-                        return;
-                    }
+            async onCultureChange(this: EditorInstance, event: Event) {
+                const select = event.target as HTMLSelectElement;
+                const culture = select.value;
+                // Reset the native selection too: a cancelled v-model update can leave Vue's previous value unchanged.
+                this.currentCulture = this.loadedCulture;
+                select.value = this.loadedCulture;
+                if (this.isSaving || this.isLoading || (this.isDirty && !confirm(messages.discardConfirm))) {
+                    return;
                 }
+                this.cancelAutoSave();
+                await this.loadCulture(culture);
+            },
+            async loadCulture(this: EditorInstance, culture: string) {
+                this.cancelAutoSave();
 
                 this.isLoading = true;
-                this.isDirty = false;
 
                 try {
                     const response = await fetch(
-                        `${this.getStringsUrl}?culture=${encodeURIComponent(this.currentCulture)}`,
+                        `${this.getStringsUrl}?culture=${encodeURIComponent(culture)}`,
                     );
-                    if (response.ok) {
-                        const data = await response.json();
-                        this.providers = data.providers;
+                    const data = await readResponse(response, messages.loadError);
+                    this.providers = data.providers;
+                    this.pluralFormExamples = data.pluralFormExamples ?? [];
+                    this.loadedCulture = this.currentCulture = data.culture;
+                    this.isDirty = false;
+                    this.editRevision = 0;
 
-                        const culture = this.cultures.find((c: Culture) => c.name === this.currentCulture);
-                        this.isReadOnly = !culture || !culture.canEdit;
-                    }
+                    const selected = this.cultures.find((c: Culture) => c.name === this.loadedCulture);
+                    this.isReadOnly = !selected || !selected.canEdit;
+                    return true;
                 } catch (error) {
                     console.error("Load error:", error);
-                    this.showNotification(messages.loadError, "danger");
+                    this.currentCulture = this.loadedCulture;
+                    this.showNotification(error instanceof Error ? error.message : messages.loadError, "danger");
+                    return false;
                 } finally {
                     this.isLoading = false;
+                }
+            },
+            resetImport(this: EditorInstance) {
+                this.importFile = null;
+                if (this.$refs.importFileInput) {
+                    this.$refs.importFileInput.value = "";
+                }
+            },
+            onImportFileChange(this: EditorInstance, event: Event) {
+                this.importFile = (event.target as HTMLInputElement).files?.[0] ?? null;
+            },
+            async importTranslations(this: EditorInstance) {
+                if (this.isReadOnly || !this.canEditCurrentCulture || this.isSaving || this.isLoading) return;
+                if (!this.importFile || this.importFile.size === 0 || this.importFile.size > 2 * 1024 * 1024) {
+                    this.showNotification(messages.importFileRequired, "danger");
+                    return;
+                }
+                if (this.isDirty && !confirm(messages.discardConfirm)) return;
+                this.cancelAutoSave();
+                this.isSaving = true;
+                this.isImporting = true;
+                const form = new FormData();
+                form.append("culture", this.loadedCulture);
+                form.append("file", this.importFile);
+                form.append("__RequestVerificationToken", getAntiForgeryToken());
+                try {
+                    const response = await fetch(this.importUrl ?? "", { method: "POST", body: form });
+                    await readResponse(response, messages.importError);
+                    if (this.$refs.importModal) {
+                        bootstrap.Modal.getOrCreateInstance(this.$refs.importModal).hide();
+                    }
+                    this.resetImport();
+                    this.showNotification(messages.imported, "success");
+                    this.isDirty = false;
+                    if (!await this.loadCulture(this.loadedCulture)) {
+                        this.isReadOnly = true;
+                    }
+                } catch (error) {
+                    console.error("Import error:", error);
+                    this.showNotification(error instanceof Error ? error.message : messages.importError, "danger");
+                } finally {
+                    this.isSaving = false;
+                    this.isImporting = false;
                 }
             },
             showNotification(this: EditorInstance, message: string, type: string) {
@@ -257,7 +464,7 @@ if (editorEl) {
                 const toastHtml = `
                     <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
                         <div class="d-flex">
-                            <div class="toast-body">${message}</div>
+                            <div class="toast-body"></div>
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
@@ -266,6 +473,8 @@ if (editorEl) {
                 toastContainer.insertAdjacentHTML("beforeend", toastHtml);
                 const toastEl = document.getElementById(toastId);
                 if (!toastEl) return;
+                const body = toastEl.querySelector<HTMLElement>(".toast-body");
+                if (body) body.textContent = message;
                 const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
                 toast.show();
 

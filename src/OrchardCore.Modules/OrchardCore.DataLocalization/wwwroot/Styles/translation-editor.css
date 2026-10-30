@@ -1,0 +1,110 @@
+#translation-editor .translations-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+#translation-editor .translations-list-header h2 {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#translation-editor .translations-list-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 100%;
+  padding: 0;
+  color: var(--bs-body-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+#translation-editor .translations-list-chevron {
+  transition: transform 0.15s ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  #translation-editor .translations-list-chevron {
+    transition: none;
+  }
+}
+#translation-editor .translations-list-toggle[aria-expanded=true] .translations-list-chevron {
+  transform: rotate(90deg);
+}
+#translation-editor .translations-list-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+#translation-editor .translations-list-progress .progress {
+  width: 6rem;
+  height: 0.375rem;
+}
+#translation-editor .translation-table {
+  table-layout: fixed;
+}
+#translation-editor .translation-table > thead > tr > th {
+  font-size: 0.875em;
+  font-weight: 600;
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+}
+#translation-editor .translation-table th,
+#translation-editor .translation-table td {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+#translation-editor .translation-table .translation-source {
+  width: 40%;
+}
+#translation-editor .translation-table .translation-status {
+  width: 4.5rem;
+  text-align: end;
+}
+#translation-editor .translation-table code,
+#translation-editor .translation-table pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+#translation-editor .translation-group-header > th {
+  --bs-table-bg-state: var(--bs-tertiary-bg);
+  font-size: 0.875em;
+  font-weight: 600;
+}
+#translation-editor .translation-row-changed > td {
+  --bs-table-bg-state: var(--bs-warning-bg-subtle);
+}
+#translation-editor .translation-form + .translation-form {
+  margin-top: 0.25rem;
+}
+#translation-editor .plural-form-label {
+  justify-content: center;
+  min-width: 3rem;
+  font-variant-numeric: tabular-nums;
+}
+#translation-editor textarea.form-control {
+  min-height: calc(1.5em + 0.5rem + var(--bs-border-width) * 2);
+  field-sizing: content;
+  resize: vertical;
+}
+@media (max-width: 767.98px) {
+  #translation-editor .translation-table {
+    table-layout: auto;
+  }
+  #translation-editor .translation-table thead {
+    display: none;
+  }
+  #translation-editor .translation-table tr.translation-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+  }
+  #translation-editor .translation-table tr.translation-row > td {
+    width: auto;
+    border-bottom: 0;
+  }
+  #translation-editor .translation-table tr.translation-row > td:nth-child(2) {
+    grid-column: 1/-1;
+    grid-row: 2;
+  }
+}
