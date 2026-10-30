@@ -94,6 +94,7 @@ public class SqlParser
                 dialect,
                 parameters,
                 names.TableAliases,
+                names.TableAliasByName,
                 names.CommonTableExpressions);
 
             var rewritten = rewriter.Visit(document);
@@ -122,6 +123,8 @@ public class SqlParser
     {
         public HashSet<string> TableAliases { get; } = [];
 
+        public Dictionary<string, string> TableAliasByName { get; } = [];
+
         public HashSet<string> CommonTableExpressions { get; } = [];
 
         protected override void VisitNamedTable(NamedTable node)
@@ -129,6 +132,11 @@ public class SqlParser
             if (node.Alias is not null)
             {
                 TableAliases.Add(node.Alias.Value);
+
+                if (node.Name.Parts.Count > 0)
+                {
+                    TableAliasByName[node.Name.Parts[0].Value] = node.Alias.Value;
+                }
             }
 
             base.VisitNamedTable(node);
@@ -153,6 +161,7 @@ public class SqlParser
         ISqlDialect dialect,
         IDictionary<string, object> parameters,
         HashSet<string> tableAliases,
+        Dictionary<string, string> tableAliasByName,
         HashSet<string> commonTableExpressions) : SqlRewriter
     {
         protected override SqlNode VisitSelect(SelectStatement node)
@@ -240,6 +249,10 @@ public class SqlParser
             if (tableAliases.Contains(qualifier.Value))
             {
                 parts.Add(qualifier with { IsQuoted = false });
+            }
+            else if (tableAliasByName.TryGetValue(qualifier.Value, out var alias))
+            {
+                parts.Add(new SqlIdentifier(alias));
             }
             else
             {

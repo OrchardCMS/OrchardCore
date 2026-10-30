@@ -446,4 +446,18 @@ public class SqlParserTests
             Assert.Equal(expectedSetOffsetSql, FormatSql(rawQuery));
         }
     }
+
+    [Fact]
+    public void Parse_AliasesArePreservedOnlyTheTableNamesGetThePrefix()
+    {
+        // Arrange
+        var expectedSql = "SELECT * FROM (SELECT d.[Id] FROM [tp_Document] AS d) AS A;";
+
+        // Act
+        var result = SqlParser.TryParse("SELECT * FROM (SELECT Document.Id FROM Document d) AS A", _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out _);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
 }
