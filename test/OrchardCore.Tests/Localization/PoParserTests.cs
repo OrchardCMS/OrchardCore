@@ -397,6 +397,86 @@ public class PoParserTests
         Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
     }
 
+    [Fact]
+    public async Task ParseAsync_PluralFormsHeader_SetsPluralRuleOnEveryRecord()
+    {
+        var entries = await ParseTextAsync("PluralFormsHeader");
+
+        AssertCzechPluralRule(entries);
+    }
+
+    [Fact]
+    public void Parse_PluralFormsHeader_SetsPluralRuleOnEveryRecord()
+    {
+        var entries = ParseText("PluralFormsHeader");
+
+        AssertCzechPluralRule(entries);
+    }
+
+    [Fact]
+    public void Parse_PoeditHeader_SetsPluralRule()
+    {
+        var entries = ParseText("PoeditHeader");
+
+        var rule = Assert.Single(entries).PluralRule;
+        Assert.NotNull(rule);
+        Assert.Equal(1, rule(0));
+        Assert.Equal(0, rule(1));
+        Assert.Equal(1, rule(2));
+    }
+
+    [Theory]
+    [InlineData("SimpleEntry")]
+    [InlineData("InvalidPluralFormsHeader")]
+    public async Task Parse_WithoutValidPluralFormsHeader_DoesNotSetPluralRule(string resourceName)
+    {
+        var entries = ParseText(resourceName);
+        var asyncEntries = await ParseTextAsync(resourceName);
+
+        Assert.Null(Assert.Single(entries).PluralRule);
+        Assert.Null(Assert.Single(asyncEntries).PluralRule);
+    }
+
+    [Fact]
+    public void Parse_EmptyMessageIdAfterFirstEntry_IsNotReadAsHeader()
+    {
+        using var reader = new StringReader(
+            """
+            msgid "car"
+            msgstr "auto"
+
+            msgid ""
+            msgstr ""
+            "Plural-Forms: nplurals=1; plural=0;\n"
+
+            msgid "ball"
+            msgstr "míč"
+            """);
+
+        var entries = PoParser.Parse(reader).ToArray();
+
+        Assert.Equal(2, entries.Length);
+        Assert.All(entries, entry => Assert.Null(entry.PluralRule));
+    }
+
+    private static void AssertCzechPluralRule(CultureDictionaryRecord[] entries)
+    {
+        Assert.Equal(2, entries.Length);
+        Assert.Equal("orchardcore.localization|ball", entries[0].Key);
+        Assert.Equal(3, entries[0].Translations.Length);
+        Assert.Equal("car", entries[1].Key);
+
+        foreach (var entry in entries)
+        {
+            Assert.NotNull(entry.PluralRule);
+
+            for (var n = 0; n <= 100; n++)
+            {
+                Assert.Equal(PluralizationRule.Czech(n), entry.PluralRule(n));
+            }
+        }
+    }
+
     private static async Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)
     {
         var testAssembly = typeof(PoParserTests).Assembly;

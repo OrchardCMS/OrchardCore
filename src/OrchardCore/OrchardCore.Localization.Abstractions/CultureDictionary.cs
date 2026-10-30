@@ -9,6 +9,8 @@ namespace OrchardCore.Localization;
 /// <remarks>This type is not thread safe.</remarks>
 public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
 {
+    private readonly Dictionary<CultureDictionaryRecordKey, PluralizationRuleDelegate> _pluralRules = [];
+
     /// <summary>
     /// Creates a new instance of <see cref="CultureDictionary"/>.
     /// </summary>
@@ -27,7 +29,7 @@ public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     public string CultureName { get; }
 
     /// <summary>
-    /// gets the pluralization rule.
+    /// Gets the pluralization rule of the culture, used for the translations that don't define their own rule.
     /// </summary>
     public PluralizationRuleDelegate PluralRule { get; }
 
@@ -53,7 +55,7 @@ public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
                 return null;
             }
 
-            var pluralForm = count.HasValue ? PluralRule(count.Value) : 0;
+            var pluralForm = count.HasValue ? GetPluralRule(key)(count.Value) : 0;
             if (pluralForm >= translations.Length)
             {
                 throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.", new PluralForm(key, pluralForm, CultureInfo.GetCultureInfo(CultureName)));
@@ -74,14 +76,38 @@ public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     public ISet<CultureDictionaryRecordKey> PlainTextTranslations { get; } = new HashSet<CultureDictionaryRecordKey>();
 
     /// <summary>
+    /// Gets the pluralization rule selecting the plural form of the translations of a resource key.
+    /// </summary>
+    /// <param name="key">The resource key.</param>
+    /// <returns>
+    /// The rule of the record merged for the <paramref name="key"/>, e.g. the one defined by the <c>Plural-Forms</c> header
+    /// of its PO file, otherwise the <see cref="PluralRule"/> of the culture.
+    /// </returns>
+    public PluralizationRuleDelegate GetPluralRule(CultureDictionaryRecordKey key)
+        => _pluralRules.TryGetValue(key, out var pluralRule) ? pluralRule : PluralRule;
+
+    /// <summary>
     /// Merges the translations from multiple dictionary records.
     /// </summary>
     /// <param name="records">The records to be merged.</param>
+    /// <remarks>
+    /// The <see cref="CultureDictionaryRecord.PluralRule"/> of a record, if any, replaces the <see cref="PluralRule"/>
+    /// of the culture for its translations.
+    /// </remarks>
     public void MergeTranslations(IEnumerable<CultureDictionaryRecord> records)
     {
         foreach (var record in records)
         {
             Translations[record.Key] = record.Translations;
+
+            if (record.PluralRule != null)
+            {
+                _pluralRules[record.Key] = record.PluralRule;
+            }
+            else
+            {
+                _pluralRules.Remove(record.Key);
+            }
         }
     }
 
@@ -89,7 +115,9 @@ public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     {
         foreach (var item in Translations)
         {
-            yield return new CultureDictionaryRecord(item.Key, null, item.Value);
+            _pluralRules.TryGetValue(item.Key, out var pluralRule);
+
+            yield return new CultureDictionaryRecord(item.Key, null, item.Value, pluralRule);
         }
     }
 

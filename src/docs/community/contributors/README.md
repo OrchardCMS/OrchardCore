@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-403-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-405-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -557,6 +557,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://www.raftel-software.com/"><img src="https://avatars.githubusercontent.com/u/81477606?v=4?s=100" width="100px;" alt="Rafael Hernández Silva"/><br /><sub><b>Rafael Hernández Silva</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Raf-Hs" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/johnkaram02"><img src="https://avatars.githubusercontent.com/u/168653085?v=4?s=100" width="100px;" alt="John Karam"/><br /><sub><b>John Karam</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=johnkaram02" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/JohnyKid123"><img src="https://avatars.githubusercontent.com/u/97468479?v=4?s=100" width="100px;" alt="Alex Venkov"/><br /><sub><b>Alex Venkov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=JohnyKid123" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

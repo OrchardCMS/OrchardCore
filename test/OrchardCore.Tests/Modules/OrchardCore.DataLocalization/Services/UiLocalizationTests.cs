@@ -37,6 +37,25 @@ public sealed class UiLocalizationTests
     }
 
     [Fact]
+    public void ApplyTranslations_PoPluralFormsRule_KeptForPoEntriesAndCultureRuleForOverrides()
+    {
+        PluralizationRuleDelegate poRule = count => count == 0 ? 0 : count == 1 ? 1 : 2;
+        var fallback = new CultureDictionary("fr", count => count > 1 ? 1 : 0);
+        fallback.MergeTranslations([
+            new CultureDictionaryRecord("Item", "Context", ["None", "One", "Many"], poRule),
+            new CultureDictionaryRecord("Other", "Context", ["None", "One", "Many"], poRule),
+        ]);
+        var document = new UiTranslationsDocument();
+        document.Translations["fr"] = [new UiTranslation { Context = "Context", Key = "Item", Values = ["Single", "Plural"] }];
+
+        var overlaid = new UiTranslationProvider().ApplyTranslations(fallback, document);
+
+        Assert.Equal("None", overlaid[CultureDictionaryRecord.GetKey("Other", "Context"), 0]);
+        Assert.Equal("Single", overlaid[CultureDictionaryRecord.GetKey("Item", "Context"), 0]);
+        Assert.Equal("Plural", overlaid[CultureDictionaryRecord.GetKey("Item", "Context"), 2]);
+    }
+
+    [Fact]
     public void LocalizationManager_OverrideProvider_AppliesAfterStandardProviders()
     {
         using var cache = new MemoryCache(new MemoryCacheOptions());

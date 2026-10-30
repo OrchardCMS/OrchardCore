@@ -82,6 +82,7 @@ IDE/build analyzers ship in `OrchardCore.Abstractions`; extraction diagnostics a
 | `OCLOC007` | Error | Liquid parsing failed. |
 | `OCLOC008` | Error or warning | C# extraction compilation or a source generator failed, or a generator assembly could not be loaded. |
 | `OCLOC009` | Error | Missing worker/SDK compiler, cancellation, or unexpected extraction failure. |
+| `OCLOC010` | Warning | A translator note or argument name is not constant (C#) or literal (Liquid); the message is extracted without it. |
 
 Use `LocalizationStrict=true` to fail on extraction warnings. IDE analyzer severities can be configured in `.editorconfig`; `dotnet build -warnaserror` promotes analyzer warnings. Do not globally suppress diagnostics just to obtain a successful build.
 
@@ -114,7 +115,7 @@ msgstr[0] "{0} livre"
 msgstr[1] "{0} livres"
 ```
 
-Plural-Forms header in the PO sets how many forms and the selection expression, e.g. Arabic uses `nplurals=6`.
+Plural-Forms header in the PO sets how many forms and the selection expression, e.g. Arabic uses `nplurals=6`. Orchard Core evaluates it (`PluralFormsParser`) for the translations of that file; files without a valid header use the culture's `IPluralRuleProvider` rule.
 
 ## PO file discovery order
 

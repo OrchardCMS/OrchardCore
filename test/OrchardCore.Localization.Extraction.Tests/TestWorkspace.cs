@@ -53,6 +53,8 @@ internal sealed class TestWorkspace : IDisposable
         var trees = new List<SyntaxTree> { tree, CSharpSyntaxTree.ParseText("global using System;") };
         var attributePath = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Localization", "SkipLocalizationExtractionAttribute.cs");
         trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(attributePath), path: attributePath));
+        var metadataPath = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Localization", "LocalizationMetadata.cs");
+        trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(metadataPath), path: metadataPath));
         if (includeSources)
         {
             var directory = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Localization");

@@ -54,6 +54,21 @@ S.Plural(count, "{0} book", "{0} books");
 // IHtmlLocalizer: H.Plural(count, "{0} book", "{0} books")
 ```
 
+### Step 2b: Describe messages for translators
+
+Add a note for an ambiguous message and name format arguments; both are ignored at runtime and only written to the POT template:
+
+```csharp
+using static OrchardCore.Localization.LocalizationMetadata; // Arg(); Razor views inherit it from the base page.
+
+H.Plural(note: "Relative date shown for future dates.", count: Arg("years", years), singular: "in 1 year", plural: "in {0} years");
+S.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user.Name)];
+```
+
+Sources: `LocalizationSource.Create<Owner>("Hello {0}", note: "...")`, then `factory.Localize(source, Arg("user name", name))`.
+
+Liquid: `{{ "in {0} years" | t: years: time.years, note: "Relative date shown for future dates." }}`. Notes and names must be constants (`OCLOC010` otherwise).
+
 ### Step 3: Reuse shared sources for strings declared without a localizer
 
 Strings declared before a localizer is available, such as deployment step categories and titles, are `LocalizationSource` instances translated at display time with `IStringLocalizerFactory.Localize()`. Don't declare them in the class that uses them:
@@ -247,7 +262,7 @@ For configuration properties, custom Liquid inputs, extraction diagnostics, and 
 - Add a culture to `SupportedCultures` before content can be translated into it.
 - DataAnnotations need `AddDataAnnotationsPortableObjectLocalization()` (the Localization module registers it).
 - Ordinary builds do not refresh POT templates; always explicitly update and commit them with string/context changes.
-- A gettext source plural has exactly two constant forms; translated PO files can have more forms, selected by the culture's plural rule.
+- A gettext source plural has exactly two constant forms; translated PO files can have more forms, selected by the file's `Plural-Forms` header, or by the culture's plural rule (`IPluralRuleProvider`) when the file has no valid header.
 - Set `GenerateLocalizationCatalog=false` only when intentionally disabling both embedding and updating, not as a fix for extraction errors.
 
 ## References

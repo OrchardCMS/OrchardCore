@@ -39,16 +39,19 @@ public sealed class UiTranslationProvider : ITranslationOverrideProvider
             }
 
             var result = new CultureDictionary(fallback.CultureName, fallback.PluralRule);
-            foreach (var translation in fallback.Translations)
-            {
-                result.Translations[translation.Key] = translation.Value;
-            }
+            // Keeps the plural rules of the PO records, e.g. from their Plural-Forms header.
+            result.MergeTranslations(fallback.Translations.Select(t => new CultureDictionaryRecord(
+                t.Key.MessageId, t.Key.Context, t.Value, fallback.GetPluralRule(t.Key))));
             result.PlainTextTranslations.UnionWith(fallback.PlainTextTranslations);
-            foreach (var translation in translations)
+
+            // Overrides are edited with the plural forms of the culture, so they use its rule.
+            var overrides = translations
+                .Select(t => new CultureDictionaryRecord(t.Key, string.IsNullOrEmpty(t.Context) ? null : t.Context, t.Values))
+                .ToArray();
+            result.MergeTranslations(overrides);
+            foreach (var record in overrides)
             {
-                var key = CultureDictionaryRecord.GetKey(translation.Key, string.IsNullOrEmpty(translation.Context) ? null : translation.Context);
-                result.Translations[key] = translation.Values;
-                result.PlainTextTranslations.Add(key);
+                result.PlainTextTranslations.Add(record.Key);
             }
 
             return result;

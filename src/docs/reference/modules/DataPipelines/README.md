@@ -320,7 +320,7 @@ When the **host key fingerprint** of an **Upload to an SFTP server** step is set
 
 ## Saving files to the media library
 
-The **Save to the media library** step saves only the files whose extension the media library accepts. By default, the media library accepts Excel workbooks (`.xlsx`), but not CSV, JSON, JSON Lines or zip files (`.csv`, `.json`, `.jsonl`, `.zip`); a run that saves such a file fails, and the editor of the step warns about it.
+The **Save to the media library** step saves only the files whose extension the media library accepts. By default, the media library accepts Excel workbooks and CSV files (`.xlsx`, `.csv`), but not JSON, JSON Lines or zip files (`.json`, `.jsonl`, `.zip`); a run that saves such a file fails, and the editor of the step warns about it.
 
 To save these files to the media library, add their extensions to the `AllowedFileExtensions` of the [Media](../Media/README.md#configuration) section. This setting replaces the default list rather than extending it, so it must include every extension the media library should keep accepting:
 
@@ -345,6 +345,7 @@ To save these files to the media library, add their extensions to the `AllowedFi
         ".odt",
         ".xls",
         ".xlsx",
+        ".csv",
         ".psd",
         ".mp3",
         ".m4a",
@@ -359,7 +360,6 @@ To save these files to the media library, add their extensions to the `AllowedFi
         ".ogv",
         ".3gp",
         ".webm",
-        ".csv",
         ".json",
         ".jsonl",
         ".zip"

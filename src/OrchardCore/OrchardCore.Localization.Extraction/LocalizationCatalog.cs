@@ -50,7 +50,17 @@ public sealed class LocalizationCatalog
     public IReadOnlyCollection<LocalizationMessage> Messages => _messages.Values;
     public IList<ExtractionDiagnostic> Diagnostics { get; } = new List<ExtractionDiagnostic>();
 
-    public void Add(string context, string text, string? plural, SourceReference source, string? comment = null, IReadOnlyList<string?>? formatArguments = null)
+    /// <summary>
+    /// Adds a message, or merges a call site into the message already declared with the same context and key.
+    /// </summary>
+    /// <param name="context">The localization context.</param>
+    /// <param name="text">The message key.</param>
+    /// <param name="plural">The plural form of the message, if any.</param>
+    /// <param name="source">The source declaring the message.</param>
+    /// <param name="comment">A comment for translators, such as a <c>// TRANSLATORS:</c> comment.</param>
+    /// <param name="formatArguments">The descriptions of the format arguments, by placeholder index.</param>
+    /// <param name="notes">The notes explaining the meaning or usage of the message to translators.</param>
+    public void Add(string context, string text, string? plural, SourceReference source, string? comment = null, IReadOnlyList<string?>? formatArguments = null, IEnumerable<string>? notes = null)
     {
         if (text.Length == 0)
         {
@@ -81,6 +91,17 @@ public sealed class LocalizationCatalog
         if (!string.IsNullOrWhiteSpace(comment))
         {
             existing.Comments.Add(comment);
+        }
+
+        if (notes is not null)
+        {
+            foreach (var note in notes)
+            {
+                if (!string.IsNullOrWhiteSpace(note))
+                {
+                    existing.Comments.Add(note.Trim());
+                }
+            }
         }
 
         if (formatArguments is not null)
