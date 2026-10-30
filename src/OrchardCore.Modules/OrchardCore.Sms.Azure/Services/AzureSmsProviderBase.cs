@@ -63,7 +63,7 @@ public abstract class AzureSmsProviderBase<TOptions> : ISmsProvider
             });
         }
 
-        if (!_phoneFormatValidator.IsValid(message.To))
+        if (!_phoneFormatValidator.Validate(message.To).Succeeded)
         {
             return Result.Failed(new ResultError
             {

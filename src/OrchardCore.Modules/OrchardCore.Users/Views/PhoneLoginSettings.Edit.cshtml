@@ -1,0 +1,10 @@
+@model OrchardCore.Users.Models.PhoneLoginSettings
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="AllowChangingPhoneNumber" type="checkbox" class="form-check-input">
+            <label class="form-check-label" asp-for="AllowChangingPhoneNumber">@T["Allow user to change their phone number"]</label>
+        </div>
+    </div>
+</div>
