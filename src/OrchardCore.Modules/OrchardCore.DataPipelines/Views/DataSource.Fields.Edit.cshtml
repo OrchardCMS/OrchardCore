@@ -40,7 +40,7 @@
     <div class="ocat-wrapper">
         <label asp-for="Fields" class="ocat-label">@T["Fields to read"]</label>
         <div class="ocat-end">
-            <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every field"]">
+            <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-actions-box="true" data-select-all-text="@T["Select all"]" data-deselect-all-text="@T["Deselect all"]" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every field"]">
                 @foreach (var group in Model.AvailableFields.GroupBy(field => field.Group ?? string.Empty))
                 {
                     <optgroup label="@group.Key">

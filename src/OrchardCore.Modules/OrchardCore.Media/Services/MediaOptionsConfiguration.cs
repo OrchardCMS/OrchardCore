@@ -29,6 +29,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".odt", // (OpenDocument Text Document)
         ".xls",
         ".xlsx", // (Microsoft Excel Document)
+        ".csv", // (Comma-Separated Values)
         ".psd", // (Adobe Photoshop Document)
 
         // Audio
