@@ -2863,6 +2863,7 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
 msgid "Move up"
 msgstr ""
 
+#. Sort direction: ascending or descending.
 #: Views/Shared/DataPipelineSortRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
 msgid "Order"

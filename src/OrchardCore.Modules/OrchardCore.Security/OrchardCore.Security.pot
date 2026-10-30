@@ -276,6 +276,7 @@ msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
 msgid "Screen Wake Lock"
 msgstr ""
 
+#. Column header: the feature is allowed for the origin of the site itself.
 #: Views/PermissionsPolicySettings.Edit.cshtml
 msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
 msgid "Self"
