@@ -1,11 +1,18 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Deployment.Steps;
 
 public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomFileDeploymentStep>
 {
+    private readonly IStringLocalizer<CustomFileDeploymentStepDriver> S;
+
+    public CustomFileDeploymentStepDriver(IStringLocalizer<CustomFileDeploymentStepDriver> stringLocalizer) =>
+        S = stringLocalizer;
+
     public override Task<IDisplayResult> DisplayAsync(CustomFileDeploymentStep step, BuildDisplayContext context)
     {
         return
@@ -27,6 +34,20 @@ public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentSte
     public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, UpdateEditorContext context)
     {
         await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.FileName, x => x.FileContent);
+
+        if (!string.IsNullOrWhiteSpace(step.FileName))
+        {
+            if (step.FileName.StartsWith('/') || Path.IsPathFullyQualified(step.FileName))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(step.FileName), S["A virtual path is required."]);
+            }
+            // The specific base path here doesn't matter, we just want to see if the generated physical path would be
+            // out of bounds.
+            else if (PathExtensions.IsOutsideOfBasePath(Path.GetTempPath(), step.FileName))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(step.FileName), S["Path must be relative to the base directory."]);
+            }
+        }
 
         return Edit(step, context);
     }
