@@ -247,8 +247,8 @@ public sealed class LocalizationSourceExtractorTests
                 public static LocalizationSource Hours => LocalizationSource.Create<Owner>("1 hour", "Hours of the day.");
                 public static LocalizationSource Greeting => LocalizationSource.Create<Owner>("Hello {0}");
                 public string Get(IStringLocalizerFactory strings, int hours, string user)
-                    => strings.Plural(Arg("hours", Range(0, 23, hours)), Hours, "{0} hours").Value
-                        + strings.Localize(Greeting, Range(0, 1, hours)).Value;
+                    => strings.Plural(Arg("hours", hours, 0, 23), Hours, "{0} hours").Value
+                        + strings.Localize(Greeting, Arg("user", hours, 0, 1)).Value;
             }
             """, includeSources: true, includePlurals: true);
 

@@ -399,6 +399,8 @@ For a context-bearing source (`Type` set), the extension resolves `factory.Creat
 
 A localized string can carry metadata for translators: a note explaining the meaning or usage of the message, and a name for each of its format arguments. The extraction writes them as comments of the message in the translation template. They are ignored at runtime, don't change the translation lookup, and changing them doesn't invalidate existing translations.
 
+Use them sparingly, only where translators could not otherwise understand a message: a word that has several meanings, such as "Open" or "Store", a value that must not be translated literally, such as a format pattern, or a placeholder whose meaning neither the message nor its expression tells. Most messages are clear from their text and context and need neither.
+
 In C# and Razor, name a format argument with the `Arg(name, value)` helper, which returns its value unchanged. It is a static method of `OrchardCore.Localization.LocalizationMetadata`, provided by `OrchardCore.Abstractions`, and of the Orchard Core Razor base page, so views can call it directly. Pass a note with the `note` parameter of the `Plural` extensions, or call `Note(note)` on the localizer, which returns the same localizer, for the indexer and the other methods:
 
 ```csharp
@@ -450,14 +452,14 @@ A format argument without a name is described by its C# expression, and the `cou
 
 #### Range of a plural count
 
-When the count of a plural message can only take a known range of values, declare it with the `Range(min, max, count)` helper, which returns the count unchanged. The extraction writes it as the gettext `range` flag, which lets translators and tools know which plural forms are used, for example a language whose plural rule distinguishes counts above 100 doesn't need that form for hours. Like `Arg`, it is a static method of `OrchardCore.Localization.LocalizationMetadata` and of the Orchard Core Razor base page, and the two helpers can wrap each other:
+When the count of a plural message can only take a known range of values, name it with the `Arg(name, value, min, max)` overload, which also returns the count unchanged. The extraction writes the range as the gettext `range` flag, which lets translators and tools know which plural forms are used, for example a language whose plural rule distinguishes counts above 100 doesn't need that form for hours:
 
 ```csharp
 using static OrchardCore.Localization.LocalizationMetadata;
 
-return H.Plural(Arg("hours", Range(0, 23, time.Hours)), "1 hour ago", "{0} hours ago");
+return H.Plural(Arg("hours", time.Hours, 0, 23), "1 hour ago", "{0} hours ago");
 
-var text = stringLocalizerFactory.Plural(Range(1, 7, days), DaysSource, "{0} days");
+var text = stringLocalizerFactory.Plural(Arg("days", days, 1, 7), DaysSource, "{0} days");
 ```
 
 ```po
@@ -470,7 +472,7 @@ msgstr[0] ""
 msgstr[1] ""
 ```
 
-The bounds must be compile-time constants with `0 <= min <= max`, and `Range` only applies to the `count` of a `Plural` call; otherwise the extraction reports `OCLOC011` and extracts the message without the flag. When several calls declare different ranges for the same message, the template carries the smallest range containing all of them; calls without a range don't change it. The Liquid `t` filter doesn't support plurals, so it has no range.
+The bounds must be compile-time constants with `0 <= min <= max`, and a range only applies to the `count` of a `Plural` call, not to another format argument or to an `Arg` nested in another one; otherwise the extraction reports `OCLOC011` and extracts the message without the flag. When several calls declare different ranges for the same message, the template carries the smallest range containing all of them; calls without a range don't change it. The Liquid `t` filter doesn't support plurals, so it has no range.
 
 ### Translation templates
 
@@ -536,7 +538,7 @@ An update reports what it could not extract as diagnostics with an `OCLOC` prefi
 | `OCLOC008` | Error or warning | The extraction compilation reported a C# error, a source generator failed, or a generator assembly could not be loaded (warning). |
 | `OCLOC009` | Error | The worker was not found, the SDK's compiler was not found, the extraction was canceled, or it failed unexpectedly. |
 | `OCLOC010` | Warning | A translator note or a format argument name is not a compile-time constant string, or a Liquid `note` argument is not a literal string. The message is still extracted, without it. |
-| `OCLOC011` | Warning | A plural `Range` has bounds that are not compile-time constants with `0 <= min <= max`, or is not the `count` of a `Plural` call. The message is still extracted, without the `range` flag. |
+| `OCLOC011` | Warning | An `Arg(name, value, min, max)` range has bounds that are not compile-time constants with `0 <= min <= max`, or is not the `count` of a `Plural` call. The message is still extracted, without the `range` flag. |
 
 Liquid files are discovered from evaluated embedded-resource, content, and none items. Additional inputs can be supplied explicitly:
 

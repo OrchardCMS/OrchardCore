@@ -516,9 +516,9 @@ public sealed class CSharpLocalizationExtractorTests
             {
                 public const int MaxMinutes = 59;
                 public string Get(IStringLocalizer<Owner> S, IHtmlLocalizer<Owner> H, int hours, int minutes, int days)
-                    => S.Plural(Range(0, 23, hours), "1 hour", "{0} hours")
-                        + S.Plural(Arg("minutes", Range(0, MaxMinutes, minutes)), "1 minute", "{0} minutes")
-                        + H.Plural("Days of the week.", Range(1, 7, Arg("days", days)), new[] { "1 day", "{0} days" }).Value
+                    => S.Plural(Arg("hours", hours, 0, 23), "1 hour", "{0} hours")
+                        + S.Plural(Arg("minutes", minutes, 0, MaxMinutes), "1 minute", "{0} minutes")
+                        + H.Plural("Days of the week.", Arg("days", days, min: 1, max: 7), new[] { "1 day", "{0} days" }).Value
                         + S.Plural(days, "1 item", "{0} items");
             }
             """, includePlurals: true);
@@ -527,6 +527,7 @@ public sealed class CSharpLocalizationExtractorTests
         Assert.Equal(new PluralRange(0, 23), catalog.Messages.Single(message => message.Text == "1 hour").Range);
         Assert.Null(catalog.Messages.Single(message => message.Text == "1 item").Range);
         var output = PotWriter.Write(catalog, "Example");
+        Assert.Contains("#. Format arguments: {0}: hours\n", output);
         Assert.Contains("#, csharp-format, range: 0..23\nmsgctxt \"Example.Owner\"\nmsgid \"1 hour\"\n", output);
         Assert.Contains("#. Format arguments: {0}: minutes\n", output);
         Assert.Contains("#, csharp-format, range: 0..59\nmsgctxt \"Example.Owner\"\nmsgid \"1 minute\"\n", output);
@@ -544,8 +545,8 @@ public sealed class CSharpLocalizationExtractorTests
             public class Owner
             {
                 public string Get(IStringLocalizer<Owner> S, int count)
-                    => S.Plural(Range(2, 10, count), "1 file", "{0} files")
-                        + S.Plural(Range(0, 5, count), "1 file", "{0} files")
+                    => S.Plural(Arg("files", count, 2, 10), "1 file", "{0} files")
+                        + S.Plural(Arg("files", count, 0, 5), "1 file", "{0} files")
                         + S.Plural(count, "1 file", "{0} files");
             }
             """, includePlurals: true);
@@ -564,17 +565,19 @@ public sealed class CSharpLocalizationExtractorTests
             public class Owner
             {
                 public string Get(IStringLocalizer<Owner> S, int max, int count)
-                    => S.Plural(Range(0, max, count), "1 dynamic", "{0} dynamic")
-                        + S.Plural(Range(5, 1, count), "1 reversed", "{0} reversed")
-                        + S.Plural(Range(-1, 1, count), "1 negative", "{0} negative")
-                        + S["Not plural {0}", Range(0, 1, count)]
-                        + S.Plural(count, "1 extra", "{0} extra {1}", Range(0, 1, count));
+                    => S.Plural(Arg("count", count, 0, max), "1 dynamic", "{0} dynamic")
+                        + S.Plural(Arg("count", count, 5, 1), "1 reversed", "{0} reversed")
+                        + S.Plural(Arg("count", count, -1, 1), "1 negative", "{0} negative")
+                        + S["Not plural {0}", Arg("count", count, 0, 1)]
+                        + S.Plural(count, "1 extra", "{0} extra {1}", Arg("count", count, 0, 1))
+                        + S.Plural(Arg("outer", Arg("inner", count, 0, 1)), "1 nested", "{0} nested");
             }
             """, includePlurals: true);
 
-        Assert.Equal(5, catalog.Messages.Count);
+        Assert.Equal(6, catalog.Messages.Count);
         Assert.All(catalog.Messages, message => Assert.Null(message.Range));
-        Assert.Equal(5, catalog.Diagnostics.Count);
+        Assert.Equal("outer", Assert.Single(catalog.Messages.Single(message => message.Text == "1 nested").FormatArguments[0]));
+        Assert.Equal(6, catalog.Diagnostics.Count);
         Assert.All(catalog.Diagnostics, diagnostic => Assert.Equal("OCLOC011", diagnostic.Code));
         Assert.DoesNotContain("range:", PotWriter.Write(catalog, "Example"));
     }

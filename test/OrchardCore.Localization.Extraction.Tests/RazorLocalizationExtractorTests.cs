@@ -134,7 +134,7 @@ public sealed class RazorLocalizationExtractorTests
             @using static OrchardCore.Localization.LocalizationMetadata
             @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
             @{ var hours = 2; }
-            <p>@T.Plural(Arg("hours", Range(0, 23, hours)), "1 hour", "{0} hours")</p>
+            <p>@T.Plural(Arg("hours", hours, 0, 23), "1 hour", "{0} hours")</p>
             """);
         options.RazorFiles.Add(new ExtractionFile(view, "Views/Index.cshtml"));
 

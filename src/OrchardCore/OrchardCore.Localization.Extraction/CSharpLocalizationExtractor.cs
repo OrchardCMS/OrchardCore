@@ -137,7 +137,7 @@ public sealed class CSharpLocalizationExtractor
             string? name = null;
             if (count is not null)
             {
-                UnwrapCount(count, out name, out _);
+                GetCountMetadata(count, out name, out _);
             }
 
             descriptions.Add(name ?? "count");
@@ -175,17 +175,14 @@ public sealed class CSharpLocalizationExtractor
     }
 
     /// <summary>
-    /// Gets the name given to a format argument with an <c>Arg(name, value)</c> helper, which returns its value
-    /// unchanged at runtime.
+    /// Gets the name given to a format argument with an <c>Arg(name, value)</c> or <c>Arg(name, value, min, max)</c>
+    /// helper, which returns its value unchanged at runtime.
     /// </summary>
     private static bool TryGetArgumentName(IOperation operation, out string? name)
     {
         name = null;
-        if (operation is not IInvocationOperation { TargetMethod: { Name: "Arg", IsStatic: true, Arity: 1, Parameters.Length: 2 } method } invocation
-            || method.Parameters[0] is not { Name: "name", Type.SpecialType: SpecialType.System_String }
-            || method.Parameters[1].Name != "value"
-            || !SymbolEqualityComparer.Default.Equals(method.Parameters[1].Type, method.TypeArguments[0])
-            || !SymbolEqualityComparer.Default.Equals(method.ReturnType, method.TypeArguments[0]))
+        if (operation is not IInvocationOperation { TargetMethod: { Name: "Arg", IsStatic: true } method } invocation
+            || !IsArg(method) && !IsRangedArg(method))
         {
             return false;
         }
@@ -195,58 +192,40 @@ public sealed class CSharpLocalizationExtractor
         return true;
     }
 
+    private static bool IsArg(IMethodSymbol method)
+        => method is { Arity: 1, Parameters.Length: 2 }
+            && method.Parameters[0] is { Name: "name", Type.SpecialType: SpecialType.System_String }
+            && method.Parameters[1].Name == "value"
+            && SymbolEqualityComparer.Default.Equals(method.Parameters[1].Type, method.TypeArguments[0])
+            && SymbolEqualityComparer.Default.Equals(method.ReturnType, method.TypeArguments[0]);
+
+    private static bool IsRangedArg(IMethodSymbol method)
+        => method is { Arity: 0, Parameters.Length: 4, ReturnType.SpecialType: SpecialType.System_Int32 }
+            && method.Parameters[0] is { Name: "name", Type.SpecialType: SpecialType.System_String }
+            && method.Parameters[1] is { Name: "value", Type.SpecialType: SpecialType.System_Int32 }
+            && method.Parameters[2] is { Name: "min", Type.SpecialType: SpecialType.System_Int32 }
+            && method.Parameters[3] is { Name: "max", Type.SpecialType: SpecialType.System_Int32 };
+
     internal static bool HasDynamicArgumentName(IOperation operation)
         => TryGetArgumentName(operation, out var name) && name is null;
 
     /// <summary>
-    /// Gets whether an operation calls a <c>Range(min, max, count)</c> helper, which returns its count unchanged at
-    /// runtime.
+    /// Gets whether an operation calls an <c>Arg(name, value, min, max)</c> helper, which declares the range of the count
+    /// of a plural message.
     /// </summary>
-    private static bool IsRange(IOperation operation)
-        => operation is IInvocationOperation { TargetMethod: { Name: "Range", IsStatic: true, Arity: 0, Parameters.Length: 3, ReturnType.SpecialType: SpecialType.System_Int32 } method }
-            && method.Parameters[0] is { Name: "min", Type.SpecialType: SpecialType.System_Int32 }
-            && method.Parameters[1] is { Name: "max", Type.SpecialType: SpecialType.System_Int32 }
-            && method.Parameters[2] is { Name: "count", Type.SpecialType: SpecialType.System_Int32 };
+    private static bool IsRangedArg(IOperation operation)
+        => operation is IInvocationOperation { TargetMethod: { Name: "Arg", IsStatic: true } method } && IsRangedArg(method);
 
     /// <summary>
-    /// Removes the <c>Arg(name, value)</c> and <c>Range(min, max, count)</c> helpers wrapping the count of a plural
-    /// message, in any order, and gets the name and the outermost range they declare.
+    /// Gets the name and the range declared by the <c>Arg</c> helper wrapping the count of a plural message.
     /// </summary>
-    private static IOperation UnwrapCount(IOperation count, out string? name, out IInvocationOperation? range)
+    private static void GetCountMetadata(IOperation count, out string? name, out IInvocationOperation? range)
     {
-        name = null;
-        range = null;
-        var named = false;
-        while (true)
+        count = Unwrap(count);
+        range = IsRangedArg(count) ? (IInvocationOperation)count : null;
+        if (!TryGetArgumentName(count, out name))
         {
-            count = Unwrap(count);
-            IOperation? value;
-            if (IsRange(count))
-            {
-                range ??= (IInvocationOperation)count;
-                value = ((IInvocationOperation)count).Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 2)?.Value;
-            }
-            else if (TryGetArgumentName(count, out var argumentName))
-            {
-                if (!named)
-                {
-                    name = argumentName;
-                    named = true;
-                }
-
-                value = ((IInvocationOperation)count).Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 1)?.Value;
-            }
-            else
-            {
-                return count;
-            }
-
-            if (value is null)
-            {
-                return count;
-            }
-
-            count = value;
+            name = null;
         }
     }
 
@@ -263,10 +242,10 @@ public sealed class CSharpLocalizationExtractor
         IInvocationOperation? range = null;
         if (count is not null)
         {
-            UnwrapCount(count, out _, out range);
+            GetCountMetadata(count, out _, out range);
         }
 
-        if (operation is not null && operation.DescendantsAndSelf().Any(descendant => IsRange(descendant) && (range is null || descendant.Syntax.Span != range.Syntax.Span)))
+        if (operation is not null && operation.DescendantsAndSelf().Any(descendant => IsRangedArg(descendant) && (range is null || descendant.Syntax.Span != range.Syntax.Span)))
         {
             catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC011", "A plural range only applies to the count of a plural message.", source));
         }
@@ -276,8 +255,8 @@ public sealed class CSharpLocalizationExtractor
             return null;
         }
 
-        var min = GetInt32(range.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 0)?.Value);
-        var max = GetInt32(range.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 1)?.Value);
+        var min = GetInt32(range.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 2)?.Value);
+        var max = GetInt32(range.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 3)?.Value);
         if (min is not >= 0 || max is null || min > max)
         {
             catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC011", "The plural range bounds are not compile-time constants with 0 <= min <= max.", source));
