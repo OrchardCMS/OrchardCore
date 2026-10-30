@@ -60,7 +60,18 @@ internal sealed class LocalizationSourceExtractor
             var operation = model.GetOperation(node, cancellationToken);
             var source = operation is null ? null : GetSource(operation);
             IOperation? plural = null;
-            if (operation is IInvocationOperation invocation && IsDeferredPlural(invocation))
+            List<string?>? formatArguments = null;
+            var deferred = false;
+            if (operation is IInvocationOperation localize && IsDeferredLocalize(localize))
+            {
+                // The source is extracted from its declaration, which reports its diagnostics, so a call only adds the
+                // descriptions of its format arguments.
+                deferred = true;
+                var argument = localize.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "source")?.Value;
+                formatArguments = CSharpLocalizationExtractor.GetFormatArguments(localize.Arguments);
+                source = argument is null || formatArguments.Count == 0 ? null : ResolveSource(argument, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
+            }
+            else if (operation is IInvocationOperation invocation && IsDeferredPlural(invocation))
             {
                 var argument = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "source")?.Value;
                 if (argument is null)
@@ -70,6 +81,7 @@ internal sealed class LocalizationSourceExtractor
 
                 source = ResolveSource(argument, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
                 plural = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "plural")?.Value;
+                formatArguments = CSharpLocalizationExtractor.GetFormatArguments(invocation.Arguments, plural: true);
                 if (source is null)
                 {
                     AddDiagnostic("OCLOC002", "The localization source's runtime context cannot be resolved statically. Use an explicit LocalizationSource declaration.", node);
@@ -91,6 +103,11 @@ internal sealed class LocalizationSourceExtractor
             var pluralText = plural is null ? null : CSharpLocalizationExtractor.GetConstant(plural);
             if (key is null || plural is not null && pluralText is null)
             {
+                if (deferred)
+                {
+                    continue;
+                }
+
                 AddDiagnostic("OCLOC001", "The localization key is not a compile-time constant string.", node);
                 continue;
             }
@@ -98,16 +115,40 @@ internal sealed class LocalizationSourceExtractor
             var context = source.Type is null ? null : CSharpLocalizationExtractor.GetResourceName(source.Type, allowGenericDefinition: true);
             if (context is null)
             {
+                if (deferred)
+                {
+                    continue;
+                }
+
                 AddDiagnostic("OCLOC002", "The localization source's runtime context cannot be resolved statically. Use a generic Create call or typeof resource type.", node);
                 continue;
             }
 
-            var span = node.GetLocation().GetMappedLineSpan();
-            _catalog.Add(context, key, pluralText, _options.GetSource(span.Path, span.StartLinePosition.Line + 1), CSharpLocalizationExtractor.GetComment(node));
+            var notes = new List<string>();
+            if (source.Note is not null)
+            {
+                var note = CSharpLocalizationExtractor.GetConstant(source.Note);
+                if (note is null && !deferred)
+                {
+                    AddDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", source.Syntax);
+                }
+                else if (note is not null)
+                {
+                    notes.Add(note);
+                }
+            }
+
+            if (formatArguments is not null && operation!.Descendants().Any(CSharpLocalizationExtractor.HasDynamicArgumentName))
+            {
+                AddDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", node);
+            }
+
+            var span = (deferred ? source.Syntax : node).GetLocation().GetMappedLineSpan();
+            _catalog.Add(context, key, pluralText, _options.GetSource(span.Path, span.StartLinePosition.Line + 1), CSharpLocalizationExtractor.GetComment(node), formatArguments, notes);
             if (plural is not null)
             {
                 var declaration = source.Syntax.GetLocation().GetMappedLineSpan();
-                _catalog.Add(context, key, pluralText, _options.GetSource(declaration.Path, declaration.StartLinePosition.Line + 1), CSharpLocalizationExtractor.GetComment(source.Syntax));
+                _catalog.Add(context, key, pluralText, _options.GetSource(declaration.Path, declaration.StartLinePosition.Line + 1), CSharpLocalizationExtractor.GetComment(source.Syntax), notes: notes);
             }
         }
     }
@@ -140,18 +181,19 @@ internal sealed class LocalizationSourceExtractor
             return null;
         }
 
+        var note = arguments.FirstOrDefault(argument => argument.Parameter?.Name == "note")?.Value;
         if (type is not null)
         {
-            return new SourceCall(value, type, false, operation.Syntax);
+            return new SourceCall(value, type, false, operation.Syntax, note);
         }
 
         var resource = arguments.FirstOrDefault(argument => argument.Parameter?.Name == "type")?.Value;
         if (resource is null || resource.ConstantValue is { HasValue: true, Value: null })
         {
-            return new SourceCall(value, null, true, operation.Syntax);
+            return new SourceCall(value, null, true, operation.Syntax, note);
         }
 
-        return new SourceCall(value, CSharpLocalizationExtractor.Unwrap(resource) is ITypeOfOperation typeOf ? typeOf.TypeOperand : null, false, operation.Syntax);
+        return new SourceCall(value, CSharpLocalizationExtractor.Unwrap(resource) is ITypeOfOperation typeOf ? typeOf.TypeOperand : null, false, operation.Syntax, note);
     }
 
     private SourceCall? ResolveSource(IOperation operation, HashSet<ISymbol> visited)
@@ -180,5 +222,8 @@ internal sealed class LocalizationSourceExtractor
     private static bool IsDeferredPlural(IInvocationOperation invocation)
         => invocation.TargetMethod.Name == "Plural" && invocation.TargetMethod.ContainingType.ToDisplayString() is "Microsoft.Extensions.Localization.StringLocalizerFactoryPluralExtensions" or "Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizerFactoryPluralExtensions";
 
-    private sealed record SourceCall(IOperation Value, ITypeSymbol? Type, bool ContextFree, SyntaxNode Syntax);
+    private static bool IsDeferredLocalize(IInvocationOperation invocation)
+        => invocation.TargetMethod.Name == "Localize" && invocation.TargetMethod.ContainingType.ToDisplayString() is "Microsoft.Extensions.Localization.StringLocalizerFactoryExtensions" or "Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizerFactoryExtensions";
+
+    private sealed record SourceCall(IOperation Value, ITypeSymbol? Type, bool ContextFree, SyntaxNode Syntax, IOperation? Note = null);
 }

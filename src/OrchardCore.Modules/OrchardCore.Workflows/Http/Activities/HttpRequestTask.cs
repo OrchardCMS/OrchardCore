@@ -3,14 +3,16 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRequestTask : TaskActivity<HttpRequestTask>
+public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
@@ -85,24 +87,32 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly UrlEncoder _urlEncoder;
 
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     protected readonly IStringLocalizer S;
 
     public HttpRequestTask(
         IWorkflowExpressionEvaluator expressionEvaluator,
         UrlEncoder urlEncoder,
         IHttpClientFactory httpClientFactory,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<HttpRequestTask> localizer
     )
     {
         _expressionEvaluator = expressionEvaluator;
         _urlEncoder = urlEncoder;
         _httpClientFactory = httpClientFactory;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Http Request Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<HttpRequestTask>("Http Request Task");
 
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Url
     {
@@ -160,6 +170,11 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
         return outcomes;
     }
 
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("object", LocalizationSource.Create<HttpRequestTask>("The response: its body, headers and status."), WorkflowValueMembers.HttpResponse)];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
+
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
@@ -188,14 +203,20 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
         var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
 
+        var responseBody = await response.Content.ReadAsStringAsync(workflowContext.CancellationToken);
+
         workflowContext.LastResult = new
         {
-            Body = await response.Content.ReadAsStringAsync(workflowContext.CancellationToken),
+            Body = responseBody,
             Headers = response.Headers.ToDictionary(x => x.Key),
             response.StatusCode,
             response.ReasonPhrase,
             response.IsSuccessStatusCode,
         };
+
+        workflowContext.SetActivityOutput(activityContext, "Body", responseBody);
+        workflowContext.SetActivityOutput(activityContext, "StatusCode", (int)response.StatusCode);
+        workflowContext.SetActivityOutput(activityContext, "Response", workflowContext.LastResult);
 
         return Outcome(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
     }
@@ -220,4 +241,14 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
             from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)
             select int.Parse(code);
     }
+
+    private static readonly ActivityOutputDescriptor[] s_outputs =
+    [
+        new ActivityOutputDescriptor { Name = "Body", TypeName = "string", DisplayName = LocalizationSource.Create<HttpRequestTask>("Response body"), Description = LocalizationSource.Create<HttpRequestTask>("The body of the response, as text.") },
+        new ActivityOutputDescriptor { Name = "StatusCode", TypeName = "number", DisplayName = LocalizationSource.Create<HttpRequestTask>("Status code"), Description = LocalizationSource.Create<HttpRequestTask>("The HTTP status code of the response, such as 200.") },
+        new ActivityOutputDescriptor { Name = "Response", TypeName = "object", DisplayName = LocalizationSource.Create<HttpRequestTask>("Response"), Description = LocalizationSource.Create<HttpRequestTask>("The response: its status code, headers and body.") },
+    ];
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => s_outputs;
 }

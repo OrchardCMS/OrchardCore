@@ -2,16 +2,19 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Localization;
 using OrchardCore.Users;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
+using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>
+public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>, IActivityDescription
 {
     private readonly ISession _session;
 
@@ -20,18 +23,21 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
        IWorkflowExpressionEvaluator expressionEvaluator,
        HtmlEncoder htmlEncoder,
        ILogger<NotifyContentOwnerTask> logger,
+       IStringLocalizerFactory localizerFactory,
        IStringLocalizer<NotifyContentOwnerTask> localizer,
        ISession session
    ) : base(notificationCoordinator,
        expressionEvaluator,
        htmlEncoder,
        logger,
-       localizer)
+       localizerFactory, localizer)
     {
         _session = session;
     }
 
-    public override LocalizedString DisplayText => S["Notify Content's Owner Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<NotifyContentOwnerTask>("Notify Content's Owner Task");
+
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     protected override async Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -56,4 +62,11 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
 
         return [];
     }
+
+    public override IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        =>
+        [
+            .. base.GetProvidedValues(),
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = LocalizationSource.Create<NotifyContentOwnerTask>("The owner of the content item, a user."), Members = WorkflowValueMembers.User, AvailableToItself = true },
+        ];
 }

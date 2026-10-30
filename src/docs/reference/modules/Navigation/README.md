@@ -466,7 +466,7 @@ The content management views use these literal trail names. Their children obtai
 |------|-------------|
 | `Contents` | The content items list. |
 | `ContentsCreate` | The content item creation form. |
-| `ContentsEdit` | The content item editing form. |
+| `ContentsEdit` | The content item editing form. When the content type is listable, the trail includes that type between **Manage Content** and the edit title. The type links to the local `returnUrl` when the edit request includes one, and otherwise to the content items list filtered to that type. A `returnUrl` that is not a local URL is ignored. |
 
 ## Extending Navigation
 

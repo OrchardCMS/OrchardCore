@@ -43,11 +43,9 @@
             </ul>
         </div>
     </div>
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button id="add-selected-parts-button" class="btn btn-primary save" type="submit" name="submit.Save" value="Save" hidden="@(!hasSelectedParts)">@T["Add Selected Parts"]</button>
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button id="add-selected-parts-button" class="btn btn-primary save" type="submit" name="submit.Save" value="Save" hidden="@(!hasSelectedParts)">@T["Add Selected Parts"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
     </div>
 </form>
 

@@ -39,6 +39,9 @@ jobs:
     - name: Run vitest unit tests (media-picker)
       working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker
       run: yarn vitest run
+    - name: Run vitest unit tests (workflows-designer)
+      working-directory: src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer
+      run: yarn vitest run
     - name: Upload vitest test results
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: always()
@@ -49,4 +52,5 @@ jobs:
           src/OrchardCore.Modules/OrchardCore.DataPipelines/Assets/designer/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer/testing/vitest-results.xml
         retention-days: 30

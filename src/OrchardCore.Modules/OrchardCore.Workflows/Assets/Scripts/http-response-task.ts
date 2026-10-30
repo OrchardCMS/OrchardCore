@@ -1,13 +1,17 @@
 import initLiquidPatternEditor from "@orchardcore/bloom/components/liquid-pattern-editor";
+import observeAndInit from "@orchardcore/bloom/helpers/observeAndInit";
+import { bindCodeMirrorToTextArea } from "@orchardcore/bloom/helpers/editorLifecycle";
 
-const editor = document.querySelector<HTMLElement>('[data-task-editor="http-response"]');
-const headers = document.getElementById(editor?.dataset.headersId ?? "") as HTMLTextAreaElement | null;
-const content = document.getElementById(editor?.dataset.contentId ?? "") as HTMLTextAreaElement | null;
+// Initializes every HttpResponseTask editor, including editors injected after the page loaded (the
+// workflow designer panel).
+const initHttpResponseTaskEditor = (element: HTMLElement) => {
+    for (const id of [element.dataset.headersId, element.dataset.contentId]) {
+        const textArea = element.querySelector<HTMLTextAreaElement>(`#${CSS.escape(id ?? "")}`);
 
-if (headers) {
-    initLiquidPatternEditor(headers);
-}
+        if (textArea) {
+            bindCodeMirrorToTextArea(initLiquidPatternEditor(textArea), textArea);
+        }
+    }
+};
 
-if (content) {
-    initLiquidPatternEditor(content);
-}
+observeAndInit('[data-task-editor="http-response"]', initHttpResponseTaskEditor);

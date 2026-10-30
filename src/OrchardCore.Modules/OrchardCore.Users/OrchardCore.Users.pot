@@ -3334,11 +3334,6 @@ msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
 msgid "Failed"
 msgstr ""
 
-#: Workflows/Activities/AssignUserRoleTask.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
-msgid "User"
-msgstr ""
-
 #: Workflows/Activities/RegisterUserTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
 msgid "Done"
@@ -3356,7 +3351,7 @@ msgstr ""
 
 #: Workflows/Activities/RegisterUserTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
-msgid "User"
+msgid "The URL that confirms the email of the registered user."
 msgstr ""
 
 #: Workflows/Activities/RegisterUserTask.cs
@@ -3367,11 +3362,6 @@ msgstr ""
 #: Workflows/Activities/UserActivity.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.UserActivity"
 msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/UserActivity.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.UserActivity"
-msgid "User"
 msgstr ""
 
 #: Workflows/Activities/UserConfirmedEvent.cs
@@ -3399,9 +3389,44 @@ msgctxt "OrchardCore.Users.Workflows.Activities.UserEnabledEvent"
 msgid "User Enabled Event"
 msgstr ""
 
+#: Workflows/Activities/UserEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserEvent"
+msgid "The user of the event."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The claims of the external login."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The external login provider, or nothing for a local login."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The name of the user who logged in."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The names of the user's roles."
+msgstr ""
+
 #: Workflows/Activities/UserLoggedInEvent.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
 msgid "User Loggedin Event"
+msgstr ""
+
+#: Workflows/Activities/UserLoggedOutEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedOutEvent"
+msgid "The name of the user who logged out."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedOutEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedOutEvent"
+msgid "The names of the user's roles."
 msgstr ""
 
 #: Workflows/Activities/UserLoggedOutEvent.cs
@@ -3431,7 +3456,12 @@ msgstr ""
 
 #: Workflows/Activities/ValidateUserTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
-msgid "User"
+msgid "The name of the signed-in user."
+msgstr ""
+
+#: Workflows/Activities/ValidateUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
+msgid "The names of the user's roles, when the user is in one of the roles."
 msgstr ""
 
 #: Workflows/Activities/ValidateUserTask.cs

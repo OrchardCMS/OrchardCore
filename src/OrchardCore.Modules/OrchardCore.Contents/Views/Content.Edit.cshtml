@@ -20,19 +20,15 @@
 
         @if (Model.Actions != null)
         {
-            <div class="ocat-wrapper edit-item-secondary group">
-                <div class="ocat-end-offset edit-item-actions">
-                    @await DisplayAsync(Model.Actions)
-
-                    @{
-                        var returnUrl = Context.Request.Query["returnUrl"];
-                    }
-
-                    @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        <a class="btn btn-secondary cancel mb-1" role="button" href="@returnUrl">@T["Cancel"]</a>
-                    }
-                </div>
+            <div class="edit-item-actions action-bar-bottom">
+                @await DisplayAsync(Model.Actions)
+                @{
+                    var returnUrl = Context.Request.Query["returnUrl"];
+                }
+                @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+                }
             </div>
         }
     </div>

@@ -21,11 +21,9 @@
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
     </div>
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-success save" type="submit">@T["Save"]</button>
-            <a class="btn btn-primary edit-nodes" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-success save" type="submit">@T["Save"]</button>
+        <a class="btn btn-primary edit-nodes action-bar-secondary" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
     </div>
 </form>

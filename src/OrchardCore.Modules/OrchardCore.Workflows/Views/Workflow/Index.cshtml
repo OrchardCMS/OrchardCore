@@ -1,38 +1,89 @@
-@using OrchardCore.Admin.Models
+@using Microsoft.AspNetCore.Routing
 @using OrchardCore.Admin
+@using OrchardCore.Admin.Models
+@using OrchardCore.Workflows.Models
 @model WorkflowIndexViewModel
 
+@{
+    // The page lists the instances of a workflow, or of every workflow.
+    var isAll = Model.WorkflowType is null;
+    var listAction = isAll ? "All" : "Index";
+
+    // The URL of the list with a status filter, and the other filters kept.
+    string FilterUrl(WorkflowFilter filter)
+    {
+        var values = new RouteValueDictionary
+        {
+            ["Options.Filter"] = filter,
+            ["Options.OrderBy"] = Model.Options.OrderBy,
+            ["Options.Created"] = Model.Options.Created,
+        };
+
+        if (isAll)
+        {
+            if (!string.IsNullOrEmpty(Model.Options.WorkflowTypeId))
+            {
+                values["Options.WorkflowTypeId"] = Model.Options.WorkflowTypeId;
+            }
+        }
+        else
+        {
+            values["workflowTypeId"] = Model.WorkflowType.Id;
+        }
+
+        return Url.Action(listAction, values);
+    }
+
+    var statusFilters = new[]
+    {
+        (Filter: WorkflowFilter.All, Label: T["All"], Css: "secondary"),
+        (Filter: WorkflowFilter.Halted, Label: T["Halted"], Css: "info"),
+        (Filter: WorkflowFilter.Running, Label: T["Running"], Css: "info"),
+        (Filter: WorkflowFilter.Faulted, Label: T["Faulted"], Css: "danger"),
+        (Filter: WorkflowFilter.Finished, Label: T["Finished"], Css: "success"),
+        (Filter: WorkflowFilter.Aborted, Label: T["Aborted"], Css: "warning"),
+    };
+}
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <zone Name="Title">
-    <breadcrumb name="WorkflowInstances" title="@T["Instances"]">
-        <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
-        <breadcrumb-item id="WorkflowType" action="Edit" controller="WorkflowType" area="OrchardCore.Workflows" route-id="@Model.WorkflowType.Id" permission="@WorkflowsPermissions.ManageWorkflows.Name">@Model.WorkflowType.Name</breadcrumb-item>
-    </breadcrumb>
+    @if (isAll)
+    {
+        <breadcrumb name="WorkflowAllInstances" title="@T["Instances"]">
+            <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+        </breadcrumb>
+    }
+    else
+    {
+        <breadcrumb name="WorkflowInstances" title="@T["Instances"]">
+            <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+            <breadcrumb-item id="WorkflowType" action="Edit" controller="WorkflowType" area="OrchardCore.Workflows" route-id="@Model.WorkflowType.Id" permission="@WorkflowsPermissions.ManageWorkflows.Name">@Model.WorkflowType.Name</breadcrumb-item>
+        </breadcrumb>
+    }
 </zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit workflow-bulk-select-list" data-selected-text="@T["selected"]">
+<nav class="mb-3 d-flex flex-wrap gap-2" aria-label="@T["Instances by status"]" data-cy="instance-counts">
+    @foreach (var status in statusFilters)
+    {
+        var isCurrent = Model.Options.Filter == status.Filter;
+        <a href="@FilterUrl(status.Filter)" class="btn btn-sm @(isCurrent ? "btn-secondary" : "btn-outline-secondary")" aria-current="@(isCurrent ? "true" : null)" data-cy="instance-count-@status.Filter">
+            @status.Label
+            <span class="badge text-bg-@status.Css ms-1">@(Model.StatusCounts.TryGetValue(status.Filter, out var count) ? count : 0)</span>
+        </a>
+    }
+</nav>
+
+<form asp-action="@listAction" id="workflows-form" method="post" class="no-multisubmit workflow-bulk-select-list" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input asp-for="ReturnUrl" type="hidden" />
 
-    <div class="card text-bg-theme mb-3 position-sticky action-bar">
-        <div class="card-body">
-            <div class="row gx-2">
-                <div class="col"></div>
-                <div class="col-auto">
-                    <a asp-action="Index" asp-controller="WorkflowType" class="btn btn-secondary" role="button">@T["Back to workflows"]</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @* The instances, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+    @* The instances, the toolbar with the filters and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
     <admin-list name="WorkflowInstances" context="Model.List"
                 bulk-actions="Model.Options.WorkflowsBulkAction"
-                empty-message="@T["<strong>Nothing here!</strong> There are no workflow instances at the moment."]">
+                empty-message="@T["<strong>Nothing here!</strong> There are no workflow instances that match these filters."]">
         <admin-list-list item-css-class="list-group-item" />
         <admin-list-grid>
             <admin-list-column type="Select" />

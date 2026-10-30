@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WorkflowsSample\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: UpperCaseExpressionProvider.cs
+msgctxt "WorkflowsSample.UpperCaseExpressionProvider"
+msgid "Upper case"
+msgstr ""
+
+#: Views/Items/TransientFailureTask.Fields.Design.cshtml
+msgctxt "WorkflowsSample.Views.Items.TransientFailureTask.Fields.Design"
+msgid "Fails the first time it runs."
+msgstr ""
+
+#: Views/Items/TransientFailureTask.Fields.Design.cshtml
+msgctxt "WorkflowsSample.Views.Items.TransientFailureTask.Fields.Design"
+msgid "Transient failure"
+msgstr ""
+
+#: Views/Items/TransientFailureTask.Fields.Thumbnail.cshtml
+msgctxt "WorkflowsSample.Views.Items.TransientFailureTask.Fields.Thumbnail"
+msgid "Fails the first time it runs."
+msgstr ""
+
+#: Views/Items/TransientFailureTask.Fields.Thumbnail.cshtml
+msgctxt "WorkflowsSample.Views.Items.TransientFailureTask.Fields.Thumbnail"
+msgid "Transient failure"
+msgstr ""
