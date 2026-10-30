@@ -18,7 +18,7 @@ public class MediaTokenService : IMediaTokenService
     // intentionally excluded: "v" is a cache-buster appended after tokenization, and including it
     // here would make the generated token disagree with the validated commands (which never
     // include "v"), silently dropping all processing on versioned URLs.
-    private static readonly HashSet<string> _knownCommands = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> s_knownCommands = new(StringComparer.OrdinalIgnoreCase)
     {
         MediaCommands.WidthCommand,
         MediaCommands.HeightCommand,
@@ -98,7 +98,7 @@ public class MediaTokenService : IMediaTokenService
             var key = pair.DecodeName().ToString();
             var value = pair.DecodeValue().ToString();
 
-            if (_knownCommands.Contains(key))
+            if (s_knownCommands.Contains(key))
             {
                 accumulator.Append(key, value);
             }

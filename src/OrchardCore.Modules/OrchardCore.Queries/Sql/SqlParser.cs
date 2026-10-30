@@ -15,12 +15,12 @@ public class SqlParser
 {
     private const string RandomFunctionName = "__orchard_random__";
 
-    private static readonly SqlGenerationOptions GenerationOptions = new()
+    private static readonly SqlGenerationOptions s_generationOptions = new()
     {
         FunctionNameCase = FunctionNameCase.Preserve,
     };
 
-    private static readonly Cyqwel.Dialects.SqlDialect ParserDialect = SqlDialectBuilder
+    private static readonly Cyqwel.Dialects.SqlDialect s_parserDialect = SqlDialectBuilder
         .Create("orchard")
         .BasedOn(SqlDialects.Generic)
         .ConfigureParser(static options => options with
@@ -34,7 +34,7 @@ public class SqlParser
     {
         var result = SqlValidator.Validate(
             sql,
-            ParserDialect);
+            s_parserDialect);
 
         if (!result.IsValid)
         {
@@ -46,7 +46,7 @@ public class SqlParser
                 .ToArray();
         }
 
-        if (!ParserDialect.TryParse(sql, out var document, out var error))
+        if (!s_parserDialect.TryParse(sql, out var document, out var error))
         {
             return error is null
                 ? ["Parse error: Unknown parsing error"]
@@ -67,7 +67,7 @@ public class SqlParser
         out string query,
         out IEnumerable<string> messages)
     {
-        if (!ParserDialect.TryParse(sql, out var document, out var error))
+        if (!s_parserDialect.TryParse(sql, out var document, out var error))
         {
             query = null;
             messages = error is null
@@ -97,7 +97,7 @@ public class SqlParser
                 names.CommonTableExpressions);
 
             var rewritten = rewriter.Visit(document);
-            query = new OrchardSqlDialect(dialect).Generate(rewritten, GenerationOptions) + ";";
+            query = new OrchardSqlDialect(dialect).Generate(rewritten, s_generationOptions) + ";";
             messages = [];
             return true;
         }

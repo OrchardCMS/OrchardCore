@@ -47,18 +47,18 @@ namespace MyTheme;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineStyle("MyTheme")
             .SetUrl("~/MyTheme/css/styles.min.css", "~/MyTheme/css/styles.css")
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineScript("MyTheme")
             .SetUrl("~/MyTheme/js/scripts.min.js", "~/MyTheme/js/scripts.js")
             .SetVersion("1.0.0");
@@ -66,7 +66,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }
 ```

@@ -239,7 +239,7 @@ To bind ```ContentPart``` to an Index, you have to implement ```IIndexAliasProvi
 ```csharp
 public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -251,7 +251,7 @@ public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
 ```
