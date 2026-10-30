@@ -14,6 +14,12 @@
               "default": 10,
               "minimum": 0
             },
+            "MaxEvaluatedUnreadNotifications": {
+              "type": "integer",
+              "description": "The maximum number of unread notifications checked by the notification visibility handlers to count the unread notifications of the navigation bar. A larger count is shown as this number followed by a plus sign. Only used when a module registers a visibility handler.",
+              "default": 100,
+              "minimum": 0
+            },
             "DisableNotificationHtmlBodySanitizer": {
               "type": "boolean",
               "description": "Whether to disable the sanitization of the HTML body of the notifications sent from workflows.",

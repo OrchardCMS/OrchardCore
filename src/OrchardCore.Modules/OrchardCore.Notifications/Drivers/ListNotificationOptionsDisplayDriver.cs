@@ -60,6 +60,8 @@ public sealed class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNot
         m.FilterResult = model.FilterResult;
         m.Sorts = model.Sorts;
         m.Statuses = model.Statuses;
+        m.Type = model.Type;
+        m.Types = model.Types;
         m.BulkActions = model.BulkActions;
         m.BulkAction = model.BulkAction;
         m.StartIndex = model.StartIndex;

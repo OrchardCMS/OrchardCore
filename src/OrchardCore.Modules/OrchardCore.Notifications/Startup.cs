@@ -39,6 +39,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<INotificationManager, NotificationManager>();
+        services.AddScoped<INotificationVisibilityEvaluator, NotificationVisibilityEvaluator>();
         services.AddScoped<INotificationMethodProviderAccessor, NotificationMethodProviderAccessor>();
 
         services.AddDataMigration<NotificationMigrations>();
@@ -72,12 +74,12 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();
         services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
-
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.AddMarkAsReadEndpoint();
+        routes.AddOpenNotificationEndpoint();
     }
 }
 

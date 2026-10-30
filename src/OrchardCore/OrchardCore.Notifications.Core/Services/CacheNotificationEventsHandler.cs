@@ -20,9 +20,14 @@ public sealed class CacheNotificationEventsHandler : NotificationEventsHandler
     /// <returns>A task that completes when the cache invalidation finishes.</returns>
     public override Task SentAsync(NotificationContext context, CancellationToken cancellationToken = default)
     {
+        if (!string.IsNullOrEmpty(context.Notification?.UserId))
+        {
+            return _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKeyByUserId(context.Notification.UserId));
+        }
+
         if (context.Notify is IUser user)
         {
-            return _tagCache.RemoveTagAsync($"{NotificationConstants.TopUnreadUserNotificationCacheTag}:{user.UserName}");
+            return _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(user.UserName));
         }
 
         return Task.CompletedTask;

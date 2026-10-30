@@ -1,0 +1,18 @@
+@using OrchardCore.Notifications.Endpoints.Management
+@model NotificationViewModel
+
+@if (!string.IsNullOrEmpty(Model.Notification.Url))
+{
+    <a class="notification-subject notification-link stretched-link" href="@Url.RouteUrl(OpenNotificationEndpoints.RouteName, new { notificationId = Model.Notification.NotificationId })">@Model.Notification.Subject</a>
+}
+else
+{
+    <span class="notification-subject">@Model.Notification.Subject</span>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Notification.Summary))
+{
+    <div class="notification-summary">
+        @Html.Raw(Model.Notification.Summary)
+    </div>
+}

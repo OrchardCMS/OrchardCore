@@ -3,13 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.Entities;
-using OrchardCore.Environment.Cache;
-using OrchardCore.Modules;
-using OrchardCore.Notifications.Indexes;
-using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Notifications.Endpoints.Management;
 
@@ -31,43 +25,31 @@ public static class MarkAsReadEndpoints
         ReadNotificationViewModel model,
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
-        ITagCache tagCache,
-        YesSql.ISession session,
-        IClock clock)
+        INotificationManager notificationManager,
+        INotificationVisibilityEvaluator visibilityEvaluator)
     {
         if (string.IsNullOrEmpty(model?.MessageId))
         {
             return TypedResults.BadRequest();
         }
 
-        if (!await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications))
+        var user = httpContextAccessor.HttpContext.User;
+
+        if (!await authorizationService.AuthorizeAsync(user, NotificationPermissions.ManageNotifications))
         {
             return TypedResults.Forbid();
         }
 
-        var userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var notification = await notificationManager.FindByIdAsync(model.MessageId);
 
-        var notification = await session.Query<Notification, NotificationIndex>(x => x.NotificationId == model.MessageId && x.UserId == userId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
-
-        if (notification == null)
+        if (notification == null ||
+            notification.UserId != user.FindFirstValue(ClaimTypes.NameIdentifier) ||
+            await visibilityEvaluator.EvaluateAsync(notification, user) == NotificationVisibility.Hidden)
         {
             return TypedResults.NotFound();
         }
 
-        var updated = false;
-        var readInfo = notification.GetOrCreate<NotificationReadInfo>();
-
-        if (!readInfo.IsRead)
-        {
-            readInfo.ReadAtUtc = clock.UtcNow;
-            readInfo.IsRead = true;
-            notification.Put(readInfo);
-
-            updated = true;
-
-            await session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
-            await tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(httpContextAccessor.HttpContext.User.Identity.Name));
-        }
+        var updated = await notificationManager.MarkAsReadAsync(notification);
 
         return TypedResults.Ok(new
         {
