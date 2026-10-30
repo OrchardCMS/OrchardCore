@@ -490,6 +490,11 @@ msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "User {0} successfully enabled."
 msgstr ""
 
+#: Controllers/AdminPasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminPasskeyController"
+msgid "The passkeys of the user were removed."
+msgstr ""
+
 #: Controllers/AuthenticatorAppController.cs
 msgctxt "OrchardCore.Users.Controllers.AuthenticatorAppController"
 msgid "Verification code is invalid."
@@ -578,6 +583,73 @@ msgstr ""
 #: Controllers/ExternalAuthenticationsController.cs
 msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
 msgid "Username is required!"
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "Invalid login attempt."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "Local login is disabled."
+msgstr ""
+
+#. Format arguments: {0}: passkeys.Count + 1
+#: Controllers/PasskeyController.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "Passkey {0}"
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The account is locked out"
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey couldn't be added."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey couldn't be added. It may already be registered."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey couldn't be removed."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey couldn't be renamed."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey couldn't be verified."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey was added."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey was removed."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "The passkey was renamed."
+msgstr ""
+
+#: Controllers/PasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.PasskeyController"
+msgid "Two-factor authentication has been enabled."
 msgstr ""
 
 #: Controllers/ResetPasswordController.cs
@@ -1081,12 +1153,12 @@ msgstr ""
 
 #: Views/AuthenticatorApp/Index.cshtml
 msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
-msgid "To use an authenticator app go through the following steps:"
+msgid "Security"
 msgstr ""
 
 #: Views/AuthenticatorApp/Index.cshtml
 msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
-msgid "Two-Factor Authentication"
+msgid "To use an authenticator app go through the following steps:"
 msgstr ""
 
 #: Views/AuthenticatorApp/Index.cshtml
@@ -1121,12 +1193,12 @@ msgstr ""
 
 #: Views/AuthenticatorApp/Reset.cshtml
 msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
-msgid "This process disables the two-factor authentication for your account."
+msgid "Security"
 msgstr ""
 
 #: Views/AuthenticatorApp/Reset.cshtml
 msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
-msgid "Two-Factor Authentication"
+msgid "This process disables the two-factor authentication for your account."
 msgstr ""
 
 #. Format arguments: {0}: Url.Action("Index", "AuthenticatorApp")
@@ -1654,6 +1726,26 @@ msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Email.Content"
 msgid "Use your email to receive one-time codes."
 msgstr ""
 
+#: Views/Items/TwoFactorMethod.Passkey.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Passkey.Actions"
+msgid "Add"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Passkey.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Passkey.Actions"
+msgid "Manage"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Passkey.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Passkey.Content"
+msgid "Passkey"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Passkey.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Passkey.Content"
+msgid "Use the fingerprint, face or screen lock of your device, or a security key."
+msgstr ""
+
 #: Views/Items/TwoFactorMethod.Phone.Actions.cshtml
 msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Actions"
 msgid "Edit"
@@ -1939,6 +2031,21 @@ msgctxt "OrchardCore.Users.Views.LoginFormForgotPassword"
 msgid "Forgot your password?"
 msgstr ""
 
+#: Views/LoginFormPasskey.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormPasskey"
+msgid "Log in with a passkey"
+msgstr ""
+
+#: Views/LoginFormPasskey.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormPasskey"
+msgid "The passkey couldn't be used. Try again, or log in with your password."
+msgstr ""
+
+#: Views/LoginFormPasskey.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormPasskey"
+msgid "or"
+msgstr ""
+
 #: Views/LoginFormRegisterUser.cshtml
 msgctxt "OrchardCore.Users.Views.LoginFormRegisterUser"
 msgid "Register as a new user"
@@ -2002,6 +2109,11 @@ msgstr ""
 #: Views/LoginSettingsRoles.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.LoginSettingsRoles.Edit"
 msgid "Select the roles to require two-factor authentication for."
+msgstr ""
+
+#: Views/PasskeyValidation.cshtml
+msgctxt "OrchardCore.Users.Views.PasskeyValidation"
+msgid "Use one of your passkeys to confirm it's you."
 msgstr ""
 
 #: Views/RegisterUserForm.Edit.cshtml
@@ -2149,6 +2261,11 @@ msgctxt "OrchardCore.Users.Views.ResetPasswordSettings.Edit"
 msgid "Use site theme for password reset page"
 msgstr ""
 
+#: Views/Security/Index.cshtml
+msgctxt "OrchardCore.Users.Views.Security.Index"
+msgid "Security"
+msgstr ""
+
 #: Views/SmsAuthenticator/Index.cshtml
 msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
 msgid "Configure SMS Authenticator"
@@ -2171,12 +2288,12 @@ msgstr ""
 
 #: Views/SmsAuthenticator/Index.cshtml
 msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
-msgid "To utilize SMS as a two-factor authentication method, please click the 'Request Code' button below in order to confirm your Phone number."
+msgid "Security"
 msgstr ""
 
 #: Views/SmsAuthenticator/Index.cshtml
 msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
-msgid "Two-Factor Authentication"
+msgid "To utilize SMS as a two-factor authentication method, please click the 'Request Code' button below in order to confirm your Phone number."
 msgstr ""
 
 #: Views/SmsAuthenticator/ValidateCode.cshtml
@@ -2201,7 +2318,7 @@ msgstr ""
 
 #: Views/SmsAuthenticator/ValidateCode.cshtml
 msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
-msgid "Two-Factor Authentication"
+msgid "Security"
 msgstr ""
 
 #: Views/SmsAuthenticator/ValidateCode.cshtml
@@ -2302,12 +2419,12 @@ msgstr ""
 
 #: Views/TwoFactorAuthentication/DisableTwoFactorAuthentication.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.DisableTwoFactorAuthentication"
-msgid "This action disables two-factor authentication for your account."
+msgid "Security"
 msgstr ""
 
 #: Views/TwoFactorAuthentication/DisableTwoFactorAuthentication.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.DisableTwoFactorAuthentication"
-msgid "Two-Factor Authentication"
+msgid "This action disables two-factor authentication for your account."
 msgstr ""
 
 #: Views/TwoFactorAuthentication/GenerateRecoveryCodes.cshtml
@@ -2322,131 +2439,12 @@ msgstr ""
 
 #: Views/TwoFactorAuthentication/GenerateRecoveryCodes.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.GenerateRecoveryCodes"
-msgid "Store these codes in a safe place."
+msgid "Security"
 msgstr ""
 
 #: Views/TwoFactorAuthentication/GenerateRecoveryCodes.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.GenerateRecoveryCodes"
-msgid "Two-Factor Authentication"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Disable two-factor authentication"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Enable"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Enabled"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Forget this device"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "No authentication methods are available."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Please enable at least one two-factor authentication method."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Preferred Two-Factor Method"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Recovery codes"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor verification codes."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Recovery options"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Reset codes"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Select the method"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "The current device has been saved during the two-factor authentication process."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Two-Factor Authentication"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Two-factor authentication can't be disabled for your user."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Two-factor authentication is disabled."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Two-factor authentication is enabled."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Two-factor authentication is not enabled yet. To enable it, please add one of the below two-factor methods."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Two-factor authentication must be enabled before proceeding."
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Two-factor methods"
-msgstr ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "Update"
-msgstr ""
-
-#. Format arguments: {0}: count
-#: Views/TwoFactorAuthentication/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "You have 1 recovery code left."
-msgid_plural "You have {0} recovery codes left."
-msgstr[0] ""
-msgstr[1] ""
-
-#: Views/TwoFactorAuthentication/Index.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
-msgid "You have no recovery codes left."
+msgid "Store these codes in a safe place."
 msgstr ""
 
 #: Views/TwoFactorAuthentication/LoginWithRecoveryCode.cshtml
@@ -2495,7 +2493,17 @@ msgstr ""
 
 #: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "The passkey couldn't be used. Try again."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
 msgid "Two-factor authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Use a passkey"
 msgstr ""
 
 #: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
@@ -2525,12 +2533,12 @@ msgstr ""
 
 #: Views/TwoFactorAuthentication/ShowRecoveryCodes.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.ShowRecoveryCodes"
-msgid "Store these codes in a safe place."
+msgid "Security"
 msgstr ""
 
 #: Views/TwoFactorAuthentication/ShowRecoveryCodes.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.ShowRecoveryCodes"
-msgid "Two-Factor Authentication"
+msgid "Store these codes in a safe place."
 msgstr ""
 
 #: Views/TwoFactorLoginSettings.Edit.cshtml
@@ -2550,22 +2558,12 @@ msgstr ""
 
 #: Views/TwoFactorLoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
-msgid "Requires an active site theme."
-msgstr ""
-
-#: Views/TwoFactorLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
 msgid "The number of recovery codes to generate. Default is 5."
 msgstr ""
 
 #: Views/TwoFactorLoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
 msgid "Two-Factor Settings"
-msgstr ""
-
-#: Views/TwoFactorLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
-msgid "Use site theme for two-factor authentication pages"
 msgstr ""
 
 #: Views/TwoFactorLoginSettings.Edit.cshtml
@@ -2800,6 +2798,11 @@ msgctxt "OrchardCore.Users.Views.UserMenuItems-Profile"
 msgid "Profile"
 msgstr ""
 
+#: Views/UserMenuItems-Security.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-Security"
+msgid "Security"
+msgstr ""
+
 #: Views/UserMenuItems-SignOut.cshtml
 msgctxt "OrchardCore.Users.Views.UserMenuItems-SignOut"
 msgid "Log off"
@@ -2810,14 +2813,19 @@ msgctxt "OrchardCore.Users.Views.UserMenuItems-SignedUser"
 msgid "Signed in as"
 msgstr ""
 
-#: Views/UserMenuItems-TwoFactor.cshtml
-msgctxt "OrchardCore.Users.Views.UserMenuItems-TwoFactor"
-msgid "Security"
-msgstr ""
-
 #: Views/UserName.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.UserName.Edit"
 msgid "User name"
+msgstr ""
+
+#: Views/UserPasskeyActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserPasskeyActionsMenu"
+msgid "Are you sure you want to remove all the passkeys of this user? They will have to log in another way."
+msgstr ""
+
+#: Views/UserPasskeyActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserPasskeyActionsMenu"
+msgid "Remove passkeys"
 msgstr ""
 
 #: Views/UserPhoneNumber.Edit.cshtml
@@ -2863,6 +2871,220 @@ msgstr ""
 #: Views/UserSaveButtons.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.UserSaveButtons.Edit"
 msgid "Save"
+msgstr ""
+
+#: Views/UserSecurity.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurity"
+msgid "There are no security settings to manage."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "A name that helps you recognize the device or password manager that keeps the passkey."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "A passkey lets you log in with the fingerprint, face or screen lock of your device, or with a security key, instead of your password."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Add a passkey"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Are you sure you want to remove this passkey? You won't be able to log in with it anymore."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "For example, my laptop"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Name"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Never used"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Passkeys"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Remove"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Rename"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Save"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Synced"
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "The passkey couldn't be added. Try again."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "This browser doesn't support passkeys."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "When two-factor authentication is enabled, a passkey can also confirm it's you after you log in with your password."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "You don't have any passkey yet."
+msgstr ""
+
+#: Views/UserSecuritySettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecuritySettings.Edit"
+msgid "The Security page, where users manage their two-factor authentication and their passkeys, and the pages it links to. Requires an active site theme."
+msgstr ""
+
+#: Views/UserSecuritySettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecuritySettings.Edit"
+msgid "Use site theme for the security pages"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Disable two-factor authentication"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Enable"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Enabled"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Forget this device"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "No authentication methods are available."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Please enable at least one two-factor authentication method."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Preferred Two-Factor Method"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Recovery codes"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor verification codes."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Recovery options"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Reset codes"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Select the method"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "The current device has been saved during the two-factor authentication process."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Two-factor authentication can't be disabled for your user."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Two-factor authentication is disabled."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Two-factor authentication is enabled."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Two-factor authentication is not enabled yet. To enable it, please add one of the below two-factor methods."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Two-factor authentication must be enabled before proceeding."
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Two-factor methods"
+msgstr ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "Update"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/UserSecurityTwoFactor.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "You have 1 recovery code left."
+msgid_plural "You have {0} recovery codes left."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/UserSecurityTwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
+msgid "You have no recovery codes left."
 msgstr ""
 
 #: Views/UserTimeZone.Edit.cshtml

@@ -37,7 +37,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
 
         services.AddDisplayDriver<User, UserTwoFactorDisplayDriver>();
         services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
-        services.AddDisplayDriver<UserMenu, TwoFactorUserMenuDisplayDriver>();
+        services.AddDisplayDriver<UserSecurity, TwoFactorUserSecurityDisplayDriver>();
         services.AddSiteDisplayDriver<TwoFactorLoginSettingsDisplayDriver>();
         services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodDisplayDriver>();
         services.AddPermissionProvider<TwoFactorPermissionProvider>();

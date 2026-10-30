@@ -7,7 +7,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
@@ -26,7 +25,6 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 {
     private readonly ILogger _logger;
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
-    private readonly IDisplayManager<TwoFactorMethod> _twoFactorDisplayManager;
 
     public TwoFactorAuthenticationController(
         SignInManager<IUser> signInManager,
@@ -39,8 +37,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         IEnumerable<ILoginFormEvent> loginFormEvents,
         INotifier notifier,
         IDistributedCache distributedCache,
-        ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator,
-        IDisplayManager<TwoFactorMethod> twoFactorDisplayManager)
+        ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator)
         : base(userManager,
             distributedCache,
             signInManager,
@@ -53,7 +50,6 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
     {
         _logger = logger;
         _loginFormEvents = loginFormEvents;
-        _twoFactorDisplayManager = twoFactorDisplayManager;
     }
 
     [AllowAnonymous]
@@ -121,7 +117,10 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
             var rememberDevice = twoFactorSettings.AllowRememberClientTwoFactorAuthentication && model.RememberDevice;
 
-            var authenticatorCode = StripToken(model.VerificationCode);
+            // The passkey provider receives the credential as JSON, which must be kept as is.
+            var authenticatorCode = currentProvider == UserConstants.PasskeyTwoFactorProvider
+                ? model.VerificationCode
+                : StripToken(model.VerificationCode);
             var result = await SignInManager.TwoFactorSignInAsync(currentProvider, authenticatorCode, model.RememberMe, rememberDevice);
 
             if (result.Succeeded)
@@ -210,25 +209,9 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View(model);
     }
 
-    public async Task<IActionResult> Index()
-    {
-        var user = await UserManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return UserNotFound();
-        }
-
-        var providers = await GetTwoFactorProvidersAsync(user);
-        var model = new TwoFactorAuthenticationViewModel();
-        await PopulateModelAsync(user, providers, model);
-
-        if (user is User u && u.TryGet<TwoFactorPreference>(out var preference))
-        {
-            model.PreferredProvider = preference.DefaultProvider;
-        }
-
-        return View(model);
-    }
+    // The two-factor authentication is managed from a section of the Security page.
+    public IActionResult Index()
+        => RedirectToTwoFactorIndex();
 
     [HttpPost]
     public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model)
@@ -254,15 +237,14 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
                 await Notifier.SuccessAsync(H["Preferences were updated successfully."]);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToTwoFactorIndex();
             }
 
-            await Notifier.ErrorAsync(H["Unable to update preferences."]);
         }
 
-        await PopulateModelAsync(user, providers, model);
+        await Notifier.ErrorAsync(H["Unable to update preferences."]);
 
-        return View(model);
+        return RedirectToTwoFactorIndex();
     }
 
     [HttpPost]
@@ -277,7 +259,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         await SignInManager.ForgetTwoFactorClientAsync();
         await Notifier.SuccessAsync(H["The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code."]);
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToTwoFactorIndex();
     }
 
     public async Task<IActionResult> GenerateRecoveryCodes()
@@ -293,7 +275,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         {
             await Notifier.ErrorAsync(H["Cannot generate recovery codes for user because they do not have 2FA enabled."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToTwoFactorIndex();
         }
 
         return View();
@@ -313,7 +295,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         {
             await Notifier.ErrorAsync(H["Cannot generate recovery codes for user because they do not have 2FA enabled."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToTwoFactorIndex();
         }
 
         var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
@@ -339,7 +321,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
         if (recoveryCodes == null || recoveryCodes.Length == 0)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToTwoFactorIndex();
         }
 
         return View(new ShowRecoveryCodesViewModel()
@@ -385,7 +367,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         {
             await Notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToTwoFactorIndex();
         }
 
         return View();
@@ -405,7 +387,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         {
             await Notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToTwoFactorIndex();
         }
 
         var disableResult = await UserManager.SetTwoFactorEnabledAsync(user, false);
@@ -418,7 +400,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             await Notifier.WarningAsync(H["Two-factor authentication has been disabled."]);
         }
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToTwoFactorIndex();
     }
 
     private async Task<string[]> GetCachedRecoveryCodesAsync(string userId)
@@ -469,28 +451,5 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         }
 
         return defaultProvider;
-    }
-
-    private async Task PopulateModelAsync(IUser user, IList<string> providers, TwoFactorAuthenticationViewModel model)
-    {
-        model.User = user;
-        model.IsTwoFaEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
-        model.IsMachineRemembered = await SignInManager.IsTwoFactorClientRememberedAsync(user);
-        model.RecoveryCodesLeft = await UserManager.CountRecoveryCodesAsync(user);
-        model.CanDisableTwoFactor = !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user);
-        model.ValidTwoFactorProviders = providers.Select(providerName => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(providerName, providerName)).ToList();
-
-        foreach (var key in TwoFactorOptions.Providers)
-        {
-            var method = new TwoFactorMethod()
-            {
-                Provider = key,
-                IsEnabled = providers.Contains(key),
-            };
-
-            var shape = await _twoFactorDisplayManager.BuildDisplayAsync(method, this, OrchardCoreConstants.DisplayType.SummaryAdmin);
-
-            model.AuthenticationMethods.Add(shape);
-        }
     }
 }

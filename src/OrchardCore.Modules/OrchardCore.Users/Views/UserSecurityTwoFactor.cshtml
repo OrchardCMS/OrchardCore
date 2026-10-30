@@ -1,16 +1,4 @@
-@using Microsoft.AspNetCore.Http.Features
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.Extensions.Options
-@using OrchardCore.Users.Events;
-@using OrchardCore.Users.Models
-
 @model TwoFactorAuthenticationViewModel
-@inject ITwoFactorAuthenticationHandlerCoordinator TwoFactorAuthenticationHandlerCoordinator
-@{
-    RenderTitleSegments(T["Two-Factor Authentication"]);
-    ViewLayout = "Layout__TwoFactor";
-}
-<style asp-name="font-awesome" at="Head" version="7"></style>
 
 @if (Model.AuthenticationMethods.Count == 0)
 {
@@ -22,14 +10,16 @@
     return;
 }
 
-@if (User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
+@* A user who logged in with multiple factors, for instance with a passkey, isn't asked to enable it. *@
+@if (User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType) &&
+    !User.HasClaim(UserConstants.AuthenticationMethodsClaimType, UserConstants.MultiFactorAuthenticationMethod))
 {
     <div class="alert alert-danger text-center py-3">
         @T["Two-factor authentication must be enabled before proceeding."]
     </div>
 }
 
-<div class="card text-bg-theme">
+<div class="card text-bg-theme" id="two-factor">
 
     <div class="card-header">
         <div class="d-flex justify-content-between">
@@ -37,7 +27,7 @@
 
             @if (Model.IsTwoFaEnabled && Model.CanDisableTwoFactor)
             {
-                <a asp-action="DisableTwoFactorAuthentication" class="btn btn-sm btn-warning">@T["Disable two-factor authentication"]</a>
+                <a asp-action="DisableTwoFactorAuthentication" asp-controller="TwoFactorAuthentication" class="btn btn-sm btn-warning">@T["Disable two-factor authentication"]</a>
             }
             else if (Model.IsTwoFaEnabled)
             {
@@ -45,18 +35,19 @@
             }
             else if (!Model.IsTwoFaEnabled && Model.ValidTwoFactorProviders.Count > 0)
             {
-                <form method="post" asp-action="EnableTwoFactorAuthentication">
+                <form method="post" asp-action="EnableTwoFactorAuthentication" asp-controller="TwoFactorAuthentication">
                     <button type="submit" class="btn btn-sm btn-success">@T["Enable"]</button>
                 </form>
             }
         </div>
     </div>
 
-    <div class="card-body">
+    @* The page also renders in the site theme, which doesn't style the 'ocat-*' classes, so it is spaced with a gap. *@
+    <div class="card-body d-flex flex-column gap-3">
 
         @if (!Model.IsTwoFaEnabled && Model.ValidTwoFactorProviders.Count == 0)
         {
-            <div class="alert alert-warning">
+            <div class="alert alert-warning mb-0">
                 <p class="text-center mb-0">@T["Two-factor authentication is not enabled yet. To enable it, please add one of the below two-factor methods."]  </p>
             </div>
         }
@@ -70,7 +61,7 @@
             }
             else if (!Model.CanDisableTwoFactor)
             {
-                <div class="alert alert-info text-center">
+                <div class="alert alert-info mb-0 text-center">
                     @T["Two-factor authentication can't be disabled for your user."]
                 </div>
             }
@@ -83,9 +74,9 @@
 
             if (Model.IsMachineRemembered)
             {
-                <div class="mb-3">
+                <div>
                     <p class="mb-1">@T["The current device has been saved during the two-factor authentication process."]</p>
-                    <form method="post" asp-action="ForgetTwoFactorClient">
+                    <form method="post" asp-action="ForgetTwoFactorClient" asp-controller="TwoFactorAuthentication">
                         <button type="submit" class="btn btn-sm btn-primary">@T["Forget this device"]</button>
                     </form>
                 </div>
@@ -94,21 +85,16 @@
 
         @if (Model.ValidTwoFactorProviders.Count > 1)
         {
-            <form method="post">
-                <div class="ocat-wrapper">
-                    <label asp-for="PreferredProvider" class="ocat-label ocat-label-required">@T["Preferred Two-Factor Method"]</label>
-                    <div class="ocat-end">
-                        <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
-                            @if (string.IsNullOrEmpty(Model.PreferredProvider))
-                            {
-                                <option value="">@T["Select the method"]</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-sm btn-primary">@T["Update"]</button>
+            <form method="post" asp-action="Index" asp-controller="TwoFactorAuthentication">
+                <label asp-for="PreferredProvider" class="form-label">@T["Preferred Two-Factor Method"]</label>
+                <div class="d-flex gap-2">
+                    <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select" required>
+                        @if (string.IsNullOrEmpty(Model.PreferredProvider))
+                        {
+                            <option value="">@T["Select the method"]</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-primary">@T["Update"]</button>
                 </div>
             </form>
         }
@@ -134,7 +120,7 @@
         <div class="card-body p-0">
             <div class="row mx-0">
                 <div class="col-auto d-flex align-items-center">
-                    <i class="fa-solid fa-key h1"></i>
+                    <i class="fa-solid fa-key fs-1"></i>
                 </div>
 
                 <div class="col p-3">
@@ -164,7 +150,7 @@
                 </div>
 
                 <div class="col-auto d-flex align-items-center">
-                    <a asp-action="GenerateRecoveryCodes" class="btn btn-sm btn-warning">@T["Reset codes"]</a>
+                    <a asp-action="GenerateRecoveryCodes" asp-controller="TwoFactorAuthentication" class="btn btn-sm btn-warning">@T["Reset codes"]</a>
                 </div>
             </div>
         </div>
