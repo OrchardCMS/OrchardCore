@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Environment.Shell.Scope;
 
@@ -331,19 +333,38 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         // The tenant gets activated here.
         if (!ShellContext.IsActivated)
         {
-            await new ShellScope(ShellContext).UsingAsync(async scope =>
-            {
-                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                foreach (var tenantEvent in tenantEvents)
-                {
-                    await tenantEvent.ActivatingAsync();
-                }
+            var tenantName = ShellContext.Settings.Name;
+            using var activity = OrchardCoreTelemetry.StartTenantActivity("Activate tenant", tenantName);
+            var startTimestamp = Stopwatch.GetTimestamp();
+            Exception exception = null;
 
-                foreach (var tenantEvent in tenantEvents.Reverse())
+            try
+            {
+                await new ShellScope(ShellContext).UsingAsync(async scope =>
                 {
-                    await tenantEvent.ActivatedAsync();
-                }
-            }, activateShell: false);
+                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        await tenantEvent.ActivatingAsync();
+                    }
+
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        await tenantEvent.ActivatedAsync();
+                    }
+                }, activateShell: false);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                OrchardCoreTelemetry.RecordException(activity, ex);
+
+                throw;
+            }
+            finally
+            {
+                OrchardCoreTelemetry.RecordDuration(OrchardCoreTelemetry.TenantActivationDuration, startTimestamp, tenantName, exception);
+            }
 
             ShellContext.IsActivated = true;
         }
