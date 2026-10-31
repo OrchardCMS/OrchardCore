@@ -151,20 +151,20 @@ public class FakeHttpMessageHandler : HttpMessageHandler
 /// </summary>
 public sealed class PrefixDataProtector : IDataProtector
 {
-    private static readonly byte[] _prefix = Encoding.UTF8.GetBytes("protected:");
+    private static readonly byte[] s_prefix = Encoding.UTF8.GetBytes("protected:");
 
     public IDataProtector CreateProtector(string purpose) => this;
 
-    public byte[] Protect(byte[] plaintext) => [.. _prefix, .. plaintext];
+    public byte[] Protect(byte[] plaintext) => [.. s_prefix, .. plaintext];
 
     public byte[] Unprotect(byte[] protectedData)
     {
-        if (!protectedData.AsSpan().StartsWith(_prefix))
+        if (!protectedData.AsSpan().StartsWith(s_prefix))
         {
             throw new CryptographicException("The payload was not protected.");
         }
 
-        return protectedData[_prefix.Length..];
+        return protectedData[s_prefix.Length..];
     }
 }
 

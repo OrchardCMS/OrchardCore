@@ -35,7 +35,7 @@ namespace OrchardCore.FileStorage.AzureBlob;
 /// </remarks>
 public class BlobFileStore : IFileStore
 {
-    private static readonly byte[] MarkerFileContent = "This is a directory marker file used by Orchard Core."u8.ToArray();
+    private static readonly byte[] s_markerFileContent = "This is a directory marker file used by Orchard Core."u8.ToArray();
     private const string DirectoryMarkerFileName = "OrchardCore.Media.txt";
 
     private readonly BlobStorageOptions _options;
@@ -720,7 +720,7 @@ public class BlobFileStore : IFileStore
         var placeholderBlob = GetBlobReference(this.Combine(path, DirectoryMarkerFileName));
 
         // Create a directory marker file to make this directory appear when listing directories.
-        using var stream = new MemoryStream(MarkerFileContent);
+        using var stream = new MemoryStream(s_markerFileContent);
 
         await placeholderBlob.UploadAsync(stream);
     }

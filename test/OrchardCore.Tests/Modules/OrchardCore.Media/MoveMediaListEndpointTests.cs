@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class MoveMediaListEndpointTests
 {
-    private static readonly MethodInfo _handleAsyncMethod = typeof(MoveMediaListEndpoint)
+    private static readonly MethodInfo s_handleAsyncMethod = typeof(MoveMediaListEndpoint)
         .GetMethod("HandleAsync", BindingFlags.NonPublic | BindingFlags.Static);
 
     [Fact]
@@ -110,7 +110,7 @@ public class MoveMediaListEndpointTests
         localizer.Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
             .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
 
-        var task = (Task<IResult>)_handleAsyncMethod.Invoke(
+        var task = (Task<IResult>)s_handleAsyncMethod.Invoke(
             null,
             [httpContext, authorizationService, mediaFileStore.Object, localizer.Object, model]);
 

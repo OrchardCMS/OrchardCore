@@ -48,7 +48,7 @@ internal sealed class ObjectPool<T> where T : class
     private readonly Factory _factory;
 
 #if DETECT_LEAKS
-    private static readonly ConditionalWeakTable<T, LeakTracker> leakTrackers = new ConditionalWeakTable<T, LeakTracker>();
+    private static readonly ConditionalWeakTable<T, LeakTracker> s_leakTrackers = new ConditionalWeakTable<T, LeakTracker>();
 
     private sealed class LeakTracker : IDisposable
     {
@@ -127,7 +127,7 @@ internal sealed class ObjectPool<T> where T : class
 
 #if DETECT_LEAKS
         var tracker = new LeakTracker();
-        leakTrackers.Add(inst, tracker);
+        s_leakTrackers.Add(inst, tracker);
 
 #if TRACE_LEAKS
         var frame = CaptureStackTrace();
@@ -212,7 +212,7 @@ public sealed class StringBuilderPool : IDisposable
     private const int DefaultCapacity = 1 * 1024;
 
     // Global pool.
-    private static readonly ObjectPool<StringBuilderPool> _poolInstance = CreatePool();
+    private static readonly ObjectPool<StringBuilderPool> s_poolInstance = CreatePool();
 
     public readonly StringBuilder Builder = new(DefaultCapacity);
     private readonly ObjectPool<StringBuilderPool> _pool;
@@ -234,7 +234,7 @@ public sealed class StringBuilderPool : IDisposable
 
     public static StringBuilderPool GetInstance()
     {
-        var builder = _poolInstance.Allocate();
+        var builder = s_poolInstance.Allocate();
         Debug.Assert(builder.Builder.Length == 0);
         return builder;
     }

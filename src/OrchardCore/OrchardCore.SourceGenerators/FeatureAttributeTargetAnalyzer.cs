@@ -17,7 +17,7 @@ public sealed class FeatureAttributeTargetAnalyzer : DiagnosticAnalyzer
     private const string ModuleAttributeMetadataName = "OrchardCore.Modules.Manifest.ModuleAttribute";
     private const string ModuleMarkerAttributeMetadataName = "OrchardCore.Modules.Manifest.ModuleMarkerAttribute";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor s_rule = new(
         DiagnosticId,
         "FeatureAttribute targets must belong to the current module",
         "Feature '{0}' is not defined by the current module '{1}', so OrchardCore will ignore this target. Known local feature IDs: {2}.",
@@ -26,7 +26,7 @@ public sealed class FeatureAttributeTargetAnalyzer : DiagnosticAnalyzer
         isEnabledByDefault: true,
         description: "OrchardCore resolves OrchardCore.Modules.FeatureAttribute targets only against features declared by the same assembly. Referencing a feature ID from another module is silently ignored at runtime and the attributed type falls back to the current module's feature mapping.");
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -105,7 +105,7 @@ public sealed class FeatureAttributeTargetAnalyzer : DiagnosticAnalyzer
             }
 
             context.ReportDiagnostic(Diagnostic.Create(
-                Rule,
+                s_rule,
                 GetAttributeLocation(attribute, context.CancellationToken),
                 requestedFeatureId,
                 currentModuleId,

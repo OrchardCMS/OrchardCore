@@ -291,7 +291,7 @@ public sealed class RateLimitsStartup : StartupBase
 [Feature(UserConstants.Features.ExternalAuthentication)]
 public sealed class ExternalAuthenticationStartup : StartupBase
 {
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
 
     private UserOptions _userOptions;
 
@@ -316,7 +316,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
             pattern: _userOptions.ExternalLoginsUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
