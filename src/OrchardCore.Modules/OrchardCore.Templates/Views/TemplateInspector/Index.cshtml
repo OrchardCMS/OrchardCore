@@ -1,0 +1,166 @@
+@model TemplateInspectorViewModel
+@{
+    var permission = Model.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name;
+
+    // Views a template of a source, e.g. of the active theme, and clones it as a local template when it's a Liquid one.
+    Func<InspectedSourceTemplate, object> sourceTemplateActions = @<text>
+        <a asp-action="Display" asp-controller="TemplateSource" asp-route-source="@item.Source" asp-route-name="@item.Template.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath"
+           class="btn btn-outline-secondary btn-sm py-0" title="@T["View the template of {0}", item.Template.ExtensionId]">
+            <i class="fa-solid fa-eye" aria-hidden="true"></i> @T["View"]
+        </a>
+        @if (item.Template.CanClone)
+        {
+            <a asp-action="Clone" asp-controller="TemplateSource" asp-route-source="@item.Source" asp-route-name="@item.Template.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath"
+               class="btn btn-outline-primary btn-sm py-0" data-url-af="UnsafeUrl" title="@T["Clone the template of {0} as a local template", item.Template.ExtensionId]">
+                <i class="fa-solid fa-clone" aria-hidden="true"></i> @T["Clone"]
+            </a>
+        }
+    </text>;
+}
+
+<zone Name="Title">
+    <breadcrumb name="TemplateInspector" title="@T["Inspect Content"]">
+        <breadcrumb-item id="Templates" action="@(Model.AdminTemplates ? "Admin" : "Index")" controller="Template" area="OrchardCore.Templates" permission="@permission">@(Model.AdminTemplates ? T["Admin Templates"] : T["Templates"])</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div class="alert alert-info" role="alert">
+    @if (Model.AdminTemplates)
+    {
+        @T["Pick a content item to see the shapes the admin renders for it, the template rendering each of them with the admin theme and the admin templates, and their alternates: create an admin template with one of these names to customize the shape for this content item, its content type or display type."]
+    }
+    else
+    {
+        @T["Pick a content item to see the shapes the front end renders for it, the template rendering each of them with the site theme and the templates, and their alternates: create a template with one of these names to customize the shape for this content item, its content type or display type."]
+    }
+</div>
+
+<form asp-action="Index" method="get">
+    <input type="hidden" name="adminTemplates" value="@Model.AdminTemplates.ToString()" />
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row g-2 align-items-center">
+                @* Filters the content items of the picker, the latest ones the user can view, by their display text. *@
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <input type="search" name="search" value="@Model.Search" class="form-control" placeholder="@T["Search content items"]" aria-label="@T["Search content items"]" />
+                        <button type="submit" class="btn btn-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <select name="contentItemId" class="form-select" aria-label="@T["Content item"]" asp-items="Model.ContentItems">
+                        <option value="">@(string.IsNullOrWhiteSpace(Model.Search) ? T["Pick a recent content item"] : T["Pick a content item matching the search"])</option>
+                    </select>
+                </div>
+                <div class="col-md-auto">
+                    <select name="displayType" class="form-select" aria-label="@T["Display type"]" asp-items="Model.DisplayTypes"></select>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary">@T["Inspect"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@if (Model.ContentItem != null)
+{
+    <h2 class="h5 mb-3">@T["{0} ({1}), {2} display type", Model.ContentItem.DisplayText ?? Model.ContentItem.ContentItemId, Model.ContentItem.ContentType, Model.DisplayType]</h2>
+
+    @if (Model.Error != null)
+    {
+        <div class="alert alert-warning" role="alert">@T["The content item could not be fully rendered: {0}", Model.Error]</div>
+    }
+
+    @if (!Model.AdminTemplates)
+    {
+        <div class="alert alert-secondary" role="alert">
+            @T["The shapes are those the content item renders by itself: the shapes a template of the site theme renders in its own markup are not listed."]
+        </div>
+    }
+
+    @* A tree of the shapes, not a list of items: each shape is indented under the shape that renders it. *@
+    <ul class="list-group mb-3">
+        @foreach (var shape in Model.Shapes)
+        {
+            <li class="list-group-item" style="padding-inline-start: @((shape.Depth * 1.5 + 1).ToString(CultureInfo.InvariantCulture))rem">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <code class="fs-6">@shape.Type</code>
+                    @if (!string.IsNullOrEmpty(shape.Differentiator))
+                    {
+                        <span class="text-body-secondary small">@shape.Differentiator</span>
+                    }
+
+                    <span class="text-body-secondary small">@T["rendered by"]</span>
+
+                    @if (shape.IsLocal)
+                    {
+                        <a asp-action="Edit" asp-controller="Template" asp-route-name="@shape.RenderedWith" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="badge ta-badge fw-normal text-decoration-none">
+                            <i class="fa-solid fa-pen-to-square text-primary" aria-hidden="true"></i>
+                            @T["Local template {0}", shape.RenderedWith]
+                        </a>
+                    }
+                    else if (shape.ExtensionId != null)
+                    {
+                        <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Bound to {0}", shape.RenderedWith]">
+                            <i class="fa-solid fa-layer-group text-secondary" aria-hidden="true"></i>
+                            @shape.ExtensionId
+                        </span>
+                        <code class="small">@shape.Source</code>
+
+                        @if (Model.SourceTemplates.TryGetValue(shape.RenderedWith ?? shape.Type, out var renderingTemplate))
+                        {
+                            @sourceTemplateActions(renderingTemplate)
+                        }
+                    }
+                    else if (shape.Source != null)
+                    {
+                        <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@shape.Source">
+                            <i class="fa-solid fa-code text-secondary" aria-hidden="true"></i>
+                            @T["Code"]
+                        </span>
+                    }
+                </div>
+
+                @if (shape.Alternates.Count > 0)
+                {
+                    <div class="d-flex flex-wrap gap-1 mt-2" aria-label="@T["Alternates, the most specific first"]">
+                        @foreach (var alternate in shape.Alternates)
+                        {
+                            var isUsed = string.Equals(alternate, shape.RenderedWith, StringComparison.OrdinalIgnoreCase);
+                            var isLocal = Model.LocalTemplates.Contains(alternate);
+
+                            // The template rendering the shape has its actions next to its extension, above.
+                            Model.SourceTemplates.TryGetValue(alternate, out var sourceTemplate);
+                            var hasSourceActions = !isLocal && !isUsed && sourceTemplate != null;
+
+                            <span class="d-inline-flex flex-wrap align-items-center gap-1 @(hasSourceActions ? "me-2" : null)">
+                            <a asp-action="@(isLocal ? "Edit" : "Create")" asp-controller="Template" asp-route-name="@alternate" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath"
+                               class="badge ta-badge fw-normal text-decoration-none @(isUsed ? "border-success" : null)"
+                               title="@(isUsed ? T["The template rendering the shape is bound to this name"] : isLocal ? T["Edit the local template"] : sourceTemplate != null ? T["{0} has a template with this name, create a local template with this name", sourceTemplate.Template.ExtensionId] : T["Create a template with this name"])">
+                                @if (isUsed)
+                                {
+                                    <i class="fa-solid fa-check text-success" aria-hidden="true"></i>
+                                }
+                                else if (isLocal)
+                                {
+                                    <i class="fa-solid fa-pen-to-square text-primary" aria-hidden="true"></i>
+                                }
+                                @if (hasSourceActions)
+                                {
+                                    <i class="fa-solid fa-layer-group text-secondary" aria-hidden="true"></i>
+                                }
+                                @alternate
+                            </a>
+                            @if (hasSourceActions)
+                            {
+                                @sourceTemplateActions(sourceTemplate)
+                            }
+                            </span>
+                        }
+                    </div>
+                }
+            </li>
+        }
+    </ul>
+}

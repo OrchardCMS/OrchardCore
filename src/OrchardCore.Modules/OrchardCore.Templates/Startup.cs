@@ -14,6 +14,9 @@ using OrchardCore.Templates.ViewModels;
 using OrchardCore.Templates.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Templates.Settings;
+using OrchardCore.Templates.Models;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.DisplayManagement.Implementation;
 
 namespace OrchardCore.Templates;
 
@@ -42,7 +45,6 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<AdminTemplatesManager>();
         services.AddPermissionProvider<AdminTemplatesPermissions>();
-
     }
 }
 
@@ -56,5 +58,39 @@ public sealed class AdminTemplatesStartup : StartupBase
         services.AddNavigationProvider<AdminTemplatesAdminMenu>();
         services.AddRecipeExecutionStep<AdminTemplateStep>();
         services.AddDeployment<AllAdminTemplatesDeploymentSource, AllAdminTemplatesDeploymentStep, AllAdminTemplatesDeploymentStepDriver>();
+    }
+}
+
+[Feature("OrchardCore.Templates.Assisted")]
+public sealed class AssistedTemplatesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // Lists the templates of the active theme, and of other sources, to view and override them.
+        services.AddScoped<ShapeTemplateFiles>();
+        services.AddScoped<SourceTemplatesService>();
+        services.AddScoped<ITemplateSource, ThemeTemplateSource>();
+        services.AddScoped<ITemplateSource, FeatureTemplateSource>();
+        services.AddScoped<ActiveThemes>();
+
+        // The alternates of the templates, suggested by the providers, e.g. of the Shape Tracing feature for the content types.
+        services.AddScoped<TemplateAlternatesService>();
+        services.AddDisplayDriver<TemplateAlternateEntry, TemplateAlternateEntryDisplayDriver>();
+        services.AddDisplayDriver<SourceTemplateEntry, SourceTemplateEntryDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.Templates.ShapeTracing")]
+public sealed class ShapeTracingStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ITemplateAlternatesProvider, ContentTemplateAlternatesProvider>();
+
+        // Inspects the shapes a content item renders, from the templates lists and the actions of the content items.
+        services.AddScoped<ShapeInspector>();
+        services.AddScoped<IShapeDisplayEvents>(serviceProvider => serviceProvider.GetRequiredService<ShapeInspector>());
+        services.AddScoped<TemplateInspectionService>();
+        services.AddScoped<IContentDisplayDriver, TemplateInspectorContentDisplayDriver>();
     }
 }

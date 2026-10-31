@@ -2,6 +2,110 @@
 
 The templates module allows editors to create custom Liquid templates.
 
+## Assisted Templates
+
+The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists. It is not enabled by default: enable it in **Configuration > Features**.
+
+The **Shape Tracing** feature (`OrchardCore.Templates.ShapeTracing`) adds the tools that need the content items, and depends on the **Contents** feature: the [alternates](#alternates) suggested for the content types, parts and fields of the site, and [Inspect Content](#inspect-content). It is not enabled by default either.
+
+## Theme Templates
+
+The **Theme Templates** button of the **Design > Templates** page lists the templates of the site themes, and the same button of the **Design > Admin Templates** page those of the admin themes. A dropdown selects the theme whose templates are listed, the active theme by default; the templates of a theme include those of the themes it is based on. Each template is shown with the file it comes from, e.g. `TheBlogTheme` `Views/Content-BlogPost.liquid`, and the name of the template that overrides it, e.g. `Content__BlogPost`.
+
+From the list of the active theme, without changing the theme, you can:
+
+- **View** the content of any template of the theme.
+- **Clone** a Liquid template as a local template with the same name, which then overrides it, and **Edit** it like any other template.
+- **Reset** a local template to the template of the theme, which replaces its content.
+- **Delete** a local template, so that the template of the theme is used again.
+
+The same actions are available as bulk actions on the selected templates.
+
+Razor (`.cshtml`) templates can only be viewed, as local templates are written in Liquid: use them as a reference to write a Liquid template with the same name, with the **Create override** button.
+
+The templates of a theme that is not active can only be viewed: a local template applies at once to the active theme, so cloning the template of another theme would render the active theme with it. Select the theme on the **Themes** page first.
+
+The status of each template shows whether it is overridden, and monitors the templates cloned from this list:
+
+| Status | Description |
+|--------|-------------|
+| Not overridden | The template of the theme is used. |
+| Cloned | The local template is the same as the template it was cloned from. |
+| Edited | The local template was edited since it was cloned. |
+| Overridden | A local template overrides it, but it was not cloned from this list, so its changes are not monitored. |
+| Cloned from _theme_ | A local template overrides it, cloned from the template of another theme, e.g. the theme that was active before. It is not compared to this template: review it, reset it to this template, or delete it. |
+| Source changed | The template of the theme changed since it was cloned, e.g. after the theme was updated. Review it, or reset the local template to it. |
+
+The list can be filtered by these statuses, and by language with the **Liquid** and **Razor** options, in the **Theme Templates** and **Feature Templates** lists. The clone records are stored by tenant next to the templates, but are not part of their recipes and deployments, so the templates imported in another tenant are shown as **Overridden**.
+
+## Feature Templates
+
+The **Feature Templates** button, next to **Theme Templates**, lists the templates of the enabled features, all of them by default, or those of the feature selected in the dropdown. They are almost all Razor templates, so they can be viewed as a reference to write a Liquid template with the same name, with the **Create override** button, which shows the name of each shape to override.
+
+A template that is not the one rendering its shape is shown as **Overridden by** the extension whose template renders it: the active theme, which overrides the templates of the features, or another feature, the last one enabled winning. A local template with the same name overrides both.
+
+Features don't tell which of their templates render the admin, so the list guesses it from the names of the templates, e.g. `TextField_Edit`, `Content_SummaryAdmin` or the workflow activities ending with `_Design`, and filters them with the **Renders** filter: the front end on the **Templates** page and the admin on the **Admin Templates** page by default, or both.
+
+## Alternates
+
+An alternate is a more specific name of a shape, which renders it only in some cases, e.g. `Content_Summary__BlogPost` renders the `Content` shape of the blog posts in the `Summary` display type, while `Content` keeps rendering the others. The **Alternates** button of a template in the **Theme Templates** and **Feature Templates** lists, and of the page viewing a template, shows the alternates of its shape for the content types of the site, when it has some: those of the content items (`Content`, or the stereotype of the content type, e.g. `Widget`), of their parts and of their fields, in the `Detail` and `Summary` display types on the **Templates** page, and in the `DetailAdmin` and `SummaryAdmin` display types on the **Admin Templates** page. They are the alternates the content display drivers add, described in [Available templates](#available-templates).
+
+Each alternate shows whether a local template has its name, and whether the theme or a feature already has a template rendering it. Its **Create** button opens the editor of a new template with this name. When the template of the list is a Liquid template of the active theme, its **Clone** button creates the template with its content, as a starting point; when the theme already has a template for the alternate, its **View** button shows this template, to clone it instead.
+
+Modules can suggest the alternates of other shapes by registering an `ITemplateAlternatesProvider`.
+
+## Inspect Content
+
+The **Inspect Content** button of the **Templates** and **Admin Templates** pages, and the **Inspect templates** action of the content items of the **Content Items** list, show the shapes a content item renders in a display type: each shape, indented under the shape rendering it, with the template that renders it and all its alternates, the most specific first, including those of this content item only, e.g. `Content__Alias__[Alias]` or `Content__Slug__[Slug]`. The alternate the template is bound to is checked, and each alternate opens the editor of the local template with its name.
+
+The content items to inspect are picked among the 50 most recently modified ones that the user can view, with the **View content** permission. The search box filters them by their display text, to find an older one.
+
+When a template of the active theme or of a feature renders the shape, or is bound to one of its alternates, **View** shows its content and **Clone** copies it as a local template, for a Liquid template, to customize it. A Razor template can only be viewed, and its alternate creates a new Liquid template with its name.
+
+The templates are resolved as the front end does, with the active site theme and the templates, on the **Templates** page, and as the admin does, with the active admin theme and the admin templates, on the **Admin Templates** page. The content item is rendered in the admin to find its shapes, so the shapes that a template of the site theme renders in its own markup are not listed.
+
+### Template sources
+
+Local templates are not tied to a theme: when the active theme changes, the templates cloned from the previous theme keep overriding the shapes of the new one. They are shown as **Cloned from** the previous theme.
+
+The templates are listed by template sources, each shown as a button of the templates list. A source can have scopes, e.g. the themes of the theme templates, selected with the dropdown. A module can list the templates of other extensions by registering an `ITemplateSource`:
+
+```csharp
+public sealed class MyTemplateSource : ITemplateSource
+{
+    private readonly ShapeTemplateFiles _shapeTemplateFiles;
+
+    public MyTemplateSource(ShapeTemplateFiles shapeTemplateFiles, IStringLocalizer<MyTemplateSource> S)
+    {
+        _shapeTemplateFiles = shapeTemplateFiles;
+        DisplayName = S["My Templates"];
+    }
+
+    // The name in the URL of the list, e.g. '/Admin/TemplateSources/My'.
+    public string Name => "My";
+
+    public LocalizedString DisplayName { get; }
+
+    public LocalizedString GetDescription(bool adminTemplates) => DisplayName;
+
+    // No scopes: the templates are listed at once.
+    public Task<IEnumerable<TemplateSourceScope>> GetScopesAsync(bool adminTemplates)
+        => Task.FromResult(Enumerable.Empty<TemplateSourceScope>());
+
+    public async Task<IEnumerable<SourceTemplate>> GetTemplatesAsync(bool adminTemplates, string scope)
+    {
+        // The templates rendering the shapes of a theme, by the theme or an enabled module.
+        var templates = await _shapeTemplateFiles.GetTemplatesAsync("TheTheme");
+
+        return templates.Where(template => template.ExtensionId == "My.Module");
+    }
+}
+```
+
+```csharp
+services.AddScoped<ITemplateSource, MyTemplateSource>();
+```
+
 ## Available templates
 
 Templates can be defined using the web editor, or in a theme. Templates are distinguished by their name.  

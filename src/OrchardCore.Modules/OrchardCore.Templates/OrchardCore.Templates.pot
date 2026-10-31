@@ -75,9 +75,191 @@ msgctxt "OrchardCore.Templates.Controllers.TemplateController"
 msgid "The name is mandatory."
 msgstr ""
 
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Admin"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "All templates"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Clone"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Delete override"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Edited since cloned"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Front end"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Front end and admin"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Liquid"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Liquid and Razor"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Not overridden"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Overridden"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Razor"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Reset to source"
+msgstr ""
+
+#: Controllers/TemplateSourceController.cs
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "Source changed since cloned"
+msgstr ""
+
+#. Format arguments: {0}: template.Name; {1}: alternate
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "The \"{0}\" template could not be cloned as \"{1}\": a template with this name exists, or the template is not a Liquid template of the active theme."
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "The \"{0}\" template could not be cloned: only Liquid templates of the active theme without a local override can be cloned."
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "The \"{0}\" template could not be reset: only Liquid templates of the active theme can be reset."
+msgstr ""
+
+#. Format arguments: {0}: template.Name; {1}: alternate
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "The \"{0}\" template has been cloned as \"{1}\"."
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "The \"{0}\" template has been cloned."
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "The \"{0}\" template has been reset to its source."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "The override of the \"{0}\" template has been deleted."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "{0} template override(s) deleted."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "{0} template(s) cloned."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Controllers/TemplateSourceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
+msgid "{0} template(s) reset to their source."
+msgstr ""
+
 #: Permissions.cs
 msgctxt "OrchardCore.Templates.Permissions"
 msgid "Manage templates"
+msgstr ""
+
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "All features"
+msgstr ""
+
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "Feature Templates"
+msgstr ""
+
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "The templates of the enabled features. They are Razor templates, which can be viewed as a reference to write a template overriding them. A template overridden by the site theme or another feature is not the one rendered."
+msgstr ""
+
+#: Services/FeatureTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.FeatureTemplateSource"
+msgid "The templates of the enabled features. They are Razor templates, which can be viewed as a reference to write an admin template overriding them. A template overridden by the admin theme or another feature is not the one rendered."
+msgstr ""
+
+#: Services/ThemeTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
+msgid "The templates of the admin themes. Clone a Liquid template of the active theme to customize it as an admin template, without changing the theme. Razor templates can be viewed as a reference."
+msgstr ""
+
+#: Services/ThemeTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
+msgid "The templates of the site themes. Clone a Liquid template of the active theme to customize it as a template, without changing the theme. Razor templates can be viewed as a reference."
+msgstr ""
+
+#: Services/ThemeTemplateSource.cs
+msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
+msgid "Theme Templates"
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Services/ThemeTemplateSource.cs
+#, csharp-format
+msgctxt "OrchardCore.Templates.Services.ThemeTemplateSource"
+msgid "{0} (active)"
 msgstr ""
 
 #. Format arguments: {0}: contentPartDefinition.DisplayName()
@@ -205,6 +387,159 @@ msgstr ""
 #: Views/Preview/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.Preview.Index"
 msgid "Template Preview"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "Alternates"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "Clone"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "Create override"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "Reset"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "Reset Template"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "The local template will be deleted, and the template of the source will be used again. Are you sure?"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "The local template will be replaced with the template of the source, and your changes will be lost. Are you sure?"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
+msgid "View"
+msgstr ""
+
+#. Format arguments: {0}: entry.ClonedFrom
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "A local template overrides it. It was cloned from a template of {0}, not from this one, so it is not compared to this template."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "A local template overrides it. It was not cloned from the source, so its changes are not monitored."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Cloned"
+msgstr ""
+
+#. Format arguments: {0}: entry.ClonedFrom
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Cloned from {0}"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Edited"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Liquid"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Not overridden"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Overridden"
+msgstr ""
+
+#. Format arguments: {0}: entry.Template.OverriddenBy
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Overridden by {0}"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Razor"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "Source changed"
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The local template is the same as the template it was cloned from."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The local template was edited since it was cloned."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template can be cloned as a local template."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template can be cloned once its theme is active."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template can be viewed, but not cloned, as local templates are written in Liquid."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template of the source changed since it was cloned, e.g. after an update. Review it, or reset the local template to it."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template of the source is used."
+msgstr ""
+
+#. Format arguments: {0}: entry.Template.OverriddenBy
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template of {0} renders this shape instead of this one. A local template overrides both."
 msgstr ""
 
 #: Views/Template/Create.cshtml
@@ -404,9 +739,115 @@ msgctxt "OrchardCore.Templates.Views.Template.Index"
 msgid "selected"
 msgstr ""
 
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "All content types, all display types"
+msgstr ""
+
+#. Format arguments: {0}: alternate.DisplayType
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "All content types, {0} display type"
+msgstr ""
+
+#. Format arguments: {0}: alternate.ContentType
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "{0}, all display types"
+msgstr ""
+
+#. Format arguments: {0}: alternate.ContentType; {1}: alternate.Element
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "{0}, all display types, <code>{1}</code>"
+msgstr ""
+
+#. Format arguments: {0}: alternate.ContentType; {1}: alternate.DisplayType
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "{0}, {1} display type"
+msgstr ""
+
+#. Format arguments: {0}: alternate.ContentType; {1}: alternate.DisplayType; {2}: alternate.Element
+#: Views/TemplateAlternateEntry.AppliesTo.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.AppliesTo.SummaryAdmin"
+msgid "{0}, {1} display type, <code>{2}</code>"
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Views/TemplateAlternateEntry.Buttons.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Buttons.SummaryAdmin"
+msgid "Clone {0}"
+msgstr ""
+
+#: Views/TemplateAlternateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Buttons.SummaryAdmin"
+msgid "Create"
+msgstr ""
+
+#: Views/TemplateAlternateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/TemplateAlternateEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Buttons.SummaryAdmin"
+msgid "View"
+msgstr ""
+
+#: Views/TemplateAlternateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Status.SummaryAdmin"
+msgid "A local template with this name renders the shape in these cases."
+msgstr ""
+
+#: Views/TemplateAlternateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Status.SummaryAdmin"
+msgid "No local template has this name yet."
+msgstr ""
+
+#: Views/TemplateAlternateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Status.SummaryAdmin"
+msgid "Not overridden"
+msgstr ""
+
+#: Views/TemplateAlternateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Status.SummaryAdmin"
+msgid "Overridden"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.RenderedBy
+#: Views/TemplateAlternateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Status.SummaryAdmin"
+msgid "Rendered by {0}"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.RenderedBy
+#: Views/TemplateAlternateEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Status.SummaryAdmin"
+msgid "{0} has a template with this name, which renders the shape in these cases, unless a local template overrides it."
+msgstr ""
+
 #: Views/TemplateCreateButton.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateCreateButton"
 msgid "Add Template"
+msgstr ""
+
+#: Views/TemplateCreateButton.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateCreateButton"
+msgid "Inspect Content"
+msgstr ""
+
+#: Views/TemplateCreateButton.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateCreateButton"
+msgid "Template sources"
 msgstr ""
 
 #: Views/TemplateEntry.Buttons.SummaryAdmin.cshtml
@@ -419,7 +860,386 @@ msgctxt "OrchardCore.Templates.Views.TemplateEntry.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Admin Templates"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Alternates, the most specific first"
+msgstr ""
+
+#. Format arguments: {0}: shape.RenderedWith
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Bound to {0}"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Clone"
+msgstr ""
+
+#. Format arguments: {0}: item.Template.ExtensionId
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Clone the template of {0} as a local template"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Code"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Content item"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Create a template with this name"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Display type"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Edit the local template"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Inspect"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Inspect Content"
+msgstr ""
+
+#. Format arguments: {0}: shape.RenderedWith
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Local template {0}"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Pick a content item matching the search"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Pick a content item to see the shapes the admin renders for it, the template rendering each of them with the admin theme and the admin templates, and their alternates: create an admin template with one of these names to customize the shape for this content item, its content type or display type."
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Pick a content item to see the shapes the front end renders for it, the template rendering each of them with the site theme and the templates, and their alternates: create a template with one of these names to customize the shape for this content item, its content type or display type."
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Pick a recent content item"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Search content items"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Templates"
+msgstr ""
+
+#. Format arguments: {0}: Model.Error
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "The content item could not be fully rendered: {0}"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "The shapes are those the content item renders by itself: the shapes a template of the site theme renders in its own markup are not listed."
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "The template rendering the shape is bound to this name"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "View"
+msgstr ""
+
+#. Format arguments: {0}: item.Template.ExtensionId
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "View the template of {0}"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "rendered by"
+msgstr ""
+
+#. Format arguments: {0}: Model.ContentItem.DisplayText ?? Model.ContentItem.ContentItemId; {1}: Model.ContentItem.ContentType; {2}: Model.DisplayType
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "{0} ({1}), {2} display type"
+msgstr ""
+
+#. Format arguments: {0}: sourceTemplate.Template.ExtensionId
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "{0} has a template with this name, create a local template with this name"
+msgstr ""
+
+#: Views/TemplateInspectorAction_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspectorAction_SummaryAdmin"
+msgid "Inspect templates"
+msgstr ""
+
 #: Views/TemplateSettings.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSettings"
 msgid "Edit templates"
+msgstr ""
+
+#: Views/TemplateSource/Alternates.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "<strong>Nothing here!</strong> There are no alternates of this template for the content types, or none matching the search."
+msgstr ""
+
+#: Views/TemplateSource/Alternates.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Actions"
+msgstr ""
+
+#: Views/TemplateSource/Alternates.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Admin Templates"
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Views/TemplateSource/Alternates.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Alternates of {0}"
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Views/TemplateSource/Alternates.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "An alternate is a more specific name of the <code>{0}</code> shape, which renders it only in some cases, e.g. for a content type or a display type. Create a template with one of these names to customize the shape in these cases only; <code>{0}</code> keeps rendering the others."
+msgstr ""
+
+#: Views/TemplateSource/Alternates.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Applies to"
+msgstr ""
+
+#. Format arguments: {0}: template.Name
+#: Views/TemplateSource/Alternates.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Clone <code>{0}</code> to start from its content."
+msgstr ""
+
+#: Views/TemplateSource/Alternates.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Name"
+msgstr ""
+
+#: Views/TemplateSource/Alternates.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Status"
+msgstr ""
+
+#: Views/TemplateSource/Alternates.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
+msgid "Templates"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Admin Templates"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Alternates"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Back"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Clone"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Content"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Create override"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Edit override"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Source"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "Templates"
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "The file of the template could not be read."
+msgstr ""
+
+#. Format arguments: {0}: template.OverriddenBy
+#: Views/TemplateSource/Display.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "The template of {0} renders this shape instead of this one. A local template with the same name overrides both."
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "The theme of this template is not active: it can be viewed, but only cloned once its theme is active."
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "This is a Razor template: it can't be cloned, as local templates are written in Liquid. Use it as a reference to write a Liquid template with the same name, which overrides it."
+msgstr ""
+
+#: Views/TemplateSource/Display.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Display"
+msgid "This template changed since it was cloned, e.g. after an update. Compare it with the local template, or reset the local template to it from the list."
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "<strong>Nothing here!</strong> There are no templates in this source, or none matching the filter."
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "Admin Templates"
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "Source"
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "Templates"
+msgstr ""
+
+#: Views/TemplateSource/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "selected"
+msgstr ""
+
+#. Format arguments: {0}: Model.Scope.DisplayName
+#: Views/TemplateSource/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
+msgid "{0} is not the active theme: its templates can be viewed, but only cloned once it is active, as local templates apply to the active theme at once. The status shows the local templates that would override them."
+msgstr ""
+
+#: Views/TemplateSourceButtons.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceButtons"
+msgid "Inspect Content"
+msgstr ""
+
+#: Views/TemplateSourceButtons.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceButtons"
+msgid "Template sources"
+msgstr ""
+
+#: Views/TemplateSourceButtons.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceButtons"
+msgid "Templates of"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Filter by language"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Filter by status"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Filter by what they render"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Language"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Renders"
+msgstr ""
+
+#: Views/TemplateSourceFilters.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
+msgid "Status"
 msgstr ""

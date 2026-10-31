@@ -1,0 +1,89 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<SourceTemplateEntry>
+
+@{
+    var entry = Model.Value;
+}
+
+<a asp-action="Display"
+   asp-controller="TemplateSource"
+   asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
+   asp-route-name="@entry.Template.Name"
+   asp-route-admintemplates="@entry.AdminTemplates"
+   asp-route-returnUrl="@FullRequestPath"
+   class="btn btn-secondary btn-sm">@T["View"]</a>
+
+@if (entry.HasAlternates)
+{
+    <a asp-action="Alternates"
+       asp-controller="TemplateSource"
+       asp-route-source="@entry.Source"
+       asp-route-scope="@entry.Scope"
+       asp-route-name="@entry.Template.Name"
+       asp-route-admintemplates="@entry.AdminTemplates"
+       class="btn btn-secondary btn-sm">@T["Alternates"]</a>
+}
+
+@if (!entry.IsOverridden)
+{
+    if (entry.Template.CanClone)
+    {
+        <a asp-action="Clone"
+           asp-controller="TemplateSource"
+           asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
+           asp-route-name="@entry.Template.Name"
+           asp-route-admintemplates="@entry.AdminTemplates"
+           asp-route-returnUrl="@FullRequestPath"
+           class="btn btn-primary btn-sm"
+           data-url-af="UnsafeUrl">@T["Clone"]</a>
+    }
+    else if (entry.Template.IsInUse)
+    {
+        @* A Razor template can't be cloned: this only opens the editor of a new Liquid template with its name. *@
+        <a asp-action="Create"
+           asp-controller="Template"
+           asp-route-name="@entry.Template.Name"
+           asp-route-admintemplates="@entry.AdminTemplates"
+           asp-route-returnUrl="@FullRequestPath"
+           class="btn btn-primary btn-sm">@T["Create override"]</a>
+    }
+}
+else
+{
+    <a asp-action="Edit"
+       asp-controller="Template"
+       asp-route-name="@entry.Template.Name"
+       asp-route-admintemplates="@entry.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath"
+       class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+    if (entry.Template.CanClone)
+    {
+        <a asp-action="Reset"
+           asp-controller="TemplateSource"
+           asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
+           asp-route-name="@entry.Template.Name"
+           asp-route-admintemplates="@entry.AdminTemplates"
+           asp-route-returnUrl="@FullRequestPath"
+           class="btn btn-warning btn-sm"
+           data-url-af="RemoveUrl UnsafeUrl"
+           data-title="@T["Reset Template"]"
+           data-message="@T["The local template will be replaced with the template of the source, and your changes will be lost. Are you sure?"]"
+           data-ok-text="@T["Reset"]">@T["Reset"]</a>
+    }
+
+    <a asp-action="Delete"
+       asp-controller="TemplateSource"
+       asp-route-source="@entry.Source"
+           asp-route-scope="@entry.Scope"
+       asp-route-name="@entry.Template.Name"
+       asp-route-admintemplates="@entry.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath"
+       class="btn btn-danger btn-sm"
+       data-url-af="RemoveUrl UnsafeUrl"
+       data-message="@T["The local template will be deleted, and the template of the source will be used again. Are you sure?"]">@T["Delete"]</a>
+}

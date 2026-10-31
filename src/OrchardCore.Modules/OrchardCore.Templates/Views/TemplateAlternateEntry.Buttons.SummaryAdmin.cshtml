@@ -1,0 +1,60 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<TemplateAlternateEntry>
+
+@{
+    var entry = Model.Value;
+    var template = entry.Base.Template;
+}
+
+@if (entry.IsOverridden)
+{
+    <a asp-action="Edit"
+       asp-controller="Template"
+       asp-route-name="@entry.Alternate.Name"
+       asp-route-admintemplates="@entry.Base.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath"
+       class="btn btn-primary btn-sm">@T["Edit"]</a>
+}
+else if (entry.RenderedBy != null)
+{
+    @* A template of the theme or a feature already renders the alternate: start from it, rather than from the shape's template. *@
+    <a asp-action="Display"
+       asp-controller="TemplateSource"
+       asp-route-source="@entry.RenderedBySource"
+       asp-route-name="@entry.Alternate.Name"
+       asp-route-admintemplates="@entry.Base.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath"
+       class="btn btn-secondary btn-sm">@T["View"]</a>
+
+    <a asp-action="Create"
+       asp-controller="Template"
+       asp-route-name="@entry.Alternate.Name"
+       asp-route-admintemplates="@entry.Base.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath"
+       class="btn btn-secondary btn-sm">@T["Create"]</a>
+}
+else
+{
+    @* A Liquid template of the active theme can be cloned under the alternate name, as a starting point. *@
+    if (template.CanClone)
+    {
+        <a asp-action="CloneAs"
+           asp-controller="TemplateSource"
+           asp-route-source="@entry.Base.Source"
+           asp-route-scope="@entry.Base.Scope"
+           asp-route-name="@template.Name"
+           asp-route-alternate="@entry.Alternate.Name"
+           asp-route-admintemplates="@entry.Base.AdminTemplates"
+           asp-route-returnUrl="@FullRequestPath"
+           class="btn btn-primary btn-sm"
+           data-url-af="UnsafeUrl">@T["Clone {0}", template.Name]</a>
+    }
+
+    <a asp-action="Create"
+       asp-controller="Template"
+       asp-route-name="@entry.Alternate.Name"
+       asp-route-admintemplates="@entry.Base.AdminTemplates"
+       asp-route-returnUrl="@FullRequestPath"
+       class="btn btn-secondary btn-sm">@T["Create"]</a>
+}
