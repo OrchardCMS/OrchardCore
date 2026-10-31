@@ -40,9 +40,16 @@
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row g-2 align-items-center">
+                @* Filters the content items of the picker, the latest ones the user can view, by their display text. *@
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <input type="search" name="search" value="@Model.Search" class="form-control" placeholder="@T["Search content items"]" aria-label="@T["Search content items"]" />
+                        <button type="submit" class="btn btn-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                    </div>
+                </div>
                 <div class="col-md">
                     <select name="contentItemId" class="form-select" aria-label="@T["Content item"]" asp-items="Model.ContentItems">
-                        <option value="">@T["Pick a recent content item"]</option>
+                        <option value="">@(string.IsNullOrWhiteSpace(Model.Search) ? T["Pick a recent content item"] : T["Pick a content item matching the search"])</option>
                     </select>
                 </div>
                 <div class="col-md-auto">

@@ -26,7 +26,15 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Templates.Assisted",
     Name = "Assisted Templates",
-    Description = "Lists the templates of the themes and features to view and clone them, suggests alternates and inspects the shapes of content items, from the Templates and Admin Templates lists.",
+    Description = "Lists the templates of the themes and features to view and clone them, from the Templates and Admin Templates lists.",
     Dependencies = ["OrchardCore.Templates"],
+    Category = "Development"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Templates.ShapeTracing",
+    Name = "Shape Tracing",
+    Description = "Inspects the shapes a content item renders, with their templates and alternates, and suggests the alternates of the templates for the content types.",
+    Dependencies = ["OrchardCore.Templates.Assisted", "OrchardCore.Contents"],
     Category = "Development"
 )]

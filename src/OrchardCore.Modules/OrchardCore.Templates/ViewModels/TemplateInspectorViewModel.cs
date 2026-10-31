@@ -19,6 +19,11 @@ public class TemplateInspectorViewModel
     public string DisplayType { get; set; }
 
     /// <summary>
+    /// Filters the content items of the picker by their display text.
+    /// </summary>
+    public string Search { get; set; }
+
+    /// <summary>
     /// The recent content items to pick from, by content type.
     /// </summary>
     public IReadOnlyList<SelectListItem> ContentItems { get; set; } = [];

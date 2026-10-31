@@ -933,6 +933,11 @@ msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Pick a content item matching the search"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Pick a content item to see the shapes the admin renders for it, the template rendering each of them with the admin theme and the admin templates, and their alternates: create an admin template with one of these names to customize the shape for this content item, its content type or display type."
 msgstr ""
 
@@ -944,6 +949,16 @@ msgstr ""
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Pick a recent content item"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Search content items"
 msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml

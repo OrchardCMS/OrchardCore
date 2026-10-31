@@ -4,7 +4,9 @@ The templates module allows editors to create custom Liquid templates.
 
 ## Assisted Templates
 
-The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists, the alternates of a shape, and **Inspect Content**. It is not enabled by default: enable it in **Configuration > Features**.
+The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists. It is not enabled by default: enable it in **Configuration > Features**.
+
+The **Shape Tracing** feature (`OrchardCore.Templates.ShapeTracing`) adds the tools that need the content items, and depends on the **Contents** feature: the [alternates](#alternates) suggested for the content types, parts and fields of the site, and [Inspect Content](#inspect-content). It is not enabled by default either.
 
 ## Theme Templates
 
@@ -55,6 +57,8 @@ Modules can suggest the alternates of other shapes by registering an `ITemplateA
 ## Inspect Content
 
 The **Inspect Content** button of the **Templates** and **Admin Templates** pages, and the **Inspect templates** action of the content items of the **Content Items** list, show the shapes a content item renders in a display type: each shape, indented under the shape rendering it, with the template that renders it and all its alternates, the most specific first, including those of this content item only, e.g. `Content__Alias__[Alias]` or `Content__Slug__[Slug]`. The alternate the template is bound to is checked, and each alternate opens the editor of the local template with its name.
+
+The content items to inspect are picked among the 50 most recently modified ones that the user can view, with the **View content** permission. The search box filters them by their display text, to find an older one.
 
 When a template of the active theme or of a feature renders the shape, or is bound to one of its alternates, **View** shows its content and **Clone** copies it as a local template, for a Liquid template, to customize it. A Razor template can only be viewed, and its alternate creates a new Liquid template with its name.
 

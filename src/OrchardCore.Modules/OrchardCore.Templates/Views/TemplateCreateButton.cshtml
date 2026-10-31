@@ -3,8 +3,9 @@
 @{
     var adminTemplates = Model.AdminTemplates != null && (bool)Model.AdminTemplates;
 
-    // Registered by the Assisted Templates feature only.
+    // Registered by the Assisted Templates and the Shape Tracing features only.
     var sourceTemplatesService = Context.RequestServices.GetService<OrchardCore.Templates.Services.SourceTemplatesService>();
+    var canInspect = Context.RequestServices.GetService<OrchardCore.Templates.Services.TemplateInspectionService>() != null;
 }
 
 @if (sourceTemplatesService != null)
@@ -16,6 +17,9 @@
             <a asp-action="Index" asp-controller="TemplateSource" asp-route-source="@source.Name" asp-route-options.admintemplates="@adminTemplates" class="btn btn-secondary" role="button">@source.DisplayName</a>
         }
     </div>
-    <a asp-action="Index" asp-controller="TemplateInspector" asp-route-admintemplates="@adminTemplates" class="btn btn-secondary" role="button">@T["Inspect Content"]</a>
+    @if (canInspect)
+    {
+        <a asp-action="Index" asp-controller="TemplateInspector" asp-route-admintemplates="@adminTemplates" class="btn btn-secondary" role="button">@T["Inspect Content"]</a>
+    }
 }
 <a asp-action="Create" asp-controller="Template" asp-route-admintemplates="@adminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary create" role="button">@T["Add Template"]</a>

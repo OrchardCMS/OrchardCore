@@ -72,15 +72,25 @@ public sealed class AssistedTemplatesStartup : StartupBase
         services.AddScoped<ITemplateSource, ThemeTemplateSource>();
         services.AddScoped<ITemplateSource, FeatureTemplateSource>();
         services.AddScoped<ActiveThemes>();
+
+        // The alternates of the templates, suggested by the providers, e.g. of the Shape Tracing feature for the content types.
         services.AddScoped<TemplateAlternatesService>();
-        services.AddScoped<ITemplateAlternatesProvider, ContentTemplateAlternatesProvider>();
         services.AddDisplayDriver<TemplateAlternateEntry, TemplateAlternateEntryDisplayDriver>();
+        services.AddDisplayDriver<SourceTemplateEntry, SourceTemplateEntryDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.Templates.ShapeTracing")]
+public sealed class ShapeTracingStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ITemplateAlternatesProvider, ContentTemplateAlternatesProvider>();
 
         // Inspects the shapes a content item renders, from the templates lists and the actions of the content items.
         services.AddScoped<ShapeInspector>();
         services.AddScoped<IShapeDisplayEvents>(serviceProvider => serviceProvider.GetRequiredService<ShapeInspector>());
         services.AddScoped<TemplateInspectionService>();
         services.AddScoped<IContentDisplayDriver, TemplateInspectorContentDisplayDriver>();
-        services.AddDisplayDriver<SourceTemplateEntry, SourceTemplateEntryDisplayDriver>();
     }
 }

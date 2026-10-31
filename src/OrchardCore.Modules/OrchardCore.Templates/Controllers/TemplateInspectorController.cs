@@ -18,11 +18,14 @@ namespace OrchardCore.Templates.Controllers;
 /// <summary>
 /// Inspects a content item: lists the shapes it renders, their alternates and the templates that render them.
 /// </summary>
-[Feature("OrchardCore.Templates.Assisted")]
+[Feature("OrchardCore.Templates.ShapeTracing")]
 [Admin("TemplateInspector/{action}", "TemplateInspector.{action}")]
 public sealed class TemplateInspectorController : Controller
 {
     private const int RecentContentItemsCount = 50;
+
+    // The pages of content items checked to find those the user can view, at most 500 content items.
+    private const int RecentContentItemsMaxPages = 10;
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
@@ -58,7 +61,7 @@ public sealed class TemplateInspectorController : Controller
     }
 
     [Admin("TemplateInspector", "TemplateInspector.Index")]
-    public async Task<IActionResult> Index(string contentItemId = null, string displayType = null, bool adminTemplates = false)
+    public async Task<IActionResult> Index(string contentItemId = null, string displayType = null, bool adminTemplates = false, string search = null)
     {
         if (!await IsAuthorizedAsync(adminTemplates))
         {
@@ -107,7 +110,8 @@ public sealed class TemplateInspectorController : Controller
             model.SourceTemplates = await GetSourceTemplatesAsync(model.Shapes, adminTemplates);
         }
 
-        model.ContentItems = await GetRecentContentItemsAsync(model.ContentItem);
+        model.Search = search;
+        model.ContentItems = await GetRecentContentItemsAsync(model.ContentItem, search);
 
         return View(model);
     }
@@ -134,16 +138,30 @@ public sealed class TemplateInspectorController : Controller
         return sourceTemplates;
     }
 
-    // The latest content items, the most recently modified first, grouped by content type in the picker, with the
-    // inspected one, which can be older, so that inspecting it in another display type keeps it.
-    private async Task<IReadOnlyList<SelectListItem>> GetRecentContentItemsAsync(ContentItem selected)
+    // The latest content items the user can view, the most recently modified first, those whose display text contains
+    // the search if any, grouped by content type in the picker, with the inspected one, which can be older, so that
+    // inspecting it in another display type keeps it.
+    private async Task<IReadOnlyList<SelectListItem>> GetRecentContentItemsAsync(ContentItem selected, string search)
     {
-        var contentItems = (await _session.Query<ContentItem, ContentItemIndex>(index => index.Latest)
-            .OrderByDescending(index => index.ModifiedUtc)
-            .Take(RecentContentItemsCount)
-            .ListAsync())
+        var contentItems = (await ViewableContentItems.TakeAsync(
+            async (page, pageSize) =>
+            {
+                var query = string.IsNullOrWhiteSpace(search)
+                    ? _session.Query<ContentItem, ContentItemIndex>(index => index.Latest)
+                    : _session.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.DisplayText.Contains(search));
+
+                return await query
+                    .OrderByDescending(index => index.ModifiedUtc)
+                    .Skip(page * pageSize)
+                    .Take(pageSize)
+                    .ListAsync();
+            },
+            contentItem => _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem),
+            RecentContentItemsCount,
+            RecentContentItemsMaxPages))
             .ToList();
 
+        // The inspected content item was authorized before being inspected.
         if (selected != null && !contentItems.Any(item => item.ContentItemId == selected.ContentItemId))
         {
             contentItems.Add(selected);
