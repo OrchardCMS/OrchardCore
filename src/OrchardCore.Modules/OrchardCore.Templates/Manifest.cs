@@ -35,6 +35,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Templates.ShapeTracing",
     Name = "Shape Tracing",
     Description = "Inspects the shapes a content item renders, with their templates and alternates, and suggests the alternates of the templates for the content types.",
-    Dependencies = ["OrchardCore.Templates.Assisted", "OrchardCore.Contents"],
+    Dependencies = ["OrchardCore.Templates.Assisted", "OrchardCore.Contents", "OrchardCore.ContentFields"],
     Category = "Development"
 )]

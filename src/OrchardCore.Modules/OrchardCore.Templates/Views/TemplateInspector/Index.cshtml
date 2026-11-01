@@ -2,6 +2,20 @@
 @{
     var permission = Model.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name;
 
+    // The content picker of the inspected content item, in its published version when it has one, like the search results.
+    object[] selected = Model.ContentItem == null
+        ? []
+        : [new
+        {
+            id = Model.ContentItem.ContentItemId,
+            displayText = string.IsNullOrWhiteSpace(Model.ContentItem.DisplayText) ? Model.ContentItem.ContentItemId : Model.ContentItem.DisplayText,
+            hasPublished = Model.ContentItem.Published,
+            isClickable = false,
+        }];
+    var selectedItems = System.Text.Json.JsonSerializer.Serialize(selected);
+    var searchUrl = Url.Action("SearchContentItems", "TemplateInspector", new { area = "OrchardCore.Templates", adminTemplates = Model.AdminTemplates });
+    var translations = System.Text.Json.JsonSerializer.Serialize(Orchard.GetJSLocalizations("content-fields-multiselect-picker"));
+
     // Views a template of a source, e.g. of the active theme, and clones it as a local template when it's a Liquid one.
     Func<InspectedSourceTemplate, object> sourceTemplateActions = @<text>
         <a asp-action="Display" asp-controller="TemplateSource" asp-route-source="@item.Source" asp-route-name="@item.Template.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath"
@@ -40,17 +54,10 @@
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row g-2 align-items-center">
-                @* Filters the content items of the picker, the latest ones the user can view, by their display text. *@
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input type="search" name="search" value="@Model.Search" class="form-control" placeholder="@T["Search content items"]" aria-label="@T["Search content items"]" />
-                        <button type="submit" class="btn btn-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
-                    </div>
-                </div>
+                @* The picker of the content items, the one of the content picker field, searching the content items the user can inspect. *@
                 <div class="col-md">
-                    <select name="contentItemId" class="form-select" aria-label="@T["Content item"]" asp-items="Model.ContentItems">
-                        <option value="">@(string.IsNullOrWhiteSpace(Model.Search) ? T["Pick a recent content item"] : T["Pick a content item matching the search"])</option>
-                    </select>
+                    <div id="TemplateInspector_ContentItem" class="vue-multiselect" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="false" data-translations="@translations" data-selected-ids-input-id="contentItemId" data-selected-ids-input-name="contentItemId" aria-label="@T["Content item"]">
+                    </div>
                 </div>
                 <div class="col-md-auto">
                     <select name="displayType" class="form-select" aria-label="@T["Display type"]" asp-items="Model.DisplayTypes"></select>
@@ -164,3 +171,7 @@
         }
     </ul>
 }
+
+<script asp-name="vue-draggable" at="Foot"></script>
+<style asp-name="vue-multiselect" at="Foot"></style>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="vuejs, vue-multiselect, vue-draggable" type="module"></script>

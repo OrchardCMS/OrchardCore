@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.Modules;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.Templates.Models;
@@ -29,7 +28,6 @@ public sealed class TemplateInspectorController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
     private readonly TemplateInspectionService _templateInspectionService;
     private readonly SourceTemplatesService _sourceTemplatesService;
@@ -41,7 +39,6 @@ public sealed class TemplateInspectorController : Controller
     public TemplateInspectorController(
         IAuthorizationService authorizationService,
         IContentManager contentManager,
-        IContentDefinitionManager contentDefinitionManager,
         ISession session,
         TemplateInspectionService templateInspectionService,
         SourceTemplatesService sourceTemplatesService,
@@ -51,7 +48,6 @@ public sealed class TemplateInspectorController : Controller
     {
         _authorizationService = authorizationService;
         _contentManager = contentManager;
-        _contentDefinitionManager = contentDefinitionManager;
         _session = session;
         _templateInspectionService = templateInspectionService;
         _sourceTemplatesService = sourceTemplatesService;
@@ -61,7 +57,7 @@ public sealed class TemplateInspectorController : Controller
     }
 
     [Admin("TemplateInspector", "TemplateInspector.Index")]
-    public async Task<IActionResult> Index(string contentItemId = null, string displayType = null, bool adminTemplates = false, string search = null)
+    public async Task<IActionResult> Index(string contentItemId = null, string displayType = null, bool adminTemplates = false)
     {
         if (!await IsAuthorizedAsync(adminTemplates))
         {
@@ -95,7 +91,7 @@ public sealed class TemplateInspectorController : Controller
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
+            if (!await CanInspectAsync(contentItem))
             {
                 return Forbid();
             }
@@ -109,9 +105,6 @@ public sealed class TemplateInspectorController : Controller
             model.LocalTemplates = new HashSet<string>(localTemplates.Templates.Keys, StringComparer.OrdinalIgnoreCase);
             model.SourceTemplates = await GetSourceTemplatesAsync(model.Shapes, adminTemplates);
         }
-
-        model.Search = search;
-        model.ContentItems = await GetRecentContentItemsAsync(model.ContentItem, search);
 
         return View(model);
     }
@@ -138,59 +131,66 @@ public sealed class TemplateInspectorController : Controller
         return sourceTemplates;
     }
 
-    // The latest content items the user can view, the most recently modified first, those whose display text contains
-    // the search if any, grouped by content type in the picker, with the inspected one, which can be older, so that
-    // inspecting it in another display type keeps it.
-    private async Task<IReadOnlyList<SelectListItem>> GetRecentContentItemsAsync(ContentItem selected, string search)
+    /// <summary>
+    /// Searches the content items to inspect, for the picker of the content items: the latest ones the user can inspect,
+    /// those whose display text contains the query if any.
+    /// </summary>
+    public async Task<IActionResult> SearchContentItems(string query = null, bool adminTemplates = false)
     {
-        var contentItems = (await ViewableContentItems.TakeAsync(
+        if (!await IsAuthorizedAsync(adminTemplates))
+        {
+            return Forbid();
+        }
+
+        var contentItems = await GetInspectableContentItemsAsync(query);
+
+        return Ok(contentItems.Select(ToPickerItem));
+    }
+
+    // The item of the content picker for a content item, which isn't a link to its editor.
+    internal static object ToPickerItem(ContentItem contentItem) => new
+    {
+        id = contentItem.ContentItemId,
+        displayText = string.IsNullOrWhiteSpace(contentItem.DisplayText) ? contentItem.ContentItemId : contentItem.DisplayText,
+        hasPublished = contentItem.Published,
+        isClickable = false,
+    };
+
+    // The latest content items the user can inspect, the most recently modified first, those whose display text contains
+    // the query if any. A content item is inspected in its published version when it has one, so it's listed with it.
+    private async Task<IReadOnlyList<ContentItem>> GetInspectableContentItemsAsync(string query)
+    {
+        return await ViewableContentItems.TakeAsync(
             async (page, pageSize) =>
             {
-                var query = string.IsNullOrWhiteSpace(search)
+                var latestQuery = string.IsNullOrWhiteSpace(query)
                     ? _session.Query<ContentItem, ContentItemIndex>(index => index.Latest)
-                    : _session.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.DisplayText.Contains(search));
+                    : _session.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.DisplayText.Contains(query));
 
-                return await query
+                var latest = (await latestQuery
                     .OrderByDescending(index => index.ModifiedUtc)
                     .Skip(page * pageSize)
                     .Take(pageSize)
-                    .ListAsync();
+                    .ListAsync())
+                    .ToList();
+
+                // The drafts of published content items are replaced by their published versions.
+                var draftIds = latest.Where(contentItem => !contentItem.Published).Select(contentItem => contentItem.ContentItemId).ToArray();
+                var published = draftIds.Length == 0
+                    ? []
+                    : (await _contentManager.GetAsync(draftIds, VersionOptions.Published)).ToDictionary(contentItem => contentItem.ContentItemId);
+
+                return latest.Select(contentItem => published.GetValueOrDefault(contentItem.ContentItemId) ?? contentItem);
             },
-            contentItem => _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem),
+            CanInspectAsync,
             RecentContentItemsCount,
-            RecentContentItemsMaxPages))
-            .ToList();
-
-        // The inspected content item was authorized before being inspected.
-        if (selected != null && !contentItems.Any(item => item.ContentItemId == selected.ContentItemId))
-        {
-            contentItems.Add(selected);
-        }
-
-        var selectedId = selected?.ContentItemId;
-
-        var groups = new Dictionary<string, SelectListGroup>(StringComparer.OrdinalIgnoreCase);
-        List<SelectListItem> items = [];
-
-        foreach (var contentItem in contentItems.OrderBy(item => item.ContentType, StringComparer.OrdinalIgnoreCase))
-        {
-            if (!groups.TryGetValue(contentItem.ContentType, out var group))
-            {
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-                group = groups[contentItem.ContentType] = new SelectListGroup { Name = typeDefinition?.DisplayName ?? contentItem.ContentType };
-            }
-
-            items.Add(new SelectListItem(
-                string.IsNullOrWhiteSpace(contentItem.DisplayText) ? contentItem.ContentItemId : contentItem.DisplayText,
-                contentItem.ContentItemId,
-                contentItem.ContentItemId == selectedId)
-            {
-                Group = group,
-            });
-        }
-
-        return items;
+            RecentContentItemsMaxPages);
     }
+
+    // A content item can be inspected by the users who can view it, and, when it is a draft, preview it.
+    private async Task<bool> CanInspectAsync(ContentItem contentItem)
+        => await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem)
+            && (contentItem.Published || await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem));
 
     private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
     {

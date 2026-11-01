@@ -51,13 +51,16 @@ public sealed class AssistedTemplatesTests : CmsTestBase, IClassFixture<CmsSetup
         await page.GotoAndAssertOkAsync($"{prefix}/Admin/TemplateSources/Theme");
         await Assertions.Expect(AlternatesLink(page).First).ToBeVisibleAsync();
 
+        // The content items are picked with the content picker, searching them by their display text.
         await page.GotoAndAssertOkAsync($"{prefix}/Admin/TemplateInspector");
+        await Assertions.Expect(page.Locator("#TemplateInspector_ContentItem .multiselect")).ToBeVisibleAsync();
 
-        // The search filters the content items of the picker by their display text.
-        await page.GotoAndAssertOkAsync($"{prefix}/Admin/TemplateInspector?search=About");
-        var pickerItems = await page.Locator("select[name='contentItemId'] option:not([value=''])").AllInnerTextsAsync();
-        Assert.NotEmpty(pickerItems);
-        Assert.All(pickerItems, item => Assert.Contains("About", item, StringComparison.OrdinalIgnoreCase));
+        var search = await page.APIRequest.GetAsync($"{prefix}/Admin/TemplateInspector/SearchContentItems?adminTemplates=false&query=About");
+        Assert.True(search.Ok);
+        var items = (await search.JsonAsync())?.EnumerateArray().Select(item => item.GetProperty("displayText").GetString()).ToList();
+        Assert.NotNull(items);
+        Assert.NotEmpty(items);
+        Assert.All(items, item => Assert.Contains("About", item, StringComparison.OrdinalIgnoreCase));
 
         await page.GotoAndAssertOkAsync($"{prefix}/Admin/Contents/ContentItems");
         await Assertions.Expect(InspectTemplatesAction(page).First).ToBeAttachedAsync();
