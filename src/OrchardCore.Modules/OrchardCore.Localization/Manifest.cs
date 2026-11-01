@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Localization",
     Name = "Localization",
     Description = "Provides support for UI localization.",
-    Dependencies = ["OrchardCore.Settings"],
+    Dependencies = ["OrchardCore.Settings", "OrchardCore.Navigation"],
     Category = "Internationalization"
 )]
 
