@@ -12,6 +12,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.AzureAI.Models;
 using OrchardCore.AzureAI.Services;
 using OrchardCore.AzureAI.ViewModels;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.AzureAI.Drivers;
@@ -23,8 +24,9 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _searchOptions;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -37,6 +39,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         IAuthorizationService authorizationService,
         IOptionsMonitor<AzureAISearchDefaultOptions> searchOptions,
         IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
@@ -44,6 +47,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         _authorizationService = authorizationService;
         _searchOptions = searchOptions;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -70,7 +74,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             model.UseCustomConfiguration = settings.UseCustomConfiguration;
             model.Endpoint = settings.Endpoint;
             model.IdentityClientId = settings.IdentityClientId;
-            model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
+            model.ApiKey = SecretInputViewModel.Create(settings.ApiKey, settings.ApiKeySecretName);
         }).Location("Content")
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchSettings), this)
         .OnGroup(SettingsGroupId);
@@ -100,6 +104,8 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         }
 
         var useCustomConfigurationChanged = settings.UseCustomConfiguration != model.UseCustomConfiguration;
+        var apiKey = settings.ApiKey;
+        var apiKeySecretName = settings.ApiKeySecretName;
 
         if (model.UseCustomConfiguration)
         {
@@ -118,17 +124,27 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
 
             if (model.AuthenticationType == AzureAIAuthenticationType.ApiKey)
             {
-                var hasNewKey = !string.IsNullOrWhiteSpace(model.ApiKey);
-
-                if (!hasNewKey && string.IsNullOrEmpty(settings.ApiKey))
+                var result = await model.ApiKey.UpdateAsync(new SecretInputUpdateContext(
+                    _serviceProvider,
+                    _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName),
+                    context.Updater.ModelState,
+                    $"{Prefix}.{nameof(model.ApiKey)}")
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ApiKey), S["API Key is required when using API Key authentication type."]);
-                }
-                else if (hasNewKey)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName);
+                    ProtectedValue = settings.ApiKey,
+                    SecretName = settings.ApiKeySecretName,
+                });
 
-                    settings.ApiKey = protector.Protect(model.ApiKey);
+                if (result.Succeeded)
+                {
+                    if (string.IsNullOrEmpty(result.ProtectedValue) && string.IsNullOrEmpty(result.SecretName))
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.ApiKey), S["API Key is required when using API Key authentication type."]);
+                    }
+                    else
+                    {
+                        settings.ApiKey = result.ProtectedValue;
+                        settings.ApiKeySecretName = result.SecretName;
+                    }
                 }
             }
         }
@@ -136,7 +152,8 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         settings.UseCustomConfiguration = model.UseCustomConfiguration;
 
         if (context.Updater.ModelState.IsValid &&
-            (searchOptions.Credential?.Key != model.ApiKey ||
+            (apiKey != settings.ApiKey ||
+             apiKeySecretName != settings.ApiKeySecretName ||
              searchOptions.Endpoint != settings.Endpoint ||
              searchOptions.AuthenticationType != settings.AuthenticationType ||
              searchOptions.IdentityClientId != settings.IdentityClientId ||

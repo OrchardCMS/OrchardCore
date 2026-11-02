@@ -13,6 +13,7 @@ public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature
 {
     private readonly IHostEnvironment _hostingEnvironment;
     private readonly IApplicationContext _applicationContext;
+    private readonly Lock _lock = new();
 
     private ApplicationPartManager _applicationPartManager;
     private IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _featureProviders;
@@ -180,7 +181,7 @@ public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature
 
         if (services != null && _featureProviders == null)
         {
-            lock (this)
+            lock (_lock)
             {
                 if (_featureProviders == null)
                 {

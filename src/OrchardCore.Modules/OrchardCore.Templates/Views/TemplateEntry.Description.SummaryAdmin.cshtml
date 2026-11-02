@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Templates.ViewModels
+
+@model ShapeViewModel<TemplateEntry>
+
+@if (!string.IsNullOrWhiteSpace(Model.Value.Template?.Description))
+{
+    <div class="admin-list-secondary">@Model.Value.Template.Description</div>
+}

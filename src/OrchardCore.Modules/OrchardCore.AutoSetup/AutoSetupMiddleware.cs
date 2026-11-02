@@ -121,7 +121,7 @@ public class AutoSetupMiddleware
                     {
                         await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
                         httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                        await httpContext.Response.WriteAsync("The requested tenant is not initialized.");
+                        await httpContext.Response.WriteAsync("The requested tenant is not initialized.", httpContext.RequestAborted);
                         return;
                     }
                 }
@@ -148,7 +148,7 @@ public class AutoSetupMiddleware
                 else
                 {
                     httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                    await httpContext.Response.WriteAsync($"The AutoSetup failed installing the site.");
+                    await httpContext.Response.WriteAsync("The AutoSetup failed installing the site.", httpContext.RequestAborted);
                     return;
                 }
             }

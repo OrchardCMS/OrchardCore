@@ -1,0 +1,83 @@
+@model SaveContentItemsStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper" asp-validation-class-for="ContentType">
+    <label asp-for="ContentType" class="ocat-label ocat-label-required">@T["Content type"]</label>
+    <div class="ocat-end">
+        <select asp-for="ContentType" class="form-select">
+            <option value="">@T["Choose a content type"]</option>
+            @foreach (var (name, displayName) in Model.ContentTypes)
+            {
+                <option value="@name" selected="@(name == Model.ContentType)">@displayName</option>
+            }
+        </select>
+        <span class="hint">@T["The user who publishes the pipeline must be allowed to edit, and to publish, items of this type."]</span>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ContentType))
+{
+    <div class="ocat-wrapper">
+        <label asp-for="Mode" class="ocat-label">@T["Rows"]</label>
+        <div class="ocat-end">
+            <select asp-for="Mode" class="form-select">
+                <option value="@ContentItemSaveMode.CreateOrUpdate">@T["Update the item a row matches, or create one"]</option>
+                <option value="@ContentItemSaveMode.CreateOnly">@T["Create items; skip the rows that match one"]</option>
+                <option value="@ContentItemSaveMode.UpdateOnly">@T["Update the items rows match; reject the others"]</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <label asp-for="KeyField" class="ocat-label">@T["Match on"]</label>
+        <div class="ocat-end">
+            <div class="input-group">
+                <select asp-for="MatchBy" class="form-select" style="max-width: 14rem">
+                    <option value="@ContentItemMatch.ContentItemId">@T["Content item id"]</option>
+                    <option value="@ContentItemMatch.DisplayText">@T["Display text"]</option>
+                </select>
+                <span class="input-group-text">=</span>
+                <select asp-for="KeyField" class="form-select">
+                    <partial name="DataPipelineFieldOptions" model="@((Model.AvailableFields, Model.KeyField, true))" />
+                </select>
+            </div>
+            <span class="hint">@T["The field of the rows that finds the item a row updates."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <label class="ocat-label ocat-label-required">@T["Values"]</label>
+        <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Mappings")">
+            <template data-dp-template>
+                <partial name="DataPipelineContentMappingRow" model="@((Model.Targets, Model.AvailableFields, new ContentFieldMapping(), "__index__"))" />
+            </template>
+            <div data-dp-rows>
+                @for (var index = 0; index < Model.Mappings.Count; index++)
+                {
+                    <partial name="DataPipelineContentMappingRow" model="@((Model.Targets, Model.AvailableFields, Model.Mappings[index], index.ToString(System.Globalization.CultureInfo.InvariantCulture)))" />
+                }
+            </div>
+            <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a value"]</button>
+            <span class="hint">@T["The parts and fields of the items, and the fields of the rows that set them. Lists such as content pickers take ids separated by commas."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="Publish" />
+                <label class="form-check-label" asp-for="Publish">@T["Publish the items"]</label>
+                <span class="hint dashed">@T["Otherwise they are saved as drafts."]</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ocat-limited-wrapper" asp-validation-class-for="BatchSize">
+        <label asp-for="BatchSize" class="ocat-label">@T["Items per save"]</label>
+        <div class="ocat-limited">
+            <input asp-for="BatchSize" type="number" min="1" max="10000" class="form-control" />
+            <span asp-validation-for="BatchSize"></span>
+        </div>
+    </div>
+}

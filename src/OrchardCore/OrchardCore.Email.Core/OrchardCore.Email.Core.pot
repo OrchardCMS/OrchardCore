@@ -1,0 +1,36 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Email.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: EmailPermissions.cs
+msgctxt "OrchardCore.Email.EmailPermissions"
+msgid "Manage Email Settings"
+msgstr ""
+
+#: Services/DefaultEmailService.cs
+msgctxt "OrchardCore.Email.Services.DefaultEmailService"
+msgid "Email settings must be configured before an Email message can be sent."
+msgstr ""
+
+#. Format arguments: {0}: address
+#: Services/EmailMessageValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Services.EmailMessageValidator"
+msgid "Invalid email address for the recipient: '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: address
+#: Services/EmailMessageValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Services.EmailMessageValidator"
+msgid "Invalid email address for the sender: '{0}'."
+msgstr ""
+
+#: Services/EmailMessageValidator.cs
+msgctxt "OrchardCore.Email.Services.EmailMessageValidator"
+msgid "The mail message should have at least one of these headers: To, Cc or Bcc."
+msgstr ""

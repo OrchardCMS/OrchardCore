@@ -1,7 +1,7 @@
 @model OrchardCore.RateLimits.ViewModels.ConcurrencyRateLimiterViewModel
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="PermitLimit">
-    <label asp-for="PermitLimit" class="ocat-label">@T["Permit limit"]</label>
+    <label asp-for="PermitLimit" class="ocat-label ocat-label-required">@T["Permit limit"]</label>
     <div class="ocat-limited">
         <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
         <span asp-validation-for="PermitLimit"></span>

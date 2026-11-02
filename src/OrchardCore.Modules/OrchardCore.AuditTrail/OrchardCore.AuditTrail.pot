@@ -1,0 +1,632 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.AuditTrail\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
+msgid "Audit Trail Trimming settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
+msgid "Audit Trail settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
+msgid "Exports the audit trail settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
+msgid "Exports the audit trail trimming settings."
+msgstr ""
+
+#: Navigation/AuditTrailAdminMenu.cs
+msgctxt "OrchardCore.AuditTrail.Navigation.AuditTrailAdminMenu"
+msgid "Audit Trail"
+msgstr ""
+
+#: Navigation/AuditTrailAdminMenu.cs
+msgctxt "OrchardCore.AuditTrail.Navigation.AuditTrailAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Navigation/AuditTrailAdminMenu.cs
+msgctxt "OrchardCore.AuditTrail.Navigation.AuditTrailAdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "All categories"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Any date"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Custom date range"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Custom time range"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Last 24 hours"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Last hour"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Last month"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Last week"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Previous 48 hours"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "Previous hour"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "This month"
+msgstr ""
+
+#: Services/DefaultAuditTrailAdminListQueryService.cs
+msgctxt "OrchardCore.AuditTrail.Services.DefaultAuditTrailAdminListQueryService"
+msgid "This week"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.Startup"
+msgid "Category"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.Startup"
+msgid "Event"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.Startup"
+msgid "Newest"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.Startup"
+msgid "Oldest"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.AuditTrail.Startup"
+msgid "User"
+msgstr ""
+
+#: Views/Admin/Display.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Admin.Display"
+msgid "Audit Trail"
+msgstr ""
+
+#: Views/Admin/Display.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Admin.Display"
+msgid "Audit Trail Event"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Admin.Index"
+msgid "Audit Trail"
+msgstr ""
+
+#: Views/AuditTrailAdminList.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminList"
+msgid "Actions"
+msgstr ""
+
+#: Views/AuditTrailAdminList.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminList"
+msgid "Category"
+msgstr ""
+
+#: Views/AuditTrailAdminList.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminList"
+msgid "Details"
+msgstr ""
+
+#: Views/AuditTrailAdminList.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminList"
+msgid "Event"
+msgstr ""
+
+#: Views/AuditTrailAdminListFilters.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListFilters"
+msgid "Category"
+msgstr ""
+
+#: Views/AuditTrailAdminListFilters.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListFilters"
+msgid "Date"
+msgstr ""
+
+#: Views/AuditTrailAdminListFilters.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListFilters"
+msgid "Events"
+msgstr ""
+
+#: Views/AuditTrailAdminListFilters.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListFilters"
+msgid "Filter by category"
+msgstr ""
+
+#: Views/AuditTrailAdminListFilters.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListFilters"
+msgid "Filter by event"
+msgstr ""
+
+#: Views/AuditTrailAdminListFilters.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListFilters"
+msgid "Sort"
+msgstr ""
+
+#: Views/AuditTrailAdminListFilters.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListFilters"
+msgid "Sort by"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "A single value can be entered"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Available Filters"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Close"
+msgstr ""
+
+#. Format arguments: {0}: "text:foo AND bar"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Combines, e.g. {0}"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Current filter"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Date range syntax"
+msgstr ""
+
+#. Format arguments: {0}: "@now"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Dates should use the {0} operator or ISO 8601 date time format."
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Dates without a ISO 8601 UTC or time component will be parsed to the users timezone"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Default"
+msgstr ""
+
+#. Format arguments: {0}: "text:\"foo bar\""
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Escape operators, e.g. {0}"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Example"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Filter"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Filter syntax"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Filters"
+msgstr ""
+
+#. Format arguments: {0}: "text:((foo OR bar) NOT baz)"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Groups operators, e.g. {0}"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Logical operators and groups are supported"
+msgstr ""
+
+#. Format arguments: {0}: "@today"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Matches dates greater than the current date minus one. {0} is also suported"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Multiple"
+msgstr ""
+
+#. Format arguments: {0}: "text:foo NOT bar"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Negates, e.g. {0}"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "No current filter applied"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Search"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "Single"
+msgstr ""
+
+#. Format arguments: {0}: "text:foo bar -> text:foo OR bar"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "The default operator when whitespace is found, e.g. {0}"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "You can search for dates that are greater or less than another date, or fall within a date range."
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "including all implied groups and operators"
+msgstr ""
+
+#: Views/AuditTrailAdminListSearch.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "may be entered with or without the term name"
+msgstr ""
+
+#. Format arguments: {0}: "date:>@now-1"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "{0} Matches dates between twenty days old and the current date"
+msgstr ""
+
+#. Format arguments: {0}: "@2020-01-01..@2020-01-01"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "{0} Matches dates from the start of the month until the start of the next month"
+msgstr ""
+
+#. Format arguments: {0}: ">@@2020-01-01T09:21:03.4472810+07:00"
+#: Views/AuditTrailAdminListSearch.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
+msgid "{0} Matches dates greater than a specified UTC offset and time"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/AuditTrailAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSummary"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: Model.StartIndex; {1}: Model.EndIndex
+#: Views/AuditTrailAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSummary"
+msgid "Items {0} to {1}"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/AuditTrailAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSummary"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/AuditTrailEvent.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEvent.SummaryAdmin"
+msgid "Actions"
+msgstr ""
+
+#: Views/AuditTrailEventActions.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventActions.SummaryAdmin"
+msgid "Details"
+msgstr ""
+
+#: Views/AuditTrailEventCategory.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventCategory.SummaryAdmin"
+msgid "Category"
+msgstr ""
+
+#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
+msgid "Category"
+msgstr ""
+
+#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
+msgid "Client IP address"
+msgstr ""
+
+#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
+msgid "Event Info"
+msgstr ""
+
+#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
+msgid "Event name"
+msgstr ""
+
+#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
+msgid "Triggered at timestamp"
+msgstr ""
+
+#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
+msgid "Triggered by user ID"
+msgstr ""
+
+#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
+msgid "Triggered by username"
+msgstr ""
+
+#: Views/AuditTrailEventMeta.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventMeta.SummaryAdmin"
+msgid "Client IP Address"
+msgstr ""
+
+#: Views/AuditTrailEventMeta.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventMeta.SummaryAdmin"
+msgid "User Name"
+msgstr ""
+
+#: Views/AuditTrailEventName.SummaryAdmin.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventName.SummaryAdmin"
+msgid "Event Name"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Allow client IP address"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Audit Trail"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Audit Trail Settings"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Event"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Events to record"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Select all"
+msgstr ""
+
+#: Views/AuditTrailSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+msgid "Whether the client IP address is recorded."
+msgstr ""
+
+#: Views/AuditTrailTrimmingSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailTrimmingSettings.Edit"
+msgid "Disable trimming task"
+msgstr ""
+
+#: Views/AuditTrailTrimmingSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailTrimmingSettings.Edit"
+msgid "Last run"
+msgstr ""
+
+#: Views/AuditTrailTrimmingSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailTrimmingSettings.Edit"
+msgid "Never"
+msgstr ""
+
+#: Views/AuditTrailTrimmingSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailTrimmingSettings.Edit"
+msgid "Retention period"
+msgstr ""
+
+#: Views/AuditTrailTrimmingSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailTrimmingSettings.Edit"
+msgid "The last time the trimming task was run."
+msgstr ""
+
+#: Views/AuditTrailTrimmingSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailTrimmingSettings.Edit"
+msgid "The number of days an event is retained."
+msgstr ""
+
+#: Views/AuditTrailTrimmingSettings.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailTrimmingSettings.Edit"
+msgid "Whether the trimming task is disabled."
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Category.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Category.Thumbnail"
+msgid "Category"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Category.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Category.Thumbnail"
+msgid "Filters on the audit trail category."
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Category.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Category.Thumbnail"
+msgid "Supports logical operators and groups"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-CorrelationId.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-CorrelationId.Thumbnail"
+msgid "Accepts a single value"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-CorrelationId.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-CorrelationId.Thumbnail"
+msgid "Filters on a correlation id."
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-CorrelationId.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-CorrelationId.Thumbnail"
+msgid "Id"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Date.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Date.Thumbnail"
+msgid "Accepts a single value"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Date.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Date.Thumbnail"
+msgid "Date"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Date.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Date.Thumbnail"
+msgid "Filters by a date or range."
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Date.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Date.Thumbnail"
+msgid "ISO 8601 date format *see date range syntax"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Event.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Event.Thumbnail"
+msgid "Event"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Event.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Event.Thumbnail"
+msgid "Filters on the audit trail event, when a Correlation Id is used."
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-Event.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-Event.Thumbnail"
+msgid "Supports logical operators and groups"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-UserId.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-UserId.Thumbnail"
+msgid "Filters by the id of a user."
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-UserId.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-UserId.Thumbnail"
+msgid "Supports logical operators and groups"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-UserId.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-UserId.Thumbnail"
+msgid "User Id"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-UserName.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-UserName.Thumbnail"
+msgid "Default term - may be entered with or without the term name"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-UserName.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-UserName.Thumbnail"
+msgid "Filters by the name of a user."
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-UserName.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-UserName.Thumbnail"
+msgid "Supports logical operators and groups"
+msgstr ""
+
+#: Views/Items/AuditTrailAdminFilters-UserName.Thumbnail.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.Items.AuditTrailAdminFilters-UserName.Thumbnail"
+msgid "User Name"
+msgstr ""

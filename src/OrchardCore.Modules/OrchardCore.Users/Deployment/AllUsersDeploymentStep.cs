@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,8 @@ namespace OrchardCore.Users.Deployment;
 /// </summary>
 public class AllUsersDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllUsersDeploymentStep>("Security");
+    public override string Name => "AllUsers";
 
-    public AllUsersDeploymentStep()
-    {
-        Name = "AllUsers";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Security;
 }

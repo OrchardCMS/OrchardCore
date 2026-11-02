@@ -2,7 +2,7 @@
 @model TimerEventViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="CronExpression">
-    <label asp-for="CronExpression" class="ocat-label">@T["CRON Expression"]</label>
+    <label asp-for="CronExpression" class="ocat-label ocat-label-required">@T["CRON Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="CronExpression" class="form-control" autofocus />
         <span asp-validation-for="CronExpression"></span>

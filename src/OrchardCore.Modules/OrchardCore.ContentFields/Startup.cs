@@ -25,7 +25,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddHtmlServices();
-        
+
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddScoped<IJSLocalizer, ContentFieldsJSLocalizer>();
 

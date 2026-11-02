@@ -8,6 +8,9 @@ public class ContentFieldDisplayDriverResolver : IContentFieldDisplayDriverResol
     private readonly IServiceProvider _serviceProvider;
     private readonly ContentDisplayOptions _contentDisplayOptions;
 
+    // The drivers are scoped services, they are resolved once per scope as they are requested for each displayed content item.
+    private readonly Dictionary<(string Name, string DisplayMode), List<IContentFieldDisplayDriver>> _displayModeDrivers = [];
+
     public ContentFieldDisplayDriverResolver(
         IServiceProvider serviceProvider,
         IOptions<ContentDisplayOptions> contentDisplayOptions
@@ -19,6 +22,11 @@ public class ContentFieldDisplayDriverResolver : IContentFieldDisplayDriverResol
 
     public IList<IContentFieldDisplayDriver> GetDisplayModeDrivers(string fieldName, string displayMode)
     {
+        if (_displayModeDrivers.TryGetValue((fieldName, displayMode), out var drivers))
+        {
+            return drivers;
+        }
+
         var services = new List<IContentFieldDisplayDriver>();
 
         if (_contentDisplayOptions.ContentFieldOptions.TryGetValue(fieldName, out var contentFieldDisplayOption))
@@ -32,7 +40,10 @@ public class ContentFieldDisplayDriverResolver : IContentFieldDisplayDriverResol
             }
         }
 
-        return services;
+        drivers = services;
+        _displayModeDrivers[(fieldName, displayMode)] = drivers;
+
+        return drivers;
     }
 
     public IList<IContentFieldDisplayDriver> GetEditorDrivers(string fieldName, string editor)

@@ -1,38 +1,34 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers;
 
 public sealed class ForLoopTaskDisplayDriver : ActivityDisplayDriver<ForLoopTask, ForLoopTaskViewModel>
 {
-    private readonly ILiquidTemplateManager _templateManager;
-    private readonly IStringLocalizer S;
+    private readonly WorkflowExpressionInputValidator _expressionValidator;
+
+    internal readonly IStringLocalizer S;
 
     public ForLoopTaskDisplayDriver(
-        ILiquidTemplateManager templateManager,
+        WorkflowExpressionInputValidator expressionValidator,
         IStringLocalizer<ForLoopTaskDisplayDriver> stringLocalizer)
     {
-        _templateManager = templateManager;
+        _expressionValidator = expressionValidator;
         S = stringLocalizer;
     }
 
     protected override void EditActivity(ForLoopTask activity, ForLoopTaskViewModel model)
     {
-        model.FromExpression = activity.From.Expression;
-        model.LiquidFromExpression = activity.LiquidFrom.Expression;
-        model.ToExpression = activity.To.Expression;
-        model.LiquidToExpression = activity.LiquidTo.Expression;
+        model.From = WorkflowExpressionInput.From(WorkflowExpressionSyntaxes.Resolve(activity.From, activity.LiquidFrom.Expression, activity.Syntax));
+        model.To = WorkflowExpressionInput.From(WorkflowExpressionSyntaxes.Resolve(activity.To, activity.LiquidTo.Expression, activity.Syntax));
+        model.Step = WorkflowExpressionInput.From(WorkflowExpressionSyntaxes.Resolve(activity.Step, activity.LiquidStep.Expression, activity.Syntax));
         model.LoopVariableName = activity.LoopVariableName;
-        model.StepExpression = activity.Step.Expression;
-        model.LiquidStepExpression = activity.LiquidStep.Expression;
-        model.Syntax = activity.Syntax;
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ForLoopTask activity, UpdateEditorContext context)
@@ -41,48 +37,17 @@ public sealed class ForLoopTaskDisplayDriver : ActivityDisplayDriver<ForLoopTask
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        activity.From = new WorkflowExpression<double>(model.FromExpression);
-        activity.LiquidFrom = new WorkflowExpression<string>(model.LiquidFromExpression);
-        activity.To = new WorkflowExpression<double>(model.ToExpression);
-        activity.LiquidTo = new WorkflowExpression<string>(model.LiquidToExpression);
-        activity.Step = new WorkflowExpression<double>(model.StepExpression);
-        activity.LiquidStep = new WorkflowExpression<string>(model.LiquidStepExpression);
         activity.LoopVariableName = model.LoopVariableName?.Trim();
-        activity.Syntax = model.Syntax;
+        activity.From = _expressionValidator.Validate<double>(model.From, context.Updater.ModelState, Prefix, nameof(model.From), new() { Label = S["From"], Required = true });
+        activity.To = _expressionValidator.Validate<double>(model.To, context.Updater.ModelState, Prefix, nameof(model.To), new() { Label = S["To"], Required = true });
+        activity.Step = _expressionValidator.Validate<double>(model.Step, context.Updater.ModelState, Prefix, nameof(model.Step), new() { Label = S["Step"], Required = true });
 
-        if (model.Syntax == WorkflowScriptSyntax.Liquid)
-        {
-            ValidateLiquidExpression(context, model.LiquidFromExpression, nameof(model.LiquidFromExpression), "From");
-            ValidateLiquidExpression(context, model.LiquidToExpression, nameof(model.LiquidToExpression), "To");
-            ValidateLiquidExpression(context, model.LiquidStepExpression, nameof(model.LiquidStepExpression), "Step");
-        }
-        else if (model.Syntax == WorkflowScriptSyntax.JavaScript)
-        {
-            ValidateRequired(context, model.FromExpression, nameof(model.FromExpression), "From");
-            ValidateRequired(context, model.ToExpression, nameof(model.ToExpression), "To");
-            ValidateRequired(context, model.StepExpression, nameof(model.StepExpression), "Step");
-        }
+        // The expressions carry their syntax now, so the properties of the former syntax setting go.
+        activity.Properties.Remove(nameof(ForLoopTask.LiquidFrom));
+        activity.Properties.Remove(nameof(ForLoopTask.LiquidTo));
+        activity.Properties.Remove(nameof(ForLoopTask.LiquidStep));
+        activity.Properties.Remove(nameof(ForLoopTask.Syntax));
 
         return Edit(activity, context);
-    }
-
-    private void ValidateLiquidExpression(UpdateEditorContext context, string expression, string propertyName, string label)
-    {
-        if (string.IsNullOrWhiteSpace(expression))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} is required field.", label]);
-        }
-        else if (!_templateManager.Validate(expression, out var errors))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} doesn't contain a valid Liquid expression. Details: {1}", label, string.Join(" ", errors)]);
-        }
-    }
-
-    private void ValidateRequired(UpdateEditorContext context, string expression, string propertyName, string label)
-    {
-        if (string.IsNullOrWhiteSpace(expression))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, propertyName, S["{0} is required field.", label]);
-        }
     }
 }

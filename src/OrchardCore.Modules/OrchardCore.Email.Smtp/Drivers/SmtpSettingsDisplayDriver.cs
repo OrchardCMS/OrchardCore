@@ -12,6 +12,7 @@ using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Drivers;
@@ -22,11 +23,12 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     public const string GroupId = EmailSettings.GroupId;
 
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptionsMonitor<SmtpOptions> _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -35,19 +37,21 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
     public SmtpSettingsDisplayDriver(
         IOptionsUpdateNotifier optionsUpdateNotifier,
-        IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         IOptionsMonitor<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options;
         _authorizationService = authorizationService;
         _emailValidator = emailAddressValidator;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -79,7 +83,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             model.RequireCredentials = settings.RequireCredentials;
             model.UseDefaultCredentials = settings.UseDefaultCredentials;
             model.UserName = settings.UserName;
-            model.Password = settings.Password;
+            model.Password = SecretInputViewModel.Create(settings.Password, settings.PasswordSecretName);
             model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
         }).Location("Content:5#SMTP")
         .OnGroup(SettingsGroupId);
@@ -147,18 +151,23 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             hasChanges |= model.DeliveryMethod != settings.DeliveryMethod;
             hasChanges |= model.PickupDirectoryLocation != settings.PickupDirectoryLocation;
 
-            // Store the password when there is a new value.
-            if (!string.IsNullOrWhiteSpace(model.Password))
+            var password = await model.Password.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.Password)}")
             {
-                // Encrypt the password.
-                var protector = _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName);
+                ProtectedValue = settings.Password,
+                SecretName = settings.PasswordSecretName,
+            });
 
-                var protectedPassword = protector.Protect(model.Password);
+            if (password.Succeeded)
+            {
+                hasChanges |= password.ProtectedValue != settings.Password;
+                hasChanges |= password.SecretName != settings.PasswordSecretName;
 
-                // Check if the password changed before setting the password.
-                hasChanges |= protectedPassword != settings.Password;
-
-                settings.Password = protectedPassword;
+                settings.Password = password.ProtectedValue;
+                settings.PasswordSecretName = password.SecretName;
             }
 
             settings.IsEnabled = true;

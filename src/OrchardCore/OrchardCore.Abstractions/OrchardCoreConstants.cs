@@ -108,6 +108,11 @@ public static class OrchardCoreConstants
         public const string DetailAdmin = "DetailAdmin";
 
         public const string SummaryAdmin = "SummaryAdmin";
+
+        /// <summary>
+        /// The display type for admin rows rendered in columns, with shapes placed directly in column zones.
+        /// </summary>
+        public const string SummaryAdminGrid = "SummaryAdminGrid";
     }
 
     public static class Security

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
@@ -54,7 +56,9 @@ public sealed class FeatureProfilesController : Controller
     }
 
     [Admin("TenantFeatureProfiles", "TenantFeatureProfilesIndex")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
         {
@@ -68,7 +72,11 @@ public sealed class FeatureProfilesController : Controller
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            // The row shows Name when it is set, so the search has to match it as well as the key.
+            featureProfiles = featureProfiles
+                .Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                    || (x.Value.Name != null && x.Value.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
         }
 
         var count = featureProfiles.Count;
@@ -103,6 +111,13 @@ public sealed class FeatureProfilesController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<FeatureProfileEntry>
+        {
+            Source = model.FeatureProfiles,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

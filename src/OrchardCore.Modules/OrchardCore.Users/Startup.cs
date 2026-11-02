@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -58,6 +59,10 @@ public sealed class Startup : StartupBase
 {
     private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
     private static readonly string s_emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+
+    // Long enough to read the confirmation notice and request a new email again once the resend cooldown is over.
+    private static readonly TimeSpan s_emailConfirmationCookieLifetime = TimeSpan.FromMinutes(10);
+
     private readonly string _tenantName;
 
     private UserOptions _userOptions;
@@ -97,6 +102,17 @@ public sealed class Startup : StartupBase
         // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+
+        // A short-lived cookie that identifies a user who passed the password check but hasn't confirmed their email yet,
+        // so that they can request a new confirmation email. Like the 'Identity.TwoFactorUserId' cookie, it doesn't sign the user in.
+        services.AddAuthentication()
+            .AddCookie(UserConstants.EmailConfirmationAuthenticationScheme, options =>
+            {
+                options.Cookie.Name = "orchemail_" + HttpUtility.UrlEncode(_tenantName);
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.ExpireTimeSpan = s_emailConfirmationCookieLifetime;
+                options.SlidingExpiration = false;
+            });
 
         services.AddUsers();
 
@@ -168,6 +184,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
         services.AddScoped<ILoginFormEvent, DisabledUserLoginFormEvent>();
+
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -240,6 +257,17 @@ public sealed class Startup : StartupBase
             }
         );
 
+        routes.MapAreaControllerRoute(
+            name: RateLimitRouteNames.ResendEmailConfirmation,
+            areaName: UserConstants.Features.Users,
+            pattern: "ResendEmailConfirmation",
+            defaults: new
+            {
+                controller = s_emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ResendEmailConfirmation),
+            }
+        );
+
         builder.UseAuthorization();
     }
 
@@ -251,14 +279,19 @@ public sealed class RateLimitsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
+        {
+            // Users who sign in are anonymous, so these attempts can only be counted per IP address. The limit leaves room for
+            // the many users of an office who share an IP address, as the account lockout already protects each account.
+            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResendEmailConfirmation, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.EmailConfirmation, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetEmailConfirmationUser));
+        });
     }
 }
 
 [Feature(UserConstants.Features.ExternalAuthentication)]
 public sealed class ExternalAuthenticationStartup : StartupBase
 {
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
 
     private UserOptions _userOptions;
 
@@ -283,7 +316,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
             pattern: _userOptions.ExternalLoginsUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
@@ -309,8 +342,9 @@ public sealed class ExternalAuthenticationRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3));
-            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
+            // These limits share the budgets of the registration and login pages, so they must use the same values.
+            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
         });
     }
 }
@@ -467,7 +501,7 @@ public sealed class ChangeEmailDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailSettings, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
     }
 }
 
@@ -542,7 +576,7 @@ public sealed class RegistrationRateLimitsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3)));
+            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20)));
     }
 }
 
@@ -637,8 +671,8 @@ public sealed class ResetPasswordRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
-            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
         });
     }
 }

@@ -1,5 +1,5 @@
 const togglePassword = document.querySelector<HTMLButtonElement>("#togglePassword");
-const password = document.getElementById("Password") as HTMLInputElement | null;
+const password = togglePassword?.closest(".input-group")?.querySelector<HTMLInputElement>("input") ?? null;
 
 togglePassword?.addEventListener("click", function (this: HTMLButtonElement) {
     if (!password) {

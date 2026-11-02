@@ -29,6 +29,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".odt", // (OpenDocument Text Document)
         ".xls",
         ".xlsx", // (Microsoft Excel Document)
+        ".csv", // (Comma-Separated Values)
         ".psd", // (Adobe Photoshop Document)
 
         // Audio
@@ -112,6 +113,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
         options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), s_defaultTemporaryFileLifeTime);
+        options.DisableThumbnails = section.GetValue(nameof(options.DisableThumbnails), false);
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

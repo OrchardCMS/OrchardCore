@@ -1,0 +1,60 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Infrastructure\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: command
+#: Commands/Builtin/HelpCommand.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "Command {0} doesn't exist"
+msgstr ""
+
+#: Commands/Builtin/HelpCommand.cs
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "List of available commands:"
+msgstr ""
+
+#. Format arguments: {0}: descriptor.MethodInfo.DeclaringType?.FullName; {1}: descriptor.MethodInfo.Name
+#: Commands/Builtin/HelpCommand.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.Builtin.HelpCommand"
+msgid "{0}.{1}: no help text"
+msgstr ""
+
+#. Format arguments: {0}: commandMatch; {1}: commandList
+#: Commands/DefaultCommandManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "Multiple commands found matching arguments \"{0}\". Commands available: {1}."
+msgstr ""
+
+#. Format arguments: {0}: commandMatch; {1}: commandList
+#: Commands/DefaultCommandManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandManager"
+msgid "No command found matching arguments \"{0}\". Commands available: {1}."
+msgstr ""
+
+#: ErrorHandling/ApiProblemDetailsMiddleware.cs
+msgctxt "OrchardCore.Infrastructure.ErrorHandling.ApiProblemDetailsMiddleware"
+msgid "Access forbidden"
+msgstr ""
+
+#: ErrorHandling/ApiProblemDetailsMiddleware.cs
+msgctxt "OrchardCore.Infrastructure.ErrorHandling.ApiProblemDetailsMiddleware"
+msgid "Access to this resource is forbidden or you do not have sufficient permissions to perform this action."
+msgstr ""
+
+#: ErrorHandling/ApiProblemDetailsMiddleware.cs
+msgctxt "OrchardCore.Infrastructure.ErrorHandling.ApiProblemDetailsMiddleware"
+msgid "Authentication is required to access this resource. Additional details may be found in the WWW-Authenticate HTTP response header."
+msgstr ""
+
+#: ErrorHandling/ApiProblemDetailsMiddleware.cs
+msgctxt "OrchardCore.Infrastructure.ErrorHandling.ApiProblemDetailsMiddleware"
+msgid "Authentication required"
+msgstr ""

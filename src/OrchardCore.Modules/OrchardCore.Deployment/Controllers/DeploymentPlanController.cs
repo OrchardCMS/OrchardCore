@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
@@ -63,7 +64,9 @@ public sealed class DeploymentPlanController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
@@ -113,6 +116,13 @@ public sealed class DeploymentPlanController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),
         ];
+
+        // The AdminList shape renders the plans with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<DeploymentPlanEntry>
+        {
+            Source = model.DeploymentPlans,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

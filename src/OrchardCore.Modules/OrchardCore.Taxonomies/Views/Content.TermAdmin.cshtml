@@ -52,7 +52,7 @@
 {
     var updater = ModelUpdaterAccessor.ModelUpdater;
 
-    @foreach (JsonObject termObject in termsArray)
+    @foreach (var termObject in termsArray.Cast<JsonObject>())
     {
         var term = termObject.ToObject<ContentItem>();
         var termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");

@@ -12,6 +12,23 @@ public static class ActivityExtensions
         return activity is IEvent;
     }
 
+    /// <summary>
+    /// Returns the retry policy of a task when it retries or follows its failed outcome, with its retries within
+    /// <see cref="ActivityRetryPolicy.MaxRetriesLimit"/>, or <see langword="null"/>. Events have none.
+    /// </summary>
+    public static ActivityRetryPolicy GetRetryPolicy(this IActivity activity)
+    {
+        if (activity is null || activity.IsEvent() || !activity.TryGet<ActivityRetryPolicy>(out var policy) || policy is null)
+        {
+            return null;
+        }
+
+        policy.MaxRetries = Math.Clamp(policy.MaxRetries, 0, ActivityRetryPolicy.MaxRetriesLimit);
+        policy.DelaySeconds = Math.Max(0, policy.DelaySeconds);
+
+        return policy.IsActive ? policy : null;
+    }
+
     public static LocalizedHtmlString GetTitleOrDefault(this IActivity activity, Func<LocalizedHtmlString> defaultTitle)
     {
         string title = null;

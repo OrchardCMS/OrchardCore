@@ -37,7 +37,7 @@ public sealed class TokenBucketRateLimiterSource : RateLimiterSourceBase<TokenBu
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, TokenBucketRateLimiterData model)
     {
         return RateLimitPartition.GetTokenBucketLimiter(
-            partitionKey: $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetRemoteIpAddress(context)}",
+            partitionKey: $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetClientPartitionKey(context)}",
             factory: _ => new TokenBucketRateLimiterOptions
             {
                 TokenLimit = model.TokenLimit,

@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Notifications.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: NotificationPermissions.cs
+msgctxt "OrchardCore.Notifications.NotificationPermissions"
+msgid "Manage notifications"
+msgstr ""
+
+#: Services/EmailNotificationProvider.cs
+msgctxt "OrchardCore.Notifications.Services.EmailNotificationProvider"
+msgid "Email Notifications"
+msgstr ""
+
+#: Services/EmailNotificationProvider.cs
+msgctxt "OrchardCore.Notifications.Services.EmailNotificationProvider"
+msgid "No email address provided."
+msgstr ""

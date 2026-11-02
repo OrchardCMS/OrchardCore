@@ -1,0 +1,210 @@
+/* The styles of the components shared by the designers (@bloom/designer). Each designer imports this file before its
+   own stylesheet. */
+
+.ocd-save-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.ocd-save-status[data-status="unsaved"] .fa-circle {
+    font-size: 0.5em;
+}
+
+.ocd-draft-banner {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-width: 0 0 var(--bs-border-width);
+}
+
+.ocd-draft-banner .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+.ocd-panel-message {
+    margin: 0;
+    padding: 1rem 0.75rem;
+    color: var(--bs-secondary-color);
+}
+
+/* The server-rendered forms use the admin's two-column 'ocat-*' rows; the panel is narrow, so they stack. */
+.ocd-form {
+    padding: 0.75rem;
+}
+
+.ocd-form .ocat-wrapper,
+.ocd-form .ocat-limited-wrapper {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.ocd-form .ocat-label,
+.ocd-form .ocat-end,
+.ocd-form .ocat-end-offset,
+.ocd-form .ocat-limited {
+    width: auto;
+    max-width: none;
+    margin-inline-start: 0;
+    padding-inline: 0;
+    text-align: start;
+}
+
+.ocd-form-actions {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0 -0.75rem -0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.ocd-form-status {
+    flex: 1 1 auto;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.ocd-issue {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    font-size: 0.8125rem;
+}
+
+.ocd-issue:hover:not(:disabled) {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.ocd-issue:disabled {
+    opacity: 1;
+}
+
+.ocd-issue-node {
+    display: block;
+    font-weight: 600;
+}
+
+/* Canvas. The canvas coordinate space never mirrors in RTL: a graph lays out the same for everyone. The context menu is
+   placed at the pointer, in canvas coordinates, and the toasts at the canvas corner. */
+/* rtl:begin:ignore */
+
+.ocd-canvas {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    direction: ltr;
+    outline: none;
+    touch-action: none;
+    user-select: none;
+    background-color: var(--bs-body-bg);
+}
+
+.ocd-canvas:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--bs-primary);
+}
+
+.ocd-canvas.is-space-held,
+.ocd-canvas.is-panning {
+    cursor: grabbing;
+}
+
+.ocd-grid {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    background-image: radial-gradient(var(--bs-border-color) 1px, transparent 1px);
+    will-change: transform;
+}
+
+.ocd-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+}
+
+.ocd-edges {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+}
+
+.ocd-edges.is-lifted {
+    pointer-events: none;
+    will-change: transform;
+}
+
+.ocd-arrow {
+    fill: var(--bs-secondary-color);
+}
+
+.ocd-arrow.is-selected {
+    fill: var(--bs-primary);
+}
+
+.ocd-edge-preview {
+    fill: none;
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    pointer-events: none;
+}
+
+.ocd-edge-preview.is-invalid {
+    stroke: var(--bs-danger);
+}
+
+.ocd-marquee {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px dashed var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    pointer-events: none;
+}
+
+.ocd-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--bs-secondary-color);
+    text-align: center;
+    pointer-events: none;
+}
+
+/* The zoom controls stay above the node's panel when it opens over the canvas (--ocd-covered-height). */
+.ocd-zoom-controls {
+    position: absolute;
+    right: 0.75rem;
+    bottom: calc(0.75rem + var(--ocd-covered-height, 0px));
+}
+
+.ocd-zoom-level {
+    min-width: 3.5rem;
+}
+
+.ocd-context-menu {
+    position: absolute;
+    z-index: 10;
+}
+
+.ocd-toasts {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 20;
+}
+/* rtl:end:ignore */

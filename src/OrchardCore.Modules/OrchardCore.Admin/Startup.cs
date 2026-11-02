@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin.Configuration;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.QuickNavigation;
+using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -44,10 +46,13 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IQuickNavigationIndex, QuickNavigationIndex>();
         services.AddScoped<QuickNavigationSource, AdminMenuItemNavigationSource>();
 
+        // The filters are resolved from the container instead of being activated by reflection on each request.
+        services.AddTransient<AdminFilter>();
+        services.AddTransient<AdminMenuFilter>();
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add<AdminFilter>();
-            options.Filters.Add<AdminMenuFilter>();
+            options.Filters.AddService<AdminFilter>();
+            options.Filters.AddService<AdminMenuFilter>();
 
             // Ordered to be called before any global filter.
             options.Filters.Add<AdminZoneFilter>(-1000);
@@ -65,9 +70,22 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, QuickNavigationNavbarDisplayDriver>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
+        services.AddShapeTableProvider<AdminListShapeTableProvider>();
+        services.AddScoped<AdminListBuilder>();
+        services.AddScoped<AdminListRowBuilder>();
+        services.AddScoped(typeof(IAdminListItemDisplayManager<>), typeof(DefaultAdminListItemDisplayManager<>));
+        services.AddScoped<AdminListLayoutResolver>();
+        services.AddScoped<IAdminListColumnsBuilder, DefaultAdminListColumnsBuilder>();
+        services.AddScoped<AdminListLayoutPreference>();
 
         // The 'OrchardCore_Admin' section is deprecated and will be removed in a future major version, use 'Admin' instead.
         services.Configure<AdminOptions>(_configuration.GetSectionCompat("Admin", "OrchardCore_Admin"));
+
+        // The tenant configuration is bound first, then the site settings override it, so the monitor exposes
+        // the effective defaults. The signal-backed change token refreshes it when the settings are saved.
+        services.Configure<AdminListOptions>(_configuration.GetSection("Admin:List"))
+            .AddTransient<IConfigureOptions<AdminListOptions>, AdminListOptionsConfiguration>()
+            .AddSignalOptionsChangeTokenSource<AdminListOptions>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

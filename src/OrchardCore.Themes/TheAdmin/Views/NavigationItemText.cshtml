@@ -8,22 +8,33 @@
 @{
     var prefix = "icon-class-";
 
-    //extract icon classes from Model.Classes
-    var iconClasses = ((IEnumerable<string>)Model.Classes)
-                    .ToList()
-                    .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                    .Select(c => c.Substring(prefix.Length));
+    // The shape is used through its static type, as it is rendered for each menu item, falling back to
+    // dynamic accesses for shapes that are not navigation items.
+    var shape = (OrchardCore.DisplayManagement.IShape)Model;
+    var navigationItem = shape as OrchardCore.Navigation.NavigationItemViewModel;
 
-    var context = OrchardCore.AdminMenu.DataLocalizationContext.AdminMenu(Model.Item.MenuName);
+    //extract icon classes from Model.Classes
+    string iconClasses = null;
+
+    foreach (var className in shape.Classes)
+    {
+        if (className.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            iconClasses = iconClasses is null ? className.Substring(prefix.Length) : iconClasses + " " + className.Substring(prefix.Length);
+        }
+    }
+
+    var context = OrchardCore.AdminMenu.DataLocalizationContext.AdminMenu(navigationItem is not null ? navigationItem.Item.MenuName : (string)Model.Item.MenuName);
+    var text = navigationItem is not null ? navigationItem.Text : (Microsoft.Extensions.Localization.LocalizedString)Model.Text;
 }
 
-@if (iconClasses.Any())
+@if (iconClasses is not null)
 {
-    <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
+    <span class="icon"><i class="@iconClasses" aria-hidden="true"></i></span>
 }
 else
 {
     <span class="icon icon-none"></span>
 }
 
-<span class="title">@D[Model.Text, context]</span>
+<span class="title">@D[text, context]</span>

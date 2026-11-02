@@ -994,7 +994,7 @@ public class DefaultContentManager : IContentManager
         return context.CloneContentItem;
     }
 
-    private async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions = null)
+    private async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
     {
         if (string.IsNullOrEmpty(contentItem.ContentItemId))
         {
@@ -1089,7 +1089,7 @@ public class DefaultContentManager : IContentManager
         return result;
     }
 
-    private async Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion, IEnumerable<ContentItem> evictionVersions = null)
+    private async Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion, IEnumerable<ContentItem> evictionVersions)
     {
         // Replaces the id to force the current item to be updated
         updatingVersion.Id = updatedVersion.Id;

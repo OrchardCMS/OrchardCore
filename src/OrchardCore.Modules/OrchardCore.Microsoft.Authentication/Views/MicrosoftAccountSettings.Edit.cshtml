@@ -10,15 +10,6 @@
     </div>
 </div>
 
-@if (Model.HasDecryptionError)
-{
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
-        </div>
-    </div>
-}
-
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <h3>@T["Microsoft Account Authentication Settings"]</h3>
@@ -26,7 +17,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="AppId">
-    <label asp-for="AppId" class="ocat-label">@T["AppId"]</label>
+    <label asp-for="AppId" class="ocat-label ocat-label-required">@T["AppId"]</label>
     <div class="ocat-end">
         <input asp-for="AppId" class="form-control" />
         <span asp-validation-for="AppId"></span>
@@ -37,8 +28,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="AppSecret">
     <label asp-for="AppSecret" class="ocat-label">@T["Secret Key"]</label>
     <div class="ocat-end">
-        <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
-        <span asp-validation-for="AppSecret"></span>
+        <secret-input asp-for="AppSecret" secret-name="@MicrosoftAuthenticationConstants.SecretNames.AppSecret" />
         <span class="hint">@T["The Application secret key found on the Microsoft developer portal parameters."]</span>
     </div>
 </div>

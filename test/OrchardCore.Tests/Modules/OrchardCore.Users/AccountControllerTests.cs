@@ -13,6 +13,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
 public class AccountControllerTests
 {
+    private const string UnconfirmedUserName = "ConfirmMe";
+
     [Fact]
     public async Task ExternalLoginSignIn_Default_Succeeds()
     {
@@ -485,7 +487,8 @@ public class AccountControllerTests
         // Act
         HttpResponseMessage response = null;
 
-        for (var i = 0; i < 4; i++)
+        // The registration allows 20 attempts per minute per IP address.
+        for (var i = 0; i < 21; i++)
         {
             var model = new RegisterViewModel()
             {
@@ -535,7 +538,8 @@ public class AccountControllerTests
         // Act
         HttpResponseMessage response = null;
 
-        for (var i = 0; i < 11; i++)
+        // The login allows 100 attempts per minute per IP address.
+        for (var i = 0; i < 101; i++)
         {
             response = await context.Client.SendAsync(await CreateLoginRequestMessageAsync("missing-user", "Password1!", loginGet), TestContext.Current.CancellationToken);
         }
@@ -586,6 +590,150 @@ public class AccountControllerTests
         Assert.Equal($"/{context.TenantName}/{nameof(RegistrationController.RegistrationPending)}", loginPost.Headers.Location.ToString());
     }
 
+    [Fact]
+    public async Task Login_WhenEmailIsNotConfirmed_DisplaysMessageAndAllowsResend()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings
+        {
+            UsersMustValidateEmail = true,
+        }, true, true, false);
+
+        var model = await RegisterUnconfirmedUserAsync(context);
+
+        var responseFromLoginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromLoginGet.IsSuccessStatusCode);
+
+        var loginBody = await responseFromLoginGet.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain("Send confirmation email", loginBody);
+
+        var responseFromConfirmEmailSentWithoutCookie = await context.Client.GetAsync("ConfirmEmailSent", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromConfirmEmailSentWithoutCookie.IsSuccessStatusCode);
+
+        var confirmEmailSentBodyWithoutCookie = await responseFromConfirmEmailSentWithoutCookie.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Contains("An email has been sent to you.", confirmEmailSentBodyWithoutCookie);
+        Assert.DoesNotContain("Send confirmation email", confirmEmailSentBodyWithoutCookie);
+
+        var responseFromUnauthorizedResendPost = await context.Client.SendAsync(
+            CreateResendEmailConfirmationRequestMessage(loginBody, responseFromLoginGet),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, responseFromUnauthorizedResendPost.StatusCode);
+
+        // Act
+        var responseFromLoginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model, responseFromLoginGet), TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, responseFromLoginPost.StatusCode);
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromLoginPost.Headers.Location.ToString());
+
+        var (responseFromConfirmEmailSent, body) = await GetConfirmEmailSentAsync(context, responseFromLoginPost);
+
+        Assert.Contains("You must confirm your email. A confirmation email was sent when the account was created.", body);
+        Assert.DoesNotContain("An email has been sent to you.", body);
+        Assert.Contains(">Send confirmation email</button>", body);
+        Assert.DoesNotContain("onclick", body);
+
+        var responseFromResendPost = await context.Client.SendAsync(
+            CreateResendEmailConfirmationRequestMessage(body, responseFromConfirmEmailSent, responseFromLoginPost),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, responseFromResendPost.StatusCode);
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromResendPost.Headers.Location.ToString());
+    }
+
+    [Fact]
+    public async Task ResendEmailConfirmation_WithinCooldown_DoesNotSendAnotherEmail()
+    {
+        // Arrange
+        var (context, responseFromLoginPost) = await LoginAsUnconfirmedUserAsync();
+        var (responseFromConfirmEmailSent, body) = await GetConfirmEmailSentAsync(context, responseFromLoginPost);
+
+        var responseFromFirstResendPost = await context.Client.SendAsync(
+            CreateResendEmailConfirmationRequestMessage(body, responseFromConfirmEmailSent, responseFromLoginPost),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, responseFromFirstResendPost.StatusCode);
+
+        var (_, bodyAfterFirstResend) = await GetConfirmEmailSentAsync(context, responseFromLoginPost, responseFromFirstResendPost);
+
+        Assert.DoesNotContain("A confirmation email was sent recently.", bodyAfterFirstResend);
+
+        // Act
+        var responseFromSecondResendPost = await context.Client.SendAsync(
+            CreateResendEmailConfirmationRequestMessage(body, responseFromConfirmEmailSent, responseFromLoginPost),
+            TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, responseFromSecondResendPost.StatusCode);
+
+        var (_, bodyAfterSecondResend) = await GetConfirmEmailSentAsync(context, responseFromLoginPost, responseFromSecondResendPost);
+
+        Assert.Contains("A confirmation email was sent recently.", bodyAfterSecondResend);
+    }
+
+    [Fact]
+    public async Task ResendEmailConfirmation_WhenEmailIsAlreadyConfirmed_ClearsResendCookie()
+    {
+        // Arrange
+        var (context, responseFromLoginPost) = await LoginAsUnconfirmedUserAsync();
+        var (responseFromConfirmEmailSent, body) = await GetConfirmEmailSentAsync(context, responseFromLoginPost);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+            var user = await userManager.FindByNameAsync(UnconfirmedUserName);
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            Assert.True((await userManager.ConfirmEmailAsync(user, token)).Succeeded);
+        });
+
+        // Act
+        var responseFromResendPost = await context.Client.SendAsync(
+            CreateResendEmailConfirmationRequestMessage(body, responseFromConfirmEmailSent, responseFromLoginPost),
+            TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, responseFromResendPost.StatusCode);
+
+        var cookies = CookiesHelper.ExtractCookies(responseFromResendPost);
+
+        Assert.True(cookies.TryGetValue("orchemail_" + context.TenantName, out var resendCookie));
+        Assert.Empty(resendCookie);
+
+        var (_, bodyAfterResend) = await GetConfirmEmailSentAsync(context, responseFromLoginPost, responseFromResendPost);
+
+        Assert.Contains("Your email is already confirmed.", bodyAfterResend);
+        Assert.DoesNotContain("Send confirmation email", bodyAfterResend);
+    }
+
+    [Fact]
+    public async Task ResendEmailConfirmation_RateLimitExceeded_ReturnsTooManyRequests()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRateLimits: true);
+
+        var responseFromLoginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        var loginBody = await responseFromLoginGet.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        HttpResponseMessage response = null;
+
+        for (var i = 0; i < 3; i++)
+        {
+            response = await context.Client.SendAsync(
+                CreateResendEmailConfirmationRequestMessage(loginBody, responseFromLoginGet),
+                TestContext.Current.CancellationToken);
+        }
+
+        // Assert
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
     private static async Task<HttpRequestMessage> CreateRequestMessageAsync(RegisterViewModel model, HttpResponseMessage response)
     {
         var data = new Dictionary<string, string>
@@ -600,6 +748,9 @@ public class AccountControllerTests
         return HttpRequestHelper.CreatePostMessageWithCookies("Register", data, response);
     }
 
+    private static Task<HttpRequestMessage> CreateLoginRequestMessageAsync(RegisterViewModel model, HttpResponseMessage response)
+        => CreateLoginRequestMessageAsync(model.UserName, model.Password, response);
+
     private static async Task<HttpRequestMessage> CreateLoginRequestMessageAsync(string userName, string password, HttpResponseMessage response)
     {
         var data = new Dictionary<string, string>
@@ -610,6 +761,78 @@ public class AccountControllerTests
         };
 
         return HttpRequestHelper.CreatePostMessageWithCookies("Login", data, response);
+    }
+
+    private static HttpRequestMessage CreateResendEmailConfirmationRequestMessage(string body, params HttpResponseMessage[] responses)
+    {
+        var data = new Dictionary<string, string>
+        {
+            {"__RequestVerificationToken", AntiForgeryHelper.ExtractAntiForgeryToken(body) },
+        };
+
+        var message = HttpRequestHelper.CreatePostMessage("ResendEmailConfirmation", data);
+
+        foreach (var response in responses)
+        {
+            CookiesHelper.CopyCookies(message, response);
+        }
+
+        return message;
+    }
+
+    private static async Task<RegisterViewModel> RegisterUnconfirmedUserAsync(SiteContext context)
+    {
+        var responseFromRegisterGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromRegisterGet.IsSuccessStatusCode);
+
+        var model = new RegisterViewModel()
+        {
+            UserName = UnconfirmedUserName,
+            Email = "ConfirmMe@orchardcore.com",
+            Password = "ConfirmMe@OC!123",
+            ConfirmPassword = "ConfirmMe@OC!123",
+        };
+
+        var responseFromRegisterPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromRegisterGet), TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, responseFromRegisterPost.StatusCode);
+
+        return model;
+    }
+
+    private static async Task<(SiteContext Context, HttpResponseMessage LoginPost)> LoginAsUnconfirmedUserAsync()
+    {
+        var context = await GetSiteContextAsync(new RegistrationSettings
+        {
+            UsersMustValidateEmail = true,
+        });
+
+        var model = await RegisterUnconfirmedUserAsync(context);
+
+        var responseFromLoginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        var responseFromLoginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model, responseFromLoginGet), TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, responseFromLoginPost.StatusCode);
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromLoginPost.Headers.Location.ToString());
+
+        return (context, responseFromLoginPost);
+    }
+
+    private static async Task<(HttpResponseMessage Response, string Body)> GetConfirmEmailSentAsync(SiteContext context, params HttpResponseMessage[] responses)
+    {
+        var message = HttpRequestHelper.CreateGetMessage("ConfirmEmailSent");
+
+        foreach (var response in responses)
+        {
+            CookiesHelper.CopyCookies(message, response);
+        }
+
+        var responseFromConfirmEmailSent = await context.Client.SendAsync(message, TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromConfirmEmailSent.IsSuccessStatusCode);
+
+        return (responseFromConfirmEmailSent, await responseFromConfirmEmailSent.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false, bool enableRateLimits = false)

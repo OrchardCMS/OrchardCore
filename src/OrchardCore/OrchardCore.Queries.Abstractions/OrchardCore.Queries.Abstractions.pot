@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Queries.Abstractions\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: QueryPermissions.cs
+msgctxt "OrchardCore.Queries.QueryPermissions"
+msgid "Execute Api - All queries"
+msgstr ""
+
+#. Format arguments: {0}
+#: QueryPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.QueryPermissions"
+msgid "Execute Api - {0}"
+msgstr ""
+
+#: QueryPermissions.cs
+msgctxt "OrchardCore.Queries.QueryPermissions"
+msgid "Manage queries"
+msgstr ""

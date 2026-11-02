@@ -18,7 +18,7 @@
 
 <div class="mb-4">
     <div class="ocat-wrapper">
-        <label asp-for="ContentType" class="ocat-label">@T["Content type"]</label>
+        <label asp-for="ContentType" class="ocat-label ocat-label-required">@T["Content type"]</label>
         <div class="ocat-end">
             <select asp-for="ContentType" asp-items="Model.ContentTypes" class="form-select">
                 <option value="">@T["Select a content type"]</option>

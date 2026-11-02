@@ -10,6 +10,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
@@ -58,7 +59,9 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
         {
@@ -82,25 +85,23 @@ public sealed class AdminController : Controller
 
         var model = new QueriesIndexViewModel
         {
-            Queries = [],
+            Queries = result.Records.ToList(),
             Options = options,
             Pager = await _shapeFactory.PagerAsync(pager, result.Count, routeData),
             QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToArray(),
         };
 
-        foreach (var query in result.Records)
-        {
-            model.Queries.Add(new QueryEntry
-            {
-                Query = query,
-                Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin),
-            });
-        }
-
         model.Options.ContentsBulkAction =
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the queries with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<Query>
+        {
+            Source = model.Queries,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

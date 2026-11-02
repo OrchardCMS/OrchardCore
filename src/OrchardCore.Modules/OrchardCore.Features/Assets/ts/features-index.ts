@@ -2,7 +2,7 @@ const EscapeKey = "Escape";
 const searchBox = document.getElementById("search-box") as HTMLInputElement | null;
 const featureGroups = Array.from(document.querySelectorAll<HTMLElement>(".feature-group"));
 const featureItems = featureGroups.flatMap((featureGroup) =>
-    Array.from(featureGroup.querySelectorAll<HTMLElement>(".list-group-item[data-filter-value]")),
+    Array.from(featureGroup.querySelectorAll<HTMLElement>("[data-filter-value]")),
 );
 const visibilityFilter = document.getElementById("visibility-filter") as HTMLSelectElement | null;
 const statusFilter = document.getElementById("status-filter") as HTMLSelectElement | null;
@@ -23,7 +23,7 @@ function isVisible(element: Element) {
 function getVisibleFeatureItemCheckboxes(featureGroup: HTMLElement) {
     return Array.from(featureGroup.querySelectorAll<HTMLInputElement>("input[name='featureIds']")).filter(
         (checkbox) => {
-            const featureItem = checkbox.closest(".list-group-item");
+            const featureItem = checkbox.closest("[data-filter-value]");
 
             return featureItem !== null && isVisible(featureItem);
         },
@@ -73,7 +73,7 @@ function updateFeatureGroupSelectAllState(featureGroup: HTMLElement) {
 
 function refreshVisibleItemClasses() {
     featureGroups.forEach((featureGroup) => {
-        const items = Array.from(featureGroup.querySelectorAll<HTMLElement>(".list-group-item[data-filter-value]"));
+        const items = Array.from(featureGroup.querySelectorAll<HTMLElement>("[data-filter-value]"));
         const visibleItems = items.filter((item) => isVisible(item));
 
         items.forEach((item) => item.classList.remove("last-child-visible"));
@@ -113,7 +113,7 @@ function applyFilters() {
     });
 
     featureGroups.forEach((featureGroup) => {
-        const hasVisibleFeatures = featureGroup.querySelector(".list-group-item[data-filter-value]:not(.d-none)") !== null;
+        const hasVisibleFeatures = featureGroup.querySelector("[data-filter-value]:not(.d-none)") !== null;
 
         featureGroup.classList.toggle("d-none", !hasVisibleFeatures);
         updateFeatureGroupSelectAllState(featureGroup);

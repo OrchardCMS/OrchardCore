@@ -70,4 +70,43 @@ public sealed class DeploymentPlanStepOrderTests : CmsTestBase<DeploymentPlanSte
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
+
+    // Covers the category filter of the "Add Step" modal (Assets/ts/deployment-plan-display.ts):
+    // selecting a category must only show the steps of that category.
+    [Fact]
+    public async Task AddStepModal_SelectCategory_ShowsOnlyStepsOfThatCategory()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        await page.GotoAndAssertOkAsync("/Admin/DeploymentPlan/Create");
+        await page.Locator("#Name").FillAsync("Step Category Filter Test Plan");
+        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Create" }).ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Add Step" }).ClickAsync();
+        var modal = page.Locator("#modalSteps");
+        await Assertions.Expect(modal).ToBeVisibleAsync();
+
+        // AllContent is in the "Content Management" category, AllRoles in the "Security" one.
+        var allContentStep = modal.Locator(".deployment-step-item", new LocatorLocatorOptions { Has = page.Locator("a[href*='type=AllContent']") });
+        var allRolesStep = modal.Locator(".deployment-step-item", new LocatorLocatorOptions { Has = page.Locator("a[href*='type=AllRoles']") });
+
+        await Assertions.Expect(allContentStep).ToBeVisibleAsync();
+        await Assertions.Expect(allRolesStep).ToBeVisibleAsync();
+
+        await modal.Locator("#deployment-step-categories .nav-link[data-list-filter-value='security']").ClickAsync();
+
+        await Assertions.Expect(allRolesStep).ToBeVisibleAsync();
+        await Assertions.Expect(allContentStep).ToBeHiddenAsync();
+
+        await modal.Locator("#deployment-step-categories .nav-link[data-list-filter-value='all']").ClickAsync();
+
+        await Assertions.Expect(allContentStep).ToBeVisibleAsync();
+        await Assertions.Expect(allRolesStep).ToBeVisibleAsync();
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
 }

@@ -13,7 +13,7 @@ public class UserCacheContextProvider : ICacheContextProvider
 
     public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
     {
-        if (contexts.Any(ctx => string.Equals(ctx, "user", StringComparison.OrdinalIgnoreCase)))
+        if (contexts.ContainsContext("user"))
         {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext.User?.Identity?.IsAuthenticated ?? false)

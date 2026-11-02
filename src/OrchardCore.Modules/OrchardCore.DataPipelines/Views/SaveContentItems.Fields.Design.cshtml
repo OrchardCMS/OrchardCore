@@ -1,0 +1,11 @@
+@model SaveContentItemsStepViewModel
+
+@if (string.IsNullOrEmpty(Model.ContentType))
+{
+    <span class="text-muted">@T["Choose a content type"]</span>
+}
+else
+{
+    <span>@(Model.ContentTypeName ?? Model.ContentType)</span>
+    <span class="text-muted d-block">@T.Plural(Model.Mappings.Count, "1 value", "{0} values") · @(Model.Publish ? T["published"] : T["drafts"])</span>
+}

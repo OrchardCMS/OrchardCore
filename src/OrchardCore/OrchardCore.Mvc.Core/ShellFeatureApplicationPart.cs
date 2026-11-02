@@ -20,6 +20,7 @@ public class ShellFeatureApplicationPart :
     private static readonly object s_synLock = new();
     private ShellBlueprint _shellBlueprint;
     private IEnumerable<ITagHelpersProvider> _tagHelpers;
+    private readonly Lock _lock = new();
 
     /// <summary>
     /// Initalizes a new <see cref="AssemblyPart"/> instance.
@@ -48,7 +49,7 @@ public class ShellFeatureApplicationPart :
 
             if (services != null && _tagHelpers == null)
             {
-                lock (this)
+                lock (_lock)
                 {
                     if (_tagHelpers == null)
                     {

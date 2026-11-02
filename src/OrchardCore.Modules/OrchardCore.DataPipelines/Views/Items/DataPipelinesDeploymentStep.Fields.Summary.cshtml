@@ -1,0 +1,14 @@
+@model ShapeViewModel<OrchardCore.DataPipelines.Deployment.DataPipelinesDeploymentStep>
+
+<h5>@T["Data Pipelines"]</h5>
+
+<span class="hint">
+    @if (Model.Value.IncludeAll)
+    {
+        @T["Adds every data pipeline, without its secrets."]
+    }
+    else
+    {
+        @T.Plural(Model.Value.PipelineIds.Length, "Adds 1 data pipeline, without its secrets.", "Adds {0} data pipelines, without their secrets.")
+    }
+</span>

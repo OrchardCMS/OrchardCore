@@ -1,0 +1,117 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Html\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: GraphQL/HtmlBodyQueryObjectType.cs
+msgctxt "OrchardCore.Html.GraphQL.HtmlBodyQueryObjectType"
+msgid "Content stored as HTML."
+msgstr ""
+
+#: GraphQL/HtmlBodyQueryObjectType.cs
+msgctxt "OrchardCore.Html.GraphQL.HtmlBodyQueryObjectType"
+msgid "the HTML content"
+msgstr ""
+
+#: Settings/HtmlBodyPartMonacoEditorSettingsDriver.cs
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartMonacoEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/HtmlBodyPartTrumbowygEditorSettingsDriver.cs
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartTrumbowygEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Views/HtmlBodyPart-Monaco.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Monaco.Edit"
+msgid "The body of the content item."
+msgstr ""
+
+#: Views/HtmlBodyPart-Monaco.Option.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Monaco.Option"
+msgid "Monaco editor"
+msgstr ""
+
+#: Views/HtmlBodyPart-Trumbowyg.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Trumbowyg.Edit"
+msgid "The body of the content item."
+msgstr ""
+
+#: Views/HtmlBodyPart-Trumbowyg.Option.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Trumbowyg.Option"
+msgid "Trumbowyg editor"
+msgstr ""
+
+#: Views/HtmlBodyPart-Wysiwyg.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Wysiwyg.Edit"
+msgid "The body of the content item."
+msgstr ""
+
+#: Views/HtmlBodyPart-Wysiwyg.Option.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr ""
+
+#: Views/HtmlBodyPart.DisplayOption.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/HtmlBodyPart.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Edit"
+msgid "The body of the content item."
+msgstr ""
+
+#: Views/HtmlBodyPart.Option.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/HtmlBodyPartMonacoSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartMonacoSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#: Views/HtmlBodyPartMonacoSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartMonacoSettings.Edit"
+msgid "Enter the editor options, language is always set to `html` when saved."
+msgstr ""
+
+#: Views/HtmlBodyPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr ""
+
+#: Views/HtmlBodyPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/HtmlBodyPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
+msgid "Whether the Html is sanitized, e.g. by removing script tags (and more)."
+msgstr ""
+
+#: Views/HtmlBodyPartTrumbowygSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#: Views/HtmlBodyPartTrumbowygSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Enter the editor options"
+msgstr ""
+
+#: Views/HtmlBodyPartTrumbowygSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Insert Media with url"
+msgstr ""
+
+#: Views/HtmlBodyPartTrumbowygSettings.Edit.cshtml
+msgctxt "OrchardCore.Html.Views.HtmlBodyPartTrumbowygSettings.Edit"
+msgid "Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."
+msgstr ""
