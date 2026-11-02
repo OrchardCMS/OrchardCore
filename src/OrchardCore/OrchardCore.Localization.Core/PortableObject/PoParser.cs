@@ -207,14 +207,16 @@ public static class PoParser
 
         public void Set(PoContext context, string text)
         {
-            if (!_headerProcessed && (context == PoContext.MessageId || context == PoContext.MessageContext))
+            var isNewEntry = context == PoContext.MessageId || context == PoContext.MessageContext;
+            
+            if (!_headerProcessed && isNewEntry)
             {
                 ReadHeader();
             }
 
             // A msgctxt or msgid after a msgstr starts a new entry. Clear what is left of an entry
             // that was not flushed because it has no translation, so its context doesn't leak.
-            if ((context == PoContext.MessageContext || context == PoContext.MessageId) && _context == PoContext.Translation)
+            if (isNewEntry && _context == PoContext.Translation)
             {
                 MessageId = null;
                 MessageContext = null;
