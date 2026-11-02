@@ -1,0 +1,155 @@
+@model DataPipelineRunViewModel
+@{
+    var run = Model.Run;
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var titles = Model.StepNames;
+}
+
+<zone Name="Title">
+    <breadcrumb name="DataPipelinesRun" title="@T["Run of {0}", run.PipelineName]">
+        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data Pipelines"]</breadcrumb-item>
+        <breadcrumb-item action="Runs" controller="Admin" area="OrchardCore.DataPipelines" route-pipelineId="@run.PipelineId">@T["Run History"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+@if (!run.IsCompleted)
+{
+    @* Refresh the page while the run executes. *@
+    <meta http-equiv="refresh" content="3" />
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                <h5 class="card-title">
+                    <span class="badge @RunBadge(run.Status)">@T[run.Status.ToString()]</span>
+                    @T["Version {0}", run.VersionNumber]
+                </h5>
+                <dl class="row mb-0 small">
+                    <dt class="col-sm-3">@T["Queued"]</dt>
+                    <dd class="col-sm-9">@run.QueuedUtc.ToString("G", culture) (UTC) · @run.Trigger@(string.IsNullOrEmpty(run.TriggeredBy) ? string.Empty : " · " + run.TriggeredBy)</dd>
+                    @if (run.StartedUtc is { } started)
+                    {
+                        <dt class="col-sm-3">@T["Started"]</dt>
+                        <dd class="col-sm-9">@started.ToString("G", culture) (UTC)</dd>
+                    }
+                    @if (run.CompletedUtc is { } completed)
+                    {
+                        <dt class="col-sm-3">@T["Ended"]</dt>
+                        <dd class="col-sm-9">@completed.ToString("G", culture) (UTC)@(run.StartedUtc is { } begin ? $" · {(completed - begin).TotalSeconds:N1} s" : string.Empty)</dd>
+                    }
+                    @if (!string.IsNullOrEmpty(run.Error))
+                    {
+                        <dt class="col-sm-3">@T["Error"]</dt>
+                        <dd class="col-sm-9 text-danger">@run.Error</dd>
+                    }
+                </dl>
+            </div>
+            <div class="col-auto">
+                @if (Model.Pipeline is not null)
+                {
+                    <a asp-action="Edit" asp-route-pipelineId="@run.PipelineId" class="btn btn-secondary btn-sm">@T["Open the pipeline"]</a>
+                }
+                @if (Model.CanCancel)
+                {
+                    <a asp-action="CancelRun" asp-route-runId="@run.RunId" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl" data-title="@T["Cancel"]" data-message="@T["Cancel this run?"]">@T["Cancel"]</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<h5>@T["Steps"]</h5>
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>@T["Step"]</th>
+            <th>@T["Status"]</th>
+            <th class="text-end">@T["Rows in"]</th>
+            <th class="text-end">@T["Rows out"]</th>
+            <th class="text-end">@T["Files"]</th>
+            <th class="text-end">@T["Warnings"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var step in run.Steps)
+        {
+            <tr>
+                <td>
+                    @(string.IsNullOrEmpty(step.Title) ? titles.GetValueOrDefault(step.StepId, step.Type) : step.Title)
+                    @if (!string.IsNullOrEmpty(step.Error))
+                    {
+                        <div class="text-danger small">@step.Error</div>
+                    }
+                </td>
+                <td><span class="badge @StepBadge(step.Status)">@T[step.Status.ToString()]</span></td>
+                <td class="text-end">@step.RowsIn.ToString("N0", culture)</td>
+                <td class="text-end">@step.RowsOut.ToString("N0", culture)</td>
+                <td class="text-end">@((step.FilesIn + step.FilesOut).ToString("N0", culture))</td>
+                <td class="text-end">@step.Warnings.ToString("N0", culture)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (run.Deliveries.Count > 0)
+{
+    <h5>@T["Delivered"]</h5>
+    <ul class="list-group mb-3">
+        @foreach (var delivery in run.Deliveries)
+        {
+            <li class="list-group-item">
+                @if (string.IsNullOrEmpty(delivery.Url))
+                {
+                    @delivery.Description
+                }
+                else
+                {
+                    <a href="@delivery.Url" target="_blank" rel="noopener">@delivery.Description</a>
+                }
+                <span class="text-muted small">· @titles.GetValueOrDefault(delivery.StepId ?? string.Empty, delivery.StepId)</span>
+            </li>
+        }
+    </ul>
+}
+
+@if (run.Log.Count > 0)
+{
+    <h5>@T["Log"]</h5>
+    <ul class="list-group">
+        @foreach (var entry in run.Log)
+        {
+            <li class="list-group-item small @(entry.Level == Microsoft.Extensions.Logging.LogLevel.Error ? "text-danger" : entry.Level == Microsoft.Extensions.Logging.LogLevel.Warning ? "text-warning-emphasis" : string.Empty)">
+                <span class="text-muted">@entry.Utc.ToString("T", culture)</span>
+                @if (!string.IsNullOrEmpty(entry.StepId))
+                {
+                    <strong>@titles.GetValueOrDefault(entry.StepId, entry.StepId):</strong>
+                }
+                @entry.Message
+            </li>
+        }
+    </ul>
+}
+
+@functions {
+    private static string RunBadge(DataPipelineRunStatus status)
+        => status switch
+        {
+            DataPipelineRunStatus.Succeeded => "text-bg-success",
+            DataPipelineRunStatus.Failed => "text-bg-danger",
+            DataPipelineRunStatus.Cancelled => "text-bg-secondary",
+            DataPipelineRunStatus.Running => "text-bg-primary",
+            _ => "text-bg-light",
+        };
+
+    private static string StepBadge(DataPipelineStepStatus status)
+        => status switch
+        {
+            DataPipelineStepStatus.Succeeded => "text-bg-success",
+            DataPipelineStepStatus.Failed => "text-bg-danger",
+            DataPipelineStepStatus.Running => "text-bg-primary",
+            DataPipelineStepStatus.Cancelled or DataPipelineStepStatus.Skipped => "text-bg-secondary",
+            _ => "text-bg-light",
+        };
+}

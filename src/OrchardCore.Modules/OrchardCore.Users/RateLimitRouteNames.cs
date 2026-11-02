@@ -14,6 +14,8 @@ internal static class RateLimitRouteNames
 
     internal const string RegisterExternalLogin = nameof(Controllers.ExternalAuthenticationsController.RegisterExternalLogin);
 
+    internal const string ResendEmailConfirmation = nameof(Controllers.EmailConfirmationController.ResendEmailConfirmation);
+
     internal const string ResetPassword = nameof(Controllers.ResetPasswordController.ResetPassword);
 
     internal const string ForgotPassword = nameof(Controllers.ResetPasswordController.ForgotPassword);

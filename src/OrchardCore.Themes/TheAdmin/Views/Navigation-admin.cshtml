@@ -1,3 +1,4 @@
+@using OrchardCore.DisplayManagement
 @inject OrchardCore.Settings.ISiteService siteService
 @using OrchardCore.Entities
 @using OrchardCore.Admin.Models
@@ -7,7 +8,8 @@
     TagBuilder tag = Tag(Model, "ul");
     tag.Attributes["Id"] = NavigationConstants.AdminMenuId;
 
-    foreach (var item in Model)
+    // The items are rendered through their static type, to not dispatch each call dynamically.
+    foreach (var item in ((IShape)Model).Items)
     {
         tag.InnerHtml.AppendHtml(await DisplayAsync(item));
     }

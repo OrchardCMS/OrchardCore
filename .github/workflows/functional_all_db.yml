@@ -57,7 +57,7 @@ jobs:
         ORCHARD_TEST_DOCKER_SERVICES: "false"
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*" --hangdump --hangdump-timeout 15m --hangdump-type Heap
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: ${{ !success() }}
       with:
         name: functional-mvc-failure
@@ -95,7 +95,7 @@ jobs:
       timeout-minutes: 30
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*" --hangdump --hangdump-timeout 15m --hangdump-type Heap
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: ${{ !success() }}
       with:
         name: functional-cms-sqlite-failure
@@ -150,7 +150,7 @@ jobs:
       timeout-minutes: 30
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*" --hangdump --hangdump-timeout 15m --hangdump-type Heap
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: ${{ !success() }}
       with:
         name: functional-cms-postgresql-failure
@@ -199,7 +199,7 @@ jobs:
       timeout-minutes: 30
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*" --hangdump --hangdump-timeout 15m --hangdump-type Heap
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: ${{ !success() }}
       with:
         name: functional-cms-mysql-failure
@@ -254,7 +254,7 @@ jobs:
       timeout-minutes: 30
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*" --hangdump --hangdump-timeout 15m --hangdump-type Heap
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: ${{ !success() }}
       with:
         name: functional-cms-redis-azurite-failure
@@ -301,7 +301,7 @@ jobs:
       timeout-minutes: 30
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*" --hangdump --hangdump-timeout 15m --hangdump-type Heap
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       if: ${{ !success() }}
       with:
         name: functional-cms-mssql-failure

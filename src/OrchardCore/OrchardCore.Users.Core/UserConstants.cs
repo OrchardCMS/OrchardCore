@@ -2,6 +2,8 @@ namespace OrchardCore.Users;
 
 public static class UserConstants
 {
+    public const string EmailConfirmationAuthenticationScheme = "Identity.EmailConfirmation";
+
     public const string TwoFactorAuthenticationClaimType = "TwoFacAuth";
 
     public static class Features

@@ -7,6 +7,7 @@
 interface CodeMirrorEditor {
     on(event: string, handler: (editor: CodeMirrorEditor) => void): void;
     save(): void;
+    toTextArea(): void;
     getValue(): string;
     setValue(value: string): void;
     setOption(key: string, value: unknown): void;
@@ -75,19 +76,6 @@ declare function randomUUID(options?: { includeHyphens?: boolean }): string;
 declare function togglePasswordVisibility(passwordCtl: HTMLElement, togglePasswordCtl: HTMLElement): void;
 declare function copyToClipboard(str: string): Promise<void>;
 declare function generateStrongPassword(options?: { generateBase64?: boolean }): string;
-
-// Defined by OrchardCore.Users (Assets/js/password-generator.js), consumed here.
-declare const passwordManager: {
-    generatePassword(
-        requiredPasswordLength: number,
-        requireUppercase: boolean,
-        requireLowercase: boolean,
-        requireDigit: boolean,
-        requireNonAlphanumeric: boolean,
-        requiredUniqueChars: boolean,
-    ): string;
-    copyPassword(password: string): void;
-};
 
 // Defined by OrchardCore.AdminMenu (Assets/js/admin-menu-icon-picker.js), consumed here.
 declare const iconPickerVue: {

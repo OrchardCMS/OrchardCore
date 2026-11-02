@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,15 +9,13 @@ namespace OrchardCore.Lucene.Deployment;
 /// </summary>
 public class LuceneIndexResetDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<LuceneIndexResetDeploymentStep>("Search");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<LuceneIndexResetDeploymentStep>("Reset Lucene Search Indices");
+    public override string Name => "LuceneIndexReset";
 
-    public LuceneIndexResetDeploymentStep()
-    {
-        Name = "LuceneIndexReset";
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => LuceneLocalizationSources.ResetLuceneSearchIndices;
 
     public bool IncludeAll { get; set; } = true;
 

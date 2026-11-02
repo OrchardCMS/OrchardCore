@@ -9,6 +9,7 @@
 - **OpenID Connect Management UI**
 - **OpenID Connect Authorization Server**
 - **OpenID Connect Client Integration**
+- **OpenID Connect Secrets**
 
 ## Core OpenID Connect Services
 
@@ -34,6 +35,12 @@ Supported flows include:
 - [Hybrid Flow](http://openid.net/specs/openid-connect-core-1_0.html)
 - [Client Credentials Grant](https://tools.ietf.org/html/rfc6749)
 - [Resource Owner Password Grant](https://tools.ietf.org/html/rfc6749)
+
+## OpenID Connect Secrets
+
+The optional `OrchardCore.OpenId.Secrets` feature is included in the `OrchardCore.OpenId` module. It depends on `OrchardCore.OpenId.Server` and `OrchardCore.Secrets` and must be enabled explicitly. It allows selecting signing and encryption keys from secrets in the OpenID Connect server settings.
+
+See [OpenID Connect Secrets](../Secrets/README.md#openid-connect-secrets-orchardcoreopenidsecrets) for setup and certificate migration details.
 
 ## OpenID Connect Token Validation
 

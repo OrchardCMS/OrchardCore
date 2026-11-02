@@ -1,37 +1,50 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class CorrelateTask : TaskActivity<CorrelateTask>
+public class CorrelateTask : TaskActivity<CorrelateTask>, IActivityDescription
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
+
+    private readonly IStringLocalizerFactory _localizerFactory;
 
     protected readonly IStringLocalizer S;
 
     public CorrelateTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<CorrelateTask> stringLocalizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
-    public override LocalizedString DisplayText => S["Correlate Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CorrelateTask>("Correlate Task");
 
-    public override LocalizedString Category => S["Primitives"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Primitives;
 
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
+
+    /// <summary>
+    /// The value to correlate the workflow instance with.
+    /// </summary>
     public WorkflowExpression<string> Value
     {
         get => GetProperty(() => new WorkflowExpression<string>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Value"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -43,12 +56,7 @@ public class CorrelateTask : TaskActivity<CorrelateTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null),
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for CorrelateTask.")
-        };
+        var value = await _expressionManager.EvaluateAsync(WorkflowExpressionSyntaxes.Resolve(Value, Value.Expression, Syntax), workflowContext);
 
         workflowContext.CorrelationId = value?.Trim();
 

@@ -22,6 +22,47 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
     public DataLocalizationTests(DataLocalizationTestsFixture fixture) : base(fixture) { }
 
     [Fact]
+    public async Task TranslationEditor_IsHiddenUntilVueMounts()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+        var loadEditor = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // Delay the editor module to expose the server-rendered template before Vue mounts.
+        await page.RouteAsync("**/OrchardCore.DataLocalization/Scripts/translation-editor/*.js*", async route =>
+        {
+            await loadEditor.Task;
+            await route.ContinueAsync();
+        });
+
+        try
+        {
+            // DOMContentLoaded waits for module scripts, so only wait for navigation to commit.
+            var response = await page.GotoAsync("/Admin/DataLocalization/Index", new() { WaitUntil = WaitUntilState.Commit });
+            Assert.NotNull(response);
+            Assert.True(response.Ok);
+
+            var editor = page.Locator("#translation-editor");
+            await Assertions.Expect(page.Locator("#translation-editor[v-cloak]")).ToHaveCountAsync(1);
+            await Assertions.Expect(editor).ToBeHiddenAsync();
+
+            loadEditor.TrySetResult();
+
+            await Assertions.Expect(editor).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator("#translation-editor[v-cloak]")).ToHaveCountAsync(0);
+            await Assertions.Expect(editor.Locator("table tbody tr").First).ToBeVisibleAsync();
+            await Assertions.Expect(editor).Not.ToContainTextAsync("{{");
+            Assert.Empty(consoleErrors);
+        }
+        finally
+        {
+            loadEditor.TrySetResult();
+            await page.CloseAsync();
+        }
+    }
+
+    [Fact]
     public async Task EditTranslation_Save_PersistsOnReload()
     {
         var page = await Fixture.CreatePageAsync();

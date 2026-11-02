@@ -1,0 +1,50 @@
+@model JoinStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper">
+    <label asp-for="JoinType" class="ocat-label">@T["Rows to keep"]</label>
+    <div class="ocat-end">
+        <select asp-for="JoinType" class="form-select">
+            <option value="@DataJoinType.Inner">@T["Only the rows that match (inner join)"]</option>
+            <option value="@DataJoinType.Left">@T["Every row of the left input (left join)"]</option>
+            <option value="@DataJoinType.Right">@T["Every row of the right input (right join)"]</option>
+            <option value="@DataJoinType.Full">@T["Every row of both inputs (full join)"]</option>
+        </select>
+        <span class="hint">@T["The right input is held in memory, so connect the smaller data set to the right."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label class="ocat-label ocat-label-required">@T["Match on"]</label>
+    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Keys")">
+        <template data-dp-template>
+            <partial name="DataPipelineJoinKeyRow" model="@((Model.LeftFields, Model.RightFields, new JoinKey(), "__index__"))" />
+        </template>
+        <div data-dp-rows>
+            @for (var index = 0; index < Model.Keys.Count; index++)
+            {
+                <partial name="DataPipelineJoinKeyRow" model="@((Model.LeftFields, Model.RightFields, Model.Keys[index], index.ToString(System.Globalization.CultureInfo.InvariantCulture)))" />
+            }
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a pair of fields"]</button>
+        <span class="hint">@T["Two rows match when every pair of fields holds equal values."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IgnoreCase" />
+            <label class="form-check-label" asp-for="IgnoreCase">@T["Ignore the case of text"]</label>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="RightPrefix" class="ocat-label">@T["Prefix of right fields"]</label>
+    <div class="ocat-end">
+        <input asp-for="RightPrefix" class="form-control" />
+        <span class="hint">@T["Added to a field of the right input whose name the left input already has."]</span>
+    </div>
+</div>

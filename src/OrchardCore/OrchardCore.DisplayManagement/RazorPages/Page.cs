@@ -171,6 +171,16 @@ public abstract class Page : Microsoft.AspNetCore.Mvc.RazorPages.Page
     }
 
     /// <summary>
+    /// Names a format argument of a localized string for translators, for example
+    /// <c>T["Hello {0}", Arg("user name", user.Name)]</c>. It has no effect at runtime.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the argument.</typeparam>
+    /// <param name="name">The name describing the argument. Must be a compile-time constant to be extracted.</param>
+    /// <param name="value">The value of the argument.</param>
+    /// <returns><paramref name="value"/>, unchanged.</returns>
+    public static TValue Arg<TValue>(string name, TValue value) => OrchardCore.Localization.LocalizationMetadata.Arg(name, value);
+
+    /// <summary>
     /// Adds a segment to the title and returns all segments.
     /// </summary>
     /// <param name="segment">The segment to add to the title.</param>

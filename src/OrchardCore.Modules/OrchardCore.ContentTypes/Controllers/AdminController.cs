@@ -11,6 +11,8 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -75,10 +77,18 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View("List", new ListContentTypesViewModel
+        var model = new ListContentTypesViewModel
         {
             Types = await GetTypesAsync(),
-        });
+        };
+
+        // The AdminList shape renders the types with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<ContentTypeEntry>
+        {
+            Source = model.Types.Select(type => new ContentTypeEntry { Name = type.Name, DisplayName = type.DisplayName, TypeDefinition = type.TypeDefinition }).ToArray(),
+        };
+
+        return View("List", model);
     }
 
     [Admin("ContentTypes/Create", "CreateType")]
@@ -492,11 +502,19 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(new ListContentPartsViewModel
+        var model = new ListContentPartsViewModel
         {
             // Only user-defined parts (not code as they are not configurable).
             Parts = await GetPartsAsync(metadataPartsOnly: true),
-        });
+        };
+
+        // The AdminList shape renders the parts with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<ContentPartEntry>
+        {
+            Source = model.Parts.Select(part => new ContentPartEntry { Name = part.Name, DisplayName = part.PartDefinition.DisplayName(), Description = part.Description, PartDefinition = part.PartDefinition }).ToArray(),
+        };
+
+        return View(model);
     }
 
     [Admin("ContentParts/Create", "CreatePart")]

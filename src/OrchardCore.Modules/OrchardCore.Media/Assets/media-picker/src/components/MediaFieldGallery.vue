@@ -10,6 +10,7 @@
       :allow-media-text="config.allowMediaText"
       :allow-anchors="config.allowAnchors"
       :id-prefix="inputName"
+      :disable-thumbnails="config.disableThumbnails ?? false"
       @reorder="onReorder"
       @edit-media-text="onEditMediaText"
       @edit-anchor="onEditAnchor"
@@ -28,6 +29,7 @@
       :base-path="config.basePath || ''"
       :upload-files-url="config.uploadFilesUrl || ''"
       :signalr-enabled="config.signalrEnabled === true"
+      :disable-thumbnails="config.disableThumbnails ?? false"
       @select="onPickerSelect"
     />
 

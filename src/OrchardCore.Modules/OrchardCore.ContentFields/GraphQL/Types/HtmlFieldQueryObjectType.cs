@@ -1,6 +1,4 @@
-using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
-using Fluid.Values;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,8 +9,7 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Liquid;
-using OrchardCore.Shortcodes.Services;
+using OrchardCore.Html.Services;
 using Shortcodes;
 
 namespace OrchardCore.ContentFields.GraphQL;
@@ -32,7 +29,6 @@ public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
     private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
     {
         var serviceProvider = ctx.RequestServices;
-        var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
         var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
         var jObject = (JsonObject)ctx.Source.Content;
@@ -46,29 +42,24 @@ public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
         var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.Ordinal));
         var settings = contentPartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
-        var html = ctx.Source.Html;
-
-        if (settings.RenderLiquid)
+        var model = new DisplayHtmlFieldViewModel
         {
-            var model = new EditHtmlFieldViewModel()
-            {
-                Html = ctx.Source.Html,
-                Field = ctx.Source,
-                Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
-                PartFieldDefinition = contentPartFieldDefinition,
-            };
-            var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
-            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+            Html = ctx.Source.Html,
+            Field = ctx.Source,
+            Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
+            PartFieldDefinition = contentPartFieldDefinition,
+            ContentItem = ctx.Source.ContentItem,
+        };
 
-            html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
-        }
-
-        return await shortcodeService.ProcessAsync(html,
+        var htmlDisplayService = serviceProvider.GetRequiredService<IHtmlDisplayService>();
+        await htmlDisplayService.UpdateModelHtmlAsync(
+            model,
             new Context
             {
-                ["ContentItem"] = ctx.Source.ContentItem,
                 ["PartFieldDefinition"] = contentPartFieldDefinition,
-            });
+            },
+            settings.SanitizeHtml);
+
+        return model.Html;
     }
 }

@@ -64,15 +64,22 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
             templateContext.SetValue("Workflow", new ObjectValue(workflowContext));
             var template = GetTemplate(expression.Expression);
 
+            T value;
+
             if (typeof(T) != typeof(string) && TryGetSingleOutputStatement(template, out var outputStatement))
             {
                 var fluidValue = await EvaluateOutputValueAsync(outputStatement, templateContext);
-                return ConvertValue<T>(fluidValue.ToObjectValue(), fluidValue.ToStringValue());
+                value = ConvertValue<T>(fluidValue.ToObjectValue(), fluidValue.ToStringValue());
+            }
+            else
+            {
+                var result = await RenderTemplateAsync(template, templateContext, encoder ?? NullEncoder.Default);
+                value = ConvertValue<T>(result, result);
             }
 
-            var result = await RenderTemplateAsync(template, templateContext, encoder ?? NullEncoder.Default);
+            workflowContext.ReportEvaluation(WorkflowExpressionSyntaxes.Liquid, expression.Expression, value);
 
-            return ConvertValue<T>(result, result);
+            return value;
         });
     }
 
@@ -140,6 +147,16 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         {
             return (T)Convert.ChangeType(stringValue, typeof(T), CultureInfo.InvariantCulture);
         }
+    }
+
+    public static Task<FluidValue> ToFluidValue(WorkflowVariables variables, string key, TemplateContext context)
+    {
+        if (!variables.TryGetValue(key, out var value))
+        {
+            return Task.FromResult<FluidValue>(NilValue.Instance);
+        }
+
+        return Task.FromResult(FluidValue.Create(value, context.Options));
     }
 
     public static Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key, TemplateContext context)

@@ -15,6 +15,7 @@ using OrchardCore.Templates.Services;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.UrlRewriting;
 using OrchardCore.UrlRewriting.Services;
+using LiquidPermissions = OrchardCore.Liquid.Permissions;
 using TemplatePermissions = OrchardCore.Templates.Permissions;
 
 namespace OrchardCore.Tests.Modules;
@@ -125,6 +126,7 @@ public class ManagementModulesInlineBreadcrumbIntegrationTests
         [
             AdminPermissions.AccessAdminPanel,
             AdminTemplatesPermissions.ManageAdminTemplates,
+            LiquidPermissions.ManageLiquidTemplates,
         ];
         if (canManageTemplates)
         {

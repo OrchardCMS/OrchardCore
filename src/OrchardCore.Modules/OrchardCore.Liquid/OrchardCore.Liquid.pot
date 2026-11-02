@@ -1,0 +1,90 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Liquid\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: string.Join(" ", errors)
+#: Drivers/LiquidFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Liquid.Drivers.LiquidFieldDisplayDriver"
+msgid "The Liquid field doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Drivers/LiquidFieldDisplayDriver.cs
+msgctxt "OrchardCore.Liquid.Drivers.LiquidFieldDisplayDriver"
+msgid "You do not have permission to manage Liquid templates."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", errors)
+#: Drivers/LiquidPartDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Liquid.Drivers.LiquidPartDisplayDriver"
+msgid "The Liquid Body doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Drivers/LiquidPartDisplayDriver.cs
+msgctxt "OrchardCore.Liquid.Drivers.LiquidPartDisplayDriver"
+msgid "You do not have permission to manage Liquid templates."
+msgstr ""
+
+#: GraphQL/LiquidFieldQueryObjectType.cs
+msgctxt "OrchardCore.Liquid.GraphQL.LiquidFieldQueryObjectType"
+msgid "Content stored as a Liquid template."
+msgstr ""
+
+#: GraphQL/LiquidFieldQueryObjectType.cs
+msgctxt "OrchardCore.Liquid.GraphQL.LiquidFieldQueryObjectType"
+msgid "the rendered Liquid content"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", errors)
+#: Handlers/LiquidFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Liquid.Handlers.LiquidFieldHandler"
+msgid "The Liquid field doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Handlers/LiquidFieldHandler.cs
+msgctxt "OrchardCore.Liquid.Handlers.LiquidFieldHandler"
+msgid "You do not have permission to manage Liquid templates."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", errors)
+#: Handlers/LiquidPartHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Liquid.Handlers.LiquidPartHandler"
+msgid "The Liquid Body doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Handlers/LiquidPartHandler.cs
+msgctxt "OrchardCore.Liquid.Handlers.LiquidPartHandler"
+msgid "You do not have permission to manage Liquid templates."
+msgstr ""
+
+#: Views/LiquidField.Edit.cshtml
+msgctxt "OrchardCore.Liquid.Views.LiquidField.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/LiquidField.Edit.cshtml
+msgctxt "OrchardCore.Liquid.Views.LiquidField.Edit"
+msgid "The content of the field, in Liquid format."
+msgstr ""
+
+#: Views/LiquidPart.Edit.cshtml
+msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
+msgid "Body"
+msgstr ""
+
+#: Views/LiquidPart.Edit.cshtml
+msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/LiquidPart.Edit.cshtml
+msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
+msgid "The body of the content item, in Liquid format."
+msgstr ""

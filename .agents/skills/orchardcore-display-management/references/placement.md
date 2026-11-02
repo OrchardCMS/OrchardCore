@@ -25,7 +25,7 @@
 | Filter | Matches |
 |--------|---------|
 | *(property name)* | The shape's original type (`TextField`, `ContentPart`, `Parts_Contents_Publish`) |
-| `displayType` | `Detail`, `Summary`, `SummaryAdmin`, `DetailAdmin`, `Edit` |
+| `displayType` | `Detail`, `Summary`, `SummaryAdmin`, `SummaryAdminGrid` (admin list Grid layout, one zone per column), `DetailAdmin`, `Edit` |
 | `differentiator` | Distinguishes reused shapes — see table below |
 | `contentType` | Single/array of ContentType or Stereotype. `Art*` wildcard prefix-matches |
 | `contentPart` | Single/array of part names the content item must contain |

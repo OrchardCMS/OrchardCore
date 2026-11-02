@@ -1,6 +1,6 @@
 import initIconPickerTriggers from "@orchardcore/bloom/components/icon-picker-trigger";
 
-const showAllToggle = document.getElementById("ContentTypesAdminNode_ShowAll") as HTMLInputElement | null;
+const showAllToggle = document.querySelector<HTMLInputElement>("[data-show-all-toggle]");
 const showAllCard = document.getElementById("show-all-card");
 const showSelectedCard = document.getElementById("show-selected-card");
 

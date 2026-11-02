@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 using OrchardCore.RateLimits.Recipes;
@@ -9,14 +10,11 @@ namespace OrchardCore.RateLimits.Deployment;
 /// </summary>
 public sealed class AllRateLimitPoliciesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllRateLimitPoliciesDeploymentStep>("Security");
-
     /// <summary>
     /// Initializes a new instance of the <see cref="AllRateLimitPoliciesDeploymentStep"/> class.
     /// </summary>
-    public AllRateLimitPoliciesDeploymentStep()
-    {
-        Name = CreateOrUpdateRateLimitPoliciesStep.StepKey;
-        Category = s_category;
-    }
+    public override string Name => CreateOrUpdateRateLimitPoliciesStep.StepKey;
+
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Security;
 }

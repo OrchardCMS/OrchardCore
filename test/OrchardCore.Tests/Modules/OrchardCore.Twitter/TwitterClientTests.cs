@@ -43,7 +43,9 @@ public class TwitterClientTests
         _mockHttpMessageHandler = new Mock<TwitterClientMessageHandler>(
             Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
             Options.Create(settings),
-            _mockDataProtectionProvider);
+            new ServiceCollection().BuildServiceProvider(),
+            _mockDataProtectionProvider,
+            NullLogger<TwitterClientMessageHandler>.Instance);
     }
 
     [Fact]
@@ -115,7 +117,9 @@ public class TwitterClientTests
         var handler = new Mock<TwitterClientMessageHandler>(
             Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
             Options.Create(settings),
-            Mock.Of<IDataProtectionProvider>(dpp => dpp.CreateProtector(It.IsAny<string>()) == protector));
+            new ServiceCollection().BuildServiceProvider(),
+            Mock.Of<IDataProtectionProvider>(dpp => dpp.CreateProtector(It.IsAny<string>()) == protector),
+            NullLogger<TwitterClientMessageHandler>.Instance);
 
         handler.Setup(c => c.GetNonce()).Returns(() => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");
 
@@ -147,20 +151,20 @@ public class FakeHttpMessageHandler : HttpMessageHandler
 /// </summary>
 public sealed class PrefixDataProtector : IDataProtector
 {
-    private static readonly byte[] _prefix = Encoding.UTF8.GetBytes("protected:");
+    private static readonly byte[] s_prefix = Encoding.UTF8.GetBytes("protected:");
 
     public IDataProtector CreateProtector(string purpose) => this;
 
-    public byte[] Protect(byte[] plaintext) => [.. _prefix, .. plaintext];
+    public byte[] Protect(byte[] plaintext) => [.. s_prefix, .. plaintext];
 
     public byte[] Unprotect(byte[] protectedData)
     {
-        if (!protectedData.AsSpan().StartsWith(_prefix))
+        if (!protectedData.AsSpan().StartsWith(s_prefix))
         {
             throw new CryptographicException("The payload was not protected.");
         }
 
-        return protectedData[_prefix.Length..];
+        return protectedData[s_prefix.Length..];
     }
 }
 

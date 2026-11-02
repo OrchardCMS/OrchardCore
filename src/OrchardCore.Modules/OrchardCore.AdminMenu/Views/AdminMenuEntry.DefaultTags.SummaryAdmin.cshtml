@@ -1,0 +1,9 @@
+@using OrchardCore.AdminMenu.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<AdminMenuEntry>
+
+<span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Status"]">
+    <i class="fa-solid @(Model.Value.AdminMenu.Enabled ? "fa-check text-success" : "fa-ban text-secondary")" aria-hidden="true"></i>
+    @(Model.Value.AdminMenu.Enabled ? T["Enabled"] : T["Disabled"])
+</span>

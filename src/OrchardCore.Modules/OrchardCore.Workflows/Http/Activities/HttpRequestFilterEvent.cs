@@ -1,29 +1,36 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRequestFilterEvent : EventActivity
+public class HttpRequestFilterEvent : EventActivity, IActivityDescription
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public static string EventName => nameof(HttpRequestFilterEvent);
 
-    public HttpRequestFilterEvent(IStringLocalizer<HttpRequestFilterEvent> localizer, IHttpContextAccessor httpContextAccessor)
+    public HttpRequestFilterEvent(IStringLocalizerFactory localizerFactory, IStringLocalizer<HttpRequestFilterEvent> localizer, IHttpContextAccessor httpContextAccessor)
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
         _httpContextAccessor = httpContextAccessor;
     }
 
     public override string Name => EventName;
-    public override LocalizedString DisplayText => S["Http Request Filter Event"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<HttpRequestFilterEvent>("Http Request Filter Event");
 
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public string HttpMethod
     {

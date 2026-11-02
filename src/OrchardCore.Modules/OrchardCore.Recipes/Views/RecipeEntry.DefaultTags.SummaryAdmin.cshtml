@@ -1,0 +1,16 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Recipes.Models
+
+@model ShapeViewModel<RecipeEntry>
+
+@if (Model.Value.IsSetupRecipe)
+{
+    <span class="badge ta-badge fw-normal text-bg-warning" data-bs-toggle="tooltip" title="@T["Kind"]">@T["Setup Recipe"]</span>
+}
+
+@foreach (var tag in Model.Value.Tags ?? [])
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Tag"]">
+        <i class="fa-solid fa-tag text-secondary" aria-hidden="true"></i> @tag
+    </span>
+}

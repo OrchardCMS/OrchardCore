@@ -5,6 +5,8 @@ namespace OrchardCore.Users;
 
 public static class UsersPermissions
 {
+    private static readonly Dictionary<string, PermissionTemplate> s_userPermissionTemplates;
+
     /// <summary>
     /// When authorizing request ManageUsers and pass an <see cref="IUser"/>
     /// Do not request a dynamic permission unless you are checking if the user can manage a specific role.
@@ -29,26 +31,43 @@ public static class UsersPermissions
     public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", LocalizationSource.Create("Edit own user information", typeof(UsersPermissions)), [EditUsers]);
 
     public static Permission CreateEditUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("EditUsersInRole_{0}", "Edit users in {0} role", [EditUsers], true));
+        s_userPermissionTemplates[EditUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreateDeleteUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("DeleteUsersInRole_{0}", "Delete users in {0} role", [DeleteUsers], true));
+        s_userPermissionTemplates[DeleteUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreateListUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("ListUsersInRole_{0}", "List users in {0} role", [ListUsers]));
+        s_userPermissionTemplates[ListUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreateAssignRoleToUsersPermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("AssignRoleToUsers_{0}", "Assign {0} role to users", [AssignRoleToUsers], true));
+        s_userPermissionTemplates[AssignRoleToUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreatePermissionForManageUsersInRole(string name) =>
-        CreateDynamicPermission(name, new Permission("ManageUsersInRole_{0}", "Manage users in {0} role", [ManageUsers], true));
+        s_userPermissionTemplates[ManageUsers.Name].CreateDynamicPermission(name);
 
-    // Dynamic permission template.
-    private static Permission CreateDynamicPermission(string roleName, Permission permission)
-        => new(
-            string.Format(permission.Name, roleName),
-            string.Format(permission.Description.Value, roleName),
-            permission.ImpliedBy,
-            permission.IsSecurityCritical
-        );
+    static UsersPermissions()
+    {
+        ViewUsers = new("View Users", LocalizationSource.Create("View user profiles", typeof(UsersPermissions)), [ManageUsers]);
+        EditUsers = new("EditUsers", LocalizationSource.Create("Edit any user", typeof(UsersPermissions)), [ManageUsers], true);
+        DeleteUsers = new("DeleteUsers", LocalizationSource.Create("Delete any user", typeof(UsersPermissions)), [ManageUsers], true);
+        ListUsers = new("ListUsers", LocalizationSource.Create("List all users", typeof(UsersPermissions)), [EditUsers, DeleteUsers]);
+        AssignRoleToUsers = new("AssignRoleToUsers", LocalizationSource.Create("Assign any role to users", typeof(UsersPermissions)), true);
+        DisableTwoFactorAuthenticationForUsers = new("DisableTwoFactorAuthenticationForUsers", LocalizationSource.Create("Disable two-factor authentication for any user", typeof(UsersPermissions)), [ManageUsers], true);
+        EditOwnUser = new("ManageOwnUserInformation", LocalizationSource.Create("Edit own user information", typeof(UsersPermissions)), [EditUsers]);
+        
+        s_userPermissionTemplates = new Dictionary<string, PermissionTemplate>
+        {
+            [EditUsers.Name] = CreateTemplate("EditUsersInRole", LocalizationSource.Create("Edit users in {0} role", typeof(UsersPermissions)), EditUsers),
+            [DeleteUsers.Name] = CreateTemplate("DeleteUsersInRole", LocalizationSource.Create("Delete users in {0} role", typeof(UsersPermissions)), DeleteUsers),
+            [ListUsers.Name] = CreateTemplate("ListUsersInRole", LocalizationSource.Create("List users in {0} role", typeof(UsersPermissions)), ListUsers),
+            [AssignRoleToUsers.Name] = CreateTemplate("AssignRoleToUsers", LocalizationSource.Create("Assign {0} role to users", typeof(UsersPermissions)), AssignRoleToUsers),
+            [ManageUsers.Name] = CreateTemplate("ManageUsersInRole", LocalizationSource.Create("Manage users in {0} role", typeof(UsersPermissions)), ManageUsers),
+        };
+    }
+
+    private static PermissionTemplate CreateTemplate(string nameBase, LocalizationSource description, Permission impliedBy) =>
+        new(nameBase + "_{0}", description, category: null, impliedBy)
+        {
+            IsSecurityCritical = impliedBy.IsSecurityCritical,
+        };
 }

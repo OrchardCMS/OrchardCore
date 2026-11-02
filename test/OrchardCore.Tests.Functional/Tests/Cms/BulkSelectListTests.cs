@@ -61,27 +61,47 @@ public sealed class BulkSelectListTests : CmsTestBase<BulkSelectListTestsFixture
         await Assertions.Expect(items).ToBeVisibleAsync();
     }
 
+    public static IEnumerable<TheoryDataRow<string, string, string>> ListLayouts()
+    {
+        (string Url, string CheckboxName)[] lists =
+        [
+            ("/Admin/Contents/ContentItems/BulkSelectTestPage", "itemIds"),
+            ("/Admin/Placements", "itemIds"),
+            ("/Admin/Shortcodes", "itemIds"),
+            ("/Admin/Sitemaps/List", "itemIds"),
+            ("/Admin/SitemapIndexes/List", "itemIds"),
+            ("/Admin/Templates", "itemIds"),
+            ("/Admin/TenantFeatureProfiles", "itemIds"),
+            ("/Admin/UrlRewriting/Index", "ruleIds"),
+            ("/Admin/DeploymentPlan/Index", "itemIds"),
+            ("/Admin/MediaProfiles", "itemIds"),
+            ("/Admin/AdminMenu/List", "itemIds"),
+            ("/Admin/Queries/Index", "itemIds"),
+        ];
+        string[] layouts = ["List", "Grid"];
+        foreach (var (url, checkboxName) in lists)
+        {
+            foreach (var layout in layouts)
+            {
+                yield return new(url, checkboxName, layout);
+            }
+        }
+    }
+
     [Theory]
-    [InlineData("/Admin/Contents/ContentItems/BulkSelectTestPage", "itemIds")]
-    [InlineData("/Admin/Placements", "itemIds")]
-    [InlineData("/Admin/Shortcodes", "itemIds")]
-    [InlineData("/Admin/Sitemaps/List", "itemIds")]
-    [InlineData("/Admin/SitemapIndexes/List", "itemIds")]
-    [InlineData("/Admin/Templates", "itemIds")]
-    [InlineData("/Admin/TenantFeatureProfiles", "itemIds")]
-    [InlineData("/Admin/UrlRewriting/Index", "ruleIds")]
-    [InlineData("/Admin/DeploymentPlan/Index", "itemIds")]
-    [InlineData("/Admin/MediaProfiles", "itemIds")]
-    [InlineData("/Admin/AdminMenu/List", "itemIds")]
-    [InlineData("/Admin/Queries/Index", "itemIds")]
-    public async Task BulkSelectList_SelectAll_TogglesActionsAndCount(string adminUrl, string checkboxName)
+    [MemberData(nameof(ListLayouts))]
+    public async Task BulkSelectList_SelectAll_TogglesActionsAndCount(string adminUrl, string checkboxName, string layout)
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+        await page.SetAdminListSettingsAsync(layout, allowUserSelection: false);
         await page.GotoAndAssertOkAsync(adminUrl);
+        await Assertions.Expect(page.Locator($".admin-list-{layout.ToLowerInvariant()}")).ToHaveCountAsync(1);
 
         await AssertSelectAllTogglesActionsAsync(page, checkboxName, expectedRowCount: 2);
 
+        Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
 }

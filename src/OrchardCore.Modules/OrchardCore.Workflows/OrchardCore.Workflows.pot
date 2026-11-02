@@ -1,0 +1,5149 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Workflows\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Activities/CommitTransactionTask.cs
+msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
+msgid "Commit Transaction Task"
+msgstr ""
+
+#: Activities/CommitTransactionTask.cs
+msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/CommitTransactionTask.cs
+msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
+msgid "Invalid"
+msgstr ""
+
+#: Activities/CommitTransactionTask.cs
+msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
+msgid "Valid"
+msgstr ""
+
+#: Activities/CorrelateTask.cs
+msgctxt "OrchardCore.Workflows.Activities.CorrelateTask"
+msgid "Correlate Task"
+msgstr ""
+
+#: Activities/CorrelateTask.cs
+msgctxt "OrchardCore.Workflows.Activities.CorrelateTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/ExecuteWorkflowTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ExecuteWorkflowTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/ExecuteWorkflowTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ExecuteWorkflowTask"
+msgid "Execute Workflow Task"
+msgstr ""
+
+#: Activities/ExecuteWorkflowTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ExecuteWorkflowTask"
+msgid "Failed"
+msgstr ""
+
+#: Activities/ExecuteWorkflowTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ExecuteWorkflowTask"
+msgid "The outputs of the workflow it ran, by name, or its fault message when it failed."
+msgstr ""
+
+#: Activities/ForEachTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/ForEachTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
+msgid "For Each Task"
+msgstr ""
+
+#: Activities/ForEachTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
+msgid "Iterate"
+msgstr ""
+
+#: Activities/ForEachTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
+msgid "The current item of the loop."
+msgstr ""
+
+#: Activities/ForLoopTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForLoopTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/ForLoopTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForLoopTask"
+msgid "For Loop Task"
+msgstr ""
+
+#: Activities/ForLoopTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForLoopTask"
+msgid "Iterate"
+msgstr ""
+
+#: Activities/ForLoopTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForLoopTask"
+msgid "The current index of the loop."
+msgstr ""
+
+#: Activities/ForkTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ForkTask"
+msgid "Fork Task"
+msgstr ""
+
+#: Activities/IfElseTask.cs
+msgctxt "OrchardCore.Workflows.Activities.IfElseTask"
+msgid "False"
+msgstr ""
+
+#: Activities/IfElseTask.cs
+msgctxt "OrchardCore.Workflows.Activities.IfElseTask"
+msgid "If Else Task"
+msgstr ""
+
+#: Activities/IfElseTask.cs
+msgctxt "OrchardCore.Workflows.Activities.IfElseTask"
+msgid "True"
+msgstr ""
+
+#: Activities/JoinTask.cs
+msgctxt "OrchardCore.Workflows.Activities.JoinTask"
+msgid "Join Task"
+msgstr ""
+
+#: Activities/JoinTask.cs
+msgctxt "OrchardCore.Workflows.Activities.JoinTask"
+msgid "Joined"
+msgstr ""
+
+#: Activities/LiquidTask.cs
+msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/LiquidTask.cs
+msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
+msgid "Liquid Task"
+msgstr ""
+
+#: Activities/LiquidTask.cs
+msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
+msgid "Result"
+msgstr ""
+
+#: Activities/LiquidTask.cs
+msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
+msgid "The rendered template."
+msgstr ""
+
+#: Activities/LiquidTask.cs
+msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
+msgid "The text the template renders."
+msgstr ""
+
+#: Activities/LogTask.cs
+msgctxt "OrchardCore.Workflows.Activities.LogTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/LogTask.cs
+msgctxt "OrchardCore.Workflows.Activities.LogTask"
+msgid "Log Task"
+msgstr ""
+
+#: Activities/MissingActivity.cs
+msgctxt "OrchardCore.Workflows.Activities.MissingActivity"
+msgid "Missing Activity"
+msgstr ""
+
+#: Activities/NotifyTask.cs
+msgctxt "OrchardCore.Workflows.Activities.NotifyTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/NotifyTask.cs
+msgctxt "OrchardCore.Workflows.Activities.NotifyTask"
+msgid "Notify Task"
+msgstr ""
+
+#: Activities/ScriptTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ScriptTask"
+msgid "Result"
+msgstr ""
+
+#: Activities/ScriptTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ScriptTask"
+msgid "Script Task"
+msgstr ""
+
+#: Activities/ScriptTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ScriptTask"
+msgid "The value the script returns."
+msgstr ""
+
+#: Activities/ScriptTask.cs
+msgctxt "OrchardCore.Workflows.Activities.ScriptTask"
+msgid "The value the script returns: its last statement."
+msgstr ""
+
+#: Activities/SetOutputTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/SetOutputTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
+msgid "Set Output Task"
+msgstr ""
+
+#: Activities/SetOutputTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
+msgid "The value this activity sets."
+msgstr ""
+
+#: Activities/SetPropertyTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/SetPropertyTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
+msgid "Set Property Task"
+msgstr ""
+
+#: Activities/SetPropertyTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
+msgid "The value the task sets the property to."
+msgstr ""
+
+#: Activities/SetPropertyTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
+msgid "The value this activity sets."
+msgstr ""
+
+#: Activities/SetPropertyTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
+msgid "Value"
+msgstr ""
+
+#: Activities/SetVariableTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetVariableTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/SetVariableTask.cs
+msgctxt "OrchardCore.Workflows.Activities.SetVariableTask"
+msgid "Set Variable Task"
+msgstr ""
+
+#: Activities/WhileLoopTask.cs
+msgctxt "OrchardCore.Workflows.Activities.WhileLoopTask"
+msgid "Done"
+msgstr ""
+
+#: Activities/WhileLoopTask.cs
+msgctxt "OrchardCore.Workflows.Activities.WhileLoopTask"
+msgid "Iterate"
+msgstr ""
+
+#: Activities/WhileLoopTask.cs
+msgctxt "OrchardCore.Workflows.Activities.WhileLoopTask"
+msgid "While Loop Task"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Workflows.AdminMenu"
+msgid "Design"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Workflows.AdminMenu"
+msgid "Workflows"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Controllers/WorkflowController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "1 faulted instance couldn't be retried: the activity it faulted at isn't known, or it's running."
+msgid_plural "{0} faulted instances couldn't be retried: the activity they faulted at isn't known, or they're running."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Controllers/WorkflowController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "1 faulted instance ran again."
+msgid_plural "{0} faulted instances ran again."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Controllers/WorkflowController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "1 instance was canceled."
+msgid_plural "{0} instances were canceled."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Aborted"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "All"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "All workflows"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Another instance is already running."
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Any time"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Cancel"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Faulted"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Finished"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Halted"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Last 24 hours"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Last 30 days"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Last 7 days"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Least recently created"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Recently created"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Retry"
+msgstr ""
+
+#: Controllers/WorkflowController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Running"
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: string.Join(", ", deletedWorkflowIds)
+#: Controllers/WorkflowController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "The workflow \"{1}\" has been deleted."
+msgid_plural "The following workflows have been deleted: {1}."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: id
+#: Controllers/WorkflowController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Workflow {0} has been deleted."
+msgstr ""
+
+#. Format arguments: {0}: id
+#: Controllers/WorkflowController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
+msgid "Workflow {0} has been restarted."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "Fix the errors listed in the issues first."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "Fix the errors listed in the variable errors first."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "Only a faulted instance can be retried."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "Only a published workflow that starts with Started by Workflow runs with inputs."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "Reload the workflow to get the latest changes, or overwrite them with yours."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "The instance is running. Try again in a moment."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "The instance's definition doesn't have this activity."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "The variables can't be saved."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "The workflow can't be published."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "The workflow is disabled. Enable it to run it."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "The workflow was changed in the meantime."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", invalid)
+#: Controllers/WorkflowDesignerController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "These inputs don't have a value of their type: {0}."
+msgstr ""
+
+#: Controllers/WorkflowDesignerController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
+msgid "This workflow runs one instance at a time, and one is running."
+msgstr ""
+
+#: Controllers/WorkflowTypeController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
+msgid "Delete"
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: string.Join(", ", deletedWorkflowTypeNames)
+#: Controllers/WorkflowTypeController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
+msgid "The workflow \"{1}\" has been deleted."
+msgid_plural "The following workflows have been deleted: {1}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Controllers/WorkflowTypeController.cs
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
+msgid "Workflow Types"
+msgstr ""
+
+#. Format arguments: {0}: workflowType.Name
+#: Controllers/WorkflowTypeController.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
+msgid "Workflow {0} deleted"
+msgstr ""
+
+#. Format arguments: {0}: ActivityRetryPolicy.MaxRetriesLimit
+#: Drivers/ActivityRetryPolicyDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Drivers.ActivityRetryPolicyDisplayDriver"
+msgid "Retries must be between 0 and {0}."
+msgstr ""
+
+#. Format arguments: {0}: ActivityRetryPolicy.MaxDelay.TotalSeconds
+#: Drivers/ActivityRetryPolicyDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Drivers.ActivityRetryPolicyDisplayDriver"
+msgid "The delay must be between 0 and {0} seconds."
+msgstr ""
+
+#: Drivers/CorrelateTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.CorrelateTaskDisplayDriver"
+msgid "Value"
+msgstr ""
+
+#: Drivers/ExecuteWorkflowTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.ExecuteWorkflowTaskDisplayDriver"
+msgid "Select a workflow usable as an activity."
+msgstr ""
+
+#: Drivers/ForEachTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.ForEachTaskDisplayDriver"
+msgid "Items"
+msgstr ""
+
+#: Drivers/ForLoopTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.ForLoopTaskDisplayDriver"
+msgid "From"
+msgstr ""
+
+#: Drivers/ForLoopTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.ForLoopTaskDisplayDriver"
+msgid "Step"
+msgstr ""
+
+#: Drivers/ForLoopTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.ForLoopTaskDisplayDriver"
+msgid "To"
+msgstr ""
+
+#: Drivers/IfElseTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.IfElseTaskDisplayDriver"
+msgid "Condition"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", errors)
+#: Drivers/LiquidTaskDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Drivers.LiquidTaskDisplayDriver"
+msgid "Expression doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Drivers/LiquidTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.LiquidTaskDisplayDriver"
+msgid "Expression is required field."
+msgstr ""
+
+#: Drivers/SetOutputTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.SetOutputTaskDisplayDriver"
+msgid "Value"
+msgstr ""
+
+#: Drivers/SetPropertyTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.SetPropertyTaskDisplayDriver"
+msgid "Value"
+msgstr ""
+
+#: Drivers/SetVariableTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.SetVariableTaskDisplayDriver"
+msgid "Value"
+msgstr ""
+
+#: Drivers/WhileLoopTaskDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.WhileLoopTaskDisplayDriver"
+msgid "Condition"
+msgstr ""
+
+#: Events/StartedByWorkflowEvent.cs
+msgctxt "OrchardCore.Workflows.Events.StartedByWorkflowEvent"
+msgid "Done"
+msgstr ""
+
+#: Events/StartedByWorkflowEvent.cs
+msgctxt "OrchardCore.Workflows.Events.StartedByWorkflowEvent"
+msgid "Started By Workflow Event"
+msgstr ""
+
+#: Events/WorkflowFaultEvent.cs
+msgctxt "OrchardCore.Workflows.Events.WorkflowFaultEvent"
+msgid "Catch Workflow Fault Event"
+msgstr ""
+
+#: Events/WorkflowFaultEvent.cs
+msgctxt "OrchardCore.Workflows.Events.WorkflowFaultEvent"
+msgid "Done"
+msgstr ""
+
+#: Events/WorkflowFaultEvent.cs
+msgctxt "OrchardCore.Workflows.Events.WorkflowFaultEvent"
+msgid "The fault the workflow caught."
+msgstr ""
+
+#: Expressions/JavaScriptExpressionProvider.cs
+msgctxt "OrchardCore.Workflows.Expressions.JavaScriptExpressionProvider"
+msgid "JavaScript"
+msgstr ""
+
+#: Expressions/LiquidExpressionProvider.cs
+msgctxt "OrchardCore.Workflows.Expressions.LiquidExpressionProvider"
+msgid "Liquid"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", errors ?? [])
+#: Expressions/LiquidExpressionProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Expressions.LiquidExpressionProvider"
+msgid "The Liquid template isn't valid: {0}"
+msgstr ""
+
+#. Format arguments: {0}: expression; {1}: Describe(valueType)
+#: Expressions/LiteralExpressionProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Expressions.LiteralExpressionProvider"
+msgid "'{0}' isn't a valid {1}."
+msgstr ""
+
+#: Expressions/LiteralExpressionProvider.cs
+msgctxt "OrchardCore.Workflows.Expressions.LiteralExpressionProvider"
+msgid "JSON value"
+msgstr ""
+
+#: Expressions/LiteralExpressionProvider.cs
+msgctxt "OrchardCore.Workflows.Expressions.LiteralExpressionProvider"
+msgid "Literal"
+msgstr ""
+
+#: Expressions/LiteralExpressionProvider.cs
+msgctxt "OrchardCore.Workflows.Expressions.LiteralExpressionProvider"
+msgid "list"
+msgstr ""
+
+#: Expressions/LiteralExpressionProvider.cs
+msgctxt "OrchardCore.Workflows.Expressions.LiteralExpressionProvider"
+msgid "number"
+msgstr ""
+
+#: Expressions/LiteralExpressionProvider.cs
+msgctxt "OrchardCore.Workflows.Expressions.LiteralExpressionProvider"
+msgid "true or false value"
+msgstr ""
+
+#: Http/Activities/HttpRedirectTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRedirectTask"
+msgid "Done"
+msgstr ""
+
+#: Http/Activities/HttpRedirectTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRedirectTask"
+msgid "Http Redirect Task"
+msgstr ""
+
+#: Http/Activities/HttpRequestEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestEvent"
+msgid "Done"
+msgstr ""
+
+#: Http/Activities/HttpRequestEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestEvent"
+msgid "Http Request Event"
+msgstr ""
+
+#: Http/Activities/HttpRequestEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestEvent"
+msgid "The URLs to return to after a form is posted, by form location key."
+msgstr ""
+
+#: Http/Activities/HttpRequestFilterEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestFilterEvent"
+msgid "Http Request Filter Event"
+msgstr ""
+
+#: Http/Activities/HttpRequestFilterEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestFilterEvent"
+msgid "Matched"
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "Http Request Task"
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "Response"
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "Response body"
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "Status code"
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "The HTTP status code of the response, such as 200."
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "The body of the response, as text."
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "The response: its body, headers and status."
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "The response: its status code, headers and body."
+msgstr ""
+
+#: Http/Activities/HttpRequestTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestTask"
+msgid "Unhandled Http Status"
+msgstr ""
+
+#: Http/Activities/HttpResponseTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpResponseTask"
+msgid "Done"
+msgstr ""
+
+#: Http/Activities/HttpResponseTask.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.HttpResponseTask"
+msgid "Http Response Task"
+msgstr ""
+
+#: Http/Activities/SignalEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.SignalEvent"
+msgid "Done"
+msgstr ""
+
+#: Http/Activities/SignalEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.SignalEvent"
+msgid "Signal Event"
+msgstr ""
+
+#: Http/Activities/SignalEvent.cs
+msgctxt "OrchardCore.Workflows.Http.Activities.SignalEvent"
+msgid "The name of the signal."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Returns a URL that triggers the Signal event of this instance."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Returns a value of the posted form."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Returns a value of the query string; queryString() returns all of it."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Returns the HttpContext of the request."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Returns the absolute URL of a path of the site."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Returns the body of the request."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Returns the query string, the posted form or the JSON body as an object."
+msgstr ""
+
+#: Http/Services/HttpWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
+msgid "Writes text to the response."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Decodes Base64 text."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Decodes HTML-encoded text."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Returns a new unique id."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Returns the id of the workflow instance."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Sets a property of the workflow."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Sets a variable, converting the value to its type."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Sets an output of the workflow."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Sets the correlation id of the instance."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The HTTP method, for example GET."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The base URL of the CDN."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The base URL of the site."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The base path of the request."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The calendar of the site."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The claims of the user."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The content type of the request."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The cookies, by name."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The culture of the current request."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The current HTTP request; nothing when the workflow doesn't run in a request."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The custom settings of the site that Liquid may read."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The default page size."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The direction of the text, ltr or rtl."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The display name of the culture."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The format of the page titles."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The headers, by name."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The host of the request."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The hosting environment."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The id of the super user."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The largest page size."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The name of the culture in its own language."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The name of the culture, for example en-US."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The name of the environment, for example Production."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The name of the site."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The name of the user."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The path of the request."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The posted form values, by name: Request.Form[\"name\"]."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The query string, with its ?."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The route values, by name."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The scheme, http or https."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The settings of the site."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The time zone of the site."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The two-letter code of the language."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The user of the current request; nothing when the workflow doesn't run in a request."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "The values of the query string, by name: Request.Query[\"name\"]."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Whether it is the Development environment."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Whether it is the Production environment."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Whether it is the Staging environment."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Whether resources come from a CDN."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Whether the request uses HTTPS."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Whether the user is signed in."
+msgstr ""
+
+#: Services/DefaultWorkflowGlobalValueProvider.cs
+msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
+msgid "Writes a message to the log, at a level such as Information or Warning."
+msgstr ""
+
+#. Format arguments: {0}: workflowType.Name
+#: Services/WorkflowActivityPresetProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowActivityPresetProvider"
+msgid "Runs the {0} workflow."
+msgstr ""
+
+#: Services/WorkflowActivityPresetProvider.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowActivityPresetProvider"
+msgid "Workflows"
+msgstr ""
+
+#: Services/WorkflowDesignerModelBuilder.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowDesignerModelBuilder"
+msgid "Failed"
+msgstr ""
+
+#. Format arguments: {0}: syntax
+#: Services/WorkflowExpressionInputValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowExpressionInputValidator"
+msgid "The {0} syntax isn't available."
+msgstr ""
+
+#. Format arguments: {0}: options.Label; {1}: _localizerFactory.Localize(descriptor.DisplayName)
+#: Services/WorkflowExpressionInputValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowExpressionInputValidator"
+msgid "{0} can't be written in {1}."
+msgstr ""
+
+#. Format arguments: {0}: options.Label
+#: Services/WorkflowExpressionInputValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowExpressionInputValidator"
+msgid "{0} is required."
+msgstr ""
+
+#. Format arguments: {0}: variableName
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "'{0}' isn't a declared variable: the value is stored as a workflow property, without a type."
+msgstr ""
+
+#. Format arguments: {0}: transition.SourceOutcomeName
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "A transition of the outcome '{0}' connects an activity that doesn't exist. It's removed when the workflow is saved."
+msgstr ""
+
+#. Format arguments: {0}: error
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "Fix the settings of this activity: {0}"
+msgstr ""
+
+#: Services/WorkflowTypeDraftManager.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "Select the workflow this activity runs."
+msgstr ""
+
+#. Format arguments: {0}: activity.Name
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "The activity type '{0}' isn't available. Enable the feature that provides it, or remove the activity."
+msgstr ""
+
+#. Format arguments: {0}: group.Key.SourceOutcomeName
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "The outcome '{0}' has more than one transition. Only the first one is followed."
+msgstr ""
+
+#. Format arguments: {0}: outputName; {1}: output.TypeName; {2}: variable.Name; {3}: variable.TypeName
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "The output '{0}' ({1}) is bound to '{2}' ({3}): its values may not convert, which faults the workflow."
+msgstr ""
+
+#. Format arguments: {0}: outputName; {1}: boundVariable
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "The output '{0}' is bound to '{1}', which isn't a declared variable."
+msgstr ""
+
+#: Services/WorkflowTypeDraftManager.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "This activity can't be reached from a start activity, so it never runs."
+msgstr ""
+
+#. Format arguments: {0}: WorkflowManager.MaxChildWorkflowDepth
+#: Services/WorkflowTypeDraftManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "This activity runs the workflow it belongs to. Make sure the workflow stops running itself: workflows can run each other {0} levels deep at most."
+msgstr ""
+
+#: Services/WorkflowTypeDraftManager.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowTypeDraftManager"
+msgid "This workflow has no start activity, so it never runs. Mark an event as the start activity."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "A script failed; the journal has the error."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "A workflow runs when something happens. Pick what starts this one, or drag any activity from the list on the left."
+msgstr ""
+
+#. Format arguments: {0}; {1}; {2}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "A {0} value may not convert to {1} ({2}); the workflow then faults."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Actions for {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Activities"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Activities added"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Activities and connections the instance ran."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Activities changed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Activities moved"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Activities removed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Add a value"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Add a variable"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Add the next activity, after {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Add variables in the Variables tab to store the values this activity produces."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Add {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Added"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "All"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "All changes saved"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "All changes since the workflow was last published are lost."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Also here:"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Also here: {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Apply"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Applying…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Available data"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Blocking"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Body"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Cancel"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Changed"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Changed {0} by {1}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Changes"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Close"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Close the activity panel"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Collapse the activities after it ({0})"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Collapse the panel"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Compare"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Compare with the published version"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Completed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Connect"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Connect an outcome of {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Connect an outcome to…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Connection actions"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Connections added"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Connections removed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Content type"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Copied {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Correlation id"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Default value"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Delete"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Delete connection"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Delete the activity"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Delete the variable {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Delete {0} activities"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Deleted 1 activity."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Deleted the connection."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Deleted {0} activities."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Description"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Details"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Discard"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Discard changes?"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Discard draft"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Discard the draft?"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Don't store"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Draft"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Draft last edited by {0} at {1}."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Drag an activity to the canvas, or click it to add it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Each publish creates a version. Instances run on the version they started on, until they finish."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Each publish creates a version. View, compare or restore earlier versions."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Each time the instance ran this activity, and what it evaluated, set and changed."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Edit"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Edit the selected activity. Changes are saved as you make them."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Enter a valid {0} value."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Error"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Events"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Expand the panel"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Export"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Exports the published workflow, without the draft."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Expressions"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Failed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "False"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Faulted"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Fields ({0})"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Fit to content"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Fix the errors, then apply."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Fix these {0} error(s) first:"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Form fields"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "From {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Functions"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Global"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Hide the activities"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "History"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Input"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Inputs"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Insert or copy {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Instance"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Instances"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Issues"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "JSON or text"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Journal"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Keep editing"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Keep the activity panel open below the canvas"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Kind of activities"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Last result"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Liquid filters, such as raw, json or date:"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Loading the activities…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Loading the workflow…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Loading…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "More actions"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Moved"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Name"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "No activities match the search."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "No data was recorded for this run: the activity changed nothing, or the workflow doesn't record activity data (see Record activity data in its settings)."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "No default value"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "No issues found."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "No value"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Not saved."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Not saved. Retrying…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Not stored"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Not waiting on this activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Nothing was recorded for this instance."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Open the activity panel over the canvas only while an activity is selected"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Open the designer"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Open the instance"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Open the settings of {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Other properties"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Outcome"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Outcome {0}: click to add the next activity, drag to an activity to connect it, or press Enter to choose one"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Output"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Outputs"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Overwrite"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Overwrite to save your layout and connections over theirs."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Passed by the workflow that runs this one, or by what starts it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Problems found in this workflow. Errors must be fixed before publishing; select one to go to its activity."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Publish"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Publish anyway"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Publish the workflow?"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Published"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Query string parameters"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Ran the instance"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Redo"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Redo (Ctrl+Y)"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Reload"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Reload to get the latest version. Your unsaved changes are lost."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Remove"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Remove connection {0} → {1}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Removed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Reset zoom to 100%"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Resize the activity panel"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Resize the panel"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Resolve…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Response"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Restore"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Restore this version?"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Result"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Resumed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Retry"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Retry from here"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Retry the instance?"
+msgstr ""
+
+#. Format arguments: {0}; {1}; {2}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Retry {0} of {1} is due {2}."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Retrying"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Returned to a workflow that runs this one as an activity."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Run"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Run by the instance"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Run the published version of the workflow, with an input or a request"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Run the workflow"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Runs"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Runs on version {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Run…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Saving…"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Script error"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Search activities"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Select an activity to edit it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Select an activity to see its details."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Sends a {0} request to the workflow, as a client would. Fill in the values the workflow reads, and add others if needed."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Set as start activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Set by a workflow that runs this one as an activity, or by the input of the same name the workflow starts with."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Settings"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Settings (or double-click the activity)"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Settings changed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Show all"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Show the activities"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Show the hidden activities after it ({0})"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Some values were too long, and were cut or left out."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Someone else changed this workflow."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Start"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Start with an event"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Store each value this activity produces in a variable of the workflow, so the activities after it can read it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Store in"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Target activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Tasks"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The activities couldn't be loaded."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The activities this instance ran, in order. Select one to go to it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The activity couldn't be added. Reload the page and try again."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The activity has errors, so its changes weren't applied. Discard them?"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The changes couldn't be applied. Try again."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The changes couldn't be saved, so the workflow wasn't published."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The comparison couldn't be loaded."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The data of this run couldn't be loaded."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The data this activity can use. Click an expression to insert it where the cursor was in the settings, or to copy it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The details of the selected activity."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The draft couldn't be discarded. Try again."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The draft was discarded."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The expression couldn't be copied."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The form couldn't be loaded."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The id this instance is correlated with, for example a content item id."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The instance couldn't be retried."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The instance didn't run this activity."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The instance ran again: {0}."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The instance runs again from {0}, with its current state."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The instance waits on these activities."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The instances that run on this version. It isn't deleted while they exist."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The outcome {0} already had a connection; it was replaced."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The published version, which new instances start on."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The request didn't start an instance, or the instance was deleted once finished."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The settings of this workflow: its name, whether it is enabled, and how its instances run."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The two definitions are the same."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The value of {0} isn't valid JSON."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The value the activity that ran just before returned. Its type depends on that activity."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The values of the input variables. Leave a field empty to use the variable's default value."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The variables of this workflow, and the values this instance has."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The variables of this workflow, with their types and default values. Read them with variable(\"name\") in JavaScript or {{ Workflow.Variables.name }} in Liquid."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The version couldn't be restored."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The versions couldn't be loaded."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow can't be published"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow couldn't be loaded. Reload the page to try again."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow couldn't be published. Try again."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow couldn't be reloaded. Try again."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow couldn't be run."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow doesn't read any parameter by name."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow has no input variables."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow has {0} warning(s):"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow instance waits on this activity."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow is disabled. Enable it on the Workflow tab, and publish, to run it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow reads this value. Leave it empty to not send it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow variables that store the values this activity produces."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow was changed after this designer last saved it."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow was published as version {0}."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow was published."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "The workflow was reloaded."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This activity type isn't available, so it can't be edited. Enable its feature or delete it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This activity type isn't available. Enable its feature to run it."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This instance"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This instance was deleted."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This runs the published version. Publish your changes to run them."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This workflow has no activities yet. Drag an activity from the toolbox to start."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This workflow has no activities."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This workflow has no variables."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This workflow has no versions yet."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "This workflow was changed"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "To run it here, publish a workflow that starts with Started by Workflow or with an HTTP Request event. Other events start the workflow when what they wait for happens."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Toolbox"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "True"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Type"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Undo"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Undo (Ctrl+Z)"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Unsaved changes"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Unset start activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Value"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Value of {0}"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Variables"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Variables of another type, which the value may not convert to"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Variables of this type have no default value."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Version {0}"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Version {0} (published)"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Version {0} replaces the activities, connections and execution settings of the draft. The changes in the draft are lost."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Version {0} was copied into the draft. Publish it to make it the published version again."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Versions"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "View"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Waiting"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Waiting on this activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Warning"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Workflow"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Workflow canvas"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Workflow canvas. Tab to an activity to select it; arrow keys move it, Delete removes it, Enter edits it, and the context menu key shows more actions."
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Workflows"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Zoom"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Zoom in"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Zoom out"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "a script failed and used its fallback value"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "another user"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "faulted the instance"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "input"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "new variable"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "not the published version"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "output"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "property"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "ran {0} time(s)"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "retried up to {0} time(s) when it fails"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "see the Liquid documentation"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "start activity"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "the instance waits on it"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} activities are selected."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} activity(ies) hidden"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} by {1}"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} changed this workflow at {1}, after this designer last saved it."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} changed this workflow. Reload to see their changes."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} connection(s) were removed because their outcome no longer exists."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} discarded the draft of this workflow."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} hidden activity(ies) after it"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} instance(s)"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} isn't a declared variable."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} issue(s)"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} ms"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} published this workflow."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} running instance(s)"
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} running instance(s) keep running on the version they started on. New instances start on the new version."
+msgstr ""
+
+#. Format arguments: {0}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0} variable"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0}, from {1}"
+msgstr ""
+
+#. Format arguments: {0}; {1}
+#: Services/WorkflowsDesignerJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "{0}: {1}"
+msgstr ""
+
+#: Timers/TimerEvent.cs
+msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
+msgid "Done"
+msgstr ""
+
+#: Timers/TimerEvent.cs
+msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
+msgid "The text TimerEvent."
+msgstr ""
+
+#: Timers/TimerEvent.cs
+msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
+msgid "Timer Event"
+msgstr ""
+
+#: Trimming/AdminMenu.cs
+msgctxt "OrchardCore.Workflows.Trimming.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Trimming/AdminMenu.cs
+msgctxt "OrchardCore.Workflows.Trimming.AdminMenu"
+msgid "Workflow Trimming"
+msgstr ""
+
+#: UserTasks/Activities/UserTaskEvent.cs
+msgctxt "OrchardCore.Workflows.UserTasks.Activities.UserTaskEvent"
+msgid "The action the user chose."
+msgstr ""
+
+#: UserTasks/Activities/UserTaskEvent.cs
+msgctxt "OrchardCore.Workflows.UserTasks.Activities.UserTaskEvent"
+msgid "The content event."
+msgstr ""
+
+#: UserTasks/Activities/UserTaskEvent.cs
+msgctxt "OrchardCore.Workflows.UserTasks.Activities.UserTaskEvent"
+msgid "The content item the user acted on."
+msgstr ""
+
+#: UserTasks/Activities/UserTaskEvent.cs
+msgctxt "OrchardCore.Workflows.UserTasks.Activities.UserTaskEvent"
+msgid "User Task Event"
+msgstr ""
+
+#. Format arguments: {0}: action
+#: UserTasks/Drivers/UserTaskEventContentDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.UserTasks.Drivers.UserTaskEventContentDriver"
+msgid "Not authorized to trigger '{0}'."
+msgstr ""
+
+#: Variables/AnyVariableType.cs
+msgctxt "OrchardCore.Workflows.Variables.AnyVariableType"
+msgid "Any"
+msgstr ""
+
+#: Variables/ArrayVariableType.cs
+msgctxt "OrchardCore.Workflows.Variables.ArrayVariableType"
+msgid "List"
+msgstr ""
+
+#: Variables/BooleanVariableType.cs
+msgctxt "OrchardCore.Workflows.Variables.BooleanVariableType"
+msgid "Yes or no"
+msgstr ""
+
+#: Variables/DateTimeVariableType.cs
+msgctxt "OrchardCore.Workflows.Variables.DateTimeVariableType"
+msgid "Date and time"
+msgstr ""
+
+#: Variables/NumberVariableType.cs
+msgctxt "OrchardCore.Workflows.Variables.NumberVariableType"
+msgid "Number"
+msgstr ""
+
+#: Variables/ObjectVariableType.cs
+msgctxt "OrchardCore.Workflows.Variables.ObjectVariableType"
+msgid "Object"
+msgstr ""
+
+#: Variables/StringVariableType.cs
+msgctxt "OrchardCore.Workflows.Variables.StringVariableType"
+msgid "Text"
+msgstr ""
+
+#. Format arguments: {0}: variable.Name
+#: Variables/WorkflowVariableValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Variables.WorkflowVariableValidator"
+msgid "'{0}' isn't a valid name: use a letter or an underscore, then letters, digits or underscores."
+msgstr ""
+
+#. Format arguments: {0}: variable.Name
+#: Variables/WorkflowVariableValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Variables.WorkflowVariableValidator"
+msgid "Another variable is named '{0}'."
+msgstr ""
+
+#: Variables/WorkflowVariableValidator.cs
+msgctxt "OrchardCore.Workflows.Variables.WorkflowVariableValidator"
+msgid "Enter a name."
+msgstr ""
+
+#. Format arguments: {0}: variable.Name; {1}: _localizerFactory.Localize(descriptor.DisplayName)
+#: Variables/WorkflowVariableValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Variables.WorkflowVariableValidator"
+msgid "The default value of '{0}' isn't a valid {1}."
+msgstr ""
+
+#. Format arguments: {0}: variable.TypeName ?? string.Empty
+#: Variables/WorkflowVariableValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Variables.WorkflowVariableValidator"
+msgid "The type '{0}' isn't available."
+msgstr ""
+
+#: Views/Activity.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Activity.Design"
+msgid "Delete"
+msgstr ""
+
+#: Views/Activity.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Activity.Design"
+msgid "Edit"
+msgstr ""
+
+#: Views/Activity.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Activity.Design"
+msgid "Startup event"
+msgstr ""
+
+#: Views/Activity.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Activity.Thumbnail"
+msgid "Add"
+msgstr ""
+
+#: Views/ActivityMetadata.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityMetadata.Edit"
+msgid "Optionally provide a custom title for this activity."
+msgstr ""
+
+#: Views/ActivityMetadata.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityMetadata.Edit"
+msgid "Title"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "A faulted workflow stops at the task, and can be retried from it. The Failed outcome lets the workflow go on, for example to notify someone; the error is the task's last result."
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Delay (seconds)"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Delay between retries"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Doubling the delay gives a service that's down more time to come back, up to a day between retries."
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Fault the workflow"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Follow the Failed outcome"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "How long to wait before the first retry. With zero, the task is retried at once; otherwise the instance waits, faulted, and is retried within a minute of the delay."
+msgstr ""
+
+#. Format arguments: {0}: ActivityRetryPolicy.MaxRetriesLimit
+#: Views/ActivityRetryPolicy.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "How many times the task is retried, up to {0}. Leave it at zero to not retry it."
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Once the retries are spent"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Retries"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Retry the task when it throws, for example when a service it calls is down for a moment."
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "The same each time"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "Twice as long each time"
+msgstr ""
+
+#: Views/ActivityRetryPolicy.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
+msgid "When it fails"
+msgstr ""
+
+#: Views/Content.UserTaskButton.cshtml
+msgctxt "OrchardCore.Workflows.Views.Content.UserTaskButton"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/Content.UserTaskButton.cshtml
+msgctxt "OrchardCore.Workflows.Views.Content.UserTaskButton"
+msgid "User Actions"
+msgstr ""
+
+#: Views/Content.UserTaskButton.cshtml
+msgctxt "OrchardCore.Workflows.Views.Content.UserTaskButton"
+msgid "and Publish"
+msgstr ""
+
+#: Views/Content.UserTaskButton.cshtml
+msgctxt "OrchardCore.Workflows.Views.Content.UserTaskButton"
+msgid "and Save"
+msgstr ""
+
+#: Views/Items/AllWorkflowTypeDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.AllWorkflowTypeDeploymentStep.Fields.Summary"
+msgid "Adds all Workflow types"
+msgstr ""
+
+#: Views/Items/AllWorkflowTypeDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.AllWorkflowTypeDeploymentStep.Fields.Summary"
+msgid "All Workflow Types"
+msgstr ""
+
+#: Views/Items/AllWorkflowTypeDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.AllWorkflowTypeDeploymentStep.Fields.Thumbnail"
+msgid "All Workflows"
+msgstr ""
+
+#: Views/Items/AllWorkflowTypeDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.AllWorkflowTypeDeploymentStep.Fields.Thumbnail"
+msgid "Exports all the Workflows of the system."
+msgstr ""
+
+#: Views/Items/CommitTransactionTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CommitTransactionTask.Fields.Design"
+msgid "Commit Transaction"
+msgstr ""
+
+#: Views/Items/CommitTransactionTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CommitTransactionTask.Fields.Thumbnail"
+msgid "Commit Transaction"
+msgstr ""
+
+#: Views/Items/CommitTransactionTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CommitTransactionTask.Fields.Thumbnail"
+msgid "Commit the current transaction."
+msgstr ""
+
+#: Views/Items/CorrelateTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CorrelateTask.Fields.Design"
+msgid "Correlate"
+msgstr ""
+
+#: Views/Items/CorrelateTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CorrelateTask.Fields.Edit"
+msgid "The value to correlate workflow instances with."
+msgstr ""
+
+#: Views/Items/CorrelateTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CorrelateTask.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/CorrelateTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CorrelateTask.Fields.Thumbnail"
+msgid "Correlate"
+msgstr ""
+
+#: Views/Items/CorrelateTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.CorrelateTask.Fields.Thumbnail"
+msgid "Correlate the current workflow instance with a value."
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Design"
+msgid "Doesn't wait for it to finish"
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Design"
+msgid "Execute Workflow"
+msgstr ""
+
+#. Format arguments: {0}: workflowType.Name
+#: Views/Items/ExecuteWorkflowTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Design"
+msgid "Execute {0}"
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Edit"
+msgid "Check to continue once the workflow finished, with its outputs, even when it waits on events. Leave unchecked to continue as soon as it started."
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Edit"
+msgid "Select a workflow"
+msgstr ""
+
+#. Format arguments: {0}: input.Name; {1}: input.TypeName
+#: Views/Items/ExecuteWorkflowTask.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Edit"
+msgid "The value of the {0} input ({1})."
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Edit"
+msgid "The workflow to run. The workflows listed are those usable as an activity, set in their settings."
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Edit"
+msgid "This workflow has no input variables."
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Edit"
+msgid "Wait for the workflow to finish"
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Edit"
+msgid "Workflow"
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Thumbnail"
+msgid "Execute Workflow"
+msgstr ""
+
+#: Views/Items/ExecuteWorkflowTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ExecuteWorkflowTask.Fields.Thumbnail"
+msgid "Runs a workflow usable as an activity, with its inputs, and gets its outputs."
+msgstr ""
+
+#: Views/Items/ForEachTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Design"
+msgid "For Each"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.LoopVariableName; {1}: expression
+#: Views/Items/ForEachTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Design"
+msgid "Iterate <em>{0}</em> over <em>{1}</em>"
+msgstr ""
+
+#: Views/Items/ForEachTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Edit"
+msgid "Items"
+msgstr ""
+
+#: Views/Items/ForEachTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Edit"
+msgid "Looping Variable"
+msgstr ""
+
+#: Views/Items/ForEachTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Edit"
+msgid "The list to iterate: a JavaScript list, a Liquid template that renders a JSON array or comma-separated values, or a literal list."
+msgstr ""
+
+#: Views/Items/ForEachTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Edit"
+msgid "The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."
+msgstr ""
+
+#: Views/Items/ForEachTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Thumbnail"
+msgid "For Each"
+msgstr ""
+
+#: Views/Items/ForEachTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForEachTask.Fields.Thumbnail"
+msgid "Iterate over a JavaScript or Liquid list of items."
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Design"
+msgid "For Loop"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.LoopVariableName; {1}: fromExpression; {2}: toExpression
+#: Views/Items/ForLoopTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Design"
+msgid "Iterate <em>{0}</em> from <em>{1}</em> to <em>{2}</em>"
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "From"
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "Looping Variable"
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "Step"
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "The end value, which isn't included."
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "The start value."
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "The value added at each iteration."
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Edit"
+msgid "To"
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Thumbnail"
+msgid "For Loop"
+msgstr ""
+
+#: Views/Items/ForLoopTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForLoopTask.Fields.Thumbnail"
+msgid "Iterate from a JavaScript or Liquid start value to an end value."
+msgstr ""
+
+#: Views/Items/ForkTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Design"
+msgid "Fork"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", Model.Activity.Forks)
+#: Views/Items/ForkTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Design"
+msgid "Fork execution into <em>{0}</em>"
+msgstr ""
+
+#: Views/Items/ForkTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Design"
+msgid "No forks"
+msgstr ""
+
+#: Views/Items/ForkTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Edit"
+msgid "Enter one or more comma-separated fork names."
+msgstr ""
+
+#: Views/Items/ForkTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Edit"
+msgid "Forks"
+msgstr ""
+
+#: Views/Items/ForkTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Thumbnail"
+msgid "Fork"
+msgstr ""
+
+#: Views/Items/ForkTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ForkTask.Fields.Thumbnail"
+msgid "Fork workflow execution into separate paths of execution."
+msgstr ""
+
+#: Views/Items/HttpRedirectTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRedirectTask.Fields.Design"
+msgid "HTTP Redirect"
+msgstr ""
+
+#: Views/Items/HttpRedirectTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRedirectTask.Fields.Edit"
+msgid "Check if the redirect should be permanent (301). Leave unchecked for a temporary redirect (302)."
+msgstr ""
+
+#: Views/Items/HttpRedirectTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRedirectTask.Fields.Edit"
+msgid "Location"
+msgstr ""
+
+#: Views/Items/HttpRedirectTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRedirectTask.Fields.Edit"
+msgid "Permanent"
+msgstr ""
+
+#: Views/Items/HttpRedirectTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRedirectTask.Fields.Edit"
+msgid "The URL to redirect to. With Liquid support."
+msgstr ""
+
+#: Views/Items/HttpRedirectTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRedirectTask.Fields.Thumbnail"
+msgid "HTTP Redirect"
+msgstr ""
+
+#: Views/Items/HttpRedirectTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRedirectTask.Fields.Thumbnail"
+msgid "Redirect the user agent to the specified URL (301/302)."
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Design"
+msgid "Handle Incoming HTTP Request"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Copy"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Form Location Key"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Generate a new URL"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "HTTP Method"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Hit the <b>Regenerate</b> button after changing this value."
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Number of days to expire the token. 0 for the token to never expire"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Regenerate"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "The HTTP method to match."
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "This key name is used to store and then retrieve the current form's location. Leave blank if the workflow doesn't handle any form or a single one."
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Token Life Span"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "URL"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Edit"
+msgid "Validate Antiforgery Token"
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Thumbnail"
+msgid "Executes when a HTTP request comes in that matches a given path."
+msgstr ""
+
+#: Views/Items/HttpRequestEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestEvent.Fields.Thumbnail"
+msgid "HTTP Request"
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Design"
+msgid "Filter Incoming HTTP Request"
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "Action"
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "Area"
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "Controller"
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "HTTP Method"
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "The HTTP method to match."
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "The action name to match."
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "The area name to match."
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Edit"
+msgid "The controller name to match."
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Thumbnail"
+msgid "Executes when the specified HTTP request comes in. Similar to an MVC Action Filter."
+msgstr ""
+
+#: Views/Items/HttpRequestFilterEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestFilterEvent.Fields.Thumbnail"
+msgid "Filter Incoming HTTP Request"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.HttpMethod; {1}: Model.Activity.Url
+#: Views/Items/HttpRequestTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Design"
+msgid "<em>{0} {1}</em>"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Design"
+msgid "HTTP Request"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "A comma-separated list of HTTP response status codes to handle as activity outcomes. For example: 200, 404, 500"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "Body"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "Content Type"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "HTTP Method"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "HTTP Response Codes"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "Headers"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "Provide additional HTTP headers, one per line. For example: Authorization: Bearer 123ABC. With Liquid support."
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "The HTTP Method. For example: GET, POST, PUT, PATCH, OPTIONS, HEAD, DELETE"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "The URL to send the request to. Supports Liquid syntax."
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "The body to send with POST, PUT and PATCH requests. With Liquid support."
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "The content type of the request body."
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Edit"
+msgid "URL"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Thumbnail"
+msgid "HTTP Request"
+msgstr ""
+
+#: Views/Items/HttpRequestTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpRequestTask.Fields.Thumbnail"
+msgid "Perform a HTTP request to a given URL."
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Design"
+msgid "HTTP Response"
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "Content"
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "Content Type"
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "HTTP Status Code"
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "Headers"
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "Provide additional HTTP response headers. Enter one key/value pair per line. For example: \"X-MyHeader: Foo\". With Liquid support."
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "The HTTP Status Code to send back. <a href=\"https://en.wikipedia.org/wiki/List_of_HTTP_status_codes\" target=\"_blank\">Click here</a> for a complete list."
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "The body to send back. With Liquid support."
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Edit"
+msgid "The content type of the response body."
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Thumbnail"
+msgid "HTTP Response"
+msgstr ""
+
+#: Views/Items/HttpResponseTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.HttpResponseTask.Fields.Thumbnail"
+msgid "Write a HTTP response."
+msgstr ""
+
+#. Format arguments: {0}: expression
+#: Views/Items/IfElseTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.IfElseTask.Fields.Design"
+msgid "Evaluate <em>{0}</em>"
+msgstr ""
+
+#: Views/Items/IfElseTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.IfElseTask.Fields.Design"
+msgid "If/Else"
+msgstr ""
+
+#: Views/Items/IfElseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.IfElseTask.Fields.Edit"
+msgid "An expression that evaluates to true or false."
+msgstr ""
+
+#: Views/Items/IfElseTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.IfElseTask.Fields.Edit"
+msgid "Condition"
+msgstr ""
+
+#: Views/Items/IfElseTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.IfElseTask.Fields.Thumbnail"
+msgid "Evaluate a JavaScript or Liquid boolean condition and continue execution based on the outcome."
+msgstr ""
+
+#: Views/Items/IfElseTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.IfElseTask.Fields.Thumbnail"
+msgid "If/Else"
+msgstr ""
+
+#: Views/Items/JoinTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Design"
+msgid "Await <strong>all</strong> inbound activities before joining execution into a single path."
+msgstr ""
+
+#: Views/Items/JoinTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Design"
+msgid "Awaits <strong>any</strong> inbound activities before joining execution into a single path."
+msgstr ""
+
+#: Views/Items/JoinTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Design"
+msgid "Join"
+msgstr ""
+
+#: Views/Items/JoinTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Edit"
+msgid "Controls whether the Join task should wait for all or any inbound activity to be completed."
+msgstr ""
+
+#: Views/Items/JoinTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Edit"
+msgid "Mode"
+msgstr ""
+
+#: Views/Items/JoinTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Thumbnail"
+msgid "Join"
+msgstr ""
+
+#: Views/Items/JoinTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Thumbnail"
+msgid "Join forked workflow execution back into a single path of execution."
+msgstr ""
+
+#: Views/Items/LiquidTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LiquidTask.Fields.Design"
+msgid "Liquid"
+msgstr ""
+
+#: Views/Items/LiquidTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LiquidTask.Fields.Edit"
+msgid "Expression"
+msgstr ""
+
+#. Format arguments: {0}: "{{ Workflow.Input.ContentItem.DisplayText }}"
+#: Views/Items/LiquidTask.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.LiquidTask.Fields.Edit"
+msgid "The Liquid expression to evaluate. The result is stored as the last result. Example: {0}"
+msgstr ""
+
+#: Views/Items/LiquidTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LiquidTask.Fields.Thumbnail"
+msgid "Evaluate a Liquid expression and store the result as the workflow's last result."
+msgstr ""
+
+#: Views/Items/LiquidTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LiquidTask.Fields.Thumbnail"
+msgid "Liquid"
+msgstr ""
+
+#: Views/Items/LogTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LogTask.Fields.Design"
+msgid "Log"
+msgstr ""
+
+#: Views/Items/LogTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LogTask.Fields.Edit"
+msgid "Log Level"
+msgstr ""
+
+#: Views/Items/LogTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LogTask.Fields.Edit"
+msgid "Text"
+msgstr ""
+
+#: Views/Items/LogTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LogTask.Fields.Edit"
+msgid "The log level."
+msgstr ""
+
+#: Views/Items/LogTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LogTask.Fields.Edit"
+msgid "The text to log. With Liquid support."
+msgstr ""
+
+#: Views/Items/LogTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LogTask.Fields.Thumbnail"
+msgid "Log"
+msgstr ""
+
+#: Views/Items/LogTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.LogTask.Fields.Thumbnail"
+msgid "Write a log entry."
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.MissingActivityRecord.Name
+#: Views/Items/MissingActivity.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.MissingActivity.Fields.Design"
+msgid "<em>{0}</em> is no longer available."
+msgstr ""
+
+#: Views/Items/MissingActivity.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.MissingActivity.Fields.Design"
+msgid "Missing Activity"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.NotificationType
+#: Views/Items/NotifyTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Design"
+msgid "{0} Notification"
+msgstr ""
+
+#: Views/Items/NotifyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Edit"
+msgid "Message"
+msgstr ""
+
+#: Views/Items/NotifyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Edit"
+msgid "Notification Type"
+msgstr ""
+
+#: Views/Items/NotifyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Edit"
+msgid "The message to show. With Liquid support."
+msgstr ""
+
+#: Views/Items/NotifyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Edit"
+msgid "The notification type."
+msgstr ""
+
+#: Views/Items/NotifyTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Thumbnail"
+msgid "Display a notification."
+msgstr ""
+
+#: Views/Items/NotifyTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Thumbnail"
+msgid "Notify"
+msgstr ""
+
+#: Views/Items/ScriptTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ScriptTask.Fields.Design"
+msgid "Script"
+msgstr ""
+
+#: Views/Items/ScriptTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ScriptTask.Fields.Edit"
+msgid "A comma-separated list of available outcomes."
+msgstr ""
+
+#: Views/Items/ScriptTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ScriptTask.Fields.Edit"
+msgid "Available Outcomes"
+msgstr ""
+
+#: Views/Items/ScriptTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ScriptTask.Fields.Edit"
+msgid "Script"
+msgstr ""
+
+#: Views/Items/ScriptTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ScriptTask.Fields.Edit"
+msgid "The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."
+msgstr ""
+
+#: Views/Items/ScriptTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ScriptTask.Fields.Thumbnail"
+msgid "Execute script and continue execution based on the returned outcome."
+msgstr ""
+
+#: Views/Items/ScriptTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.ScriptTask.Fields.Thumbnail"
+msgid "Script"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.OutputName
+#: Views/Items/SetOutputTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Design"
+msgid "Output via {0}"
+msgstr ""
+
+#: Views/Items/SetOutputTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/SetOutputTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Edit"
+msgid "The name to output to."
+msgstr ""
+
+#: Views/Items/SetOutputTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Edit"
+msgid "The value to store in the specified output."
+msgstr ""
+
+#: Views/Items/SetOutputTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/SetOutputTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Thumbnail"
+msgid "Evaluate a JavaScript or Liquid expression and store the result into the workflow's output."
+msgstr ""
+
+#: Views/Items/SetOutputTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Thumbnail"
+msgid "Set Output"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.PropertyName
+#: Views/Items/SetPropertyTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Design"
+msgid "Set {0} Property"
+msgstr ""
+
+#: Views/Items/SetPropertyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/SetPropertyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Edit"
+msgid "The property to set. If the specified property doesn't exist yet, it will be added."
+msgstr ""
+
+#: Views/Items/SetPropertyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Edit"
+msgid "The value to store in the specified property."
+msgstr ""
+
+#: Views/Items/SetPropertyTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/SetPropertyTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Thumbnail"
+msgid "Assign a JavaScript or Liquid value to a property on the workflow."
+msgstr ""
+
+#: Views/Items/SetPropertyTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Thumbnail"
+msgid "Set Property"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.VariableName
+#: Views/Items/SetVariableTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.SetVariableTask.Fields.Design"
+msgid "Set {0}"
+msgstr ""
+
+#: Views/Items/SetVariableTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetVariableTask.Fields.Edit"
+msgid "The value to store in the variable."
+msgstr ""
+
+#: Views/Items/SetVariableTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetVariableTask.Fields.Edit"
+msgid "The variable to set. A variable declared in the Variables tab gets the value converted to its type; another name sets the workflow property of that name."
+msgstr ""
+
+#: Views/Items/SetVariableTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetVariableTask.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/SetVariableTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetVariableTask.Fields.Edit"
+msgid "Variable"
+msgstr ""
+
+#: Views/Items/SetVariableTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetVariableTask.Fields.Thumbnail"
+msgid "Assign a JavaScript or Liquid value to a workflow variable, converted to its type."
+msgstr ""
+
+#: Views/Items/SetVariableTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SetVariableTask.Fields.Thumbnail"
+msgid "Set Variable"
+msgstr ""
+
+#: Views/Items/SignalEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Design"
+msgid "Signal"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.SignalName
+#: Views/Items/SignalEvent.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Design"
+msgid "When <em>{0}</em> is triggered"
+msgstr ""
+
+#: Views/Items/SignalEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/SignalEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Edit"
+msgid "The signal name. With Liquid support."
+msgstr ""
+
+#: Views/Items/SignalEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Thumbnail"
+msgid "Executes when a signal is triggered."
+msgstr ""
+
+#: Views/Items/SignalEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Thumbnail"
+msgid "Signal"
+msgstr ""
+
+#: Views/Items/StartedByWorkflowEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.StartedByWorkflowEvent.Fields.Design"
+msgid "Started By Workflow"
+msgstr ""
+
+#: Views/Items/StartedByWorkflowEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.StartedByWorkflowEvent.Fields.Thumbnail"
+msgid "Started By Workflow"
+msgstr ""
+
+#: Views/Items/StartedByWorkflowEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.StartedByWorkflowEvent.Fields.Thumbnail"
+msgid "Starts this workflow when another workflow runs it with the Execute Workflow task."
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.CronExpression
+#: Views/Items/TimerEvent.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Design"
+msgid "<em>{0}</em>"
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Design"
+msgid "Timer"
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
+msgid "CRON Expression"
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
+msgid "The CRON expression uses UTC by default. Check this box to use the site's time zone instead."
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
+msgid "The CRON expression."
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
+msgid "Use site time zone"
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Thumbnail"
+msgid "Executes repeatedly according to a specified CRON expression."
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Thumbnail"
+msgid "Timer"
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
+msgid "Any"
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
+msgid "No user actions specified"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", Model.Activity.Actions)
+#: Views/Items/UserTaskEvent.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
+msgid "Request any user action of <em>{0}</em>"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.Roles.Any() ? Html.Raw(Html.Encode(string.Join(", ", Model.Activity.Roles))) : T["Any"]
+#: Views/Items/UserTaskEvent.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
+msgid "Required roles: <em>{0}</em>"
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
+msgid "User Task"
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Edit"
+msgid "Actions"
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Edit"
+msgid "Enter one or more comma-separated action names."
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Edit"
+msgid "Roles"
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Edit"
+msgid "Select the roles that are allowed to perform the specified actions. If no roles are selected, then any role is allowed."
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Thumbnail"
+msgid "Halt the workflow until the user executed an action on a content item."
+msgstr ""
+
+#: Views/Items/UserTaskEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Thumbnail"
+msgid "User Task"
+msgstr ""
+
+#. Format arguments: {0}: expression
+#: Views/Items/WhileLoopTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WhileLoopTask.Fields.Design"
+msgid "Loop while <em>{0}</em> is true"
+msgstr ""
+
+#: Views/Items/WhileLoopTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WhileLoopTask.Fields.Design"
+msgid "While Loop"
+msgstr ""
+
+#: Views/Items/WhileLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WhileLoopTask.Fields.Edit"
+msgid "Condition"
+msgstr ""
+
+#: Views/Items/WhileLoopTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WhileLoopTask.Fields.Edit"
+msgid "The loop goes on while this expression evaluates to true."
+msgstr ""
+
+#: Views/Items/WhileLoopTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WhileLoopTask.Fields.Thumbnail"
+msgid "Iterate while a JavaScript or Liquid condition is true."
+msgstr ""
+
+#: Views/Items/WhileLoopTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WhileLoopTask.Fields.Thumbnail"
+msgid "While Loop"
+msgstr ""
+
+#: Views/Items/WorkflowFaultEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Design"
+msgid "Workflow Fault Event"
+msgstr ""
+
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "Check the captured workflow error information and return a Boolean value. If it is true, it will be processed by the current workflow. Javascript syntax."
+msgstr ""
+
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "Trigger Condition"
+msgstr ""
+
+#. Format arguments: {0}: WorkflowFaultModel.WorkflowFaultInputKey
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "You can use input('{0}') to get error information, contains the following attributes："
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.ActivityId)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Activity Id."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.ActivityTypeName)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Activity Type Name."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.FaultMessage)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Contains error messages manually raised by workflow activity."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.ExceptionDetails)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Exception Details."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.ErrorMessage)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Exception Information Summary."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.ExecutedActivityCount)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Executed activity count."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.ActivityDisplayName)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：The name of the activity."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.WorkflowId)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Workflow Id."
+msgstr ""
+
+#. Format arguments: {0}: nameof(WorkflowFaultModel.WorkflowName)
+#: Views/Items/WorkflowFaultEvent.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Edit"
+msgid "{0}：Workflow name."
+msgstr ""
+
+#: Views/Items/WorkflowFaultEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Thumbnail"
+msgid "Trigger and capture exception information when exception occurs in any other workflow."
+msgstr ""
+
+#: Views/Items/WorkflowFaultEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.WorkflowFaultEvent.Fields.Thumbnail"
+msgid "Workflow Fault Event"
+msgstr ""
+
+#: Views/Shared/Components/SelectWorkflowType/Default.cshtml
+msgctxt "OrchardCore.Workflows.Views.Shared.Components.SelectWorkflowType.Default"
+msgid "-"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Are you sure you want to delete this workflow instance?"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Are you sure you want to restart this workflow instance?"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Back"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Correlation ID"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Created"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Delete"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Fault Message"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Instances"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "None"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Restart"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "State"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Status"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Workflow"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Workflow ID"
+msgstr ""
+
+#: Views/Workflow/Details.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
+msgid "Workflows"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "<strong>Nothing here!</strong> There are no workflow instances that match these filters."
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Aborted"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "All"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Created"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Faulted"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Finished"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Halted"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Instances"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Instances by status"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Running"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Workflow"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "Workflows"
+msgstr ""
+
+#: Views/Workflow/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Any number"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Delete successfully completed workflows"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Enabled"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Fault the workflow on script errors"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Follow every transition"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Follow the first transition only"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Instances at a time"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Lock expiration (ms)"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Lock timeout (ms)"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Name"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "One at a time"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "One per correlated item"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Outcomes with several transitions"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Record activity data"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "The name of the workflow."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Uncheck to prevent workflows of this type from being executed."
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "Usable as an activity"
+msgstr ""
+
+#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
+msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
+msgstr ""
+
+#: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
+msgid "Are you sure you want to delete this workflow instance?"
+msgstr ""
+
+#: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
+msgid "Are you sure you want to restart this workflow instance?"
+msgstr ""
+
+#: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
+msgid "Restart"
+msgstr ""
+
+#: Views/WorkflowEntry.DefaultMeta.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultMeta.SummaryAdmin"
+msgid "Created"
+msgstr ""
+
+#. Format arguments: {0}: workflow.PendingRetry.FailedAttempts; {1}: workflow.PendingRetry.MaxRetries; {2}: await DisplayAsync(await New.DateTime(Utc: workflow.PendingRetry.DueUtc, Format: "g"))
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Retry {0} of {1} due {2}"
+msgstr ""
+
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Runs on an earlier version"
+msgstr ""
+
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Runs on the published version"
+msgstr ""
+
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Status"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Version
+#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
+msgid "Version {0}"
+msgstr ""
+
+#. Format arguments: {0}: Model.Label
+#: Views/WorkflowExpressionEditor.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowExpressionEditor"
+msgid "Syntax of {0}"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Created"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Filter by creation date"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Filter by status"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Filter by workflow"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Sort"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Sort by"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Status"
+msgstr ""
+
+#: Views/WorkflowInstancesFilters.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
+msgid "Workflow"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Aborted"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Disable"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Executing"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Faulted"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Finished"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Halted"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Idle"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Last run"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Never"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Resuming"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Retention period"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Starting"
+msgstr ""
+
+#. Format arguments: {0}: status.ToString()
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Status: {0}"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Statuses"
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "The last time the background trimming task was run."
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "The number of days a workflow instance is retained for."
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Whether the task is disabled."
+msgstr ""
+
+#: Views/WorkflowTrimming.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
+msgid "Workflows with the selected statuses will be trimmed."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Advanced"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Any number"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Cancel"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Clone Workflow"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Delete successfully completed workflows"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Enabled"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Fault the workflow on script errors"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Follow every transition"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Follow the first transition only"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Instances at a time"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Invalid lock expiration value in the advanced tab"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Invalid lock timeout value in the advanced tab"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Lock expiration (ms)"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Lock timeout (ms)"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Name"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "One at a time"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "One per correlated item"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Outcomes with several transitions"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Properties"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Record activity data"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Save"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "The name of the workflow."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Uncheck to prevent workflows of this type from being executed."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Usable as an activity"
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
+msgstr ""
+
+#: Views/WorkflowType/Clone.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
+msgid "Workflows"
+msgstr ""
+
+#: Views/WorkflowType/CompareVersions.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.CompareVersions"
+msgid "Compare versions"
+msgstr ""
+
+#: Views/WorkflowType/CompareVersions.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.CompareVersions"
+msgid "Workflows"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Any number"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Create Workflow"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Create and open the designer"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Delete successfully completed workflows"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Enabled"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Fault the workflow on script errors"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Follow every transition"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Follow the first transition only"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Instances at a time"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Lock expiration (ms)"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Lock timeout (ms)"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "More settings"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "One at a time"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "One per correlated item"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Outcomes with several transitions"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Record activity data"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "The defaults suit most workflows. You can change these settings later, on the designer's Workflow tab."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Uncheck to prevent workflows of this type from being executed."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Usable as an activity"
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "What the workflow does, such as \"Notify the editors when an article is published\"."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
+msgstr ""
+
+#: Views/WorkflowType/Create.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
+msgid "Workflows"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "<strong>Nothing here!</strong> There are no workflow types for the moment."
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "Create Workflow"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "Instances"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "Workflows"
+msgstr ""
+
+#: Views/WorkflowType/Index.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
+msgid "selected"
+msgstr ""
+
+#. Format arguments: {0}: Model.Version.Version
+#: Views/WorkflowType/Version.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Version"
+msgid "Version {0}"
+msgstr ""
+
+#: Views/WorkflowType/Version.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowType.Version"
+msgid "Workflows"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Clone"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Export"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
+msgid "Instances"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
+msgid "No startup task"
+msgstr ""
+
+#: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
+msgid "Status"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "All Workflow Types"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Workflows"
+msgstr ""

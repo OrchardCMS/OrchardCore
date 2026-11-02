@@ -1,0 +1,16 @@
+@model DataSourceStepViewModel
+
+@if (string.IsNullOrEmpty(Model.DataSet))
+{
+    <span class="text-muted">@T["Choose a data set"]</span>
+}
+else
+{
+    <span>@Model.SourceName › @Model.DataSetName</span>
+    <span class="text-muted d-block">
+        @(Model.Fields.Length == 0 ? T["Every field"] : T.Plural(Model.Fields.Length, "1 field", "{0} fields"))@if (Model.Filters.Count > 0)
+        {
+            @: · @T.Plural(Model.Filters.Count, "1 filter", "{0} filters")
+        }
+    </span>
+}

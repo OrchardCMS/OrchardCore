@@ -1,0 +1,9 @@
+@model DataPipelineStepTitleViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="Title" class="ocat-label">@T["Title"]</label>
+    <div class="ocat-end">
+        <input asp-for="Title" class="form-control" />
+        <span class="hint">@T["Shown on the canvas instead of the name of the step."]</span>
+    </div>
+</div>

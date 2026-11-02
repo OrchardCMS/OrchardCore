@@ -1,5 +1,7 @@
-import { initializeMenu } from "./menu";
-import "./resizeDetector";
+import { initializeMenu } from "./sidebar";
+import "./sidebarBreakpointDetector";
+import "./actionBar";
+import "./actionGroup";
 
 // Bootstrap is loaded as a shared global script resource (see ResourceManagementOptionsConfiguration.cs),
 // not bundled here — this brings in its types only, with no runtime import/bundling.
@@ -186,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 (function () {
     // Tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });

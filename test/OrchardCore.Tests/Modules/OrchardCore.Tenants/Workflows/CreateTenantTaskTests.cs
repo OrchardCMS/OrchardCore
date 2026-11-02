@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tests.Apis.Context;
@@ -88,6 +89,7 @@ public class CreateTenantTaskTests : SiteContext
             expressionEvaluatorMock.Object,
             Mock.Of<IWorkflowScriptEvaluator>(),
             serviceProvider.GetRequiredService<ITenantValidator>(),
+            new NullStringLocalizerFactory(),
             localizerMock.Object)
         {
             TenantName = new WorkflowExpression<string>(tenantName),

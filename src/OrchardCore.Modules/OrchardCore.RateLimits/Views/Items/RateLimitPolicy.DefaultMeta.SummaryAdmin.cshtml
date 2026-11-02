@@ -1,4 +1,16 @@
+@using System.Globalization
 @model dynamic
+
+@{
+    var enabledUtc = ((DateTime?)Model.Value.EnabledUtc)?.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
+}
+
+@if (Model.Value.EnabledUtc is not null)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: Model.Value.EnabledUtc, Format: "g"))">
+        <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@enabledUtc">@await DisplayAsync(await New.Timespan(Utc: Model.Value.EnabledUtc))</time>
+    </span>
+}
 
 @if (!string.IsNullOrEmpty(Model.Value.Author))
 {

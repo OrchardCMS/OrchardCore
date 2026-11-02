@@ -9,17 +9,15 @@
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name"></span>
         </div>
     </div>
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-primary create" type="submit">@T["Create"]</button>
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
