@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Acornima" Version="1.8.0" />
+    <PackageVersion Include="Acornima" Version="1.9.0" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
     <PackageVersion Include="AngleSharp" Version="1.8.5" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.104.4" />
@@ -24,7 +24,7 @@
     <PackageVersion Include="Cyqwel" Version="0.4.0" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.27" />
-    <PackageVersion Include="FluentFTP" Version="55.0.0" />
+    <PackageVersion Include="FluentFTP" Version="55.1.0" />
     <PackageVersion Include="Fluid.Core" Version="2.40.0" />
     <PackageVersion Include="GraphQL" Version="8.8.5" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.5" />
@@ -66,7 +66,7 @@
     <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.7.1" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.14" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.18.0" />
     <PackageVersion Include="Shortcodes" Version="1.3.6" />
     <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="NetVips" Version="3.2.0" />
