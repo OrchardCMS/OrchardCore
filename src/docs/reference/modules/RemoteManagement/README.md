@@ -782,6 +782,8 @@ text with a JSON object containing the HTTP `statusCode` and the response `body`
 JSON when the response is JSON and as a string otherwise.
 HTTP errors set MCP `isError` to `true`. Operation permissions are evaluated at call
 time; discovery does not promise that a caller can invoke every listed tool.
+A response larger than `MaximumResponseBytes` (4 MiB by default) is turned into a tool
+error, as responses are held in memory.
 
 Only named endpoints carrying `CliOperationMetadata` are exposed. Hidden CLI
 operations, stream inputs, binary responses, multipart bodies, and header/cookie parameters are excluded.
@@ -799,14 +801,15 @@ Use Pomi or the HTTP APIs for these operations and for file transfers.
 The operations for which Pomi asks a confirmation (`RequiresConfirmation`), such as executing
 a recipe, deleting or stopping a tenant, importing a deployment package or any deletion, are
 left out too: a model can invoke a tool without asking anyone. Enable them for a tenant with
-`AllowConfirmationRequiredTools`, which is off by default:
+`AllowConfirmationRequiredTools`, which is off by default. These settings configure the tools:
 
 ```json
 {
   "OrchardCore": {
     "RemoteManagement": {
       "Mcp": {
-        "AllowConfirmationRequiredTools": true
+        "AllowConfirmationRequiredTools": false,
+        "MaximumResponseBytes": 4194304
       }
     }
   }

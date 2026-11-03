@@ -27,6 +27,7 @@ public sealed class McpStartup : StartupBase
     {
         services.AddOptions<McpToolOptions>().Configure<IShellConfiguration>((options, configuration) =>
             configuration.GetSection("RemoteManagement:Mcp").Bind(options));
+        services.AddSingleton<IHttpContextAccessor, McpHttpContextAccessor>();
         services.AddSingleton<McpEndpointRegistry>();
         services.AddScoped<McpToolCatalog>();
         services.AddScoped<McpToolInvoker>();

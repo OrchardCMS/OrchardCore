@@ -11,4 +11,12 @@ public sealed class McpToolOptions
     /// annotations only advise clients to ask, so these operations stay off by default.
     /// </summary>
     public bool AllowConfirmationRequiredTools { get; set; }
+
+    /// <summary>
+    /// Gets or sets the largest response, in bytes, a tool can return. Responses are held in memory
+    /// to become the text of the tool's result, so a larger one is turned into a tool error.
+    /// </summary>
+    public int MaximumResponseBytes { get; set; } = DefaultMaximumResponseBytes;
+
+    internal const int DefaultMaximumResponseBytes = 4 * 1024 * 1024;
 }

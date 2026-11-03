@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using ModelContextProtocol.Protocol;
 using Moq;
+using OrchardCore.Environment.Shell;
 using OrchardCore.RemoteManagement;
 using OrchardCore.RemoteManagement.Mcp;
 
@@ -71,7 +72,8 @@ public class McpToolTests
     {
         await using var services = CreateServices();
         var parent = CreateContext(services);
-        var accessor = new HttpContextAccessor { HttpContext = parent };
+        var accessor = new McpHttpContextAccessor { HttpContext = parent };
+        var hostAccessor = new HttpContextAccessor();
         HttpContext dispatched = null;
         HttpContext ambient = null;
         string inputBody = null;
@@ -89,13 +91,14 @@ public class McpToolTests
         Assert.NotNull(dispatched);
         Assert.Same(services.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>(), dispatched.RequestServices.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>());
         Assert.Same(parent.User, dispatched.User);
-        Assert.Same(parent, ambient);
+        Assert.Same(dispatched, ambient);
         Assert.Equal("/tenant-a", dispatched.Request.PathBase.Value);
         Assert.Equal("a/b?c", dispatched.Request.RouteValues["id"]);
         Assert.Equal("one&two", dispatched.Request.Query["search"]);
         Assert.Equal("{\"title\":\"Example\"}", inputBody);
         Assert.False(result.IsError == true);
         Assert.Same(parent, accessor.HttpContext);
+        Assert.Same(parent, hostAccessor.HttpContext);
         Assert.Contains("saved", Assert.IsType<TextContentBlock>(Assert.Single(result.Content)).Text);
     }
 
@@ -144,7 +147,7 @@ public class McpToolTests
     {
         await using var services = CreateServices();
         var parent = CreateContext(services);
-        var accessor = new HttpContextAccessor { HttpContext = parent };
+        var accessor = new McpHttpContextAccessor { HttpContext = parent };
         var endpoint = CreateEndpoint(handler: _ => throw new InvalidOperationException("secret database connection"));
         var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
 
@@ -157,6 +160,103 @@ public class McpToolTests
 
     private static Task<CallToolResult> InvokeAsync(McpToolDefinition tool, HttpContext parent, string arguments) =>
         McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(arguments), parent, NullLogger.Instance, CancellationToken.None);
+
+    [Fact]
+    public async Task InvokeEndpointAsync_BackgroundFlowOutlivesTheCall_DoesNotKeepTheDispatchedRequest()
+    {
+        await using var services = CreateServices();
+        var parent = CreateContext(services);
+        var accessor = new McpHttpContextAccessor { HttpContext = parent };
+        var callCompleted = new TaskCompletionSource();
+        Task<HttpContext> background = null;
+        var endpoint = CreateEndpoint(handler: _ =>
+        {
+            background = Task.Run(async () =>
+            {
+                await callCompleted.Task;
+                return accessor.HttpContext;
+            });
+            return Task.CompletedTask;
+        });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
+
+        await InvokeAsync(tool, parent, """{"path":{"id":"a"},"body":{}}""");
+        callCompleted.SetResult();
+
+        Assert.Same(parent, await background);
+    }
+
+    [Fact]
+    public async Task InvokeEndpointAsync_DispatchedRequest_KeepsTheConnectionAndTenantOfTheCaller()
+    {
+        await using var services = CreateServices();
+        var parent = CreateContext(services);
+        parent.Connection.RemoteIpAddress = System.Net.IPAddress.Parse("203.0.113.1");
+        var feature = new ShellContextFeature { OriginalPathBase = "/root" };
+        parent.Features.Set(feature);
+        HttpContext dispatched = null;
+        var endpoint = CreateEndpoint(handler: context =>
+        {
+            dispatched = context;
+            return Task.CompletedTask;
+        });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
+
+        await InvokeAsync(tool, parent, """{"path":{"id":"a"},"body":{}}""");
+
+        Assert.Equal(parent.Connection.RemoteIpAddress, dispatched.Connection.RemoteIpAddress);
+        Assert.Same(feature, dispatched.Features.Get<ShellContextFeature>());
+    }
+
+    [Theory]
+    [InlineData(1024, false)]
+    [InlineData(4096, false)]
+    [InlineData(4097, true)]
+    [InlineData(1024 * 1024, true)]
+    public async Task InvokeEndpointAsync_ResponseOverTheLimit_ReturnsAToolError(int length, bool rejected)
+    {
+        await using var services = CreateServices();
+        var endpoint = CreateEndpoint(handler: async context =>
+        {
+            context.Response.ContentType = "text/plain";
+            var chunk = new string('x', 1024);
+            for (var written = 0; written < length; written += chunk.Length)
+            {
+                await context.Response.WriteAsync(chunk[..Math.Min(chunk.Length, length - written)]);
+                await context.Response.Body.FlushAsync();
+            }
+        });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
+
+        var result = await McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>("""{"path":{"id":"a"},"body":{}}"""),
+            CreateContext(services), NullLogger.Instance, CancellationToken.None, 4096);
+
+        Assert.Equal(rejected, result.IsError == true);
+        Assert.Equal(rejected, Assert.IsType<TextContentBlock>(Assert.Single(result.Content)).Text.Contains("4096 bytes"));
+    }
+
+    [Fact]
+    public async Task InvokeEndpointAsync_EndpointHandlesTheLimitException_StillReturnsAToolError()
+    {
+        await using var services = CreateServices();
+        var endpoint = CreateEndpoint(handler: async context =>
+        {
+            try
+            {
+                await context.Response.Body.WriteAsync(new byte[8192]);
+            }
+            catch (Exception)
+            {
+                context.Response.StatusCode = 200;
+            }
+        });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
+
+        var result = await McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>("""{"path":{"id":"a"},"body":{}}"""),
+            CreateContext(services), NullLogger.Instance, CancellationToken.None, 4096);
+
+        Assert.True(result.IsError);
+    }
 
     [Fact]
     public async Task InvokeEndpoint_JsonResponse_IsEmbeddedInResult()

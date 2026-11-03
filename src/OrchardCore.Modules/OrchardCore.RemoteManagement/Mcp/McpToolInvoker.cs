@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.RemoteManagement.Mcp;
 
@@ -19,12 +21,14 @@ internal sealed class McpToolInvoker
 
     private readonly McpToolCatalog _catalog;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly McpToolOptions _options;
     private readonly ILogger<McpToolInvoker> _logger;
 
-    public McpToolInvoker(McpToolCatalog catalog, IHttpContextAccessor httpContextAccessor, ILogger<McpToolInvoker> logger)
+    public McpToolInvoker(McpToolCatalog catalog, IHttpContextAccessor httpContextAccessor, IOptions<McpToolOptions> options, ILogger<McpToolInvoker> logger)
     {
         _catalog = catalog;
         _httpContextAccessor = httpContextAccessor;
+        _options = options.Value;
         _logger = logger;
     }
 
@@ -38,7 +42,7 @@ internal sealed class McpToolInvoker
             return Error("Unknown or unavailable tool.");
         }
 
-        return await InvokeEndpointAsync(tool, request.Arguments, parent, _logger, cancellationToken);
+        return await InvokeEndpointAsync(tool, request.Arguments, parent, _logger, cancellationToken, _options.MaximumResponseBytes);
     }
 
     internal static async Task<CallToolResult> InvokeEndpointAsync(
@@ -46,7 +50,8 @@ internal sealed class McpToolInvoker
         IDictionary<string, JsonElement> arguments,
         HttpContext parent,
         ILogger logger,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        int maximumResponseBytes = McpToolOptions.DefaultMaximumResponseBytes)
     {
         arguments ??= new Dictionary<string, JsonElement>();
         var schema = tool.Tool.InputSchema;
@@ -77,6 +82,14 @@ internal sealed class McpToolInvoker
         context.Request.Host = parent.Request.Host;
         context.Request.PathBase = parent.Request.PathBase;
         context.Request.Headers.Authorization = parent.Request.Headers.Authorization;
+
+        // Services read these from the current request, such as to log the address of the caller or resolve the tenant's URLs.
+        context.Connection.RemoteIpAddress = parent.Connection.RemoteIpAddress;
+        context.Connection.RemotePort = parent.Connection.RemotePort;
+        context.Connection.LocalIpAddress = parent.Connection.LocalIpAddress;
+        context.Connection.LocalPort = parent.Connection.LocalPort;
+        context.TraceIdentifier = parent.TraceIdentifier;
+        context.Features.Set(parent.Features.Get<ShellContextFeature>());
         var path = tool.Path;
         var query = new List<KeyValuePair<string, string>>();
 
@@ -135,7 +148,7 @@ internal sealed class McpToolInvoker
         context.Request.QueryString = QueryString.Create(query);
         var body = arguments.TryGetValue("body", out var bodyArgument) ? bodyArgument.GetRawText() : tool.Metadata.DefaultJsonBody;
         await using var input = new MemoryStream(body is null ? [] : Encoding.UTF8.GetBytes(body));
-        await using var output = new MemoryStream();
+        await using var output = new McpToolResponseStream(maximumResponseBytes);
         context.Request.Body = input;
         context.Request.ContentLength = input.Length;
         if (body is not null)
@@ -145,6 +158,7 @@ internal sealed class McpToolInvoker
 
         context.Features.Set<IHttpRequestBodyDetectionFeature>(new RequestBodyDetectionFeature(body is not null));
         context.Response.Body = output;
+        using var toolCall = McpHttpContextAccessor.BeginToolCall(context);
         try
         {
             // Run ASP.NET Core's authorization middleware against the original endpoint metadata.
@@ -155,6 +169,11 @@ internal sealed class McpToolInvoker
                 context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>());
             await authorization.Invoke(context);
             await context.Response.CompleteAsync();
+            if (output.LimitExceeded)
+            {
+                return TooLargeError(maximumResponseBytes);
+            }
+
             output.Position = 0;
             using var reader = new StreamReader(output, leaveOpen: true);
             var responseBody = await reader.ReadToEndAsync(cancellationToken);
@@ -163,6 +182,10 @@ internal sealed class McpToolInvoker
                 IsError = context.Response.StatusCode >= StatusCodes.Status400BadRequest,
                 Content = [new TextContentBlock { Text = FormatResult(context.Response.StatusCode, responseBody) }],
             };
+        }
+        catch (McpToolResponseTooLargeException)
+        {
+            return TooLargeError(maximumResponseBytes);
         }
         catch (BadHttpRequestException exception)
         {
@@ -193,6 +216,9 @@ internal sealed class McpToolInvoker
 
         return new JsonObject { ["statusCode"] = statusCode, ["body"] = content }.ToJsonString(s_resultSerializerOptions);
     }
+
+    private static CallToolResult TooLargeError(int maximumResponseBytes) =>
+        Error($"The response is larger than the {maximumResponseBytes} bytes a tool can return, though a write operation may have been applied. Narrow the request, such as with paging, or use the HTTP API or Pomi.");
 
     private static CallToolResult Error(string message) => new()
     {
