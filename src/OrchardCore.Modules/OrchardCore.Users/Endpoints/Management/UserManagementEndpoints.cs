@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -193,24 +194,6 @@ internal static class UserManagementEndpoints
             return httpContext.ApiMissingBodyProblem();
         }
 
-        if (await userManager.FindByNameAsync(request.UserName) is User existingUser)
-        {
-            if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, existingUser))
-            {
-                return httpContext.ApiForbidProblem();
-            }
-
-            if (await MatchesCreateRequestAsync(existingUser, request, userManager))
-            {
-                return TypedResults.Ok(ToResponse(existingUser));
-            }
-
-            return TypedResults.Problem(
-                title: "Conflict",
-                detail: $"User '{request.UserName}' already exists with different settings.",
-                statusCode: StatusCodes.Status409Conflict);
-        }
-
         var user = new User
         {
             UserName = request.UserName,
@@ -220,9 +203,17 @@ internal static class UserManagementEndpoints
             IsEnabled = request.IsEnabled,
         };
 
+        // Authorize before the lookup so that a caller who can't create users can't probe user names.
         if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, user))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        if (!string.IsNullOrEmpty(request.UserName) && await userManager.FindByNameAsync(request.UserName) is User existingUser)
+        {
+            return await CanRetryCreateAsync(httpContext, existingUser, request, authorizationService)
+                ? TypedResults.Ok(ToResponse(existingUser))
+                : UserNameNotAvailableProblem();
         }
 
         var modelState = new ModelStateDictionary();
@@ -236,11 +227,11 @@ internal static class UserManagementEndpoints
         await userService.CreateUserAsync(user, request.Password, modelState.AddModelError);
         if (!modelState.IsValid)
         {
-            if (await userManager.FindByNameAsync(request.UserName) is User concurrentUser &&
-                await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, concurrentUser) &&
-                await MatchesCreateRequestAsync(concurrentUser, request, userManager))
+            if (!string.IsNullOrEmpty(request.UserName) && await userManager.FindByNameAsync(request.UserName) is User concurrentUser)
             {
-                return TypedResults.Ok(ToResponse(concurrentUser));
+                return await CanRetryCreateAsync(httpContext, concurrentUser, request, authorizationService)
+                    ? TypedResults.Ok(ToResponse(concurrentUser))
+                    : UserNameNotAvailableProblem();
             }
 
             return httpContext.ApiValidationProblem(modelState: modelState);
@@ -249,25 +240,32 @@ internal static class UserManagementEndpoints
         return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(user.UserId)}", ToResponse(user));
     }
 
-    internal static Task<bool> MatchesCreateRequestAsync(
-        User existingUser,
-        UserCreateRequest request,
-        UserManager<IUser> userManager)
+    // The password is left out so that the response never tells whether a guessed password is the user's.
+    internal static bool MatchesCreateRequest(User existingUser, UserCreateRequest request)
     {
         var existingRoles = existingUser.RoleNames ?? [];
         var requestedRoles = (request.RoleNames ?? [])
             .Where(roleName => !string.IsNullOrWhiteSpace(roleName))
             .Distinct(StringComparer.OrdinalIgnoreCase);
-        var passwordMatches = PasswordMatches(existingUser, request.Password, userManager);
 
-        return Task.FromResult(string.Equals(existingUser.Email, request.Email, StringComparison.OrdinalIgnoreCase)
+        return string.Equals(existingUser.Email, request.Email, StringComparison.OrdinalIgnoreCase)
             && string.Equals(existingUser.PhoneNumber, request.PhoneNumber, StringComparison.Ordinal)
             && existingUser.EmailConfirmed == request.EmailConfirmed
             && existingUser.IsEnabled == request.IsEnabled
             && existingRoles.Order(StringComparer.OrdinalIgnoreCase)
-                .SequenceEqual(requestedRoles.Order(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase)
-            && passwordMatches);
+                .SequenceEqual(requestedRoles.Order(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
     }
+
+    private static async Task<bool> CanRetryCreateAsync(HttpContext httpContext, User existingUser, UserCreateRequest request, IAuthorizationService authorizationService)
+        => await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, existingUser)
+            && MatchesCreateRequest(existingUser, request);
+
+    // The only response for a name that is taken, whether the caller can edit that user, and whatever settings it has.
+    private static ProblemHttpResult UserNameNotAvailableProblem()
+        => TypedResults.Problem(
+            title: "Conflict",
+            detail: "The user name is not available with these settings.",
+            statusCode: StatusCodes.Status409Conflict);
 
     internal static async Task<IResult> UpdateAsync(HttpContext httpContext, string userId, UserUpdateRequest request, UserManager<IUser> userManager, IUserService userService, IAuthorizationService authorizationService, IServiceProvider serviceProvider)
     {
@@ -299,7 +297,11 @@ internal static class UserManagementEndpoints
             }
         }
 
-        if (request.IsEnabled == false && user.IsEnabled && await IsSoleEnabledAdministratorAsync(serviceProvider, userManager, user))
+        if (request.IsEnabled == false && user.IsEnabled && IsCurrentUser(httpContext, user))
+        {
+            preflight.AddModelError(nameof(UserUpdateRequest.IsEnabled), "You cannot disable your own account.");
+        }
+        else if (request.IsEnabled == false && user.IsEnabled && await IsSoleEnabledAdministratorAsync(serviceProvider, userManager, user))
         {
             preflight.AddModelError(nameof(UserUpdateRequest.IsEnabled), "Could not disable the user.");
         }
@@ -391,6 +393,11 @@ internal static class UserManagementEndpoints
             return httpContext.ApiForbidProblem();
         }
 
+        if (IsCurrentUser(httpContext, user))
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["You cannot disable your own account."]);
+        }
+
         if (!await userService.DisableAsync(user))
         {
             return httpContext.ApiBadRequestProblem(detail: localizer["Could not disable the user."]);
@@ -409,6 +416,11 @@ internal static class UserManagementEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.DeleteUsers, user))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        if (IsCurrentUser(httpContext, user))
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["You cannot delete your own account."]);
         }
 
         if (await IsSoleEnabledAdministratorAsync(serviceProvider, userManager, user))
@@ -446,6 +458,14 @@ internal static class UserManagementEndpoints
             AccessFailedCount = user.AccessFailedCount,
             RoleNames = user.RoleNames?.OrderBy(role => role, StringComparer.OrdinalIgnoreCase).ToArray() ?? [],
         };
+
+    private static bool IsCurrentUser(HttpContext httpContext, User user)
+    {
+        // User access tokens can carry the user identifier in the subject claim only.
+        var currentUserId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? httpContext.User.FindFirstValue("sub");
+
+        return string.Equals(currentUserId, user.UserId, StringComparison.OrdinalIgnoreCase);
+    }
 
     private static async Task<string[]> GetAuthorizedRoleNamesAsync(HttpContext httpContext, IServiceProvider serviceProvider, IAuthorizationService authorizationService, IEnumerable<string> requestedRoleNames, ModelStateDictionary modelState)
     {

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -240,7 +241,7 @@ public class UserManagementEndpointsTests
     }
 
     [Fact]
-    public async Task MatchesCreateRequestAsync_IdenticalUser_ReturnsTrue()
+    public void MatchesCreateRequest_IdenticalUser_ReturnsTrue()
     {
         var user = new User
         {
@@ -261,12 +262,173 @@ public class UserManagementEndpointsTests
             RoleNames = ["Author", "Editor"],
         };
 
-        var matches = await UserManagementEndpoints.MatchesCreateRequestAsync(
-            user,
-            request,
-            CreateUserManager().Object);
+        Assert.True(UserManagementEndpoints.MatchesCreateRequest(user, request));
+    }
 
-        Assert.True(matches);
+    [Theory]
+    [InlineData("right-password")]
+    [InlineData("wrong-password")]
+    [InlineData(null)]
+    public async Task CreateAsync_ExactRetry_DoesNotDependOnThePassword(string password)
+    {
+        var userManager = CreateUserManager();
+        var existing = new User { UserId = "alice", UserName = "alice", Email = "alice@example.test", IsEnabled = true, RoleNames = [] };
+        existing.PasswordHash = new PasswordHasher<IUser>().HashPassword(existing, "right-password");
+        userManager.Setup(manager => manager.FindByNameAsync("alice")).ReturnsAsync(existing);
+
+        var result = await UserManagementEndpoints.CreateAsync(
+            CreateHttpContext(),
+            new UserManagementEndpoints.UserCreateRequest { UserName = "alice", Email = "alice@example.test", Password = password },
+            userManager.Object,
+            Mock.Of<IUserService>(),
+            AuthorizeAll(),
+            CreateServices());
+
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+    }
+
+    [Theory]
+    [InlineData(true, "other@example.test")]
+    [InlineData(false, "alice@example.test")]
+    [InlineData(false, "other@example.test")]
+    public async Task CreateAsync_ExistingName_ReturnsTheSameConflict(bool canEditExisting, string email)
+    {
+        var userManager = CreateUserManager();
+        var existing = new User { UserId = "alice", UserName = "alice", Email = "alice@example.test", IsEnabled = true, RoleNames = [] };
+        userManager.Setup(manager => manager.FindByNameAsync("alice")).ReturnsAsync(existing);
+        var authorization = new Mock<IAuthorizationService>();
+        authorization
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync((ClaimsPrincipal _, object resource, IEnumerable<IAuthorizationRequirement> _) =>
+                ReferenceEquals(resource, existing) && !canEditExisting ? AuthorizationResult.Failed() : AuthorizationResult.Success());
+
+        var result = await UserManagementEndpoints.CreateAsync(
+            CreateHttpContext(),
+            new UserManagementEndpoints.UserCreateRequest { UserName = "alice", Email = email },
+            userManager.Object,
+            Mock.Of<IUserService>(),
+            authorization.Object,
+            CreateServices());
+
+        var problem = Assert.IsType<ProblemHttpResult>(result);
+        Assert.Equal(StatusCodes.Status409Conflict, problem.StatusCode);
+        Assert.DoesNotContain("alice", problem.ProblemDetails.Detail);
+    }
+
+    [Fact]
+    public async Task CreateAsync_CallerCannotCreateUsers_DoesNotLookUpTheName()
+    {
+        var userManager = CreateUserManager();
+
+        var result = await UserManagementEndpoints.CreateAsync(
+            CreateHttpContext(),
+            new UserManagementEndpoints.UserCreateRequest { UserName = "alice" },
+            userManager.Object,
+            Mock.Of<IUserService>(),
+            Mock.Of<IAuthorizationService>(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()) == Task.FromResult(AuthorizationResult.Failed())),
+            CreateServices());
+
+        Assert.Equal(StatusCodes.Status403Forbidden, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        userManager.Verify(manager => manager.FindByNameAsync(It.IsAny<string>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(ClaimTypes.NameIdentifier)]
+    [InlineData("sub")]
+    public async Task DisableAsync_OwnAccount_ReturnsBadRequest(string claimType)
+    {
+        var user = new User { UserId = "alice", UserName = "alice", IsEnabled = true };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+        var userService = new Mock<IUserService>();
+
+        var result = await UserManagementEndpoints.DisableAsync(CreateHttpContext(claimType, "alice"), "alice", userManager.Object, userService.Object, AuthorizeAll(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        userService.Verify(service => service.DisableAsync(It.IsAny<IUser>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DisableAsync_OtherAccount_Disables()
+    {
+        var user = new User { UserId = "alice", UserName = "alice", IsEnabled = true };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+        var userService = new Mock<IUserService>();
+        userService.Setup(service => service.DisableAsync(user)).ReturnsAsync(true);
+
+        var result = await UserManagementEndpoints.DisableAsync(CreateHttpContext(ClaimTypes.NameIdentifier, "bob"), "alice", userManager.Object, userService.Object, AuthorizeAll(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_OwnAccount_ReturnsBadRequest()
+    {
+        var user = new User { UserId = "alice", UserName = "alice", IsEnabled = true };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+
+        var result = await UserManagementEndpoints.DeleteAsync(CreateHttpContext(ClaimTypes.NameIdentifier, "alice"), "alice", userManager.Object, AuthorizeAll(), CreateServices(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        userManager.Verify(manager => manager.DeleteAsync(It.IsAny<IUser>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_DisablingOwnAccount_SavesNothing()
+    {
+        var user = new User { UserId = "alice", UserName = "alice", Email = "old@example.test", IsEnabled = true };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+
+        var result = await UserManagementEndpoints.UpdateAsync(
+            CreateHttpContext(ClaimTypes.NameIdentifier, "alice"),
+            "alice",
+            new UserManagementEndpoints.UserUpdateRequest { Email = "new@example.test", IsEnabled = false },
+            userManager.Object,
+            Mock.Of<IUserService>(),
+            AuthorizeAll(),
+            CreateServices());
+
+        Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal("old@example.test", user.Email);
+        userManager.Verify(manager => manager.UpdateAsync(It.IsAny<IUser>()), Times.Never);
+    }
+
+    private static DefaultHttpContext CreateHttpContext(string claimType = null, string claimValue = null)
+    {
+        var context = new DefaultHttpContext { RequestServices = CreateServices() };
+        if (claimType is not null)
+        {
+            context.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(claimType, claimValue)], "Test"));
+        }
+
+        return context;
+    }
+
+    private static ServiceProvider CreateServices()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddLocalization();
+        return services.BuildServiceProvider();
+    }
+
+    private static IAuthorizationService AuthorizeAll()
+    {
+        var authorization = new Mock<IAuthorizationService>();
+        authorization
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(AuthorizationResult.Success());
+        return authorization.Object;
+    }
+
+    private static IStringLocalizer<AdminController> CreateLocalizer()
+    {
+        var localizer = new Mock<IStringLocalizer<AdminController>>();
+        localizer.Setup(value => value[It.IsAny<string>()]).Returns<string>(name => new LocalizedString(name, name));
+        return localizer.Object;
     }
 
     private static Mock<UserManager<IUser>> CreateUserManager()

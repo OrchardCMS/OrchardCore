@@ -261,13 +261,13 @@ Content-Type: application/json
 
 ### Responses
 
-Create retry lookup uses the normalized user name. Email and role names compare
-case-insensitively, phone number compares ordinally, and `emailConfirmed` and `isEnabled` must
-match exactly. Blank or duplicate requested roles are ignored. A blank password is equivalent
-only to a passwordless account; a nonblank password must verify against the current hash. The
-equivalent path still requires resource-aware `EditUsers` authorization for the existing user and
-does not mutate roles. Concurrent equivalent creation converges to `200`; a concurrent
-non-equivalent Identity failure can return `400`.
+Create authorizes `EditUsers` before looking up the user name, so a caller who can't create users gets
+`403 Forbidden` for any name. Create retry lookup uses the normalized user name. Email and role names compare
+case-insensitively, and phone number, email confirmation and enabled state must match exactly. Blank or duplicate
+requested roles are ignored. The password is never compared: an equivalent retry leaves the existing password
+unchanged, whatever password it sends. A caller who can't edit the existing user gets the same `409 Conflict` as
+one whose settings differ, so the response only tells that the name isn't available. An equivalent retry doesn't
+change roles. Concurrent equivalent creation converges to `200`, and non-equivalent creation to `409`.
 
 | Status | Meaning |
 | --- | --- |
@@ -276,7 +276,7 @@ non-equivalent Identity failure can return `400`.
 | `400 Bad Request` | Missing/malformed JSON; Identity validation failure; invalid/unauthorized role assignment. |
 | `401 Unauthorized` | The bearer token is absent or rejected. |
 | `403 Forbidden` | The caller cannot create this user. Role-assignment authorization failures are instead returned as `400` validation errors. |
-| `409 Conflict` | The requested user name already exists with different account settings, roles, or password. |
+| `409 Conflict` | The requested user name already exists, with different account settings or roles, or the caller can't edit that user. |
 
 ## Update a user
 
@@ -376,7 +376,7 @@ POST /api/users/{userId}:disable
 | --- | --- | --- | --- |
 | `userId` | string | Yes | Existing user ID. |
 
-There is no request body. Disabling an already disabled account succeeds. The sole enabled user in the `Administrator` role cannot be disabled.
+There is no request body. Disabling an already disabled account succeeds. The sole enabled user in the `Administrator` role cannot be disabled, and callers cannot disable their own account.
 
 ### Request
 
@@ -410,7 +410,7 @@ Accept: application/json
 | Status | Meaning |
 | --- | --- |
 | `200 OK` | The user is disabled, or was already disabled. |
-| `400 Bad Request` | `IUserService` rejected the operation, including the sole-enabled-administrator safeguard or an Identity update failure. |
+| `400 Bad Request` | The target is the caller's own account, or `IUserService` rejected the operation, including the sole-enabled-administrator safeguard or an Identity update failure. |
 | `401 Unauthorized` | The bearer token is absent or rejected. |
 | `403 Forbidden` | The caller cannot edit this user. |
 | `404 Not Found` | The user manager cannot resolve `userId`. |
@@ -427,7 +427,7 @@ DELETE /api/users/{userId}
 | --- | --- | --- | --- |
 | `userId` | string | Yes | Existing user ID. |
 
-There is no request body.
+There is no request body. Callers cannot delete their own account, and the sole enabled user in the `Administrator` role cannot be deleted.
 
 ### Request
 
@@ -454,7 +454,7 @@ Accept: application/json
 | --- | --- |
 | `200 OK` | The user was deleted. |
 | `204 No Content` | The user is already absent. |
-| `400 Bad Request` | The configured Identity user manager rejected deletion. |
+| `400 Bad Request` | The target is the caller's own account or the sole enabled administrator, or the configured Identity user manager rejected deletion. |
 | `401 Unauthorized` | The bearer token is absent or rejected. |
 | `403 Forbidden` | The caller cannot delete this user. |
 
@@ -569,7 +569,7 @@ Operation-specific permission failure:
 Invalid paging uses `Bad request` with either `Skip must be zero or greater and take must be greater than zero.` or `Take cannot exceed 200.` Authentication-policy responses are produced by the configured `Api` authentication handler; their body is handler-dependent.
 
 User creation emits `409 Conflict` when the normalized requested user name already exists with
-different email, phone, confirmation state, enabled state, roles, or password. Other Identity
+different email, phone, confirmation state, enabled state, or roles, or when the caller can't edit that user. Other Identity
 conflicts, including a duplicate email under another user name, are returned as `400 Bad Request`
 validation problems.
 
