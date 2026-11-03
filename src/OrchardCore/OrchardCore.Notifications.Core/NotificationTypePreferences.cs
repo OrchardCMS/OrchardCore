@@ -48,10 +48,15 @@ public static class NotificationTypePreferences
         ArgumentNullException.ThrowIfNull(type);
 
         var enabled = new HashSet<string>(enabledMethods ?? [], StringComparer.OrdinalIgnoreCase);
-        var optin = new List<string>();
-        var optout = new List<string>();
+        var listedMethods = new HashSet<string>(methods, StringComparer.OrdinalIgnoreCase);
+        NotificationTypePreference existing = null;
+        part.Types?.TryGetValue(type.Name, out existing);
 
-        foreach (var method in methods)
+        // The choices of a method that isn't registered, for example when its feature is disabled, are kept.
+        var optin = existing?.Optin?.Where(method => !listedMethods.Contains(method)).ToList() ?? [];
+        var optout = existing?.Optout?.Where(method => !listedMethods.Contains(method)).ToList() ?? [];
+
+        foreach (var method in listedMethods)
         {
             var isDefault = !type.DisabledMethods.Contains(method);
             var isEnabled = enabled.Contains(method);

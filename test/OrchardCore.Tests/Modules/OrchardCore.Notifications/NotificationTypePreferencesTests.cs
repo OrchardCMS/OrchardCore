@@ -43,6 +43,18 @@ public class NotificationTypePreferencesTests
     }
 
     [Fact]
+    public void SetEnabledMethods_MethodNotRegistered_KeepsItsChoice()
+    {
+        var type = CreateType();
+        var part = new UserNotificationPreferencesPart();
+
+        NotificationTypePreferences.SetEnabledMethods(part, type, _methods, ["Email"]);
+        NotificationTypePreferences.SetEnabledMethods(part, type, ["Email"], ["Email"]);
+
+        Assert.False(NotificationTypePreferences.IsMethodEnabledForType(part, type, "SMS"));
+    }
+
+    [Fact]
     public void IsMethodEnabledForType_MethodAddedAfterChoice_UsesTypeDefault()
     {
         var type = CreateType();
