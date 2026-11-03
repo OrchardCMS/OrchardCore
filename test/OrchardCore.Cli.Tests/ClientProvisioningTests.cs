@@ -96,6 +96,103 @@ public class ClientProvisioningTests
         Assert.DoesNotContain("login", next);
     }
 
+    [Theory]
+    [InlineData("""{"name":"child","clientCredentials":{"clientId":"pomi-test","clientSecret":"never-print-this"}}""", "no tenant URL")]
+    [InlineData("""{"name":"child","primaryUrl":null,"url":"http://cms.example/","clientCredentials":{"clientId":"pomi-test","clientSecret":"never-print-this"}}""", "HTTPS")]
+    [InlineData("""{"name":"child","url":"https://cms.example/","clientCredentials":{"clientSecret":"never-print-this"}}""", "no client identifier")]
+    public async Task CaptureProvisionedContext_UnusableResponse_KeepsSecretInPrivateFile(string json, string expectedReason)
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var paths = new CliPaths(TestPaths.CreateScratchDirectory(nameof(CaptureProvisionedContext_UnusableResponse_KeepsSecretInPrivateFile)));
+        using var client = new HttpClient();
+        var app = await CliApplication.CreateAsync(["context", "list"], paths, client, cancellationToken, new FileCredentialStore(paths));
+        using var document = JsonDocument.Parse(json);
+
+        var exception = await Assert.ThrowsAsync<CliException>(() => app.CaptureProvisionedContextAsync(document.RootElement, cancellationToken));
+
+        Assert.Contains(expectedReason, exception.Message);
+        Assert.DoesNotContain("never-print-this", exception.Message);
+        var file = Assert.Single(Directory.GetFiles(paths.RootDirectory, "provisioned-application-*.json"));
+        Assert.Contains(file, exception.Message);
+        Assert.Contains("never-print-this", await File.ReadAllTextAsync(file, cancellationToken));
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(file));
+        }
+
+        Assert.Empty((await new ContextStore(paths).LoadAsync(cancellationToken)).Contexts);
+    }
+
+    [Fact]
+    public async Task CaptureProvisionedContext_CredentialStoreFails_KeepsSecretInPrivateFile()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var paths = new CliPaths(TestPaths.CreateScratchDirectory(nameof(CaptureProvisionedContext_CredentialStoreFails_KeepsSecretInPrivateFile)));
+        using var client = new HttpClient();
+        var app = await CliApplication.CreateAsync(["context", "list"], paths, client, cancellationToken, new UnsupportedCredentialStore());
+        using var document = JsonDocument.Parse("""{"name":"child","url":"https://cms.example/child","clientCredentials":{"clientId":"pomi-test","clientSecret":"never-print-this"}}""");
+
+        var exception = await Assert.ThrowsAsync<CliException>(() => app.CaptureProvisionedContextAsync(document.RootElement, cancellationToken));
+
+        Assert.Contains("pomi-test", exception.Message);
+        var file = Assert.Single(Directory.GetFiles(paths.RootDirectory, "provisioned-application-*.json"));
+        Assert.Contains("never-print-this", await File.ReadAllTextAsync(file, cancellationToken));
+        Assert.Empty((await new ContextStore(paths).LoadAsync(cancellationToken)).Contexts);
+    }
+
+    [Fact]
+    public async Task CaptureProvisionedContext_NoSecret_ExplainsWithoutCreatingFile()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var paths = new CliPaths(TestPaths.CreateScratchDirectory(nameof(CaptureProvisionedContext_NoSecret_ExplainsWithoutCreatingFile)));
+        using var client = new HttpClient();
+        var app = await CliApplication.CreateAsync(["context", "list"], paths, client, cancellationToken, new FileCredentialStore(paths));
+        using var document = JsonDocument.Parse("""{"name":"child","url":"https://cms.example/child","clientCredentials":{"clientId":"pomi-test"}}""");
+
+        var exception = await Assert.ThrowsAsync<CliException>(() => app.CaptureProvisionedContextAsync(document.RootElement, cancellationToken));
+
+        Assert.Contains("no client secret", exception.Message);
+        Assert.Empty(Directory.GetFiles(paths.RootDirectory, "provisioned-application-*.json"));
+    }
+
+    [Fact]
+    public async Task CaptureProvisionedContext_NoName_UsesDefaultContextName()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var paths = new CliPaths(TestPaths.CreateScratchDirectory(nameof(CaptureProvisionedContext_NoName_UsesDefaultContextName)));
+        using var client = new HttpClient();
+        var app = await CliApplication.CreateAsync(["context", "list"], paths, client, cancellationToken, new FileCredentialStore(paths));
+        using var document = JsonDocument.Parse("""{"url":"https://cms.example/child","clientCredentials":{"clientId":"pomi-test","clientSecret":"never-print-this"}}""");
+
+        var output = await app.CaptureProvisionedContextAsync(document.RootElement, cancellationToken);
+
+        Assert.Equal("tenant", output.GetProperty("context").GetString());
+    }
+
+    [Fact]
+    public async Task CaptureProvisionedContext_ParallelRuns_KeepEveryContextAndSecret()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var paths = new CliPaths(TestPaths.CreateScratchDirectory(nameof(CaptureProvisionedContext_ParallelRuns_KeepEveryContextAndSecret)));
+        var credentials = new FileCredentialStore(paths);
+        using var client = new HttpClient();
+        var apps = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => CliApplication.CreateAsync(["context", "list"], paths, client, cancellationToken, credentials)));
+
+        await Task.WhenAll(apps.Select((app, index) => Task.Run(async () =>
+        {
+            using var document = JsonDocument.Parse($$$"""{"name":"child","url":"https://cms.example/child{{{index}}}","clientCredentials":{"clientId":"client-{{{index}}}","clientSecret":"secret-{{{index}}}"}}""");
+            await app.CaptureProvisionedContextAsync(document.RootElement, cancellationToken);
+        }, cancellationToken)));
+
+        var configuration = await new ContextStore(paths).LoadAsync(cancellationToken);
+        Assert.Equal(8, configuration.Contexts.DistinctBy(context => context.Name).Count());
+        foreach (var context in configuration.Contexts)
+        {
+            var index = context.TenantUrl.TrimEnd('/')[^1];
+            Assert.Equal($"secret-{index}", (await credentials.GetAsync(CliApplication.GetCredentialKey(context), cancellationToken))!.ClientSecret);
+        }
+    }
+
     private sealed class ProvisioningHandler : HttpMessageHandler
     {
         private readonly bool _provision;

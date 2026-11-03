@@ -14,12 +14,25 @@ internal sealed partial class CliApplication
             return response;
         }
 
-        var clientId = credentials.GetProperty("clientId").GetString() ?? throw new CliException("The server returned no client identifier.");
-        var clientSecret = credentials.GetProperty("clientSecret").GetString() ?? throw new CliException("The server returned no client secret.");
-        var name = response.GetProperty("name").GetString() ?? "tenant";
-        var url = response.TryGetProperty("primaryUrl", out var primaryUrl) ? primaryUrl.GetString() : response.GetProperty("url").GetString();
-        var contextName = await SaveProvisionedContextAsync(name, url ?? throw new CliException("The server returned no tenant URL."),
-            clientId, clientSecret, cancellationToken);
+        var clientId = ReadOptionalString(credentials, "clientId");
+        var clientSecret = ReadOptionalString(credentials, "clientSecret")
+            ?? throw new CliException($"The server created the application '{clientId}' but returned no client secret, so no context was saved. Rotate the secret of the application in the tenant.");
+
+        // The server can't return this secret again, so nothing past this point may lose it.
+        string contextName;
+        try
+        {
+            contextName = await SaveProvisionedContextAsync(
+                ReadOptionalString(response, "name") ?? "tenant",
+                ReadOptionalString(response, "primaryUrl") ?? ReadOptionalString(response, "url") ?? throw new CliException("The server returned no tenant URL."),
+                clientId ?? throw new CliException("The server returned no client identifier."),
+                clientSecret,
+                cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            throw new CliException(await SaveProvisioningResponseAsync(response, clientId, exception));
+        }
 
         var output = JsonNode.Parse(response.GetRawText())!.AsObject();
         output.Remove("clientCredentials");
@@ -79,27 +92,56 @@ internal sealed partial class CliApplication
     {
         var tenantUrl = CliPaths.NormalizeTenantUrl(url);
         CliUriPolicy.RequireSecureEndpoint(tenantUrl);
-        var context = new TenantContextRecord
-        {
-            Name = NextStepFormatter.ChooseContextName(name, _configuration.Contexts),
-            TenantUrl = tenantUrl,
-            Authority = tenantUrl,
-            ClientId = RemoteManagementConstants.CliClientId,
-            AddedAt = DateTimeOffset.UtcNow,
-            Scopes = [RemoteManagementConstants.ManagementScope],
-            GrantTypes = ["client_credentials"],
-        };
+        TenantContextRecord? context = null;
 
-        // This also works for local installation, where the temporary setup host has stopped.
-        // The first authenticated command obtains a token from the site's final URL.
-        await _credentialStore.SaveAsync(GetCredentialKey(context), new StoredToken
+        // Choose the name while holding the lock, for parallel runs not to save under the same one.
+        await _contextStore.UpdateAsync(_configuration, async configuration =>
         {
-            ClientId = clientId,
-            ClientSecret = clientSecret,
+            context = new TenantContextRecord
+            {
+                Name = NextStepFormatter.ChooseContextName(name, configuration.Contexts),
+                TenantUrl = tenantUrl,
+                Authority = tenantUrl,
+                ClientId = RemoteManagementConstants.CliClientId,
+                AddedAt = DateTimeOffset.UtcNow,
+                Scopes = [RemoteManagementConstants.ManagementScope],
+                GrantTypes = ["client_credentials"],
+            };
+
+            // This also works for local installation, where the temporary setup host has stopped.
+            // The first authenticated command obtains a token from the site's final URL.
+            await _credentialStore.SaveAsync(GetCredentialKey(context), new StoredToken
+            {
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+            }, cancellationToken);
+            configuration.Contexts.Add(context);
+            configuration.CurrentContext ??= context.Name;
         }, cancellationToken);
-        _configuration.Contexts.Add(context);
-        _configuration.CurrentContext ??= context.Name;
-        await _contextStore.SaveAsync(_configuration, cancellationToken);
-        return context.Name;
+
+        return context!.Name;
     }
+
+    // Saves the whole response in a new private file, and returns the message explaining the failure.
+    private async Task<string> SaveProvisioningResponseAsync(JsonElement response, string? clientId, Exception failure)
+    {
+        var message = $"The server created the application '{clientId}', but no context was saved for it: {failure.Message}";
+        try
+        {
+            _paths.EnsureRootDirectory();
+            var path = Path.Combine(_paths.RootDirectory, $"provisioned-application-{Guid.NewGuid():n}.json");
+            await using var file = SecretOutputFile.Create(new FileInfo(path));
+            await file.WriteAsync(response, CancellationToken.None);
+            return $"{message} Its credentials are in the private file '{path}', as the server can't return them again. Add a context for the tenant, supply them with OC_CLIENT_ID and OC_CLIENT_SECRET, and delete the file.";
+        }
+        catch (Exception exception) when (exception is CliException or IOException or UnauthorizedAccessException)
+        {
+            return $"{message} Its client secret couldn't be saved either ({exception.Message}), so rotate the secret of the application in the tenant.";
+        }
+    }
+
+    private static string? ReadOptionalString(JsonElement element, string propertyName) =>
+        element.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(value.GetString())
+            ? value.GetString()
+            : null;
 }
