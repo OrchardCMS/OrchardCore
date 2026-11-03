@@ -43,10 +43,11 @@ schema = json.loads(payload)
 failures = []
 commands = []
 # These routes resolve a resource before checking its resource-specific permission.
-# Unknown resources disclose no data; repeated user deletion converges to 204.
+# Unknown resources disclose no data.
 missing_resource_status = {
     'queries execute': 404, 'users show': 404, 'users update': 404,
-    'users delete': 204, 'users disable': 404, 'custom-settings show': 404,
+    'users delete': 404, 'users disable': 404, 'users unlock': 404,
+    'users confirm-email': 404, 'users send-reset': 404, 'custom-settings show': 404,
     'custom-settings update': 404, 'custom-settings schema': 404,
     'custom-settings list': 200,  # Filters out settings the identity cannot access.
     'settings sections list': 200,  # Filters providers by their read permission.

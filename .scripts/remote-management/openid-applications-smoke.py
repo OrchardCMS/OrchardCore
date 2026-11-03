@@ -54,7 +54,8 @@ def request(path, method='GET', body=None, client='cli-fixture', status=200, raw
         return json.loads(text) if text else None
 
 
-def pomi(*args, body=None, client='cli-openid-applications', status=None, failure=False):
+# Assigning a role requires holding its permissions, here ManageScopes for the Cli-openid-scopes role.
+def pomi(*args, body=None, client='cli-openid-application-grants', status=None, failure=False):
     env = os.environ.copy()
     env.update(OC_FIXTURE_CONFIG_HOME=config_home, OC_FIXTURE_CLIENT_ID=client)
     selected_state = Path(config_home) / 'application-client.json' if client == name else state_path
@@ -120,6 +121,7 @@ with tempfile.TemporaryDirectory(prefix='openid-applications-cli-', dir=state_pa
     try:
         assert created['clientId'] == name and created['roles'] == ['Cli-openid-scopes']
         assert application_secret not in json.dumps(created)
+        request('api/openid/applications', 'POST', {**body, 'clientId': name + '-escalated'}, client='cli-openid-applications', status=403)
         assert not {'clientSecret', 'properties', 'jsonWebKeySet', 'settings'} & created.keys()
         assert pomi('openid', 'applications', 'create', body=body) == created
         assert_tool_excluded('applications', 'create')

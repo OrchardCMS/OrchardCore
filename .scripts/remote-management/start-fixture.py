@@ -47,6 +47,7 @@ for suffix, permissions in [
     ("feature-profiles", ["ManageTenantFeatureProfiles"]),
     ("tenants", ["ManageTenants"]),
     ("openid-applications", ["ManageApplications"]),
+    ("openid-application-grants", ["ManageApplications", "ManageScopes"]),
     ("openid-scopes", ["ManageScopes"]),
     ("home-route", ["SetHomeRoute"]),
     ("culture-picker", ["ManageContentCulturePicker"]),
