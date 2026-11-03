@@ -31,47 +31,61 @@ public sealed class NotificationVisibilityEvaluator : INotificationVisibilityEva
             return NotificationVisibility.Visible;
         }
 
-        var key = (user?.FindFirstValue(ClaimTypes.NameIdentifier), notification.NotificationId);
+        await EvaluateMissingAsync([notification], user, cancellationToken);
 
-        if (_decisions.TryGetValue(key, out var visibility))
-        {
-            return visibility;
-        }
-
-        var context = new NotificationVisibilityContext(notification, user);
-
-        foreach (var handler in _handlers)
-        {
-            try
-            {
-                await handler.EvaluateAsync(context, cancellationToken);
-            }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                // A notification whose access could not be checked must not be shown.
-                _logger.LogError(ex, "The handler '{Handler}' failed to evaluate the notification '{NotificationId}', which is hidden.", handler.GetType().FullName, notification.NotificationId);
-
-                context.Hide();
-            }
-        }
-
-        return _decisions[key] = context.Visibility;
+        return _decisions[GetKey(notification, user)];
     }
 
     public async Task<List<Notification>> FilterAsync(IEnumerable<Notification> notifications, ClaimsPrincipal user, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(notifications);
 
-        var visible = new List<Notification>();
+        var list = notifications.ToList();
 
-        foreach (var notification in notifications)
+        if (_handlers.Length == 0)
         {
-            if (await EvaluateAsync(notification, user, cancellationToken) != NotificationVisibility.Hidden)
+            return list;
+        }
+
+        await EvaluateMissingAsync(list, user, cancellationToken);
+
+        return list.FindAll(notification => _decisions[GetKey(notification, user)] != NotificationVisibility.Hidden);
+    }
+
+    private async Task EvaluateMissingAsync(IEnumerable<Notification> notifications, ClaimsPrincipal user, CancellationToken cancellationToken)
+    {
+        var contexts = notifications
+            .Where(notification => !_decisions.ContainsKey(GetKey(notification, user)))
+            .DistinctBy(notification => notification.NotificationId)
+            .Select(notification => new NotificationVisibilityContext(notification, user))
+            .ToList();
+
+        if (contexts.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var handler in _handlers)
+        {
+            try
             {
-                visible.Add(notification);
+                await handler.EvaluateAsync(contexts, cancellationToken);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                // Notifications whose access could not be checked must not be shown.
+                _logger.LogError(ex, "The handler '{Handler}' failed to evaluate {Count} notifications, which are hidden.", handler.GetType().FullName, contexts.Count);
+
+                contexts.ForEach(context => context.Hide());
             }
         }
 
-        return visible;
+        foreach (var context in contexts)
+        {
+            _decisions[GetKey(context.Notification, user)] = context.Visibility;
+        }
     }
+
+    private static (string UserId, string NotificationId) GetKey(Notification notification, ClaimsPrincipal user)
+        => (user?.FindFirstValue(ClaimTypes.NameIdentifier), notification.NotificationId);
 }

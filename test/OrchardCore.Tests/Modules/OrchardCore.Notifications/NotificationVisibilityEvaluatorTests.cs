@@ -83,6 +83,33 @@ public class NotificationVisibilityEvaluatorTests
         Assert.Equal(["1", "3", "4"], visible.Select(n => n.NotificationId));
     }
 
+    [Fact]
+    public async Task FilterAsync_ManyNotifications_CallsHandlerOnceWithOnlyTheMissingOnes()
+    {
+        var batches = new List<string[]>();
+        var evaluator = new NotificationVisibilityEvaluator(
+            [new BatchHandler(contexts => batches.Add(contexts.Select(c => c.Notification.NotificationId).ToArray()))],
+            NullLogger<NotificationVisibilityEvaluator>.Instance);
+
+        await evaluator.EvaluateAsync(CreateNotification("1", null), _user, TestContext.Current.CancellationToken);
+        await evaluator.FilterAsync([CreateNotification("1", null), CreateNotification("2", null), CreateNotification("3", null), CreateNotification("3", null)], _user, TestContext.Current.CancellationToken);
+        await evaluator.FilterAsync([CreateNotification("2", null)], _user, TestContext.Current.CancellationToken);
+
+        Assert.Equal([["1"], ["2", "3"]], batches);
+    }
+
+    [Fact]
+    public async Task FilterAsync_HandlerThrows_HidesTheBatch()
+    {
+        var evaluator = new NotificationVisibilityEvaluator(
+            [new BatchHandler(_ => throw new InvalidOperationException())],
+            NullLogger<NotificationVisibilityEvaluator>.Instance);
+
+        var visible = await evaluator.FilterAsync([CreateNotification("1", null), CreateNotification("2", null)], _user, TestContext.Current.CancellationToken);
+
+        Assert.Empty(visible);
+    }
+
     private static Notification CreateNotification(string id, string type, string referenceId = null)
         => new()
         {
@@ -91,6 +118,23 @@ public class NotificationVisibilityEvaluatorTests
             ReferenceId = referenceId,
             UserId = "user1",
         };
+
+    private sealed class BatchHandler : INotificationVisibilityHandler
+    {
+        private readonly Action<IReadOnlyList<NotificationVisibilityContext>> _evaluate;
+
+        public BatchHandler(Action<IReadOnlyList<NotificationVisibilityContext>> evaluate)
+        {
+            _evaluate = evaluate;
+        }
+
+        public Task EvaluateAsync(IReadOnlyList<NotificationVisibilityContext> contexts, CancellationToken cancellationToken = default)
+        {
+            _evaluate(contexts);
+
+            return Task.CompletedTask;
+        }
+    }
 
     private sealed class DelegateHandler : INotificationVisibilityHandler
     {
@@ -101,9 +145,12 @@ public class NotificationVisibilityEvaluatorTests
             _evaluate = evaluate;
         }
 
-        public Task EvaluateAsync(NotificationVisibilityContext context, CancellationToken cancellationToken = default)
+        public Task EvaluateAsync(IReadOnlyList<NotificationVisibilityContext> contexts, CancellationToken cancellationToken = default)
         {
-            _evaluate(context);
+            foreach (var context in contexts)
+            {
+                _evaluate(context);
+            }
 
             return Task.CompletedTask;
         }
