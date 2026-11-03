@@ -21,7 +21,7 @@ public class IndexHandlerFailureTests
         var store = new Mock<IIndexProfileStore>();
         var manager = new DefaultIndexProfileManager(store.Object, [new FailingHandler(phase)], NullLogger<DefaultIndexProfileManager>.Instance);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => manager.UpdateAsync(profile).AsTask());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => manager.UpdateAsync(profile, new JsonObject()).AsTask());
 
         Assert.Equal("Original", profile.Name);
         Assert.Equal("Original", profile.Properties["Extension"]["Value"].GetValue<string>());

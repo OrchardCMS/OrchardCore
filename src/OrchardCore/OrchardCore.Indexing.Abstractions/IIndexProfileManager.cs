@@ -88,10 +88,11 @@ public interface IIndexProfileManager
     ValueTask CreateAsync(IndexProfile indexProfile);
 
     /// <summary>
-    /// Applies optional additional data, validates the resulting model, and persists valid values.
-    /// Values applied by updating handlers are restored if updating or validation fails
-    /// before persistence. Validation errors throw an <see cref="IndexProfileValidationException"/>;
-    /// handler exceptions propagate. Post-persistence failures do not restore stored values.
+    /// Applies optional additional data and persists the model. When data is provided, the resulting
+    /// model is validated first, and validation errors throw an <see cref="IndexProfileValidationException"/>.
+    /// Without data the model is saved as is, so call <see cref="ValidateAsync(IndexProfile)"/> first after
+    /// changing it. Values applied by updating handlers are restored if updating or validation fails.
+    /// Exceptions of updating and validating handlers propagate; those of updated handlers are logged.
     /// </summary>
     /// <param name="indexProfile">The model to be updated.</param>
     /// <param name="data">Optional additional data to update the model with. Defaults to <c>null</c>.</param>

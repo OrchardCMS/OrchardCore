@@ -170,10 +170,15 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
             var updatingContext = new UpdatingContext<IndexProfile>(index, data);
             await InvokeRequiredAsync(updatingContext, static (handler, ctx) => handler.UpdatingAsync(ctx));
 
-            var validation = await ValidateAsync(index);
-            if (!validation.Succeeded)
+            // Only incoming values need validating here. Saving without any is what resets, rebuilds and
+            // migrations do on a profile stored by an earlier version, which may not pass the current rules.
+            if (data is not null)
             {
-                throw new IndexProfileValidationException(validation.Errors);
+                var validation = await ValidateAsync(index);
+                if (!validation.Succeeded)
+                {
+                    throw new IndexProfileValidationException(validation.Errors);
+                }
             }
         }
         catch

@@ -229,7 +229,11 @@ unavailable providers, provider rejection and failure to remove the local profil
 
 The default profile manager propagates failures from initialization, mutation and
 validation handlers. It does not save after a creating/updating/validation handler
-fails. Failed updates restore the tracked values from before the updating handlers,
+fails. `UpdateAsync` validates the values it's given and throws
+`IndexProfileValidationException` when they are rejected; without values it saves the
+profile as is, so a reset, a rebuild or a migration keeps working on a profile stored by
+an earlier version, and a caller that changes the profile directly calls `ValidateAsync`
+first. Failed updates restore the tracked values from before the updating handlers,
 including nested extension properties. The `Created`, `Updated` and `Deleted` handlers
 run after the write is committed, so their failures are logged instead of being
 reported to the caller, and the remaining handlers are still notified. This behavior

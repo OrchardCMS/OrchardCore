@@ -48,6 +48,20 @@ public class IndexProfileUpdateValidationTests
     }
 
     [Fact]
+    public async Task Update_NoIncomingDataOnInvalidStoredProfile_SavesWithoutValidating()
+    {
+        var profile = new IndexProfile { Id = "id", Name = "Rejected" };
+        profile.Properties["Private"] = new JsonObject { ["Value"] = "Original" };
+        var store = new Mock<IIndexProfileStore>();
+        var manager = new DefaultIndexProfileManager(store.Object, [new TestHandler()], NullLogger<DefaultIndexProfileManager>.Instance);
+        Assert.False((await manager.ValidateAsync(profile)).Succeeded);
+
+        await manager.UpdateAsync(profile);
+
+        store.Verify(value => value.UpdateAsync(profile), Times.Once);
+    }
+
+    [Fact]
     public async Task Recipe_InvalidIncomingValues_ReportsErrorAndKeepsStoredProfile()
     {
         using var services = new ServiceCollection().BuildServiceProvider();
@@ -77,7 +91,7 @@ public class IndexProfileUpdateValidationTests
     {
         public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)
         {
-            context.Model.Name = context.Data["Name"].GetValue<string>();
+            context.Model.Name = context.Data["Name"]?.GetValue<string>() ?? context.Model.Name;
             context.Model.Properties["Private"]["Value"] = "Changed";
             return Task.CompletedTask;
         }
