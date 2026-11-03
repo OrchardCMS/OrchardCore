@@ -44,7 +44,7 @@ Local templates are not tied to a theme: when the active theme changes, the temp
 
 The **Feature Templates** button, next to **Theme Templates**, lists the templates of the enabled features, all of them by default, or those of the feature selected in the dropdown. They are almost all Razor templates, so they can be viewed as a reference to write a Liquid template with the same name, with the **Create override** button, which shows the name of each shape to override.
 
-A template that is not the one rendering its shape is shown as **Overridden by** the extension whose template renders it: the active theme, which overrides the templates of the features, or another feature, in the order the shape table applies them: the last one enabled wins, and the application module wins over all of them. A local template with the same name overrides both, so such a template can't be cloned, as that would change what the shape renders: use the **Create override** button instead.
+A template that is not the one rendering its shape is shown as **Overridden by** the extension whose template renders it: the active theme, which overrides the templates of the features, or another feature, as the shape table orders them. A local template with the same name overrides both, so such a template can't be cloned, as that would change what the shape renders: use the **Create override** button instead.
 
 Features don't tell which of their templates render the admin, so the list guesses it from the names of the templates, e.g. `TextField_Edit`, `Content_SummaryAdmin` or the workflow activities ending with `_Design`, and filters them with the **Renders** filter: the front end on the **Templates** page and the admin on the **Admin Templates** page by default, or both.
 

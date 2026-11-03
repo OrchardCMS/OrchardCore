@@ -337,22 +337,22 @@ public sealed class SourceTemplatesTests : IDisposable
     [Fact]
     public async Task GetTemplatesAsync_ShapeTableOrdersModulesDifferently_ListsTemplateOfModuleRenderingIt()
     {
-        // The application module is last in the shape table, wherever its feature is enabled.
+        // The shape table decides which module renders a shape, whatever the order of the enabled features.
         AddExtension("SiteTheme");
-        AddExtension("Application.Module", isTheme: false);
+        AddExtension("Rendering.Module", isTheme: false);
         AddExtension("Other.Module", isTheme: false);
-        AddFile("Application.Module", "Views/TextField.cshtml", "application");
+        AddFile("Rendering.Module", "Views/TextField.cshtml", "rendering");
         AddFile("Other.Module", "Views/TextField.cshtml", "other");
-        BindModule("TextField", "Application.Module", "Views/TextField.cshtml");
+        BindModule("TextField", "Rendering.Module", "Views/TextField.cshtml");
 
         var source = CreateFeatureSource();
 
         var template = Assert.Single(await source.GetTemplatesAsync(adminTemplates: false, scope: null));
-        Assert.Equal("Application.Module", template.ExtensionId);
+        Assert.Equal("Rendering.Module", template.ExtensionId);
         Assert.Null(template.OverriddenBy);
 
         template = Assert.Single(await source.GetTemplatesAsync(adminTemplates: false, scope: "Other.Module"));
-        Assert.Equal("Application.Module", template.OverriddenBy);
+        Assert.Equal("Rendering.Module", template.OverriddenBy);
     }
 
     [Fact]
