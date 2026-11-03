@@ -83,6 +83,11 @@ internal sealed class CliOperationTransformer : IOpenApiOperationTransformer
                 .ToArray());
         }
 
+        if (!string.IsNullOrWhiteSpace(metadata.RequestSchemaPath))
+        {
+            extension["requestSchemaPath"] = metadata.RequestSchemaPath;
+        }
+
         if (metadata.LongRunning)
         {
             extension["longRunning"] = true;

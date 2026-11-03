@@ -62,6 +62,13 @@ public sealed class CliOperationMetadata
     public IList<string> SecretProperties { get; init; } = [];
 
     /// <summary>
+    /// Gets or sets the path that returns the JSON Schema of the request body, for an operation whose body depends on its
+    /// arguments, so that the OpenAPI document can't describe it, as in <c>api/settings/sections/{name}/schema</c>.
+    /// Pomi reads it to refuse a <c>writeOnly</c> property in an inline <c>--body</c>.
+    /// </summary>
+    public string RequestSchemaPath { get; set; }
+
+    /// <summary>
     /// Gets or sets the singular name of the resource, which CLI summaries use, as in "Tenant 'Demo' created successfully.".
     /// </summary>
     public string ResourceName { get; set; }

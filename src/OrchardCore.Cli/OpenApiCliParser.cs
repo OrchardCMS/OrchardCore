@@ -102,6 +102,7 @@ internal static class OpenApiCliParser
             ProvisioningProperty = CliUtilities.ReadString(extensionElement, "provisioningProperty"),
             ResourceName = CliUtilities.ReadString(extensionElement, "resourceName"),
             CompletedAction = CliUtilities.ReadString(extensionElement, "completedAction"),
+            RequestSchemaPath = CliUtilities.ReadString(extensionElement, "requestSchemaPath"),
             ItemsProperty = CliUtilities.ReadString(extensionElement, "itemsProperty"),
             SetupPasswordProperty = CliUtilities.ReadString(extensionElement, "setupPasswordProperty"),
         };
@@ -320,6 +321,10 @@ internal static class OpenApiCliParser
             }
         }
     }
+
+    /// <summary>Reads a standalone JSON Schema, returning whether it marks a value writeOnly and the names of such properties.</summary>
+    internal static bool ReadWriteOnlyProperties(JsonElement schema, HashSet<string> names) =>
+        CollectWriteOnlyProperties(schema, schema, [], names);
 
     // Returns whether the schema or anything below it is marked writeOnly, and collects the names of such properties.
     private static bool CollectWriteOnlyProperties(JsonElement schema, JsonElement root, HashSet<string> visitedReferences, HashSet<string> names)

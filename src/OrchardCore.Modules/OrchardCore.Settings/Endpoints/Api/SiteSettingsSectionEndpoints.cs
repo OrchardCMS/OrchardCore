@@ -30,6 +30,7 @@ internal static class SiteSettingsSectionEndpoints
         {
             Capability = Capability,
             InputMode = input ? CliInputMode.Json : CliInputMode.Options,
+            RequestSchemaPath = input ? "api/settings/sections/{name}/schema" : null,
         };
         if (argument)
         {

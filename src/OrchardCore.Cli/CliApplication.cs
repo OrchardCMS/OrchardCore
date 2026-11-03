@@ -1112,6 +1112,7 @@ internal sealed partial class CliApplication
                 }
             }
             var routePath = operation.Path;
+            var requestSchemaPath = operation.CliMetadata.RequestSchemaPath;
             var query = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (parameter, argument) in positionalArguments)
@@ -1120,6 +1121,7 @@ internal sealed partial class CliApplication
                 if (string.Equals(parameter.Location, "path", StringComparison.OrdinalIgnoreCase))
                 {
                     routePath = routePath.Replace($"{{{parameter.Name}}}", Uri.EscapeDataString(value), StringComparison.Ordinal);
+                    requestSchemaPath = requestSchemaPath?.Replace($"{{{parameter.Name}}}", Uri.EscapeDataString(value), StringComparison.Ordinal);
                 }
                 else if (string.Equals(parameter.Location, "query", StringComparison.OrdinalIgnoreCase))
                 {
@@ -1173,12 +1175,30 @@ internal sealed partial class CliApplication
             await using var secretOutput = secretOutputOption is null ? null : SecretOutputFile.Create(
                 parseResult.GetValue(secretOutputOption) ?? throw new CliException("A secret output file is required."));
             var accessToken = await ResolveAccessTokenAsync(context, null, null, false, cancellationToken);
+            if (!string.IsNullOrEmpty(requestSchemaPath) && bodyOption is not null && parseResult.GetValue(bodyOption) is { } inlineBody)
+            {
+                await EnsureNoWriteOnlyValueAsync(context, requestSchemaPath, inlineBody, accessToken, cancellationToken);
+            }
+
             var response = await SendApiRequestAsync(context, operation.Method, routePath, query, headers, body, accessToken, cancellationToken, download, requestTimeout);
             var outputJson = secretOutput is not null ? await secretOutput.WriteAsync(response.Json, cancellationToken)
                 : RemoveWriteOnlyProperties(provisioningSupported ? await CaptureProvisionedContextAsync(response.Json, cancellationToken) : response.Json, operation);
             IReadOnlyList<CliTableColumnMetadata>? tableColumns = secretOutput is null && operation.CliMetadata.TableColumns.Count > 0 ? [.. operation.CliMetadata.TableColumns] : null;
             return await WriteOutputAsync(parseResult, outputJson, cancellationToken, tableColumns, response.HttpMethod, response.StatusCode, operation.CliMetadata);
         });
+    }
+
+    // The schema of this body is only known at run time, so its command keeps the --body option. A write-only value is
+    // refused there, as it would be left in the shell history, like the secret options that other commands leave out.
+    private async Task EnsureNoWriteOnlyValueAsync(TenantContextRecord context, string schemaPath, string inlineBody, string? accessToken, CancellationToken cancellationToken)
+    {
+        var schema = await SendApiRequestAsync(context, "GET", schemaPath, new Dictionary<string, string>(), new Dictionary<string, string>(), null, accessToken, cancellationToken);
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (OpenApiCliParser.ReadWriteOnlyProperties(schema.Json, names)
+            && (names.Count == 0 || RemoveProperties(JsonNode.Parse(inlineBody), names)))
+        {
+            throw new CliException("This request body has a write-only value, such as a secret, which must not appear on a command line. Use --body-file or --stdin instead of --body.");
+        }
     }
 
     private static Option<int?> CreateRequestTimeoutOption() => new("--request-timeout")

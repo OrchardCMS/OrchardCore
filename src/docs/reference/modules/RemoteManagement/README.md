@@ -582,6 +582,7 @@ resource:
 | `SummaryProperties` | `summaryProperties` | The response properties that human-readable output shows after a change, instead of all of them. |
 | `ItemsProperty` | `itemsProperty` | The response property holding the rows of a list, for table output without `TableColumns`. Without it, Pomi looks for `items`. |
 | `SetupPasswordProperty` | `setupPasswordProperty` | The body property holding the password of a new administrator. Pomi requires it and applies the setup password rules before sending the request. |
+| `RequestSchemaPath` | `requestSchemaPath` | The path returning the JSON Schema of a request body that depends on the arguments, which the OpenAPI document can't describe, such as `api/settings/sections/{name}/schema`. Pomi refuses `--body` when it contains a property that this schema marks `writeOnly`. |
 | `NextSteps` | `nextSteps` | The commands suggested after the operation succeeds, see below. |
 | `LongRunning` | `longRunning` | The operation does its work before it responds, which can take minutes. Pomi waits up to 10 minutes for its response instead of 30 seconds. Don't set it on an operation that queues its work and returns `202`. |
 
