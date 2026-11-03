@@ -66,6 +66,15 @@ public sealed class AssistedTemplatesTests : CmsTestBase, IClassFixture<CmsSetup
         Assert.NotEmpty(items);
         Assert.All(items, item => Assert.Contains("About", item, StringComparison.OrdinalIgnoreCase));
 
+        // The front end renders the content item with the site theme, whose template for an article doesn't render its title
+        // part, and what this template adds to the layout, e.g. the title of the page, stays out of the inspection page.
+        var contentItemId = (await search.JsonAsync())?.EnumerateArray().First().GetProperty("id").GetString();
+        await page.GotoAndAssertOkAsync($"{prefix}/Admin/TemplateInspector?contentItemId={contentItemId}");
+        var shapes = page.Locator("ul.list-group code.fs-6");
+        await Assertions.Expect(shapes.GetByText("HtmlBodyPart", new() { Exact = true })).ToHaveCountAsync(1);
+        await Assertions.Expect(shapes.GetByText("TitlePart", new() { Exact = true })).ToHaveCountAsync(0);
+        Assert.DoesNotContain("About", await page.TitleAsync(), StringComparison.Ordinal);
+
         await page.GotoAndAssertOkAsync($"{prefix}/Admin/Contents/ContentItems");
         await Assertions.Expect(InspectTemplatesAction(page).First).ToBeAttachedAsync();
 

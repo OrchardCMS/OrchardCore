@@ -73,13 +73,6 @@
         <div class="alert alert-warning" role="alert">@T["The content item could not be fully rendered: {0}", Model.Error]</div>
     }
 
-    @if (!Model.AdminTemplates)
-    {
-        <div class="alert alert-secondary" role="alert">
-            @T["The shapes are those the content item renders by itself: the shapes a template of the site theme renders in its own markup are not listed."]
-        </div>
-    }
-
     @* A tree of the shapes, not a list of items: each shape is indented under the shape that renders it. *@
     <ul class="list-group mb-3">
         @foreach (var shape in Model.Shapes)

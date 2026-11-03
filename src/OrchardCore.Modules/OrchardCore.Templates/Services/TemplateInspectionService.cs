@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Templates.Models;
 
@@ -17,10 +21,7 @@ public sealed class TemplateInspectionService
 {
     private const string AlternateSeparator = "__";
 
-    private readonly ShapeInspector _shapeInspector;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IShapeHtmlRenderer _shapeHtmlRenderer;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IShapeTableManager _shapeTableManager;
     private readonly ShapeTemplateFiles _shapeTemplateFiles;
     private readonly ActiveThemes _activeThemes;
@@ -28,20 +29,14 @@ public sealed class TemplateInspectionService
     private readonly ILogger _logger;
 
     public TemplateInspectionService(
-        ShapeInspector shapeInspector,
-        IContentItemDisplayManager contentItemDisplayManager,
-        IUpdateModelAccessor updateModelAccessor,
-        IShapeHtmlRenderer shapeHtmlRenderer,
+        IHttpContextAccessor httpContextAccessor,
         IShapeTableManager shapeTableManager,
         ShapeTemplateFiles shapeTemplateFiles,
         ActiveThemes activeThemes,
         SourceTemplatesService sourceTemplatesService,
         ILogger<TemplateInspectionService> logger)
     {
-        _shapeInspector = shapeInspector;
-        _contentItemDisplayManager = contentItemDisplayManager;
-        _updateModelAccessor = updateModelAccessor;
-        _shapeHtmlRenderer = shapeHtmlRenderer;
+        _httpContextAccessor = httpContextAccessor;
         _shapeTableManager = shapeTableManager;
         _shapeTemplateFiles = shapeTemplateFiles;
         _activeThemes = activeThemes;
@@ -58,27 +53,51 @@ public sealed class TemplateInspectionService
     /// <returns>The shapes, each one before the shapes it renders, or an error when the content item could not be rendered.</returns>
     public async Task<(IReadOnlyList<InspectedShape> Shapes, string Error)> InspectAsync(ContentItem contentItem, string displayType, bool adminTemplates)
     {
-        IReadOnlyList<InspectedShape> shapes;
+        IReadOnlyList<InspectedShape> shapes = [];
         string error = null;
+        var httpContext = _httpContextAccessor.HttpContext;
 
-        // The content item renders with the admin theme of this request: the shapes and their alternates are those of the
-        // drivers, but the shapes a template of the site theme would render itself are not listed.
-        _shapeInspector.Start();
+        // The services of this request are those of the admin. The content item renders in its own scope, which selects
+        // the theme and the local templates from whether the request is an admin one. What its templates add to the
+        // layout or the resources stays in that scope, out of this page.
+        if (!adminTemplates)
+        {
+            httpContext.Items.Remove(typeof(AdminAttribute));
+        }
 
         try
         {
-            var shape = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
+            await ShellScope.UsingChildScopeAsync(async scope =>
+            {
+                var services = scope.ServiceProvider;
+                var shapeInspector = services.GetRequiredService<ShapeInspector>();
 
-            await _shapeHtmlRenderer.RenderAsync(shape);
-        }
-        catch (Exception ex) when (!ex.IsFatal())
-        {
-            _logger.LogWarning(ex, "The content item '{ContentItemId}' could not be rendered to inspect its templates.", contentItem.ContentItemId);
-            error = ex.Message;
+                shapeInspector.Start();
+
+                try
+                {
+                    var shape = await services.GetRequiredService<IContentItemDisplayManager>()
+                        .BuildDisplayAsync(contentItem, services.GetRequiredService<IUpdateModelAccessor>().ModelUpdater, displayType);
+
+                    await services.GetRequiredService<IShapeHtmlRenderer>().RenderAsync(shape);
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogWarning(ex, "The content item '{ContentItemId}' could not be rendered to inspect its templates.", contentItem.ContentItemId);
+                    error = ex.Message;
+                }
+                finally
+                {
+                    shapes = shapeInspector.Stop();
+                }
+            });
         }
         finally
         {
-            shapes = _shapeInspector.Stop();
+            if (!adminTemplates)
+            {
+                AdminAttribute.Apply(httpContext);
+            }
         }
 
         await ResolveTemplatesAsync(shapes, adminTemplates);

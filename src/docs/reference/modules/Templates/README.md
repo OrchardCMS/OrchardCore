@@ -62,7 +62,7 @@ The content item to inspect is picked with the content picker of the content pic
 
 When a template of the active theme or of a feature renders the shape, or is bound to one of its alternates, **View** shows its content and **Clone** copies it as a local template, for a Liquid template, to customize it. A Razor template can only be viewed, and its alternate creates a new Liquid template with its name.
 
-The templates are resolved as the front end does, with the active site theme and the templates, on the **Templates** page, and as the admin does, with the active admin theme and the admin templates, on the **Admin Templates** page. The content item is rendered in the admin to find its shapes, so the shapes that a template of the site theme renders in its own markup are not listed.
+The templates are resolved as the front end does, with the active site theme and the templates, on the **Templates** page, and as the admin does, with the active admin theme and the admin templates, on the **Admin Templates** page. The content item is rendered the same way to find its shapes, so the placement of the theme and the shapes its templates render in their own markup are taken into account. It is rendered on its own, without the layout of a page, so the shapes of the layout, e.g. the widgets, are not listed.
 
 ### Template sources
 
