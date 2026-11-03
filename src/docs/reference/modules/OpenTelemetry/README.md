@@ -18,7 +18,7 @@ builder.Services
     .AddOpenTelemetry();
 ```
 
-The `OrchardCore.Cms.Web` application of the repository does it when an OTLP endpoint is configured, so that setting one is enough to export its telemetry, and nothing is collected otherwise.
+The `OrchardCore.Cms.Web` application of the repository does it when `builder.Configuration.HasOtlpEndpoint()` tells that an OTLP endpoint is configured, so that setting one is enough to export its telemetry, and nothing is collected otherwise.
 
 The telemetry is exported over OTLP once an endpoint is configured, either in the `OrchardCore:OpenTelemetry:Otlp` section or with the standard `OTEL_EXPORTER_OTLP_ENDPOINT` configuration value, e.g. as an environment variable:
 
@@ -89,17 +89,35 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `ServiceName` | The `service.name` resource attribute. Defaults to the application name. |
 | `ServiceInstanceId` | The `service.instance.id` resource attribute identifying this instance of the application. Defaults to the machine name followed by the process id, which is unique for each running instance. |
 | `Tracing:Enabled` | Whether traces are collected. Defaults to `true`. |
-| `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, all traces are sampled. |
+| `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, the standard `OTEL_TRACES_SAMPLER` value is used, and otherwise all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
 | `Tracing:IncludeClientLibraries` | Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to `true`. See [Client libraries](#client-libraries). |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
 | `Metrics:Meters` | The names of additional `Meter` to collect metrics from. |
 | `Logging:Enabled` | Whether logs are collected. Defaults to `true`. The log levels of the `Logging` section apply. |
-| `Otlp:Endpoint` | The endpoint of the OTLP receiver, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. |
+| `Otlp:Endpoint` | The endpoint of the OTLP receiver for all signals, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. |
 | `Otlp:Protocol` | `Grpc` or `HttpProtobuf`. Defaults to the `OTEL_EXPORTER_OTLP_PROTOCOL` value, and otherwise to `Grpc`. |
 
-The standard `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_PROTOCOL` and `OTEL_EXPORTER_OTLP_HEADERS` [configuration values](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) are also supported, the latter to pass an API key to a hosted backend, as well as `OTEL_METRIC_EXPORT_INTERVAL` and the `OTEL_BSP_*` and `OTEL_BLRP_*` settings of the batches of traces and logs. The `Otlp` section takes precedence over them. `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` take precedence over the values of the section.
+The standard [OTLP exporter values](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) are also supported, from the configuration of the application, e.g. environment variables. The `Otlp` section takes precedence over them.
+
+| Value | Description |
+| --- | --- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | The endpoint of the OTLP receiver for all signals. Over HTTP, the path of each signal is added to it. |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `grpc` or `http/protobuf`. Defaults to `grpc`. |
+| `OTEL_EXPORTER_OTLP_HEADERS` | The headers sent to the receiver, e.g. to pass an API key to a hosted backend. |
+| `OTEL_EXPORTER_OTLP_TIMEOUT` | The time to wait for the receiver, in milliseconds. |
+| `OTEL_EXPORTER_OTLP_COMPRESSION` | `gzip` or `none`. |
+| `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `cumulative`, `delta` or `lowmemory`. Defaults to `cumulative`. Some backends require `delta`. |
+
+Each of the first five values also exists for a single signal, which takes precedence, with `TRACES`, `METRICS` or `LOGS` after `OTLP`. For instance, `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` only sets the endpoint of the traces, and is used as is, without adding a path to it. Only the signals with an endpoint are exported.
+
+The other standard values are read by the OpenTelemetry SDK itself:
+
+- `OTEL_SDK_DISABLED` turns everything off.
+- `OTEL_TRACES_SAMPLER` and `OTEL_TRACES_SAMPLER_ARG` set the sampler, when `Tracing:SamplingRatio` isn't set.
+- `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` take precedence over the values of the section.
+- `OTEL_METRIC_EXPORT_INTERVAL`, `OTEL_METRIC_EXPORT_TIMEOUT` and the `OTEL_BSP_*` and `OTEL_BLRP_*` settings of the batches of traces and logs are only read from environment variables.
 
 ## Collected telemetry
 

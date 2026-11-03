@@ -62,7 +62,8 @@ public sealed class OpenTelemetryTracingOptions
 
     /// <summary>
     /// Gets or sets the ratio, from 0 to 1, of the traces that are sampled. A trace started by a sampled parent,
-    /// e.g. in another service, is always sampled. When not set, all traces are sampled.
+    /// e.g. in another service, is always sampled. When not set, the standard 'OTEL_TRACES_SAMPLER' configuration
+    /// value is used, and otherwise all traces are sampled.
     /// </summary>
     public double? SamplingRatio { get; set; }
 
@@ -117,14 +118,15 @@ public sealed class OpenTelemetryLoggingOptions
 public sealed class OpenTelemetryOtlpOptions
 {
     /// <summary>
-    /// Gets or sets the endpoint of the OTLP receiver, e.g. 'http://localhost:4317'. When neither this value nor the
-    /// 'OTEL_EXPORTER_OTLP_ENDPOINT' configuration value is set, the telemetry is not exported over OTLP.
+    /// Gets or sets the endpoint of the OTLP receiver for all signals, e.g. 'http://localhost:4317'. When neither this
+    /// value nor the 'OTEL_EXPORTER_OTLP_ENDPOINT' and 'OTEL_EXPORTER_OTLP_{SIGNAL}_ENDPOINT' configuration values are
+    /// set, the telemetry is not exported over OTLP.
     /// </summary>
     public string Endpoint { get; set; }
 
     /// <summary>
-    /// Gets or sets the protocol used to export to the endpoint. When not set, the 'OTEL_EXPORTER_OTLP_PROTOCOL'
-    /// configuration value is used, and otherwise <see cref="OtlpExportProtocol.Grpc"/>.
+    /// Gets or sets the protocol used to export to the endpoint. When not set, the 'OTEL_EXPORTER_OTLP_{SIGNAL}_PROTOCOL'
+    /// and 'OTEL_EXPORTER_OTLP_PROTOCOL' configuration values are used, and otherwise <see cref="OtlpExportProtocol.Grpc"/>.
     /// </summary>
     public OtlpExportProtocol? Protocol { get; set; }
 }

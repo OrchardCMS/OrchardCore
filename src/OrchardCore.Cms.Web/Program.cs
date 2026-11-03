@@ -11,8 +11,7 @@ var orchardCore = builder.Services
 // Exports traces, metrics and logs when an OTLP endpoint is configured, e.g. with the 'OTEL_EXPORTER_OTLP_ENDPOINT' environment variable.
 // Without one nothing would be exported, so nothing is collected.
 // See https://docs.orchardcore.net/en/latest/reference/modules/OpenTelemetry/.
-if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]) ||
-    !string.IsNullOrWhiteSpace(builder.Configuration["OrchardCore:OpenTelemetry:Otlp:Endpoint"]))
+if (builder.Configuration.HasOtlpEndpoint())
 {
     orchardCore.AddOpenTelemetry();
 }

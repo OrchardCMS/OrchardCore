@@ -35,7 +35,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
     /// HttpClient, the .NET runtime and the database clients, tagged with their tenant and with resource attributes
     /// identifying this instance of the application. The options are read from the 'OrchardCore:OpenTelemetry' section,
     /// and the telemetry is exported over OTLP when an endpoint is configured in 'OrchardCore:OpenTelemetry:Otlp:Endpoint'
-    /// or in the standard 'OTEL_EXPORTER_OTLP_ENDPOINT' configuration value.
+    /// or in the standard 'OTEL_EXPORTER_OTLP_ENDPOINT' and 'OTEL_EXPORTER_OTLP_{SIGNAL}_ENDPOINT' configuration values.
     /// </summary>
     /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
     /// <param name="configure">Optional callback to further configure OpenTelemetry, e.g. to add other instrumentations or exporters.</param>
@@ -67,13 +67,17 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
             .AddOrchardCoreInstrumentation()
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
-            .AddSource(s_databaseSources)
-            .SetSampler(serviceProvider => CreateSampler(GetOptions(serviceProvider))));
+            .AddSource(s_databaseSources));
 
         services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracing) =>
         {
             var options = GetOptions(serviceProvider);
             tracing.AddSource(options.Tracing.Sources);
+
+            if (CreateSampler(options) is { } sampler)
+            {
+                tracing.SetSampler(sampler);
+            }
 
             if (options.Enabled && options.Tracing.Enabled && options.Tracing.IncludeClientLibraries)
             {
@@ -149,7 +153,10 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
                 metrics.AddReader(new PeriodicExportingMetricReader(
                     new OtlpMetricExporter(exporterOptions),
                     readerOptions.ExportIntervalMilliseconds ?? 60_000,
-                    readerOptions.ExportTimeoutMilliseconds ?? 30_000));
+                    readerOptions.ExportTimeoutMilliseconds ?? 30_000)
+                {
+                    TemporalityPreference = OtlpExporterOptionsFactory.GetTemporalityPreference(serviceProvider.GetService<IConfiguration>()),
+                });
             }
         });
 
@@ -192,6 +199,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         AppContext.SetSwitch(AzureActivitySourceSwitch, true);
     }
 
+    // Without a sampler, the SDK uses the standard 'OTEL_TRACES_SAMPLER' value, and otherwise samples all traces.
     private static Sampler CreateSampler(OrchardCoreOpenTelemetryOptions options)
     {
         if (!options.Enabled || !options.Tracing.Enabled)
@@ -201,7 +209,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
 
         return options.Tracing.SamplingRatio is { } samplingRatio
             ? new ParentBasedSampler(new TraceIdRatioBasedSampler(samplingRatio))
-            : new ParentBasedSampler(new AlwaysOnSampler());
+            : null;
     }
 
     private static OtlpExporterOptions CreateOtlpExporterOptions(

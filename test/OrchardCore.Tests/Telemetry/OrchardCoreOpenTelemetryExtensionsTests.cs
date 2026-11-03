@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -56,6 +57,34 @@ public class OrchardCoreOpenTelemetryExtensionsTests
         using var activity = source.StartActivity("Operation");
 
         // A dropped activity may still be created to propagate the trace context, but it isn't recorded.
+        Assert.Equal(sampled, activity?.Recorded ?? false);
+    }
+
+    [Theory]
+    [InlineData("true", null, "always_off", false)]
+    [InlineData("true", null, "always_on", true)]
+    [InlineData("true", null, null, true)]
+    [InlineData("true", "1", "always_off", true)]
+    [InlineData("false", null, "always_on", false)]
+    public void AddOpenTelemetry_StandardSampler_AppliesWhenNotConfigured(string enabled, string samplingRatio, string standardSampler, bool sampled)
+    {
+        var sourceName = Guid.NewGuid().ToString("n");
+        var builder = CreateBuilder(new()
+        {
+            ["OrchardCore:OpenTelemetry:Enabled"] = enabled,
+            ["OrchardCore:OpenTelemetry:Tracing:SamplingRatio"] = samplingRatio,
+            ["OrchardCore:OpenTelemetry:Tracing:Sources:0"] = sourceName,
+            ["OTEL_TRACES_SAMPLER"] = standardSampler,
+        });
+
+        new OrchardCoreBuilder(builder.Services).AddOpenTelemetry();
+
+        using var host = builder.Build();
+        host.Services.GetRequiredService<TracerProvider>();
+
+        using var source = new ActivitySource(sourceName);
+        using var activity = source.StartActivity("Operation");
+
         Assert.Equal(sampled, activity?.Recorded ?? false);
     }
 
@@ -184,6 +213,104 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     public void OtlpExporterOptionsFactory_NoEndpoint_ReturnsNull()
     {
         Assert.Null(OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), new ConfigurationBuilder().Build(), OtlpExporterOptionsFactory.Metrics));
+    }
+
+    [Fact]
+    public void OtlpExporterOptionsFactory_SignalConfiguration_TakesPrecedenceForThatSignal()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://collector:4317",
+                ["OTEL_EXPORTER_OTLP_HEADERS"] = "api-key=shared",
+                ["OTEL_EXPORTER_OTLP_TIMEOUT"] = "1000",
+                ["OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"] = "http://traces:4318/custom/path",
+                ["OTEL_EXPORTER_OTLP_TRACES_PROTOCOL"] = "http/protobuf",
+                ["OTEL_EXPORTER_OTLP_TRACES_HEADERS"] = "api-key=traces",
+                ["OTEL_EXPORTER_OTLP_TRACES_TIMEOUT"] = "2000",
+                ["OTEL_EXPORTER_OTLP_TRACES_COMPRESSION"] = "gzip",
+            })
+            .Build();
+
+        var traces = OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), configuration, OtlpExporterOptionsFactory.Traces);
+        var logs = OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), configuration, OtlpExporterOptionsFactory.Logs);
+
+        Assert.Equal(new Uri("http://traces:4318/custom/path"), traces.Endpoint);
+        Assert.Equal(OtlpExportProtocol.HttpProtobuf, traces.Protocol);
+        Assert.Equal("api-key=traces", traces.Headers);
+        Assert.Equal(2000, traces.TimeoutMilliseconds);
+        Assert.Equal(OtlpExportCompression.GZip, traces.Compression);
+
+        Assert.Equal(new Uri("http://collector:4317"), logs.Endpoint);
+        Assert.Equal(OtlpExportProtocol.Grpc, logs.Protocol);
+        Assert.Equal("api-key=shared", logs.Headers);
+        Assert.Equal(1000, logs.TimeoutMilliseconds);
+    }
+
+    [Fact]
+    public void OtlpExporterOptionsFactory_OnlySignalEndpoint_ExportsOnlyThatSignal()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["OTEL_EXPORTER_OTLP_METRICS_ENDPOINT"] = "http://metrics:4317",
+            })
+            .Build();
+
+        Assert.NotNull(OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), configuration, OtlpExporterOptionsFactory.Metrics));
+        Assert.Null(OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), configuration, OtlpExporterOptionsFactory.Traces));
+        Assert.Null(OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), configuration, OtlpExporterOptionsFactory.Logs));
+    }
+
+    [Fact]
+    public void OtlpExporterOptionsFactory_SectionEndpointWithSignalEndpoint_UsesSectionEndpoint()
+    {
+        var options = new OrchardCoreOpenTelemetryOptions();
+        options.Otlp.Endpoint = "http://collector:4318";
+        options.Otlp.Protocol = OtlpExportProtocol.HttpProtobuf;
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"] = "http://traces:4318/custom/path",
+            })
+            .Build();
+
+        var exporterOptions = OtlpExporterOptionsFactory.Create(options, configuration, OtlpExporterOptionsFactory.Traces);
+
+        Assert.Equal(new Uri("http://collector:4318/v1/traces"), exporterOptions.Endpoint);
+    }
+
+    [Theory]
+    [InlineData("OrchardCore:OpenTelemetry:Otlp:Endpoint", "http://collector:4317", true)]
+    [InlineData("OTEL_EXPORTER_OTLP_ENDPOINT", "http://collector:4317", true)]
+    [InlineData("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", "http://collector:4317", true)]
+    [InlineData("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT", "http://collector:4317", true)]
+    [InlineData("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT", "http://collector:4317", true)]
+    [InlineData("OTEL_EXPORTER_OTLP_ENDPOINT", " ", false)]
+    [InlineData("OTEL_EXPORTER_OTLP_PROTOCOL", "grpc", false)]
+    public void HasOtlpEndpoint_Configuration_TellsWhetherAnEndpointIsConfigured(string key, string value, bool expected)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { [key] = value })
+            .Build();
+
+        Assert.Equal(expected, configuration.HasOtlpEndpoint());
+    }
+
+    [Theory]
+    [InlineData("delta", MetricReaderTemporalityPreference.Delta)]
+    [InlineData("LowMemory", MetricReaderTemporalityPreference.LowMemory)]
+    [InlineData("cumulative", MetricReaderTemporalityPreference.Cumulative)]
+    [InlineData("invalid", MetricReaderTemporalityPreference.Cumulative)]
+    [InlineData(null, MetricReaderTemporalityPreference.Cumulative)]
+    public void GetTemporalityPreference_StandardConfiguration_ReturnsPreference(string value, MetricReaderTemporalityPreference expected)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { ["OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE"] = value })
+            .Build();
+
+        Assert.Equal(expected, OtlpExporterOptionsFactory.GetTemporalityPreference(configuration));
     }
 
     [Fact]
