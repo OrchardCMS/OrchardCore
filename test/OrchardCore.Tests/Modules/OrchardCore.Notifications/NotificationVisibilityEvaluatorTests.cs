@@ -29,6 +29,16 @@ public class NotificationVisibilityEvaluatorTests
     }
 
     [Fact]
+    public async Task EvaluateAsync_HandlerThrows_ReturnsHidden()
+    {
+        var evaluator = new NotificationVisibilityEvaluator(
+            [new DelegateHandler(_ => throw new InvalidOperationException()), new DelegateHandler(c => c.Restrict())],
+            NullLogger<NotificationVisibilityEvaluator>.Instance);
+
+        Assert.Equal(NotificationVisibility.Hidden, await evaluator.EvaluateAsync(CreateNotification("1", "Mention"), _user, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
     public async Task EvaluateAsync_SameNotificationTwice_CallsHandlersOnce()
     {
         var calls = 0;

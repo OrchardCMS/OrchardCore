@@ -40,7 +40,20 @@ public sealed class NotificationVisibilityEvaluator : INotificationVisibilityEva
 
         var context = new NotificationVisibilityContext(notification, user);
 
-        await _handlers.InvokeAsync((handler, context, token) => handler.EvaluateAsync(context, token), context, cancellationToken, _logger);
+        foreach (var handler in _handlers)
+        {
+            try
+            {
+                await handler.EvaluateAsync(context, cancellationToken);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                // A notification whose access could not be checked must not be shown.
+                _logger.LogError(ex, "The handler '{Handler}' failed to evaluate the notification '{NotificationId}', which is hidden.", handler.GetType().FullName, notification.NotificationId);
+
+                context.Hide();
+            }
+        }
 
         return _decisions[key] = context.Visibility;
     }
