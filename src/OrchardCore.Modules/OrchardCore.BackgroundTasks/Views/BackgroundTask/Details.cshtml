@@ -88,18 +88,18 @@
 
                                 <dt class="col-sm-5">@T["Next run"]</dt>
                                 <dd class="col-sm-7" data-next-run>
-                                    @if (state.NextStartTime is not null)
+                                    @if (!Model.Enable)
+                                    {
+                                        @T["Not scheduled, the task is disabled."]
+                                    }
+                                    else if (state.NextStartTime is not null)
                                     {
                                         <span>@await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G"))</span>
                                         <span class="text-muted">(@await DisplayAsync(await New.TimeSpan(Utc: state.NextStartTime.Value)))</span>
                                     }
-                                    else if (Model.Enable)
-                                    {
-                                        @T["The schedule is not a valid cron expression."]
-                                    }
                                     else
                                     {
-                                        @T["Not scheduled, the task is disabled."]
+                                        @T["The schedule is not a valid cron expression."]
                                     }
                                 </dd>
 

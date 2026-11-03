@@ -188,18 +188,12 @@ public sealed class BackgroundTaskScheduler
     }
 
     /// <summary>
-    /// Gets the UTC date and time of the next scheduled occurrence, or <see langword="null"/> if the task is disabled
-    /// or if its schedule is not a valid cron expression.
+    /// Gets the UTC date and time of the next occurrence of the schedule, whether the task is enabled or not, or
+    /// <see langword="null"/> if the schedule is not a valid cron expression.
     /// </summary>
     public DateTime? GetNextStartTime()
     {
-        var settings = Settings;
-        if (!settings.Enable)
-        {
-            return null;
-        }
-
-        var schedule = CrontabSchedule.TryParse(settings.Schedule);
+        var schedule = CrontabSchedule.TryParse(Settings.Schedule);
         if (schedule is null)
         {
             return null;

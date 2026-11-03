@@ -330,13 +330,14 @@ public class BackgroundTaskSchedulerTests
     }
 
     [Fact]
-    public void GetNextStartTime_DisabledTask_ReturnsNull()
+    public void GetNextStartTime_DisabledTask_ReturnsNextOccurrence()
     {
         var clock = new FakeClock(_referenceTime);
         var scheduler = CreateScheduler(clock, "* * * * *", enable: false);
 
-        Assert.Null(scheduler.GetNextStartTime());
-        Assert.Null(scheduler.GetState().NextStartTime);
+        var expected = new DateTime(2026, 1, 15, 10, 1, 0, DateTimeKind.Utc);
+        Assert.Equal(expected, scheduler.GetNextStartTime());
+        Assert.Equal(expected, scheduler.GetState().NextStartTime);
     }
 
     [Fact]

@@ -35,9 +35,10 @@ public class BackgroundTaskState
     public DateTime? QueuedTime { get; set; }
 
     /// <summary>
-    /// The UTC date and time of the next scheduled occurrence, or <see langword="null"/> if the task is disabled
-    /// or if its schedule is not a valid cron expression. It can be in the past when the occurrence is due and
-    /// waits for the background service to pick it up.
+    /// The UTC date and time of the next occurrence of the schedule, or <see langword="null"/> if the schedule is not
+    /// a valid cron expression. It is also set for a disabled task, as the background service only knows that a task
+    /// was disabled or enabled on its next polling. It can be in the past when the occurrence is due and waits for
+    /// the background service to pick it up.
     /// </summary>
     public DateTime? NextStartTime { get; set; }
 
