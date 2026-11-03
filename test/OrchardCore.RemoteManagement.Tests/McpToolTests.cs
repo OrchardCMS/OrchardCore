@@ -159,7 +159,7 @@ public class McpToolTests
     }
 
     [Fact]
-    public void RequiresBearerToken_MatchesOnlyTheApiSchemeWithoutAnonymousAccess()
+    public void RequiresBearerToken_ApiSchemeWithoutAnonymousAccess_ReturnsTrue()
     {
         var api = new AuthorizeAttribute { AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api };
         var policy = new AuthorizationPolicyBuilder(OrchardCoreConstants.AuthenticationSchemes.Api).RequireAuthenticatedUser().Build();

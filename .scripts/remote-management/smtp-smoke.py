@@ -158,6 +158,11 @@ with tempfile.TemporaryDirectory(prefix='smtp-cli-', dir=state_path.parent) as c
     pomi('settings', 'sections', 'update', 'smtp', body={'host': 'bad-change', 'port': 70000}, failure=True)
     assert before == pomi('settings', 'sections', 'show', 'smtp')
     assert tool('settings_sections_show', {'path': {'name': 'smtp'}})['values'] == before['values']
+    # The section accepts secrets, which must stay out of MCP tool arguments.
+    refused = request('mcp', 'POST', {'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call',
+        'params': {'name': 'settings_sections_update', 'arguments': {'path': {'name': 'smtp'}, 'body': {'host': 'refused.example.test'}}}})['result']
+    assert refused['isError'] and json.loads(refused['content'][0]['text'])['statusCode'] == 403
+    assert before == pomi('settings', 'sections', 'show', 'smtp')
     email = pomi('settings', 'sections', 'show', 'email')
     assert 'SMTP' in email['values']['availableProviders']
     pomi('settings', 'sections', 'update', 'email', body={'defaultProvider': 'SMTP'})

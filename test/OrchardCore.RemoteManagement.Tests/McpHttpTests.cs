@@ -167,6 +167,21 @@ public class McpHttpTests
     }
 
     [Fact]
+    public async Task Mcp_ToolCall_ExposesTheDispatchedRequestAndRestoresTheOuterOne()
+    {
+        await using var app = await CreateApplicationAsync();
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "allowed");
+
+        using var response = await SendAsync(client, "tools/call", """{"name":"widgets_ambient","arguments":{}}""");
+
+        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        Assert.Contains("same", body);
+        Assert.Contains("true", body);
+        Assert.Equal("true", response.Headers.GetValues("X-Outer-Request-Kept").Single());
+    }
+
+    [Fact]
     public async Task Mcp_Initialize_ReportsTheOrchardCoreVersion()
     {
         await using var app = await CreateApplicationAsync();
@@ -247,6 +262,18 @@ public class McpHttpTests
         var startup = new McpStartup();
         startup.ConfigureServices(builder.Services);
         var app = builder.Build();
+        app.Use((context, next) =>
+        {
+            // Reads the accessor from the flow of the outer request, once the tool call completes.
+            context.Response.OnStarting(() =>
+            {
+                var accessor = context.RequestServices.GetRequiredService<IHttpContextAccessor>();
+                context.Response.Headers["X-Outer-Request-Kept"] = ReferenceEquals(accessor.HttpContext, context) ? "true" : "false";
+                return Task.CompletedTask;
+            });
+
+            return next(context);
+        });
         app.UsePathBase("/tenant-a");
         app.UseRouting();
         startup.Configure(app, app, app.Services);
@@ -260,6 +287,10 @@ public class McpHttpTests
         app.MapPut("api/widgets/{id}", (string id, WidgetInput input) => Results.Json(new { id, input.Title }))
             .WithName("ApiUpdateWidget")
             .WithCliCommand(new CliOperationMetadata(["widgets"], "update"))
+            .RequireAuthorization(policy => policy.AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api).RequireClaim("widgets"));
+        app.MapGet("api/widgets/ambient", (HttpContext context, IHttpContextAccessor accessor) => Results.Json(new { same = ReferenceEquals(accessor.HttpContext, context) }))
+            .WithName("ApiGetAmbientWidget")
+            .WithCliCommand(new CliOperationMetadata(["widgets"], "ambient"))
             .RequireAuthorization(policy => policy.AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api).RequireClaim("widgets"));
         app.MapDelete("api/widgets/{id}", (string id) => Results.Json(new { id }))
             .WithName("ApiDeleteWidget")
