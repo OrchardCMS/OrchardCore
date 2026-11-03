@@ -123,7 +123,7 @@ internal static class WorkflowManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/types/{workflowTypeId}/enable", EnableWorkflowTypeAsync)
+        group.MapPost("/types/{workflowTypeId}:enable", EnableWorkflowTypeAsync)
             .WithName("ApiEnableWorkflowType")
             .WithTags("Workflows")
             .WithSummary("Enables a workflow type.")
@@ -134,7 +134,7 @@ internal static class WorkflowManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/types/{workflowTypeId}/disable", DisableWorkflowTypeAsync)
+        group.MapPost("/types/{workflowTypeId}:disable", DisableWorkflowTypeAsync)
             .WithName("ApiDisableWorkflowType")
             .WithTags("Workflows")
             .WithSummary("Disables a workflow type.")
@@ -145,7 +145,7 @@ internal static class WorkflowManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/types/{workflowTypeId}/execute", ExecuteWorkflowAsync)
+        group.MapPost("/types/{workflowTypeId}:execute", ExecuteWorkflowAsync)
             .WithName("ApiExecuteWorkflowType")
             .WithTags("Workflows")
             .WithSummary("Executes a workflow type.")

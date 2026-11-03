@@ -18,8 +18,8 @@ internal static class SitemapEndpoints
         Configure(routes.MapPost("api/sitemaps", CreateAsync), "ApiCreateSitemap", "create", "Creates a sitemap or index. Read back the server-generated ID before retrying.", input: true).Produces<SitemapResponse>();
         Configure(routes.MapPut("api/sitemaps/{id}", UpdateAsync), "ApiUpdateSitemap", "update", "Replaces a definition while retaining its sources.", "id", true).Produces<SitemapResponse>();
         Configure(routes.MapDelete("api/sitemaps/{id}", DeleteAsync), "ApiDeleteSitemap", "delete", "Deletes a sitemap; an absent ID is unchanged.", "id").Produces(204);
-        Configure(routes.MapPost("api/sitemaps/{id}/enable", EnableAsync), "ApiEnableSitemap", "enable", "Enables public sitemap routing.", "id").Produces(204);
-        Configure(routes.MapPost("api/sitemaps/{id}/disable", DisableAsync), "ApiDisableSitemap", "disable", "Disables public sitemap routing.", "id").Produces(204);
+        Configure(routes.MapPost("api/sitemaps/{id}:enable", EnableAsync), "ApiEnableSitemap", "enable", "Enables public sitemap routing.", "id").Produces(204);
+        Configure(routes.MapPost("api/sitemaps/{id}:disable", DisableAsync), "ApiDisableSitemap", "disable", "Disables public sitemap routing.", "id").Produces(204);
     }
 
     internal static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string operation, string verb, string summary,

@@ -30,9 +30,9 @@ internal static class RateLimitEndpoints
             .Produces<RateLimitPolicyResponse>();
         Configure(routes.MapDelete(Prefix + "/by-id", DeleteAsync), "ApiDeleteRateLimitPolicy", "delete", "Deletes a policy; an absent policy is unchanged.", ["policyId"])
             .Produces(204);
-        Configure(routes.MapPost(Prefix + "/enable", EnableAsync), "ApiEnableRateLimitPolicy", "enable", "Enables a policy and reloads tenant rate limiting.", ["policyId"])
+        Configure(routes.MapPost(Prefix + "/by-id:enable", EnableAsync), "ApiEnableRateLimitPolicy", "enable", "Enables a policy and reloads tenant rate limiting.", ["policyId"])
             .Produces(204);
-        Configure(routes.MapPost(Prefix + "/disable", DisableAsync), "ApiDisableRateLimitPolicy", "disable", "Disables a policy and reloads tenant rate limiting.", ["policyId"])
+        Configure(routes.MapPost(Prefix + "/by-id:disable", DisableAsync), "ApiDisableRateLimitPolicy", "disable", "Disables a policy and reloads tenant rate limiting.", ["policyId"])
             .Produces(204);
         Configure(routes.MapGet("api/rate-limits/limiter-types", SourcesAsync), "ApiListRateLimitSources", "list", "Discovers built-in limiter configuration schemas.", group: ["rate-limits", "limiter-types"])
             .Produces<IReadOnlyList<RateLimitSourceResponse>>();

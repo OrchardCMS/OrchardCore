@@ -13,7 +13,7 @@ Every endpoint uses Orchard Core's `Api` authentication scheme, requires
 credential configuration.
 
 All operations except execution require the security-critical `ManageWorkflows` permission.
-`POST /api/workflows/types/{workflowTypeId}/execute` instead requires the security-critical
+`POST /api/workflows/types/{workflowTypeId}:execute` instead requires the security-critical
 `ExecuteWorkflows` permission.
 
 Unauthenticated requests return `401 Unauthorized`. Failed permission checks return
@@ -57,9 +57,9 @@ their declared casing.
 | `POST` | `/types/validate` | `ManageWorkflows` | Validate a graph without saving |
 | `GET` | `/activity-types` | `ManageWorkflows` | List registered activity types |
 | `GET` | `/activity-types/{name}` | `ManageWorkflows` | Get an activity type descriptor |
-| `POST` | `/types/{workflowTypeId}/enable` | `ManageWorkflows` | Enable a workflow type |
-| `POST` | `/types/{workflowTypeId}/disable` | `ManageWorkflows` | Disable a workflow type |
-| `POST` | `/types/{workflowTypeId}/execute` | `ExecuteWorkflows` | Start a workflow |
+| `POST` | `/types/{workflowTypeId}:enable` | `ManageWorkflows` | Enable a workflow type |
+| `POST` | `/types/{workflowTypeId}:disable` | `ManageWorkflows` | Disable a workflow type |
+| `POST` | `/types/{workflowTypeId}:execute` | `ExecuteWorkflows` | Start a workflow |
 | `GET` | `/instances` | `ManageWorkflows` | List persisted instances |
 | `GET` | `/instances/{workflowId}` | `ManageWorkflows` | Get an instance |
 | `DELETE` | `/instances/{workflowId}` | `ManageWorkflows` | Cancel an instance |
@@ -595,13 +595,13 @@ the selected activity. Also returns `401`, `403`, or `404`.
 
 ### Enable a workflow type
 
-`POST /api/workflows/types/{workflowTypeId}/enable`
+`POST /api/workflows/types/{workflowTypeId}:enable`
 
 `workflowTypeId` is required. No body or query parameters.
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN" \
-  https://localhost:5001/api/workflows/types/4workflowtype/enable
+  https://localhost:5001/api/workflows/types/4workflowtype:enable
 ```
 
 `200 OK` returns the complete workflow type with `"isEnabled": true`:
@@ -626,13 +626,13 @@ same `200` representation. Also returns `401`, `403`, or `404`.
 
 ### Disable a workflow type
 
-`POST /api/workflows/types/{workflowTypeId}/disable`
+`POST /api/workflows/types/{workflowTypeId}:disable`
 
 `workflowTypeId` is required. No body or query parameters.
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN" \
-  https://localhost:5001/api/workflows/types/4workflowtype/disable
+  https://localhost:5001/api/workflows/types/4workflowtype:disable
 ```
 
 `200 OK` returns the complete workflow type with `"isEnabled": false`:
@@ -656,7 +656,7 @@ representation. Also returns `401`, `403`, or `404`.
 
 ### Execute a workflow type
 
-`POST /api/workflows/types/{workflowTypeId}/execute`
+`POST /api/workflows/types/{workflowTypeId}:execute`
 
 `workflowTypeId` is a required string path parameter. The JSON body has:
 
@@ -676,7 +676,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
       "requestedBy": "api"
     }
   }' \
-  https://localhost:5001/api/workflows/types/4workflowtype/execute
+  https://localhost:5001/api/workflows/types/4workflowtype:execute
 ```
 
 `200 OK` returns the resulting workflow state, dynamic output, and the persisted

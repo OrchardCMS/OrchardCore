@@ -43,7 +43,7 @@ public class ContentAndWorkflowEndpointMetadataTests
             AssertOperation(endpoints, "/api/content/versions/{contentItemVersionId}", "DELETE", "ApiDeleteContentItemVersion", ["content", "versions"], "delete");
             AssertOperation(endpoints, "/api/workflows/types", "POST", "ApiCreateWorkflowType", ["workflow", "types"], "create", CliInputMode.Json);
             AssertOperation(endpoints, "/api/workflows/activity-types", "GET", "ApiListWorkflowActivityTypes", ["workflow", "activity-types"], "list");
-            AssertOperation(endpoints, "/api/workflows/types/{workflowTypeId}/execute", "POST", "ApiExecuteWorkflowType", ["workflow", "types"], "execute", CliInputMode.Json);
+            AssertOperation(endpoints, "/api/workflows/types/{workflowTypeId}:execute", "POST", "ApiExecuteWorkflowType", ["workflow", "types"], "execute", CliInputMode.Json);
             AssertOperation(endpoints, "/api/workflows/instances/{workflowId}", "DELETE", "ApiCancelWorkflowInstance", ["workflow", "instances"], "cancel");
             Assert.DoesNotContain(
                 endpoints

@@ -125,7 +125,7 @@ with tempfile.TemporaryDirectory(prefix='rate-limits-cli-', dir=state_path.paren
     globals_enabled = [value['policyId'] for value in request('api/rate-limits/policies?take=200')
         if value['isEnabled'] and value['definition']['scope'] == 'Global']
     for value in globals_enabled:
-        request('api/rate-limits/policies/disable?policyId=' + value, 'POST', status=204)
+        request('api/rate-limits/policies/by-id:disable?policyId=' + value, 'POST', status=204)
     policy_id = None
     try:
         pomi('api', 'refresh', '--force')
@@ -180,4 +180,4 @@ with tempfile.TemporaryDirectory(prefix='rate-limits-cli-', dir=state_path.paren
                 pomi('rate-limits', 'policies', 'delete', policy_id, '--force')
         finally:
             for value in globals_enabled:
-                request('api/rate-limits/policies/enable?policyId=' + value, 'POST', status=204)
+                request('api/rate-limits/policies/by-id:enable?policyId=' + value, 'POST', status=204)
