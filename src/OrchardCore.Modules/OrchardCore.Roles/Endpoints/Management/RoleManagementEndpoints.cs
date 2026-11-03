@@ -20,6 +20,37 @@ internal static class RoleManagementEndpoints
 {
     private const string RoutePrefix = "api/roles";
 
+    private const string CreateRequestExample = """
+        {
+          "roleName": "ExampleReader",
+          "roleDescription": "Reads published content.",
+          "permissionNames": ["ViewContent"]
+        }
+        """;
+
+    private const string CreateResponseExample = """
+        {
+          "roleId": "ExampleReader",
+          "roleName": "ExampleReader",
+          "roleDescription": "Reads published content.",
+          "isSystemRole": false,
+          "isAdminRole": false,
+          "permissionCount": 1,
+          "permissions": [
+            {
+              "name": "ViewContent",
+              "description": "View all content",
+              "category": "Content",
+              "featureId": "OrchardCore.Contents",
+              "featureName": "Contents",
+              "isSecurityCritical": false,
+              "isAssigned": true,
+              "isEffective": true
+            }
+          ]
+        }
+        """;
+
     public static IEndpointRouteBuilder AddRoleManagementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routes = builder.MapManagementGroup(RoleManagementApiEndpointConventions.TagName);
@@ -70,6 +101,7 @@ internal static class RoleManagementEndpoints
                 InputMode = CliInputMode.Json,
             })
             .Accepts<RoleCreateRequest>("application/json")
+            .WithOpenApiExample(CreateRequestExample, CreateResponseExample)
             .Produces<RoleResponse>(StatusCodes.Status201Created)
             .Produces<RoleResponse>(StatusCodes.Status200OK)
             .ProducesETag()

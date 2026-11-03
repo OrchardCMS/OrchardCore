@@ -13,6 +13,19 @@ namespace OrchardCore.Queries.Endpoints.Api;
 
 public static class QueryManagementEndpoints
 {
+    private const string CreateExample = """
+        {
+          "name": "ExampleArticles",
+          "source": "Sql",
+          "returnContentItems": true,
+          "properties": {
+            "SqlQueryMetadata": {
+              "Template": "select DocumentId from ContentItemIndex where ContentType = 'Article' and Published = true"
+            }
+          }
+        }
+        """;
+
     public static IEndpointRouteBuilder AddQueryManagementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routes = builder.MapManagementGroup(QueryManagementEndpointConventions.TagName);
@@ -64,6 +77,7 @@ public static class QueryManagementEndpoints
                 InputMode = CliInputMode.Json,
             })
             .Accepts<QueryDefinitionDto>("application/json")
+            .WithOpenApiExample(CreateExample, CreateExample)
             .Produces<QueryDefinitionDto>(StatusCodes.Status201Created)
             .Produces<QueryDefinitionDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status409Conflict)

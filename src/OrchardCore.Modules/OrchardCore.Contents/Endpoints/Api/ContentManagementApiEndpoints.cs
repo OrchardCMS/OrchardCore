@@ -24,6 +24,54 @@ internal static partial class ContentManagementApiEndpoints
 
     internal const int MaximumBulkItems = 100;
 
+    private const string CreateRequestExample = """
+        {
+          "ContentType": "Article",
+          "DisplayText": "Example article",
+          "TitlePart": {
+            "Title": "Example article"
+          }
+        }
+        """;
+
+    private const string CreateDraftResponseExample = """
+        {
+          "ContentItemId": "4example5content6item7id8w9",
+          "ContentItemVersionId": "4example5content6version7id",
+          "ContentType": "Article",
+          "DisplayText": "Example article",
+          "Latest": true,
+          "Published": false,
+          "ModifiedUtc": "2026-01-15T10:30:00Z",
+          "PublishedUtc": null,
+          "CreatedUtc": "2026-01-15T10:30:00Z",
+          "Owner": "4example5owner6id7w8x9y0z1",
+          "Author": "admin",
+          "TitlePart": {
+            "Title": "Example article"
+          }
+        }
+        """;
+
+    private const string CreateResponseExample = """
+        {
+          "ContentItemId": "4example5content6item7id8w9",
+          "ContentItemVersionId": "4example5content6version7id",
+          "ContentType": "Article",
+          "DisplayText": "Example article",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2026-01-15T10:30:00Z",
+          "PublishedUtc": "2026-01-15T10:30:00Z",
+          "CreatedUtc": "2026-01-15T10:30:00Z",
+          "Owner": "4example5owner6id7w8x9y0z1",
+          "Author": "admin",
+          "TitlePart": {
+            "Title": "Example article"
+          }
+        }
+        """;
+
     public static IEndpointRouteBuilder AddContentManagementApiEndpoints(this IEndpointRouteBuilder builder)
     {
         var group = builder.MapGroup("api/content")
@@ -72,6 +120,7 @@ internal static partial class ContentManagementApiEndpoints
             .WithDescription("Creates a content item when the request has no contentItemId, or updates the current draft for backward compatibility when one is supplied.")
             .WithCliCommand(Cli(["content", "items"], "save", inputMode: CliInputMode.Json))
             .Produces<ContentItem>(StatusCodes.Status200OK)
+            .WithOpenApiExample(CreateRequestExample, CreateResponseExample)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -84,6 +133,7 @@ internal static partial class ContentManagementApiEndpoints
             .WithDescription("Creates a new draft content item.")
             .WithCliCommand(Cli(["content", "items"], "create-draft", inputMode: CliInputMode.Json))
             .Produces<ContentItem>(StatusCodes.Status201Created)
+            .WithOpenApiExample(CreateRequestExample, CreateDraftResponseExample)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);

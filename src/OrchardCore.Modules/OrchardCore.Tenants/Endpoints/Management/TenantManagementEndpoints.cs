@@ -38,6 +38,41 @@ internal static partial class TenantManagementEndpoints
 {
     private const string RoutePrefix = "api/tenants";
 
+    private const string CreateRequestExample = """
+        {
+          "name": "ExampleTenant",
+          "requestUrlPrefix": "example-tenant",
+          "category": "Examples",
+          "description": "A tenant created from the API example.",
+          "databaseProvider": "Sqlite",
+          "recipeName": "Blog"
+        }
+        """;
+
+    private const string CreateResponseExample = """
+        {
+          "name": "ExampleTenant",
+          "tenantId": "4example5tenant6id7w8x9y0z1",
+          "state": "Uninitialized",
+          "category": "Examples",
+          "description": "A tenant created from the API example.",
+          "requestUrlHost": "",
+          "requestUrlPrefix": "example-tenant",
+          "databaseProvider": "Sqlite",
+          "connectionString": "",
+          "tablePrefix": "",
+          "schema": null,
+          "recipeName": "Blog",
+          "featureProfiles": [],
+          "urls": ["https://cms.example.com/example-tenant"],
+          "primaryUrl": "https://cms.example.com/example-tenant",
+          "setupUrl": "https://cms.example.com/example-tenant?token=placeholder-setup-token",
+          "canStart": false,
+          "canStop": false,
+          "canDelete": true
+        }
+        """;
+
     private static readonly string[] _summaryProperties =
         ["name", "tenantId", "state", "setupUrl", "primaryUrl", "url", "requestUrlHost", "requestUrlPrefix", "recipeName", "databaseProvider"];
 
@@ -124,6 +159,7 @@ internal static partial class TenantManagementEndpoints
                 },
             })
             .Accepts<TenantCreateRequest>("application/json")
+            .WithOpenApiExample(CreateRequestExample, CreateResponseExample)
             .Produces<TenantResponse>(StatusCodes.Status201Created)
             .Produces<TenantResponse>(StatusCodes.Status200OK)
             .ProducesETag()

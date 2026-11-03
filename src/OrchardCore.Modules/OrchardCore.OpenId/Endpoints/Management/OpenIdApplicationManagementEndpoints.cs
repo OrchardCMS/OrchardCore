@@ -18,11 +18,41 @@ namespace OrchardCore.OpenId.Endpoints.Management;
 
 internal static class OpenIdApplicationManagementEndpoints
 {
+    private const string CreateRequestExample = """
+        {
+          "clientId": "example-client",
+          "displayName": "Example client",
+          "clientType": "confidential",
+          "consentType": "implicit",
+          "clientSecret": "replace-with-a-generated-secret",
+          "allowClientCredentialsFlow": true,
+          "roles": [],
+          "scopes": ["orchardcore.management"]
+        }
+        """;
+
+    private const string CreateResponseExample = """
+        {
+          "id": "4example5application6id7w8x9",
+          "clientId": "example-client",
+          "displayName": "Example client",
+          "clientType": "confidential",
+          "applicationType": "web",
+          "consentType": "implicit",
+          "roles": [],
+          "permissions": ["ept:token", "gt:client_credentials", "scp:orchardcore.management"],
+          "requirements": [],
+          "redirectUris": [],
+          "postLogoutRedirectUris": []
+        }
+        """;
+
     public static void AddOpenIdApplicationManagementEndpoints(this IEndpointRouteBuilder routes)
     {
         Configure(routes.MapPost("api/openid/applications", CreateAsync), "ApiCreateOpenIdApplication", "create",
             "Creates an application. Equivalent client-identifier retries return its redacted description.", input: true)
-            .Produces<OpenIdApplicationResponse>(201).Produces<OpenIdApplicationResponse>().ProducesProblem(409).ProducesETag();
+            .Produces<OpenIdApplicationResponse>(201).Produces<OpenIdApplicationResponse>().ProducesProblem(409).ProducesETag()
+            .WithOpenApiExample(CreateRequestExample, CreateResponseExample);
         Configure(routes.MapPut("api/openid/applications/by-client-id", UpdateAsync), "ApiUpdateOpenIdApplication", "update",
             "Replaces application settings. An omitted secret preserves the current confidential credential.", input: true, argument: true)
             .Produces<OpenIdApplicationResponse>().ProducesProblem(404).AcceptsIfMatch();

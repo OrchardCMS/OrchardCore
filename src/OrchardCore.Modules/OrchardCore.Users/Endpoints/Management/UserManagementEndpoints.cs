@@ -26,6 +26,32 @@ internal static class UserManagementEndpoints
 {
     private const string RoutePrefix = "api/users";
 
+    private const string CreateRequestExample = """
+        {
+          "userName": "example.user",
+          "email": "example.user@example.com",
+          "password": "Replace-Me-1",
+          "emailConfirmed": true,
+          "isEnabled": true,
+          "roleNames": []
+        }
+        """;
+
+    private const string CreateResponseExample = """
+        {
+          "userId": "4example5user6id7w8x9y0z1a2",
+          "userName": "example.user",
+          "email": "example.user@example.com",
+          "phoneNumber": null,
+          "emailConfirmed": true,
+          "isEnabled": true,
+          "isLockoutEnabled": false,
+          "lockoutEndUtc": null,
+          "accessFailedCount": 0,
+          "roleNames": []
+        }
+        """;
+
     public static IEndpointRouteBuilder AddUserManagementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routes = builder.MapManagementGroup(UserManagementApiEndpointConventions.TagName);
@@ -78,6 +104,7 @@ internal static class UserManagementEndpoints
                 SecretProperties = { "password" },
             })
             .Accepts<UserCreateRequest>("application/json")
+            .WithOpenApiExample(CreateRequestExample, CreateResponseExample)
             .Produces<UserResponse>(StatusCodes.Status201Created)
             .ProducesETag()
             .Produces<UserResponse>(StatusCodes.Status200OK)
