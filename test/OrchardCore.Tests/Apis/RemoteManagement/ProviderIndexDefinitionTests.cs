@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AzureAI;
@@ -10,6 +12,7 @@ using OrchardCore.Elasticsearch.Core.Models;
 using OrchardCore.Elasticsearch.Endpoints.Management;
 using OrchardCore.Elasticsearch.Models;
 using OrchardCore.Entities;
+using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
@@ -139,6 +142,33 @@ public class ProviderIndexDefinitionTests
         Assert.Equal(JsonSerializer.Serialize(definition), JsonSerializer.Serialize(described.Definition));
         Assert.Empty(profile.GetOrCreate<AzureAISearchIndexMetadata>().IndexMappings);
     }
+
+    [Fact]
+    public async Task Delete_MissingProfileOrOtherProvider_ReturnsNotFoundWithoutDeleting()
+    {
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
+        var http = new DefaultHttpContext { RequestServices = services };
+        var profiles = new Mock<IIndexProfileManager>();
+        var management = new Mock<IIndexProfileManagementService>(MockBehavior.Strict);
+        Assert.Equal(404, Status(await ElasticsearchIndexDefinitionEndpoints.DeleteAsync(http, Authorize(), profiles.Object, management.Object, "missing")));
+        Assert.Equal(404, Status(await AzureAISearchIndexDefinitionEndpoints.DeleteAsync(http, Authorize(), profiles.Object, management.Object, "missing")));
+
+        profiles.Setup(value => value.FindByIdAsync("id")).ReturnsAsync(new IndexProfile { Id = "id", ProviderName = "Other", Type = "Content" });
+        Assert.Equal(404, Status(await ElasticsearchIndexDefinitionEndpoints.DeleteAsync(http, Authorize(), profiles.Object, management.Object, "id")));
+        Assert.Equal(404, Status(await AzureAISearchIndexDefinitionEndpoints.DeleteAsync(http, Authorize(), profiles.Object, management.Object, "id")));
+        management.VerifyNoOtherCalls();
+    }
+
+    private static IAuthorizationService Authorize()
+    {
+        var authorization = new Mock<IAuthorizationService>();
+        authorization.Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(AuthorizationResult.Success());
+
+        return authorization.Object;
+    }
+
+    private static int? Status(IResult result) => Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode;
 
     private static ElasticsearchOptions CreateElasticsearchOptions()
     {

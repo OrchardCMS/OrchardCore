@@ -265,6 +265,7 @@ def check_index_definitions(route, features, provider_name):
     call(f'api/indexes/{route}', 'POST', {**valid, 'IndexedContentTypes': []}, status=400)
     assert send(f'api/indexes/{route}', 'POST', {**valid, 'IndexMappings': {}})[0] == 400, 'Private mappings are not part of a definition.'
     call(f'api/indexes/{route}/by-id?id=missing', status=404)
+    call(f'api/indexes/{route}/by-id?id=missing', 'DELETE', status=404)
 
     # There is no server: the provider has to report it, without leaving a profile behind.
     code, text, _ = send(f'api/indexes/{route}', 'POST', valid)

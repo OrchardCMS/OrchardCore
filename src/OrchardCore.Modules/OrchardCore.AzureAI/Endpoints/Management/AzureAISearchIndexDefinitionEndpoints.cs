@@ -123,8 +123,7 @@ internal static class AzureAISearchIndexDefinitionEndpoints
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(id)) { return TypedResults.Problem("An index identifier is required.", statusCode: 400); }
         var profile = await profiles.FindByIdAsync(id);
-        if (profile is null) { return TypedResults.NoContent(); }
-        if (!IsContentIndex(profile)) { return context.ApiNotFoundProblem(); }
+        if (profile is null || !IsContentIndex(profile)) { return context.ApiNotFoundProblem(); }
         var result = await management.DeleteAsync(profile);
         return result == IndexProfileManagementResult.Success ? TypedResults.NoContent() : MutationFailure(result);
     }
