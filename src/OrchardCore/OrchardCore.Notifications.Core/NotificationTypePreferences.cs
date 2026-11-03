@@ -8,26 +8,6 @@ namespace OrchardCore.Notifications;
 public static class NotificationTypePreferences
 {
     /// <summary>
-    /// Gets whether a method is on for a type of notification: the choice of the user for the type when
-    /// they made one, otherwise the default of the type. A method the user turned off for every type stays off.
-    /// </summary>
-    /// <param name="part">The preferences of the user, or <see langword="null"/>.</param>
-    /// <param name="type">The type of notification.</param>
-    /// <param name="method">The notification method.</param>
-    /// <returns><see langword="true"/> when the user receives the type with the method.</returns>
-    public static bool IsMethodEnabled(UserNotificationPreferencesPart part, NotificationTypeDescriptor type, string method)
-    {
-        ArgumentNullException.ThrowIfNull(type);
-
-        if (part?.Optout?.Contains(method, StringComparer.OrdinalIgnoreCase) == true)
-        {
-            return false;
-        }
-
-        return IsMethodEnabledForType(part, type, method);
-    }
-
-    /// <summary>
     /// Gets whether a method is on for a type of notification, without the methods the user turned off for every type.
     /// </summary>
     /// <param name="part">The preferences of the user, or <see langword="null"/>.</param>

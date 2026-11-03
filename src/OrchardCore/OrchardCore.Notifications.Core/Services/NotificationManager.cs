@@ -92,35 +92,11 @@ public sealed class NotificationManager : INotificationManager
         return count;
     }
 
-    public async Task<bool> MarkAsReadAsync(Notification notification, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(notification);
+    public Task<bool> MarkAsReadAsync(Notification notification, CancellationToken cancellationToken = default)
+        => SetReadAsync(notification, true, cancellationToken);
 
-        if (!SetRead(notification, true))
-        {
-            return false;
-        }
-
-        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection, cancellationToken: cancellationToken);
-        await RefreshAsync(notification.UserId);
-
-        return true;
-    }
-
-    public async Task<bool> MarkAsUnreadAsync(Notification notification, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(notification);
-
-        if (!SetRead(notification, false))
-        {
-            return false;
-        }
-
-        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection, cancellationToken: cancellationToken);
-        await RefreshAsync(notification.UserId);
-
-        return true;
-    }
+    public Task<bool> MarkAsUnreadAsync(Notification notification, CancellationToken cancellationToken = default)
+        => SetReadAsync(notification, false, cancellationToken);
 
     public async Task<int> MarkAsReadAsync(NotificationFilter filter, CancellationToken cancellationToken = default)
     {
@@ -189,6 +165,21 @@ public sealed class NotificationManager : INotificationManager
         }
 
         return query;
+    }
+
+    private async Task<bool> SetReadAsync(Notification notification, bool isRead, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(notification);
+
+        if (!SetRead(notification, isRead))
+        {
+            return false;
+        }
+
+        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection, cancellationToken: cancellationToken);
+        await RefreshAsync(notification.UserId);
+
+        return true;
     }
 
     private bool SetRead(Notification notification, bool isRead)
