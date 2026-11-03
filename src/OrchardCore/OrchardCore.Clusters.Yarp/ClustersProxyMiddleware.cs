@@ -7,7 +7,7 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Distributes proxy requests across tenant clusters.
 /// </summary>
-public class ClustersProxyMiddleware
+public sealed class ClustersProxyMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IProxyStateLookup _lookup;
@@ -20,20 +20,17 @@ public class ClustersProxyMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        // Check if this instance is not used as a clusters proxy.
-        if (!context.TryGetClusterFeature(out var feature) || feature.ClusterId is null)
+        // A tenant should only be served by its cluster, so don't let the route forward it to its default cluster.
+        var clusterId = context.Features.Get<ClusterFeature>()?.ClusterId;
+
+        if (clusterId is null || !_lookup.TryGetCluster(clusterId, out var cluster))
         {
-            // Bypass the clusters proxy middleware.
-            await _next(context);
+            context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
             return;
         }
 
-        // Try to get the configured cluster with the same identifier.
-        if (_lookup.TryGetCluster(feature.ClusterId, out var cluster))
-        {
-            // Distribute the proxy request to this tenant cluster.
-            context.ReassignProxyRequest(cluster);
-        }
+        // Distribute the proxy request to this tenant cluster.
+        context.ReassignProxyRequest(cluster);
 
         await _next(context);
     }

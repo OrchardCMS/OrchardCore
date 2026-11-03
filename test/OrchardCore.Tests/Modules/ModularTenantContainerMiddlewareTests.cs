@@ -1,5 +1,6 @@
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
@@ -10,7 +11,7 @@ namespace OrchardCore.Tests.Modules;
 public class ModularTenantContainerMiddlewareTests
 {
     [Fact]
-    public async Task InvokeReturnsServiceUnavailableWhenNoClusterMatchesResolvedTenant()
+    public async Task Invoke_NoClusterMatchesTenant_ReturnsServiceUnavailable()
     {
         // Arrange
         var shellSettings = new ShellSettings
@@ -58,5 +59,25 @@ public class ModularTenantContainerMiddlewareTests
         httpContext.Response.Body.Position = 0;
         using var reader = new StreamReader(httpContext.Response.Body);
         Assert.Equal("No cluster is configured for the requested tenant.", await reader.ReadToEndAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task RouterInvoke_NoTenantScope_CallsNext()
+    {
+        // Arrange
+        var nextCalled = false;
+        var middleware = new ModularTenantRouterMiddleware(
+            _ =>
+            {
+                nextCalled = true;
+                return Task.CompletedTask;
+            },
+            NullLogger<ModularTenantRouterMiddleware>.Instance);
+
+        // Act
+        await middleware.Invoke(new DefaultHttpContext());
+
+        // Assert
+        Assert.True(nextCalled);
     }
 }

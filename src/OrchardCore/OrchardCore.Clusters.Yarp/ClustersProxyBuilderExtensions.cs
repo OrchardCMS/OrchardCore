@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Clusters;
@@ -20,6 +22,7 @@ public static class ClustersProxyBuilderExtensions
             new ConfigurationChangeTokenSource<ClustersOptions>(
                 Options.DefaultName,
                 serviceProvider.GetRequiredService<IConfiguration>().GetSection("OrchardCore_Clusters")));
+        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ClustersProxyMatcherPolicy>());
 
         return builder.AddConfigFilter<ClustersProxyConfigFilter>();
     }

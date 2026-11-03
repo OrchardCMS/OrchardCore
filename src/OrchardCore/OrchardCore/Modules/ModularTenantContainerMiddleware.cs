@@ -41,6 +41,7 @@ public class ModularTenantContainerMiddleware
         {
             var clustersOptions = _clustersOptionsMonitor.CurrentValue;
 
+            // When this instance is a clusters proxy, the tenant only runs on the cluster serving it.
             if (httpContext.AsClustersProxy(clustersOptions))
             {
                 var clusterId = shellSettings.GetClusterId(clustersOptions);

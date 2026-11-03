@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 
@@ -25,7 +24,10 @@ public class ModularTenantRouterMiddleware
 
     public Task Invoke(HttpContext httpContext)
     {
-        if (httpContext.TryGetClusterFeature(out _))
+        var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
+
+        // No tenant scope was created as a clusters proxy forwards this request to the tenant cluster.
+        if (shellContext is null)
         {
             return _next(httpContext);
         }
@@ -34,8 +36,6 @@ public class ModularTenantRouterMiddleware
         {
             _logger.LogInformation("Begin Routing Request");
         }
-
-        var shellContext = httpContext.Features.Get<ShellContextFeature>().ShellContext;
 
         // Define a new 'PathBase' for the current request based on the tenant 'RequestUrlPrefix'.
         // Because IIS or another middleware might have already set it, we just append the prefix.
@@ -48,14 +48,14 @@ public class ModularTenantRouterMiddleware
             httpContext.Request.Path = remainingPath;
         }
 
+        // Update the last request time (done atomically).
+        shellContext.LastRequestTimeUtc = DateTime.UtcNow;
+
         // Do we need to rebuild the pipeline?
         if (!shellContext.HasPipeline())
         {
             return Awaited(shellContext, httpContext);
         }
-
-        // Update the last request time (done atomically).
-        shellContext.LastRequestTimeUtc = DateTime.UtcNow;
 
         return shellContext.Pipeline.Invoke(httpContext);
 
@@ -66,9 +66,6 @@ public class ModularTenantRouterMiddleware
             {
                 await shellContext.BuildPipelineAsync();
             }
-
-            // Update the last request time (done atomically).
-            shellContext.LastRequestTimeUtc = DateTime.UtcNow;
 
             await shellContext.Pipeline.Invoke(httpContext);
         }
