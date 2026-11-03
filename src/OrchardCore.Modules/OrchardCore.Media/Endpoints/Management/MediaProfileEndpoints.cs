@@ -24,7 +24,7 @@ internal static class MediaProfileEndpoints
             .Produces<MediaProfileDefinition>();
         Configure(routes.MapPut("api/media/profiles/by-name", UpdateAsync), "ApiUpdateMediaProfile", "update", "Replaces or renames a profile after validating its definition and name conflicts.", "name", true)
             .Produces<MediaProfileDefinition>();
-        Configure(routes.MapDelete("api/media/profiles/by-name", DeleteAsync), "ApiDeleteMediaProfile", "delete", "Deletes a named profile; an absent profile is unchanged.", "name")
+        Configure(routes.MapDelete("api/media/profiles/by-name", DeleteAsync), "ApiDeleteMediaProfile", "delete", "Deletes a named profile.", "name")
             .Produces(204);
     }
 
@@ -99,7 +99,8 @@ internal static class MediaProfileEndpoints
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(name)) { return Invalid("A profile name is required."); }
         var document = await manager.LoadMediaProfilesDocumentAsync();
-        if (document.MediaProfiles.ContainsKey(name)) { await manager.RemoveMediaProfileAsync(name); }
+        if (!document.MediaProfiles.ContainsKey(name)) { return context.ApiNotFoundProblem(); }
+        await manager.RemoveMediaProfileAsync(name);
         return TypedResults.NoContent();
     }
 

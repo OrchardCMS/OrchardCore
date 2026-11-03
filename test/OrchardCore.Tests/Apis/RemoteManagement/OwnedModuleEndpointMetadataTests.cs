@@ -79,13 +79,13 @@ public class OwnedModuleEndpointMetadataTests
         AssertOperation(endpoints, "api/users/{userId}:unlock", "POST", "ApiUnlockUser", "Users", ["users"], "unlock", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/users/{userId}:confirm-email", "POST", "ApiConfirmUserEmail", "Users", ["users"], "confirm-email", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/users/{userId}:send-reset", "POST", "ApiSendUserPasswordReset", "Users", ["users"], "send-reset", null, [200, 400, 401, 403, 404, 409, 502]);
-        AssertOperation(endpoints, "api/users/{userId}", "DELETE", "ApiDeleteUser", "Users", ["users"], "delete", null, [200, 204, 400, 401, 403]);
+        AssertOperation(endpoints, "api/users/{userId}", "DELETE", "ApiDeleteUser", "Users", ["users"], "delete", null, [204, 400, 401, 403, 404]);
 
         AssertOperation(endpoints, "api/roles", "GET", "ApiListRoles", "Roles", ["roles"], "list", null, [200, 400, 401, 403]);
         AssertOperation(endpoints, "api/roles/{roleId}", "GET", "ApiGetRole", "Roles", ["roles"], "show", null, [200, 401, 403, 404]);
         AssertOperation(endpoints, "api/roles", "POST", "ApiCreateRole", "Roles", ["roles"], "create", "application/json", [201, 400, 401, 403, 409]);
         AssertOperation(endpoints, "api/roles/{roleId}", "PUT", "ApiUpdateRole", "Roles", ["roles"], "update", "application/json", [200, 400, 401, 403, 404]);
-        AssertOperation(endpoints, "api/roles/{roleId}", "DELETE", "ApiDeleteRole", "Roles", ["roles"], "delete", null, [200, 400, 401, 403]);
+        AssertOperation(endpoints, "api/roles/{roleId}", "DELETE", "ApiDeleteRole", "Roles", ["roles"], "delete", null, [204, 400, 401, 403, 404]);
 
         AssertOperation(endpoints, "api/themes", "GET", "ApiListThemes", "Themes", ["themes"], "list", null, [200, 400, 401, 403]);
         AssertOperation(endpoints, "api/themes/{themeId}:enable", "POST", "ApiEnableTheme", "Themes", ["themes"], "enable", null, [200, 400, 401, 403, 404]);

@@ -103,7 +103,7 @@ identifier returns `409`. Updates return `200` and skip saving an equivalent def
 A missing update target returns `404`. Invalid settings return `400`, retaining the
 last valid application values.
 
-Deletion returns `204`, including when the application is already absent. A deleted
+Deletion returns `204`, or `404` when the application is unknown. A deleted
 application can no longer authenticate to obtain new tokens. Application settings and
 credential changes govern subsequent authentication; they do not promise immediate
 invalidation of all previously issued access tokens. Existing token lifetime and

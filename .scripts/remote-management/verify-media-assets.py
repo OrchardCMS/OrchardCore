@@ -105,8 +105,8 @@ try:
     entries = request('api/media/files?path=' + folder, admin)['items']
     assert {item['name'] for item in entries} == {'site-v1.css', 'site-v1.js', 'site-v1.svg', 'copy.js', 'move.js'}
 finally:
-    request('api/media/folder?path=' + protected_folder, admin, 'DELETE')
-    request('api/media/folder?path=' + folder, restricted, 'DELETE')
+    request('api/media/folder?path=' + protected_folder, admin, 'DELETE', expected=204)
+    request('api/media/folder?path=' + folder, restricted, 'DELETE', expected=204)
 request('api/media/file?path=' + folder + '/site-v1.css', restricted, expected=404)
 report = {'passed': True, 'requests': len(checks), 'checks': checks}
 (Path(state['root']) / 'media-assets.json').write_text(json.dumps(report, indent=2))

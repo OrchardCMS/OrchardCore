@@ -168,12 +168,15 @@ with tempfile.TemporaryDirectory(prefix='openid-applications-cli-', dir=state_pa
         try:
             assert tool('applications', 'show', {'query': {'clientId': name}}) == changed
             request(path, 'DELETE', status=204)
-            request(path, 'DELETE', status=204)
+            request(path, 'DELETE', status=404)
         finally:
             request('api/features/OrchardCore.RemoteManagement.Cli:enable?force=true', 'POST')
         authenticate_application(expected_error='invalid_client')
         pomi('openid', 'applications', 'show', name, status=404)
-        pomi('openid', 'applications', 'delete', name, '--force')
+        pomi('openid', 'applications', 'delete', name, '--force', status=404)
         print('PASS: application CRUD, redaction/retries/conflicts, shared validation, credential preservation, runtime role/grant replacement, permissions and MCP without CLI.')
     finally:
-        request(path, 'DELETE', status=204)
+        try:
+            request(path, 'DELETE', status=204)
+        except AssertionError:
+            pass  # The checks above delete it when they get that far.

@@ -55,7 +55,7 @@ internal static partial class ContentManagementApiEndpoints
             .WithSummary("Permanently deletes an archived content item version.")
             .WithDescription("Rejects latest or published versions. Does not delete the logical item, related content, media, or audit events.")
             .WithCliCommand(Cli(["content", "versions"], "delete", arguments: [new("contentItemVersionId", 0)], requiresConfirmation: true))
-            .Produces<ContentItem>().Produces(204).ProducesProblem(401).ProducesProblem(403).ProducesProblem(409);
+            .Produces(204).ProducesProblem(401).ProducesProblem(403).ProducesProblem(404).ProducesProblem(409);
     }
 
     private static async Task<IResult> ListVersionsAsync(string contentItemId, IContentManager manager, ISession session,
@@ -106,12 +106,12 @@ internal static partial class ContentManagementApiEndpoints
         return error ?? Results.Json(version, service.SerializerOptions);
     }
 
-    private static async Task<IResult> DeleteVersionAsync(string contentItemVersionId, IContentManager manager, ISession session, ContentApiService service, HttpContext httpContext)
+    private static async Task<IResult> DeleteVersionAsync(string contentItemVersionId, IContentManager manager, ISession session, HttpContext httpContext)
     {
         var (version, _, error) = await AuthorizeVersionAsync(contentItemVersionId, manager, session, httpContext, CommonPermissions.DeleteContent);
         if (error is not null)
         {
-            return error is IStatusCodeHttpResult { StatusCode: 404 } ? TypedResults.NoContent() : error;
+            return error;
         }
         if (version.Latest || version.Published)
         {
@@ -120,7 +120,7 @@ internal static partial class ContentManagementApiEndpoints
         // Match archived-version pruning. Removing the logical content item here
         // would invoke lifecycle handlers for its active versions and related data.
         session.Delete(version);
-        return Results.Json(version, service.SerializerOptions);
+        return TypedResults.NoContent();
     }
 
     private static async Task<IResult> RestoreVersionAsync(string contentItemVersionId, IContentManager manager, ISession session,

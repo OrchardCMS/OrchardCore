@@ -405,13 +405,7 @@ curl -X DELETE -H 'Authorization: Bearer ACCESS_TOKEN' \
   'https://cms.example.com/tenant-a/api/media/folder?path=images%2Fproducts'
 ```
 
-`200 OK`:
-
-```json
-{
-  "path": "images/products"
-}
-```
+`204 No Content` confirms the deletion.
 
 Other responses: `400` for root, protected system folders, or a path that resolves to a non-directory entry; `401`; `403`; `404` when deletion fails or the directory is absent.
 
@@ -734,13 +728,7 @@ curl -X DELETE -H 'Authorization: Bearer ACCESS_TOKEN' \
   'https://cms.example.com/tenant-a/api/media/file?path=archive%2Flogo.png'
 ```
 
-`200 OK`:
-
-```json
-{
-  "path": "archive/logo.png"
-}
-```
+`204 No Content` confirms the deletion.
 
 Other responses: `401`, `403`, and `404` for an empty path or when the file-store deletion fails.
 

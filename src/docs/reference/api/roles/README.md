@@ -405,26 +405,15 @@ Authorization: Bearer eyJ...
 Accept: application/json
 ```
 
-### `200 OK`
-
-```json
-{
-  "roleId": "ContentEditor",
-  "action": "delete"
-}
-```
-
-`action` is always `delete`. If the role is already absent, the convergent retry returns the same
-`200 OK` body.
-
 ### Responses
 
 | Status | Meaning |
 | --- | --- |
-| `200 OK` | The non-system role was deleted, or the role was already absent. |
+| `204 No Content` | The non-system role was deleted. |
 | `400 Bad Request` | The role is a system role, or the Identity role manager rejected deletion. |
 | `401 Unauthorized` | The bearer token is absent or rejected. |
 | `403 Forbidden` | A required permission is missing. |
+| `404 Not Found` | The role manager cannot resolve `roleId`. |
 
 ## Error and validation responses
 

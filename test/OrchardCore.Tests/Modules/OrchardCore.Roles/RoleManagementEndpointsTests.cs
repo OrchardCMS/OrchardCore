@@ -76,21 +76,42 @@ public class RoleManagementEndpointsTests
     }
 
     [Fact]
-    public async Task DeleteAsync_MissingRoleReturnsSuccessfulConvergedResponse()
+    public async Task DeleteAsync_MissingRole_ReturnsNotFound()
     {
         var roleManager = RolesMockHelper.MockRoleManager<IRole>();
         roleManager.Setup(manager => manager.FindByIdAsync("missing")).ReturnsAsync((IRole)null);
 
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
+
         var result = await RoleManagementEndpoints.DeleteAsync(
-            new DefaultHttpContext(),
+            new DefaultHttpContext { RequestServices = services },
             "missing",
             CreateAuthorizationService(),
             roleManager.Object,
             CreateRoleService().Object,
             CreateLocalizer());
 
-        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal(StatusCodes.Status404NotFound, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         roleManager.Verify(manager => manager.DeleteAsync(It.IsAny<IRole>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ExistingRole_ReturnsNoContent()
+    {
+        var role = new Role { RoleName = "Editors" };
+        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        roleManager.Setup(manager => manager.FindByIdAsync("Editors")).ReturnsAsync(role);
+        roleManager.Setup(manager => manager.DeleteAsync(role)).ReturnsAsync(IdentityResult.Success);
+
+        var result = await RoleManagementEndpoints.DeleteAsync(
+            new DefaultHttpContext(),
+            "Editors",
+            CreateAuthorizationService(),
+            roleManager.Object,
+            CreateRoleService().Object,
+            CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status204NoContent, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
     }
 
     [Fact]

@@ -29,7 +29,7 @@ public static class DeleteMediaEndpoint
                     new CliArgumentMetadata("path", 0),
                 },
             })
-            .Produces<DeleteMediaResultDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -70,7 +70,7 @@ public static class DeleteMediaEndpoint
     {
         var result = await DeleteAsync(httpContext, authorizationService, mediaFileStore, path);
 
-        return result ?? TypedResults.Ok(new DeleteMediaResultDto { Path = path });
+        return result ?? TypedResults.NoContent();
     }
 
     private static async Task<IResult> DeleteAsync(

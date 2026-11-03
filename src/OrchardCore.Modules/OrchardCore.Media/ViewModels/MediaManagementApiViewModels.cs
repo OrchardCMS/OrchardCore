@@ -230,14 +230,6 @@ public sealed class CreateFolderResultDto
 }
 
 /// <summary>
-/// Describes a completed file deletion operation.
-/// </summary>
-public sealed class DeleteMediaResultDto
-{
-    public string Path { get; set; }
-}
-
-/// <summary>
 /// Describes a completed batch file deletion operation.
 /// </summary>
 public sealed class DeleteMediaListResultDto
@@ -251,14 +243,6 @@ public sealed class DeleteMediaListResultDto
     /// Gets or sets the requested paths for which no file was found.
     /// </summary>
     public IReadOnlyList<string> MissingPaths { get; set; } = [];
-}
-
-/// <summary>
-/// Describes a completed folder deletion operation.
-/// </summary>
-public sealed class DeleteFolderResultDto
-{
-    public string Path { get; set; }
 }
 
 /// <summary>

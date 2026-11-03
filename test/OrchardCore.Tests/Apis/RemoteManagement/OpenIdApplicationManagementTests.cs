@@ -136,7 +136,7 @@ public class OpenIdApplicationManagementTests
             var services = scope.ServiceProvider;
             var manager = services.GetRequiredService<IOpenIdApplicationManager>();
             Assert.Null(await manager.FindByClientIdAsync("managed-client"));
-            Assert.IsType<NoContent>(await OpenIdApplicationManagementEndpoints.DeleteAsync(new DefaultHttpContext { RequestServices = services }, Authorize(), manager, "managed-client"));
+            Assert.Equal(404, Status(await OpenIdApplicationManagementEndpoints.DeleteAsync(new DefaultHttpContext { RequestServices = services }, Authorize(), manager, "managed-client")));
         });
     }
 

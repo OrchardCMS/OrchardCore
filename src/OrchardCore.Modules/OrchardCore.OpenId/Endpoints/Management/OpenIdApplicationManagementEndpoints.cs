@@ -27,8 +27,8 @@ internal static class OpenIdApplicationManagementEndpoints
             "Replaces application settings. An omitted secret preserves the current confidential credential.", input: true, argument: true)
             .Produces<OpenIdApplicationResponse>().ProducesProblem(404);
         Configure(routes.MapDelete("api/openid/applications/by-client-id", DeleteAsync), "ApiDeleteOpenIdApplication", "delete",
-            "Deletes an application. An absent application is a successful no-op; issued token lifetimes still apply.", argument: true)
-            .Produces(204);
+            "Deletes an application; issued token lifetimes still apply.", argument: true)
+            .Produces(204).ProducesProblem(404);
     }
 
     private static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string id, string verb, string summary,
@@ -222,7 +222,8 @@ internal static class OpenIdApplicationManagementEndpoints
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(clientId)) { return TypedResults.Problem("The client identifier is required.", statusCode: 400); }
         var application = await manager.FindByClientIdForUpdateAsync(clientId, context.RequestAborted);
-        if (application is not null) { await manager.DeleteAsync(application, context.RequestAborted); }
+        if (application is null) { return context.ApiNotFoundProblem(); }
+        await manager.DeleteAsync(application, context.RequestAborted);
         return TypedResults.NoContent();
     }
 

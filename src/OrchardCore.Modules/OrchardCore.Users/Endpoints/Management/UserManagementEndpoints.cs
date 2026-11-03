@@ -175,11 +175,11 @@ internal static class UserManagementEndpoints
                 Arguments = { new CliArgumentMetadata("userId", 0) },
                 RequiresConfirmation = true,
             })
-            .Produces<UserOperationResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return builder;
     }
@@ -551,7 +551,7 @@ internal static class UserManagementEndpoints
     {
         if (await userManager.FindByIdAsync(userId) is not User user)
         {
-            return TypedResults.NoContent();
+            return httpContext.ApiNotFoundProblem(detail: localizer["User not found."]);
         }
 
         if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.DeleteUsers, user))
@@ -578,11 +578,7 @@ internal static class UserManagementEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        return TypedResults.Ok(new UserOperationResponse
-        {
-            UserId = userId,
-            Action = "delete",
-        });
+        return TypedResults.NoContent();
     }
 
     internal static UserResponse ToResponse(User user)
@@ -829,12 +825,6 @@ internal static class UserManagementEndpoints
         public DateTimeOffset? LockoutEndUtc { get; init; }
         public int AccessFailedCount { get; init; }
         public string[] RoleNames { get; init; } = [];
-    }
-
-    internal sealed class UserOperationResponse
-    {
-        public string UserId { get; init; } = string.Empty;
-        public string Action { get; init; } = string.Empty;
     }
 
     private sealed class NoopUpdateModel : IUpdateModel

@@ -103,10 +103,11 @@ internal static class RoleManagementEndpoints
                 Arguments = { new CliArgumentMetadata("roleId", 0) },
                 RequiresConfirmation = true,
             })
-            .Produces<RoleOperationResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return builder;
     }
@@ -304,11 +305,7 @@ internal static class RoleManagementEndpoints
         var role = await roleManager.FindByIdAsync(roleId);
         if (role is null)
         {
-            return TypedResults.Ok(new RoleOperationResponse
-            {
-                RoleId = roleId,
-                Action = "delete",
-            });
+            return httpContext.ApiNotFoundProblem(detail: localizer["Role not found."]);
         }
 
         if (await roleService.IsSystemRoleAsync(role.RoleName))
@@ -325,11 +322,7 @@ internal static class RoleManagementEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        return TypedResults.Ok(new RoleOperationResponse
-        {
-            RoleId = roleId,
-            Action = "delete",
-        });
+        return TypedResults.NoContent();
     }
 
     internal static async Task<RoleResponse> ToResponseAsync(Role role, IAuthorizationService authorizationService, IRoleService roleService, PermissionCatalog permissionCatalog)
@@ -482,12 +475,6 @@ internal static class RoleManagementEndpoints
         public bool IsSecurityCritical { get; init; }
         public bool IsAssigned { get; init; }
         public bool IsEffective { get; init; }
-    }
-
-    internal sealed class RoleOperationResponse
-    {
-        public string RoleId { get; init; } = string.Empty;
-        public string Action { get; init; } = string.Empty;
     }
 }
 

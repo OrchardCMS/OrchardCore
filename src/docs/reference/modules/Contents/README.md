@@ -259,9 +259,10 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 
 ##### Responses
 
-| Code | Description |
-|------|-------------|
-| 200  | Success     |
+| Code | Description                |
+|------|----------------------------|
+| 200  | Success, with the item     |
+| 404  | The item doesn't exist     |
 
 ## GraphQL
 

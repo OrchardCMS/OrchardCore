@@ -66,7 +66,7 @@ pomi('content', 'versions', 'delete', first_id, failure=True)  # Confirmation re
 assert pomi('content', 'versions', 'show', first_id) == archived
 pomi('content', 'versions', 'delete', first_id, '--force')
 pomi('content', 'versions', 'show', first_id, status=404)
-pomi('content', 'versions', 'delete', first_id, '--force')
+pomi('content', 'versions', 'delete', first_id, '--force', status=404)
 assert pomi('content', 'items', 'show', item_id)['ContentItemVersionId'] == second_id
 for route in (f'api/content/{item_id}/versions', f'api/content/versions/{second_id}', f'api/content/versions/{second_id}/render'):
     try:

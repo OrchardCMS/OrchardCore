@@ -490,26 +490,15 @@ Authorization: Bearer eyJ...
 Accept: application/json
 ```
 
-### `200 OK`
-
-```json
-{
-  "userId": "4g3v21zq5xk9a7n2",
-  "action": "delete"
-}
-```
-
-`action` is always `delete`.
-
 ### Responses
 
 | Status | Meaning |
 | --- | --- |
-| `200 OK` | The user was deleted. |
-| `204 No Content` | The user is already absent. |
+| `204 No Content` | The user was deleted. |
 | `400 Bad Request` | The target is the caller's own account or the sole enabled administrator, or the configured Identity user manager rejected deletion. |
 | `401 Unauthorized` | The bearer token is absent or rejected. |
 | `403 Forbidden` | The caller cannot delete this user. |
+| `404 Not Found` | The user manager cannot resolve `userId`. |
 
 ## Error and validation responses
 

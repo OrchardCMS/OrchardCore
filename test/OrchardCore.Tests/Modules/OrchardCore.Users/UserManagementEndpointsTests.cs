@@ -81,7 +81,7 @@ public class UserManagementEndpointsTests
 
     [Theory]
     [InlineData(false, StatusCodes.Status400BadRequest, 0)]
-    [InlineData(true, StatusCodes.Status200OK, 1)]
+    [InlineData(true, StatusCodes.Status204NoContent, 1)]
     public async Task DeleteAsync_Administrator_KeepsTheOnlyEnabledOne(bool hasOtherAdministrator, int expectedStatus, int expectedDeletions)
     {
         var user = new User { UserId = "admin", UserName = "admin", IsEnabled = true, RoleNames = [OrchardCoreConstants.Roles.Administrator] };
@@ -374,6 +374,14 @@ public class UserManagementEndpointsTests
 
         Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         userManager.Verify(manager => manager.DeleteAsync(It.IsAny<IUser>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_MissingUser_ReturnsNotFound()
+    {
+        var result = await UserManagementEndpoints.DeleteAsync(CreateHttpContext(), "missing", CreateUserManager().Object, AuthorizeAll(), CreateServices(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status404NotFound, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
     }
 
     [Fact]

@@ -32,7 +32,7 @@ public static class DeleteFolderEndpoint
                     new CliArgumentMetadata("path", 0),
                 },
             })
-            .Produces<DeleteFolderResultDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -90,7 +90,7 @@ public static class DeleteFolderEndpoint
     {
         var result = await DeleteAsync(httpContext, authorizationService, mediaFileStore, options, attachedMediaFieldFileService, directoryTreeCache, localizer, path);
 
-        return result ?? TypedResults.Ok(new DeleteFolderResultDto { Path = path });
+        return result ?? TypedResults.NoContent();
     }
 
     private static async Task<IResult> DeleteAsync(

@@ -687,8 +687,8 @@ Also returns `401`, `403`, or `404` for an unknown item or one whose latest vers
 `DELETE /api/content/{contentItemId}`
 
 `contentItemId` is required. No body or query parameters. Deletes the latest version through
-the content manager and requires `DeleteContent`. Repeating the deletion after the item is absent
-returns `204 No Content`.
+the content manager and requires `DeleteContent`. This route keeps its original contract, which
+returns the deleted item rather than `204 No Content`.
 
 ```bash
 curl -X DELETE -H "Authorization: Bearer $TOKEN" \
@@ -716,7 +716,7 @@ curl -X DELETE -H "Authorization: Bearer $TOKEN" \
 }
 ```
 
-Also returns `204`, `401`, or `403`.
+Also returns `401`, `403`, or `404` for an unknown item.
 
 ### Bulk publish, unpublish, or delete
 
@@ -988,9 +988,8 @@ parameters. It requires read permission and `DeleteContent` on the version and
 current item. It uses the same document deletion approach as archived-version
 pruning, without running the logical item's removal lifecycle.
 
-`200 OK` returns the deleted content document. An already absent version returns
-`204 No Content`, making retries safe. A latest or published version returns
-`409` Problem Details and remains unchanged. For example:
+`204 No Content` confirms the deletion. An unknown version returns `404`. A latest or
+published version returns `409` Problem Details and remains unchanged. For example:
 
 ```json
 {
