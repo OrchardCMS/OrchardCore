@@ -43,7 +43,8 @@ public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
             }
 
             // Lets a module render its own notifications with a template, for example 'Notification-Mention.Header.cshtml'.
-            if (!string.IsNullOrEmpty(notification.Type))
+            // A restricted notification keeps the default templates, which don't show its content.
+            if (!string.IsNullOrEmpty(notification.Type) && visibility != NotificationVisibility.Restricted)
             {
                 var encodedType = notification.Type.EncodeAlternateElement();
 
