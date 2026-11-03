@@ -18,12 +18,13 @@ The cluster is the placement boundary. A tenant maps to one cluster at a time, n
 
 | Component | Responsibility |
 | --- | --- |
-| `ShellSettings.ClusterSlot` | Computes a stable slot from the tenant identifier using CRC16/XMODEM. |
+| `ShellSettingsExtensions.GetClusterSlot()` | Computes a stable slot from the tenant identifier using CRC16/XMODEM. |
 | `ShellSettingsExtensions.GetClusterId()` | Maps a tenant slot to a configured cluster ID. |
 | `HttpContextExtensions.AsClustersProxy()` | Detects whether the current request should be forwarded by the clustering proxy. |
 | `ClusterFeature` | Carries the selected cluster ID through the request pipeline. |
-| `ClustersOptionsSetup` | Binds `OrchardCore_Clusters` configuration into `ClustersOptions`. |
-| `ClustersProxyConfigFilter` | Updates the YARP route template and adds loop-prevention request headers. |
+| `ClustersOptionsSetup` | Binds and validates the `OrchardCore:Clusters` configuration into `ClustersOptions`. |
+| `ClustersProxyConfigFilter` | Updates the YARP route template to add the loop-prevention request header and to keep the original `Host` header. |
+| `ClustersProxyMatcherPolicy` | Only selects the YARP route template for the requests that the current node should forward. |
 | `ClustersProxyMiddleware` | Reassigns a YARP proxy request to the selected cluster. |
 | `ModularTenantContainerMiddleware` | Resolves the tenant, sets `ClusterFeature`, and bypasses normal tenant scope creation for proxy forwarding. |
 | `ModularTenantRouterMiddleware` | Bypasses proxy-forwarded requests and records the last request timestamp for tenant pipelines. |
@@ -41,7 +42,7 @@ On a node acting as the clustering proxy, `ModularTenantContainerMiddleware` res
 
 ### 3. Loop prevention
 
-`ClustersProxyConfigFilter` adds the `From-Clusters-Proxy` header to forwarded requests. Backend nodes use this header to skip redistribution and continue with normal tenant execution.
+`ClustersProxyConfigFilter` adds the `From-Clusters-Proxy` header to forwarded requests. Backend nodes use this header to skip redistribution and continue with normal tenant execution. The same condition is evaluated on each request by `ClustersProxyMatcherPolicy` and `ModularTenantContainerMiddleware`, so the host level route is never selected for a request running the tenant pipeline, including after a configuration reload.
 
 ### 4. Backend tenant execution
 
@@ -62,7 +63,7 @@ Releasing the shell context removes the cached tenant pipeline and service scope
 
 Tenant clustering is primarily a sharding mechanism for tenant execution:
 
-- `ShellSettings.ClusterSlot` gives each tenant a stable placement key
+- `ShellSettingsExtensions.GetClusterSlot()` gives each tenant a stable placement key
 - `ShellSettingsExtensions.GetClusterId()` chooses exactly one configured cluster for that key
 - the proxy forwards the request to that cluster and backend execution happens there
 
@@ -80,29 +81,30 @@ When slot ranges change because you add or remove a cluster, affected tenants ar
 
 There is no proactive tenant migration, no state copy performed by this feature, and no built-in warmup of the new backend pipeline.
 
-When `OrchardCore_Clusters` is backed by a configuration provider that supports reload notifications, the running clustering proxy observes those changes dynamically. In that case, adding or removing clusters changes tenant placement on the next request without restarting the proxy node.
+When `OrchardCore:Clusters` is backed by a configuration provider that supports reload notifications, the running clustering proxy observes those changes dynamically. In that case, adding or removing clusters changes tenant placement on the next request without restarting the proxy node.
 
 ## Configuration assumptions
 
-- clustering is configured through `OrchardCore_Clusters`
+- clustering is configured through `OrchardCore:Clusters`
 - tenant slot ranges are inclusive
-- `MaxIdleTime` is a global setting for the clustering configuration
+- `MaxIdleTime` applies to the tenants running on the node reading it
 - the route identified by `ClustersOptions.RouteTemplate` is the catch-all route used for clustered forwarding
 
 ## Operational notes
 
 - keep `UseTenantClusters()` first in the proxy pipeline so the cluster assignment happens before session affinity or load balancing
 - choose non-overlapping `SlotRange` values
-- use a shared clustering configuration across proxy and backend nodes
+- use a shared clustering configuration across proxy and backend nodes, including `MaxIdleTime` that is read by the backend nodes
+- share the tenant list across all the nodes, as the proxy places a tenant from its own list, see [Creating or changing a tenant](../../reference/modules/ReverseProxy/TenantClusters.md#creating-or-changing-a-tenant)
 - keep `Enabled` set only on nodes that should actively redistribute tenant requests
 - make sure every backend destination that may receive a tenant request can serve that tenant data
-- use a configuration provider for `OrchardCore_Clusters` that supports reload notifications if you want placement changes to apply dynamically
+- use a configuration provider for `OrchardCore:Clusters` that supports reload notifications if you want placement changes to apply dynamically
 
 ## Failure behavior
 
 Without a configuration change, the feature does not automatically move a tenant to a different cluster.
 
-- If a destination inside the selected cluster fails and other destinations remain healthy in that same cluster, YARP can continue routing there.
+- If a destination inside the selected cluster fails and other destinations remain healthy in that same cluster, YARP can continue routing there once its health checks have been configured and detect the failure.
 - If the whole selected cluster becomes unavailable, requests for tenants assigned to that cluster fail until the cluster is restored or the clustering configuration is changed.
 
 ## Related documentation

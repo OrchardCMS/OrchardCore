@@ -47,7 +47,7 @@ This demo is useful when you want to verify all of the following on a local mach
 - one edge node can route tenants to multiple backend clusters
 - adding a cluster reshuffles tenants whose slots move into the new range
 - removing a cluster reshuffles tenants out of the removed range
-- `OrchardCore_Clusters` changes are picked up dynamically by the running edge node
+- `OrchardCore:Clusters` changes are picked up dynamically by the running edge node
 - tenant pipelines are built lazily on the backend that receives the next request
 - a tenant can still be served when one destination in its assigned cluster goes down, if another healthy destination remains in that cluster
 
@@ -82,7 +82,7 @@ builder.Services
 builder.Services
     .AddReverseProxy()
     .AddTenantClusters()
-    .LoadFromConfig(builder.Configuration.GetSection("OrchardCore_Clusters"));
+    .LoadFromConfig(builder.Configuration.GetSection("OrchardCore:Clusters"));
 
 var app = builder.Build();
 
@@ -186,7 +186,7 @@ That means the demo uses two different configuration locations:
 
 | File location | Purpose in this demo |
 | --- | --- |
-| `<node>-root/appsettings.json` | Host-level configuration for that node. Edit this file for `Logging` and `OrchardCore_Clusters`. |
+| `<node>-root/appsettings.json` | Host-level configuration for that node. Edit this file for `Logging` and `OrchardCore:Clusters`. |
 | `<node>-root/NLog.config` | Shared logging target definition copied into each node root. You do not need to edit it for this demo. |
 | `<node>-root/App_Data/Sites/Default/appsettings.json` and `<node>-root/App_Data/Sites/<tenant>/appsettings.json` | Tenant state created by Orchard during setup. These files are copied later from the setup node, but they are not where you configure clustering for the demo. |
 
@@ -221,7 +221,7 @@ The log files are then written under each node's own `App_Data/logs/` directory 
 
 For the setup phase, start only the edge root with clustering disabled.
 
-At this point, `edge-root/appsettings.json` should either have no `OrchardCore_Clusters` section yet, or keep `"Enabled": false`.
+At this point, `edge-root/appsettings.json` should either have no `OrchardCore:Clusters` section yet, or keep `"Enabled": false`.
 
 Use `http://127.0.0.1:55797` for the setup node:
 
@@ -380,34 +380,36 @@ If you open new terminals, rerun the variable setup from step 3 in each terminal
 
 ## 8. Initial layout: two clusters
 
-Before starting or probing the full 4-node layout, edit only `edge-root/appsettings.json` and set its `OrchardCore_Clusters` section to:
+Before starting or probing the full 4-node layout, edit only `edge-root/appsettings.json` and set its `OrchardCore:Clusters` section to:
 
 ```json
-"OrchardCore_Clusters": {
-  "Enabled": true,
-  "MaxIdleTime": "00:00:20",
-  "Routes": {
-    "RouteTemplate": {
-      "ClusterId": "cluster-a",
-      "Match": {
-        "Path": "{**catch-all}"
-      }
-    }
-  },
+"OrchardCore": {
   "Clusters": {
-    "cluster-a": {
-      "SlotRange": [0, 7314],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55798/"
+    "Enabled": true,
+    "MaxIdleTime": "00:00:20",
+    "Routes": {
+      "RouteTemplate": {
+        "ClusterId": "cluster-a",
+        "Match": {
+          "Path": "{**catch-all}"
         }
       }
     },
-    "cluster-b": {
-      "SlotRange": [7315, 16383],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55799/"
+    "Clusters": {
+      "cluster-a": {
+        "SlotRange": [0, 7314],
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55798/"
+          }
+        }
+      },
+      "cluster-b": {
+        "SlotRange": [7315, 16383],
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55799/"
+          }
         }
       }
     }
@@ -417,10 +419,18 @@ Before starting or probing the full 4-node layout, edit only `edge-root/appsetti
 
 For this step:
 
-- `edge-root/appsettings.json` contains the full `OrchardCore_Clusters` section shown below with `"Enabled": true`
+- `edge-root/appsettings.json` contains the full `OrchardCore:Clusters` section shown above with `"Enabled": true`
 - `backend1-root/appsettings.json`, `backend2-root/appsettings.json`, and `backend3-root/appsettings.json` keep clustering disabled
 
-The backend files can either omit the `OrchardCore_Clusters` section entirely or contain the same section with `"Enabled": false`. The important part is that only the edge node actively redistributes requests.
+The backend files can either contain the same section with `"Enabled": false`, or only the following one. The important parts are that only the edge node actively redistributes requests, and that the backend nodes define the `MaxIdleTime` releasing the tenants they run:
+
+```json
+"OrchardCore": {
+  "Clusters": {
+    "MaxIdleTime": "00:00:20"
+  }
+}
+```
 
 Send one request per tenant through the edge:
 
@@ -460,39 +470,41 @@ backend3 (:55800) is unused
 Now edit only `edge-root/appsettings.json` and change the cluster section to:
 
 ```json
-"OrchardCore_Clusters": {
-  "Enabled": true,
-  "MaxIdleTime": "00:00:20",
-  "Routes": {
-    "RouteTemplate": {
-      "ClusterId": "cluster-a",
-      "Match": {
-        "Path": "{**catch-all}"
-      }
-    }
-  },
+"OrchardCore": {
   "Clusters": {
-    "cluster-a": {
-      "SlotRange": [0, 3301],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55798/"
+    "Enabled": true,
+    "MaxIdleTime": "00:00:20",
+    "Routes": {
+      "RouteTemplate": {
+        "ClusterId": "cluster-a",
+        "Match": {
+          "Path": "{**catch-all}"
         }
       }
     },
-    "cluster-b": {
-      "SlotRange": [3302, 7503],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55799/"
+    "Clusters": {
+      "cluster-a": {
+        "SlotRange": [0, 3301],
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55798/"
+          }
         }
-      }
-    },
-    "cluster-c": {
-      "SlotRange": [7504, 16383],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55800/"
+      },
+      "cluster-b": {
+        "SlotRange": [3302, 7503],
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55799/"
+          }
+        }
+      },
+      "cluster-c": {
+        "SlotRange": [7504, 16383],
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55800/"
+          }
         }
       }
     }
@@ -537,31 +549,33 @@ edge (:55797)
 Edit only `edge-root/appsettings.json` again:
 
 ```json
-"OrchardCore_Clusters": {
-  "Enabled": true,
-  "MaxIdleTime": "00:00:20",
-  "Routes": {
-    "RouteTemplate": {
-      "ClusterId": "cluster-a",
-      "Match": {
-        "Path": "{**catch-all}"
-      }
-    }
-  },
+"OrchardCore": {
   "Clusters": {
-    "cluster-a": {
-      "SlotRange": [0, 7503],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55798/"
+    "Enabled": true,
+    "MaxIdleTime": "00:00:20",
+    "Routes": {
+      "RouteTemplate": {
+        "ClusterId": "cluster-a",
+        "Match": {
+          "Path": "{**catch-all}"
         }
       }
     },
-    "cluster-c": {
-      "SlotRange": [7504, 16383],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55800/"
+    "Clusters": {
+      "cluster-a": {
+        "SlotRange": [0, 7503],
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55798/"
+          }
+        }
+      },
+      "cluster-c": {
+        "SlotRange": [7504, 16383],
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55800/"
+          }
         }
       }
     }
@@ -617,26 +631,36 @@ The previous steps showed tenant placement across clusters. This final step show
 Edit only `edge-root/appsettings.json` and change the cluster section to:
 
 ```json
-"OrchardCore_Clusters": {
-  "Enabled": true,
-  "MaxIdleTime": "00:00:20",
-  "Routes": {
-    "RouteTemplate": {
-      "ClusterId": "cluster-a",
-      "Match": {
-        "Path": "{**catch-all}"
-      }
-    }
-  },
+"OrchardCore": {
   "Clusters": {
-    "cluster-a": {
-      "SlotRange": [0, 16383],
-      "Destinations": {
-        "destination1": {
-          "Address": "http://127.0.0.1:55798/"
+    "Enabled": true,
+    "MaxIdleTime": "00:00:20",
+    "Routes": {
+      "RouteTemplate": {
+        "ClusterId": "cluster-a",
+        "Match": {
+          "Path": "{**catch-all}"
+        }
+      }
+    },
+    "Clusters": {
+      "cluster-a": {
+        "SlotRange": [0, 16383],
+        "HealthCheck": {
+          "Active": {
+            "Enabled": true,
+            "Interval": "00:00:05",
+            "Timeout": "00:00:03",
+            "Path": "/"
+          }
         },
-        "destination2": {
-          "Address": "http://127.0.0.1:55799/"
+        "Destinations": {
+          "destination1": {
+            "Address": "http://127.0.0.1:55798/"
+          },
+          "destination2": {
+            "Address": "http://127.0.0.1:55799/"
+          }
         }
       }
     }
@@ -667,7 +691,7 @@ Wait for reload, then send a few requests for the same tenant through the edge:
 
 At this point, `alpha` can be served by either `backend1` or `backend2`, because both nodes are destinations of the same cluster.
 
-Now stop `backend1`, for example by pressing `Ctrl+C` in the backend1 terminal, then probe the same tenant again:
+Now stop `backend1`, for example by pressing `Ctrl+C` in the backend1 terminal, wait for the next active health check to mark this destination as unhealthy, then probe the same tenant again:
 
 === "Bash"
 
@@ -706,7 +730,7 @@ This demonstrates failover inside one cluster. It does not demonstrate automatic
 
 - This demo intentionally uses the same built application for every node.
 - The nodes still need separate content roots because `App_Data`, logs, and node-specific configuration must not be shared as one writable directory.
-- In this demo, all clustering changes are made in the root-level `appsettings.json` of the edge node. The tenant `App_Data/Sites/.../appsettings.json` files are setup output, not the place where the cluster map is edited.
+- In this demo, all placement changes are made in the root-level `appsettings.json` of the edge node. The tenant `App_Data/Sites/.../appsettings.json` files are setup output, not the place where the cluster map is edited.
 - For a production-style setup, nodes in the same cluster should share backing services such as the tenant database, data protection keys, and media storage, while still keeping node-local runtime files separate.
 - If your configuration provider does not support reload notifications, placement changes will not apply dynamically until the edge process restarts.
 
