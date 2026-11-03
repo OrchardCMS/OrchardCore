@@ -169,6 +169,12 @@ def completed(operation):
     raise AssertionError('The deployment worker did not finish before the test deadline.')
 
 
+for feature in ['OrchardCore.Deployment', 'OrchardCore.RemoteManagement.Mcp', 'OrchardCore.Media', 'OrchardCore.Themes']:
+    request('api/features/' + feature + ':enable?force=true', 'POST')
+# The pending recipe enables a feature, which only counts as pending while it's disabled. Other scripts can leave any on.
+pending_feature = next(feature['id'] for feature in request('api/features?take=200')['items']
+    if not feature['isEnabled'] and not feature['enabledByDependencyOnly'] and not feature['isAlwaysEnabled'])
+
 # The API lists the recipes of an extension, which are harvested once until the shell is released.
 recipes_folder = root / 'Areas/OrchardCore.Recipes/Recipes'
 recipes_folder.mkdir(parents=True, exist_ok=True)
@@ -188,15 +194,13 @@ recipes_folder.mkdir(parents=True, exist_ok=True)
     ]}))
 (recipes_folder / f'{marker}-pending.recipe.json').write_text(json.dumps({
     'name': marker + '-pending', 'displayName': 'Pending handler validation recipe', 'steps': [
-        {'name': 'Feature', 'enable': ['OrchardCore.Facebook']},
+        {'name': 'Feature', 'enable': [pending_feature]},
         {'name': 'NoSuchStep' + marker},
     ]}))
 (recipes_folder / f'{marker}-no-steps.recipe.json').write_text(json.dumps({'name': marker + '-no-steps', 'displayName': 'No steps validation recipe'}))
 (recipes_folder / f'{marker}-malformed.recipe.json').write_text('{"name":"' + marker + '-malformed",')
 atexit.register(lambda: [path.unlink() for path in recipes_folder.glob(marker + '*')])
 
-for feature in ['OrchardCore.Deployment', 'OrchardCore.RemoteManagement.Mcp', 'OrchardCore.Media', 'OrchardCore.Themes']:
-    request('api/features/' + feature + ':enable?force=true', 'POST')
 # A feature that was already enabled doesn't release the shell, which keeps the harvested recipes.
 if not request(f'api/recipes?take=200&search={marker}')['items']:
     request('api/features/OrchardCore.RemoteManagement.Mcp:disable?force=true', 'POST')
