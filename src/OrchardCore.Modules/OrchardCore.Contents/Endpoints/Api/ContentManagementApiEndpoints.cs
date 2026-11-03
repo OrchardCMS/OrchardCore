@@ -576,6 +576,7 @@ internal static partial class ContentManagementApiEndpoints
         var metadata = new CliOperationMetadata(commandGroup, verb)
         {
             Capability = Capability,
+            ResourceName = "Content item",
             InputMode = inputMode,
             RequiresConfirmation = requiresConfirmation,
         };

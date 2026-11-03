@@ -33,6 +33,30 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
 
+def tenant_metadata(verb):
+    # What the tenant endpoints publish, which drives the summaries and the next steps.
+    enable = {'description': 'enable remote management for this tenant.', 'whenProperty': 'state', 'whenValue': 'Running',
+              'arguments': ['tenants', 'enable-remote-management', '{name}']}
+    steps = {
+        'create': [
+            {'description': 'set up this tenant (replace the placeholders and adjust the site details).',
+             'whenProperty': 'state', 'whenValue': 'Uninitialized',
+             'arguments': ['tenants', 'setup', '{name}', '--site-name', '{name}', '--user-name', 'admin', '--email', '<admin-email>'],
+             'optionalArguments': [{'whenMissing': 'recipeName', 'arguments': ['--recipe-name', '<recipe-name>']},
+                                   {'whenMissing': 'databaseProvider', 'arguments': ['--database-provider', 'Sqlite']}],
+             'note': 'The administrator password will be prompted securely.'},
+            enable],
+        'setup': [enable],
+        'enable-remote-management': [{'whenProperty': 'state', 'whenValue': 'Running', 'savesContext': True}],
+    }
+    return {
+        'commandGroup': ['tenants'], 'verb': verb, 'resourceName': 'Tenant',
+        'summaryProperties': ['name', 'state', 'setupUrl', 'primaryUrl', 'url'],
+        'completedAction': 'configured for remote management' if verb == 'enable-remote-management' else None,
+        'nextSteps': steps.get(verb, []),
+    }
+
+
 server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
 thread = threading.Thread(target=server.serve_forever, daemon=True)
 thread.start()
@@ -60,10 +84,10 @@ try:
                 'expiresAt': '9999-01-01T00:00:00Z',
                 'content': json.dumps({'paths': {'/api/tenants': {'post': {
                     'operationId': 'CreateTenant',
-                    'x-oc-cli': {'commandGroup': ['tenants'], 'verb': verb if verb != 'delete' else 'create'},
+                    'x-oc-cli': tenant_metadata(verb if verb != 'delete' else 'create'),
                 }, 'delete': {
                     'operationId': 'DeleteTenant',
-                    'x-oc-cli': {'commandGroup': ['tenants'], 'verb': 'delete'},
+                    'x-oc-cli': tenant_metadata('delete'),
                 }}}}),
             }))
             command = [pomi, 'tenants', verb, *options]

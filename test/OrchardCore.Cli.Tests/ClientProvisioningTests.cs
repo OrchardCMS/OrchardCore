@@ -91,7 +91,7 @@ public class ClientProvisioningTests
         Assert.DoesNotContain("never-print-this", output.GetRawText());
         Assert.Equal("child", output.GetProperty("context").GetString());
         Assert.Equal("pomi-test", output.GetProperty("clientId").GetString());
-        var next = NextStepFormatter.Format(new CommandOutput { Json = output, CommandPath = ["tenants", "install"] });
+        var next = NextStepFormatter.Format(new CommandOutput { Json = output, CommandPath = ["tenants", "install"], Operation = TenantOperations.Get("install") });
         Assert.Contains("--context=child", next);
         Assert.DoesNotContain("login", next);
     }

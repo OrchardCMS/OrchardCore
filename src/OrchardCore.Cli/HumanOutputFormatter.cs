@@ -31,7 +31,7 @@ internal static class HumanOutputFormatter
         var path = string.Join(' ', output.CommandPath);
         IReadOnlySet<string>? fields = ReportsFailure(output.Json) || output.StatusCode == 202 ? null : path == "install"
             ? new HashSet<string>(["directory", "url", "tenant"])
-            : mutation ? GetSummaryProperties(output) : null;
+            : mutation && output.Operation?.SummaryProperties is { Count: > 0 } summaryProperties ? [.. summaryProperties] : null;
         AppendValue(builder, output.Json, 0, skipTransportFields: output.HttpMethod is not null, fields);
         if (path == "install" && Property(output.Json, "listenUrl") is { ValueKind: JsonValueKind.String } listenUrl)
         {
@@ -42,19 +42,6 @@ internal static class HumanOutputFormatter
             AppendHint(builder, nextStep, useColor);
         }
         return builder.Length == 0 ? "No results." : builder.ToString().TrimEnd();
-    }
-
-    private static HashSet<string>? GetSummaryProperties(CommandOutput output)
-    {
-        if (output.Operation?.SummaryProperties is { Count: > 0 } properties)
-        {
-            return [.. properties];
-        }
-
-        // Servers without the summaryProperties metadata.
-        return output.CommandPath.Count == 2 && output.CommandPath[0] == "tenants"
-            ? ["name", "tenantId", "state", "setupUrl", "primaryUrl", "url", "requestUrlHost", "requestUrlPrefix", "recipeName", "databaseProvider"]
-            : null;
     }
 
     private static void AppendHint(StringBuilder builder, string hint, bool useColor)
@@ -102,7 +89,6 @@ internal static class HumanOutputFormatter
             "api refresh" => "API metadata is up to date.",
             "docs refresh" => "Documentation index is up to date.",
             "install" => "Site created and initialized successfully.",
-            "tenants install" when output.Operation?.ResourceName is null => "Tenant created and initialized successfully.",
             _ => null,
         };
         if (known is not null || !mutation)
@@ -111,23 +97,11 @@ internal static class HumanOutputFormatter
         }
 
         var verb = output.CommandPath.Count > 0 ? output.CommandPath[^1] : string.Empty;
-        var group = string.Join(' ', output.CommandPath.SkipLast(1));
-
-        // The names below are for servers without the resourceName metadata.
-        var resource = output.Operation?.ResourceName ?? group switch
-        {
-            "tenants" => "Tenant",
-            "content items" => "Content item",
-            "content types" => "Content type",
-            "media files" => "Media file",
-            "media folders" => "Media folder",
-            "users" => "User",
-            "roles" => "Role",
-            _ => null,
-        };
         // Create may return an existing resource with 200 (idempotent APIs).
         // Only a 201 response warrants claiming that a new resource was created.
-        if (resource is not null && PastTense(verb) is { } action && (verb != "create" || output.StatusCode == 201))
+        if (output.Operation?.ResourceName is { } resource
+            && (output.Operation.CompletedAction ?? PastTense(verb)) is { } action
+            && (verb != "create" || output.StatusCode == 201))
         {
             var name = Property(output.Json, "name");
             var identity = name.ValueKind == JsonValueKind.String ? $" '{name.GetString()}'" : string.Empty;
@@ -145,7 +119,6 @@ internal static class HumanOutputFormatter
         "start" => "started", "stop" => "stopped", "clone" => "cloned", "move" => "moved", "rename" => "renamed",
         "restore" => "restored", "reset" => "reset", "save" => "saved", "setup" => "set up",
         "assign" => "assigned", "revoke" => "revoked", "apply" => "applied", "rebuild" => "rebuilt",
-        "enable-remote-management" => "configured for remote management",
         "add" => "added", "clear" => "cleared", "refresh" => "refreshed", "install" => "installed",
         _ => null,
     };

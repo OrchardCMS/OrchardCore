@@ -35,6 +35,7 @@ public class OutputFormatterTests
         await OutputFormatter.WriteAsync(new CommandOutput
         {
             Json = document.RootElement, CommandPath = ["tenants", "create"], HttpMethod = "POST", StatusCode = 201,
+            Operation = TenantOperations.Get("create"),
         }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
         var text = writer.ToString();
         Assert.StartsWith("Tenant 'Demo' created successfully.", text);
@@ -56,6 +57,7 @@ public class OutputFormatterTests
         await OutputFormatter.WriteAsync(new CommandOutput
         {
             Json = document.RootElement, CommandPath = ["tenants", "create"], HttpMethod = "POST", StatusCode = statusCode,
+            Operation = TenantOperations.Get("create"),
         }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
         Assert.Contains(expected, writer.ToString());
         Assert.DoesNotContain("created successfully", writer.ToString());
@@ -115,17 +117,50 @@ public class OutputFormatterTests
     }
 
     [Fact]
-    public async Task Human_TenantInstallWithoutMetadata_KeepsSummaryOfOlderServers()
+    public async Task Human_MutationWithoutMetadata_UsesGenericSummaryAndShowsEveryProperty()
     {
-        using var document = JsonDocument.Parse("""{"name":"Demo","state":"Running","internalId":"hidden"}""");
+        using var document = JsonDocument.Parse("""{"name":"Demo","state":"Running","internalId":"visible"}""");
         using var writer = new StringWriter();
         await OutputFormatter.WriteAsync(new CommandOutput
         {
             Json = document.RootElement, CommandPath = ["tenants", "install"], HttpMethod = "POST", StatusCode = 201,
         }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
 
-        Assert.StartsWith("Tenant created and initialized successfully.", writer.ToString());
+        Assert.StartsWith("'tenants install' completed successfully.", writer.ToString());
+        Assert.Contains("visible", writer.ToString());
+    }
+
+    [Theory]
+    [InlineData("reload", "Tenant 'Demo' reloaded successfully.")]
+    [InlineData("enable-remote-management", "Tenant 'Demo' configured for remote management successfully.")]
+    [InlineData("disable-remote-management", "Tenant 'Demo' disabled for remote management successfully.")]
+    public async Task Human_TenantActionWithCompletedAction_ReportsItsOwnMessage(string verb, string expected)
+    {
+        using var document = JsonDocument.Parse("""{"name":"Demo","action":"hidden","state":"Running","url":"https://cms.example/demo/"}""");
+        using var writer = new StringWriter();
+        await OutputFormatter.WriteAsync(new CommandOutput
+        {
+            Json = document.RootElement, CommandPath = ["tenants", verb], HttpMethod = "POST", StatusCode = 200,
+            Operation = TenantOperations.Get(verb),
+        }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
+
+        Assert.StartsWith(expected, writer.ToString());
+        Assert.Contains("State: Running", writer.ToString());
         Assert.DoesNotContain("hidden", writer.ToString());
+    }
+
+    [Fact]
+    public async Task Human_CompletedActionFromTenant_EscapesTerminalSequences()
+    {
+        using var document = JsonDocument.Parse("""{"name":"Demo"}""");
+        using var writer = new StringWriter();
+        await OutputFormatter.WriteAsync(new CommandOutput
+        {
+            Json = document.RootElement, CommandPath = ["widgets", "spin"], HttpMethod = "POST", StatusCode = 200,
+            Operation = new CliOperationMetadata(["widgets"], "spin") { ResourceName = "Widget", CompletedAction = "spun\u001b[2J" },
+        }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain('\u001b', writer.ToString());
     }
 
     [Theory]
@@ -153,6 +188,7 @@ public class OutputFormatterTests
         await OutputFormatter.WriteAsync(new CommandOutput
         {
             Json = document.RootElement, CommandPath = ["tenants", "delete"], HttpMethod = "DELETE", StatusCode = 204,
+            Operation = TenantOperations.Get("delete"),
         }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
         Assert.Equal("Tenant removed successfully.", writer.ToString().Trim());
     }

@@ -67,6 +67,17 @@ public sealed class CliOperationMetadata
     public string ResourceName { get; set; }
 
     /// <summary>
+    /// Gets or sets the phrase that CLI summaries use for a verb they can't put in the past tense, as in
+    /// "Tenant 'Demo' reloaded successfully.". This requires <see cref="ResourceName"/>.
+    /// </summary>
+    public string CompletedAction { get; set; }
+
+    /// <summary>
+    /// Gets or initializes the commands that human-readable output suggests after the operation succeeds.
+    /// </summary>
+    public IList<CliNextStepMetadata> NextSteps { get; init; } = [];
+
+    /// <summary>
     /// Gets or initializes the response properties that human-readable output shows after the operation changes
     /// something. All of them are shown when this is empty.
     /// </summary>

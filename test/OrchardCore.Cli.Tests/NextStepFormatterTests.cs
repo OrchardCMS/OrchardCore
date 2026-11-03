@@ -24,6 +24,7 @@ public class NextStepFormatterTests
             var text = NextStepFormatter.Format(new CommandOutput
             {
                 Json = data.RootElement, CommandPath = path, ContextName = "parent", CurrentContextName = currentContext,
+                Operation = path[0] == "tenants" ? TenantOperations.Get(path[1]) : null,
             });
             Assert.Contains(expectedQualifier ? $"pomi --context=parent {command}" : $"pomi {command}", text);
             if (!expectedQualifier)
@@ -70,6 +71,7 @@ public class NextStepFormatterTests
         var text = NextStepFormatter.Format(new CommandOutput
         {
             Json = data.RootElement, CommandPath = ["tenants", "enable-remote-management"], ContextName = "parent",
+            Operation = TenantOperations.Get("enable-remote-management"),
             KnownContexts = [new TenantContextRecord { Name = "demo", TenantUrl = "https://another.example.com/" }],
         });
         Assert.Contains("pomi context list --output json", text);
@@ -83,6 +85,7 @@ public class NextStepFormatterTests
         var text = NextStepFormatter.Format(new CommandOutput
         {
             Json = data.RootElement, CommandPath = ["tenants", "enable-remote-management"],
+            Operation = TenantOperations.Get("enable-remote-management"),
             KnownContexts = [new TenantContextRecord { Name = "Demo", TenantUrl = "https://cms.example.com/demo/" }],
         });
         Assert.Contains("pomi context add Demo-2 https://cms.example.com/demo --current", text);
@@ -150,13 +153,98 @@ public class NextStepFormatterTests
         var text = HumanOutputFormatter.Format(new CommandOutput
         {
             Json = data.RootElement, CommandPath = ["tenants", "setup"], HttpMethod = "POST", StatusCode = status,
+            Operation = TenantOperations.Get("setup"),
         });
         Assert.DoesNotContain("Next:", text);
     }
 
+    [Fact]
+    public void ProvisionedContext_OperationWithProvisioningMetadata_SuggestsExploringIt()
+    {
+        foreach (var verb in new[] { "install", "enable-remote-management" })
+        {
+            Assert.Contains("pomi --context=demo --help", Format(["tenants", verb], """{"name":"Demo","state":"Running","context":"demo"}"""));
+        }
+
+        Assert.DoesNotContain("--context=demo --help", Format(["tenants", "start"], """{"name":"Demo","state":"Running","context":"demo"}"""));
+    }
+
+    [Fact]
+    public void DisabledRemoteManagement_SuggestsEnablingAgain()
+    {
+        var text = Format(["tenants", "disable-remote-management"], """{"name":"Demo","state":"Running"}""");
+
+        Assert.Contains("contexts saved for this tenant stop working", text);
+        Assert.Contains("pomi --context=parent tenants enable-remote-management Demo", text);
+    }
+
+    [Fact]
+    public void ReloadedTenant_HasNoNextStep()
+    {
+        Assert.Null(Format(["tenants", "reload"], """{"name":"Demo","state":"Running"}"""));
+    }
+
+    [Fact]
+    public void OperationWithoutMetadata_SuggestsNothing()
+    {
+        using var data = JsonDocument.Parse("""{"name":"Demo","state":"Running"}""");
+
+        Assert.Null(NextStepFormatter.Format(new CommandOutput { Json = data.RootElement, CommandPath = ["tenants", "start"] }));
+    }
+
+    [Fact]
+    public void NextStepMetadata_OtherResource_BuildsItsCommand()
+    {
+        var operation = ParseOperation("""
+            {"commandGroup":["widgets"],"verb":"create","nextSteps":[
+              {"description":"skipped.","whenProperty":"state","whenValue":"Other","arguments":["widgets","skipped"]},
+              {"description":"publish this widget.","whenProperty":"state","whenValue":"Draft","arguments":["widgets","publish","{id}"],
+               "optionalArguments":[{"whenMissing":"owner","arguments":["--owner","<owner>"]},{"whenMissing":"category","arguments":["--category","none"]}],"note":"Publishing is immediate."}]}
+            """);
+        using var data = JsonDocument.Parse("""{"id":"My Widget","state":"Draft","category":"tools"}""");
+
+        var text = NextStepFormatter.Format(new CommandOutput { Json = data.RootElement, CommandPath = ["widgets", "create"], Operation = operation });
+
+        Assert.Equal("Next: publish this widget.\n  pomi widgets publish 'My Widget' --owner '<owner>'\nPublishing is immediate.", text);
+    }
+
+    [Theory]
+    [InlineData("""{"description":"bad\u001b[2J.","arguments":["widgets"]}""")]
+    [InlineData("""{"description":"fine.","note":"bad\nrm -rf /","arguments":["widgets"]}""")]
+    [InlineData("""{"description":"fine.","arguments":["widgets","bad\nargument"]}""")]
+    [InlineData("""{"description":"fine.","arguments":["widgets","{dashed}"]}""")]
+    [InlineData("""{"description":"fine.","arguments":["widgets","{control}"]}""")]
+    [InlineData("""{"description":"fine.","arguments":["widgets","{missing}"]}""")]
+    [InlineData("""{"arguments":["widgets"]}""")]
+    public void NextStepMetadata_UnsafeOrIncomplete_SuggestsNothing(string step)
+    {
+        var operation = ParseOperation($$"""{"commandGroup":["widgets"],"verb":"create","nextSteps":[{{step}}]}""");
+        using var data = JsonDocument.Parse("""{"dashed":"--force","control":"a\nb"}""");
+
+        Assert.Null(NextStepFormatter.Format(new CommandOutput { Json = data.RootElement, CommandPath = ["widgets", "create"], Operation = operation }));
+    }
+
+    [Fact]
+    public void NextStepMetadata_ShellMetacharactersInValue_QuotesThem()
+    {
+        var operation = ParseOperation("""{"commandGroup":["widgets"],"verb":"create","nextSteps":[{"description":"show it.","arguments":["widgets","show","{id}"]}]}""");
+        using var data = JsonDocument.Parse("""{"id":"a; $(touch marker)"}""");
+
+        var text = NextStepFormatter.Format(new CommandOutput { Json = data.RootElement, CommandPath = ["widgets", "create"], Operation = operation });
+
+        Assert.Contains($"pomi widgets show {NextStepFormatter.QuoteArgument("a; $(touch marker)")}", text);
+    }
+
+    private static OrchardCore.RemoteManagement.CliOperationMetadata ParseOperation(string extension) =>
+        Assert.Single(OpenApiCliParser.Parse("""{"paths":{"/api/widgets":{"post":{"x-oc-cli":""" + extension + "}}}}")).CliMetadata;
+
     private static string? Format(string[] path, string json)
     {
         using var data = JsonDocument.Parse(json);
-        return NextStepFormatter.Format(new CommandOutput { Json = data.RootElement, CommandPath = path, ContextName = "parent" });
+        return NextStepFormatter.Format(new CommandOutput
+        {
+            Json = data.RootElement, CommandPath = path, ContextName = "parent",
+            Operation = path[0] == "tenants" ? TenantOperations.Get(path[1]) : null,
+        });
     }
 }

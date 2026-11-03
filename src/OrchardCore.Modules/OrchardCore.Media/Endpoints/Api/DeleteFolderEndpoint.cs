@@ -26,6 +26,7 @@ public static class DeleteFolderEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "folders"], "delete")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media folder",
                 RequiresConfirmation = true,
                 Arguments =
                 {

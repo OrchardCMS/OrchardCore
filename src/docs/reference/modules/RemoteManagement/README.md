@@ -566,15 +566,37 @@ endpoints.MapGet("/api/example/widgets", ListWidgetsAsync)
 
 The Remote Management OpenAPI transformer emits this metadata as `x-oc-cli`. Use `Arguments` for positional ordering, `InputMode` for complex bodies, `DefaultJsonBody` when a command should send a default body if none is supplied, `RequiresConfirmation` for destructive operations, aliases for compatibility, and `TableColumns` for optional table output.
 
-Four more properties describe how Pomi presents an operation, so that it doesn't need to know the
+More properties describe how Pomi presents an operation, so that it doesn't need to know the
 resource:
 
 | Property | `x-oc-cli` | Effect |
 | --- | --- | --- |
 | `ResourceName` | `resourceName` | The singular name in the summary of a change, as in `Tenant 'Demo' created successfully.` |
+| `CompletedAction` | `completedAction` | The phrase for a verb Pomi can't put in the past tense, as in `Tenant 'Demo' reloaded successfully.` It requires `ResourceName`. |
 | `SummaryProperties` | `summaryProperties` | The response properties that human-readable output shows after a change, instead of all of them. |
 | `ItemsProperty` | `itemsProperty` | The response property holding the rows of a list, for table output without `TableColumns`. Without it, Pomi looks for `items`. |
 | `SetupPasswordProperty` | `setupPasswordProperty` | The body property holding the password of a new administrator. Pomi requires it and applies the setup password rules before sending the request. |
+| `NextSteps` | `nextSteps` | The commands suggested after the operation succeeds, see below. |
+
+Human-readable output shows the first of the `NextSteps` whose condition matches the response:
+
+```csharp
+NextSteps =
+{
+    new CliNextStepMetadata
+    {
+        Description = "start this tenant.",
+        WhenProperty = "state",
+        WhenValue = "Disabled",
+        Arguments = { "tenants", "start", "{name}" },
+    },
+},
+```
+
+An argument written as `{property}` is replaced by that response property, and quoted for the shell. `OptionalArguments`
+adds arguments when a response property is empty, and `Note` adds text after the command. Nothing is suggested when a
+value is missing, starts with `-` or contains a control character. Set `SavesContext` instead of `Arguments` to suggest
+saving a context for the tenant that the response describes through its `name` and `url` or `primaryUrl`.
 
 Set `SecretProperties` to the body properties that must not appear on a command line. Pomi replaces
 their options with `--<property>-env`, `--<property>-file` and `--<property>-stdin`, prompts for a

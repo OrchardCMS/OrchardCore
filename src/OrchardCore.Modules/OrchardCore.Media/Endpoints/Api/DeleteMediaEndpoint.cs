@@ -23,6 +23,7 @@ public static class DeleteMediaEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "files"], "delete")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media file",
                 RequiresConfirmation = true,
                 Arguments =
                 {

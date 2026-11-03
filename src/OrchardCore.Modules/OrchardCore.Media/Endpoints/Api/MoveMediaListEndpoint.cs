@@ -28,6 +28,7 @@ public static class MoveMediaListEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "files"], "move-batch")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media file",
                 InputMode = CliInputMode.Json,
                 TableColumns =
                 {

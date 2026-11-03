@@ -24,6 +24,7 @@ public static class DeleteMediaListEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "files"], "delete-batch")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media file",
                 RequiresConfirmation = true,
                 InputMode = CliInputMode.Json,
             })

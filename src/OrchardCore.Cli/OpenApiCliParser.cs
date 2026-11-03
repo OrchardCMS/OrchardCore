@@ -100,6 +100,7 @@ internal static class OpenApiCliParser
             DefaultJsonBody = CliUtilities.ReadString(extensionElement, "defaultJsonBody"),
             ProvisioningProperty = CliUtilities.ReadString(extensionElement, "provisioningProperty"),
             ResourceName = CliUtilities.ReadString(extensionElement, "resourceName"),
+            CompletedAction = CliUtilities.ReadString(extensionElement, "completedAction"),
             ItemsProperty = CliUtilities.ReadString(extensionElement, "itemsProperty"),
             SetupPasswordProperty = CliUtilities.ReadString(extensionElement, "setupPasswordProperty"),
         };
@@ -145,7 +146,46 @@ internal static class OpenApiCliParser
             }
         }
 
+        if (extensionElement.TryGetProperty("nextSteps", out var nextStepsElement) && nextStepsElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var stepElement in nextStepsElement.EnumerateArray())
+            {
+                metadata.NextSteps.Add(ParseNextStep(stepElement));
+            }
+        }
+
         return true;
+    }
+
+    private static CliNextStepMetadata ParseNextStep(JsonElement stepElement)
+    {
+        var step = new CliNextStepMetadata
+        {
+            Description = CliUtilities.ReadString(stepElement, "description"),
+            WhenProperty = CliUtilities.ReadString(stepElement, "whenProperty"),
+            WhenValue = CliUtilities.ReadString(stepElement, "whenValue"),
+            Note = CliUtilities.ReadString(stepElement, "note"),
+            SavesContext = stepElement.TryGetProperty("savesContext", out var savesContext) && savesContext.ValueKind == JsonValueKind.True,
+        };
+
+        foreach (var argument in CliUtilities.ReadStringArray(stepElement, "arguments"))
+        {
+            step.Arguments.Add(argument);
+        }
+
+        if (stepElement.TryGetProperty("optionalArguments", out var optionalElement) && optionalElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var optional in optionalElement.EnumerateArray())
+            {
+                var whenMissing = CliUtilities.ReadString(optional, "whenMissing");
+                if (!string.IsNullOrWhiteSpace(whenMissing))
+                {
+                    step.OptionalArguments.Add(new CliNextStepOptionalArguments(whenMissing, CliUtilities.ReadStringArray(optional, "arguments")));
+                }
+            }
+        }
+
+        return step;
     }
 
     private static void ParseParameters(OpenApiOperationDefinition operation, JsonElement operationElement, JsonElement root)

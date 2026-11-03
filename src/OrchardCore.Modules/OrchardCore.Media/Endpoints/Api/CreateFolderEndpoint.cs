@@ -28,6 +28,7 @@ public static class CreateFolderEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "folders"], "create")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media folder",
                 InputMode = CliInputMode.Options,
                 TableColumns =
                 {

@@ -65,7 +65,7 @@ public class SetupPasswordValidatorTests
               "requestBody":{"required":true,"content":{"application/json":{"schema":{
                 "type":"object","required":["password"],"properties":{"password":{"type":"string"}}
               }}}},
-              "x-oc-cli":{"commandGroup":["tenants"],"verb":"__VERB__","secretProperties":["password"],"arguments":[{"parameterName":"tenantName","position":0}]}
+              "x-oc-cli":{"commandGroup":["tenants"],"verb":"__VERB__","secretProperties":["password"],"setupPasswordProperty":"password","arguments":[{"parameterName":"tenantName","position":0}]}
             }}}}
             """.Replace("__VERB__", verb, StringComparison.Ordinal);
         await new CacheService(paths).WriteAsync(tenant, CacheKind.OpenApi, new CachedContentRecord

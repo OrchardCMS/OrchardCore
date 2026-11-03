@@ -65,6 +65,7 @@ internal static class RoleManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["roles"], "create")
             {
                 Capability = RoleManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Role",
                 InputMode = CliInputMode.Json,
             })
             .Accepts<RoleCreateRequest>("application/json")
@@ -82,6 +83,7 @@ internal static class RoleManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["roles"], "update")
             {
                 Capability = RoleManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Role",
                 Arguments = { new CliArgumentMetadata("roleId", 0) },
                 InputMode = CliInputMode.Json,
             })
@@ -100,6 +102,7 @@ internal static class RoleManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["roles"], "delete")
             {
                 Capability = RoleManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Role",
                 Arguments = { new CliArgumentMetadata("roleId", 0) },
                 RequiresConfirmation = true,
             })

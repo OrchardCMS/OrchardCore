@@ -1797,7 +1797,7 @@ internal sealed partial class CliApplication
     internal static void ValidateDynamicJsonBody(string content, OpenApiOperationDefinition operation)
     {
         using var document = JsonDocument.Parse(content);
-        if (GetSetupPasswordProperty(operation) is { } passwordProperty)
+        if (operation.CliMetadata.SetupPasswordProperty is { Length: > 0 } passwordProperty)
         {
             var root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object
@@ -1871,21 +1871,6 @@ internal sealed partial class CliApplication
                 }
             }
         }
-    }
-
-    private static string? GetSetupPasswordProperty(OpenApiOperationDefinition operation)
-    {
-        if (!string.IsNullOrEmpty(operation.CliMetadata.SetupPasswordProperty))
-        {
-            return operation.CliMetadata.SetupPasswordProperty;
-        }
-
-        // Servers without the setupPasswordProperty metadata.
-        return operation.Method == "POST"
-            && operation.CliMetadata.CommandGroup.SequenceEqual(["tenants"])
-            && operation.CliMetadata.Verb is "install" or "setup"
-                ? "password"
-                : null;
     }
 
     private static bool MatchesSchemaType(JsonElement value, string type) => type switch

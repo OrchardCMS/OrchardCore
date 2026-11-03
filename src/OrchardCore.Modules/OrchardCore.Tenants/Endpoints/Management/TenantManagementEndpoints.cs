@@ -41,6 +41,14 @@ internal static partial class TenantManagementEndpoints
     private static readonly string[] _summaryProperties =
         ["name", "tenantId", "state", "setupUrl", "primaryUrl", "url", "requestUrlHost", "requestUrlPrefix", "recipeName", "databaseProvider"];
 
+    private static readonly CliNextStepMetadata _enableRemoteManagementStep = new()
+    {
+        Description = "enable remote management for this tenant.",
+        WhenProperty = "state",
+        WhenValue = nameof(TenantState.Running),
+        Arguments = { "tenants", "enable-remote-management", "{name}" },
+    };
+
     public static IEndpointRouteBuilder AddTenantManagementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routes = builder.MapManagementGroup(TenantManagementApiEndpointConventions.TagName);
@@ -89,6 +97,30 @@ internal static partial class TenantManagementEndpoints
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
                 ResourceName = "Tenant",
                 SummaryProperties = _summaryProperties,
+                NextSteps =
+                {
+                    new CliNextStepMetadata
+                    {
+                        Description = "set up this tenant (replace the placeholders and adjust the site details).",
+                        WhenProperty = "state",
+                        WhenValue = nameof(TenantState.Uninitialized),
+                        Arguments = { "tenants", "setup", "{name}", "--site-name", "{name}", "--user-name", "admin", "--email", "<admin-email>" },
+                        OptionalArguments =
+                        {
+                            new CliNextStepOptionalArguments("recipeName", "--recipe-name", "<recipe-name>"),
+                            new CliNextStepOptionalArguments("databaseProvider", "--database-provider", "Sqlite"),
+                        },
+                        Note = "The administrator password will be prompted securely. Choose a recipe such as SaaS or Blog if one is not already configured.",
+                    },
+                    _enableRemoteManagementStep,
+                    new CliNextStepMetadata
+                    {
+                        Description = "start this tenant.",
+                        WhenProperty = "state",
+                        WhenValue = nameof(TenantState.Disabled),
+                        Arguments = { "tenants", "start", "{name}" },
+                    },
+                },
             })
             .Accepts<TenantCreateRequest>("application/json")
             .Produces<TenantResponse>(StatusCodes.Status201Created)
@@ -112,6 +144,7 @@ internal static partial class TenantManagementEndpoints
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 SecretProperties = { "password", "connectionString" },
                 ProvisioningProperty = "enableRemoteManagement",
+                NextSteps = { _enableRemoteManagementStep },
             })
             .Accepts<TenantInstallRequest>("application/json")
             .Produces<TenantResponse>(StatusCodes.Status201Created)
@@ -135,6 +168,7 @@ internal static partial class TenantManagementEndpoints
                 SetupPasswordProperty = "password",
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 SecretProperties = { "password", "connectionString" },
+                NextSteps = { _enableRemoteManagementStep },
             })
             .Accepts<TenantSetupRequest>("application/json")
             .Produces<TenantResponse>(StatusCodes.Status200OK)
@@ -194,6 +228,7 @@ internal static partial class TenantManagementEndpoints
                 ResourceName = "Tenant",
                 SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
+                NextSteps = { _enableRemoteManagementStep },
             })
             .Produces<TenantResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -227,10 +262,12 @@ internal static partial class TenantManagementEndpoints
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
                 ResourceName = "Tenant",
+                CompletedAction = "configured for remote management",
                 SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 ExcludedFromMcp = true,
                 ProvisioningProperty = "provisionClient",
+                NextSteps = { new CliNextStepMetadata { WhenProperty = "state", WhenValue = nameof(TenantState.Running), SavesContext = true } },
             })
             .Produces<TenantOperationResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -246,8 +283,19 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "disable-remote-management")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                CompletedAction = "disabled for remote management",
+                SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 RequiresConfirmation = true,
+                NextSteps =
+                {
+                    new CliNextStepMetadata
+                    {
+                        Description = "the contexts saved for this tenant stop working until you enable remote management again.",
+                        Arguments = { "tenants", "enable-remote-management", "{name}" },
+                    },
+                },
             })
             .Produces<TenantOperationResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -263,6 +311,9 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "reload")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                CompletedAction = "reloaded",
+                SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
             })
             .Produces<TenantOperationResponse>(StatusCodes.Status200OK)

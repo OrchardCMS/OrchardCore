@@ -529,6 +529,7 @@ internal static class ContentDefinitionApiEndpoints
         var metadata = new CliOperationMetadata(commandGroup, verb)
         {
             Capability = Capability,
+            ResourceName = commandGroup is [_, "types"] ? "Content type" : null,
             InputMode = inputMode,
             RequiresConfirmation = requiresConfirmation,
         };

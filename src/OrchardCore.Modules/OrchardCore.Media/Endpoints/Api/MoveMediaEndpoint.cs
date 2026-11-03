@@ -32,6 +32,7 @@ public static class MoveMediaEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "files"], "move")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media file",
                 InputMode = CliInputMode.Options,
                 TableColumns =
                 {

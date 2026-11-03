@@ -33,6 +33,7 @@ public static class UploadMediaEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "files"], "upload")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media file",
                 InputMode = CliInputMode.Stream,
                 Arguments =
                 {

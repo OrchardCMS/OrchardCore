@@ -31,6 +31,7 @@ public static class CopyMediaEndpoint
             .WithCliCommand(new CliOperationMetadata(["media", "files"], "copy")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
+                ResourceName = "Media file",
                 InputMode = CliInputMode.Options,
                 TableColumns =
                 {

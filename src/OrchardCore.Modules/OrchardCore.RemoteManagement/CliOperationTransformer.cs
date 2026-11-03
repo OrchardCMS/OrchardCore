@@ -103,6 +103,16 @@ internal sealed class CliOperationTransformer : IOpenApiOperationTransformer
             extension["resourceName"] = metadata.ResourceName;
         }
 
+        if (!string.IsNullOrWhiteSpace(metadata.CompletedAction))
+        {
+            extension["completedAction"] = metadata.CompletedAction;
+        }
+
+        if (metadata.NextSteps.Count > 0)
+        {
+            extension["nextSteps"] = new JsonArray(metadata.NextSteps.Select(CreateNextStep).ToArray());
+        }
+
         if (metadata.SummaryProperties.Count > 0)
         {
             extension["summaryProperties"] = new JsonArray(metadata.SummaryProperties
@@ -122,4 +132,51 @@ internal sealed class CliOperationTransformer : IOpenApiOperationTransformer
 
         return extension;
     }
+
+    private static JsonObject CreateNextStep(CliNextStepMetadata step)
+    {
+        var extension = new JsonObject();
+
+        if (!string.IsNullOrWhiteSpace(step.Description))
+        {
+            extension["description"] = step.Description;
+        }
+
+        if (!string.IsNullOrWhiteSpace(step.WhenProperty))
+        {
+            extension["whenProperty"] = step.WhenProperty;
+            extension["whenValue"] = step.WhenValue;
+        }
+
+        if (step.Arguments.Count > 0)
+        {
+            extension["arguments"] = CreateStringArray(step.Arguments);
+        }
+
+        if (step.OptionalArguments.Count > 0)
+        {
+            extension["optionalArguments"] = new JsonArray(step.OptionalArguments
+                .Select(optional => new JsonObject
+                {
+                    ["whenMissing"] = optional.WhenMissing,
+                    ["arguments"] = CreateStringArray(optional.Arguments),
+                })
+                .ToArray());
+        }
+
+        if (!string.IsNullOrWhiteSpace(step.Note))
+        {
+            extension["note"] = step.Note;
+        }
+
+        if (step.SavesContext)
+        {
+            extension["savesContext"] = true;
+        }
+
+        return extension;
+    }
+
+    private static JsonArray CreateStringArray(IEnumerable<string> values) =>
+        new(values.Select(value => JsonValue.Create(value)).ToArray());
 }

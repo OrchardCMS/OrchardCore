@@ -65,21 +65,10 @@ public class CliApplicationSchemaTests
         CliApplication.ValidateDynamicJsonBody("""{"administratorPassword":"Str0ng-Password!"}""", operation);
     }
 
-    [Theory]
-    [InlineData("install")]
-    [InlineData("setup")]
-    public void ValidateDynamicJsonBody_ServerWithoutMetadata_ValidatesTenantSetupPassword(string verb)
-    {
-        var operation = new OpenApiOperationDefinition { Method = "POST", CliMetadata = new CliOperationMetadata(["tenants"], verb) };
-
-        Assert.Throws<CliException>(() => CliApplication.ValidateDynamicJsonBody("""{"password":"weak"}""", operation));
-        CliApplication.ValidateDynamicJsonBody("""{"password":"Str0ng-Password!"}""", operation);
-    }
-
     [Fact]
-    public void ValidateDynamicJsonBody_OtherOperationWithoutMetadata_LeavesPasswordToTheServer()
+    public void ValidateDynamicJsonBody_OperationWithoutMetadata_LeavesPasswordToTheServer()
     {
-        var operation = new OpenApiOperationDefinition { Method = "POST", CliMetadata = new CliOperationMetadata(["users"], "create") };
+        var operation = new OpenApiOperationDefinition { Method = "POST", CliMetadata = new CliOperationMetadata(["tenants"], "setup") };
 
         CliApplication.ValidateDynamicJsonBody("""{"password":"weak"}""", operation);
     }
