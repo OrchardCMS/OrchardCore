@@ -98,7 +98,8 @@ public sealed class ShapeTemplateFiles
 
     /// <summary>
     /// Lists the template files of extensions, whether they are enabled or not, e.g. a theme and the themes it is based on.
-    /// When several extensions have a template for the same shape, the template of the first one is listed.
+    /// When several extensions have a template for the same shape, the template of the first one is listed. When an
+    /// extension has several files for the same shape, the last one is listed, which is the one the shape table binds.
     /// </summary>
     /// <param name="extensionIds">The extensions, the one whose templates win first.</param>
     public IReadOnlyList<SourceTemplate> GetExtensionTemplates(IEnumerable<string> extensionIds)
@@ -115,6 +116,7 @@ public sealed class ShapeTemplateFiles
             }
 
             var extensionPath = extension.SubPath.Replace('\\', '/').TrimEnd('/');
+            var extensionTemplates = new Dictionary<string, SourceTemplate>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var subPath in s_harvester.SubPaths())
             {
@@ -127,14 +129,19 @@ public sealed class ShapeTemplateFiles
                         continue;
                     }
 
-                    templates.TryAdd(templateName, new SourceTemplate
+                    extensionTemplates[templateName] = new SourceTemplate
                     {
                         Name = templateName,
                         ExtensionId = extension.Id,
                         RelativePath = relativePath,
                         FilePath = filePath,
-                    });
+                    };
                 }
+            }
+
+            foreach (var (templateName, template) in extensionTemplates)
+            {
+                templates.TryAdd(templateName, template);
             }
         }
 

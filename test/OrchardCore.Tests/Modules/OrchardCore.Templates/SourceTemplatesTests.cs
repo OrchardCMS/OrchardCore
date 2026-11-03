@@ -39,6 +39,7 @@ public sealed class SourceTemplatesTests : IDisposable
     private readonly Dictionary<string, ShapeBinding> _bindings = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ShapeBinding> _moduleBindings = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _disabled = [];
+    private readonly HashSet<string> _unavailable = [];
     private string _siteThemeId = "SiteTheme";
 
     public void Dispose() => _root.Delete(recursive: true);
@@ -158,6 +159,20 @@ public sealed class SourceTemplatesTests : IDisposable
     }
 
     [Fact]
+    public async Task ThemeSource_ThemeNotAvailableToTheTenant_IsNotListed()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("ExcludedTheme");
+        AddFile("ExcludedTheme", "Views/Layout.liquid", "excluded");
+        _unavailable.Add("ExcludedTheme");
+
+        var source = CreateSource();
+
+        Assert.Equal(["SiteTheme"], (await source.GetScopesAsync(adminTemplates: false)).Select(scope => scope.Name));
+        Assert.Empty(await source.GetTemplatesAsync(adminTemplates: false, scope: "ExcludedTheme"));
+    }
+
+    [Fact]
     public async Task GetTemplatesAsync_ThemeOfTheOtherList_ReturnsNothing()
     {
         AddExtension("SiteTheme");
@@ -215,6 +230,21 @@ public sealed class SourceTemplatesTests : IDisposable
 
         // The callers change the templates they get, e.g. what overrides them.
         Assert.NotSame(first, second);
+    }
+
+    [Fact]
+    public void GetExtensionTemplates_TwoFilesForOneShape_ListsTheFileTheShapeTableBinds()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("BaseTheme");
+        AddFile("SiteTheme", "Views/Content.liquid", "first");
+        AddFile("SiteTheme", "Views/Items/Content.cshtml", "last");
+        AddFile("BaseTheme", "Views/Content.liquid", "base");
+
+        var template = Assert.Single(CreateShapeTemplateFiles().GetExtensionTemplates(["SiteTheme", "BaseTheme"]));
+
+        Assert.Equal("SiteTheme", template.ExtensionId);
+        Assert.Equal("Views/Items/Content.cshtml", template.RelativePath);
     }
 
     [Fact]
@@ -283,6 +313,36 @@ public sealed class SourceTemplatesTests : IDisposable
         var template = new SourceTemplate { FilePath = filePath, IsInUse = isInUse, OverriddenBy = overriddenBy };
 
         Assert.Equal(expected, template.CanClone);
+    }
+
+    [Fact]
+    public async Task CloneAsync_ResetToTheThemeActiveNow_UpdatesOnlyTheGeneratedDescription()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("NewTheme");
+        AddFile("SiteTheme", "Views/Generated.liquid", "old");
+        AddFile("SiteTheme", "Views/Given.liquid", "old");
+        AddFile("NewTheme", "Views/Generated.liquid", "new");
+        AddFile("NewTheme", "Views/Given.liquid", "new");
+
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+
+        foreach (var entry in await service.GetEntriesAsync(source, adminTemplates: false, scope: null))
+        {
+            Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+        }
+
+        _templates.Templates["Given"].Description = "Mine";
+        _siteThemeId = "NewTheme";
+
+        foreach (var entry in await service.GetEntriesAsync(source, adminTemplates: false, scope: null))
+        {
+            Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: true));
+        }
+
+        Assert.Equal("Cloned from NewTheme (Views/Generated.liquid).", _templates.Templates["Generated"].Description);
+        Assert.Equal("Mine", _templates.Templates["Given"].Description);
     }
 
     [Fact]
@@ -629,19 +689,6 @@ public sealed class SourceTemplatesTests : IDisposable
 
     private FeatureTemplateSource CreateFeatureSource()
     {
-        var shellFeaturesManager = new Mock<IShellFeaturesManager>();
-        shellFeaturesManager.Setup(manager => manager.GetEnabledFeaturesAsync()).ReturnsAsync(() => _extensions
-            .Where(extension => !_disabled.Contains(extension.Id))
-            .Select(extension =>
-            {
-                var feature = new Mock<IFeatureInfo>();
-                feature.SetupGet(feature => feature.Id).Returns(extension.Id);
-                feature.SetupGet(feature => feature.Extension).Returns(extension);
-
-                return feature.Object;
-            })
-            .ToList());
-
         var siteThemeService = new Mock<ISiteThemeService>();
         siteThemeService.Setup(service => service.GetSiteThemeNameAsync()).ReturnsAsync(() => _siteThemeId);
 
@@ -650,10 +697,32 @@ public sealed class SourceTemplatesTests : IDisposable
 
         return new FeatureTemplateSource(
             CreateShapeTemplateFiles(),
-            shellFeaturesManager.Object,
+            CreateShellFeaturesManager(),
             new ActiveThemes([siteThemeService.Object], []),
             localizer.Object);
     }
+
+    private IShellFeaturesManager CreateShellFeaturesManager()
+    {
+        var shellFeaturesManager = new Mock<IShellFeaturesManager>();
+        shellFeaturesManager.Setup(manager => manager.GetEnabledFeaturesAsync()).ReturnsAsync(() => CreateFeatures(_disabled));
+        shellFeaturesManager.Setup(manager => manager.GetAvailableFeaturesAsync()).ReturnsAsync(() => CreateFeatures(_unavailable));
+
+        return shellFeaturesManager.Object;
+    }
+
+    private List<IFeatureInfo> CreateFeatures(HashSet<string> excluded)
+        => _extensions
+            .Where(extension => !excluded.Contains(extension.Id))
+            .Select(extension =>
+            {
+                var feature = new Mock<IFeatureInfo>();
+                feature.SetupGet(feature => feature.Id).Returns(extension.Id);
+                feature.SetupGet(feature => feature.Extension).Returns(extension);
+
+                return feature.Object;
+            })
+            .ToList();
 
     private void AddExtension(string id, string baseTheme = null, bool isTheme = true, bool admin = false, bool enabled = true)
     {
@@ -734,6 +803,7 @@ public sealed class SourceTemplatesTests : IDisposable
         return new ThemeTemplateSource(
             CreateShapeTemplateFiles(),
             CreateExtensionManager(),
+            CreateShellFeaturesManager(),
             CreateActiveThemes(),
             localizer.Object);
     }

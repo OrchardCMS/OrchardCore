@@ -178,17 +178,24 @@ public sealed class SourceTemplatesService
             return false;
         }
 
+        var overrides = await _overridesManager.LoadOverridesDocumentAsync(adminTemplates);
+
+        // A reset keeps the description the template was given, not the one telling which file it was cloned from.
+        var description = localTemplate?.Description;
+
+        if (description == null ||
+            (overrides.Overrides.TryGetValue(template.Name, out var record) && description == GetCloneDescription(record.ExtensionId, record.RelativePath)))
+        {
+            description = GetCloneDescription(template.ExtensionId, template.RelativePath);
+        }
+
         var clone = new Template
         {
             Content = content,
-
-            // A reset keeps the description the template was given.
-            Description = localTemplate?.Description ?? $"Cloned from {template.ExtensionId} ({template.RelativePath}).",
+            Description = description,
         };
 
         await UpdateTemplateAsync(template.Name, clone, adminTemplates);
-
-        var overrides = await _overridesManager.LoadOverridesDocumentAsync(adminTemplates);
 
         overrides.Overrides[template.Name] = new TemplateOverride
         {
@@ -263,6 +270,9 @@ public sealed class SourceTemplatesService
 
         return true;
     }
+
+    private static string GetCloneDescription(string extensionId, string relativePath)
+        => $"Cloned from {extensionId} ({relativePath}).";
 
     private static bool IsClonedFrom(TemplateOverride record, SourceTemplate template)
         => string.Equals(record.ExtensionId, template.ExtensionId, StringComparison.OrdinalIgnoreCase)

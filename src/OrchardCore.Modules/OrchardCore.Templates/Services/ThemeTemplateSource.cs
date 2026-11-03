@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Templates.Models;
 
@@ -16,6 +17,7 @@ public sealed class ThemeTemplateSource : ITemplateSource
 
     private readonly ShapeTemplateFiles _shapeTemplateFiles;
     private readonly IExtensionManager _extensionManager;
+    private readonly IShellFeaturesManager _shellFeaturesManager;
 
     private readonly ActiveThemes _activeThemes;
 
@@ -24,11 +26,13 @@ public sealed class ThemeTemplateSource : ITemplateSource
     public ThemeTemplateSource(
         ShapeTemplateFiles shapeTemplateFiles,
         IExtensionManager extensionManager,
+        IShellFeaturesManager shellFeaturesManager,
         ActiveThemes activeThemes,
         IStringLocalizer<ThemeTemplateSource> stringLocalizer)
     {
         _shapeTemplateFiles = shapeTemplateFiles;
         _extensionManager = extensionManager;
+        _shellFeaturesManager = shellFeaturesManager;
         _activeThemes = activeThemes;
         S = stringLocalizer;
     }
@@ -45,7 +49,7 @@ public sealed class ThemeTemplateSource : ITemplateSource
     {
         var activeThemeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
 
-        return GetThemes(adminTemplates)
+        return (await GetThemesAsync(adminTemplates))
             .Select(theme =>
             {
                 var isActive = string.Equals(theme.Id, activeThemeId, StringComparison.OrdinalIgnoreCase);
@@ -71,7 +75,7 @@ public sealed class ThemeTemplateSource : ITemplateSource
         var themeId = string.IsNullOrEmpty(scope) ? activeThemeId : scope;
 
         // Only the themes of the list can be listed, e.g. not an admin theme as a site theme.
-        if (string.IsNullOrEmpty(themeId) || !GetThemes(adminTemplates).Any(theme => string.Equals(theme.Id, themeId, StringComparison.OrdinalIgnoreCase)))
+        if (string.IsNullOrEmpty(themeId) || !(await GetThemesAsync(adminTemplates)).Any(theme => string.Equals(theme.Id, themeId, StringComparison.OrdinalIgnoreCase)))
         {
             return [];
         }
@@ -87,12 +91,17 @@ public sealed class ThemeTemplateSource : ITemplateSource
         return templates;
     }
 
+    // The themes that can be selected as a site theme, or as an admin theme, like on the Themes page:
+    // those whose features are available to the tenant, e.g. from its feature profile.
+    private async Task<IEnumerable<IExtensionInfo>> GetThemesAsync(bool adminTemplates)
+    {
+        var available = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+            .Select(feature => feature.Extension.Id)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-    // The themes that can be selected as a site theme, or as an admin theme, like on the Themes page.
-    private IEnumerable<IExtensionInfo> GetThemes(bool adminTemplates)
-        => _extensionManager.GetExtensions().Where(extension =>
+        return _extensionManager.GetExtensions().Where(extension =>
         {
-            if (!extension.Exists || extension.Manifest?.IsTheme() != true ||
+            if (!available.Contains(extension.Id) || !extension.Exists || extension.Manifest?.IsTheme() != true ||
                 extension.Features.Any(feature => feature.IsAlwaysEnabled || feature.EnabledByDependencyOnly))
             {
                 return false;
@@ -107,6 +116,7 @@ public sealed class ThemeTemplateSource : ITemplateSource
 
             return adminTemplates == tags.Any(tag => string.Equals(tag, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
         });
+    }
 
     // The theme and the themes it is based on, the theme first.
     private List<string> GetThemeIds(string themeId)
