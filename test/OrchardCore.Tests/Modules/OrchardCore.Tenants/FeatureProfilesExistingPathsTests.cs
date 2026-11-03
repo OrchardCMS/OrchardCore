@@ -59,8 +59,9 @@ public class FeatureProfilesExistingPathsTests
         var invalid = JsonNode.Parse("""
             {"name":"FeatureProfiles","FeatureProfiles":{"legacy":{"Name":"Rejected","FeatureRules":null}}}
             """);
-        await Assert.ThrowsAsync<System.ComponentModel.DataAnnotations.ValidationException>(() =>
-            step.ExecuteAsync(new RecipeExecutionContext { Name = "FeatureProfiles", Step = (JsonObject)invalid }));
+        var context = new RecipeExecutionContext { Name = "FeatureProfiles", Step = (JsonObject)invalid };
+        await step.ExecuteAsync(context);
+        Assert.NotEmpty(context.Errors);
         Assert.Same(original, document.FeatureProfiles["legacy"]);
     }
 }
