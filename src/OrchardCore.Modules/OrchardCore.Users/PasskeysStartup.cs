@@ -60,17 +60,6 @@ public sealed class PasskeysStartup : StartupBase
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.MapAreaControllerRoute(
-            name: "Passkeys",
-            areaName: UserConstants.Features.Users,
-            pattern: "Passkeys",
-            defaults: new
-            {
-                controller = s_passkeyControllerName,
-                action = nameof(PasskeyController.Index),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
             name: RateLimitRouteNames.PasskeyLogin,
             areaName: UserConstants.Features.Users,
             pattern: "Passkeys/Login",

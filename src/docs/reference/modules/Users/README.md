@@ -64,7 +64,7 @@ The **User Security** feature provides the **Security** page (`/Security`), link
 
 The page is the `UserSecurity` shape, built by the display drivers of the `UserSecurity` model, so a module can add its own section with a `DisplayDriver<UserSecurity>`.
 
-The `/TwoFactor` path, and its custom value set in `TwoFactorAuthenticationPath`, redirects to the Two-Factor Authentication section, and `/Passkeys` redirects to the Passkeys section.
+The `/TwoFactor` path, and its custom value set in `TwoFactorAuthenticationPath`, redirects to the Two-Factor Authentication section.
 
 By default, the Security page and the pages it links to, such as the setup of an authenticator app or the recovery codes, use the admin theme. To use the site theme instead, select **Use site theme for the security pages** in `Settings` → `Security` → `User Login`, on the **Security Page** tab.
 

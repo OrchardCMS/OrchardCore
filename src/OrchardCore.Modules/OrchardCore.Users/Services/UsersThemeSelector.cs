@@ -59,7 +59,6 @@ public class UsersThemeSelector : IThemeSelector
                     }
                     break;
                 case "Security":
-                case "Passkey":
                 case "SmsAuthenticator":
                 case "AuthenticatorApp":
                     useSiteTheme = (await _siteService.GetSettingsAsync<UserSecuritySettings>()).UseSiteTheme;

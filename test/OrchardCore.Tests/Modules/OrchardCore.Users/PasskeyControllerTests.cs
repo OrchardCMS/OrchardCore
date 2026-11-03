@@ -425,10 +425,8 @@ public class PasskeyControllerTests
         Assert.DoesNotContain("Add a passkey below to use passkeys as a two-factor method.", page);
     }
 
-    [Theory]
-    [InlineData("TwoFactor", "/Security#two-factor")]
-    [InlineData("Passkeys", "/Security#passkeys")]
-    public async Task FormerPage_WhenRequested_RedirectsToSecuritySection(string path, string expectedLocation)
+    [Fact]
+    public async Task TwoFactor_WhenRequested_RedirectsToSecuritySection()
     {
         // Arrange
         var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
@@ -437,11 +435,11 @@ public class PasskeyControllerTests
         await LoginWithPasswordAsync(client);
 
         // Act
-        var response = await client.GetAsync(path, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync("TwoFactor", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-        Assert.Equal($"/{context.TenantName}{expectedLocation}", response.Headers.Location.ToString());
+        Assert.Equal($"/{context.TenantName}/Security#two-factor", response.Headers.Location.ToString());
     }
 
     [Fact]

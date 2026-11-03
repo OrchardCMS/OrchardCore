@@ -67,10 +67,6 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         _logger = logger;
     }
 
-    // The passkeys are managed from a section of the Security page.
-    public IActionResult Index()
-        => RedirectToPasskeys();
-
     [HttpPost]
     public async Task<IActionResult> CreationOptions()
     {
