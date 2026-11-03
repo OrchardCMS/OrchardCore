@@ -26,7 +26,8 @@ Resource permissions are evaluated in addition to those permissions:
 | Get or render a draft/latest unpublished version | `PreviewContent` on the item |
 | Create or update a draft; validate; create a draft version | `EditContent` on the item |
 | Create/update and publish; publish or unpublish | `EditContent` and/or `PublishContent` as described by the operation |
-| Delete | `DeleteContent` on the item |
+| Clone | `CloneContent` on the item |
+| Discard a draft, delete | `DeleteContent` on the item |
 | List versions | `ListContent` on the current item, plus read permission on each version and the current item |
 | Show or render an exact version | `ViewContent` if that version is published, otherwise `PreviewContent`, on both that version and the current item |
 | Restore a version | Read permission above, plus `EditContent` and `PublishContent` on both versions |
@@ -77,6 +78,8 @@ All request and response bodies use `application/json`.
 | `POST` | `/api/content/{contentItemId}/draft` | Create or refresh a draft version |
 | `POST` | `/api/content/{contentItemId}/publish` | Publish the draft |
 | `POST` | `/api/content/{contentItemId}/unpublish` | Unpublish the published version |
+| `POST` | `/api/content/{contentItemId}:clone` | Clone into a new draft item |
+| `POST` | `/api/content/{contentItemId}:discard-draft` | Discard the draft version |
 | `DELETE` | `/api/content/{contentItemId}` | Delete the latest version |
 | `POST` | `/api/content/validate` | Validate a create/existing draft payload |
 | `POST` | `/api/content/{contentItemId}/validate` | Validate an update |
@@ -649,6 +652,35 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 
 Also returns `401`, `403`, or `404`.
 
+### Clone a content item
+
+`POST /api/content/{contentItemId}:clone`
+
+No body or query parameters. Creates a new content item as a draft from the latest version, and
+requires `CloneContent`. `201 Created` returns the clone, with its URL in the `Location` header.
+
+```bash
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc:clone
+```
+
+Also returns `401`, `403`, `404` for an unknown item, or `409` when a content handler refuses the clone.
+
+### Discard a draft
+
+`POST /api/content/{contentItemId}:discard-draft`
+
+No body or query parameters. Removes the draft version and requires `DeleteContent`. The published
+version becomes the latest one. A content item that was never published is removed.
+`204 No Content` confirms it.
+
+```bash
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc:discard-draft
+```
+
+Also returns `401`, `403`, or `404` for an unknown item or one whose latest version is published.
+
 ### Delete a content item
 
 `DELETE /api/content/{contentItemId}`
@@ -940,7 +972,7 @@ All five version operations also return `401` for missing authentication and
 
 ## Endpoint coverage and sources
 
-This page covers all 19 routes mapped by:
+This page covers all 21 routes mapped by:
 
 * `src/OrchardCore.Modules/OrchardCore.Contents/Endpoints/Api/ContentManagementApiEndpoints.cs`
 * `src/OrchardCore.Modules/OrchardCore.Contents/Endpoints/Api/ContentVersionApiEndpoints.cs`

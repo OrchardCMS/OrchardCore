@@ -149,7 +149,7 @@ internal sealed class ContentApiService
         var normalizedStatus = status?.ToLowerInvariant();
 
         // Only per-item permissions, like viewing one's own items, require reading the items to filter them.
-        if (await CanViewAllItemsAsync(user, allowedTypes, normalizedStatus))
+        if (await CanViewAllItemsAsync(user, typeDefinitions.Where(definition => allowedTypes.Contains(definition.Name)), normalizedStatus))
         {
             var query = await CreateListQueryAsync(allowedTypes, contentType, normalizedStatus, filter, order);
             response.TotalCount = await query.CountAsync();
@@ -538,13 +538,13 @@ internal sealed class ContentApiService
     }
 
     // Published items need the view permission and the others the preview one, see CanViewContentItemAsync().
-    private async Task<bool> CanViewAllItemsAsync(ClaimsPrincipal user, IEnumerable<string> contentTypes, string status)
+    // The permissions of a content type are evaluated without an item, so owning an item doesn't count.
+    private async Task<bool> CanViewAllItemsAsync(ClaimsPrincipal user, IEnumerable<ContentTypeDefinition> definitions, string status)
     {
-        foreach (var contentType in contentTypes)
+        foreach (var definition in definitions)
         {
-            // An owner that is nobody checks access to the items of others, even for a caller without a user identifier.
-            if ((status is not "draft" && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentType, owner: string.Empty))
-                || (status is "draft" or "latest" && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.PreviewContent, contentType, owner: string.Empty)))
+            if ((status is not "draft" && !await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermissionOf(CommonPermissions.ViewContent, definition)))
+                || (status is "draft" or "latest" && !await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermissionOf(CommonPermissions.PreviewContent, definition))))
             {
                 return false;
             }
@@ -701,6 +701,39 @@ internal sealed class ContentApiService
         }
 
         await _contentManager.RemoveAsync(contentItem);
+        return contentItem;
+    }
+
+    public async Task<ContentItem> CloneAsync(ClaimsPrincipal user, string contentItemId)
+    {
+        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+        if (contentItem is null)
+        {
+            return null;
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem))
+        {
+            return new ContentItem { ContentItemId = string.Empty };
+        }
+
+        return await _contentManager.CloneAsync(contentItem);
+    }
+
+    public async Task<ContentItem> DiscardDraftAsync(ClaimsPrincipal user, string contentItemId)
+    {
+        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+        if (contentItem is null || contentItem.Published)
+        {
+            return null;
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
+        {
+            return new ContentItem { ContentItemId = string.Empty };
+        }
+
+        await _contentManager.DiscardDraftAsync(contentItem);
         return contentItem;
     }
 

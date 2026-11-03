@@ -198,6 +198,66 @@ public class ContentItemManagementApiTests
     }
 
     [Fact]
+    public async Task CloneAsync_ExistingItem_CreatesADraftWithANewId()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+            var user = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "Test")], nameof(StubIdentity)));
+            var source = await service.SaveAsync(user, new ContentItem { ContentType = "BlogPost", DisplayText = "Original" }, publish: true, allowCreate: true, allowUpdate: true);
+
+            var clone = await service.CloneAsync(user, source.ContentItemId);
+
+            Assert.NotEqual(source.ContentItemId, clone.ContentItemId);
+            Assert.False(clone.Published);
+            Assert.Null(await service.CloneAsync(user, "missing"));
+        });
+    }
+
+    [Fact]
+    public async Task DiscardDraftAsync_DraftOfPublishedItem_KeepsThePublishedVersion()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        var user = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "Test")], nameof(StubIdentity)));
+        string id = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+            id = (await service.SaveAsync(user, new ContentItem { ContentType = "BlogPost", DisplayText = "Published" }, publish: true, allowCreate: true, allowUpdate: true)).ContentItemId;
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+
+            // The latest version is the published one, so there is no draft to discard.
+            Assert.Null(await service.DiscardDraftAsync(user, id));
+            Assert.Null(await service.DiscardDraftAsync(user, "missing"));
+            await service.CreateDraftAsync(user, id);
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+            var discarded = await service.DiscardDraftAsync(user, id);
+            Assert.NotNull(discarded);
+            Assert.False(ContentApiService.IsForbidden(discarded));
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+            Assert.Null(await manager.GetAsync(id, VersionOptions.Draft));
+            Assert.NotNull(await manager.GetAsync(id, VersionOptions.Published));
+        });
+    }
+
+    [Fact]
     public async Task ScanAuthorizedItemsAsync_PageIsFollowedByAnItem_StopsAndFlagsAnEstimate()
     {
         var loads = 0;

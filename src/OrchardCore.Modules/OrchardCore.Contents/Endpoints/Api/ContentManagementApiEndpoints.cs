@@ -137,6 +137,29 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        group.MapPost("/{contentItemId}:clone", CloneAsync)
+            .WithName("ApiCloneContentItem")
+            .WithTags("Content Items")
+            .WithSummary("Clones a content item.")
+            .WithDescription("Creates a new content item as a draft from the latest version of a content item.")
+            .WithCliCommand(Cli(["content", "items"], "clone", arguments: [new CliArgumentMetadata("contentItemId", 0)]))
+            .Produces<ContentItem>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapPost("/{contentItemId}:discard-draft", DiscardDraftAsync)
+            .WithName("ApiDiscardContentItemDraft")
+            .WithTags("Content Items")
+            .WithSummary("Discards the draft of a content item.")
+            .WithDescription("Removes the draft version. The published version becomes the latest one, and a content item that was never published is removed.")
+            .WithCliCommand(Cli(["content", "items"], "discard-draft", arguments: [new CliArgumentMetadata("contentItemId", 0)], requiresConfirmation: true))
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         contentApi.MapDelete("/{contentItemId}", DeleteAsync)
             .WithName("ApiDeleteContentItem")
             .WithTags("Content Items")
@@ -292,6 +315,54 @@ internal static partial class ContentManagementApiEndpoints
         }
 
         return contentItem is null ? httpContext.ApiNotFoundProblem() : Results.Json(contentItem, service.SerializerOptions);
+    }
+
+    private static async Task<IResult> CloneAsync(string contentItemId, ContentApiService service, HttpContext httpContext)
+    {
+        if (!await HasAccessAsync(httpContext))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        ContentItem clone;
+        try
+        {
+            clone = await service.CloneAsync(httpContext.User, contentItemId);
+        }
+        catch (InvalidOperationException)
+        {
+            return TypedResults.Problem(title: "Conflict", detail: "Could not clone the content item.", statusCode: StatusCodes.Status409Conflict);
+        }
+
+        if (ContentApiService.IsForbidden(clone))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        if (clone is null)
+        {
+            return httpContext.ApiNotFoundProblem();
+        }
+
+        httpContext.Response.Headers.Location = $"{httpContext.Request.PathBase}/api/content/{clone.ContentItemId}";
+
+        return Results.Json(clone, service.SerializerOptions, statusCode: StatusCodes.Status201Created);
+    }
+
+    private static async Task<IResult> DiscardDraftAsync(string contentItemId, ContentApiService service, HttpContext httpContext)
+    {
+        if (!await HasAccessAsync(httpContext))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        var contentItem = await service.DiscardDraftAsync(httpContext.User, contentItemId);
+        if (ContentApiService.IsForbidden(contentItem))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        return contentItem is null ? httpContext.ApiNotFoundProblem() : TypedResults.NoContent();
     }
 
     [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
