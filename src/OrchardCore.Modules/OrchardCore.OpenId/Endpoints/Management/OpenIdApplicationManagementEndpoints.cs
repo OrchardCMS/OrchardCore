@@ -11,6 +11,7 @@ using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.OpenId.Endpoints.Management;
@@ -95,6 +96,54 @@ internal static class OpenIdApplicationManagementEndpoints
         return errors.Count == 0 ? null : TypedResults.ValidationProblem(errors);
     }
 
+    // A client credentials token carries the permissions of the application's roles, so adding a role
+    // must not grant more than the caller holds. The administrator role grants every permission.
+    internal static async Task<ProblemHttpResult> AuthorizeNewRolesAsync(HttpContext context, IAuthorizationService authorization,
+        IOpenIdApplicationManager manager, OpenIdApplicationMutationRequest request, object application, CancellationToken cancellationToken)
+    {
+        var currentRoles = application is null ? [] : await manager.GetRolesAsync(application, cancellationToken);
+        var newRoles = request.Roles.Except(currentRoles, StringComparer.Ordinal).ToArray();
+        if (newRoles.Length == 0 || context.RequestServices.GetService<IRoleService>() is not { } roles)
+        {
+            return null;
+        }
+
+        var permissions = context.RequestServices.GetRequiredService<IPermissionService>();
+        foreach (var role in newRoles)
+        {
+            IEnumerable<Permission> granted;
+            if (await roles.IsAdminRoleAsync(role))
+            {
+                granted = await permissions.GetPermissionsAsync();
+            }
+            else
+            {
+                var rolePermissions = new List<Permission>();
+                foreach (var claim in await roles.GetRoleClaimsAsync(role, cancellationToken))
+                {
+                    if (claim.Type == Permission.ClaimType)
+                    {
+                        rolePermissions.Add(await permissions.FindByNameAsync(claim.Value) ?? new Permission(claim.Value));
+                    }
+                }
+                granted = rolePermissions;
+            }
+
+            foreach (var permission in granted)
+            {
+                if (!await authorization.AuthorizeAsync(context.User, permission))
+                {
+                    return TypedResults.Problem(
+                        title: "Forbidden",
+                        detail: $"The role '{role}' grants the permission '{permission.Name}' that you do not hold.",
+                        statusCode: StatusCodes.Status403Forbidden);
+                }
+            }
+        }
+
+        return null;
+    }
+
     private static async Task<ValidationProblem> ValidateClientAsync(HttpContext context, IOpenIdApplicationManager manager,
         OpenIdApplicationMutationRequest request, object application, bool isNew, CancellationToken cancellationToken)
     {
@@ -115,6 +164,7 @@ internal static class OpenIdApplicationManagementEndpoints
         var ct = context.RequestAborted;
         var existing = await manager.FindByClientIdAsync(request.ClientId, ct);
         if (await ValidateClientAsync(context, manager, request, existing, isNew: true, ct) is { } client) { return client; }
+        if (await AuthorizeNewRolesAsync(context, authorization, manager, request, existing, ct) is { } forbidden) { return forbidden; }
         try
         {
             var settings = request.ToSettings();
@@ -150,6 +200,7 @@ internal static class OpenIdApplicationManagementEndpoints
         if (application is null) { return context.ApiNotFoundProblem(); }
         if (await ValidateReferencesAsync(context, scopes, request) is { } references) { return references; }
         if (await ValidateClientAsync(context, manager, request, application, isNew: false, ct) is { } client) { return client; }
+        if (await AuthorizeNewRolesAsync(context, authorization, manager, request, application, ct) is { } forbidden) { return forbidden; }
         try
         {
             var settings = request.ToSettings();

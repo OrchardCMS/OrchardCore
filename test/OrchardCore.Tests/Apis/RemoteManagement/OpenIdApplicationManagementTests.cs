@@ -9,6 +9,8 @@ using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Endpoints.Management;
 using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Apis.RemoteManagement;
@@ -136,6 +138,45 @@ public class OpenIdApplicationManagementTests
             Assert.Null(await manager.FindByClientIdAsync("managed-client"));
             Assert.IsType<NoContent>(await OpenIdApplicationManagementEndpoints.DeleteAsync(new DefaultHttpContext { RequestServices = services }, Authorize(), manager, "managed-client"));
         });
+    }
+
+    [Theory]
+    [InlineData("Publisher", false, "PublishContent", 403)]
+    [InlineData("Publisher", false, "ViewContent", null)]
+    [InlineData("Administrator", true, "PublishContent", 403)]
+    [InlineData("Administrator", true, "ViewContent", null)]
+    public async Task AuthorizeNewRolesAsync_RolePermissions_RequireTheCallerToHoldThem(string role, bool isAdmin, string denied, int? expected)
+    {
+        using var services = RoleServices(role, isAdmin);
+        var result = await OpenIdApplicationManagementEndpoints.AuthorizeNewRolesAsync(new DefaultHttpContext { RequestServices = services }, Authorize(denied),
+            Mock.Of<IOpenIdApplicationManager>(), Request(roles: [role]), null, TestContext.Current.CancellationToken);
+
+        Assert.Equal(expected, result?.StatusCode);
+    }
+
+    [Fact]
+    public async Task AuthorizeNewRolesAsync_RoleAlreadyAssigned_DoesNotRequireItsPermissions()
+    {
+        using var services = RoleServices("Publisher", false);
+        var application = new object();
+        var manager = new Mock<IOpenIdApplicationManager>();
+        manager.Setup(value => value.GetRolesAsync(application, It.IsAny<CancellationToken>())).ReturnsAsync(["Publisher"]);
+
+        var result = await OpenIdApplicationManagementEndpoints.AuthorizeNewRolesAsync(new DefaultHttpContext { RequestServices = services }, Authorize("PublishContent"),
+            manager.Object, Request(roles: ["Publisher"]), application, TestContext.Current.CancellationToken);
+
+        Assert.Null(result);
+    }
+
+    private static ServiceProvider RoleServices(string role, bool isAdmin)
+    {
+        var roles = new Mock<IRoleService>();
+        roles.Setup(value => value.IsAdminRoleAsync(role)).ReturnsAsync(isAdmin);
+        roles.Setup(value => value.GetRoleClaimsAsync(role, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Claim(Permission.ClaimType, "PublishContent"), new Claim("other", "ignored")]);
+        var permissions = new Mock<IPermissionService>();
+        permissions.Setup(value => value.GetPermissionsAsync()).ReturnsAsync([new Permission("PublishContent")]);
+        return new ServiceCollection().AddSingleton(roles.Object).AddSingleton(permissions.Object).BuildServiceProvider();
     }
 
     private static OpenIdApplicationMutationRequest Request(string secret = null, string displayName = "Application",

@@ -86,7 +86,7 @@ the administrator account or require an interactive `pomi login`.
 | `applicationType` | `web` (default) or `native`. Native applications must be public. |
 | `consentType` | `explicit` (default), `implicit`, `external` or `systematic`. |
 | `clientSecret` | Required when creating a confidential client or switching a public client to confidential. Omitted or empty preserves an existing confidential secret. Public clients reject a supplied secret; changing to public removes the stored secret. |
-| `roles`, `scopes` | Replacement arrays; omission or `[]` clears them, and `null` is invalid. Role names must exist in this tenant. Scope names must be registered, or be `openid` or `offline_access`. Duplicate entries collapse. |
+| `roles`, `scopes` | Replacement arrays; omission or `[]` clears them, and `null` is invalid. Role names must exist in this tenant, and adding a role returns `403 Forbidden` when it grants a permission the caller doesn't hold. Scope names must be registered, or be `openid` or `offline_access`. Duplicate entries collapse. |
 | `redirectUris`, `postLogoutRedirectUris` | Space or comma separated absolute URI strings, matching the editor/recipe format. Omission clears them. URI fragments are invalid. |
 | `allowPasswordFlow`, `allowClientCredentialsFlow`, `allowAuthorizationCodeFlow`, `allowDeviceAuthorizationFlow`, `allowRefreshTokenFlow`, `allowHybridFlow`, `allowImplicitFlow` | Grant switches, each defaulting to false. The shared builder updates the corresponding endpoint and response-type permissions. The authorization server must also enable the selected flows. |
 | `allowLogoutEndpoint`, `allowIntrospectionEndpoint`, `allowRevocationEndpoint` | Endpoint switches, each defaulting to false. |
