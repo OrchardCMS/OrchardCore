@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing.Handlers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users;
@@ -147,6 +148,61 @@ public class PasskeyControllerTests
     }
 
     [Fact]
+    public async Task Login_WithoutUserVerification_DoesNotSignIn()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync();
+        using var authenticator = new TestPasskeyAuthenticator();
+
+        var registrationClient = CreateClient(context, out _);
+        await LoginWithPasswordAsync(registrationClient);
+        await RegisterPasskeyAsync(registrationClient, authenticator, "My laptop");
+
+        authenticator.VerifiesUser = false;
+
+        var client = CreateClient(context, out var cookies);
+
+        // Act
+        var response = await LoginWithPasskeyAsync(client, authenticator);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Contains("/Login", response.Headers.Location.ToString());
+        Assert.Null(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+    }
+
+    [Theory]
+    [InlineData("discouraged")]
+    [InlineData("preferred")]
+    // The passkey handler only enforces user verification for the exact value 'required'.
+    [InlineData("Required")]
+    public async Task Login_WithUnenforcedUserVerification_AsksForSecondFactor(string userVerificationRequirement)
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
+        using var authenticator = new TestPasskeyAuthenticator();
+
+        var registrationClient = CreateClient(context, out _);
+        await LoginWithPasswordAsync(registrationClient);
+        await RegisterPasskeyAsync(registrationClient, authenticator, "My laptop");
+
+        await SetUserVerificationRequirementAsync(context, userVerificationRequirement);
+        await EnableTwoFactorAuthenticationAsync(context);
+
+        authenticator.VerifiesUser = false;
+
+        var client = CreateClient(context, out var cookies);
+
+        // Act
+        var response = await LoginWithPasskeyAsync(client, authenticator);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Contains("LoginWithTwoFactorAuthentication", response.Headers.Location.ToString());
+        Assert.Null(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+    }
+
+    [Fact]
     public async Task Delete_WithPasskeyId_RemovesPasskey()
     {
         // Arrange
@@ -182,14 +238,7 @@ public class PasskeyControllerTests
         await LoginWithPasswordAsync(registrationClient);
         await RegisterPasskeyAsync(registrationClient, authenticator, "My laptop");
 
-        await context.UsingTenantScopeAsync(async scope =>
-        {
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-
-            var user = await userManager.FindByNameAsync(AdminUserName);
-
-            await userManager.SetTwoFactorEnabledAsync(user, true);
-        });
+        await EnableTwoFactorAuthenticationAsync(context);
 
         var client = CreateClient(context, out var cookies);
 
@@ -334,6 +383,22 @@ public class PasskeyControllerTests
 
         return client.SendAsync(request, TestContext.Current.CancellationToken);
     }
+
+    private static Task EnableTwoFactorAuthenticationAsync(SiteContext context)
+        => context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+            await userManager.SetTwoFactorEnabledAsync(await userManager.FindByNameAsync(AdminUserName), true);
+        });
+
+    private static Task SetUserVerificationRequirementAsync(SiteContext context, string userVerificationRequirement)
+        => context.UsingTenantScopeAsync(scope =>
+        {
+            scope.ServiceProvider.GetRequiredService<IOptions<IdentityPasskeyOptions>>().Value.UserVerificationRequirement = userVerificationRequirement;
+
+            return Task.CompletedTask;
+        });
 
     private static async Task<IList<UserPasskey>> GetPasskeysAsync(SiteContext context)
     {

@@ -309,7 +309,8 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
             : loginSettings.UsePersistentAuthenticationCookie;
 
         // With user verification, the passkey proves both possession of the device and the biometric or PIN check.
-        var isMultiFactor = string.Equals(_passkeyOptions.UserVerificationRequirement, "required", StringComparison.OrdinalIgnoreCase);
+        // The passkey handler only verifies it for this exact value.
+        var isMultiFactor = string.Equals(_passkeyOptions.UserVerificationRequirement, "required", StringComparison.Ordinal);
 
         if (!isMultiFactor &&
             await UserManager.GetTwoFactorEnabledAsync(user) &&
