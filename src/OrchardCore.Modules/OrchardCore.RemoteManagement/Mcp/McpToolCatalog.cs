@@ -22,9 +22,14 @@ internal sealed class McpToolCatalog
 
     public async Task<IReadOnlyList<McpToolDefinition>> GetToolsAsync(CancellationToken cancellationToken)
     {
+        if (_registry.Tools is { } tools)
+        {
+            return tools;
+        }
+
         var document = await _documents.GetOpenApiDocumentAsync(cancellationToken);
         var json = JsonNode.Parse(await document.SerializeAsJsonAsync(OpenApiSpecVersion.OpenApi3_1, cancellationToken));
-        return CreateTools(_registry.DataSources.SelectMany(source => source.Endpoints).OfType<RouteEndpoint>(), json);
+        return _registry.Tools = CreateTools(_registry.DataSources.SelectMany(source => source.Endpoints).OfType<RouteEndpoint>(), json);
     }
 
     internal static IReadOnlyList<McpToolDefinition> CreateTools(IEnumerable<RouteEndpoint> endpoints, JsonNode document)

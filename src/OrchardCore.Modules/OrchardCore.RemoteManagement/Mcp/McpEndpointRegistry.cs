@@ -7,4 +7,8 @@ namespace OrchardCore.RemoteManagement.Mcp;
 internal sealed class McpEndpointRegistry
 {
     public ICollection<EndpointDataSource> DataSources { get; set; } = [];
+
+    // Built on first use, once all module routes exist. Tools don't depend on the caller, and a
+    // feature change releases the tenant and this registry with it.
+    public IReadOnlyList<McpToolDefinition> Tools { get; set; }
 }
