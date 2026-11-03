@@ -4,6 +4,14 @@ The `Notifications` module offers a comprehensive infrastructure for managing no
 
 Orchard Core also provides `INotifier` for transient UI notifications rendered by the active theme. Use `INotificationService` for persistent user notifications in the notification center, and use `INotifier` for per-request status messages such as success, warning, and error messages shown after an admin action.
 
+This video shows the notification bell, the notification center, the notification preferences, a workflow that sends notifications, and how a module uses the notification center as its inbox.
+
+<video controls preload="metadata" width="100%" poster="videos/notifications-module.jpg">
+    <source src="videos/notifications-module.mp4" type="video/mp4">
+    <track kind="captions" src="videos/notifications-module.vtt" srclang="en" label="English">
+    Your browser does not support embedded videos. <a href="videos/notifications-module.mp4">Download the video</a>.
+</video>
+
 ## Configurations
 
 You can customize the default notification options through the configuration provider using the following settings:
