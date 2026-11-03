@@ -492,6 +492,11 @@ msgstr ""
 
 #: Controllers/AdminPasskeyController.cs
 msgctxt "OrchardCore.Users.Controllers.AdminPasskeyController"
+msgid "The passkeys of the user couldn't be removed."
+msgstr ""
+
+#: Controllers/AdminPasskeyController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminPasskeyController"
 msgid "The passkeys of the user were removed."
 msgstr ""
 
@@ -2920,6 +2925,11 @@ msgstr ""
 
 #: Views/UserSecurityPasskeys.cshtml
 msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "Passkeys can't be used on this site, as logging in with a local account is disabled."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
 msgid "Remove"
 msgstr ""
 
@@ -2956,6 +2966,11 @@ msgstr ""
 #: Views/UserSecurityPasskeys.cshtml
 msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
 msgid "You don't have any passkey yet."
+msgstr ""
+
+#: Views/UserSecurityPasskeys.cshtml
+msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
+msgid "You have reached the maximum number of passkeys. Remove one to add another."
 msgstr ""
 
 #: Views/UserSecuritySettings.Edit.cshtml

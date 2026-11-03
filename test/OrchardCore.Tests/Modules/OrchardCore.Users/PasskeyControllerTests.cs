@@ -380,6 +380,7 @@ public class PasskeyControllerTests
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
         Assert.NotNull(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+        Assert.NotNull(Assert.Single(await GetPasskeysAsync(context)).LastUsedUtc);
     }
 
     [Fact]
