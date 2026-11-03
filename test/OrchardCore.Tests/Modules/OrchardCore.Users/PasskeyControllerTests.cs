@@ -203,6 +203,33 @@ public class PasskeyControllerTests
     }
 
     [Fact]
+    public async Task Login_WithUnenforcedUserVerificationAndNoTwoFactorProvider_SignsIn()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync();
+        using var authenticator = new TestPasskeyAuthenticator();
+
+        var registrationClient = CreateClient(context, out _);
+        await LoginWithPasswordAsync(registrationClient);
+        await RegisterPasskeyAsync(registrationClient, authenticator, "My laptop");
+
+        await SetUserVerificationRequirementAsync(context, "discouraged");
+
+        // Without the two-factor services, no provider can complete the second factor of a user who has it enabled.
+        await EnableTwoFactorAuthenticationAsync(context);
+
+        var client = CreateClient(context, out var cookies);
+
+        // Act
+        var response = await LoginWithPasskeyAsync(client, authenticator);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
+        Assert.NotNull(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+    }
+
+    [Fact]
     public async Task Delete_WithPasskeyId_RemovesPasskey()
     {
         // Arrange

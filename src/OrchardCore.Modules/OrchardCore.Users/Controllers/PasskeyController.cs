@@ -313,7 +313,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         var isMultiFactor = string.Equals(_passkeyOptions.UserVerificationRequirement, "required", StringComparison.Ordinal);
 
         if (!isMultiFactor &&
-            await UserManager.GetTwoFactorEnabledAsync(user) &&
+            await SignInManager.IsTwoFactorEnabledAsync(user) &&
             !await SignInManager.IsTwoFactorClientRememberedAsync(user))
         {
             // Without user verification, a passkey is a single factor, so ask for the second one as after a password.
