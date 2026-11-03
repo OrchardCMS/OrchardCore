@@ -45,16 +45,16 @@ public class OwnedModuleEndpointMetadataTests
         Assert.Equal(
             CliInputMode.Options,
             endpoints.Single(endpoint =>
-                string.Equals(endpoint.RoutePattern.RawText, "api/tenants", StringComparison.Ordinal) &&
+                string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), "api/tenants", StringComparison.Ordinal) &&
                 endpoint.Metadata.GetMetadata<IHttpMethodMetadata>()?.HttpMethods.Contains("POST", StringComparer.OrdinalIgnoreCase) == true)
                 .Metadata.GetRequiredMetadata<CliOperationMetadata>()
                 .InputMode);
         var setupMetadata = endpoints.Single(endpoint =>
-            string.Equals(endpoint.RoutePattern.RawText, "api/tenants/{tenantName}:setup", StringComparison.Ordinal))
+            string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), "api/tenants/{tenantName}:setup", StringComparison.Ordinal))
             .Metadata.GetRequiredMetadata<CliOperationMetadata>();
         Assert.Equal(["password", "connectionString"], setupMetadata.SecretProperties);
         var installMetadata = endpoints.Single(endpoint =>
-            string.Equals(endpoint.RoutePattern.RawText, "api/tenants/{tenantName}:install", StringComparison.Ordinal))
+            string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), "api/tenants/{tenantName}:install", StringComparison.Ordinal))
             .Metadata.GetRequiredMetadata<CliOperationMetadata>();
         Assert.Equal(["password", "connectionString"], installMetadata.SecretProperties);
 

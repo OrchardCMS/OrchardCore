@@ -98,7 +98,7 @@ public class MediaAndQueriesOpenApiDiscoveryTests
         string expectedDefaultJsonBody = null)
     {
         var endpoint = endpoints.FirstOrDefault(endpoint =>
-            string.Equals(endpoint.RoutePattern.RawText, route, StringComparison.Ordinal)
+            string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), route, StringComparison.Ordinal)
             && endpoint.Metadata.GetMetadata<IHttpMethodMetadata>()?.HttpMethods.Contains(method, StringComparer.OrdinalIgnoreCase) == true);
 
         Assert.NotNull(endpoint);
