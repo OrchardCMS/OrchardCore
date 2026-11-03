@@ -554,7 +554,7 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         // The module's syntax, with a value typed in the code editor.
         await syntax.SelectOptionAsync("UpperCase");
         await value.Locator(".monaco-editor").ClickAsync();
-        await page.Keyboard.PressAsync("Control+A");
+        await page.Keyboard.PressAsync("ControlOrMeta+A");
         await page.Keyboard.TypeAsync("world");
         await page.Locator("[data-cy=panel-activity-title]").ClickAsync();
         await Assertions.Expect(value.Locator("textarea[name='SetVariableTask.Value.Expression']")).ToHaveValueAsync("world");
