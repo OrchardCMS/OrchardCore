@@ -652,7 +652,10 @@ native clients may use loopback HTTP callbacks (including ephemeral loopback
 ports supported by OpenIddict). Wildcards, fragments, and embedded credentials
 are rejected. Authorization and token requests must specify the current tenant's
 MCP `resource`; another tenant's resource is rejected. Issued tokens include the
-MCP URL in their audiences alongside the existing management resources.
+MCP URL in their audiences alongside the existing management resources, and `/mcp` answers
+`403` when the token of such a client doesn't target that exact URL, such as a token requested
+for another host of the tenant. Tokens of other applications, such as client credentials
+applications, preconfigured MCP clients and Pomi, have no MCP audience and aren't subject to this check.
 
 ### Registration endpoint and limits
 

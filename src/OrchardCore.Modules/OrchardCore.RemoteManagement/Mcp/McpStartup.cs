@@ -112,5 +112,5 @@ public sealed class McpStartup : StartupBase
     private static void ConfigureAccessPolicy(AuthorizationPolicyBuilder policy) => policy
         .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
         .RequireAuthenticatedUser()
-        .AddRequirements(new PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement));
+        .AddRequirements(new PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement), new McpResourceAudienceRequirement());
 }

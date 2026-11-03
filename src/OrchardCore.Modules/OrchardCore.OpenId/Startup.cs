@@ -5,6 +5,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -450,6 +451,7 @@ public sealed class RemoteManagementMcpStartup : StartupBase
         services.AddScoped<RemoteManagementMcpConfigurationService>();
         services.AddScoped<McpClientRegistrationService>();
         services.AddSingleton<McpClientRegistrationLimiter>();
+        services.AddScoped<IAuthorizationHandler, McpResourceAudienceAuthorizationHandler>();
         services.AddOptions<RemoteManagementMcpOptions>().Configure<IShellConfiguration>((options, configuration) => configuration.GetSection("OpenId:Mcp").Bind(options));
         services.AddOpenIddict().AddServer(options =>
         {

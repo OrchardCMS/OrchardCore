@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -14,9 +15,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.OpenId.Abstractions.Managers;
+using OrchardCore.OpenId.Handlers;
 using OrchardCore.RemoteManagement;
 using OrchardCore.RemoteManagement.Mcp;
 using OrchardCore.Security;
@@ -163,6 +167,23 @@ public class McpHttpTests
     }
 
     [Theory]
+    [InlineData("dynamic-resource", HttpStatusCode.OK)]
+    [InlineData("dynamic-other-resource", HttpStatusCode.Forbidden)]
+    [InlineData("dynamic-no-resource", HttpStatusCode.Forbidden)]
+    [InlineData("client-credentials", HttpStatusCode.OK)]
+    [InlineData("no-client", HttpStatusCode.OK)]
+    public async Task Mcp_DynamicClientToken_RequiresTheMcpAudience(string token, HttpStatusCode expected)
+    {
+        await using var app = await CreateApplicationAsync();
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        using var response = await SendAsync(client, "tools/list");
+
+        Assert.Equal(expected, response.StatusCode);
+    }
+
+    [Theory]
     [InlineData(null, false)]
     [InlineData("true", true)]
     public async Task Mcp_ConfirmationRequiredOperation_IsAToolOnlyWhenConfigured(string allowed, bool listed)
@@ -201,6 +222,13 @@ public class McpHttpTests
         builder.Services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, TestBearerHandler>(OrchardCoreConstants.AuthenticationSchemes.Api, _ => { });
         builder.Services.AddAuthorization();
         builder.Services.AddSingleton<IAuthorizationHandler, ManagementPermissionHandler>();
+        var applications = new Mock<IOpenIdApplicationManager>();
+        var dynamicClient = new object();
+        applications.Setup(manager => manager.FindByClientIdAsync("dynamic-client", It.IsAny<CancellationToken>())).ReturnsAsync(dynamicClient);
+        applications.Setup(manager => manager.GetPropertiesAsync(dynamicClient, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ImmutableDictionary<string, JsonElement>.Empty.Add("orchardcore:remote-management:dynamic-mcp", JsonSerializer.SerializeToElement(true)));
+        builder.Services.AddSingleton(applications.Object);
+        builder.Services.AddScoped<IAuthorizationHandler, McpResourceAudienceAuthorizationHandler>();
         builder.Services.AddScoped(_ => new RemoteManagementManifestService([], Options.Create(new OpenIddictServerOptions()), new ShellSettings { Name = "TenantA" }));
         var startup = new McpStartup();
         startup.ConfigureServices(builder.Services);
@@ -262,7 +290,9 @@ public class McpHttpTests
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var token = Request.Headers.Authorization.ToString();
-            if (token is not ("Bearer allowed" or "Bearer management-only" or "Bearer denied"))
+            if (token is not ("Bearer allowed" or "Bearer management-only" or "Bearer denied" or
+                "Bearer dynamic-resource" or "Bearer dynamic-other-resource" or "Bearer dynamic-no-resource" or
+                "Bearer client-credentials" or "Bearer no-client"))
             {
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
@@ -278,7 +308,24 @@ public class McpHttpTests
                 claims.Add(new("widgets", "true"));
             }
 
-            return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name)), Scheme.Name)));
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
+            switch (token)
+            {
+                case "Bearer dynamic-resource":
+                    principal.SetPresenters("dynamic-client").SetAudiences("orchardcore", "http://localhost/tenant-a/mcp");
+                    break;
+                case "Bearer dynamic-other-resource":
+                    principal.SetPresenters("dynamic-client").SetAudiences("orchardcore", "http://localhost/tenant-b/mcp");
+                    break;
+                case "Bearer dynamic-no-resource":
+                    principal.SetPresenters("dynamic-client").SetAudiences("orchardcore");
+                    break;
+                case "Bearer client-credentials":
+                    principal.SetPresenters("pre-registered-client").SetAudiences("orchardcore");
+                    break;
+            }
+
+            return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(principal, Scheme.Name)));
         }
     }
 }

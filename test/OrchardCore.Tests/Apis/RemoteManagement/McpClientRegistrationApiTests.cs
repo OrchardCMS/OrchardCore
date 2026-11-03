@@ -191,6 +191,15 @@ public class McpClientRegistrationApiTests
         using var tools = await client.PostAsJsonAsync("mcp", new { jsonrpc = "2.0", id = 4, method = "tools/list" }, cancellationToken);
         Assert.True(tools.IsSuccessStatusCode, await tools.Content.ReadAsStringAsync(cancellationToken));
         Assert.Contains("tools", await tools.Content.ReadAsStringAsync(cancellationToken));
+
+        // The token targets the MCP URL it was requested for, not this tenant on another host.
+        using var otherHostRequest = new HttpRequestMessage(HttpMethod.Post, "mcp")
+        {
+            Content = JsonContent.Create(new { jsonrpc = "2.0", id = 5, method = "tools/list" }),
+        };
+        otherHostRequest.Headers.Host = "other-host.example";
+        using var otherHost = await client.SendAsync(otherHostRequest, cancellationToken);
+        Assert.Equal(HttpStatusCode.Forbidden, otherHost.StatusCode);
         client.DefaultRequestHeaders.Authorization = null;
 
         using var refreshed = await client.PostAsync(tokenEndpoint, new FormUrlEncodedContent(new Dictionary<string, string>
@@ -200,6 +209,42 @@ public class McpClientRegistrationApiTests
         }), cancellationToken);
         Assert.True(refreshed.IsSuccessStatusCode, await refreshed.Content.ReadAsStringAsync(cancellationToken));
 
+    }
+
+    [Fact]
+    public async Task TenantMcp_ClientCredentialsToken_DoesNotRequireTheMcpAudience()
+    {
+        using var site = new SiteContext { RecipeName = "Blank" };
+        await site.InitializeAsync();
+        await site.UsingTenantScopeAsync(async scope =>
+        {
+            var features = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var available = await features.GetAvailableFeaturesAsync();
+            await features.EnableFeaturesAsync(available.Where(feature => feature.Id == "OrchardCore.RemoteManagement.Mcp"), force: true);
+        });
+        await site.WaitForDeferredTasksAsync(TestContext.Current.CancellationToken);
+        var credentials = RemoteManagementClientCredentials.Generate();
+        Assert.True(SiteContext.ShellHost.TryGetSettings(site.TenantName, out var settings));
+        Assert.True(await RemoteManagementProvisioning.ConfigureAsync(SiteContext.ShellHost, settings, credentials));
+
+        var cancellationToken = TestContext.Current.CancellationToken;
+        using var client = SiteContext.Site.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = site.Client.BaseAddress });
+        using var tokenResponse = await client.PostAsync("connect/token", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = credentials.ClientId,
+            ["client_secret"] = credentials.ClientSecret,
+            ["scope"] = RemoteManagementConstants.ManagementScope,
+        }), cancellationToken);
+        var tokenPayload = await tokenResponse.Content.ReadAsStringAsync(cancellationToken);
+        Assert.True(tokenResponse.IsSuccessStatusCode, tokenPayload);
+        using var token = JsonDocument.Parse(tokenPayload);
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.RootElement.GetProperty("access_token").GetString());
+        client.DefaultRequestHeaders.Accept.ParseAdd("application/json, text/event-stream");
+
+        using var tools = await client.PostAsJsonAsync("mcp", new { jsonrpc = "2.0", id = 1, method = "tools/list" }, cancellationToken);
+
+        Assert.True(tools.IsSuccessStatusCode, await tools.Content.ReadAsStringAsync(cancellationToken));
     }
 
     private static async Task<HttpResponseMessage> GetTenantPageAsync(HttpClient client, Uri uri, CancellationToken cancellationToken)
