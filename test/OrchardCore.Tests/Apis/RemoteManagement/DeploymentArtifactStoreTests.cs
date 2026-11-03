@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment.Artifacts;
+using OrchardCore.Deployment.Operations;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 
@@ -87,8 +89,18 @@ public class DeploymentArtifactStoreTests
             using var secondInput = new MemoryStream([2]);
             var first = await one.CreateAsync("owner", DeploymentArtifactKind.Import, "recipe.json", "application/json", firstInput, TestContext.Current.CancellationToken);
             var second = await two.CreateAsync("owner", DeploymentArtifactKind.Import, "recipe.json", "application/json", secondInput, TestContext.Current.CancellationToken);
+            var clock = new Mock<IClock>();
+            clock.SetupGet(value => value.UtcNow).Returns(() => now);
+            var operations = new DeploymentOperationStore(Options.Create(new ShellOptions { ShellsApplicationDataPath = root, ShellsContainerName = "Sites" }),
+                new ShellSettings { Name = "one" }, Options.Create(new DeploymentOperationOptions { Retention = TimeSpan.FromDays(1) }),
+                new EphemeralDataProtectionProvider(), clock.Object);
+            var operation = await operations.CreateAsync("owner", "request", DeploymentOperationKind.Import, "artifact", TestContext.Current.CancellationToken);
+            using (var claim = await operations.ClaimAsync(operation.Id, TestContext.Current.CancellationToken))
+            {
+                await claim.CompleteAsync(DeploymentOperationState.Succeeded, null, null, TestContext.Current.CancellationToken);
+            }
             now += TimeSpan.FromDays(2);
-            using var services = new ServiceCollection().AddSingleton(one).BuildServiceProvider();
+            using var services = new ServiceCollection().AddSingleton(one).AddSingleton(operations).BuildServiceProvider();
             var task = new DeploymentArtifactCleanupTask();
             using var cancelled = new CancellationTokenSource();
             await cancelled.CancelAsync();
@@ -97,6 +109,7 @@ public class DeploymentArtifactStoreTests
             await task.DoWorkAsync(services, TestContext.Current.CancellationToken);
             Assert.Null(await one.FindAsync(first.Id, "owner", includeExpired: true));
             Assert.NotNull(await two.FindAsync(second.Id, "owner", includeExpired: true));
+            Assert.Null(await operations.FindAsync(operation.Id, "owner", TestContext.Current.CancellationToken));
         }
         finally
         {
