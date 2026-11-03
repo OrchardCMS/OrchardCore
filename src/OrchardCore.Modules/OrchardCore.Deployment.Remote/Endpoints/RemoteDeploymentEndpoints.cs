@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -20,23 +22,23 @@ internal static class RemoteDeploymentEndpoints
         {
             var resource = clients ? "remote-clients" : "remote-instances";
             var permission = clients ? DeploymentPermissions.ManageRemoteClients : DeploymentPermissions.ManageRemoteInstances;
-            var prefix = clients ? "RemoteDeploymentClients" : "RemoteDeploymentInstances";
+            var name = clients ? "RemoteDeploymentClient" : "RemoteDeploymentInstance";
             var path = "api/deployment/" + resource;
             if (clients)
             {
-                Configure(routes.MapGet(path, ListClientsAsync), prefix + "List", resource, "list", permission).Produces<RemoteClientResponse[]>();
-                Configure(routes.MapGet(path + "/{id}", GetClientAsync), prefix + "Get", resource, "show", permission, true).Produces<RemoteClientResponse>();
-                Configure(routes.MapPost(path, CreateClientAsync), prefix + "Create", resource, "create", permission).Produces<RemoteDeploymentWriteResponse<RemoteClientResponse>>();
-                Configure(routes.MapPut(path + "/{id}", UpdateClientAsync), prefix + "Update", resource, "update", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteClientResponse>>();
-                Configure(routes.MapDelete(path + "/{id}", DeleteClientAsync), prefix + "Delete", resource, "delete", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteClientResponse>>();
+                Configure(routes.MapGet(path, ListClientsAsync), "ApiList" + name + "s", resource, "list", permission).Produces<RemoteClientResponse[]>();
+                Configure(routes.MapGet(path + "/{id}", GetClientAsync), "ApiGet" + name, resource, "show", permission, true).Produces<RemoteClientResponse>();
+                Configure(routes.MapPost(path, CreateClientAsync), "ApiCreate" + name, resource, "create", permission).Produces<RemoteDeploymentWriteResponse<RemoteClientResponse>>();
+                Configure(routes.MapPut(path + "/{id}", UpdateClientAsync), "ApiUpdate" + name, resource, "update", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteClientResponse>>();
+                Configure(routes.MapDelete(path + "/{id}", DeleteClientAsync), "ApiDelete" + name, resource, "delete", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteClientResponse>>();
             }
             else
             {
-                Configure(routes.MapGet(path, ListInstancesAsync), prefix + "List", resource, "list", permission).Produces<RemoteInstanceResponse[]>();
-                Configure(routes.MapGet(path + "/{id}", GetInstanceAsync), prefix + "Get", resource, "show", permission, true).Produces<RemoteInstanceResponse>();
-                Configure(routes.MapPost(path, CreateInstanceAsync), prefix + "Create", resource, "create", permission).Produces<RemoteDeploymentWriteResponse<RemoteInstanceResponse>>();
-                Configure(routes.MapPut(path + "/{id}", UpdateInstanceAsync), prefix + "Update", resource, "update", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteInstanceResponse>>();
-                Configure(routes.MapDelete(path + "/{id}", DeleteInstanceAsync), prefix + "Delete", resource, "delete", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteInstanceResponse>>();
+                Configure(routes.MapGet(path, ListInstancesAsync), "ApiList" + name + "s", resource, "list", permission).Produces<RemoteInstanceResponse[]>();
+                Configure(routes.MapGet(path + "/{id}", GetInstanceAsync), "ApiGet" + name, resource, "show", permission, true).Produces<RemoteInstanceResponse>();
+                Configure(routes.MapPost(path, CreateInstanceAsync), "ApiCreate" + name, resource, "create", permission).Produces<RemoteDeploymentWriteResponse<RemoteInstanceResponse>>();
+                Configure(routes.MapPut(path + "/{id}", UpdateInstanceAsync), "ApiUpdate" + name, resource, "update", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteInstanceResponse>>();
+                Configure(routes.MapDelete(path + "/{id}", DeleteInstanceAsync), "ApiDelete" + name, resource, "delete", permission, true).Produces<RemoteDeploymentWriteResponse<RemoteInstanceResponse>>();
             }
         }
     }
@@ -56,6 +58,12 @@ internal static class RemoteDeploymentEndpoints
     }
 
     private static ProblemHttpResult Secure(HttpContext context) => context.Request.IsHttps ? null : TypedResults.Problem("HTTPS is required.", statusCode: 400);
+
+    // The stored key is a credential of another site, so a comparison must not reveal how much of it matches.
+    internal static bool SameApiKey(string stored, string candidate) => stored is null || candidate is null
+        ? stored == candidate
+        : CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(stored), Encoding.UTF8.GetBytes(candidate));
+
     private static ProblemHttpResult Conflict() => TypedResults.Problem("A resource with this name already exists with different configuration.", statusCode: 409);
     private static RemoteClientResponse Describe(RemoteClient value) => new() { Id = value.Id, ClientName = value.ClientName, HasApiKey = value.ProtectedApiKey?.Length > 0 };
     private static RemoteInstanceResponse Describe(RemoteInstance value) => new() { Id = value.Id, Name = value.Name, Url = value.Url, ClientName = value.ClientName, HasApiKey = !string.IsNullOrEmpty(value.ApiKey) };
@@ -112,7 +120,7 @@ internal static class RemoteDeploymentEndpoints
         var existing = (await service.GetRemoteInstanceListAsync()).RemoteInstances.FirstOrDefault(value => value.Name == request.Name);
         if (existing is not null)
         {
-            return existing.Url == request.Url && existing.ClientName == request.ClientName && existing.ApiKey == request.ApiKey
+            return existing.Url == request.Url && existing.ClientName == request.ClientName && SameApiKey(existing.ApiKey, request.ApiKey)
                 ? TypedResults.Ok(new RemoteDeploymentWriteResponse<RemoteInstanceResponse> { Resource = Describe(existing) }) : Conflict();
         }
         await service.CreateRemoteInstanceAsync(request.Name, request.Url, request.ClientName, request.ApiKey);
@@ -130,7 +138,7 @@ internal static class RemoteDeploymentEndpoints
         var errors = RemoteDeploymentValidation.Instance(request.Name, request.Url, request.ClientName, key);
         if (errors.Count > 0) { return TypedResults.ValidationProblem(errors); }
         if ((await service.GetRemoteInstanceListAsync()).RemoteInstances.Any(other => other.Id != value.Id && other.Name == request.Name)) { return Conflict(); }
-        var changed = value.Name != request.Name || value.Url != request.Url || value.ClientName != request.ClientName || value.ApiKey != key;
+        var changed = value.Name != request.Name || value.Url != request.Url || value.ClientName != request.ClientName || !SameApiKey(value.ApiKey, key);
         if (changed) { await service.UpdateRemoteInstance(id, request.Name, request.Url, request.ClientName, key); }
         return TypedResults.Ok(new RemoteDeploymentWriteResponse<RemoteInstanceResponse> { Changed = changed, Resource = Describe(await service.LoadRemoteInstanceAsync(id)) });
     }

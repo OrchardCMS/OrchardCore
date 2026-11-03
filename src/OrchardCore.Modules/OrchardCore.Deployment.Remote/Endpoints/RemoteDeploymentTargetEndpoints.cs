@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Deployment.Remote.Services;
@@ -17,9 +18,9 @@ internal static class RemoteDeploymentTargetEndpoints
 {
     internal static void Map(IEndpointRouteBuilder routes)
     {
-        RemoteDeploymentEndpoints.Configure(routes.MapGet("api/deployment/targets", ListAsync), "RemoteDeploymentTargetsList", "targets", "list", DeploymentPermissions.ExportRemoteInstances)
+        RemoteDeploymentEndpoints.Configure(routes.MapGet("api/deployment/targets", ListAsync), "ApiListRemoteDeploymentTargets", "targets", "list", DeploymentPermissions.ExportRemoteInstances)
             .Produces<RemoteDeploymentTargetResponse[]>();
-        RemoteDeploymentEndpoints.Configure(routes.MapPost("api/deployment/targets/{id}/send", SendAsync), "RemoteDeploymentTargetsSend", "targets", "send", DeploymentPermissions.ExportRemoteInstances, true)
+        RemoteDeploymentEndpoints.Configure(routes.MapPost("api/deployment/targets/{id}/send", SendAsync), "ApiSendToRemoteDeploymentTarget", "targets", "send", DeploymentPermissions.ExportRemoteInstances, true)
             .Produces<RemoteDeploymentSendResponse>().ProducesProblem(502);
     }
 
@@ -27,7 +28,7 @@ internal static class RemoteDeploymentTargetEndpoints
         (await service.GetRemoteInstanceListAsync()).RemoteInstances.OrderBy(value => value.Name, StringComparer.Ordinal)
             .Select(value => new RemoteDeploymentTargetResponse { Id = value.Id, Name = value.Name }).ToArray());
 
-    private static async Task<IResult> SendAsync(string id, HttpContext context, [FromServices] RemoteInstanceService instances,
+    internal static async Task<IResult> SendAsync(string id, HttpContext context, [FromServices] RemoteInstanceService instances,
         [FromServices] IAuthorizationService authorization, [FromServices] ISession session, [FromServices] IDeploymentArchiveService archives,
         [FromServices] RemoteDeploymentSender sender, [FromBody] RemoteDeploymentSendRequest request)
     {
@@ -42,15 +43,18 @@ internal static class RemoteDeploymentTargetEndpoints
         {
             await using var archive = await archives.CreateAsync(plan, new RecipeDescriptor());
             var status = await sender.SendAsync(destination, archive, plan.Name.ToSafeName() + ".zip", context.RequestAborted);
-            return status == HttpStatusCode.OK ? TypedResults.Ok(new RemoteDeploymentSendResponse { Succeeded = true })
-                : TypedResults.Problem("The remote import did not report success. Inspect the target before sending again.", statusCode: 502);
+            return status == HttpStatusCode.OK ? TypedResults.Ok(new RemoteDeploymentSendResponse { Succeeded = true }) : UnconfirmedProblem();
         }
         catch (UnauthorizedAccessException) { return context.ApiForbidProblem(); }
         catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException)
         {
-            return TypedResults.Problem("Remote deployment completion is unknown. Inspect the target before sending again.", statusCode: 502);
+            return UnconfirmedProblem();
         }
     }
+
+    // A single message for every outcome, as telling them apart would reveal which hosts can be reached from this server.
+    private static ProblemHttpResult UnconfirmedProblem()
+        => TypedResults.Problem("The remote deployment was not confirmed. Inspect the target before sending again.", statusCode: 502);
 }
 
 /// <summary>Identifies an existing remote instance without exposing its connection credentials.</summary>
