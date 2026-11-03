@@ -48,7 +48,7 @@ for mode in ('env', 'stdin'):
     args += ['--password-env', 'OC_INSTALL_TEST_PASSWORD'] if mode == 'env' else ['--password-stdin']
     if mode == 'env':
         human = pomi(*args, output='human')
-        assert 'Tenant created and initialized successfully.' in human, human
+        assert f"Tenant '{name}' installed successfully." in human, human
         assert 'tenants enable-remote-management ' + name in human, human
         assert state['url'].rstrip('/') + '/' + name.lower() in human, human
         installed = pomi('tenants', 'show', name)
