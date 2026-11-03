@@ -32,5 +32,6 @@ public class ApiProblemDetailsTests
         Assert.Equal("Authentication required", (string)problemDetails["title"]);
         Assert.Contains("WWW-Authenticate", (string)problemDetails["detail"]);
         Assert.Equal("https://tools.ietf.org/html/rfc9110#section-15.5.2", (string)problemDetails["type"]);
+        Assert.Equal("unauthorized", (string)problemDetails["code"]);
     }
 }

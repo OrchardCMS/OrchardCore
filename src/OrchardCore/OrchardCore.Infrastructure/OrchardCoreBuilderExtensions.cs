@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using OrchardCore;
 using OrchardCore.Infrastructure.ErrorHandling;
 
@@ -21,6 +23,9 @@ public static partial class OrchardCoreBuilderExtensions
             // Registers the 'IProblemDetailsService' used by the middleware below to write the
             // bodies, honoring the app-level Problem Details customizations.
             services.AddProblemDetails();
+
+            // Tells the failures apart for machines, whichever way an endpoint reports them.
+            services.Configure<ProblemDetailsOptions>(options => options.CustomizeProblemDetails += ApiProblemCodes.Apply);
         });
 
         // Note: the middleware inspects the responses produced by the rest of the pipeline, so it
