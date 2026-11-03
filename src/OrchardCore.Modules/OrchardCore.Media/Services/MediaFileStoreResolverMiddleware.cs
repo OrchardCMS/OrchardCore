@@ -59,7 +59,8 @@ public class MediaFileStoreResolverMiddleware
         }
 
         // subPath.Value returns an unescaped path value, subPath returns an escaped path value.
-        var subPathValue = subPath.Value;
+        // Trim the trailing slash so that a file isn't mistaken for a folder.
+        var subPathValue = subPath.Value.TrimEnd('/');
 
         var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
         if (isFileCached)

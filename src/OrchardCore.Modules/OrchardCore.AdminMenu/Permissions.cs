@@ -1,14 +1,16 @@
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] {
+    private static readonly PermissionTemplate s_viewAdminMenu = new(
+        "ViewAdminMenu_{0}",
+        LocalizationSource.Create<Permissions>("View Admin Menu - {0}"),
         AdminMenuPermissions.ManageAdminMenu,
-        AdminMenuPermissions.ViewAdminMenuAll,
-    });
+        AdminMenuPermissions.ViewAdminMenuAll);
 
     private readonly IEnumerable<Permission> _generalPermissions =
     [
@@ -16,12 +18,6 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     private readonly IAdminMenuService _adminMenuService;
-
-    [Obsolete("This will be removed in a future release. Instead use 'AdminMenuPermissions.ViewAdminMenuAll'.")]
-    public static readonly Permission ManageAdminMenu = AdminMenuPermissions.ViewAdminMenuAll;
-
-    [Obsolete("This will be removed in a future release. Instead use 'AdminMenuPermissions.ManageAdminMenu'.")]
-    public static readonly Permission ViewAdminMenuAll = AdminMenuPermissions.ManageAdminMenu;
 
     public Permissions(IAdminMenuService adminMenuService)
     {
@@ -60,10 +56,6 @@ public sealed class Permissions : IPermissionProvider
         },
     ];
 
-    public static Permission CreatePermissionForAdminMenu(string name)
-        => new(
-            string.Format(_viewAdminMenu.Name, name),
-            string.Format(_viewAdminMenu.Description, name),
-            _viewAdminMenu.ImpliedBy
-        );
+    public static Permission CreatePermissionForAdminMenu(string name) =>
+        s_viewAdminMenu.CreateDynamicPermission(name);
 }

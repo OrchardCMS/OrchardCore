@@ -1,0 +1,15 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Sitemaps.ViewModels
+
+@model ShapeViewModel<SitemapListEntry>
+
+<a class="btn btn-info btn-sm" asp-action="Display" asp-controller="Admin" asp-route-sitemapId="@Model.Value.SitemapId">@T["Manage Sources"]</a>
+
+@if (Model.Value.Enabled)
+{
+    <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@Model.Value.SitemapId" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
+}
+
+<a asp-action="Edit" asp-controller="Admin" asp-route-sitemapId="@Model.Value.SitemapId" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-action="Delete" asp-controller="Admin" asp-route-sitemapId="@Model.Value.SitemapId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

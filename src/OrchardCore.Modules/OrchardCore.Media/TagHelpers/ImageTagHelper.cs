@@ -53,7 +53,8 @@ public class ImageTagHelper : TagHelper
             return;
         }
 
-        var resolvedUrl = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(AssetSrc) : AssetSrc;
+        AssetSrc = AssetSrc.RemoveQueryString(out string queryString);
+        var resolvedUrl = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(AssetSrc) + queryString : AssetSrc + queryString;
 
         if (AppendVersion && _fileVersionProvider != null)
         {

@@ -28,4 +28,18 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers a scoped provider that updates breadcrumb items after their inline declarations.
+    /// </summary>
+    /// <typeparam name="TProvider">The breadcrumb provider implementation.</typeparam>
+    /// <param name="services">The tenant service collection.</param>
+    /// <returns>The service collection.</returns>
+    public static IServiceCollection AddBreadcrumbProvider<TProvider>(this IServiceCollection services)
+        where TProvider : class, IBreadcrumbProvider
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IBreadcrumbProvider, TProvider>());
+
+        return services;
+    }
 }

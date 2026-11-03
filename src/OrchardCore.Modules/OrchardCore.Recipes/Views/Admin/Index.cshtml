@@ -1,133 +1,55 @@
-@model RecipeViewModel[]
-@using OrchardCore.Recipes.ViewModels
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
+@model OrchardCore.Recipes.ViewModels.RecipesIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Recipes"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="Recipes" title="@T["Recipes"]" />
+</zone>
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the recipe is executed."]</p>
-
-<form autocomplete="off" class="position-sticky action-bar">
-    <div class="card text-bg-theme mb-3">
+<div>
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
-            <div class="row gx-3">
+            <div class="row gx-2">
                 <div class="col">
-                    <div class="has-search">
-                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus>
+                    <div class="input-group">
+                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
                     </div>
                 </div>
+                @if (Model.LayoutSelector != null)
+                {
+                    <div class="col-auto d-flex align-items-center">
+                        @await DisplayAsync(Model.LayoutSelector)
+                    </div>
+                }
             </div>
         </div>
     </div>
-</form>
 
-<form asp-action="Recipes">
-    @{
-        var recipeGroups = Model.GroupBy(f => f.Feature).ToList();
-        if (Model.Any())
+    @* the form is necessary to generate an antiforgery token for the execute action *@
+    <form asp-action="Recipes">
+        @foreach (var group in Model.Groups)
         {
-            foreach (var recipeGroup in recipeGroups)
-            {
-                var groupName = recipeGroup.Key;
+            <div class="recipe-group list-management-group mb-3" data-filter-value="@group.FilterValue">
+                <h4 class="mb-2" data-filter-value="@group.FilterValue">@group.Feature</h4>
 
-                <div class="recipe-group">
-                    @{
-                        var groupRecipeNames = string.Join(" ", recipeGroup.Select(r => r.DisplayName));
-                    }
-                    <h4 class="mb-2 mt-2" data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
-                    <ul class="list-group" data-filter-value="@groupName @groupRecipeNames">
-                        @foreach (var recipe in recipeGroup.OrderBy(r => r.DisplayName))
-                        {
-                            <li class="list-group-item" data-filter-value="@groupName @recipe.DisplayName">
-                                <div class="row">
-                                    <div class="col">
-                                        <a id="btn-run-@Html.GenerateIdFromName(recipe.Name)" asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm float-end" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="RemoveUrl UnsafeUrl">@T["Run"]</a>
-                                        <h6>
-                                            @recipe.DisplayName
-                                            @if (recipe.IsSetupRecipe)
-                                            {
-                                                <span class="badge text-bg-warning">
-                                                    @T["Setup Recipe"]
-                                                </span>
-                                            }
-                                            @if (recipe.Tags != null && recipe.Tags.Any())
-                                            {
-                                                @foreach (var tag in recipe.Tags)
-                                                {
-                                                    <span class="badge ta-badge">
-                                                        @tag
-                                                    </span>
-                                                }
-                                            }
-                                        </h6>
-                                        <small class="text-muted">@recipe.Description</small>
-                                    </div>
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                </div>
-                <div id="list-alert" class="alert alert-info d-none" role="alert">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
-            }
-        }
-        else
-        {
-            <div class="alert alert-info" role="alert">
-                @T["<strong>Nothing here!</strong> There are no recipes for the moment."]
+                @* The recipes of this feature are rendered by the AdminList shape using the configured layout. *@
+                <admin-list name="@OrchardCore.Recipes.RecipesAdminList.Name" context="group.List"
+                            show-toolbar="false">
+                    <admin-list-list item-css-class="list-group-item" />
+                    <admin-list-grid>
+                        <admin-list-column name="Name" position="10" title="@T["Name"]" />
+                        <admin-list-column name="Tags" position="20" title="@T["Tags"]" width="auto" />
+                        <admin-list-column type="Actions" title="@T["Actions"]" />
+                    </admin-list-grid>
+                </admin-list>
             </div>
         }
-    }
-</form>
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
+    </form>
 
-    onDocumentReady(function () {
-        var searchBox = document.getElementById('search-box');
-        if (!searchBox) {
-            return;
-        }
+    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+        @T["Your search returned no results."]
+    </div>
+</div>
 
-        function isVisible(element) {
-            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-        }
-
-        // On each keypress filter the list of features
-        searchBox.addEventListener('keyup', function (e) {
-            var search = this.value.toLowerCase();
-            var elementsToFilter = document.querySelectorAll("[data-filter-value]");
-
-            // On ESC, clear the search box and display all features
-            if (e.key === "Escape" || search == '') {
-                searchBox.value = '';
-                elementsToFilter.forEach(function (element) {
-                    element.style.display = '';
-                });
-            }
-            else {
-                elementsToFilter.forEach(function (element) {
-                    var text = element.dataset.filterValue.toLowerCase();
-                    var found = text.indexOf(search) > -1;
-                    element.style.display = found ? '' : 'none';
-                });
-
-                var visible = Array.from(document.querySelectorAll('.recipe-group > ul > li')).filter(isVisible);
-                var listAlert = document.getElementById('list-alert');
-                if (listAlert) {
-                    if (visible.length == 0) {
-                        listAlert.classList.remove("d-none");
-                    }
-                    else {
-                        listAlert.classList.add("d-none");
-                    }
-                }
-            }
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.min.js" debug-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.js" at="Foot" type="module"></script>

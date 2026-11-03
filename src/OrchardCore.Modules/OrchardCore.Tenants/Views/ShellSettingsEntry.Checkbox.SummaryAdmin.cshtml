@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" value="@Model.Value.Name" name="tenantNames" id="tenantNames-@Model.Value.Name">
+    <label class="form-check-label" for="tenantNames-@Model.Value.Name"></label>
+</div>

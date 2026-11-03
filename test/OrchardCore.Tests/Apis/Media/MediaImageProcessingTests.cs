@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Apis.Media;
 public class MediaImageProcessingTests
 {
     [Fact]
-    public async Task ResizesImage_WithValidToken()
+    public async Task ResizesImage_ValidToken_Succeeds()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -28,7 +28,7 @@ public class MediaImageProcessingTests
     }
 
     [Fact]
-    public async Task ConvertsFormat_WithValidToken()
+    public async Task ConvertsFormat_ValidToken_Succeeds()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -43,7 +43,7 @@ public class MediaImageProcessingTests
     }
 
     [Fact]
-    public async Task ServesOriginal_WithInvalidToken()
+    public async Task ServesOriginal_InvalidToken_Succeeds()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -60,7 +60,7 @@ public class MediaImageProcessingTests
     }
 
     [Fact]
-    public async Task ResizesImage_WithVersionAndToken()
+    public async Task ResizesImage_VersionAndToken_Succeeds()
     {
         // Regression guard: a "v" cache-buster must not be part of the HMAC, so a versioned and
         // tokenized URL must still be processed instead of silently serving the original.
@@ -79,7 +79,7 @@ public class MediaImageProcessingTests
     }
 
     [Fact]
-    public async Task ConcurrentFirstHits_AllSucceed()
+    public async Task ConcurrentFirstHits_AllSucceed_Succeeds()
     {
         // Regression guard for the cache stampede: many concurrent first-hit requests for the same
         // resized image must all succeed (atomic temp-file + rename), with no IOExceptions and no

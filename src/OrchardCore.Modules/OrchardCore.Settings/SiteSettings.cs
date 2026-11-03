@@ -8,14 +8,18 @@ namespace OrchardCore.Settings;
 // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
 public class SiteSettings : DocumentEntity, ISite
 {
-    private static readonly object _missing = new();
+    private static readonly object s_missing = new();
     private readonly ConcurrentDictionary<string, object> _cache = new();
 
-    public string BaseUrl { get; set; }
+    private Uri _baseUri;
+    private Uri _cdnBaseUri;
+
     public string Calendar { get; set; }
     public int MaxPagedCount { get; set; }
     public int MaxPageSize { get; set; }
     public int PageSize { get; set; }
+    public bool AllowPageSizeSelection { get; set; }
+    public int[] PageSizeOptions { get; set; } = [10, 25, 50, 100];
     public string TimeZoneId { get; set; }
     public ResourceDebugMode ResourceDebugMode { get; set; }
     public string SiteName { get; set; }
@@ -23,10 +27,21 @@ public class SiteSettings : DocumentEntity, ISite
     public string PageTitleFormat { get; set; }
     public string SuperUser { get; set; }
     public bool UseCdn { get; set; }
-    public string CdnBaseUrl { get; set; }
     public RouteValueDictionary HomeRoute { get; set; } = [];
     public bool AppendVersion { get; set; } = true;
     public CacheMode CacheMode { get; set; }
+
+    public string BaseUrl
+    {
+        get => _baseUri?.AbsoluteUri;
+        set => _baseUri = string.IsNullOrWhiteSpace(value) ? null : new Uri(value, UriKind.Absolute);
+    }
+
+    public string CdnBaseUrl
+    {
+        get => _cdnBaseUri?.AbsoluteUri;
+        set => _cdnBaseUri = string.IsNullOrWhiteSpace(value) ? null : new Uri(value, UriKind.Absolute);
+    }
 
     public T As<T>() where T : new()
         => GetOrCreate<T>();
@@ -45,7 +60,7 @@ public class SiteSettings : DocumentEntity, ISite
 
         if (_cache.TryGetValue(name, out var obj))
         {
-            if (ReferenceEquals(obj, _missing))
+            if (ReferenceEquals(obj, s_missing))
             {
                 settings = default;
                 return false;
@@ -61,7 +76,7 @@ public class SiteSettings : DocumentEntity, ISite
             return true;
         }
 
-        _cache[name] = _missing;
+        _cache[name] = s_missing;
         settings = default;
         return false;
     }

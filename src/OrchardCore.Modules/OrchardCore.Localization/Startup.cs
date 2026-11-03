@@ -31,6 +31,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<ILocalizationService, LocalizationService>();
+        services.AddScoped<IJSLocalizer, LocalizationJSLocalizer>();
 
         services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
             AddDataAnnotationsPortableObjectLocalization();

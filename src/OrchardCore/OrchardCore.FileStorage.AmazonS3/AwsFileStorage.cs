@@ -15,6 +15,10 @@ public class AwsFileStore : IFileStore
     private readonly string _basePrefix;
     private readonly IAmazonS3 _amazonS3Client;
 
+    public string StorageName => "Amazon S3";
+
+    public IFileStoreCapabilities Capabilities { get; } = new FileStoreCapabilities(hasHierarchicalNamespace: false, supportsAtomicMove: false);
+
     public AwsFileStore(IClock clock, AwsStorageOptions options, IAmazonS3 amazonS3Client)
     {
         _clock = clock;
@@ -82,7 +86,7 @@ public class AwsFileStore : IFileStore
 
         foreach (var file in listObjectsResponse.S3Objects ?? [])
         {
-            var itemName = Path.GetFileName(WebUtility.UrlDecode(file.Key));
+            var itemName = Path.GetFileName(file.Key);
 
             if (includeSubDirectories || !string.IsNullOrEmpty(itemName))
             {

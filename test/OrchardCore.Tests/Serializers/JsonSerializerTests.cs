@@ -20,7 +20,7 @@ public class JsonSerializerTests
     }
 
     [Fact]
-    public void Deserialize_WhenCalled_ReturnValidUserLoginInfo()
+    public void Deserialize_CalledReturnValidUserLoginInfo_Succeeds()
     {
         var obj = JsonSerializer.Deserialize<UserLoginInfo>(_userLoginInfo, _options);
 
@@ -34,7 +34,7 @@ public class JsonSerializerTests
     [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":\"1\"}", 1)]
     [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":1}", 1)]
     [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":2.75}", 2.75)]
-    public void Deserialize_WhenCalled_ReturnDoubleFromStringWithBaseOptions(string json, double expectedWeight)
+    public void Deserialize_CalledReturnDoubleFromStringWithBaseOptions_Succeeds(string json, double expectedWeight)
     {
         var item = JsonSerializer.Deserialize<CustomListValueOption>(json, JOptions.Base);
 
@@ -42,7 +42,7 @@ public class JsonSerializerTests
     }
 
     [Fact]
-    public void Serialize_WhenCalled_ReturnValidJson()
+    public void Serialize_CalledReturnValidJson_Succeeds()
     {
         var loginInfo = new UserLoginInfo("OpenIdConnect", "abc", "default");
         var json = JsonSerializer.Serialize(loginInfo, _options);
@@ -51,7 +51,7 @@ public class JsonSerializerTests
     }
 
     [Fact]
-    public async Task DefaultContentSerializer_SerializeAndDeserialize_UserWithUserLoginInfo()
+    public async Task DefaultContentSerializer_SerializeAndDeserialize_UsesrWithUserLoginInfo()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();

@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class ShapePagerTag
 {
-    private static readonly HashSet<string> _properties =
+    private static readonly HashSet<string> s_properties =
     [
         "Id",
         "PreviousText",
@@ -33,7 +33,7 @@ public class ShapePagerTag
                 {
                     var propertyName = argument.Name.ToPascalCaseUnderscore();
 
-                    if (_properties.Contains(propertyName))
+                    if (s_properties.Contains(propertyName))
                     {
                         objectValue[propertyName] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                     }

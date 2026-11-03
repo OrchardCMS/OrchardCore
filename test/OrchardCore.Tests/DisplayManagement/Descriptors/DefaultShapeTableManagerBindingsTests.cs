@@ -133,7 +133,7 @@ public class DefaultShapeTableManagerBindingsTests : IDisposable
     }
 
     [Fact]
-    public async Task OnlyFirstBindingPerBindingSourceIsUsed()
+    public async Task OnlyFirstBindingPerBindingSourceIsUsed_Default_Succeeds()
     {
         var manager = _sp.GetRequiredService<IShapeTableManager>();
         var table = await manager.GetShapeTableAsync(themeId: null);

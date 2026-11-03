@@ -8,7 +8,7 @@ namespace OrchardCore.Users;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", LoginSettingsDisplayDriver.GroupId },
@@ -23,32 +23,6 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security")
-                    .Id("security")
-                    .Add(S["Users"], S["Users"].PrefixPosition(), users => users
-                        .AddClass("users")
-                        .Id("users")
-                        .Action("Index", "Admin", UserConstants.Features.Users)
-                        .Permission(UsersPermissions.ListUsers)
-                        .Resource(new User())
-                        .LocalNav()
-                    )
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
-                            .Permission(UsersPermissions.ManageUsers)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Access Control"], NavigationConstants.AdminMenuAccessControlPosition, accessControl => accessControl
                 .AddClass("accessControl")
@@ -67,7 +41,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
                         .Permission(UsersPermissions.ManageUsers)
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .LocalNav()
                     )
                 )

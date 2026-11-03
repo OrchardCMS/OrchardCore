@@ -8,7 +8,7 @@ namespace OrchardCore.Sms;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", SmsSettings.GroupId },
@@ -23,38 +23,13 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
-                            .AddClass("sms")
-                            .Id("sms")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(SmsPermissions.ManageSmsSettings)
-                            .LocalNav()
-                        )
-                        .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
-                            .AddClass("smstest")
-                            .Id("smstest")
-                            .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
-                            .Permission(SmsPermissions.ManageSmsSettings)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Communication"], S["Communication"].PrefixPosition(), communication => communication
                     .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                         .AddClass("sms")
                         .Id("sms")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(SmsPermissions.ManageSmsSettings)
                         .LocalNav()
                     )

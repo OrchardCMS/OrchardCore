@@ -47,48 +47,34 @@
 </div>
 
 <div class="ocat-limited-wrapper">
+    <label asp-for="MinLength" class="ocat-label">@T["Minimum length"]</label>
+    <div class="ocat-limited">
+        <input asp-for="MinLength" class="form-control" type="number" min="0" />
+        <span class="hint">@T["Specifies the minimum number of characters allowed. Leave blank for no minimum limit."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="MaxLength" class="ocat-label">@T["Maximum length"]</label>
+    <div class="ocat-limited">
+        <input asp-for="MaxLength" class="form-control" type="number" min="0" />
+        <span class="hint">@T["Specifies the maximum number of characters allowed. Leave blank for no maximum limit."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper">
     <label asp-for="Type" class="ocat-label">@T["Type"]</label>
     <div class="ocat-limited">
         <select asp-for="Type" class="form-select" asp-items="Model.Types"></select>
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" id="patternEditor">
-    <label asp-for="Pattern" class="ocat-label">@T["Pattern"]</label>
+<div class="ocat-limited-wrapper" id="patternEditor" data-generated-types="@nameof(FieldBehaviorType.GeneratedDisabled),@nameof(FieldBehaviorType.GeneratedHidden)">
+    <label asp-for="Pattern" class="ocat-label ocat-label-required">@T["Pattern"]</label>
     <div class="ocat-limited">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to generate the value for this field. With Liquid support."]</span>
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-
-        setPatternVisibility();
-
-        document.getElementById('@Html.IdFor(x => x.Type)').addEventListener('change', function () {
-            setPatternVisibility();
-        });
-    });
-
-    function setPatternVisibility() {
-        var selectedValue = document.getElementById('@Html.IdFor(x => x.Type)').value;
-        var patternEditor = document.getElementById('patternEditor');
-        switch (selectedValue) {
-            case '@nameof(FieldBehaviorType.GeneratedDisabled)':
-            case '@nameof(FieldBehaviorType.GeneratedHidden)':
-                patternEditor.classList.remove('d-none');
-                break;
-            default:
-                patternEditor.classList.add('d-none');
-                break;
-        }
-    }
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-settings/text-field-settings.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-settings/text-field-settings.js" at="Foot" type="module"></script>

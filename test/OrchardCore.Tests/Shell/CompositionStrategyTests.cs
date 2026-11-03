@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Shell;
 public class CompositionStrategyTests
 {
     [Fact]
-    public async Task ComposeAsync_ReturnsBlueprintWithDependencies_WhenFeaturesPresent()
+    public async Task ComposeAsync_FeaturesPresent_ReturnsBlueprintWithDependencies()
     {
         // Arrange
         var featureId = "FeatureA";
@@ -49,7 +49,7 @@ public class CompositionStrategyTests
     }
 
     [Fact]
-    public async Task ComposeAsync_SkipsType_WhenRequiredFeatureMissing()
+    public async Task ComposeAsync_RequiredFeatureMissing_SkipsType()
     {
         // Arrange
         var featureId = "FeatureA";
@@ -84,7 +84,7 @@ public class CompositionStrategyTests
     }
 
     [Fact]
-    public async Task ComposeAsync_SkipsType_WhenNotAllRequiredFeaturesAreEnabled()
+    public async Task ComposeAsync_NotAllRequiredFeaturesAreEnabled_SkipsType()
     {
         // Arrange
         var featureId = "FeatureA";
@@ -120,7 +120,177 @@ public class CompositionStrategyTests
     }
 
     [Fact]
-    public async Task ComposeAsync_IncludedType_WhenAllRequiredFeaturesAreEnabled()
+    public void RequireFeatures_AbsentEmptyAndNamedAttributes_HaveExpectedCompositionSemantics()
+    {
+        Assert.Empty(RequireFeaturesAttribute.GetRequiredFeatureNamesForType(typeof(DummyType)));
+        Assert.False(RequiredStartupAttribute.IsRequiredForType(typeof(DummyType)));
+
+        Assert.Empty(RequireFeaturesAttribute.GetRequiredFeatureNamesForType(typeof(TypeWithEmptyRequiredFeatures)));
+        Assert.False(RequiredStartupAttribute.IsRequiredForType(typeof(TypeWithEmptyRequiredFeatures)));
+
+        Assert.Equal(["FeatureA", "FeatureB"], RequireFeaturesAttribute.GetRequiredFeatureNamesForType(typeof(TypeWithMultipleRequiredFeatures)));
+        Assert.False(RequiredStartupAttribute.IsRequiredForType(typeof(TypeWithMultipleRequiredFeatures)));
+
+        Assert.True(RequiredStartupAttribute.IsRequiredForType(typeof(RequiredStartupTypeWithRequiredFeatures)));
+    }
+
+    [Fact]
+    public async Task ComposeAsync_EmptyRequiredFeaturesAndOwningFeatureDisabled_DoesNotCompose()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(TypeWithEmptyRequiredFeatures)]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, new ShellDescriptor());
+
+        // Assert
+        Assert.Empty(blueprint.Dependencies);
+    }
+
+    [Fact]
+    public async Task ComposeAsync_EmptyRequiredFeaturesAndOwningFeatureEnabled_ComposesAsOwningFeature()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([moduleFeature]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(TypeWithEmptyRequiredFeatures)]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+        var descriptor = new ShellDescriptor
+        {
+            Features = [new ShellFeature { Id = moduleFeature.Id }],
+        };
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, descriptor);
+
+        // Assert
+        var dependency = Assert.Single(blueprint.Dependencies);
+        Assert.Equal(typeof(TypeWithEmptyRequiredFeatures), dependency.Key);
+        Assert.Equal(moduleFeature, Assert.Single(dependency.Value));
+    }
+
+    [Fact]
+    public async Task ComposeAsync_RequiredStartupAndOwningFeatureDisabled_ComposesAsApplicationFeature()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+        var applicationFeature = CreateFeature(Application.DefaultFeatureId);
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature, applicationFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(RequiredStartupType)]);
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(applicationFeature))
+            .Returns([]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, new ShellDescriptor());
+
+        // Assert
+        var dependency = Assert.Single(blueprint.Dependencies);
+        Assert.Equal(typeof(RequiredStartupType), dependency.Key);
+        Assert.Equal(applicationFeature, Assert.Single(dependency.Value));
+    }
+
+    [Fact]
+    public async Task ComposeAsync_RequiredStartupAndNamedFeaturesDisabled_DoesNotCompose()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+        var applicationFeature = CreateFeature(Application.DefaultFeatureId);
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature, applicationFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(RequiredStartupTypeWithRequiredFeatures)]);
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(applicationFeature))
+            .Returns([]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, new ShellDescriptor());
+
+        // Assert
+        Assert.Empty(blueprint.Dependencies);
+    }
+
+    [Fact]
+    public async Task ComposeAsync_RequiredStartupAndNamedFeaturesEnabled_ComposesOnceAsApplicationFeature()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+        var requiredFeature = CreateFeature("FeatureB");
+        var applicationFeature = CreateFeature(Application.DefaultFeatureId);
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([moduleFeature, requiredFeature]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature, requiredFeature, applicationFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(RequiredStartupTypeWithRequiredFeatures)]);
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(requiredFeature))
+            .Returns([]);
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(applicationFeature))
+            .Returns([]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+        var descriptor = new ShellDescriptor
+        {
+            Features =
+            [
+                new ShellFeature { Id = moduleFeature.Id },
+                new ShellFeature { Id = requiredFeature.Id },
+            ],
+        };
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, descriptor);
+
+        // Assert
+        var dependency = Assert.Single(blueprint.Dependencies);
+        Assert.Equal(typeof(RequiredStartupTypeWithRequiredFeatures), dependency.Key);
+        Assert.Equal(applicationFeature, Assert.Single(dependency.Value));
+    }
+
+    [Fact]
+    public async Task ComposeAsyncIncludedType_AllRequiredFeaturesAreEnabled_Succeeds()
     {
         // Arrange
         var featureAId = "FeatureA";
@@ -164,7 +334,7 @@ public class CompositionStrategyTests
     }
 
     [Fact]
-    public async Task ComposeAsync_LogsDebug_WhenLoggerEnabled()
+    public async Task ComposeAsyncLogsDebug_LoggerEnabled_Succeeds()
     {
         // Arrange
         var featureId = "FeatureA";
@@ -205,7 +375,7 @@ public class CompositionStrategyTests
     }
 
     [Fact]
-    public async Task ComposeAsync_SkipsType_WhenFeatureIsDefaultTenantOnly_AndTenantIsNotDefault()
+    public async Task ComposeAsync_FeatureIsDefaultTenantOnlyAndTenantIsNotDefault_SkipsType()
     {
         // Arrange - Bug #18244: DefaultTenantOnly feature types should be skipped on non-default tenants
         var featureId = "FeatureA";
@@ -241,7 +411,7 @@ public class CompositionStrategyTests
     }
 
     [Fact]
-    public async Task ComposeAsync_IncludesType_WhenFeatureIsDefaultTenantOnly_AndTenantIsDefault()
+    public async Task ComposeAsyncIncludesType_FeatureIsDefaultTenantOnlyAndTenantIsDefault_Succeeds()
     {
         // Arrange
         var featureId = "FeatureA";
@@ -278,7 +448,7 @@ public class CompositionStrategyTests
     }
 
     [Fact]
-    public async Task ComposeAsync_IncludesType_WhenFeatureIsNotDefaultTenantOnly_AndTenantIsNotDefault()
+    public async Task ComposeAsyncIncludesType_FeatureIsNotDefaultTenantOnlyAndTenantIsNotDefault_Succeeds()
     {
         // Arrange
         var featureId = "FeatureA";
@@ -316,9 +486,26 @@ public class CompositionStrategyTests
 
     public class DummyType;
 
+    [RequireFeatures()]
+    public class TypeWithEmptyRequiredFeatures;
+
     [RequireFeatures("MissingFeature")] // This feature will not be present in descriptor
     public class TypeWithRequiredFeature;
 
     [RequireFeatures("FeatureA", "FeatureB")]
     public class TypeWithMultipleRequiredFeatures;
+
+    [RequiredStartup]
+    public class RequiredStartupType;
+
+    [RequiredStartup]
+    [RequireFeatures("FeatureA", "FeatureB")]
+    public class RequiredStartupTypeWithRequiredFeatures;
+
+    private static IFeatureInfo CreateFeature(string id)
+    {
+        var feature = new Mock<IFeatureInfo>();
+        feature.Setup(f => f.Id).Returns(id);
+        return feature.Object;
+    }
 }

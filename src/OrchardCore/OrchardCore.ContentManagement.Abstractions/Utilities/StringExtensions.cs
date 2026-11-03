@@ -9,9 +9,9 @@ namespace OrchardCore.ContentManagement.Utilities;
 
 public static class StringExtensions
 {
-    private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+    private static readonly char[] s_validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
 
-    private static readonly HashSet<string> _reservedNames = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> s_reservedNames = new(StringComparer.OrdinalIgnoreCase)
     {
         nameof(ContentItem.Id),
         nameof(ContentItem.ContentItemId),
@@ -49,8 +49,10 @@ public static class StringExtensions
         return sb.ToString();
     }
 
+    [Obsolete("Use the Ellipsize extension methods in OrchardCore.Mvc.Utilities instead.")]
     public static string Ellipsize(this string text, int characterCount) => text.Ellipsize(characterCount, "\u00A0\u2026");
 
+    [Obsolete("Use the Ellipsize extension methods in OrchardCore.Mvc.Utilities instead.")]
     public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -63,9 +65,9 @@ public static class StringExtensions
             return text;
         }
 
-        // search beginning of word
+        // search beginning of word, unless the cut already falls at the end of one
         var backup = characterCount;
-        while (characterCount > 0 && char.IsLetter(text[characterCount - 1]))
+        while (characterCount > 0 && char.IsLetter(text[characterCount]))
         {
             characterCount--;
         }
@@ -154,7 +156,7 @@ public static class StringExtensions
         //
         // rough blacklist regex == m/^[^/?#[]@"^{}|\s`<>]+$/ (leaving off % to keep the regex simple)
 
-        return !segment.Any(_validSegmentChars);
+        return !segment.Any(s_validSegmentChars);
     }
 
     /// <summary>
@@ -188,7 +190,7 @@ public static class StringExtensions
         return name;
     }
 
-    public static bool IsReservedContentName(this string name) => _reservedNames.Contains(name);
+    public static bool IsReservedContentName(this string name) => s_reservedNames.Contains(name);
 
     public static string RemoveDiacritics(this string name)
     {

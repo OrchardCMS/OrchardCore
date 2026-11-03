@@ -16,10 +16,11 @@ public class ShellFeatureApplicationPart :
     IApplicationPartTypeProvider,
     ICompilationReferencesProvider
 {
-    private static IEnumerable<string> _referencePaths;
-    private static readonly object _synLock = new();
+    private static IEnumerable<string> s_referencePaths;
+    private static readonly object s_synLock = new();
     private ShellBlueprint _shellBlueprint;
     private IEnumerable<ITagHelpersProvider> _tagHelpers;
+    private readonly Lock _lock = new();
 
     /// <summary>
     /// Initalizes a new <see cref="AssemblyPart"/> instance.
@@ -48,7 +49,7 @@ public class ShellFeatureApplicationPart :
 
             if (services != null && _tagHelpers == null)
             {
-                lock (this)
+                lock (_lock)
                 {
                     if (_tagHelpers == null)
                     {
@@ -68,22 +69,22 @@ public class ShellFeatureApplicationPart :
     /// <inheritdoc />
     public IEnumerable<string> GetReferencePaths()
     {
-        if (_referencePaths != null)
+        if (s_referencePaths != null)
         {
-            return _referencePaths;
+            return s_referencePaths;
         }
 
-        lock (_synLock)
+        lock (s_synLock)
         {
-            if (_referencePaths != null)
+            if (s_referencePaths != null)
             {
-                return _referencePaths;
+                return s_referencePaths;
             }
 
-            _referencePaths = DependencyContext.Default.CompileLibraries
+            s_referencePaths = DependencyContext.Default.CompileLibraries
                 .SelectMany(library => library.ResolveReferencePaths());
         }
 
-        return _referencePaths;
+        return s_referencePaths;
     }
 }

@@ -6,7 +6,7 @@ namespace OrchardCore.Modules.OrchardCore.Tenants.Tests;
 public class ProfilesTests
 {
     [Fact]
-    public void FeatureProfilesSchemaService_ShouldCreateValidSchema()
+    public void FeatureProfilesSchemaService_Default_CreatesValidSchema()
     {
         var featureProfilesRuleOptions = new FeatureProfilesRuleOptions();
         featureProfilesRuleOptions.Rules["Exclude"] = static (expression, name) => (true, true);

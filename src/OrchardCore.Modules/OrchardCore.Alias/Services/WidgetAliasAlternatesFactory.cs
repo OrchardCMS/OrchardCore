@@ -9,7 +9,7 @@ namespace OrchardCore.Alias.Services;
 /// </summary>
 internal static class WidgetAliasAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<WidgetAliasAlternatesCacheKey, string[]> _cache = new();
+    private static readonly ConcurrentDictionary<WidgetAliasAlternatesCacheKey, string[]> s_cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a Widget shape with Alias configuration.
@@ -17,7 +17,7 @@ internal static class WidgetAliasAlternatesFactory
     public static string[] GetAlternates(string alias, string displayType)
     {
         var key = new WidgetAliasAlternatesCacheKey(alias, displayType);
-        return _cache.GetOrAdd(key, BuildAlternates);
+        return s_cache.GetOrAdd(key, BuildAlternates);
     }
 
     private static string[] BuildAlternates(WidgetAliasAlternatesCacheKey key)

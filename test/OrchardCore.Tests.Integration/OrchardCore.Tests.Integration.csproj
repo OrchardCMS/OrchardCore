@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.FileStorage.AmazonS3\OrchardCore.FileStorage.AmazonS3.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.FileStorage.AzureBlob\OrchardCore.FileStorage.AzureBlob.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Media.AmazonS3\OrchardCore.Media.AmazonS3.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Media.Azure\OrchardCore.Media.Azure.csproj" />
   </ItemGroup>

@@ -14,7 +14,7 @@ public class JArrayTests
 
     [Theory]
     [MemberData(nameof(MergeArrayEntries))]
-    public void MergeArrayShouldRespectJsonMergeSettings(string jsonArrayContent1, string jsonArrayContent2, JsonMergeSettings mergeSettings, string expectedJsonString)
+    public void MergeArray_Default_RespectJsonMergeSettings(string jsonArrayContent1, string jsonArrayContent2, JsonMergeSettings mergeSettings, string expectedJsonString)
     {
         // Arrange
         var array = JsonNode.Parse(jsonArrayContent1) as JsonArray;

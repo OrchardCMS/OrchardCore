@@ -1,6 +1,7 @@
 using Fluid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -8,26 +9,33 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
+public class HttpRedirectTask : TaskActivity<HttpRedirectTask>, IActivityDescription
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public HttpRedirectTask(
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<HttpRedirectTask> localizer,
         IHttpContextAccessor httpContextAccessor,
         IWorkflowExpressionEvaluator expressionEvaluator
     )
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
         _httpContextAccessor = httpContextAccessor;
         _expressionEvaluator = expressionEvaluator;
     }
 
-    public override LocalizedString DisplayText => S["Http Redirect Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<HttpRedirectTask>("Http Redirect Task");
 
-    public override LocalizedString Category => S["HTTP"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Http;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Location
     {
@@ -42,9 +50,7 @@ public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -53,6 +59,6 @@ public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
         _httpContextAccessor.HttpContext.Response.Redirect(location.ToUriComponents(), Permanent);
         _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

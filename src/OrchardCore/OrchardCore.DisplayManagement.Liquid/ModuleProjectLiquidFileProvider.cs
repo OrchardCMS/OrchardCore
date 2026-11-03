@@ -11,19 +11,19 @@ namespace OrchardCore.DisplayManagement.Liquid;
 /// </summary>
 public class ModuleProjectLiquidFileProvider : IFileProvider
 {
-    private static Dictionary<string, string> _paths;
-    private static readonly object _synLock = new();
+    private static Dictionary<string, string> s_paths;
+    private static readonly object s_synLock = new();
 
     public ModuleProjectLiquidFileProvider(IApplicationContext applicationContext)
     {
-        if (_paths != null)
+        if (s_paths != null)
         {
             return;
         }
 
-        lock (_synLock)
+        lock (s_synLock)
         {
-            if (_paths == null)
+            if (s_paths == null)
             {
                 var assets = new List<Asset>();
                 var application = applicationContext.Application;
@@ -44,7 +44,7 @@ public class ModuleProjectLiquidFileProvider : IFileProvider
                 }
 
                 // Init the mapping between module and project asset paths.
-                _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
+                s_paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
             }
         }
     }
@@ -64,7 +64,7 @@ public class ModuleProjectLiquidFileProvider : IFileProvider
         var path = NormalizePath(subpath);
 
         // Map the module asset path to the project asset path.
-        if (_paths.TryGetValue(path, out var projectAssetPath))
+        if (s_paths.TryGetValue(path, out var projectAssetPath))
         {
             // Serve the project asset from the physical file system.
             return new PhysicalFileInfo(new FileInfo(projectAssetPath));
@@ -83,7 +83,7 @@ public class ModuleProjectLiquidFileProvider : IFileProvider
         var path = NormalizePath(filter);
 
         // Map the module asset path to the project asset path.
-        if (_paths.TryGetValue(path, out var projectAssetPath))
+        if (s_paths.TryGetValue(path, out var projectAssetPath))
         {
             // Watch the project asset from the physical file system.
             return new PollingFileChangeToken(new FileInfo(projectAssetPath));

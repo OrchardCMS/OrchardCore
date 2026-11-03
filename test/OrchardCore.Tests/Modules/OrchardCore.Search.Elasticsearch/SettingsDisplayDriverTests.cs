@@ -53,7 +53,7 @@ public partial class SettingsDisplayDriverTests
     }
 
     [Fact]
-    public async Task ContentPickerFieldElasticEditorSettingsShouldDeserialize()
+    public async Task ContentPickerFieldElasticEditorSettings_Default_Deserialize()
     {
 
         await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>

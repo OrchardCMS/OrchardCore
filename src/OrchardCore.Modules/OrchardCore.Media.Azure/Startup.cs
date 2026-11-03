@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,10 +13,13 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media.Azure.Filters;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
+using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -34,9 +38,6 @@ public sealed class Startup : Modules.StartupBase
         _configuration = configuration;
     }
 
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureMediaStorage;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddPermissionProvider<Permissions>();
@@ -44,7 +45,8 @@ public sealed class Startup : Modules.StartupBase
         services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
         // Only replace default implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure");
+        // The 'OrchardCore_Media_Azure' section is deprecated and will be removed in a future major version, use 'Media:Azure' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure", "OrchardCore_Media_Azure");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
@@ -84,20 +86,28 @@ public sealed class Startup : Modules.StartupBase
             services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
+            // Register the blob file store as a singleton so it can be injected for async initialization.
+            services.AddSingleton(serviceProvider =>
+            {
+                var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                var clock = serviceProvider.GetRequiredService<IClock>();
+                var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
+                var blobLogger = serviceProvider.GetRequiredService<ILogger<BlobFileStore>>();
+
+                return new BlobFileStore(blobStorageOptions, clock, contentTypeProvider, blobLogger);
+            });
+
             // Replace the default media file store with a blob file store.
             services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
             {
-                var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var fileStore = serviceProvider.GetRequiredService<BlobFileStore>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                var clock = serviceProvider.GetRequiredService<IClock>();
-                var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
-                var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
@@ -109,12 +119,21 @@ public sealed class Startup : Modules.StartupBase
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
+                return new DefaultMediaFileStore(
+                    fileStore,
+                    mediaUrlBase,
+                    mediaOptions.CdnBaseUrl,
+                    mediaEventHandlers,
+                    mediaCreatingEventHandlers,
+                    fileSizeHelper,
+                    logger);
             }));
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
             services.AddScoped<IModularTenantEvents, MediaBlobContainerTenantEvents>();
+
+            services.Configure<MvcOptions>(options => options.Filters.Add<MediaGalleryCapabilitiesFilter>());
         }
     }
 
@@ -155,15 +174,13 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         _logger = logger;
     }
 
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureResizedImageCache;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<MediaBlobImageCacheOptions>, MediaBlobImageCacheOptionsConfiguration>();
 
         // Only replace the default local cache implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure_Image_Cache");
+        // The 'OrchardCore_Media_Azure_ImageSharp_Cache' section is deprecated and will be removed in a future major version, use 'Media:Azure:ImageCache' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure:ImageCache", "OrchardCore_Media_Azure_ImageSharp_Cache");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
@@ -184,18 +201,28 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             _logger.LogError(
-                "Azure Media ImageSharp Image Cache is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
+                "Azure Media Image Cache is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
             optionsAreValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(containerName))
         {
             _logger.LogError(
-                "Azure Media ImageSharp Image Cache is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
+                "Azure Media Image Cache is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
             optionsAreValid = false;
         }
 
         return optionsAreValid;
+    }
+}
+
+[Feature("OrchardCore.Media.Azure.Storage")]
+[RequireFeatures("OrchardCore.Media.Tus")]
+public sealed class MediaAzureTusStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
     }
 }
 

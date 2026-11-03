@@ -15,6 +15,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Localization;
+using OrchardCore.Tests.Utilities;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -70,31 +71,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         _prefixedStore.Dispose();
         _prefixedStore = null;
 
-        if (File.Exists(_tempFilename))
-        {
-            try
-            {
-                File.Delete(_tempFilename);
-            }
-            catch
-            {
-
-            }
-        }
-
-        var prefixFilename = _tempFilename + _prefix;
-
-        if (File.Exists(prefixFilename))
-        {
-            try
-            {
-                File.Delete(prefixFilename);
-            }
-            catch
-            {
-
-            }
-        }
+        TestFileHelper.TryDelete(_tempFilename);
+        TestFileHelper.TryDelete(_tempFilename + _prefix);
 
         return ValueTask.CompletedTask;
     }
@@ -139,7 +117,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterByContentItemIndex()
+    public async Task Filter_ByContentItemIndex_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -173,7 +151,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterByContentItemIndexWhenSqlTablePrefixIsUsed()
+    public async Task Filter_SqlTablePrefixIsUsed_Succeeds()
     {
         _prefixedStore.RegisterIndexes<AnimalIndexProvider>();
 
@@ -214,7 +192,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     [InlineData("animal")]
     [InlineData("ANIMAL")]
     [InlineData("Animal")]
-    public async Task ShouldFilterByAliasIndexRegardlessOfInputFieldCase(string fieldName)
+    public async Task Filter_ByAliasIndexRegardlessOfInputFieldCase_Succeeds(string fieldName)
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -252,7 +230,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases()
+    public async Task Be_AbleToUseTheSameIndexForMultipleAliases_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -293,7 +271,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterOnMultipleIndexesOnSameAlias()
+    public async Task Filter_MultipleIndexesOnSameAlias_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
         _store.RegisterIndexes<AnimalTraitsIndexProvider>();
@@ -342,7 +320,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterPartsWithoutAPrefixWhenThePartHasNoPrefix()
+    public async Task Filter_ThePartHasNoPrefix_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -377,7 +355,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterNestedPartInputWhenPartNameHasNoPrefix()
+    public async Task Filter_PartNameHasNoPrefix_Succeeds()
     {
         _store.RegisterIndexes<AnimalLocalizationIndexProvider>();
 
@@ -419,7 +397,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     [InlineData("animal")]
     [InlineData("ANIMAL")]
     [InlineData("Animal")]
-    public async Task ShouldFilterNestedPartInputRegardlessOfInputFieldCase(string fieldName)
+    public async Task Filter_NestedPartInputRegardlessOfInputFieldCase_Succeeds(string fieldName)
     {
         _store.RegisterIndexes<AnimalLocalizationIndexProvider>();
 
@@ -454,7 +432,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterByCollapsedWhereInputForCollapsedParts()
+    public async Task Filter_ByCollapsedWhereInputForCollapsedParts_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -724,7 +702,7 @@ public class AnimalLocalizationIndexProvider : IndexProvider<ContentItem>
 
 public class MultipleAliasIndexProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -748,13 +726,13 @@ public class MultipleAliasIndexProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
 
 public class AnimalLocalizationAliasProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -766,13 +744,13 @@ public class AnimalLocalizationAliasProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
 
 public class MultipleIndexesIndexProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -796,7 +774,7 @@ public class MultipleIndexesIndexProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
 

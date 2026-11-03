@@ -63,11 +63,16 @@ public sealed class Startup : StartupBase
         services.AddOptions<MarkdownPipelineOptions>();
         services.ConfigureMarkdownPipeline((pipeline) =>
         {
-            var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownExtensions);
+            // The 'OrchardCore_Markdown' section is deprecated and will be removed in a future major version, use 'Markdown' instead.
+            var extensions = _shellConfiguration.GetSectionCompat("Markdown", "OrchardCore_Markdown")
+                .GetValue("Extensions", DefaultMarkdownExtensions);
             pipeline.Configure(extensions);
         });
 
-        services.AddScoped<IMarkdownService, DefaultMarkdownService>();
+        // The Markdig pipeline is thread-safe, building it once per tenant prevents rebuilding it on each request.
+        services.AddSingleton<IMarkdownService, DefaultMarkdownService>();
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }

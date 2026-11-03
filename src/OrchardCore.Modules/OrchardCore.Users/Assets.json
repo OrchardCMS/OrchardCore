@@ -10,5 +10,32 @@
     "name": "users-qrcode",
     "source": "../../../node_modules/qrcodejs/qrcode.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "user-editors",
+    "source": [
+      "Assets/ts/user-fields.ts",
+      "Assets/ts/authenticator-app.ts",
+      "Assets/ts/request-verification-code.ts",
+      "Assets/ts/external-login-settings.ts",
+      "Assets/ts/external-registration-settings.ts"
+    ],
+    "dest": "wwwroot/Scripts/user-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "users-admin-list",
+    "source": "Assets/ts/users-admin-list.ts",
+    "dest": "wwwroot/Scripts/users-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "login-form-credentials",
+    "source": "Assets/ts/login-form-credentials.ts",
+    "dest": "wwwroot/Scripts/login-form-credentials/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

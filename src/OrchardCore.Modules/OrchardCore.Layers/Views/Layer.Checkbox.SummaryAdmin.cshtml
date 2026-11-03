@@ -1,0 +1,10 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Layers.Models
+
+@model ShapeViewModel<Layer>
+
+@* Checking a layer highlights its widgets in the zones beside the list. *@
+<div class="form-check">
+    <input type="checkbox" class="form-check-input layer-check" id="@Model.Value.Name" value="@Model.Value.Name">
+    <label class="form-check-label" for="@Model.Value.Name">&nbsp;</label>
+</div>

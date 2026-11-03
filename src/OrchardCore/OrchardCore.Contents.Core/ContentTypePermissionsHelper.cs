@@ -1,4 +1,5 @@
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 
@@ -9,64 +10,59 @@ namespace OrchardCore.Contents.Security;
 /// </summary>
 public static class ContentTypePermissionsHelper
 {
-    private static readonly Permission _publishContent = new("Publish_{0}", "Publish or unpublish {0} for others", [CommonPermissions.PublishContent]);
-    private static readonly Permission _publishOwnContent = new("PublishOwn_{0}", "Publish or unpublish {0}", [_publishContent, CommonPermissions.PublishOwnContent]);
-    private static readonly Permission _editContent = new("Edit_{0}", "Edit {0} for others", [_publishContent, CommonPermissions.EditContent]);
-    private static readonly Permission _editOwnContent = new("EditOwn_{0}", "Edit {0}", [_editContent, _publishOwnContent, CommonPermissions.EditOwnContent]);
-    private static readonly Permission _deleteContent = new("Delete_{0}", "Delete {0} for others", [CommonPermissions.DeleteContent]);
-    private static readonly Permission _deleteOwnContent = new("DeleteOwn_{0}", "Delete {0}", [_deleteContent, CommonPermissions.DeleteOwnContent]);
-    private static readonly Permission _viewContent = new("View_{0}", "View {0} by others", [_editContent, CommonPermissions.ViewContent]);
-    private static readonly Permission _viewOwnContent = new("ViewOwn_{0}", "View own {0}", [_viewContent, CommonPermissions.ViewOwnContent]);
-    private static readonly Permission _previewContent = new("Preview_{0}", "Preview {0} by others", [_editContent, CommonPermissions.PreviewContent]);
-    private static readonly Permission _previewOwnContent = new("PreviewOwn_{0}", "Preview own {0}", [_previewContent, CommonPermissions.PreviewOwnContent]);
-    private static readonly Permission _cloneContent = new("Clone_{0}", "Clone {0} by others", [_editContent, CommonPermissions.CloneContent]);
-    private static readonly Permission _cloneOwnContent = new("CloneOwn_{0}", "Clone own {0}", [_cloneContent, CommonPermissions.CloneOwnContent]);
-    private static readonly Permission _listContent = new("ListContent_{0}", "List {0} content items", [CommonPermissions.ListContent]);
-    private static readonly Permission _editContentOwner = new("EditContentOwner_{0}", "Edit the owner of a {0} content item", [CommonPermissions.EditContentOwner]);
+    private static readonly PermissionTemplate s_publishContent = CreateTemplate("Publish", LocalizationSource.Create("Publish or unpublish {0} for others", typeof(ContentTypePermissionsHelper)), CommonPermissions.PublishContent);
+    private static readonly PermissionTemplate s_publishOwnContent = CreateTemplate("PublishOwn", LocalizationSource.Create("Publish or unpublish {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.PublishOwnContent, s_publishContent);
+    private static readonly PermissionTemplate s_editContent = CreateTemplate("Edit", LocalizationSource.Create("Edit {0} for others", typeof(ContentTypePermissionsHelper)), CommonPermissions.EditContent, s_publishContent);
+    private static readonly PermissionTemplate s_editOwnContent = CreateTemplate("EditOwn", LocalizationSource.Create("Edit {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.EditOwnContent, s_editContent, s_publishOwnContent);
+    private static readonly PermissionTemplate s_deleteContent = CreateTemplate("Delete", LocalizationSource.Create("Delete {0} for others", typeof(ContentTypePermissionsHelper)), CommonPermissions.DeleteContent);
+    private static readonly PermissionTemplate s_deleteOwnContent = CreateTemplate("DeleteOwn", LocalizationSource.Create("Delete {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.DeleteOwnContent, s_deleteContent);
+    private static readonly PermissionTemplate s_viewContent = CreateTemplate("View", LocalizationSource.Create("View {0} by others", typeof(ContentTypePermissionsHelper)), CommonPermissions.ViewContent, s_editContent);
+    private static readonly PermissionTemplate s_viewOwnContent = CreateTemplate("ViewOwn", LocalizationSource.Create("View own {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.ViewOwnContent, s_viewContent);
+    private static readonly PermissionTemplate s_previewContent = CreateTemplate("Preview", LocalizationSource.Create("Preview {0} by others", typeof(ContentTypePermissionsHelper)), CommonPermissions.PreviewContent, s_editContent);
+    private static readonly PermissionTemplate s_previewOwnContent = CreateTemplate("PreviewOwn", LocalizationSource.Create("Preview own {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.PreviewOwnContent, s_previewContent);
+    private static readonly PermissionTemplate s_cloneContent = CreateTemplate("Clone", LocalizationSource.Create("Clone {0} by others", typeof(ContentTypePermissionsHelper)), CommonPermissions.CloneContent, s_editContent);
+    private static readonly PermissionTemplate s_cloneOwnContent = CreateTemplate("CloneOwn", LocalizationSource.Create("Clone own {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.CloneOwnContent, s_cloneContent);
+    private static readonly PermissionTemplate s_listContent = CreateTemplate("ListContent", LocalizationSource.Create("List {0} content items", typeof(ContentTypePermissionsHelper)), CommonPermissions.ListContent);
+    private static readonly PermissionTemplate s_editContentOwner = CreateTemplate("EditContentOwner", LocalizationSource.Create("Edit the owner of a {0} content item", typeof(ContentTypePermissionsHelper)), CommonPermissions.EditContentOwner);
 
-    public static readonly Dictionary<string, Permission> PermissionTemplates = new()
+    public static readonly Dictionary<string, PermissionTemplate> PermissionTemplates = new()
     {
-        { CommonPermissions.PublishContent.Name, _publishContent },
-        { CommonPermissions.PublishOwnContent.Name, _publishOwnContent },
-        { CommonPermissions.EditContent.Name, _editContent },
-        { CommonPermissions.EditOwnContent.Name, _editOwnContent },
-        { CommonPermissions.DeleteContent.Name, _deleteContent },
-        { CommonPermissions.DeleteOwnContent.Name, _deleteOwnContent },
-        { CommonPermissions.ViewContent.Name, _viewContent },
-        { CommonPermissions.ViewOwnContent.Name, _viewOwnContent },
-        { CommonPermissions.PreviewContent.Name, _previewContent },
-        { CommonPermissions.PreviewOwnContent.Name, _previewOwnContent },
-        { CommonPermissions.CloneContent.Name, _cloneContent },
-        { CommonPermissions.CloneOwnContent.Name, _cloneOwnContent },
-        { CommonPermissions.ListContent.Name, _listContent },
-        { CommonPermissions.EditContentOwner.Name, _editContentOwner },
+        { CommonPermissions.PublishContent.Name, s_publishContent },
+        { CommonPermissions.PublishOwnContent.Name, s_publishOwnContent },
+        { CommonPermissions.EditContent.Name, s_editContent },
+        { CommonPermissions.EditOwnContent.Name, s_editOwnContent },
+        { CommonPermissions.DeleteContent.Name, s_deleteContent },
+        { CommonPermissions.DeleteOwnContent.Name, s_deleteOwnContent },
+        { CommonPermissions.ViewContent.Name, s_viewContent },
+        { CommonPermissions.ViewOwnContent.Name, s_viewOwnContent },
+        { CommonPermissions.PreviewContent.Name, s_previewContent },
+        { CommonPermissions.PreviewOwnContent.Name, s_previewOwnContent },
+        { CommonPermissions.CloneContent.Name, s_cloneContent },
+        { CommonPermissions.CloneOwnContent.Name, s_cloneOwnContent },
+        { CommonPermissions.ListContent.Name, s_listContent },
+        { CommonPermissions.EditContentOwner.Name, s_editContentOwner },
     };
 
-    private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = [];
+    private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByType = [];
 
     /// <summary>
     /// Returns a dynamic permission for a content type, based on a global content permission template.
     /// </summary>
-    public static Permission ConvertToDynamicPermission(Permission permission)
-    {
-        if (PermissionTemplates.TryGetValue(permission.Name, out var result))
-        {
-            return result;
-        }
-
-        return null;
-    }
+    [Obsolete($"Use {nameof(GetPermissionTemplate)} instead.")]
+    public static Permission ConvertToDynamicPermission(Permission permission) =>
+        PermissionTemplates.TryGetValue(permission.Name, out var result) ? result.CreateDynamicPermission("{0}") : null;
 
     /// <summary>
     /// Generates a permission dynamically for a content type.
     /// </summary>
+    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
     public static Permission CreateDynamicPermission(Permission template, ContentTypeDefinition typeDefinition)
     {
         ArgumentNullException.ThrowIfNull(template);
 
         return new Permission(
             string.Format(template.Name, typeDefinition.Name),
-            string.Format(template.Description, typeDefinition.DisplayName),
+            string.Format(template.Description.Value, typeDefinition.DisplayName),
             (template.ImpliedBy ?? [])
             .Where(t => t != null)
             .Select(t => CreateDynamicPermission(t, typeDefinition))
@@ -79,30 +75,86 @@ public static class ContentTypePermissionsHelper
     /// <summary>
     /// Generates a permission dynamically for a content type, without a display name or category.
     /// </summary>
+    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
     public static Permission CreateDynamicPermission(Permission template, string contentType)
     {
         ArgumentNullException.ThrowIfNull(template);
 
         var key = new ValueTuple<string, string>(template.Name, contentType);
 
-        if (_permissionsByType.TryGetValue(key, out var permission))
+        if (s_permissionsByType.TryGetValue(key, out var permission))
         {
             return permission;
         }
 
         permission = new Permission(
             string.Format(template.Name, contentType),
-            string.Format(template.Description, contentType),
+            string.Format(template.Description.Value, contentType),
             (template.ImpliedBy ?? []).Select(t => CreateDynamicPermission(t, contentType))
         );
 
-        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByType)
+        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByType)
         {
             [key] = permission,
         };
 
-        _permissionsByType = localPermissions;
+        s_permissionsByType = localPermissions;
 
         return permission;
     }
+
+    /// <summary>
+    /// Returns a permission template for content types, based on a global content permission with the name of <paramref
+    /// name="basePermissionName"/>.
+    /// </summary>
+    public static PermissionTemplate GetPermissionTemplate(string basePermissionName) =>
+        PermissionTemplates.TryGetValue(basePermissionName, out var result) ? result : null;
+
+    /// <summary>
+    /// Generates a dynamic version of the provided <paramref name="basePermission"/>, that is specific to content type
+    /// indicated by the <paramref name="typeDefinition"/>.
+    /// </summary>
+    public static Permission CreateDynamicPermissionOf(Permission basePermission, ContentTypeDefinition typeDefinition) =>
+        CreateDynamicPermissionOf(basePermission.Name, typeDefinition);
+
+    /// <summary>
+    /// Generates a permission dynamically for a content type, without a display name or category.
+    /// </summary>
+    public static Permission CreateDynamicPermissionOf(string basePermissionName, string contentType) =>
+        CreateDynamicPermissionOf(basePermissionName, contentType, contentType);
+
+    /// <summary>
+    /// Generates a dynamic version of the provided permission with the name <paramref name="basePermissionName"/>,
+    /// that is specific to a content type indicated by the <paramref name="typeDefinition"/>.
+    /// </summary>
+    public static Permission CreateDynamicPermissionOf(string basePermissionName, ContentTypeDefinition typeDefinition) =>
+        CreateDynamicPermissionOf(basePermissionName, typeDefinition.Name, typeDefinition.DisplayName);
+    
+    /// <summary>
+    /// Generates a dynamic version of the provided permission with the name <paramref name="basePermissionName"/>,
+    /// that is specific to a <paramref name="contentType"/>.
+    /// </summary>
+    private static Permission CreateDynamicPermissionOf(string basePermissionName, string contentType, string contentTypeDisplayName)
+    {
+        if (GetPermissionTemplate(basePermissionName) is not { } template)
+        {
+            return null;
+        }
+
+        return template.CreateDynamicPermission(contentType, contentTypeDisplayName);
+    }
+
+    private static PermissionTemplate CreateTemplate(
+        string nameBase,
+        LocalizationSource description,
+        Permission impliedBy,
+        params PermissionTemplate[] impliedByTemplates) =>
+        new(
+            nameBase + "_{0}",
+            description,
+            "{1} Content Type - {0}",
+            impliedBy)
+        {
+            ImpliedByTemplates = impliedByTemplates,
+        };
 }

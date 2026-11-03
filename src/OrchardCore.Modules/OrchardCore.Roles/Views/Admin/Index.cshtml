@@ -1,150 +1,59 @@
-@using System.Linq
+@using OrchardCore.Admin.Models
+@using OrchardCore.Admin
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Roles
 
 @model OrchardCore.Roles.ViewModels.RolesViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
+@inject IAuthorizationService AuthorizationService
 
-<div class="card mb-3 text-bg-theme position-sticky action-bar">
-    <div class="card-body">
-        <div class="row gx-3">
-            <div class="col">
-                <div class="has-search">
-                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+@{
+    var hasManagePermission = await AuthorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles);
+}
+
+<zone Name="Title">
+    <breadcrumb name="Roles" title="@T["Roles"]" />
+</zone>
+
+<div>
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-2">
+                <div class="col">
+                    <div class="input-group">
+                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                    </div>
                 </div>
-            </div>
-            <div class="col-auto">
-                <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Role"]</a>
+                @if (hasManagePermission)
+                {
+                    <div class="col-auto">
+                        <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Role"]</a>
+                    </div>
+                }
             </div>
         </div>
     </div>
+
+    <form asp-action="Index" class="roles">
+        <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+
+        @* The roles are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+        <admin-list name="Roles" context="Model.List"
+                    show-select-all="false"
+                    empty-message="@T["<strong>Nothing here!</strong> There are no roles for the moment."]">
+            <admin-list-list item-css-class="list-group-item" />
+            <admin-list-grid>
+                <admin-list-column name="Name" position="10" title="@T["Name"]" />
+                <admin-list-column name="Kind" position="20" title="@T["Kind"]" width="auto" />
+                <admin-list-column type="Actions" title="@T["Actions"]" />
+            </admin-list-grid>
+        </admin-list>
+    </form>
+
+    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+        @T["Your search returned no results."]
+    </div>
 </div>
 
-<form asp-action="Index" class="roles">
-    @{
-        var message = T["Are you sure you want to delete this role?"];
-    }
-    <ul class="list-group">
-        @for (var i = 0; i < Model.RoleEntries.Count; i++)
-        {
-            var entry = Model.RoleEntries[i];
-
-            <li class="list-group-item" data-filter-value="@entry.Name">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <span>@entry.Name</span>
-
-                        @if (entry.IsSystemRole)
-                        {
-                            <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
-                                <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
-                            </span>
-                        }
-                    </div>
-
-                    <div>
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
-
-                        @if (!entry.IsAdminRole)
-                        {
-                            <a class="btn btn-warning btn-sm" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
-                        }
-
-                        @if (!entry.IsSystemRole)
-                        {
-                            <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
-                        }
-                    </div>
-                </div>
-                @if (!string.IsNullOrWhiteSpace(entry.Description))
-                {
-                    <p class="text-muted mb-0">@entry.Description</p>
-                }
-            </li>
-        }
-    </ul>
-    <div id="list-alert" class="alert alert-info d-none" role="alert">
-        @T["<strong>Nothing here!</strong> Your search returned no results."]
-    </div>
-</form>
-
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var searchBox = document.getElementById('search-box');
-        if (!searchBox) {
-            return;
-        }
-
-        function isVisible(element) {
-            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-        }
-
-        // On Enter, edit the role if there is a single one
-        searchBox.addEventListener('keydown', function (e) {
-            if (e.key == 'Enter') {
-
-                // Edit the role if there is a single filtered element
-                var visible = Array.from(document.querySelectorAll('.roles > ul > li')).filter(isVisible);
-                if (visible.length == 1) {
-                    window.location = visible[0].querySelector('.edit').getAttribute('href');
-                }
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
-        });
-
-        // On each keypress filter the list of roles
-        searchBox.addEventListener('keyup', function (e) {
-            var search = this.value.toLowerCase();
-            var elementsToFilter = document.querySelectorAll("[data-filter-value]");
-
-            // On ESC, clear the search box and display all roles
-            if (e.key === "Escape" || search == '') {
-                searchBox.value = '';
-                elementsToFilter.forEach(function (element) {
-                    element.classList.remove("d-none", "first-child-visible", "last-child-visible");
-                });
-            }
-            else {
-                elementsToFilter.forEach(function (element) {
-                    var text = element.dataset.filterValue.toLowerCase();
-                    var found = text.indexOf(search) > -1;
-
-                    if (found) {
-                        element.classList.remove("d-none", "first-child-visible", "last-child-visible");
-                    }
-                    else {
-                        element.classList.add("d-none");
-                    }
-                });
-
-                var visibleElements = Array.from(elementsToFilter).filter(function (element) {
-                    return !element.classList.contains('d-none');
-                });
-
-                if (visibleElements.length > 0) {
-                    visibleElements[0].classList.add("first-child-visible");
-                    visibleElements[visibleElements.length - 1].classList.add("last-child-visible");
-                }
-
-                // We display an alert if a search is not found
-                var visible = Array.from(document.querySelectorAll('.roles > ul > li')).filter(isVisible);
-                if (visible.length == 0) {
-                    document.getElementById('list-alert').classList.remove("d-none");
-                }
-                else {
-                    document.getElementById('list-alert').classList.add("d-none");
-                }
-            }
-        });
-    })
-</script>
+<script asp-src="~/OrchardCore.Roles/Scripts/roles-editors/roles-index.min.js" debug-src="~/OrchardCore.Roles/Scripts/roles-editors/roles-index.js" at="Foot" type="module"></script>

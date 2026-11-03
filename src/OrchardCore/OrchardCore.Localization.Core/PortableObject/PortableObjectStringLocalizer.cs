@@ -8,10 +8,11 @@ namespace OrchardCore.Localization.PortableObject;
 /// <summary>
 /// Represents <see cref="IPluralStringLocalizer"/> for portable objects.
 /// </summary>
+[SkipLocalizationExtraction]
 public class PortableObjectStringLocalizer : IPluralStringLocalizer
 {
-    private static readonly string _dataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
-    private static readonly string _localizedDataAnnotationsMvcOptionsContext = typeof(LocalizedDataAnnotationsMvcOptions).FullName;
+    private static readonly string s_dataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
+    private static readonly string s_localizedDataAnnotationsMvcOptionsContext = typeof(LocalizedDataAnnotationsMvcOptions).FullName;
 
     private readonly ILocalizationManager _localizationManager;
     private readonly bool _fallBackToParentCulture;
@@ -76,6 +77,8 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     public virtual (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
     {
         ArgumentNullException.ThrowIfNull(name);
+
+        arguments ??= Array.Empty<object>();
 
         // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
         if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
@@ -194,10 +197,10 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
                     var key = CultureDictionaryRecord.GetKey(name, context);
 
                     // Extract translation from data annotations attributes.
-                    if (context == _localizedDataAnnotationsMvcOptionsContext)
+                    if (context == s_localizedDataAnnotationsMvcOptionsContext)
                     {
                         // Extract translation with context.
-                        key = CultureDictionaryRecord.GetKey(name, _dataAnnotationsDefaultErrorMessagesContext);
+                        key = CultureDictionaryRecord.GetKey(name, s_dataAnnotationsDefaultErrorMessagesContext);
                         translation = dictionary[key];
 
                         if (translation != null)

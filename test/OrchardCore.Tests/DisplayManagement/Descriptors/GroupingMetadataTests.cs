@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors;
 public class GroupingMetadataTests
 {
     [Fact]
-    public void Empty_ShouldReturnDefaultInstance()
+    public void Empty_Default_ReturnsDefaultInstance()
     {
         var empty = GroupingMetadata.Empty;
 
@@ -18,7 +18,7 @@ public class GroupingMetadataTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void ParseTabOrCard_WithNullOrEmpty_ReturnsEmpty(string value)
+    public void ParseTabOrCard_NullOrEmpty_ReturnsEmpty(string value)
     {
         var result = GroupingMetadata.ParseTabOrCard(value);
 
@@ -30,7 +30,7 @@ public class GroupingMetadataTests
     [InlineData("Settings", "Settings", null)]
     [InlineData("Content", "Content", null)]
     [InlineData("Tab1", "Tab1", null)]
-    public void ParseTabOrCard_WithNameOnly_ReturnsCorrectName(string input, string expectedName, string expectedPosition)
+    public void ParseTabOrCard_NameOnly_ReturnsCorrectName(string input, string expectedName, string expectedPosition)
     {
         var result = GroupingMetadata.ParseTabOrCard(input);
 
@@ -46,7 +46,7 @@ public class GroupingMetadataTests
     [InlineData("Tab1;2.5", "Tab1", "2.5")]
     [InlineData("Details;before", "Details", "before")]
     [InlineData("Other;after", "Other", "after")]
-    public void ParseTabOrCard_WithPosition_ReturnsCorrectValues(string input, string expectedName, string expectedPosition)
+    public void ParseTabOrCard_Position_ReturnsCorrectValues(string input, string expectedName, string expectedPosition)
     {
         var result = GroupingMetadata.ParseTabOrCard(input);
 
@@ -59,7 +59,7 @@ public class GroupingMetadataTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void ParseColumn_WithNullOrEmpty_ReturnsEmpty(string value)
+    public void ParseColumn_NullOrEmpty_ReturnsEmpty(string value)
     {
         var result = GroupingMetadata.ParseColumn(value);
 
@@ -71,7 +71,7 @@ public class GroupingMetadataTests
     [InlineData("Left", "Left", null, null)]
     [InlineData("Right", "Right", null, null)]
     [InlineData("Content", "Content", null, null)]
-    public void ParseColumn_WithNameOnly_ReturnsCorrectName(string input, string expectedName, string expectedPosition, string expectedWidth)
+    public void ParseColumn_NameOnly_ReturnsCorrectName(string input, string expectedName, string expectedPosition, string expectedWidth)
     {
         var result = GroupingMetadata.ParseColumn(input);
 
@@ -85,7 +85,7 @@ public class GroupingMetadataTests
     [InlineData("Left;1", "Left", "1", null)]
     [InlineData("Content;5.1", "Content", "5.1", null)]
     [InlineData("Right;before", "Right", "before", null)]
-    public void ParseColumn_WithPositionOnly_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
+    public void ParseColumn_PositionOnly_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
     {
         var result = GroupingMetadata.ParseColumn(input);
 
@@ -99,7 +99,7 @@ public class GroupingMetadataTests
     [InlineData("Left_9", "Left", null, "9")]
     [InlineData("Content_3", "Content", null, "3")]
     [InlineData("Right_lg-6", "Right", null, "lg-6")]
-    public void ParseColumn_WithWidthOnly_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
+    public void ParseColumn_WidthOnly_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
     {
         var result = GroupingMetadata.ParseColumn(input);
 
@@ -113,7 +113,7 @@ public class GroupingMetadataTests
     [InlineData("Left_9;1", "Left", "1", "9")]
     [InlineData("Content_3;5", "Content", "5", "3")]
     [InlineData("Right_lg-6;2.5", "Right", "2.5", "lg-6")]
-    public void ParseColumn_WithWidthThenPosition_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
+    public void ParseColumn_WidthThenPosition_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
     {
         var result = GroupingMetadata.ParseColumn(input);
 
@@ -127,7 +127,7 @@ public class GroupingMetadataTests
     [InlineData("Left;1_9", "Left", "1", "9")]
     [InlineData("Content;5_3", "Content", "5", "3")]
     [InlineData("Right;2.5_lg-6", "Right", "2.5", "lg-6")]
-    public void ParseColumn_WithPositionThenWidth_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
+    public void ParseColumn_PositionThenWidth_ReturnsCorrectValues(string input, string expectedName, string expectedPosition, string expectedWidth)
     {
         var result = GroupingMetadata.ParseColumn(input);
 
@@ -230,7 +230,7 @@ public class GroupingMetadataTests
     [Theory]
     [InlineData("Settings", "Settings")]
     [InlineData("Settings;1", "Settings;1")]
-    public void ToLocationString_ReturnsCorrectFormat(string input, string expected)
+    public void ToLocationString_Default_ReturnsCorrectFormat(string input, string expected)
     {
         var result = GroupingMetadata.ParseTabOrCard(input);
         Assert.Equal(expected, result.ToString());

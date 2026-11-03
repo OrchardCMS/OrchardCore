@@ -4,15 +4,17 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class CreateContentTask : ContentTask
+public class CreateContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     private readonly JavaScriptEncoder _javaScriptEncoder;
@@ -22,10 +24,11 @@ public class CreateContentTask : ContentTask
         IContentManager contentManager,
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<CreateContentTask> localizer,
         JavaScriptEncoder javaScriptEncoder,
         ISession session)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
         _expressionEvaluator = expressionEvaluator;
         _javaScriptEncoder = javaScriptEncoder;
@@ -34,9 +37,9 @@ public class CreateContentTask : ContentTask
 
     public override string Name => nameof(CreateContentTask);
 
-    public override LocalizedString Category => S["Content"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CreateContentTask>("Create Content Task");
 
-    public override LocalizedString DisplayText => S["Create Content Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public string ContentType
     {
@@ -62,9 +65,7 @@ public class CreateContentTask : ContentTask
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -121,14 +122,29 @@ public class CreateContentTask : ContentTask
 
             workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
             workflowContext.LastResult = contentItem;
+            workflowContext.SetActivityOutput(activityContext, "ContentItem", contentItem);
 
-            return Outcomes("Done");
+            return Outcome("Done");
         }
 
         workflowContext.LastResult = result;
 
         await _session.CancelAsync();
 
-        return Outcomes("Failed");
+        return Outcome("Failed");
     }
+
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = LocalizationSource.Create<CreateContentTask>("Content item"), Description = LocalizationSource.Create<CreateContentTask>("The content item the task created.") }];
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => s_outputs;
+
+    private static readonly ActivityProvidedValue[] s_providedValues =
+    [
+        new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = LocalizationSource.Create<CreateContentTask>("The content item the activity created."), Members = WorkflowValueMembers.ContentItem },
+        ActivityProvidedValue.LastResult("contentItem", LocalizationSource.Create<CreateContentTask>("The content item the activity created, or the validation result when it failed."), WorkflowValueMembers.ContentItem),
+    ];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 }

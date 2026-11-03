@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -30,6 +31,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
     private readonly IAuthorizationService _authorizationService;
     private readonly IMediaFileStore _mediaFileStore;
     private readonly FileCreationService _fileCreationService;
+    private readonly MediaOptions _mediaOptions;
     private readonly IMembershipService _membershipService;
     private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
     private readonly ISession _session;
@@ -43,6 +45,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         IContentDefinitionManager contentDefinitionManager,
         IMediaFileStore mediaFileStore,
         FileCreationService fileCreationService,
+        IOptions<MediaOptions> mediaOptions,
         IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
         IStringLocalizer<MetaWeblogHandler> localizer)
     {
@@ -53,6 +56,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         _session = session;
         _mediaFileStore = mediaFileStore;
         _fileCreationService = fileCreationService;
+        _mediaOptions = mediaOptions.Value;
         _membershipService = membershipService;
         S = localizer;
     }
@@ -149,13 +153,44 @@ public class MetaWeblogHandler : IXmlRpcHandler
 
     private async Task<XRpcStruct> MetaWeblogNewMediaObjectAsync(string userName, string password, XRpcStruct file)
     {
-        _ = await ValidateUserAsync(userName, password);
+        var user = await ValidateUserAsync(userName, password);
 
         var name = file.Optional<string>("name");
         var bits = file.Optional<byte[]>("bits");
 
-        var directoryName = Path.GetDirectoryName(name);
-        var filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
+        var normalizedPath = _mediaFileStore.NormalizePath(name);
+        if (string.IsNullOrWhiteSpace(normalizedPath))
+        {
+            throw new InvalidOperationException(S["The media path is invalid."].Value);
+        }
+
+        var pathSegments = normalizedPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (pathSegments.Any(segment => segment is "." or ".."))
+        {
+            throw new InvalidOperationException(S["The media path is invalid."].Value);
+        }
+
+        var fileName = pathSegments[^1];
+        var directoryName = string.Join('/', pathSegments[..^1]);
+        var filePath = _mediaFileStore.Combine(directoryName, fileName);
+
+        if (!await _authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)(directoryName ?? string.Empty)))
+        {
+            throw new InvalidOperationException(S["Not authorized to upload media."].Value);
+        }
+
+        var extension = Path.GetExtension(filePath);
+        var canUploadRestrictedMedia = await _authorizationService.AuthorizeAsync(
+            user,
+            MediaPermissions.UploadRestrictedMedia);
+        if (!_mediaOptions.AllowedFileExtensions.Contains(extension)
+            && (!canUploadRestrictedMedia
+                || !_mediaOptions.RestrictedFileExtensions.Contains(extension)))
+        {
+            throw new InvalidOperationException(S["This file extension is not allowed: {0}", extension].Value);
+        }
+
         Stream stream = null;
         try
         {
@@ -279,6 +314,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
             driver.EditPost(content, contentItem);
         }
 
+        await CheckMutationAccessAsync(
+            publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent,
+            user,
+            contentItem);
+
         await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
         // Try to get the UTC time zone by default.
@@ -364,6 +404,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
         {
             driver.EditPost(content, contentItem);
         }
+
+        await CheckMutationAccessAsync(
+            publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent,
+            user,
+            contentItem);
 
         // Try to get the UTC time zone by default.
         var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
@@ -481,6 +526,19 @@ public class MetaWeblogHandler : IXmlRpcHandler
         if (!await _authorizationService.AuthorizeAsync(user, permission, contentItem))
         {
             throw new InvalidOperationException(S["Not authorized to delete this content"].Value);
+        }
+    }
+
+    private async Task CheckMutationAccessAsync(
+        Permission permission,
+        ClaimsPrincipal user,
+        ContentItem contentItem)
+    {
+        if (!await _authorizationService.AuthorizeAsync(user, permission, contentItem))
+        {
+            await _session.CancelAsync();
+
+            throw new InvalidOperationException(S["Not authorized to edit this content"].Value);
         }
     }
 

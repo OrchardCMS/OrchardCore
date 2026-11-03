@@ -10,16 +10,16 @@ namespace OrchardCore.ReCaptcha.Drivers;
 
 public sealed class ReCaptchaResetPasswordFormDisplayDriver : DisplayDriver<ResetPasswordForm>
 {
-    private readonly ReCaptchaSettings _settings;
+    private readonly IOptionsMonitor<ReCaptchaSettings> _settings;
 
-    public ReCaptchaResetPasswordFormDisplayDriver(IOptions<ReCaptchaSettings> options)
+    public ReCaptchaResetPasswordFormDisplayDriver(IOptionsMonitor<ReCaptchaSettings> options)
     {
-        _settings = options.Value;
+        _settings = options;
     }
 
     public override async Task<IDisplayResult> EditAsync(ResetPasswordForm model, BuildEditorContext context)
     {
-        if (!_settings.ConfigurationExists())
+        if (!_settings.CurrentValue.ConfigurationExists())
         {
             return null;
         }

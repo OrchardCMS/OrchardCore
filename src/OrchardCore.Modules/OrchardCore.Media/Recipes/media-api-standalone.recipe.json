@@ -1,0 +1,58 @@
+{
+  "name": "MediaApiStandalone",
+  "displayName": "Media API — Standalone external app",
+  "description": "Layers the cross-origin configuration needed to run the Media gallery SPA as a standalone external app (hosted on its own origin) on top of the MediaApiPkce recipe. Apply MediaApiPkce FIRST (it enables the OpenID Server/Validation/Management and bearer Media API); then this recipe (1) enables the OrchardCore.Cors module and configures a default CORS policy allowing the app origin for the Media API, /connect/token and /hubs/media (bearer-only, so AllowCredentials is false), and (2) re-declares the 'media_gallery' public client with the app-origin callback + silent-renew redirect URIs added. IMPORTANT: replace https://media.example.com with the standalone app's real origin (scheme+host+port, no trailing slash for CORS origins), and https://localhost:5001 with the Orchard tenant origin. The redirect URIs must exactly match the pages the app serves (callback.html / silent-callback.html at the app origin+base). CORS origins are ORIGINS ONLY — no path, no trailing slash.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "security" ],
+  "tags": [ "openid", "oauth2", "pkce", "media", "api", "cors", "standalone" ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Cors"
+      ]
+    },
+    {
+      "name": "Settings",
+      "CorsSettings": {
+        "Policies": [
+          {
+            "Name": "MediaStandalone",
+            "AllowAnyOrigin": false,
+            "AllowedOrigins": [ "https://media.example.com" ],
+            "AllowAnyHeader": true,
+            "AllowedHeaders": [],
+            "AllowAnyMethod": true,
+            "AllowedMethods": [],
+            "AllowCredentials": false,
+            "IsDefaultPolicy": true,
+            "ExposedHeaders": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "OpenIdApplication",
+      "ClientId": "media_gallery",
+      "DisplayName": "Media Gallery (SPA)",
+      "Type": "public",
+      "ConsentType": "implicit",
+      "AllowAuthorizationCodeFlow": true,
+      "AllowLogoutEndpoint": true,
+      "RequireProofKeyForCodeExchange": true,
+      "RedirectUris": "https://media.example.com/callback.html https://media.example.com/silent-callback.html https://localhost:5001/OrchardCore.Media/media-gallery-oidc-silent.html",
+      "PostLogoutRedirectUris": "https://media.example.com/ https://localhost:5001/",
+      "ScopeEntries": [
+        { "Name": "email" },
+        { "Name": "profile" },
+        { "Name": "roles" }
+      ]
+    },
+    {
+      "name": "ReloadTenant"
+    }
+  ]
+}

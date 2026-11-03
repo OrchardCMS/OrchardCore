@@ -1,4 +1,8 @@
 <div class="alert alert-primary">
     <h4>@T["Welcome to Orchard Core"]</h4>
-    <p class="mb-0">@T["Feel free to browse the menu and discover all its possibilities."]</p>
+    <p class="mb-0">@T["Your site is ready. Get started with the actions below, or browse the menu to discover all its possibilities."]</p>
+</div>
+
+<div class="row">
+    @await DisplayAsync(await New.AdminDashboardContent())
 </div>

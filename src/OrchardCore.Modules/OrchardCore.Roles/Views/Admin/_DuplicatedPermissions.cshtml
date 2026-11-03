@@ -1,0 +1,13 @@
+@if (ViewData["DuplicatedPermissions"] is string[] duplicatedPermissions && duplicatedPermissions.Length > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>@T["Duplicate Permissions Detected"]</strong>
+        <p>@T["The following permissions are ambiguous and must be uniquely named across all modules:"]</p>
+        <ul>
+            @foreach (var permission in duplicatedPermissions)
+            {
+                <li>@permission</li>
+            }
+        </ul>
+    </div>
+}

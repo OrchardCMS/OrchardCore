@@ -1,0 +1,8 @@
+{
+  "name": "@orchardcore/admin",
+  "version": "1.0.0",
+  "dependencies": {
+    "@orchardcore/bloom": "workspace:^",
+    "@types/bootstrap": "5.2.7"
+  }
+}

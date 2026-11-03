@@ -6,7 +6,7 @@ namespace OrchardCore.Twitter;
 
 public sealed class AdminMenuSignIn : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", TwitterConstants.Features.Signin },
@@ -21,24 +21,6 @@ public sealed class AdminMenuSignIn : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-           .Add(S["Security"], security => security
-               .Add(S["Authentication"], authentication => authentication
-
-               .Add(S["Sign In with X (Twitter)"], S["Sign In with X (Twitter)"].PrefixPosition(), twitter => twitter
-                   .AddClass("twitter")
-                   .Id("twitter")
-                   .Action("Index", "Admin", _routeValues)
-                   .Permission(Permissions.ManageTwitterSignin)
-                   .LocalNav())
-               )
-           );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
@@ -46,7 +28,7 @@ public sealed class AdminMenuSignIn : AdminNavigationProvider
                         .Add(S["Sign In with X (Twitter)"], S["Sign In with X (Twitter)"].PrefixPosition(), twitter => twitter
                             .AddClass("twitter")
                             .Id("twitter")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageTwitterSignin)
                             .LocalNav()
                         )

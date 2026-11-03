@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Environment.Cache;
 public class CacheScopeManagerTests
 {
     [Fact]
-    public void ScopesCanBeEnteredAndExited()
+    public void ScopesCanBeEnteredAndExited_Default_Succeeds()
     {
         var scopeA = new CacheContext("a");
         var scopeB = new CacheContext("b");
@@ -27,10 +27,13 @@ public class CacheScopeManagerTests
         sut.EnterScope(scopeD);
 
         sut.ExitScope();
+
+        // Every scope has been exited, so there is nothing left to exit.
+        Assert.Throws<InvalidOperationException>(sut.ExitScope);
     }
 
     [Fact]
-    public void ContextsAreBubbledUp1()
+    public void ContextsAreBubbledUp1_Default_Succeeds()
     {
         var scopeA = new CacheContext("a");
         var scopeB = new CacheContext("b").AddContext("1", "2");
@@ -51,7 +54,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ContextsAreBubbledUp2()
+    public void ContextsAreBubbledUp2_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").AddContext("1", "2");
         var scopeB = new CacheContext("b");
@@ -71,7 +74,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ContextsAreBubbledUp3()
+    public void ContextsAreBubbledUp3_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").AddContext("3", "4");
         var scopeB = new CacheContext("b").AddContext("1", "2");
@@ -94,7 +97,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void TagsAreBubbledUp1()
+    public void TagsAreBubbledUp1_Default_Succeeds()
     {
         var scopeA = new CacheContext("a");
         var scopeB = new CacheContext("b").AddTag("1", "2");
@@ -115,7 +118,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void TagsAreBubbledUp2()
+    public void TagsAreBubbledUp2_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").AddTag("1", "2");
         var scopeB = new CacheContext("b");
@@ -135,7 +138,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void TagsAreBubbledUp3()
+    public void TagsAreBubbledUp3_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").AddTag("3", "4");
         var scopeB = new CacheContext("b").AddTag("1", "2");
@@ -158,7 +161,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpiryOnIsBubbledUp1()
+    public void ExpiryOnIsBubbledUp1_Default_Succeeds()
     {
         var scopeA = new CacheContext("a");
         var scopeB = new CacheContext("b").WithExpiryOn(new DateTime(2018, 10, 26));
@@ -176,7 +179,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpiryOnIsBubbledUp2()
+    public void ExpiryOnIsBubbledUp2_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").WithExpiryOn(new DateTime(2018, 10, 26));
         var scopeB = new CacheContext("b");
@@ -194,7 +197,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpiryOnIsBubbledUp3()
+    public void ExpiryOnIsBubbledUp3_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").WithExpiryOn(new DateTime(2020, 10, 26));
         var scopeB = new CacheContext("b").WithExpiryOn(new DateTime(2018, 10, 26));
@@ -212,7 +215,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpiryAfterIsBubbledUp1()
+    public void ExpiryAfterIsBubbledUp1_Default_Succeeds()
     {
         var scopeA = new CacheContext("a");
         var scopeB = new CacheContext("b").WithExpiryAfter(new TimeSpan(3, 30, 26));
@@ -230,7 +233,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpiryAfterIsBubbledUp2()
+    public void ExpiryAfterIsBubbledUp2_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").WithExpiryAfter(new TimeSpan(3, 30, 26));
         var scopeB = new CacheContext("b");
@@ -248,7 +251,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpiryAfterIsBubbledUp3()
+    public void ExpiryAfterIsBubbledUp3_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").WithExpiryAfter(new TimeSpan(5, 30, 26));
         var scopeB = new CacheContext("b").WithExpiryAfter(new TimeSpan(3, 30, 26));
@@ -266,7 +269,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpirySlidingIsBubbledUp1()
+    public void ExpirySlidingIsBubbledUp1_Default_Succeeds()
     {
         var scopeA = new CacheContext("a");
         var scopeB = new CacheContext("b").WithExpirySliding(new TimeSpan(3, 30, 26));
@@ -284,7 +287,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpirySlidingIsBubbledUp2()
+    public void ExpirySlidingIsBubbledUp2_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").WithExpirySliding(new TimeSpan(3, 30, 26));
         var scopeB = new CacheContext("b");
@@ -302,7 +305,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ExpirySlidingIsBubbledUp3()
+    public void ExpirySlidingIsBubbledUp3_Default_Succeeds()
     {
         var scopeA = new CacheContext("a").WithExpirySliding(new TimeSpan(5, 30, 26));
         var scopeB = new CacheContext("b").WithExpirySliding(new TimeSpan(3, 30, 26));
@@ -320,7 +323,7 @@ public class CacheScopeManagerTests
     }
 
     [Fact]
-    public void ComplexNesting()
+    public void ComplexNesting_Default_Succeeds()
     {
         var scopeA = new CacheContext("a")
             .AddContext("c1")

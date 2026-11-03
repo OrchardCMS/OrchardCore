@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.AdminMenu.Deployment;
 
@@ -8,14 +9,11 @@ namespace OrchardCore.AdminMenu.Deployment;
 /// </summary>
 public class AdminMenuDeploymentStep : DeploymentStep
 {
-    public AdminMenuDeploymentStep()
-    {
-        Name = "AdminMenu";
-    }
+    public override string Name => "AdminMenu";
 
-    public AdminMenuDeploymentStep(IStringLocalizer<AdminMenuDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => AdminMenuLocalizationSources.AdminMenus;
 }

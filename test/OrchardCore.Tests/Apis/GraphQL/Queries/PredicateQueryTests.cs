@@ -23,7 +23,7 @@ public class PredicateQueryTests
     [InlineData("ListItemIndex.Value", "[ListItemIndex].[Value]")]
     [InlineData("[ListItemIndex.Value]", "[ListItemIndex.Value]")]
     [InlineData("[ListItemIndex].[Value]", "[ListItemIndex].[Value]")]
-    public void ShouldReturnQuotedColumnNameWhenAliasNotExists(string propertyPath, string expectedColumnName)
+    public void Return_AliasNotExists_Succeeds(string propertyPath, string expectedColumnName)
     {
         // Arrange
         var predicateQuery = new PredicateQuery(_configuration, []);
@@ -40,7 +40,7 @@ public class PredicateQueryTests
     [InlineData("ListItemIndexPath.ValuePath", "ListItemIndexAlias.ValueAlias", "[ListItemIndexAlias].[ValueAlias]")]
     [InlineData("ListItemIndexPath.ValuePath", "[ListItemIndexAlias.ValueAlias]", "[ListItemIndexAlias.ValueAlias]")]
     [InlineData("ListItemIndexPath.ValuePath", "[ListItemIndexAlias].[ValueAlias]", "[ListItemIndexAlias].[ValueAlias]")]
-    public void ShouldReturnQuotedAliasColumnNameWhenAliasExists(string propertyPath, string alias, string expectedColumnName)
+    public void Return_AliasExists_Succeeds(string propertyPath, string alias, string expectedColumnName)
     {
         // Arrange
         var predicateQuery = new PredicateQuery(_configuration, []);
@@ -58,7 +58,7 @@ public class PredicateQueryTests
     [InlineData("[ListItemIndex].[Value]", "[ListItemIndex].[Value]")]
     [InlineData("ListItemIndex.[Value]", "[ListItemIndex].[Value]")]
     [InlineData("[ListItemIndex].Value", "[ListItemIndex].[Value]")]
-    public void DoesNotQuoteWhenPathIsQuoted(string propertyPath, string expectedColumnName)
+    public void DoesNotQuoteWhenPathIsQuoted_Default_Succeeds(string propertyPath, string expectedColumnName)
     {
         // Arrange
         var predicateQuery = new PredicateQuery(_configuration, []);
@@ -75,7 +75,7 @@ public class PredicateQueryTests
     [InlineData("[ListItemIndex.Value]", "[ListItemIndex.Value]", "Sqlite")]
     [InlineData("[ListItemIndex.Value]", "[ListItemIndex.Value]", "SqlServer")]
     [InlineData("\"ListItemIndex.Value\"", "\"ListItemIndex.Value\"", "Postgre")]
-    public void DetectsProviderDependentQuoteChars(string propertyPath, string expectedColumnName, string dialect)
+    public void DetectsProviderDependentQuoteChars_Default_Succeeds(string propertyPath, string expectedColumnName, string dialect)
     {
         // Arrange
         var configuration = new Configuration();
@@ -119,7 +119,7 @@ public class PredicateQueryTests
     }
 
     [Fact]
-    public void ShouldReturnQuotedTableAliasAndColumnNameWhenProviderExists()
+    public void Return_ProviderExists_Succeeds()
     {
         // Arrange
         var predicateQuery = new PredicateQuery(_configuration, [new IndexPropertyProvider<ListItemIndex>()]);
@@ -135,7 +135,7 @@ public class PredicateQueryTests
     }
 
     [Fact]
-    public void ShouldReturnQuotedTableAliasAndPathWhenProviderNotExists()
+    public void Return_ProviderNotExists_Succeeds()
     {
         // Arrange
         var predicateQuery = new PredicateQuery(_configuration, []);

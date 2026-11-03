@@ -11,15 +11,6 @@ public sealed class Permissions : IPermissionProvider
         WorkflowsPermissions.ManageWorkflowSettings,
     ];
 
-    [Obsolete("This will be removed in a future release. Instead use 'WorkflowsPermissions.ManageWorkflows'.")]
-    public static readonly Permission ManageWorkflows = WorkflowsPermissions.ManageWorkflows;
-
-    [Obsolete("This will be removed in a future release. Instead use 'WorkflowsPermissions.ExecuteWorkflows'.")]
-    public static readonly Permission ExecuteWorkflows = WorkflowsPermissions.ExecuteWorkflows;
-
-    [Obsolete("This will be removed in a future release. Instead use 'WorkflowsPermissions.ManageWorkflowSettings'.")]
-    public static readonly Permission ManageWorkflowSettings = WorkflowsPermissions.ManageWorkflowSettings;
-
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 
@@ -33,7 +24,7 @@ public sealed class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = OrchardCoreConstants.Roles.Editor,
-            Permissions = _allPermissions,
+            Permissions = [WorkflowsPermissions.ExecuteWorkflows],
         }
     ];
 }

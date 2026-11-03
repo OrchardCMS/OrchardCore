@@ -96,7 +96,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ShapeResultsShouldBeInitialized()
+    public async Task ShapeResults_Default_BeInitialized()
     {
         var shapeType = "shapetype1";
 
@@ -118,7 +118,7 @@ public class DynamicCacheTests
         {
             shape.Properties["property1"] = 1;
             ((MyModel)shape).MyProperty = 3;
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }).Location("Content");
 
         var contentShape = await factory.CreateAsync("Content");
@@ -136,7 +136,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ShapeResultsAreRenderedOnceWhenCached()
+    public async Task ShapeResultsAreRenderedOnce_Cached_Succeeds()
     {
         var shapeType = "shapetype1";
         var cacheTag = "mytag";
@@ -170,7 +170,7 @@ public class DynamicCacheTests
             initializing: shape =>
             {
                 initializedCalled++;
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             }).Location("Content").Cache("mycontent", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(1)).AddTag(cacheTag))
             .Processing(shape =>
             {
@@ -228,7 +228,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task DriverResultsAssignProcessing()
+    public async Task DriverResultsAssignProcessing_Default_Succeeds()
     {
         // ShapeMetadata.Processing is the method which is not invoked when the shape is cached.
         // We need to ensure that the delegate used in the driver InitializeAsync call is used as Processing and not during
@@ -256,7 +256,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithCachingCachesFinalMorphedShape()
+    public async Task ShapeMorphingWithCachingCachesFinalMorphedShape_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var factory = _serviceProvider.GetService<IShapeFactory>();
@@ -351,7 +351,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ShapeMorphingChainWithCachingCachesFinalResult()
+    public async Task ShapeMorphingChainWithCachingCachesFinalResult_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var factory = _serviceProvider.GetService<IShapeFactory>();
@@ -479,7 +479,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ConditionalShapeMorphingWithCachingRespectsCacheKeys()
+    public async Task ConditionalShapeMorphingWithCachingRespectsCacheKeys_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var factory = _serviceProvider.GetService<IShapeFactory>();
@@ -531,7 +531,7 @@ public class DynamicCacheTests
             shape =>
             {
                 shape.Properties["ShouldMorph"] = true;
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             })
             .Location("Content")
             .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -552,7 +552,7 @@ public class DynamicCacheTests
             shape =>
             {
                 shape.Properties["ShouldMorph"] = false;
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             })
             .Location("Content")
             .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -576,7 +576,7 @@ public class DynamicCacheTests
                 shape =>
                 {
                     shape.Properties["ShouldMorph"] = true;
-                    return Task.CompletedTask;
+                    return ValueTask.CompletedTask;
                 })
                 .Location("Content")
                 .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -594,7 +594,7 @@ public class DynamicCacheTests
                 shape =>
                 {
                     shape.Properties["ShouldMorph"] = false;
-                    return Task.CompletedTask;
+                    return ValueTask.CompletedTask;
                 })
                 .Location("Content")
                 .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -612,7 +612,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithAlternatesAndCachingPreservesAlternates()
+    public async Task ShapeMorphingWithAlternatesAndCachingPreservesAlternates_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var factory = _serviceProvider.GetService<IShapeFactory>();
@@ -708,7 +708,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithCacheInvalidationRecreatesCorrectly()
+    public async Task ShapeMorphingWithCacheInvalidationRecreatesCorrectly_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var factory = _serviceProvider.GetService<IShapeFactory>();
@@ -799,7 +799,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task DoubleMorphingWithConcatenationCachesFinalCombinedResult()
+    public async Task DoubleMorphingWithConcatenationCachesFinalCombinedResult_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var factory = _serviceProvider.GetService<IShapeFactory>();
@@ -869,7 +869,7 @@ public class DynamicCacheTests
         var shapeResult = new ShapeResult(
             "DoubleMorphShape",
             ctx => factory.CreateAsync("DoubleMorphShape"),
-            shape => { shape.Properties["Data"] = "TestValue"; return Task.CompletedTask; })
+            shape => { shape.Properties["Data"] = "TestValue"; return ValueTask.CompletedTask; })
             .Location("Content")
             .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
@@ -891,7 +891,7 @@ public class DynamicCacheTests
             shapeResult = new ShapeResult(
                 "DoubleMorphShape",
                 ctx => factory.CreateAsync("DoubleMorphShape"),
-                shape => { shape.Properties["Data"] = "TestValue"; return Task.CompletedTask; })
+                shape => { shape.Properties["Data"] = "TestValue"; return ValueTask.CompletedTask; })
                 .Location("Content")
                 .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
@@ -910,7 +910,7 @@ public class DynamicCacheTests
         var shapeResult2 = new ShapeResult(
             "DoubleMorphShape",
             ctx => factory.CreateAsync("DoubleMorphShape"),
-            shape => { shape.Properties["Data"] = "DifferentValue"; return Task.CompletedTask; })
+            shape => { shape.Properties["Data"] = "DifferentValue"; return ValueTask.CompletedTask; })
             .Location("Content")
             .Cache("double-morph-concat-different", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
@@ -931,7 +931,7 @@ public class DynamicCacheTests
         shapeResult = new ShapeResult(
             "DoubleMorphShape",
             ctx => factory.CreateAsync("DoubleMorphShape"),
-            shape => { shape.Properties["Data"] = "TestValue"; return Task.CompletedTask; })
+            shape => { shape.Properties["Data"] = "TestValue"; return ValueTask.CompletedTask; })
             .Location("Content")
             .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
@@ -955,7 +955,7 @@ public class DynamicCacheTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithCachingCachesInnerMorphedShape()
+    public async Task ShapeMorphingWithCachingCachesInnerMorphedShape_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var factory = _serviceProvider.GetService<IShapeFactory>();

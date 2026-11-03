@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Azure.Models;
 
@@ -11,13 +13,19 @@ public sealed class AzureSmsOptionsConfiguration : IConfigureOptions<AzureSmsOpt
 
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger _logger;
 
     public AzureSmsOptionsConfiguration(
         ISiteService siteService,
-        IDataProtectionProvider dataProtectionProvider)
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
+        ILogger<AzureSmsOptionsConfiguration> logger)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public void Configure(AzureSmsOptions options)
@@ -27,11 +35,12 @@ public sealed class AzureSmsOptionsConfiguration : IConfigureOptions<AzureSmsOpt
         options.IsEnabled = settings.IsEnabled;
         options.PhoneNumber = settings.PhoneNumber;
 
-        if (!string.IsNullOrEmpty(settings.ConnectionString))
-        {
-            var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-
-            options.ConnectionString = protector.Unprotect(settings.ConnectionString);
-        }
+        options.ConnectionString = _serviceProvider.GetSecretValueAsync(
+            settings.ConnectionStringSecretName,
+            settings.ConnectionString,
+            _dataProtectionProvider.CreateProtector(ProtectorName),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
     }
 }

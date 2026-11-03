@@ -6,22 +6,24 @@
 }
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" ></style>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Admin Menu: {0}", localizedAdminMenuName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="AdminMenusEdit" title="@T["Edit Admin Menu: {0}", localizedAdminMenuName]">
+        <breadcrumb-item id="AdminMenus" action="List" controller="Menu" area="OrchardCore.AdminMenu" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Admin Menus"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end">
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
     </div>
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-success save" type="submit">@T["Save"]</button>
-            <a class="btn btn-primary edit-nodes" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-success save" type="submit">@T["Save"]</button>
+        <a class="btn btn-primary edit-nodes action-bar-secondary" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
     </div>
 </form>

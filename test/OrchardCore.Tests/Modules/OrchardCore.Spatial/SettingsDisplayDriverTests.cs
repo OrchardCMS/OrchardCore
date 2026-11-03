@@ -41,7 +41,7 @@ public class SettingsDisplayDriverTests
     }
 
     [Fact]
-    public async Task GeoPointFieldSettingsShouldDeserialize()
+    public async Task GeoPointFieldSettings_Default_Deserialize()
     {
         var settings = new GeoPointFieldSettings
         {

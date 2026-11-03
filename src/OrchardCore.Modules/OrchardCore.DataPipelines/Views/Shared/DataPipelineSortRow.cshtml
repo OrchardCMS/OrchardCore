@@ -1,0 +1,17 @@
+@model (IReadOnlyList<DataField> Fields, SortField Key, string Index)
+@{
+    // The full name, such as "DataPipelineStep.Keys[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Keys[{Model.Index}]");
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
+        <partial name="DataPipelineFieldOptions" model="@((Model.Fields, Model.Key.Field, true))" />
+    </select>
+    <select name="@(prefix).Descending" class="form-select" style="max-width: 12rem" aria-label="@T["Order"]">
+        <option value="false" selected="@(!Model.Key.Descending)">@T["Ascending"]</option>
+        <option value="true" selected="@Model.Key.Descending">@T["Descending"]</option>
+    </select>
+    <button type="button" class="btn btn-outline-secondary" data-dp-up title="@T["Move up"]"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>

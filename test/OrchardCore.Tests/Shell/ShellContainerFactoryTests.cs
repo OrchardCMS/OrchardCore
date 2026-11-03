@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Shell;
 
 public class ShellContainerFactoryTests
 {
-    private static readonly ShellSettings _uninitializedDefaultShell = new ShellSettings()
+    private static readonly ShellSettings s_uninitializedDefaultShell = new ShellSettings()
         .AsDefaultShell()
         .AsUninitialized();
 
@@ -45,14 +45,14 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task CanRegisterDefaultServiceWithFeatureInfo()
+    public async Task CanRegisterDefaultServiceWithFeatureInfo_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
         var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
         var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateContainerAsync(s_uninitializedDefaultShell, shellBlueprint))
             .CreateScope()
             .ServiceProvider;
 
@@ -63,7 +63,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task CanReplaceDefaultServiceWithCustomService()
+    public async Task CanReplaceDefaultServiceWithCustomService_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
@@ -71,7 +71,7 @@ public class ShellContainerFactoryTests
         AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
         var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateContainerAsync(s_uninitializedDefaultShell, shellBlueprint))
             .CreateScope()
             .ServiceProvider;
 
@@ -83,11 +83,11 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task HostServiceLifeTimesShouldBePreserved()
+    public async Task HostServiceLifeTimes_Default_BePreserved()
     {
         var shellBlueprint = CreateBlueprint();
         var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateContainerAsync(s_uninitializedDefaultShell, shellBlueprint))
             .CreateScope()
             .ServiceProvider;
 
@@ -122,13 +122,13 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
+    public async Task Default_TwoHostSingletonsTwoHostSingletonsGetServicesReturnsHostAndShellServicesSucceeds_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
         AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
 
         var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateContainerAsync(s_uninitializedDefaultShell, shellBlueprint))
             .CreateScope()
             .ServiceProvider;
 
@@ -138,12 +138,12 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
+    public async Task Default_HostSingletonAndScopedHostSingletonAndScopedGetServicesReturnsCorrectImplementationsSucceeds_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
         var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateContainerAsync(s_uninitializedDefaultShell, shellBlueprint))
             .CreateScope()
             .ServiceProvider;
 
@@ -155,14 +155,14 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task AssignsTypeToMultipleFeatures()
+    public async Task AssignsTypeToMultipleFeatures_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
         var expectedFeatureInfos = AddStartups(shellBlueprint, typeof(RegisterServiceStartup), typeof(RegisterSecondServiceStartup));
 
         var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateContainerAsync(s_uninitializedDefaultShell, shellBlueprint))
             .CreateScope()
             .ServiceProvider;
 
@@ -173,14 +173,14 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task RawStartupIsAssignedToCorrectFeature()
+    public async Task RawStartupIsAssignedToCorrectFeature_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
         var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(Startup));
 
         var container = (await _shellContainerFactory
-            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateContainerAsync(s_uninitializedDefaultShell, shellBlueprint))
             .CreateScope()
             .ServiceProvider;
 

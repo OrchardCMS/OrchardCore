@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -22,8 +23,6 @@ namespace OrchardCore.RateLimits;
 
 public sealed class Startup : StartupBase
 {
-    public override int ConfigureOrder => OrchardCoreConstants.ConfigureOrder.RateLimiter;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddRateLimiter();
@@ -47,6 +46,7 @@ public sealed class Startup : StartupBase
 
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
+
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

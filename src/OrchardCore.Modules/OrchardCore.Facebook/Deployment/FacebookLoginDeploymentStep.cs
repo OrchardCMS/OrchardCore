@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Facebook.Deployment;
 
@@ -8,14 +9,8 @@ namespace OrchardCore.Facebook.Deployment;
 /// </summary>
 public class FacebookLoginDeploymentStep : DeploymentStep
 {
-    public FacebookLoginDeploymentStep()
-    {
-        Name = "Facebook Login";
-    }
+    public override string Name => "Facebook Login";
 
-    public FacebookLoginDeploymentStep(IStringLocalizer<FacebookLoginDeploymentStep> S)
-        : this()
-    {
-        Category = S["Meta"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => FacebookLocalizationSources.Meta;
 }

@@ -7,7 +7,7 @@ namespace OrchardCore.Security;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", SecuritySettingsDisplayDriver.GroupId },
@@ -22,30 +22,12 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security")
-                    .Id("security")
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                            .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
                         .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .LocalNav()
                     )
                 )

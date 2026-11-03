@@ -83,17 +83,6 @@ public class FeatureService
                 await _shellFeaturesManager.DisableFeaturesAsync(features, force == true);
                 await notifyAsync(features, false);
                 break;
-            case FeaturesBulkAction.Toggle:
-                // The features array has already been checked for validity.
-                var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-                var disabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync();
-                var featuresToEnable = disabledFeatures.Intersect(features);
-                var featuresToDisable = enabledFeatures.Intersect(features);
-
-                await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force == true);
-                await notifyAsync(featuresToEnable, true);
-                await notifyAsync(featuresToDisable, false);
-                return;
             default:
                 break;
         }

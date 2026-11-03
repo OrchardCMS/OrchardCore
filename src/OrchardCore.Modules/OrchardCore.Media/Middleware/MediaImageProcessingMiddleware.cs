@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Middleware;
 
 internal sealed class MediaImageProcessingMiddleware : IMiddleware
 {
-    private static readonly HashSet<string> _imageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> s_imageExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".jpg", ".jpeg", ".png", ".gif", ".webp",
     };
@@ -62,7 +62,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
 
         // Only handle image file requests.
         var ext = Path.GetExtension(remaining.Value);
-        if (string.IsNullOrEmpty(ext) || !_imageExtensions.Contains(ext))
+        if (string.IsNullOrEmpty(ext) || !s_imageExtensions.Contains(ext))
         {
             return next(context);
         }

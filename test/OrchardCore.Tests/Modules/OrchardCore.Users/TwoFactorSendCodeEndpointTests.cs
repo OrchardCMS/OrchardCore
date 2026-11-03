@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 public class TwoFactorSendCodeEndpointTests
 {
     [Fact]
-    public async Task EmailSendCode_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task EmailSendCode_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(UserConstants.Features.EmailAuthenticator);
@@ -26,7 +26,7 @@ public class TwoFactorSendCodeEndpointTests
     }
 
     [Fact]
-    public async Task SmsSendCode_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task SmsSendCode_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(UserConstants.Features.SmsAuthenticator);

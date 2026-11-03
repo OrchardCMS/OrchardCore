@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class JoinTask : TaskActivity<JoinTask>
+public class JoinTask : TaskActivity<JoinTask>, IActivityDescription
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public enum JoinMode
@@ -14,14 +16,19 @@ public class JoinTask : TaskActivity<JoinTask>
         WaitAny,
     }
 
-    public JoinTask(IStringLocalizer<JoinTask> localizer)
+    public JoinTask(IStringLocalizerFactory localizerFactory, IStringLocalizer<JoinTask> localizer)
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Join Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<JoinTask>("Join Task");
 
-    public override LocalizedString Category => S["Control Flow"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.ControlFlow;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public JoinMode Mode
     {
@@ -36,9 +43,7 @@ public class JoinTask : TaskActivity<JoinTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Joined"]);
-    }
+        => Outcome(S["Joined"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -70,7 +75,7 @@ public class JoinTask : TaskActivity<JoinTask>
 
         if (done)
         {
-            return Outcomes("Joined");
+            return Outcome("Joined");
         }
 
         return Noop();

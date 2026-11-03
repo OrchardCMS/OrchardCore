@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation;
@@ -31,7 +30,7 @@ public class NavigationShapes : ShapeTableProvider
                 // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
                 // events and thus this code can be cached.
 
-                if (menu is Shape shape && shape.HasItems)
+                if (menu.HasItems())
                 {
                     return;
                 }
@@ -66,7 +65,6 @@ public class NavigationShapes : ShapeTableProvider
                         }
                     }
 
-                    // TODO: Flag Selected menu item
                     await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
                 }
             });
@@ -75,9 +73,9 @@ public class NavigationShapes : ShapeTableProvider
             .OnDisplaying(displaying =>
             {
                 var menuItem = displaying.Shape;
-                var menu = menuItem.GetProperty<IShape>("Menu");
+                var menu = menuItem is NavigationItemViewModel navigationItem ? navigationItem.Menu : menuItem.GetProperty<IShape>(nameof(NavigationItemViewModel.Menu));
                 var menuName = menu.GetProperty<string>("MenuName");
-                var level = menuItem.GetProperty<int>("Level");
+                var level = menuItem is NavigationItemViewModel typedNavigationItem ? typedNavigationItem.Level : menuItem.GetProperty<int>(nameof(NavigationItemViewModel.Level));
 
                 menuItem.Metadata.Alternates.AddRange(NavigationAlternatesFactory.GetNavigationItemAlternates(menuName, level));
             });
@@ -86,8 +84,9 @@ public class NavigationShapes : ShapeTableProvider
             .OnDisplaying(displaying =>
             {
                 var menuItem = displaying.Shape;
-                var menuName = menuItem.GetProperty<IShape>("Menu").GetProperty<string>("MenuName");
-                var level = menuItem.GetProperty<int>("Level");
+                var menu = menuItem is NavigationItemViewModel navigationItem ? navigationItem.Menu : menuItem.GetProperty<IShape>(nameof(NavigationItemViewModel.Menu));
+                var menuName = menu.GetProperty<string>("MenuName");
+                var level = menuItem is NavigationItemViewModel typedNavigationItem ? typedNavigationItem.Level : menuItem.GetProperty<int>(nameof(NavigationItemViewModel.Level));
 
                 // NavigationItemLink__[MenuName] e.g. NavigationItemLink-Main-Menu
                 // NavigationItemLink__[MenuName]__level__[level] e.g. NavigationItemLink-Main-Menu-level-2

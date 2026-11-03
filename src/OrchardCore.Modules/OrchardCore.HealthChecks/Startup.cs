@@ -25,7 +25,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<IHealthChecksResponseWriter, DefaultHealthChecksResponseWriter>();
         services.AddHealthChecks();
 
-        services.Configure<HealthChecksOptions>(_shellConfiguration.GetSection("OrchardCore_HealthChecks"));
+        // The 'OrchardCore_HealthChecks' section is deprecated and will be removed in a future major version, use 'HealthChecks' instead.
+        services.Configure<HealthChecksOptions>(_shellConfiguration.GetSectionCompat("HealthChecks", "OrchardCore_HealthChecks"));
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -36,7 +37,7 @@ public sealed class Startup : StartupBase
         {
             var healthChecksResponseWriter = serviceProvider.GetService<IHealthChecksResponseWriter>();
 
-            app.UseHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
+            routes.MapHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
             {
                 AllowCachingResponses = false,
                 ResultStatusCodes =
@@ -50,7 +51,7 @@ public sealed class Startup : StartupBase
         }
         else
         {
-            app.UseHealthChecks(healthChecksOptions.Url);
+            routes.MapHealthChecks(healthChecksOptions.Url);
         }
     }
 }

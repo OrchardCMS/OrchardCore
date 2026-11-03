@@ -1,0 +1,31 @@
+[
+  {
+    "action": "parcel",
+    "name": "sql-query-editor",
+    "source": "Assets/ts/sql-query.ts",
+    "dest": "wwwroot/Scripts/sql-query/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "query-editors",
+    "source": [
+      "Assets/ts/query-fields.ts",
+      "Assets/ts/query-based-content-deployment-step.ts"
+    ],
+    "dest": "wwwroot/Scripts/query-editors/",
+    "tags": ["admin", "dashboard", "js"]  },
+  {
+    "action": "parcel",
+    "name": "queries-index",
+    "source": "Assets/ts/queries-index.ts",
+    "dest": "wwwroot/Scripts/queries-index/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "queries-admin-query",
+    "source": "Assets/ts/queries-admin-query.ts",
+    "dest": "wwwroot/Scripts/queries-admin-query/",
+    "tags": ["admin", "dashboard", "js"]  }
+]

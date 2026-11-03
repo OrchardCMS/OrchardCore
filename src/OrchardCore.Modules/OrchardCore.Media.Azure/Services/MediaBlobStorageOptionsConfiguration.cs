@@ -21,8 +21,9 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
         _shellConfiguration = shellConfiguration;
     }
 
+    // The 'OrchardCore_Media_Azure' section is deprecated and will be removed in a future major version, use 'Media:Azure' instead.
     protected override MediaBlobStorageOptions GetRawOptions()
-        => _shellConfiguration.GetSection("OrchardCore_Media_Azure")
+        => _shellConfiguration.GetSectionCompat("Media:Azure", "OrchardCore_Media_Azure")
         .Get<MediaBlobStorageOptions>();
 
     protected override void FurtherConfigure(MediaBlobStorageOptions rawOptions, MediaBlobStorageOptions options)
@@ -30,5 +31,6 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
         options.CreateContainer = rawOptions.CreateContainer;
         options.RemoveContainer = rawOptions.RemoveContainer;
         options.RemoveFilesFromBasePath = rawOptions.RemoveFilesFromBasePath;
+        options.UseHierarchicalNamespace = rawOptions.UseHierarchicalNamespace;
     }
 }

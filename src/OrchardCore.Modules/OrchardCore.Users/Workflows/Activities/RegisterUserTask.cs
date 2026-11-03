@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -15,9 +16,9 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class RegisterUserTask : TaskActivity<RegisterUserTask>
+public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvidedValues, IActivityDescription
 {
-    private static readonly string _emailConfirmationControllerName = typeof(Controllers.EmailConfirmationController).ControllerName();
+    private static readonly string s_emailConfirmationControllerName = typeof(Controllers.EmailConfirmationController).ControllerName();
     private readonly IUserService _userService;
     private readonly UserManager<IUser> _userManager;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -26,6 +27,8 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
     private readonly IEmailService _emailService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly HtmlEncoder _htmlEncoder;
+
+    private readonly IStringLocalizerFactory _localizerFactory;
 
     protected readonly IStringLocalizer S;
 
@@ -37,6 +40,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         IHttpContextAccessor httpContextAccessor,
         IEmailService emailService,
         IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<RegisterUserTask> localizer,
         HtmlEncoder htmlEncoder)
     {
@@ -47,14 +51,19 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         _httpContextAccessor = httpContextAccessor;
         _emailService = emailService;
         _updateModelAccessor = updateModelAccessor;
+        _localizerFactory = localizerFactory;
         S = localizer;
         _htmlEncoder = htmlEncoder;
     }
 
-    public override LocalizedString DisplayText => S["Register User Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<RegisterUserTask>("Register User Task");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.User;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
 
     // The category to which this activity belongs. The activity picker groups activities by this category.
-    public override LocalizedString Category => S["User"];
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     // The message to display.
     public bool SendConfirmationEmail
@@ -83,9 +92,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
     // Returns the possible outcomes of this activity.
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
-    }
+        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
 
     // This is the heart of the activity and actually performs the work to be done.
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -93,7 +100,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         var email = GetPropertyFromContextOrForm(workflowContext, "Email");
         if (string.IsNullOrWhiteSpace(email))
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
 
         var userName = GetPropertyFromContextOrForm(workflowContext, "UserName") ?? email.Replace('@', '+');
@@ -101,15 +108,15 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
         if (user == null)
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
 
         if (SendConfirmationEmail && !await SendConfirmationEmailAsync(user, workflowContext, email))
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
 
-        return Outcomes("Done", "Valid");
+        return Outcome("Done", "Valid");
     }
 
     private string GetPropertyFromContextOrForm(WorkflowExecutionContext context, string key)
@@ -140,7 +147,9 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
             {
                 foreach (var item in errors)
                 {
+#pragma warning disable OCLOC104 // The errors are the identity errors, which are declared and extracted where they are described.
                     updater.ModelState.TryAddModelError(item.Key, S[item.Value]);
+#pragma warning restore OCLOC104
                 }
             }
             return null;
@@ -156,7 +165,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         var uri = _linkGenerator.GetUriByAction(
             _httpContextAccessor.HttpContext,
             nameof(Controllers.EmailConfirmationController.ConfirmEmail),
-            _emailConfirmationControllerName,
+            s_emailConfirmationControllerName,
             new { area = UserConstants.Features.Users, userId = user.UserId, code });
 
         context.Properties["EmailConfirmationUrl"] = uri;
@@ -165,7 +174,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
         var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, context, _htmlEncoder);
 
-        var result = await _emailService.SendAsync(email, subject, body);
+        var result = await _emailService.SendAsync(email, subject, body, cancellationToken: context.CancellationToken);
 
         if (!result.Succeeded)
         {
@@ -183,4 +192,9 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
         return true;
     }
+
+    private static readonly ActivityProvidedValue[] s_providedValues = [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "EmailConfirmationUrl", TypeName = "string", Description = LocalizationSource.Create<RegisterUserTask>("The URL that confirms the email of the registered user."), AvailableToItself = true }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 }

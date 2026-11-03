@@ -1,6 +1,8 @@
 @model dynamic
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Configure OpenID Connect validation settings"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="OpenIdValidationConfiguration" title="@T["Configure OpenID Connect validation settings"]" />
+</zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit">
     @Html.ValidationSummary()
@@ -11,9 +13,7 @@
 
     @await DisplayAsync(Model.Content)
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
     </div>
 </form>

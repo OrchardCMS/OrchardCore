@@ -58,6 +58,14 @@ public sealed class SettingsStep : NamedRecipeStepHandler
                     site.PageSize = property.Value.Value<int>();
                     break;
 
+                case "AllowPageSizeSelection":
+                    site.AllowPageSizeSelection = property.Value.Value<bool>();
+                    break;
+
+                case "PageSizeOptions":
+                    site.PageSizeOptions = property.Value.ToObject<int[]>();
+                    break;
+
                 case "ResourceDebugMode":
                     if (property.Value.TryGetEnumValue<ResourceDebugMode>(out var resourceDebugMode))
                     {

@@ -12,7 +12,7 @@ public class OpenIdApplicationStepTests
 {
     [Theory]
     [ClassData(typeof(OpenIdApplicationStepTestsData))]
-    public async Task OpenIdApplicationCanBeParsed(string recipeName, OpenIdApplicationDescriptor expected)
+    public async Task OpenIdApplicationCanBeParsed_Default_Succeeds(string recipeName, OpenIdApplicationDescriptor expected)
     {
         // Arrange
         OpenIdApplicationDescriptor actual = null;
@@ -67,7 +67,7 @@ public class OpenIdApplicationStepTests
     }
 
     [Fact]
-    public async Task OpenIdApplicationCanBeUpdated()
+    public async Task OpenIdApplicationCanBeUpdated_Default_Succeeds()
     {
         // Arrange
         var recipeName = "app-recipe3";

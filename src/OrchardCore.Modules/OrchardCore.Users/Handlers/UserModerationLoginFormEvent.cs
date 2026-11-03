@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
@@ -12,23 +11,20 @@ namespace OrchardCore.Users.Handlers;
 
 internal sealed class UserModerationLoginFormEvent : LoginFormEventBase
 {
-    private readonly RegistrationOptions _registrationOptions;
-    private readonly UserManager<IUser> _userManager;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserModerationLoginFormEvent(
-        IOptions<RegistrationOptions> registrationOptions,
-        UserManager<IUser> userManager,
+        IOptionsMonitor<RegistrationOptions> registrationOptions,
         IHttpContextAccessor httpContextAccessor)
     {
-        _registrationOptions = registrationOptions.Value;
-        _userManager = userManager;
+        _registrationOptions = registrationOptions;
         _httpContextAccessor = httpContextAccessor;
     }
 
     public override Task<IActionResult> ValidatingLoginAsync(IUser user)
     {
-        if (!_registrationOptions.UsersAreModerated || user is not User u || u.IsEnabled)
+        if (!_registrationOptions.CurrentValue.UsersAreModerated || user is not User u || u.IsEnabled)
         {
             return Task.FromResult<IActionResult>(null);
         }

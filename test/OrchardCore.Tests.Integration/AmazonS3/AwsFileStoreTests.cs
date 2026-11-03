@@ -1,8 +1,11 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AmazonS3;
+using OrchardCore.Media.Core;
 using OrchardCore.Modules;
 using OrchardCore.Tests.Integration.Infrastructure;
 using Xunit;
@@ -99,14 +102,14 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     // -- File operations --
 
     [DockerFact]
-    public async Task CreateFile_ReturnsPath()
+    public async Task CreateFile_Default_ReturnsPath()
     {
         var result = await CreateTestFileAsync("folder/file.txt");
         Assert.Equal("folder/file.txt", result);
     }
 
     [DockerFact]
-    public async Task GetFileInfo_ReturnsCorrectMetadata()
+    public async Task GetFileInfo_Default_ReturnsCorrectMetadata()
     {
         var content = "hello world";
         await CreateTestFileAsync("info-test.txt", content);
@@ -128,7 +131,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task GetFileStream_ReturnsContent()
+    public async Task GetFileStream_Default_ReturnsContent()
     {
         var expected = "stream content test";
         await CreateTestFileAsync("stream-test.txt", expected);
@@ -139,7 +142,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task DeleteFile_ReturnsTrue()
+    public async Task DeleteFile_Default_ReturnsTrue()
     {
         await CreateTestFileAsync("delete-me.txt");
 
@@ -150,7 +153,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task CopyFile_CreatesNewFile()
+    public async Task CopyFile_Default_CreatesNewFile()
     {
         var content = "copy me";
         await CreateTestFileAsync("original.txt", content);
@@ -229,7 +232,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task CreateDirectory_Succeeds()
+    public async Task CreateDirectory_Default_Succeeds()
     {
         var result = await _store.TryCreateDirectoryAsync("new-dir");
 
@@ -240,7 +243,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task DeleteDirectory_WithContents_DeletesAll()
+    public async Task DeleteDirectory_Contents_DeletesAll()
     {
         await _store.TryCreateDirectoryAsync("dir-to-delete");
         await CreateTestFileAsync("dir-to-delete/file1.txt");
@@ -263,7 +266,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     // -- Move --
 
     [DockerFact]
-    public async Task MoveFile_MovesToNewPath()
+    public async Task MoveFile_Default_MovesToNewPath()
     {
         var content = "move me";
         await CreateTestFileAsync("src.txt", content);
@@ -275,7 +278,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task MoveFile_AcrossDirectories()
+    public async Task MoveFile_AcrossDirectories_Succeeds()
     {
         await _store.TryCreateDirectoryAsync("dir-a");
         await _store.TryCreateDirectoryAsync("dir-b");
@@ -290,7 +293,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     // -- Directory content listing --
 
     [DockerFact]
-    public async Task GetDirectoryContent_ListsFilesAndDirs()
+    public async Task GetDirectoryContent_Default_ListsFilesAndDirs()
     {
         await CreateTestFileAsync("root-file.txt");
         await _store.TryCreateDirectoryAsync("sub-dir");
@@ -304,6 +307,91 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
         Assert.Contains(entries, e => e.Name == "root-file.txt" && !e.IsDirectory);
         Assert.Contains(entries, e => e.Name == "sub-dir" && e.IsDirectory);
+    }
+
+    // -- NTFS-incompatible names, see https://github.com/OrchardCMS/OrchardCore/issues/17644 --
+
+    private const string NtfsInvalidFolder = "test:asdf";
+
+    [DockerFact]
+    public async Task CreateFile_FolderWithNtfsInvalidCharacters_RoundTrips()
+    {
+        // S3 object keys allow names that are invalid on NTFS, such as ':'.
+        var path = $"{NtfsInvalidFolder}/file.txt";
+        await CreateTestFileAsync(path, "ntfs invalid");
+
+        var info = await _store.GetFileInfoAsync(path);
+        Assert.NotNull(info);
+        Assert.Equal(path, info.Path);
+        Assert.Equal("ntfs invalid", await ReadFileContentAsync(path));
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in _store.GetDirectoryContentAsync(NtfsInvalidFolder))
+        {
+            entries.Add(entry);
+        }
+
+        Assert.Contains(entries, e => e.Name == "file.txt" && !e.IsDirectory);
+    }
+
+    [DockerFact]
+    public async Task SetCache_FolderWithNtfsInvalidCharacters_CachesServesAndDeletes()
+    {
+        // The remote-store to local media cache flow from issue #17644: the cache must be able
+        // to mirror a remote folder name that the local file system (NTFS) rejects.
+        var path = $"{NtfsInvalidFolder}/cached.txt";
+        await CreateTestFileAsync(path, "cache me");
+        var entry = await _store.GetFileInfoAsync(path);
+        Assert.NotNull(entry);
+
+        var cacheRoot = Directory.CreateTempSubdirectory("ms-cache-tests").FullName;
+        try
+        {
+            using var cache = new DefaultMediaFileStoreCacheFileProvider(
+                NullLogger<DefaultMediaFileStoreCacheFileProvider>.Instance,
+                "/media",
+                cacheRoot);
+
+            await using (var stream = await _store.GetFileStreamAsync(entry))
+            {
+                await cache.SetCacheAsync(stream, entry, CancellationToken.None);
+            }
+
+            Assert.True(await cache.IsCachedAsync(path));
+
+            // The static file middleware serves cached media through IFileProvider.
+            var fileInfo = ((IFileProvider)cache).GetFileInfo('/' + path);
+            Assert.True(fileInfo.Exists);
+            using (var reader = new StreamReader(fileInfo.CreateReadStream()))
+            {
+                Assert.Equal("cache me", await reader.ReadToEndAsync());
+            }
+
+            Assert.True(await cache.TryDeleteDirectoryAsync(NtfsInvalidFolder));
+            Assert.False(await cache.IsCachedAsync(path));
+        }
+        finally
+        {
+            Directory.Delete(cacheRoot, true);
+        }
+    }
+
+    [DockerFact]
+    public async Task GetDirectoryContent_PreservesPlusSignInFileName()
+    {
+        // Regression test for #17764: AwsFileStore used to run object keys through
+        // WebUtility.UrlDecode(), which turns a literal "+" into a space, corrupting the
+        // reported entry name for files such as "My+File.jpg".
+        await CreateTestFileAsync("plus-test/My+File.jpg");
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in _store.GetDirectoryContentAsync("plus-test"))
+        {
+            entries.Add(entry);
+        }
+
+        Assert.Contains(entries, e => !e.IsDirectory && e.Name == "My+File.jpg");
+        Assert.DoesNotContain(entries, e => !e.IsDirectory && e.Name == "My File.jpg");
     }
 }
 

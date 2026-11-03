@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Redis;
 public class RedisCacheWrapperTests
 {
     [Fact]
-    public void RedisCacheWrapperMustNotDisposeInnerCache()
+    public void RedisCacheWrapper_Default_NotDisposeInnerCache()
     {
         var redisCache = new Mock<IDistributedCache>();
         var disposable = redisCache.As<IDisposable>();

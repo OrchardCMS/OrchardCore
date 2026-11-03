@@ -6,7 +6,7 @@ namespace OrchardCore.Microsoft.Authentication;
 
 public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", MicrosoftAuthenticationConstants.Features.MicrosoftAccount },
@@ -21,24 +21,6 @@ public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
-                            .AddClass("microsoft")
-                            .Id("microsoft")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageMicrosoftAuthentication)
-                            .LocalNav()
-                        )
-                    )
-               );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
@@ -46,7 +28,7 @@ public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
                         .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
                             .AddClass("microsoft")
                             .Id("microsoft")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageMicrosoftAuthentication)
                             .LocalNav()
                         )

@@ -1,12 +1,27 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class DefaultMediaFileStoreTests
 {
+    private readonly FileSizeHelper _fileSizeHelper;
+
+    public DefaultMediaFileStoreTests()
+    {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
+
+        _fileSizeHelper = new FileSizeHelper(stringLocalizerMock.Object);
+    }
+
     [Theory]
     [InlineData("foo bar.jpg", "/media/foo%20bar.jpg")]
     [InlineData("my folder/foo bar.jpg", "/media/my%20folder/foo%20bar.jpg")]
@@ -14,7 +29,7 @@ public class DefaultMediaFileStoreTests
     [InlineData("日本語.jpg", "/media/%E6%97%A5%E6%9C%AC%E8%AA%9E.jpg")]
     [InlineData("simple.jpg", "/media/simple.jpg")]
     [InlineData("sub/dir/file.jpg", "/media/sub/dir/file.jpg")]
-    public void MapPathToPublicUrl_ReturnsUrlEncodedPath(string path, string expected)
+    public void MapPathToPublicUrl_Default_ReturnsUrlEncodedPath(string path, string expected)
     {
         var store = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
@@ -22,6 +37,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
+            _fileSizeHelper,
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -32,7 +48,7 @@ public class DefaultMediaFileStoreTests
     [Theory]
     [InlineData("https://cdn.example.com", "foo bar.jpg", "https://cdn.example.com/media/foo%20bar.jpg")]
     [InlineData("https://cdn.example.com", "bàr.jpeg", "https://cdn.example.com/media/b%C3%A0r.jpeg")]
-    public void MapPathToPublicUrl_WithCdnBaseUrl_ReturnsUrlEncodedPath(string cdnBaseUrl, string path, string expected)
+    public void MapPathToPublicUrl_CdnBaseUrl_ReturnsUrlEncodedPath(string cdnBaseUrl, string path, string expected)
     {
         var store = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
@@ -40,6 +56,7 @@ public class DefaultMediaFileStoreTests
             cdnBaseUrl,
             [],
             [],
+            _fileSizeHelper,
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -64,6 +81,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var result = await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -73,7 +91,7 @@ public class DefaultMediaFileStoreTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_HandlerReturnsInputStream_PassesInputStreamToFileStore()
+    public async Task CreateFileFromStreamAsync_HandlerReturnsInputStream_PassesesesInputStreamToFileStore()
     {
         var fileStoreMock = new Mock<IFileStore>();
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
@@ -94,6 +112,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [handlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var result = await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -103,7 +122,7 @@ public class DefaultMediaFileStoreTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_HandlersCreateNewStreams_PassesCorrectStreams()
+    public async Task CreateFileFromStreamAsync_HandlersCreateNewStreams_PassesesesCorrectStreams()
     {
         var fileStoreMock = new Mock<IFileStore>();
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
@@ -131,6 +150,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [handler1.Object, handler2.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var result = await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -173,6 +193,7 @@ public class DefaultMediaFileStoreTests
             "",
             [mediaEventHandler.Object],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var exception = await Assert.ThrowsAsync<FileStoreException>(() =>
@@ -185,7 +206,7 @@ public class DefaultMediaFileStoreTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_MediaReplacementStreamLivesThroughStorage()
+    public async Task CreateFileFromStreamAsync_MediaReplacementStreamLivesThroughStorage_Succeeds()
     {
         var fileStoreMock = new Mock<IFileStore>();
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
@@ -217,6 +238,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         await store.CreateFileFromStreamAsync("test.txt", inputStream);

@@ -1,0 +1,9 @@
+@using OrchardCore.Media.ViewModels
+
+@model MediaApiSettingsViewModel
+
+<div class="mb-3" asp-validation-class-for="AuthenticationScheme">
+    <label asp-for="AuthenticationScheme" class="form-label">@T["Media API authentication"]</label>
+    <select asp-for="AuthenticationScheme" class="form-select" asp-items="Model.AuthenticationSchemes"></select>
+    <span class="hint">@T["How the Media Gallery, uploads and realtime updates authenticate to the Media API (api/media). Exactly one scheme is active at a time — never both. Cookie works out of the box with the admin session (with antiforgery protection on writes). Bearer uses OAuth2 bearer tokens and requires the OpenID Connect Token Validation feature and a registered PKCE client."]</span>
+</div>

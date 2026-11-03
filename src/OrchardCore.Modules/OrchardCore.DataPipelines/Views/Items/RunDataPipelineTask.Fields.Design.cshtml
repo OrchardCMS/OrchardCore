@@ -1,0 +1,7 @@
+@model OrchardCore.Workflows.ViewModels.ActivityViewModel<OrchardCore.DataPipelines.Workflows.RunDataPipelineTask>
+@using OrchardCore.Workflows.Helpers
+
+<header>
+    <h4><i class="fa-solid fa-diagram-project" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Run Data Pipeline"])</h4>
+</header>
+<span>@(Model.Activity.WaitForCompletion ? T["Waits for the run"] : T["Doesn't wait for the run"])</span>

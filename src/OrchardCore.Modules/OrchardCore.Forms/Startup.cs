@@ -10,6 +10,8 @@ using OrchardCore.Forms.Activities.Drivers;
 using OrchardCore.Forms.Drivers;
 using OrchardCore.Forms.Filters;
 using OrchardCore.Forms.Models;
+using OrchardCore.Forms.Services;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 
@@ -81,6 +83,7 @@ public sealed class Startup : StartupBase
 
         services.AddDataMigration<Migrations>();
         services.AddShapeTableProvider<FormShapeTableProvider>();
+        services.AddScoped<IJSLocalizer, FormsJSLocalizer>();
     }
 }
 

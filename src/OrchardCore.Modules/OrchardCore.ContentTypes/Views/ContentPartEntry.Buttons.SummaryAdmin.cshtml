@@ -1,0 +1,8 @@
+@using OrchardCore.ContentTypes.Models
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<ContentPartEntry>
+
+<a id="btn-edit-@Model.Value.Name" class="btn btn-primary btn-sm edit-button list-item-action" asp-route-action="EditPart" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Value.Name">@T["Edit"]</a>
+
+<a class="btn btn-danger btn-sm delete-button" asp-action="DeletePart" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Value.Name" asp-route-returnUrl="@FullRequestPath" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content part?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>

@@ -1,0 +1,58 @@
+{
+  "name": "MediaApiStandaloneLocalhost",
+  "displayName": "Media API — Standalone external app (localhost dev)",
+  "description": "Dev convenience: the MediaApiStandalone configuration with localhost origins baked in (app at http://localhost:5173 — the pinned Vite dev port — against an Orchard tenant at https://localhost:5001). Apply MediaApiPkce FIRST, then run this. It enables OrchardCore.Cors with a default policy allowing http://localhost:5173 (bearer, so AllowCredentials=false), registers the app-origin callback URIs on the 'media_gallery' client, and reloads the tenant so the CORS policy takes effect immediately. Do not use in production — apply MediaApiStandalone (with your real origins) instead.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "security" ],
+  "tags": [ "openid", "oauth2", "pkce", "media", "api", "cors", "standalone", "dev" ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Cors"
+      ]
+    },
+    {
+      "name": "Settings",
+      "CorsSettings": {
+        "Policies": [
+          {
+            "Name": "MediaStandalone",
+            "AllowAnyOrigin": false,
+            "AllowedOrigins": [ "http://localhost:5173" ],
+            "AllowAnyHeader": true,
+            "AllowedHeaders": [],
+            "AllowAnyMethod": true,
+            "AllowedMethods": [],
+            "AllowCredentials": false,
+            "IsDefaultPolicy": true,
+            "ExposedHeaders": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "OpenIdApplication",
+      "ClientId": "media_gallery",
+      "DisplayName": "Media Gallery (SPA)",
+      "Type": "public",
+      "ConsentType": "implicit",
+      "AllowAuthorizationCodeFlow": true,
+      "AllowLogoutEndpoint": true,
+      "RequireProofKeyForCodeExchange": true,
+      "RedirectUris": "http://localhost:5173/callback.html http://localhost:5173/silent-callback.html https://localhost:5001/OrchardCore.Media/media-gallery-oidc-silent.html",
+      "PostLogoutRedirectUris": "http://localhost:5173/ https://localhost:5001/",
+      "ScopeEntries": [
+        { "Name": "email" },
+        { "Name": "profile" },
+        { "Name": "roles" }
+      ]
+    },
+    {
+      "name": "ReloadTenant"
+    }
+  ]
+}

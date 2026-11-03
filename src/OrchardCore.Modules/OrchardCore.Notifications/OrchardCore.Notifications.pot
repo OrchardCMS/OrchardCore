@@ -1,0 +1,511 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Notifications\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Activities/NotifyContentOwnerTask.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyContentOwnerTask"
+msgid "Notify Content's Owner Task"
+msgstr ""
+
+#: Activities/NotifyContentOwnerTask.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyContentOwnerTask"
+msgid "The owner of the content item, a user."
+msgstr ""
+
+#: Activities/NotifyUserTask.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyUserTask"
+msgid "Notify Specific Users Task"
+msgstr ""
+
+#: Activities/NotifyUserTaskActivity.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
+msgid "Done"
+msgstr ""
+
+#: Activities/NotifyUserTaskActivity.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
+msgid "Failed"
+msgstr ""
+
+#: Activities/NotifyUserTaskActivity.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
+msgid "Failed: no user found"
+msgstr ""
+
+#: Activities/NotifyUserTaskActivity.cs
+msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
+msgid "How many notifications the activity sent."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "Mark as read"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "Mark as unread"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "Previously created"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "Read"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "Recently created"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "Remove"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "Unread"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "notification"
+msgid_plural "notifications"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: counter; {1}: H.Plural(counter, "notification", "notifications")
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "{0} {1} read successfully."
+msgstr ""
+
+#. Format arguments: {0}: counter; {1}: H.Plural(counter, "notification", "notifications")
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "{0} {1} removed successfully."
+msgstr ""
+
+#. Format arguments: {0}: counter; {1}: H.Plural(counter, "notification", "notifications")
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Controllers.AdminController"
+msgid "{0} {1} unread successfully."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', htmlBodyErrors)
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "HTML Body field does not contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', subjectErrors)
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "Subject field does not contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', summaryErrors)
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "Summary field does not contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', textBodyErrors)
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "Text Body field does not contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Drivers/NotifyUserTaskDisplayDriver.cs
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskDisplayDriver"
+msgid "Please provide at least one username to notify."
+msgstr ""
+
+#: NotificationsLocalizationSources.cs
+msgctxt "OrchardCore.Notifications.NotificationsLocalizationSources"
+msgid "Notifications"
+msgstr ""
+
+#: Views/Admin/List.cshtml
+msgctxt "OrchardCore.Notifications.Views.Admin.List"
+msgid "Notification Center"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Design"
+msgid "Notify Content Owner"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "HTML Body"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "HTML summary for the notification. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "Subject"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "Summary"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "Text Body"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "This optional text body does not support HTML. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "Use HTML Body when possible"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "When checked, the notification provider will use the HTML body if it supports HTML."
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Edit"
+msgid "You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Thumbnail"
+msgid "Notify Content Owner"
+msgstr ""
+
+#: Views/Items/NotifyContentOwnerTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyContentOwnerTask.Fields.Thumbnail"
+msgid "Notify content owner"
+msgstr ""
+
+#: Views/Items/NotifyUserTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTask.Fields.Design"
+msgid "Notify Specific Users"
+msgstr ""
+
+#: Views/Items/NotifyUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTask.Fields.Edit"
+msgid "Please provide a comma separated list of user names. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTask.Fields.Edit"
+msgid "User names"
+msgstr ""
+
+#: Views/Items/NotifyUserTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTask.Fields.Thumbnail"
+msgid "Notify Specific Users"
+msgstr ""
+
+#: Views/Items/NotifyUserTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTask.Fields.Thumbnail"
+msgid "Notify specific users"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "HTML Body"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "Subject"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "Summary"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "Text Body"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "This optional text body does not support HTML. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "Use HTML Body when possible"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "When checked, the notification provider will use the HTML body if it supports HTML."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
+msgid "You may use Liquid syntax. Html is supported."
+msgstr ""
+
+#: Views/NotificationsActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsActions_SummaryAdmin"
+msgid "Mark as read"
+msgstr ""
+
+#: Views/NotificationsAdminList.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
+msgid "Actions"
+msgstr ""
+
+#: Views/NotificationsAdminList.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
+msgid "No notifications found."
+msgstr ""
+
+#: Views/NotificationsAdminList.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
+msgid "Received"
+msgstr ""
+
+#: Views/NotificationsAdminList.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
+msgid "Subject"
+msgstr ""
+
+#: Views/NotificationsAdminList.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
+msgid "selected"
+msgstr ""
+
+#: Views/NotificationsAdminList.Fields.BulkActions.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList.Fields.BulkActions"
+msgid "Actions"
+msgstr ""
+
+#: Views/NotificationsAdminListActionBarButtons.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
+msgid "Are you sure you to mark all notifications as read?"
+msgstr ""
+
+#: Views/NotificationsAdminListActionBarButtons.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
+msgid "Cancel"
+msgstr ""
+
+#: Views/NotificationsAdminListActionBarButtons.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
+msgid "Delete"
+msgstr ""
+
+#: Views/NotificationsAdminListActionBarButtons.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
+msgid "Mark All as Read"
+msgstr ""
+
+#: Views/NotificationsAdminListActionBarButtons.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
+msgid "Ok"
+msgstr ""
+
+#. Format arguments: {0}: @item.Text.ToLower()
+#: Views/NotificationsAdminListBulkActions.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListBulkActions"
+msgid "Are you sure you want to {0} these items?"
+msgstr ""
+
+#: Views/NotificationsAdminListBulkActions.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListBulkActions"
+msgid "Bulk Action"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "All"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "Filter by status"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "Show"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "Sort"
+msgstr ""
+
+#: Views/NotificationsAdminListFilters.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
+msgid "Sort by"
+msgstr ""
+
+#: Views/NotificationsAdminListSearch.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListSearch"
+msgid "Search"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/NotificationsAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListSummary"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: Model.StartIndex; {1}: Model.EndIndex
+#: Views/NotificationsAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListSummary"
+msgid "Items {0} to {1}"
+msgstr ""
+
+#: Views/NotificationsAdminListSummary.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListSummary"
+msgid "Select All"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/NotificationsAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListSummary"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "Are you sure you want to delete this notification?"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "Are you sure you want to mark this notification as unread?"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "Delete a notification"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "Mark as unread"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "No"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "Unread a message"
+msgstr ""
+
+#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
+msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
+msgid "Yes"
+msgstr ""
+
+#: Views/UserNotificationNavbar.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationNavbar"
+msgid "Notification Center"
+msgstr ""
+
+#: Views/UserNotificationNavbar.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationNavbar"
+msgid "Notifications"
+msgstr ""
+
+#. Format arguments: {0}: Model.MaxVisibleNotifications
+#: Views/UserNotificationNavbar.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.UserNotificationNavbar"
+msgid "You have more than {0} unread notifications"
+msgstr ""
+
+#: Views/UserNotificationNavbar.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationNavbar"
+msgid "You have no unread notifications"
+msgstr ""
+
+#: Views/UserNotificationNavbar.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationNavbar"
+msgid "You have no unread notifications."
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: Model.TotalUnread
+#: Views/UserNotificationNavbar.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.UserNotificationNavbar"
+msgid "You have {1} unread notification"
+msgid_plural "You have {0} unread notifications"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/UserNotificationPreferencesPart.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
+msgid "From the list above, you can sort the notification priority where the most important method is on the top."
+msgstr ""
+
+#: Views/UserNotificationPreferencesPart.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
+msgid "Notification Methods"
+msgstr ""
+
+#: Views/UserNotificationPreferencesPart.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.UserNotificationPreferencesPart.Edit"
+msgid "Select all notification methods to receive."
+msgstr ""

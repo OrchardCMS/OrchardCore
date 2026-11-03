@@ -1,11 +1,21 @@
 @import '../../../../../../../node_modules/bootstrap/scss/mixins/_color-mode';
 
 @include color-mode(dark) {
-    --oc-scrollbar-color: #76787A;
-    --oc-admin-menu-bg-color: var(--bs-dark);
+    /* The dark counterpart of the menu palette declared in '_variables.scss'. */
+    --oc-admin-accent-rgb: 173, 181, 189;
+    /* On the dark surfaces the accent is the lightest of the grays instead of the darkest. */
+    --oc-admin-accent-strong-color: #ced4da;
+    --oc-admin-menu-bg-color: #1c1f23;
+    --oc-admin-menu-border-color: #343a40;
+    --oc-scrollbar-color: #666e75;
+    --oc-admin-menu-font-color: #adb5bd;
+    --oc-admin-menu-font-color-hover: #f8f9fa;
+    --oc-admin-menu-item-font-color: #adb5bd;
+    --oc-admin-menu-item-font-color-active: #f8f9fa;
+    --oc-admin-menu-group-font-color: #7d8790;
+    --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.45);
 
     @import "badge";
-    @import "bootstrap-select";
     @import "card";
     @import "modal";
     @import "theme_helpers";

@@ -12,6 +12,7 @@ public class SlugifyFilter : ILiquidFilter
     {
         _slugService = slugService;
     }
+
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
         var slug = _slugService.Slugify(input.ToStringValue());

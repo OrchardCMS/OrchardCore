@@ -3,7 +3,8 @@ using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
+[Collection(CmsTestCollection.Name)]
+public sealed class SaasTests : IAsyncLifetime
 {
     private readonly SaasFixture _fixture;
 
@@ -21,7 +22,7 @@ public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task DisplaysTheHomePageOfTheSaasTheme()
+    public async Task DisplaysTheHomePageOfTheSaasTheme_Default_Succeeds()
     {
         var page = await _fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync($"/{_fixture.Tenant.Prefix}");
@@ -30,7 +31,7 @@ public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task SaasAdminLoginShouldWork()
+    public async Task SaasAdminLogin_Default_Works()
     {
         var page = await _fixture.CreatePageAsync();
         await page.LoginAsync($"/{_fixture.Tenant.Prefix}");
@@ -40,7 +41,7 @@ public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task SaasAdminRootShouldNotKeepPreviousMenuItemActive()
+    public async Task SaasAdminRoot_Default_NotKeepPreviousMenuItemActive()
     {
         var page = await _fixture.CreatePageAsync();
         await page.LoginAsync($"/{_fixture.Tenant.Prefix}");

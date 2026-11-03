@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 public class AdminControllerTests
 {
     [Fact]
-    public async Task EditPostShouldSaveEnabledPolicyMetadataWithoutReloadingShell()
+    public async Task EditPost_Default_SavessEnabledPolicyMetadataWithoutReloadingShell()
     {
         const string policyId = "policy-id";
         var enabledUtc = DateTime.UtcNow;
@@ -81,7 +81,7 @@ public class AdminControllerTests
     }
 
     [Fact]
-    public async Task EnableShouldReloadShellWhenEnablingDisabledPolicy()
+    public async Task Enable_EnablingDisabledPolicy_ReloadShell()
     {
         const string policyId = "policy-id";
         var existingPolicy = new RateLimitPolicy
@@ -111,7 +111,7 @@ public class AdminControllerTests
     }
 
     [Fact]
-    public async Task CloneShouldCreateDisabledPolicyWithUniqueIncrementedName()
+    public async Task Clone_Default_CreatesDisabledPolicyWithUniqueIncrementedName()
     {
         const string policyId = "policy-id";
         var sourcePolicy = new RateLimitPolicy
@@ -200,7 +200,6 @@ public class AdminControllerTests
             shellReleaseManager,
             new EmptyEndpointDataSource(),
             Options.Create(new RateLimitsOptions()),
-            Mock.Of<IDisplayManager<RateLimitPolicy>>(),
             Mock.Of<IStringLocalizer<AdminController>>(),
             Mock.Of<IHtmlLocalizer<AdminController>>())
         {

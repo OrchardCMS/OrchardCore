@@ -424,6 +424,27 @@ As `executionid` use a custom identifier to distinguish these recipe executions 
 
 ---
 
+### `command`
+
+Runs one or more of the built-in commands. This is useful during setup or import, for example to create a user.
+
+```json
+{
+  "name": "command",
+  "Commands": [
+    "createUser /UserName:admin /Password:Password1! /Email:admin@example.com /Roles:Administrator"
+  ]
+}
+```
+
+Each entry in `Commands` is a single command: the command name followed by any `/Switch:value` arguments.
+
+The command most useful in recipes is `createUser`, which provisions a user during setup or import. See the [Users documentation](../Users/README.md#commands) for its switches.
+
+Other commands, such as `help commands` (lists every available command) and `recipes harvest` (lists the available recipes), write their result to the log and are meant for interactive or diagnostic use rather than for imports. Run `help commands` to see the full list of commands registered by the enabled features.
+
+---
+
 ## Recipe Migrations
 
 **Recipe migrations** allow you to perform updates using Orchard Core recipe files. These migrations are especially useful for updating metadata such as content types, workflows, settings, or any other component that can be updated via a recipe.

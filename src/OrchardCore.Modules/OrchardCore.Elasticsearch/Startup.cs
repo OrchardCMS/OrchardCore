@@ -55,7 +55,10 @@ public sealed class Startup : StartupBase
 
         services.Configure<ElasticsearchOptions>(options =>
         {
-            var configuration = _shellConfiguration.GetSection(ElasticsearchConnectionOptionsConfigurations.ConfigSectionName);
+            // The 'OrchardCore_Elasticsearch' section is deprecated and will be removed in a future major version, use 'Search:Elasticsearch' instead.
+            var configuration = _shellConfiguration.GetSectionCompat(
+                ElasticsearchConnectionOptionsConfigurations.SectionName,
+                ElasticsearchConnectionOptionsConfigurations.ConfigSectionName);
 
             options.AddIndexPrefix(configuration);
             options.AddTokenFilters(configuration);

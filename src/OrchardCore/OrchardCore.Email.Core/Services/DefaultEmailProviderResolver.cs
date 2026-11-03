@@ -5,30 +5,33 @@ namespace OrchardCore.Email.Services;
 
 public class DefaultEmailProviderResolver : IEmailProviderResolver
 {
-    private readonly EmailOptions _emailOptions;
+    private readonly IOptionsMonitor<EmailOptions> _emailOptions;
     private readonly IServiceProvider _serviceProvider;
-    private readonly EmailProviderOptions _providerOptions;
+    private readonly IOptionsMonitor<EmailProviderOptions> _providerOptions;
 
     public DefaultEmailProviderResolver(
-        IOptions<EmailOptions> emailOptions,
-        IOptions<EmailProviderOptions> providerOptions,
+        IOptionsMonitor<EmailOptions> emailOptions,
+        IOptionsMonitor<EmailProviderOptions> providerOptions,
         IServiceProvider serviceProvider)
     {
-        _emailOptions = emailOptions.Value;
+        _emailOptions = emailOptions;
         _serviceProvider = serviceProvider;
-        _providerOptions = providerOptions.Value;
+        _providerOptions = providerOptions;
     }
 
     public ValueTask<IEmailProvider> GetAsync(string name = null)
     {
+        var emailOptions = _emailOptions.CurrentValue;
+        var providerOptions = _providerOptions.CurrentValue;
+
         if (string.IsNullOrEmpty(name))
         {
-            name = _emailOptions.DefaultProviderName;
+            name = emailOptions.DefaultProviderName;
         }
 
         if (!string.IsNullOrEmpty(name))
         {
-            if (_providerOptions.Providers.TryGetValue(name, out var providerType))
+            if (providerOptions.Providers.TryGetValue(name, out var providerType))
             {
                 return ValueTask.FromResult(_serviceProvider.CreateInstance<IEmailProvider>(providerType.Type));
             }

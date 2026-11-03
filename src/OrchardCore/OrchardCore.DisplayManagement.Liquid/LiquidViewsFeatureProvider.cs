@@ -15,27 +15,27 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
     public static readonly string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
     public static readonly string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
 
-    private static List<string> _sharedPaths;
-    private static readonly object _synLock = new();
+    private static List<string> s_sharedPaths;
+    private static readonly object s_synLock = new();
 
     public LiquidViewsFeatureProvider(IOptions<TemplateOptions> templateOptions)
     {
-        if (_sharedPaths != null)
+        if (s_sharedPaths != null)
         {
             return;
         }
 
-        lock (_synLock)
+        lock (s_synLock)
         {
-            if (_sharedPaths == null)
+            if (s_sharedPaths == null)
             {
-                _sharedPaths = [];
+                s_sharedPaths = [];
 
                 var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
                     Application.ModulesPath, [LiquidViewTemplate.ViewExtension],
                     LiquidViewTemplate.ViewsFolder);
 
-                _sharedPaths.AddRange(filePaths.Select(p => '/' + p));
+                s_sharedPaths.AddRange(filePaths.Select(p => '/' + p));
             }
         }
     }
@@ -48,7 +48,7 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
             Item = new TenantRazorCompiledItem(typeof(LiquidPage), DefaultLiquidViewPath),
         });
 
-        foreach (var path in _sharedPaths)
+        foreach (var path in s_sharedPaths)
         {
             if (!Path.GetFileName(path).StartsWith('_'))
             {

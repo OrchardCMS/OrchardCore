@@ -31,13 +31,13 @@ public static class GetSdkEndpoints
     public static class GetInitScriptEndpoint
     {
         // Update this version when the script changes to invalidate client caches
-        private static readonly int ScriptVersion = 1;
+        private static readonly int s_scriptVersion = 1;
 
-        private static readonly string CacheKey = "Facebook.GetInitScriptEndpoint";
+        private static readonly string s_cacheKey = "Facebook.GetInitScriptEndpoint";
 
         public static ulong HashCacheBustingValues(FacebookSettings settings)
         {
-            var hash = new XxHash3(ScriptVersion);
+            var hash = new XxHash3(s_scriptVersion);
             hash.Append(Encoding.UTF8.GetBytes(settings.AppId ?? ""));
             hash.Append(Encoding.UTF8.GetBytes(settings.Version ?? ""));
             hash.Append(Encoding.UTF8.GetBytes(settings.FBInitParams ?? ""));
@@ -51,7 +51,7 @@ public static class GetSdkEndpoints
             // Regenerate hash: Don't trust url hash because it could cause cache issues
             var expectedHash = HashCacheBustingValues(settings);
 
-            var cachedScript = cache.Get(CacheKey) as KeyValuePair<ulong, byte[]>?;
+            var cachedScript = cache.Get(s_cacheKey) as KeyValuePair<ulong, byte[]>?;
             if (cachedScript == null || cachedScript.Value.Key != expectedHash)
             {
                 // Note: Update ScriptVersion constant when the script changes
@@ -65,7 +65,7 @@ public static class GetSdkEndpoints
                         }});
                     }};");
 
-                cache.Set(CacheKey,
+                cache.Set(s_cacheKey,
                         new KeyValuePair<ulong, byte[]>(expectedHash, scriptBytes),
                         new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1)));
             }

@@ -14,7 +14,7 @@ public interface IJSLocalizer
     /// Returns a dictionary of localized strings for the specified group, or <see langword="null"/> if this
     /// implementation does not handle the requested group.
     /// </summary>
-    /// <param name="group">The group identifier that scopes the set of keys to return (e.g., <c>"media-app"</c>).</param>
+    /// <param name="group">The group identifier that scopes the set of keys to return (e.g., <c>"media-gallery"</c>).</param>
     /// <returns>
     /// A dictionary mapping translation keys to their localized values, or <see langword="null"/> when this
     /// implementation has no localizations for the given group.

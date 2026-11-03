@@ -7,7 +7,7 @@ namespace OrchardCore.Workflows.Trimming;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", WorkflowTrimmingDisplayDriver.GroupId },
@@ -22,26 +22,10 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-               .Add(S["Configuration"], configuration => configuration
-                   .Add(S["Settings"], settings => settings
-                       .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
-                           .Action("Index", "Admin", _routeValues)
-                           .Permission(WorkflowsPermissions.ManageWorkflowSettings)
-                           .LocalNav()
-                       )
-                   )
-               );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Workflow Trimming"], S["Workflow Trimming"].PrefixPosition(), trimming => trimming
-                    .Action("Index", "Admin", _routeValues)
+                    .Action("Index", "Admin", s_routeValues)
                     .Permission(WorkflowsPermissions.ManageWorkflowSettings)
                     .LocalNav()
                 )

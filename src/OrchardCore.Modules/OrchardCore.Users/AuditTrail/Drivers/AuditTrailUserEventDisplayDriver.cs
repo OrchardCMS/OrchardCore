@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -9,12 +11,25 @@ namespace OrchardCore.Users.AuditTrail.Drivers;
 
 public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailUserEvent>
 {
-    public override IDisplayResult Display(AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent, BuildDisplayContext context)
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public AuditTrailUserEventDisplayDriver(
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor)
     {
-        return Initialize<AuditTrailUserEventViewModel>("AuditTrailUserEventDetail_DetailAdmin", m =>
-        {
-            m.AuditTrailEvent = auditTrailEvent;
-            m.UserEvent = userEvent;
-        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
     }
+
+    public override IDisplayResult Display(AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent, BuildDisplayContext context) =>
+        Initialize<AuditTrailUserEventViewModel>("AuditTrailUserEventDetail_DetailAdmin", model =>
+            {
+                model.AuditTrailEvent = auditTrailEvent;
+                model.UserEvent = userEvent;
+            })
+            .RenderWhen(async () =>
+                _httpContextAccessor.HttpContext?.User is { Identity.IsAuthenticated: true } claimsPrincipal &&
+                await _authorizationService.AuthorizeAsync(claimsPrincipal, Permissions.ViewUserAuditTrailEvents, userEvent))
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
 }

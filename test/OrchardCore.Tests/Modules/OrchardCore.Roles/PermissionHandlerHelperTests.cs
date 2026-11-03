@@ -12,7 +12,7 @@ public class PermissionHandlerHelperTests
     [InlineData("AllowAnonymous", false, true)]
     [InlineData("AllowAuthenticated", true, true)]
     [InlineData("AllowAuthenticated", false, false)]
-    public async Task GrantsRolesPermissions(string required, bool authenticated, bool success)
+    public async Task GrantsRolesPermissions_Default_Succeeds(string required, bool authenticated, bool success)
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
@@ -44,7 +44,7 @@ public class PermissionHandlerHelperTests
     }
 
     [Fact]
-    public async Task DoNotRevokeExistingGrants()
+    public async Task DoNotRevokeExistingGrants_Default_Succeeds()
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
@@ -61,12 +61,12 @@ public class PermissionHandlerHelperTests
     }
 
     [Fact]
-    public async Task GrantsInheritedPermissions()
+    public async Task GrantsInheritedPermissions_Default_Succeeds()
     {
         // Arrange
         var level2 = new Permission("Implicit2");
-        var level1 = new Permission("Implicit1", "Foo", new[] { level2 });
-        var required = new Permission("Required", "Foo", new[] { level1 });
+        var level1 = PermissionHelpers.Create("Implicit1", "Foo", level2);
+        var required = PermissionHelpers.Create("Required", "Foo", level1);
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required);
 
@@ -91,7 +91,7 @@ public class PermissionHandlerHelperTests
     [Theory]
     [InlineData("AllowAnonymous", true)]
     [InlineData("AllowAuthenticated", true)]
-    public async Task IsCaseInsensitive(string required, bool authenticated)
+    public async Task IsCaseInsensitive_Default_Succeeds(string required, bool authenticated)
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
@@ -124,14 +124,17 @@ public class PermissionHandlerHelperTests
 
     private static RolesPermissionsHandler CreatePermissionHandler(params Role[] roles)
     {
-        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        var lookupNormalizer = new UpperInvariantLookupNormalizer();
+        var roleStore = new Mock<IRoleStore<IRole>>();
 
         foreach (var role in roles)
         {
-            roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
+            roleStore
+                .Setup(m => m.FindByNameAsync(lookupNormalizer.NormalizeName(role.RoleName), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(role);
         }
 
         var permissionGrantingService = new DefaultPermissionGrantingService();
-        return new RolesPermissionsHandler(roleManager.Object, permissionGrantingService);
+        return new RolesPermissionsHandler(roleStore.Object, lookupNormalizer, permissionGrantingService);
     }
 }

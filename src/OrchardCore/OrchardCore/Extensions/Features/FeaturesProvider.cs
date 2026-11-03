@@ -1,22 +1,20 @@
 namespace OrchardCore.Environment.Extensions.Features;
 
 /// <inheritdoc/>
-public class FeaturesProvider : IFeaturesProvider
+public sealed class FeaturesProvider : FeaturesProviderBase
 {
     public const string FeatureProviderStateKey = "FeatureProvider:Features";
-
-    private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 
     /// <summary>
     /// Constructs a provider instance.
     /// </summary>
     /// <param name="featureBuilderEvents"></param>
     public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
+        : base(featureBuilderEvents)
     {
-        _featureBuilderEvents = featureBuilderEvents;
     }
 
-    public IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
+    public override IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
     {
         var featuresInfos = new List<IFeatureInfo>();
 
@@ -37,6 +35,8 @@ public class FeaturesProvider : IFeaturesProvider
                 var featureName = feature.Name;
 
                 var featureDependencyIds = feature.Dependencies;
+                var featureBeforeDependencyIds = feature.Before;
+                var featureAfterDependencyIds = feature.After;
 
                 // Categorize, Prioritize, Describe, using the ModuleInfo (ModuleAttribute) as the back stop
                 var featureCategory = feature.Categorize(manifestInfo.ModuleInfo);
@@ -56,32 +56,26 @@ public class FeaturesProvider : IFeaturesProvider
                     ManifestInfo = manifestInfo,
                     Priority = featurePriority,
                     FeatureDependencyIds = featureDependencyIds,
+                    FeatureBeforeDependencyIds = featureBeforeDependencyIds,
+                    FeatureAfterDependencyIds = featureAfterDependencyIds,
                     DefaultTenantOnly = featureDefaultTenantOnly,
                     IsAlwaysEnabled = featureIsAlwaysEnabled,
                     EnabledByDependencyOnly = featureEnabledByDependencyOnly,
                 };
 
-                foreach (var builder in _featureBuilderEvents)
-                {
-                    builder.Building(context);
-                }
-
-                var featureInfo = new FeatureInfo(
-                    context.FeatureId,
-                    context.FeatureName,
-                    context.Priority,
-                    context.Category,
-                    context.Description,
-                    context.ExtensionInfo,
-                    context.FeatureDependencyIds,
-                    context.DefaultTenantOnly,
-                    context.IsAlwaysEnabled,
-                    context.EnabledByDependencyOnly);
-
-                foreach (var builder in _featureBuilderEvents)
-                {
-                    builder.Built(featureInfo);
-                }
+                var featureInfo = BuildFeature(context, ctx => new FeatureInfo(
+                    ctx.FeatureId,
+                    ctx.FeatureName,
+                    ctx.Priority,
+                    ctx.Category,
+                    ctx.Description,
+                    ctx.ExtensionInfo,
+                    ctx.FeatureDependencyIds,
+                    ctx.FeatureBeforeDependencyIds,
+                    ctx.FeatureAfterDependencyIds,
+                    ctx.DefaultTenantOnly,
+                    ctx.IsAlwaysEnabled,
+                    ctx.EnabledByDependencyOnly));
 
                 featuresInfos.Add(featureInfo);
             }
@@ -93,6 +87,8 @@ public class FeaturesProvider : IFeaturesProvider
             var featureName = manifestInfo.Name;
 
             var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies;
+            var featureBeforeDependencyIds = manifestInfo.ModuleInfo.Before;
+            var featureAfterDependencyIds = manifestInfo.ModuleInfo.After;
 
             // Ditto Categorize, Prioritize, Describe, in this case the root Module 'is' the back stop
             var featureCategory = manifestInfo.ModuleInfo.Categorize();
@@ -112,32 +108,26 @@ public class FeaturesProvider : IFeaturesProvider
                 ManifestInfo = manifestInfo,
                 Priority = featurePriority,
                 FeatureDependencyIds = featureDependencyIds,
+                FeatureBeforeDependencyIds = featureBeforeDependencyIds,
+                FeatureAfterDependencyIds = featureAfterDependencyIds,
                 DefaultTenantOnly = featureDefaultTenantOnly,
                 IsAlwaysEnabled = featureIsAlwaysEnabled,
                 EnabledByDependencyOnly = featureEnabledByDependencyOnly,
             };
 
-            foreach (var builder in _featureBuilderEvents)
-            {
-                builder.Building(context);
-            }
-
-            var featureInfo = new FeatureInfo(
-                context.FeatureId,
-                context.FeatureName,
-                context.Priority,
-                context.Category,
-                context.Description,
-                context.ExtensionInfo,
-                context.FeatureDependencyIds,
-                context.DefaultTenantOnly,
-                context.IsAlwaysEnabled,
-                context.EnabledByDependencyOnly);
-
-            foreach (var builder in _featureBuilderEvents)
-            {
-                builder.Built(featureInfo);
-            }
+            var featureInfo = BuildFeature(context, ctx => new FeatureInfo(
+                ctx.FeatureId,
+                ctx.FeatureName,
+                ctx.Priority,
+                ctx.Category,
+                ctx.Description,
+                ctx.ExtensionInfo,
+                ctx.FeatureDependencyIds,
+                ctx.FeatureBeforeDependencyIds,
+                ctx.FeatureAfterDependencyIds,
+                ctx.DefaultTenantOnly,
+                ctx.IsAlwaysEnabled,
+                ctx.EnabledByDependencyOnly));
 
             featuresInfos.Add(featureInfo);
         }

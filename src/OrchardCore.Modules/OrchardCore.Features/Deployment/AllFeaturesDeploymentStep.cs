@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Features.Deployment;
 
@@ -8,16 +9,13 @@ namespace OrchardCore.Features.Deployment;
 /// </summary>
 public class AllFeaturesDeploymentStep : DeploymentStep
 {
-    public AllFeaturesDeploymentStep()
-    {
-        Name = "AllFeatures";
-    }
+    public override string Name => "AllFeatures";
 
-    public AllFeaturesDeploymentStep(IStringLocalizer<AllFeaturesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Infrastructure"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Infrastructure;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => FeaturesLocalizationSources.AllFeatures;
 
     public bool IgnoreDisabledFeatures { get; set; }
 }

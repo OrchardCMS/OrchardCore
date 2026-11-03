@@ -7,7 +7,7 @@ namespace OrchardCore.Https;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", HttpsSettingsDisplayDriver.GroupId },
@@ -22,27 +22,11 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
-                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), https => https
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageHttps)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), https => https
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageHttps)
                         .LocalNav()
                     )

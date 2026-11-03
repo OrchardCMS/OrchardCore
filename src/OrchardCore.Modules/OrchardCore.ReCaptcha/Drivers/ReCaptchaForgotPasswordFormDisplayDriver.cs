@@ -3,23 +3,22 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
-using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.ReCaptcha.Drivers;
 
 public sealed class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
 {
-    private readonly ReCaptchaSettings _settings;
+    private readonly IOptionsMonitor<ReCaptchaSettings> _settings;
 
-    public ReCaptchaForgotPasswordFormDisplayDriver(IOptions<ReCaptchaSettings> options)
+    public ReCaptchaForgotPasswordFormDisplayDriver(IOptionsMonitor<ReCaptchaSettings> options)
     {
-        _settings = options.Value;
+        _settings = options;
     }
 
     public override async Task<IDisplayResult> EditAsync(ForgotPasswordForm model, BuildEditorContext context)
     {
-        if (!_settings.ConfigurationExists())
+        if (!_settings.CurrentValue.ConfigurationExists())
         {
             return null;
         }

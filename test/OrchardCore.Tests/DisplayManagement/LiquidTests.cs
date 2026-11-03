@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.DisplayManagement;
 public class LiquidTests
 {
     [Fact]
-    public async Task ComparingTextField_ReturnsCorrectValue()
+    public async Task ComparingTextField_Default_ReturnsCorrectValue()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -45,7 +45,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task ComparingDateTimeField_ReturnsCorrectValue()
+    public async Task ComparingDateTimeField_Default_ReturnsCorrectValue()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -80,7 +80,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task ComparingNumericField_ReturnsCorrectValue()
+    public async Task ComparingNumericField_Default_ReturnsCorrectValue()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -113,7 +113,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task SortingContentItems_ShouldSortTheArrayOnIntegerField()
+    public async Task SortingContentItems_Default_SortTheArrayOnIntegerField()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -139,7 +139,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task FilteringContentItems_ShouldFilterTheArrayOnBooleanField()
+    public async Task FilteringContentItems_Default_FilterTheArrayOnBooleanField()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -165,7 +165,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task FilteringAndSortingContentItems_ShouldFilterAndSortTheArrayOnContentFields()
+    public async Task FilteringAndSortingContentItems_Default_FilterAndSortTheArrayOnContentFields()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -191,7 +191,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldCompareSingleValueWithString()
+    public async Task StringValuesValue_Default_CompareSingleValueWithString()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -215,7 +215,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldCompareMultipleValuesWithString()
+    public async Task StringValuesValue_Default_CompareMultipleValuesWithString()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -240,7 +240,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldSupportContainsCheck()
+    public async Task StringValuesValue_Default_SupportContainsCheck()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -264,7 +264,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldSupportArrayIteration()
+    public async Task StringValuesValue_Default_SupportArrayIteration()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -288,7 +288,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldSupportArrayIndexing()
+    public async Task StringValuesValue_Default_SupportArrayIndexing()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -312,7 +312,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldSupportSizeProperty()
+    public async Task StringValuesValue_Default_SupportSizeProperty()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -336,7 +336,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldSupportFirstAndLastProperties()
+    public async Task StringValuesValue_Default_SupportFirstAndLastProperties()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -360,7 +360,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldHandleEmptyValues()
+    public async Task StringValuesValue_Default_HandlesEmptyValues()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -385,7 +385,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldCompareSingleValueAsString()
+    public async Task StringValuesValue_Default_CompareSingleValueAsString()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -410,7 +410,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldConcatenateMultipleValuesForStringComparison()
+    public async Task StringValuesValue_Default_ConcatenateMultipleValuesForStringComparison()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -435,7 +435,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldSupportBooleanConversion()
+    public async Task StringValuesValue_Default_SupportBooleanConversion()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -459,7 +459,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_EmptyShouldBeTruthy()
+    public async Task StringValuesValue_Default_EmptyBeTruthy()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -485,7 +485,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task StringValuesValue_ShouldHtmlEncodeOutput()
+    public async Task StringValuesValue_Default_HtmlEncodeOutput()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -500,7 +500,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task RequestQueryStringValues_ShouldHtmlEncodeOutput()
+    public async Task RequestQueryStringValues_Default_HtmlEncodeOutput()
     {
         var result = await RenderRequestValueAsync("{{ Request.Query.q }}", request =>
         {
@@ -511,7 +511,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task RequestHeaderStringValues_ShouldHtmlEncodeOutput()
+    public async Task RequestHeaderStringValues_Default_HtmlEncodeOutput()
     {
         var result = await RenderRequestValueAsync("{{ Request.Headers.test }}", request =>
         {
@@ -522,7 +522,7 @@ public class LiquidTests
     }
 
     [Fact]
-    public async Task RequestFormStringValues_ShouldHtmlEncodeOutput()
+    public async Task RequestFormStringValues_Default_HtmlEncodeOutput()
     {
         var result = await RenderRequestValueAsync("{{ Request.Form.q }}", request =>
         {

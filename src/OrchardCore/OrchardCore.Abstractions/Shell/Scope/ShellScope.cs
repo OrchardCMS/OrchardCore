@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Shell.Scope;
 /// </summary>
 public sealed class ShellScope : IServiceScope, IAsyncDisposable
 {
-    private static readonly AsyncLocal<ShellScopeHolder> _current = new();
+    private static readonly AsyncLocal<ShellScopeHolder> s_current = new();
 
     private readonly AsyncServiceScope _serviceScope;
     private Dictionary<object, object> _items;
@@ -59,7 +59,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Retrieve the current shell scope from the async flow.
     /// </summary>
-    public static ShellScope Current => _current.Value?.Scope;
+    public static ShellScope Current => s_current.Value?.Scope;
 
     /// <summary>
     /// Sets a shared item to the current shell scope.
@@ -227,7 +227,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     public void StartAsyncFlow()
     // Use an object indirection to hold the current scope in the 'AsyncLocal',
     // so that it can be cleared in all execution contexts when it is cleared.
-        => _current.Value = new ShellScopeHolder { Scope = this };
+        => s_current.Value = new ShellScopeHolder { Scope = this };
 
     /// <summary>
     /// Executes a delegate using this shell scope in an isolated async flow,
@@ -579,7 +579,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     private static void Terminate()
     {
-        var holder = _current.Value;
+        var holder = s_current.Value;
         if (holder is not null)
         {
             // Clear the current scope that may be trapped in some execution contexts.

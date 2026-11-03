@@ -7,7 +7,7 @@ using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Seo.Services;
 
-public class RobotsMiddleware
+public sealed class RobotsMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IStaticFileProvider _staticFileProvider;
@@ -54,7 +54,7 @@ public class RobotsMiddleware
 
             ClearResponse(httpContext.Response);
             httpContext.Response.ContentType = MediaTypeNames.Text.Plain;
-            await httpContext.Response.WriteAsync(content.ToString());
+            await httpContext.Response.WriteAsync(content.ToString(), httpContext.RequestAborted);
 
             return;
         }

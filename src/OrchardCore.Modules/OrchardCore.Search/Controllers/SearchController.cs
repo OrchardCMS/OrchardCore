@@ -60,6 +60,7 @@ public sealed class SearchController : Controller
         _logger = logger;
     }
 
+    [HttpGet]
     [Route("search/{index?}")]
     public async Task<IActionResult> Search(string index, string terms, PagerSlimParameters pagerParameters)
     {

@@ -4,7 +4,7 @@ namespace OrchardCore.OpenId;
 
 public class UrlAttribute : ValidationAttribute
 {
-    private static readonly char[] _urlSeparators = [' ', ','];
+    private static readonly char[] s_urlSeparators = [' ', ','];
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
@@ -12,7 +12,7 @@ public class UrlAttribute : ValidationAttribute
         {
             var urls = value.ToString();
 
-            foreach (var url in urls.Split(_urlSeparators, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var url in urls.Split(s_urlSeparators, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !uri.IsWellFormedOriginalString())
                 {

@@ -1,6 +1,7 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
@@ -35,10 +36,17 @@ public class ImageShortcodeTests
     [InlineData("", "foo [media]bar[/media] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
     [InlineData("", "foo [image]bàr.jpeg?width=100[/image] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100""> baz")]
     [InlineData("", "foo [image]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')\"[/image] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100 onload=""> baz")]
-    public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
+    public async Task Process_Default_Succeeds(string cdnBaseUrl, string text, string expected)
     {
         var sanitizerOptions = new HtmlSanitizerOptions();
         sanitizerOptions.Configure.Add(opt => opt.AllowedAttributes.Add("class"));
+
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
 
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
@@ -46,6 +54,7 @@ public class ImageShortcodeTests
             cdnBaseUrl,
             [],
             [],
+            new FileSizeHelper(stringLocalizerMock.Object),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var fileVersionProvider = Mock.Of<IFileVersionProvider>();

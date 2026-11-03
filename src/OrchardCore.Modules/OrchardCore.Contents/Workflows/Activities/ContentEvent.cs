@@ -1,18 +1,22 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public abstract class ContentEvent : ContentActivity, IEvent
+public abstract class ContentEvent : ContentActivity, IEvent, IActivityProvidedValues
 {
     protected ContentEvent(
         IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
@@ -44,6 +48,13 @@ public abstract class ContentEvent : ContentActivity, IEvent
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes("Done");
+        return Outcome("Done");
     }
+
+    public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        =>
+        [
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = LocalizationSource.Create<ContentEvent>("The content item of the event."), Members = WorkflowValueMembers.ContentItem },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = ContentEventConstants.ContentEventInputKey, TypeName = "object", Description = LocalizationSource.Create<ContentEvent>("The content event."), Members = WorkflowValueMembers.ContentEvent },
+        ];
 }

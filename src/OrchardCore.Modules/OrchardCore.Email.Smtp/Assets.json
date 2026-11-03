@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "smtp-settings",
+    "source": "Assets/ts/smtp-settings.ts",
+    "dest": "wwwroot/Scripts/smtp-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

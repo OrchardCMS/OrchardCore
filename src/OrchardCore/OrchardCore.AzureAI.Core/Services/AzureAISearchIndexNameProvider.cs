@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
@@ -8,20 +7,15 @@ namespace OrchardCore.AzureAI.Services;
 
 public sealed class AzureAISearchIndexNameProvider : IIndexNameProvider
 {
-    private readonly IMemoryCache _memoryCache;
     private readonly ShellSettings _shellSettings;
-    private readonly AzureAISearchDefaultOptions _azureAIOptions;
-    private readonly string _prefixCacheKey;
+    private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _azureAIOptions;
 
     public AzureAISearchIndexNameProvider(
-        IMemoryCache memoryCache,
         ShellSettings shellSettings,
-        IOptions<AzureAISearchDefaultOptions> azureAIOptions)
+        IOptionsMonitor<AzureAISearchDefaultOptions> azureAIOptions)
     {
-        _memoryCache = memoryCache;
         _shellSettings = shellSettings;
-        _azureAIOptions = azureAIOptions.Value;
-        _prefixCacheKey = $"AzureAISearchIndexesPrefix_{shellSettings.Name}";
+        _azureAIOptions = azureAIOptions;
     }
 
     public string GetFullIndexName(string indexName)
@@ -33,26 +27,19 @@ public sealed class AzureAISearchIndexNameProvider : IIndexNameProvider
 
     private string GetIndexPrefix()
     {
-        if (!_memoryCache.TryGetValue<string>(_prefixCacheKey, out var value))
+        var prefix = _shellSettings.Name.ToLowerInvariant();
+        var azureAIOptions = _azureAIOptions.CurrentValue;
+
+        if (!string.IsNullOrWhiteSpace(azureAIOptions.IndexesPrefix))
         {
-            var prefix = _shellSettings.Name.ToLowerInvariant();
-
-            if (!string.IsNullOrWhiteSpace(_azureAIOptions.IndexesPrefix))
-            {
-                prefix = $"{_azureAIOptions.IndexesPrefix.ToLowerInvariant()}-{prefix}";
-            }
-
-            if (AzureAISearchIndexNamingHelper.TryGetSafePrefix(prefix, out var safePrefix))
-            {
-                value = safePrefix;
-                _memoryCache.Set(_prefixCacheKey, safePrefix);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Unable to create a safe index prefix for AI Search. Attempted to created a safe name using '{safePrefix}'.");
-            }
+            prefix = $"{azureAIOptions.IndexesPrefix.ToLowerInvariant()}-{prefix}";
         }
 
-        return value ?? string.Empty;
+        if (AzureAISearchIndexNamingHelper.TryGetSafePrefix(prefix, out var safePrefix))
+        {
+            return safePrefix;
+        }
+
+        throw new InvalidOperationException($"Unable to create a safe index prefix for AI Search. Attempted to created a safe name using '{safePrefix}'.");
     }
 }

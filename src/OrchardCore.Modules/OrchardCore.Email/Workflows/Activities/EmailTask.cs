@@ -1,35 +1,44 @@
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Email.Workflows.Activities;
 
-public class EmailTask : TaskActivity<EmailTask>
+public class EmailTask : TaskActivity<EmailTask>, IActivityProvidedValues, IActivityDescription
 {
     private readonly IEmailService _emailService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
     private readonly HtmlEncoder _htmlEncoder;
 
     public EmailTask(
         IEmailService emailService,
         IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<EmailTask> localizer,
         HtmlEncoder htmlEncoder
     )
     {
         _emailService = emailService;
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
         _htmlEncoder = htmlEncoder;
     }
 
-    public override LocalizedString DisplayText => S["Email Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<EmailTask>("Email Task");
 
-    public override LocalizedString Category => S["Messaging"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Messaging;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Author
     {
@@ -127,9 +136,12 @@ public class EmailTask : TaskActivity<EmailTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
+
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("object", LocalizationSource.Create<EmailTask>("The result of sending the email."), WorkflowValueMembers.Result)];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -176,14 +188,14 @@ public class EmailTask : TaskActivity<EmailTask>
             message.Sender = sender.Trim();
         }
 
-        var result = await _emailService.SendAsync(message);
+        var result = await _emailService.SendAsync(message, cancellationToken: workflowContext.CancellationToken);
         workflowContext.LastResult = result;
 
         if (!result.Succeeded)
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

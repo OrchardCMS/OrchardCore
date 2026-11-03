@@ -14,7 +14,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields;
 
 public class ContentFieldsProvider : IContentFieldProvider
 {
-    private static readonly FrozenDictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>()
+    private static readonly FrozenDictionary<string, FieldTypeDescriptor> s_contentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>()
     {
         {
             nameof(BooleanField),
@@ -116,7 +116,7 @@ public class ContentFieldsProvider : IContentFieldProvider
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
     {
-        if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldDescriptor))
+        if (!s_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldDescriptor))
         {
             return null;
         }
@@ -145,7 +145,7 @@ public class ContentFieldsProvider : IContentFieldProvider
     }
 
     public bool HasField(ISchema schema, ContentPartFieldDefinition field)
-        => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+        => s_contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
 
     public FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field)
     {
@@ -154,7 +154,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             return null;
         }
 
-        var fieldDescriptor = _contentFieldTypeMappings[field.FieldDefinition.Name];
+        var fieldDescriptor = s_contentFieldTypeMappings[field.FieldDefinition.Name];
 
         return new FieldTypeIndexDescriptor
         {
@@ -165,7 +165,7 @@ public class ContentFieldsProvider : IContentFieldProvider
     }
 
     public bool HasFieldIndex(ContentPartFieldDefinition field)
-        => _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
+        => s_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
         fieldTypeDescriptor.IndexType != null &&
         !string.IsNullOrWhiteSpace(fieldTypeDescriptor.IndexProperty);
 

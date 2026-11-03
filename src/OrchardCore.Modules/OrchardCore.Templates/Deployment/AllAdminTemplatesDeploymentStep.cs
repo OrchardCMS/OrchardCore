@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Templates.Deployment;
 
@@ -8,15 +9,13 @@ namespace OrchardCore.Templates.Deployment;
 /// </summary>
 public class AllAdminTemplatesDeploymentStep : DeploymentStep
 {
-    public AllAdminTemplatesDeploymentStep()
-    {
-        Name = "AllAdminTemplates";
-    }
+    public override string Name => "AllAdminTemplates";
 
-    public AllAdminTemplatesDeploymentStep(IStringLocalizer<AllAdminTemplatesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Development"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Development;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => TemplatesLocalizationSources.AllAdminTemplates;
+
     public bool ExportAsFiles { get; set; }
 }

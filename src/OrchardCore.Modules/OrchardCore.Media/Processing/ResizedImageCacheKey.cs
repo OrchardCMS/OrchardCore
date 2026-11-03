@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Processing;
 /// </remarks>
 internal static class ResizedImageCacheKey
 {
-    private static readonly Comparison<KeyValuePair<string, string>> _byOrdinalKey =
+    private static readonly Comparison<KeyValuePair<string, string>> s_byOrdinalKey =
         static (a, b) => string.Compare(a.Key, b.Key, StringComparison.OrdinalIgnoreCase);
 
     public static string Compute(string tenantName, string path, IEnumerable<KeyValuePair<string, string>> commands)
@@ -26,7 +26,7 @@ internal static class ResizedImageCacheKey
         // Sort the (few) commands deterministically. Materializing into a small array and sorting in
         // place avoids the extra allocations of LINQ's OrderBy.
         var sorted = commands.ToArray();
-        Array.Sort(sorted, _byOrdinalKey);
+        Array.Sort(sorted, s_byOrdinalKey);
 
         // Build the payload directly into a pooled UTF-8 buffer and hash that span, so no
         // intermediate System.String or managed byte[] is allocated for the key material.

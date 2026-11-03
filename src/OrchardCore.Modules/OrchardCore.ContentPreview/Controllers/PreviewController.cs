@@ -16,7 +16,7 @@ namespace OrchardCore.ContentPreview.Controllers;
 
 public sealed class PreviewController : Controller
 {
-    private static readonly DistributedCacheEntryOptions _draftCacheOptions = new()
+    private static readonly DistributedCacheEntryOptions s_draftCacheOptions = new()
     {
         SlidingExpiration = TimeSpan.FromMinutes(5),
     };
@@ -100,7 +100,7 @@ public sealed class PreviewController : Controller
                 }
             }
 
-            return this.InternalServerError(new { errors });
+            return UnprocessableEntity(new { errors });
         }
 
         var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
@@ -126,7 +126,7 @@ public sealed class PreviewController : Controller
         await _distributedCache.SetAsync(
             "contentpreview:" + token,
             JsonSerializer.SerializeToUtf8Bytes(draft, JOptions.Default),
-            _draftCacheOptions);
+            s_draftCacheOptions);
 
         return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }), token });
     }

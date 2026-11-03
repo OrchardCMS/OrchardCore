@@ -3,7 +3,7 @@ namespace OrchardCore.Infrastructure.Tests;
 public class ResultTests
 {
     [Fact]
-    public void Success_ShouldBeSingleton_WithSucceededTrue_AndNoErrors()
+    public void Success_SucceededTrueAndNoErrors_IsSingleton()
     {
         // Arrange & Act
         var firstResult = Result.Success();
@@ -16,7 +16,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void SuccessOfT_ReturnsResultOfT_WithProvidedValue_AndSucceededTrue()
+    public void SuccessOfT_SucceededTrue_ReturnsResultOfTWithProvidedValue()
     {
         // Arrange
         var value = "Done!!";
@@ -32,7 +32,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void Failed_NullArray_ReturnsFailed_WithNoErrors()
+    public void Failed_NullArray_ReturnsFailedWithNoErrors()
     {
         // Arrange & Act
         var result = Result.Failed((ResultError[])null);
@@ -43,7 +43,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void Failed_NoArguments_ReturnsFailed_WithNoErrors()
+    public void Failed_NoArguments_ReturnsFailedWithNoErrors()
     {
         // Arrange & Act
         var result = Result.Failed();
@@ -54,7 +54,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void Failed_WithMultipleErrors_AddsAllErrors()
+    public void Failed_MultipleErrors_AddsAllErrors()
     {
         // Arrange
         var error1 = new ResultError { Message = new LocalizedString("FirstName", "First Name is required.") };
@@ -73,7 +73,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void Failed_WithLocalizedString_CreatesSingleResultError_WithMatchingMessage()
+    public void Failed_LocalizedString_CreatesSingleResultErrorWithMatchingMessage()
     {
         // Arrange
         var localized = new LocalizedString("key", "message text");
@@ -90,7 +90,7 @@ public class ResultTests
     }
 
     [Fact]
-    public void FailedT_ReturnsResultT_WithDefaultValue_AndProvidedErrors()
+    public void FailedT_ProvidedErrors_ReturnsResultTWithDefaultValue()
     {
         // Arrange
         var error = new ResultError { Message = new LocalizedString("key", "message text") };

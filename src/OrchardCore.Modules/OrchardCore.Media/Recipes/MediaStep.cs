@@ -3,19 +3,20 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Media.Recipes;
 
 /// <summary>
-/// This recipe step creates a set of queries.
+/// Imports files into the tenant's media store using relative target paths.
 /// </summary>
 public sealed class MediaStep : NamedRecipeStepHandler
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly FileCreationService _fileCreationService;
-    private readonly HashSet<string> _allowedFileExtensions;
+    private readonly MediaOptions _mediaOptions;
     private readonly IHttpClientFactory _httpClientFactory;
 
     internal readonly IStringLocalizer S;
@@ -30,7 +31,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
     {
         _mediaFileStore = mediaFileStore;
         _fileCreationService = fileCreationService;
-        _allowedFileExtensions = options.Value.AllowedFileExtensions;
+        _mediaOptions = options.Value;
         _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
     }
@@ -41,7 +42,14 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
         foreach (var file in model.Files)
         {
-            if (!_allowedFileExtensions.Contains(Path.GetExtension(file.TargetPath), StringComparer.OrdinalIgnoreCase))
+            if (!MediaFileStorePathHelper.IsValidRelativePath(file.TargetPath))
+            {
+                context.Errors.Add(S["Media target path must be a relative file path without traversal segments: '{0}'", file.TargetPath]);
+
+                continue;
+            }
+
+            if (!_mediaOptions.IsFileExtensionAllowed(Path.GetExtension(file.TargetPath), hasAdditionalPermission: true))
             {
                 context.Errors.Add(S["File extension not allowed: '{0}'", file.TargetPath]);
 

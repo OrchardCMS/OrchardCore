@@ -1,16 +1,27 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure;
 using OrchardCore.Media;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class MediaFileStoreExtensionsTests
 {
+    private readonly FileSizeHelper _fileSizeHelper;
+
+    public MediaFileStoreExtensionsTests()
+    {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        _fileSizeHelper = new FileSizeHelper(stringLocalizerMock.Object);
+    }
+
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlerCanReplaceStreamBeforeSaving()
+    public async Task CreateFileFromStreamAsync_FileEventHandlerCanReplaceStreamBeforeSaving_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>();
@@ -42,7 +53,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlerCanRejectFile()
+    public async Task CreateFileFromStreamAsync_FileEventHandlerCanRejectFile_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>(MockBehavior.Strict);
@@ -65,7 +76,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlersRunCreatedAfterTheFileIsStored()
+    public async Task CreateFileFromStreamAsync_FileEventHandlersRunCreatedAfterTheFileIsStored_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>();
@@ -93,7 +104,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlersRunBeforeMediaCreatingHandlers()
+    public async Task CreateFileFromStreamAsync_FileEventHandlersRunBeforeMediaCreatingHandlers_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var fileStoreMock = new Mock<IFileStore>();
@@ -133,6 +144,7 @@ public class MediaFileStoreExtensionsTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var fileCreationService = CreateFileCreationService(fileHandlerMock.Object);
@@ -143,7 +155,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlerRejectionStopsMediaProcessing()
+    public async Task CreateFileFromStreamAsync_FileEventHandlerRejectionStopsMediaProcessing_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
@@ -164,6 +176,7 @@ public class MediaFileStoreExtensionsTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var fileCreationService = CreateFileCreationService(fileHandlerMock.Object);
@@ -176,7 +189,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventReplacementStreamLivesThroughMediaProcessingAndStorage()
+    public async Task CreateFileFromStreamAsync_FileEventReplacementStreamLivesThroughMediaProcessingAndStorage_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var fileStoreMock = new Mock<IFileStore>();
@@ -219,6 +232,7 @@ public class MediaFileStoreExtensionsTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var fileCreationService = CreateFileCreationService(handlerMock.Object);

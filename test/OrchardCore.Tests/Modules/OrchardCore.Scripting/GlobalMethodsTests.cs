@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Scripting;
 public class GlobalMethodsTests
 {
     [Fact]
-    public void ShouldBase64EncodeCompressedBase64()
+    public void Base_64EncodeCompressedBase64_Succeeds()
     {
         var gzip = (Func<string, string>)CommonGeneratorMethods._gZip.Method.Invoke(null);
         var source = "H4sIAOCaLmcAA/NIzcnJVwjPL8pJUQQAoxwpHAwAAAA=";
@@ -16,7 +16,7 @@ public class GlobalMethodsTests
     }
 
     [Fact]
-    public void ShouldBase64Decode()
+    public void Base_64Decode_Succeeds()
     {
         var base64encode = (Func<string, string>)CommonGeneratorMethods._base64.Method.Invoke(null);
         var source = Convert.ToBase64String(Encoding.UTF8.GetBytes("Hello World!"));
@@ -26,7 +26,7 @@ public class GlobalMethodsTests
     }
 
     [Fact]
-    public void ShouldHtmlDecode()
+    public void Html_Decode_Succeeds()
     {
         var htmldecode = (Func<string, string>)CommonGeneratorMethods._html.Method.Invoke(null);
         var source = "&lt;Hello&gt;";
@@ -36,7 +36,7 @@ public class GlobalMethodsTests
     }
 
     [Fact]
-    public void ShouldEncryptAndDecrypt()
+    public void Encrypt_Decrypt_Succeeds()
     {
         var services = new ServiceCollection();
         services.AddDataProtection();
@@ -57,7 +57,7 @@ public class GlobalMethodsTests
     }
 
     [Fact]
-    public void ShouldReturnEmptyStringWhenDecryptingEmptyInput()
+    public void Return_DecryptingEmptyInput_Succeeds()
     {
         var services = new ServiceCollection();
         services.AddDataProtection();
@@ -72,7 +72,7 @@ public class GlobalMethodsTests
     }
 
     [Fact]
-    public void ShouldReturnEmptyStringWhenDecryptingInvalidInput()
+    public void Return_DecryptingInvalidInput_Succeeds()
     {
         var services = new ServiceCollection();
         services.AddDataProtection();

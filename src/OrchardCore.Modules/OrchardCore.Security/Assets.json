@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "permissions-policy-settings",
+    "source": "Assets/ts/permissions-policy-settings.ts",
+    "dest": "wwwroot/Scripts/permissions-policy-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

@@ -1,4 +1,4 @@
-using Acornima;
+using Jint;
 using Jint.Runtime;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -75,10 +75,14 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
             });
             condition.Script = model.Script;
         }
-        catch (ParseErrorException ex) // Invalid syntax
+        catch (ScriptPreparationException ex) // Invalid syntax
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", ex.Message]);
-            await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", ex.Message]);
+            // The parser exception is wrapped by Jint, and the inner exception carries the actual
+            // syntax error along with its position, which is what is worth showing to the user.
+            var details = (ex.InnerException ?? ex).Message;
+
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", details]);
+            await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", details]);
         }
         catch (JavaScriptException ex) // Evaluation threw an Error
         {

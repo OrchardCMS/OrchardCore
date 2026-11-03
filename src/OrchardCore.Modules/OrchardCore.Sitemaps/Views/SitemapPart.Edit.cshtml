@@ -2,13 +2,13 @@
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <div class="form-check">
-            <input asp-for="OverrideSitemapConfig" class="form-check-input" />
+            <input asp-for="OverrideSitemapConfig" class="form-check-input" data-sitemap-override-toggle />
             <label asp-for="OverrideSitemapConfig" class="form-check-label">@T["Override sitemap configuration"]</label>
             <span class="hint dashed">@T["Check to override sitemap configuration."]</span>
         </div>
     </div>
     <div class="ocat-end-offset">
-        <div class="form-check sitemap-form-g mt-3" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
+        <div class="form-check sitemap-form-g mt-3" data-sitemap-override-for="@Html.IdFor(m => m.OverrideSitemapConfig)" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
             <input asp-for="Exclude" class="form-check-input" />
             <label asp-for="Exclude" class="form-check-label">@T["Exclude"]</label>
             <span class="hint dashed">@T["Check to exclude this content item from the site map."]</span>
@@ -17,14 +17,14 @@
 </div>
 <div class="ocat-wrapper">
     <label asp-for="ChangeFrequency" class="ocat-label">@T["Change Frequency"]</label>
-    <div class="ocat-end sitemap-form-g" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
+    <div class="ocat-end sitemap-form-g" data-sitemap-override-for="@Html.IdFor(m => m.OverrideSitemapConfig)" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
         <select asp-for="ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
         <span class="hint">@T["The frequency this content item is likely to change."]</span>
 </div>
 </div>
 <div class="ocat-wrapper">
     <label asp-for="Priority" class="ocat-label">@T["Priority"] </label>
-    <div class="ocat-end sitemap-form-g" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
+    <div class="ocat-end sitemap-form-g" data-sitemap-override-for="@Html.IdFor(m => m.OverrideSitemapConfig)" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
         <select asp-for="Priority" class="form-select">
             <option value="0">@T["0.0"]</option>
             <option value="1">@T["0.1"]</option>
@@ -42,11 +42,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.getElementById('@Html.IdFor(i => i.OverrideSitemapConfig)').addEventListener('change', function (e) {
-        var checked = e.target.checked;
-        document.querySelectorAll('.sitemap-form-g').forEach(function (element) {
-            element.style.display = checked ? '' : 'none';
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Sitemaps/Scripts/sitemap-part/sitemap-part.min.js" debug-src="~/OrchardCore.Sitemaps/Scripts/sitemap-part/sitemap-part.js" at="Foot" type="module"></script>

@@ -6,7 +6,7 @@ namespace OrchardCore.Google;
 
 public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", GoogleConstants.Features.GoogleAuthentication },
@@ -21,24 +21,6 @@ public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Authentication"], authentication => authentication
-                    .Add(S["Google"], S["Google"].PrefixPosition(), google => google
-                        .AddClass("google")
-                        .Id("google")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGoogleAuthentication)
-                        .LocalNav()
-                    )
-                )
-            );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
@@ -46,7 +28,7 @@ public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
                         .Add(S["Google"], S["Google"].PrefixPosition(), google => google
                             .AddClass("google")
                             .Id("google")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageGoogleAuthentication)
                             .LocalNav()
                         )

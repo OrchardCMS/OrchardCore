@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Placements.Deployment;
 
@@ -8,14 +9,8 @@ namespace OrchardCore.Placements.Deployment;
 /// </summary>
 public class PlacementsDeploymentStep : DeploymentStep
 {
-    public PlacementsDeploymentStep()
-    {
-        Name = "Placements";
-    }
+    public override string Name => "Placements";
 
-    public PlacementsDeploymentStep(IStringLocalizer<PlacementsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Development"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Development;
 }

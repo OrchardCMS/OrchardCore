@@ -6,7 +6,7 @@ namespace OrchardCore.Google;
 
 public sealed class GoogleTagManagerAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", GoogleConstants.Features.GoogleTagManager },
@@ -21,31 +21,13 @@ public sealed class GoogleTagManagerAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), google => google
-                        .AddClass("googleTagManager")
-                        .Id("googleTagManager")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGoogleTagManager)
-                        .LocalNav()
-                    )
-                )
-            );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
                     .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), google => google
                         .AddClass("googleTagManager")
                         .Id("googleTagManager")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageGoogleTagManager)
                         .LocalNav()
                     )

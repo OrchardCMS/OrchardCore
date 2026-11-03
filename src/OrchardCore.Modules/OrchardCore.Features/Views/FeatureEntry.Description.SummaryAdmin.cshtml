@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Features.Models
+
+@model ShapeViewModel<FeatureEntry>
+
+@if (!string.IsNullOrEmpty(Model.Value.Feature.Descriptor.Description))
+{
+    <div class="admin-list-secondary">@Model.Value.Feature.Descriptor.Description</div>
+}

@@ -6,9 +6,13 @@
     var orderUrl = Url.Action("UpdateOrder", "Step");
 }
 
-<script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="Sortable, jQuery"></script>
+<script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="Sortable"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="DeploymentPlansDisplay" title="@T["Deployment Plan"]">
+        <breadcrumb-item id="DeploymentPlans" action="Index" controller="DeploymentPlan" area="OrchardCore.Deployment" permission="@DeploymentPermissions.Export.Name">@T["Deployment Plans"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div class="d-none" id="stepOrderUrl" data-url="@orderUrl"></div>
 <div class="d-none" id="deploymentPlanId" data-id="@Model.DeploymentPlan.Id"></div>
@@ -57,7 +61,7 @@
 </form>
 
 <!-- Modal -->
-<div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="available-steps-title" aria-hidden="true">
+<div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="available-steps-title" aria-hidden="true" data-list-management data-client-side-search="true" data-search-result-selector=".deployment-step-item" data-search-text-attribute="textContent" data-normalize-search="true" data-search-group-selector=".modal-body section" data-search-group-visible-selector=".deployment-step-item">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,12 +76,12 @@
                         </div>
                         <ul class="nav nav-pills flex-column" id="deployment-step-categories">
                             <li class="nav-item">
-                                <a class="nav-link active" href="#all" data-category="all">@T["All"]</a>
+                                <a class="nav-link active" href="#all" data-list-filter-link data-list-filter-attribute="data-category" data-list-filter-value="all">@T["All"]</a>
                             </li>
                             @foreach (var category in Model.Categories)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#@category.Id" data-category="@category.Id">@category.Name</a>
+                                    <a class="nav-link" href="#@category.Id" data-list-filter-link data-list-filter-attribute="data-category" data-list-filter-value="@category.Id">@category.Name</a>
                                 </li>
                             }
                         </ul>
@@ -138,88 +142,4 @@
         </div>
     </div>
 </div>
-<script at="Foot">
-    function getDeploymentStepCategory() {
-        var activeCategory = document.querySelector('#deployment-step-categories .nav-link.active');
-
-        return activeCategory ? activeCategory.dataset.category || 'all' : 'all';
-    }
-
-    function filterDeploymentSteps() {
-        var searchBox = document.getElementById('search-box');
-        var search = replaceDiacritics(String(searchBox ? searchBox.value || '' : '').toLowerCase());
-        var selectedCategory = getDeploymentStepCategory();
-
-        document.querySelectorAll('.deployment-step-item').forEach(function (card) {
-            var cardText = replaceDiacritics(card.textContent.toLowerCase());
-            var matchesSearch = search === '' || cardText.indexOf(search) > -1;
-            var matchesCategory = selectedCategory === 'all' || card.dataset.category === selectedCategory;
-
-            card.style.display = matchesSearch && matchesCategory ? '' : 'none';
-        });
-    }
-
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var modalSteps = document.getElementById('modalSteps');
-        var searchBox = document.getElementById('search-box');
-        var deploymentStepCategories = document.getElementById('deployment-step-categories');
-
-        if (modalSteps) {
-            modalSteps.addEventListener('shown.bs.modal', function () {
-                if (searchBox) {
-                    searchBox.focus();
-                }
-                filterDeploymentSteps();
-            });
-
-            modalSteps.addEventListener('hidden.bs.modal', function () {
-                if (searchBox) {
-                    searchBox.value = '';
-                }
-                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (link) {
-                    link.classList.remove('active');
-                });
-                var allCategory = document.querySelector('#deployment-step-categories .nav-link[data-category="all"]');
-                if (allCategory) {
-                    allCategory.classList.add('active');
-                }
-                filterDeploymentSteps();
-            });
-        }
-
-        if (searchBox) {
-            searchBox.addEventListener('input', function () {
-                filterDeploymentSteps();
-            });
-        }
-
-        if (deploymentStepCategories) {
-            deploymentStepCategories.addEventListener('click', function (e) {
-                var link = e.target.closest('.nav-link');
-
-                if (!link || !deploymentStepCategories.contains(link)) {
-                    return;
-                }
-
-                e.preventDefault();
-                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (navLink) {
-                    navLink.classList.remove('active');
-                });
-                link.classList.add('active');
-                filterDeploymentSteps();
-            });
-        }
-    });
-
-    function replaceDiacritics(str) {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
-</script>
+<script asp-src="~/OrchardCore.Deployment/Scripts/deployment-plan-display/deployment-plan-display.min.js" debug-src="~/OrchardCore.Deployment/Scripts/deployment-plan-display/deployment-plan-display.js" at="Foot" type="module"></script>

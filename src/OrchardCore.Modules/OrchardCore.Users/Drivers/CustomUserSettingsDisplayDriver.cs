@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
@@ -32,6 +33,39 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
         _contentManager = contentManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+    }
+
+    public override async Task<IDisplayResult> DisplayAsync(User user, BuildDisplayContext context)
+    {
+        if (!string.Equals(context.DisplayType, OrchardCoreConstants.DisplayType.SummaryAdmin, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(context.DisplayType, OrchardCoreConstants.DisplayType.SummaryAdminGrid, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
+        if (!contentTypeDefinitions.Any())
+        {
+            return null;
+        }
+
+        var results = new List<IDisplayResult>();
+        var userClaim = _httpContextAccessor.HttpContext.User;
+
+        foreach (var contentTypeDefinition in contentTypeDefinitions)
+        {
+            results.Add(Factory("CustomUserSettings_SummaryAdmin", async builder =>
+                {
+                    var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition);
+                    return await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater: null, context.DisplayType);
+                })
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, PlacementInfo.HiddenLocation)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, PlacementInfo.HiddenLocation)
+                .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
+        }
+
+        return Combine(results);
     }
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)

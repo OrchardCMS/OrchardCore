@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Logging;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Tests.Functional.Helpers;
@@ -17,8 +18,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
     // Capture the original values once at process start, then clear the env vars so
     // ShellSettingsManager can't re-apply them with highest priority — each host gets
     // its per-fixture connection string via tenants.json and builder.Configuration instead.
-    private static readonly string _originalConnectionString = CaptureAndClear("OrchardCore__ConnectionString");
-    private static readonly string _originalDatabaseProvider = CaptureAndClear("OrchardCore__DatabaseProvider");
+    private static readonly string s_originalConnectionString = CaptureAndClear("OrchardCore__ConnectionString");
+    private static readonly string s_originalDatabaseProvider = CaptureAndClear("OrchardCore__DatabaseProvider");
 
     private static string CaptureAndClear(string variable)
     {
@@ -36,23 +37,39 @@ public sealed class OrchardTestServer : IAsyncDisposable
     /// Used by test helpers (e.g., CreateTenantAsync) to fill in child tenant connection strings.
     /// </summary>
     [ThreadStatic]
-    private static string _currentConnectionString;
+    private static string s_currentConnectionString;
 
-    public static string CurrentConnectionString => _currentConnectionString;
+    public static string CurrentConnectionString => s_currentConnectionString;
+
+    internal static bool IsPostgresConfigured =>
+        s_originalDatabaseProvider == "Postgres" && !string.IsNullOrEmpty(s_originalConnectionString);
 
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
+    private readonly string _postgresConnectionString;
 
     public string ServerAddress { get; }
 
-    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector)
+    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector, string postgresConnectionString = null)
     {
         _app = app;
         ServerAddress = serverAddress;
         _logCollector = logCollector;
+        _postgresConnectionString = postgresConnectionString;
     }
 
-    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null)
+    /// <summary>
+    /// Starts an isolated CMS host, with optional fixture-specific configuration and services.
+    /// </summary>
+    /// <param name="contentRoot">The CMS application's content root.</param>
+    /// <param name="appDataPath">The fixture's application data directory.</param>
+    /// <param name="instanceId">The fixture's database isolation identifier.</param>
+    /// <param name="configure">Optional host customization applied before building the application.</param>
+    public static async Task<OrchardTestServer> StartCmsAsync(
+        string contentRoot,
+        string appDataPath,
+        string instanceId = null,
+        Action<WebApplicationBuilder> configure = null)
     {
         var loggerProvider = new FakeLoggerProvider();
 
@@ -70,8 +87,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // Serve test recipes from embedded resources instead of copying files.
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
+        builder.Services.AddSingleton<IModuleNamesProvider, TestThemeModuleNamesProvider>();
 
-        ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        var postgresConnectionString = ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        configure?.Invoke(builder);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -79,7 +98,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
+        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector, postgresConnectionString);
     }
 
     public static async Task<OrchardTestServer> StartMvcAsync(string contentRoot, string appDataPath)
@@ -109,9 +128,14 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // The OrchardCore tenant pipeline initializes lazily on the first request.
         // Warm up the app now so tests don't race against pipeline initialization.
-        await WarmUpAsync(address, timeoutSeconds: 90);
+        await WarmUpAsync(address, loggerProvider.Collector, timeoutSeconds: 90);
 
         return new OrchardTestServer(app, address, loggerProvider.Collector);
+    }
+
+    private sealed class TestThemeModuleNamesProvider : IModuleNamesProvider
+    {
+        public IEnumerable<string> GetModuleNames() => ["AdminThemeSample", "WorkflowsSample"];
     }
 
     public void AssertNoLoggedIssues()
@@ -133,19 +157,54 @@ public sealed class OrchardTestServer : IAsyncDisposable
     }
 
     private static bool IsIgnoredWarning(FakeLogRecord record) =>
-        record.Category == "Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager"
-        && record.Message.Contains("No XML encryptor configured");
+        (record.Category == "Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager"
+            && record.Message.Contains("No XML encryptor configured"))
+        || record.Category == "OrchardCore.Media.Controllers.MediaApiController"
+        || record.Category == "OrchardCore.Media.Services.DiskTusTempStore"
+        || (record.Category == "Microsoft.AspNetCore.Server.Kestrel"
+            && record.Message.Contains("Connection processing ended abnormally"))
+        || (record.Category == "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware"
+            && record.Exception?.ToString().Contains("Cannot create directory '_Users") == true)
+        // Fires exactly once, on the first request after a test enables
+        // OrchardCore.OpenId.Client, before that test's setup code gets a chance to save
+        // valid settings - inherent to exercising this feature at all in a test, not a
+        // product regression (OpenIdClientConfiguration's background settings-validity
+        // check runs independently of page navigation timing).
+        || (record.Category == "OrchardCore.OpenId.Configuration.OpenIdClientConfiguration"
+            && record.Message.Contains("The OpenID client settings are invalid"))
+        // The Transient failure activity of the WorkflowsSample test module faults its instance on purpose.
+        || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
+            && record.Exception is WorkflowsSample.TransientFailureException)
+        // The script of the Script errors workflow fails on purpose.
+        || (record.Category == "OrchardCore.Workflows.Evaluators.JavaScriptWorkflowScriptEvaluator"
+            && record.Message.Contains("input('Order').Total"))
+        || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
+            && record.Exception is OrchardCore.Workflows.Models.WorkflowScriptException
+            && record.Exception.Message.Contains("reading 'Total'"));
 
     public async ValueTask DisposeAsync()
     {
         if (_app is not null)
         {
-            await _app.StopAsync();
-            await _app.DisposeAsync();
+            try
+            {
+                await _app.StopAsync();
+                await _app.DisposeAsync();
+            }
+            finally
+            {
+                if (_postgresConnectionString is not null)
+                {
+                    // Npgsql pools outlive hosts. Release this fixture's idle connections
+                    // without clearing pools belonging to other, still-running fixtures.
+                    using var connection = new Npgsql.NpgsqlConnection(_postgresConnectionString);
+                    Npgsql.NpgsqlConnection.ClearPool(connection);
+                }
+            }
         }
     }
 
-    private static void ConfigureServices(
+    private static string ConfigureServices(
         WebApplicationBuilder builder,
         string appDataPath,
         string instanceId,
@@ -168,24 +227,28 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // Ensure the per-fixture App_Data path exists before shell initialization persists settings.
         Directory.CreateDirectory(resolvedAppDataPath);
 
+        // Configure a per-fixture temporary directory, as the default unique one logs a warning.
+        builder.Configuration["OrchardCore:TempDirectory:Path"] = Path.Combine(resolvedAppDataPath, "Temp");
+
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
-        if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
+        string connectionString = null;
+        if (!string.IsNullOrEmpty(s_originalConnectionString) && !string.IsNullOrEmpty(s_originalDatabaseProvider))
         {
-            var connectionString = _originalConnectionString;
+            connectionString = s_originalConnectionString;
 
             if (!string.IsNullOrEmpty(instanceId))
             {
-                var dbName = ExtractDatabaseName(_originalConnectionString);
+                var dbName = ExtractDatabaseName(s_originalConnectionString);
                 if (dbName is not null)
                 {
-                    connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
-                    EnsureCleanDatabase(connectionString, _originalDatabaseProvider);
+                    connectionString = ReplaceDatabaseName(s_originalConnectionString, $"{dbName}_{instanceId}");
+                    EnsureCleanDatabase(connectionString, s_originalDatabaseProvider);
                 }
             }
 
             // Store for test helpers that need the fixture-specific connection string.
-            _currentConnectionString = connectionString;
+            s_currentConnectionString = connectionString;
 
             // Write tenants.json so OrchardCore picks up the per-fixture database.
             File.WriteAllText(
@@ -194,7 +257,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
                 {
                     ["Default"] = new Dictionary<string, string>
                     {
-                        ["DatabaseProvider"] = _originalDatabaseProvider,
+                        ["DatabaseProvider"] = s_originalDatabaseProvider,
                         ["ConnectionString"] = connectionString,
                     },
                 }));
@@ -202,16 +265,18 @@ public sealed class OrchardTestServer : IAsyncDisposable
             // Override the env-var-sourced configuration keys so ShellSettingsManager
             // doesn't re-apply the original values with highest priority.
             builder.Configuration["OrchardCore:ConnectionString"] = connectionString;
-            builder.Configuration["OrchardCore:DatabaseProvider"] = _originalDatabaseProvider;
+            builder.Configuration["OrchardCore:DatabaseProvider"] = s_originalDatabaseProvider;
         }
 
         // Disable YesSql concurrency checks during setup. Each recipe step runs in a new
         // scope with a new session, but the document cache can serve stale versions, causing
         // ConcurrencyException on SiteSettings with external databases.
-        builder.Configuration["OrchardCore:OrchardCore_Documents:CheckConcurrency"] = "false";
+        builder.Configuration["OrchardCore:Documents:CheckConcurrency"] = "false";
 
         builder.Logging.AddFilter<FakeLoggerProvider>(level => level >= LogLevel.Warning);
         builder.Logging.AddProvider(loggerProvider);
+
+        return IsPostgresConfigured && !string.IsNullOrEmpty(instanceId) ? connectionString : null;
     }
 
     /// <summary>
@@ -356,32 +421,89 @@ public sealed class OrchardTestServer : IAsyncDisposable
     /// OrchardCore tenant pipeline has finished its lazy first-request initialization
     /// before the Playwright tests begin.
     /// </summary>
-    private static async Task WarmUpAsync(string baseAddress, string healthPath = "/health/live", int timeoutSeconds = 30)
+    private static async Task WarmUpAsync(
+        string baseAddress,
+        FakeLogCollector logCollector,
+        string healthPath = "/health/live",
+        int timeoutSeconds = 30)
     {
-        using var client = new HttpClient();
+        // Each attempt gets a fresh connection: a single connection that the server accepts but
+        // never answers must not consume the whole budget, nor be handed back out of the pool.
+        var handler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.Zero,
+            ConnectTimeout = TimeSpan.FromSeconds(5),
+        };
+
+        using var client = new HttpClient(handler, disposeHandler: true);
+
         var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+        var attempts = 0;
+        var lastFailure = "no attempt completed";
 
         while (DateTime.UtcNow < deadline)
         {
+            attempts++;
+
+            // Bound each attempt so one hung request can't eat the entire timeout, which would
+            // leave us unable to tell a hang apart from a fast, consistently failing response.
+            using var attemptCancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
             try
             {
-                var response = await client.GetAsync($"{baseAddress}{healthPath}");
+                var response = await client.GetAsync($"{baseAddress}{healthPath}", attemptCancellation.Token);
                 if (response.IsSuccessStatusCode)
                 {
                     return;
                 }
+
+                var body = await response.Content.ReadAsStringAsync(attemptCancellation.Token);
+                lastFailure = $"HTTP {(int)response.StatusCode} {response.ReasonPhrase}"
+                    + (string.IsNullOrWhiteSpace(body) ? " (empty body)" : $": {Truncate(body, 500)}");
             }
-            catch
+            catch (OperationCanceledException)
+            {
+                lastFailure = "the request did not complete within 10 seconds";
+            }
+            catch (Exception ex)
             {
                 // Server not yet accepting connections — keep waiting.
+                lastFailure = $"{ex.GetType().Name}: {ex.Message}";
             }
 
             await Task.Delay(500);
         }
 
         throw new TimeoutException(
-            $"The application at '{baseAddress}' did not respond successfully at '{healthPath}' within {timeoutSeconds} seconds.");
+            $"The application at '{baseAddress}' did not respond successfully at '{healthPath}' within "
+            + $"{timeoutSeconds} seconds after {attempts} attempt(s). Last failure: {lastFailure}."
+            + DescribeLoggedIssues(logCollector));
     }
+
+    /// <summary>
+    /// Renders the warnings and errors the host logged during startup, so a warm-up failure
+    /// reports why the app is unhealthy instead of only that it is.
+    /// </summary>
+    private static string DescribeLoggedIssues(FakeLogCollector logCollector)
+    {
+        var issues = logCollector.GetSnapshot()
+            .Where(e => e.Level >= LogLevel.Warning)
+            .ToList();
+
+        if (issues.Count == 0)
+        {
+            return $"{System.Environment.NewLine}The host logged no warnings or errors.";
+        }
+
+        var messages = issues.Select(e =>
+            $"[{e.Level}] {e.Category}: {e.Message}{(e.Exception is not null ? $" -> {e.Exception}" : string.Empty)}");
+
+        return $"{System.Environment.NewLine}The host logged {issues.Count} warning(s)/error(s):"
+            + $"{System.Environment.NewLine}{string.Join(System.Environment.NewLine, messages)}";
+    }
+
+    private static string Truncate(string value, int maxLength) =>
+        value.Length <= maxLength ? value : value[..maxLength] + "…";
 
     private static string GetListeningAddress(WebApplication app)
     {

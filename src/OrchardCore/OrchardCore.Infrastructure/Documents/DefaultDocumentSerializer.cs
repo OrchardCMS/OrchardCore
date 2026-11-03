@@ -12,7 +12,7 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
 {
     private const string StreamTag = nameof(DefaultDocumentSerializer);
 
-    private static readonly byte[] _gZipHeaderBytes = [0x1f, 0x8b];
+    private static readonly byte[] s_gZipHeaderBytes = [0x1f, 0x8b];
 
     private readonly JsonSerializerOptions _serializerOptions;
 
@@ -75,7 +75,7 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        return data.AsSpan().StartsWith(_gZipHeaderBytes);
+        return data.AsSpan().StartsWith(s_gZipHeaderBytes);
     }
 
     internal static async Task CompressAsync(Stream source, RecyclableMemoryStream output)

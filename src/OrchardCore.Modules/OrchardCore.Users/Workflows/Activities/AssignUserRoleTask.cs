@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -9,28 +10,35 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
+public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>, IActivityDescription
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IUserService _userService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public AssignUserRoleTask(
         UserManager<IUser> userManager,
         IUserService userService,
         IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<AssignUserRoleTask> localizer)
     {
         _userManager = userManager;
         _userService = userService;
         _expressionEvaluator = expressionEvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Assign User Role Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<AssignUserRoleTask>("Assign User Role Task");
 
-    public override LocalizedString Category => S["User"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.User;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> UserName
     {
@@ -45,9 +53,7 @@ public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -63,11 +69,11 @@ public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
                 await _userManager.AddToRoleAsync(user, roleName);
             }
 
-            return Outcomes("Done");
+            return Outcome("Done");
         }
         else
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
     }
 }

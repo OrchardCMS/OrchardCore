@@ -51,7 +51,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_CropMode_ProducesExactDimensions()
+    public async Task Process_CropMode_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands { Width = 60, Height = 60, ResizeMode = ResizeMode.Crop };
@@ -61,7 +61,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_CropMode_WithFocalPoint_ProducesExactDimensions()
+    public async Task Process_CropModeWithFocalPoint_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands
@@ -78,7 +78,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_StretchMode_ProducesExactDimensions()
+    public async Task Process_StretchMode_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands { Width = 100, Height = 80, ResizeMode = ResizeMode.Stretch };
@@ -90,7 +90,7 @@ public sealed class VipsImageProcessingEngineTests
     [Theory]
     [InlineData(200, 100, 50, null, 50, 100)]  // width-only: height is left unchanged
     [InlineData(200, 100, null, 40, 200, 40)]  // height-only: width is left unchanged
-    public async Task Process_StretchMode_SingleAxis_LeavesOtherAxisUnchanged(
+    public async Task Process_StretchModeSingleAxis_LeavesOtherAxisUnchanged(
         int srcW, int srcH, int? reqW, int? reqH, int expW, int expH)
     {
         using var input = CreateTestPng(srcW, srcH);
@@ -101,7 +101,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_CropMode_WithFocalPoint_SingleAxis_LeavesOtherAxisUnchanged()
+    public async Task Process_CropModeWithFocalPointSingleAxis_LeavesOtherAxisUnchanged()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands
@@ -119,7 +119,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_PadMode_ProducesExactDimensions()
+    public async Task Process_PadMode_ProducessExactDimensions()
     {
         // Input 200x100 → pad to portrait 100x200; thumbnail shrinks to 100x50, rest is padding.
         using var input = CreateTestPng(200, 100);
@@ -205,7 +205,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_PadMode_RgbaSource_ProducesExactDimensions()
+    public async Task Process_PadModeRgbaSource_ProducessExactDimensions()
     {
         // A 4-band (RGBA) source must pad without a band-count mismatch on the background color.
         using var rgba = Image.Black(200, 100, bands: 4);
@@ -224,7 +224,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_PadMode_GrayscaleSource_ProducesExactDimensions()
+    public async Task Process_PadModeGrayscaleSource_ProducessExactDimensions()
     {
         // A single-band (grayscale) source must pad without a band-count mismatch.
         using var gray = Image.Black(200, 100, bands: 1);
@@ -243,7 +243,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_BoxPadMode_ProducesExactDimensions()
+    public async Task Process_BoxPadMode_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands
@@ -259,7 +259,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_AutoOrientDisabled_ProducesOutput()
+    public async Task Process_AutoOrientDisabled_ProducessOutput()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands { Width = 100, ResizeMode = ResizeMode.Max, AutoOrient = false };
@@ -280,7 +280,7 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_OutputIsNonEmpty()
+    public async Task Process_OutputIsNonEmpty_Succeeds()
     {
         using var input = CreateTestPng(100, 50);
         var commands = new ImageProcessingCommands { Width = 50, Format = Format.Png };

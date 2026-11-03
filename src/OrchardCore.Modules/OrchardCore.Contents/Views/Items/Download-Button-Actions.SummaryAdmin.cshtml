@@ -4,59 +4,26 @@
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
-    var exportId = Guid.NewGuid().ToString("n");
-    var exportPublishedId = Guid.NewGuid().ToString("n");
-    var exportDraftId = Guid.NewGuid().ToString("n");
 }
 
 <div class="dropdown-divider"></div>
 @if (hasDraft)
 {
     <a asp-action="Display" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" asp-route-latest="true" class="dropdown-item">@T["View Draft as JSON"]</a>
-    <a id="@exportDraftId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-latest="@bool.TrueString" class="dropdown-item" data-url-af="UnsafeUrl">@T["Download Draft as JSON"]</a>
+    <a asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-latest="@bool.TrueString" class="dropdown-item download-json-toggle-dropdown" data-url-af="UnsafeUrl">@T["Download Draft as JSON"]</a>
 
     if (hasPublished)
     {
         <div class="dropdown-divider"></div>
 
         <a asp-action="Display" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item">@T["View Published as JSON"]</a>
-        <a id="@exportPublishedId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item" data-url-af="UnsafeUrl">@T["Download Published as JSON"]</a>
+        <a asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item download-json-toggle-dropdown" data-url-af="UnsafeUrl">@T["Download Published as JSON"]</a>
     }
 }
 else
 {
     <a asp-action="Display" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item">@T["View as JSON"]</a>
-    <a id="@exportId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item" data-url-af="UnsafeUrl">@T["Download as JSON"]</a>
+    <a asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item download-json-toggle-dropdown" data-url-af="UnsafeUrl">@T["Download as JSON"]</a>
 }
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        function toggleDropdown(element) {
-            var dropdownMenu = element.closest(".dropdown-menu");
-            var dropdownToggle = dropdownMenu?.previousElementSibling;
-            if (dropdownToggle) {
-                bootstrap.Dropdown.getOrCreateInstance(dropdownToggle).toggle();
-            }
-        }
-
-        document.getElementById('@exportDraftId')?.addEventListener('click', function () {
-            toggleDropdown(this);
-        });
-
-        document.getElementById('@exportPublishedId')?.addEventListener('click', function () {
-            toggleDropdown(this);
-        });
-
-        document.getElementById('@exportId')?.addEventListener('click', function () {
-            toggleDropdown(this);
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Contents/Scripts/download-editors/download-button-actions.min.js" debug-src="~/OrchardCore.Contents/Scripts/download-editors/download-button-actions.js" at="Foot" type="module"></script>

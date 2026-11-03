@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.ContentManagement;
 public class ContentElementTests
 {
     [Fact]
-    public void Get_WhenCastingBaseTypeThenConcreteType_ReturnNewInstance()
+    public void Get_CastingBaseTypeThenConcreteTypeReturnNewInstance_Succeeds()
     {
         var contentItem = new ContentItem();
         var titlePart = new TitlePart
@@ -38,7 +38,7 @@ public class ContentElementTests
     }
 
     [Fact]
-    public void Get_WhenCastingConcreteTypeThenBaseType_ReturnNewInstance()
+    public void Get_CastingConcreteTypeThenBaseTypeReturnNewInstance_Succeeds()
     {
         var contentItem = new ContentItem();
         var titlePart = new TitlePart
@@ -69,7 +69,7 @@ public class ContentElementTests
     }
 
     [Fact]
-    public void Apply_WhenCalledWithNullProperty_SetThePropertyToNull()
+    public void Apply_CalledWithNullPropertySetThePropertyToNull_Succeeds()
     {
         var contentItem = new ContentItem();
 

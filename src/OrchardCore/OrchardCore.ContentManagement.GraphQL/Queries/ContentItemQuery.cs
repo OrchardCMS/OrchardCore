@@ -38,8 +38,6 @@ public sealed class ContentItemQuery : ISchemaBuilder
             Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync),
         };
 
-        field.RequirePermission(GraphQLPermissions.ExecuteGraphQL);
-
         schema.Query.AddField(field);
 
         return Task.CompletedTask;

@@ -15,14 +15,14 @@ public static class ShellPipelineExtensions
 {
     private const string EndpointRouteBuilder = "__EndpointRouteBuilder";
 
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
     /// <summary>
     /// Builds the tenant pipeline atomically.
     /// </summary>
     public static async Task BuildPipelineAsync(this ShellContext context)
     {
-        var semaphore = _semaphores.GetOrAdd(context.Settings.Name, _ => new SemaphoreSlim(1));
+        var semaphore = s_semaphores.GetOrAdd(context.Settings.Name, _ => new SemaphoreSlim(1));
 
         await semaphore.WaitAsync();
         try

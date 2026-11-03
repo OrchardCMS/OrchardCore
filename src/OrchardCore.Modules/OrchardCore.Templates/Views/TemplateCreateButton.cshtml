@@ -1,0 +1,6 @@
+@* The button of the templates list, passed to the AdminList shape as its 'Actions' so the layout places it. *@
+@{
+    var adminTemplates = Model.AdminTemplates != null && (bool)Model.AdminTemplates;
+}
+
+<a asp-action="Create" asp-controller="Template" asp-route-admintemplates="@adminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Add Template"]</a>

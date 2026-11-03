@@ -1,20 +1,18 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Users.Deployment;
 
 public class CustomUserSettingsDeploymentStep : DeploymentStep
 {
-    public CustomUserSettingsDeploymentStep()
-    {
-        Name = "CustomUserSettings";
-    }
+    public override string Name => "CustomUserSettings";
 
-    public CustomUserSettingsDeploymentStep(IStringLocalizer<CustomUserSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Security"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Security;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => UsersLocalizationSources.CustomUserSettings;
 
     public bool IncludeAll { get; set; } = true;
 

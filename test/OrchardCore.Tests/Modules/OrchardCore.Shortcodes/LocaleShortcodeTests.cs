@@ -13,7 +13,7 @@ public class LocaleShortcodeTests
     [InlineData("en-CA", "foo [locale en false]bar[/locale][locale fr]far[/locale] baz", @"foo  baz")]
     [InlineData("fr", "foo [locale 'en']bar[/locale][locale 'fr']far[/locale] baz", @"foo far baz")]
     [InlineData("fr", "foo [locale en]bar[/locale][locale fr]far[/locale] baz", @"foo far baz")]
-    public async Task ShouldProcess(string currentCulture, string text, string expected)
+    public async Task Process_Default_Succeeds(string currentCulture, string text, string expected)
     {
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(currentCulture);
 

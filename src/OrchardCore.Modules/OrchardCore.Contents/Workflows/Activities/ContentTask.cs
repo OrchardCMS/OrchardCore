@@ -10,8 +10,9 @@ public abstract class ContentTask : ContentActivity, ITask
     protected ContentTask(
         IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
     }
 }

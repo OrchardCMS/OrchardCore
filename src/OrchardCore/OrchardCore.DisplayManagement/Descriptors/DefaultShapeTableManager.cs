@@ -8,6 +8,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Locking;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -21,9 +22,9 @@ public class DefaultShapeTableManager : IShapeTableManager
 
     // FeatureShapeDescriptors are identical across tenants so they can be reused statically. Each shape table will
     // create a unique list of these per tenant.
-    private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
+    private static readonly ConcurrentDictionary<(Type BindingStrategyType, string FeatureId, string ShapeType), FeatureShapeDescriptor> s_shapeDescriptors = new();
 
-    private static readonly object _syncLock = new();
+    private static readonly object s_syncLock = new();
 
     // Singleton cache to hold a tenant's theme ShapeTable.
     private readonly IDictionary<string, Task<ShapeTable>> _shapeTableCache;
@@ -84,34 +85,37 @@ public class DefaultShapeTableManager : IShapeTableManager
             logger.LogInformation("Start building shape table for {Theme}", themeId);
         }
 
-        HashSet<string> excludedFeatures;
+        ILookup<Type, string> excludedFeaturesByStrategy;
 
         // Here we don't use a lock for thread safety but for atomicity.
-        lock (_syncLock)
+        lock (s_syncLock)
         {
-            excludedFeatures = new HashSet<string>(_shapeDescriptors.Select(kv => kv.Value.Feature.Id));
+            excludedFeaturesByStrategy = s_shapeDescriptors.Keys.ToLookup(key => key.BindingStrategyType, key => key.FeatureId);
         }
 
-        var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
+        var shapeDescriptors = new Dictionary<(Type BindingStrategyType, string FeatureId, string ShapeType), FeatureShapeDescriptor>();
 
         foreach (var bindingStrategy in bindingStrategies)
         {
+            var requiredFeatureIds = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(bindingStrategy.GetType());
+            var excludedFeatures = excludedFeaturesByStrategy[bindingStrategy.GetType()].ToHashSet();
+
             foreach (var strategyFeature in typeFeatureProvider.GetFeaturesForDependency(bindingStrategy.GetType()))
             {
                 var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                 await bindingStrategy.DiscoverAsync(builder);
                 var builtAlterations = builder.BuildAlterations();
 
-                BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
+                BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors, requiredFeatureIds);
             }
         }
 
         // Here we don't use a lock for thread safety but for atomicity.
-        lock (_syncLock)
+        lock (s_syncLock)
         {
             foreach (var kv in shapeDescriptors)
             {
-                _shapeDescriptors[kv.Key] = kv.Value;
+                s_shapeDescriptors[kv.Key] = kv.Value;
             }
         }
 
@@ -125,8 +129,9 @@ public class DefaultShapeTableManager : IShapeTableManager
             enabledAndOrderedFeatureIds.Add(hostingEnvironment.ApplicationName);
         }
 
-        var descriptors = _shapeDescriptors
+        var descriptors = s_shapeDescriptors
             .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
+            .Where(sd => sd.Value.RequiredFeatureIds.Count == 0 || sd.Value.RequiredFeatureIds.All(enabledAndOrderedFeatureIds.Contains))
             .Where(sd => IsModuleOrRequestedTheme(extensionManager, sd.Value.Feature, themeId))
             .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
             .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
@@ -156,7 +161,8 @@ public class DefaultShapeTableManager : IShapeTableManager
     private static void BuildDescriptors(
         IShapeTableProvider bindingStrategy,
         IEnumerable<ShapeAlteration> builtAlterations,
-        Dictionary<string, FeatureShapeDescriptor> shapeDescriptors)
+        Dictionary<(Type BindingStrategyType, string FeatureId, string ShapeType), FeatureShapeDescriptor> shapeDescriptors,
+        IList<string> requiredFeatureIds)
     {
         var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 
@@ -164,16 +170,15 @@ public class DefaultShapeTableManager : IShapeTableManager
         {
             var firstAlteration = alterations.First();
 
-            var key = bindingStrategy.GetType().Name
-                + firstAlteration.Feature.Id
-                + firstAlteration.ShapeType.ToLower();
+            var key = (bindingStrategy.GetType(), firstAlteration.Feature.Id, firstAlteration.ShapeType.ToLowerInvariant());
 
-            if (!_shapeDescriptors.ContainsKey(key))
+            if (!s_shapeDescriptors.ContainsKey(key))
             {
                 var descriptor = new FeatureShapeDescriptor
                 (
                     firstAlteration.Feature,
-                    firstAlteration.ShapeType
+                    firstAlteration.ShapeType,
+                    requiredFeatureIds
                 );
 
                 foreach (var alteration in alterations)

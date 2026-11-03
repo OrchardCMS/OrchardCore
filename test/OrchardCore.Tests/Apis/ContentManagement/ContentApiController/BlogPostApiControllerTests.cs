@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController;
 public class BlogPostApiControllerTests
 {
     [Fact]
-    public async Task ShouldCreateDraftOfExistingContentItem()
+    public async Task Create_DraftOfExistingContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -31,7 +31,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldCreateAndPublishExistingContentItem()
+    public async Task Create_PublishExistingContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -51,7 +51,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldOnlyCreateTwoContentItemRecordsForExistingContentItem()
+    public async Task Only_CreateTwoContentItemRecordsForExistingContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -76,7 +76,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldCreateDraftOfNewContentItem()
+    public async Task Create_DraftOfNewContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -132,7 +132,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldCreateAndPublishNewContentItem()
+    public async Task Create_PublishNewContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -189,7 +189,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldFailValidationWhenAutoroutePathIsNotUnique()
+    public async Task Fail_AutoroutePathIsNotUnique_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -251,7 +251,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldGenerateUniqueAutoroutePath()
+    public async Task Generate_UniqueAutoroutePath_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 

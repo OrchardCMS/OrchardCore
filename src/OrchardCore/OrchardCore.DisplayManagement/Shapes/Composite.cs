@@ -1,11 +1,13 @@
 using System.Dynamic;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace OrchardCore.DisplayManagement.Shapes;
 
 public class Composite : DynamicObject
 {
-    protected readonly Dictionary<string, object> _properties = [];
+    // Allocated on first use, as some shapes like the zones placeholders never hold any property.
+    private Dictionary<string, object> _properties;
 
     public override bool TryGetMember(GetMemberBinder binder, out object result)
     {
@@ -14,7 +16,7 @@ public class Composite : DynamicObject
 
     protected virtual bool TryGetMemberImpl(string name, out object result)
     {
-        if (_properties.TryGetValue(name, out result))
+        if (_properties != null && _properties.TryGetValue(name, out result))
         {
             return true;
         }
@@ -31,7 +33,7 @@ public class Composite : DynamicObject
 
     protected virtual bool TrySetMemberImpl(string name, object value)
     {
-        _properties[name] = value;
+        Properties[name] = value;
         return true;
     }
 
@@ -110,10 +112,7 @@ public class Composite : DynamicObject
         return false;
     }
 
-    public IDictionary<string, object> Properties
-    {
-        get { return _properties; }
-    }
+    public IDictionary<string, object> Properties => _properties ??= [];
 
     public static bool operator ==(Composite a, Nil _) => null == a;
 
@@ -121,7 +120,8 @@ public class Composite : DynamicObject
 
     protected bool Equals(Composite other)
     {
-        return Equals(_properties, other._properties);
+        // Each instance owns its properties, so two composites are only equal when they are the same instance.
+        return ReferenceEquals(this, other);
     }
 
     public override bool Equals(object obj)
@@ -146,14 +146,14 @@ public class Composite : DynamicObject
 
     public override int GetHashCode()
     {
-        return (_properties != null ? _properties.GetHashCode() : 0);
+        return RuntimeHelpers.GetHashCode(this);
     }
 }
 
 public class Nil : DynamicObject
 {
-    private static readonly Nil _singleton = new();
-    public static Nil Instance { get { return _singleton; } }
+    private static readonly Nil s_singleton = new();
+    public static Nil Instance { get { return s_singleton; } }
 
     private Nil()
     {

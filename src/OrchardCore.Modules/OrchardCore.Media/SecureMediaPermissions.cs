@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Localization;
 using OrchardCore.Media.Services;
 using OrchardCore.Security.Permissions;
 
@@ -9,14 +10,17 @@ namespace OrchardCore.Media;
 
 public sealed class SecureMediaPermissions : IPermissionProvider
 {
-    private static readonly Permission _viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in folder '{0}'", new[] { MediaPermissions.ViewMedia });
+    private static readonly PermissionTemplate s_viewMediaTemplate = new(
+        "ViewMediaContent_{0}",
+        LocalizationSource.Create<SecureMediaPermissions>("View media content in folder '{0}'"),
+        MediaPermissions.ViewMedia);
 
-    private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByFolder = new();
-    private static readonly char[] _trimSecurePathChars = ['/', '\\', ' '];
-    private static readonly ReadOnlyDictionary<string, Permission> _permissionTemplates = new(new Dictionary<string, Permission>()
+    private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByFolder = new();
+    private static readonly char[] s_trimSecurePathChars = ['/', '\\', ' '];
+    private static readonly ReadOnlyDictionary<string, PermissionTemplate> s_permissionTemplates = new Dictionary<string, PermissionTemplate>
     {
-        { MediaPermissions.ViewMedia.Name, _viewMediaTemplate },
-    });
+        [MediaPermissions.ViewMedia.Name] = s_viewMediaTemplate,
+    }.AsReadOnly();
 
     private readonly MediaOptions _mediaOptions;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
@@ -24,18 +28,6 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     private readonly IMediaFileStore _fileStore;
     private readonly IMemoryCache _cache;
 
-
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewMedia'.")]
-    public static readonly Permission ViewMedia = MediaPermissions.ViewMedia;
-
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewRootMedia'.")]
-    public static readonly Permission ViewRootMedia = MediaPermissions.ViewRootMedia;
-
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewOthersMedia'.")]
-    public static readonly Permission ViewOthersMedia = MediaPermissions.ViewOthersMedia;
-
-    [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewOwnMedia'.")]
-    public static readonly Permission ViewOwnMedia = MediaPermissions.ViewOwnMedia;
 
     public SecureMediaPermissions(
         IOptions<MediaOptions> options,
@@ -86,48 +78,38 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                     MediaPermissions.ViewOwnMedia,
                 },
             },
-            new PermissionStereotype
-            {
-                Name = OrchardCoreConstants.Roles.Anonymous,
-                Permissions = new[]
-                {
-                    MediaPermissions.ViewMedia,
-                },
-            },
         };
     }
 
     /// <summary>
-    /// Returns a dynamic permission for a secure folder, based on a global view media permission template.
+    /// Create a dynamic permission specific to the provided <paramref name="secureFolder"/> using internal templates,
+    /// based on the permission identified by the <paramref name="basePermissionName"/>.
     /// </summary>
-    internal static Permission ConvertToDynamicPermission(Permission permission) => _permissionTemplates.TryGetValue(permission.Name, out var result) ? result : null;
-
-    internal static Permission CreateDynamicPermission(Permission template, string secureFolder)
+    /// <param name="basePermissionName"></param>
+    /// <param name="secureFolder"></param>
+    /// <returns></returns>
+    internal static Permission CreateDynamicPermissionOf(string basePermissionName, string secureFolder)
     {
-        ArgumentNullException.ThrowIfNull(template);
-
-        secureFolder = secureFolder?.Trim(_trimSecurePathChars);
-
-        var key = new ValueTuple<string, string>(template.Name, secureFolder);
-
-        if (_permissionsByFolder.TryGetValue(key, out var permission))
+        if (!s_permissionTemplates.TryGetValue(basePermissionName, out var template))
         {
-            return permission;
+            return null;
         }
 
-        permission = new Permission(
-            string.Format(template.Name, secureFolder),
-            string.Format(template.Description, secureFolder),
-            (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, secureFolder))
-        );
+        secureFolder = secureFolder?.Trim(s_trimSecurePathChars);
+        var key = new ValueTuple<string, string>(template.Name, secureFolder);
 
-        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByFolder)
+        if (s_permissionsByFolder.TryGetValue(key, out var permissionByFolder))
+        {
+            return permissionByFolder;
+        }
+
+        var permission = template.CreateDynamicPermission(secureFolder);
+        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByFolder)
         {
             [key] = permission,
         };
 
-        _permissionsByFolder = localPermissions;
-
+        s_permissionsByFolder = localPermissions;
         return permission;
     }
 
@@ -158,9 +140,9 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 
             var folderPath = entry.Path;
 
-            foreach (var template in _permissionTemplates)
+            foreach (var template in s_permissionTemplates)
             {
-                var dynamicPermission = CreateDynamicPermission(template.Value, folderPath);
+                var dynamicPermission = CreateDynamicPermissionOf(template.Key, folderPath);
                 result.Add(dynamicPermission);
                 viewRootImpliedBy.Add(dynamicPermission);
             }

@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Markdown;
 public class MarkdownTests
 {
     [Fact]
-    public void ShouldConfigureMarkdownPipeline()
+    public void Configure_MarkdownPipeline_Succeeds()
     {
         var services = CreateServiceCollection();
         var markdownService = services.BuildServiceProvider().GetService<IMarkdownService>();
@@ -23,7 +23,7 @@ public class MarkdownTests
     }
 
     [Fact]
-    public void ShouldReconfigureMarkdownPipeline()
+    public void Reconfigure_MarkdownPipeline_Succeeds()
     {
         // Setup. With defaults.
         var services = CreateServiceCollection();
@@ -44,17 +44,18 @@ public class MarkdownTests
     }
 
     [Fact]
-    public async Task ShouldConvertMarkdownToHtmlAsync()
+    public async Task Convert_MarkdownToHtmlAsync_Succeeds()
     {
         // Arrange
         var services = CreateServiceCollection();
         services.AddScoped<IOrchardHelper>(provider => new MockOrchardHelper(provider));
         services.AddScoped<IShortcodeService, ShortcodeService>();
         services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
-        
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+
         // Act
         var orchard = services.BuildServiceProvider().GetService<IOrchardHelper>();
-        
+
         await using var stringWriter = new StringWriter();
         (await orchard.MarkdownToHtmlAsync("This _is_ a ==test== markdown.")).WriteTo(stringWriter, HtmlEncoder.Default);
         var html = stringWriter.ToString();
@@ -62,6 +63,40 @@ public class MarkdownTests
         // Assert
         html = html.ReplaceLineEndings(string.Empty);
         Assert.Equal("<p>This <em>is</em> a <mark>test</mark> markdown.</p>", html);
+    }
+
+    [Theory]
+    [InlineData(true, "<p><strong>Safe</strong> </p>\n")]
+    [InlineData(false, "<p><strong>Safe</strong> <script>alert('xss')</script></p>\n")]
+    public async Task MarkdownDisplayService_SanitizesAfterConversionAndShortcodes(
+        bool sanitizeHtml,
+        string expected)
+    {
+        var services = CreateServiceCollection();
+        services.AddSingleton<IShortcodeService>(new UnsafeShortcodeService());
+        services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+        services.AddOptions<HtmlSanitizerOptions>();
+        var service = services.BuildServiceProvider().GetRequiredService<IMarkdownDisplayService>();
+
+        var html = await service.ToHtmlAsync("**Safe** [unsafe]", sanitizeHtml: sanitizeHtml);
+
+        Assert.Equal(expected, html);
+    }
+
+    [Fact]
+    public async Task MarkdownDisplayService_LiquidSyntax_IsNotExecuted()
+    {
+        var services = CreateServiceCollection();
+        services.AddSingleton<IShortcodeService>(new PassthroughShortcodeService());
+        services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+        services.AddOptions<HtmlSanitizerOptions>();
+        var service = services.BuildServiceProvider().GetRequiredService<IMarkdownDisplayService>();
+
+        var html = await service.ToHtmlAsync("{{ ContentItem.DisplayText }}", sanitizeHtml: false);
+
+        Assert.Equal("<p>{{ ContentItem.DisplayText }}</p>\n", html);
     }
 
     private static ServiceCollection CreateServiceCollection()
@@ -74,7 +109,7 @@ public class MarkdownTests
 
         return services;
     }
-    
+
     private sealed class MockOrchardHelper : IOrchardHelper
     {
         public HttpContext HttpContext { get; }
@@ -84,13 +119,26 @@ public class MarkdownTests
             HttpContext = new DefaultHttpContext();
             HttpContext.RequestServices = provider;
         }
+
+    }
+
+    private sealed class UnsafeShortcodeService : IShortcodeService
+    {
+        public ValueTask<string> ProcessAsync(string input, Context context = null)
+            => ValueTask.FromResult(input.Replace("[unsafe]", "<script>alert('xss')</script>"));
+    }
+
+    private sealed class PassthroughShortcodeService : IShortcodeService
+    {
+        public ValueTask<string> ProcessAsync(string input, Context context = null)
+            => ValueTask.FromResult(input);
     }
 
     [Theory]
     [InlineData("<script>alert('xss')</script>", "<p>&lt;script&gt;alert('xss')&lt;/script&gt;</p>\n")]
     [InlineData("<img src=x onerror=alert(1)>", "<p>&lt;img src=x onerror=alert(1)&gt;</p>\n")]
     [InlineData("<a href=\"javascript:alert(1)\">click</a>", "<p>&lt;a href=&quot;javascript:alert(1)&quot;&gt;click&lt;/a&gt;</p>\n")]
-    public void DefaultMarkdownPipeline_ShouldEscapeHtmlTags(string maliciousMarkdown, string expected)
+    public void DefaultMarkdownPipeline_Default_EscapeHtmlTags(string maliciousMarkdown, string expected)
     {
         // The default 'nohtml' pipeline escapes all raw HTML, making it display as text.
         var services = CreateServiceCollection();
@@ -111,7 +159,7 @@ public class MarkdownTests
     [InlineData("<a href=\"javascript:alert(1)\">click</a>")]
     [InlineData("<iframe src=\"evil.com\"></iframe>")]
     [InlineData("<object data=\"evil.swf\"></object>")]
-    public async Task MarkdownifyFilter_ShouldSanitizeXssPayloads_WhenNoHtmlIsDisabled(string maliciousMarkdown)
+    public async Task MarkdownifyFilter_NoHtmlIsDisabled_SanitizeXssPayloads(string maliciousMarkdown)
     {
         // Even when 'nohtml' is removed from the pipeline (allowing raw HTML),
         // the markdownify filter must still sanitize dangerous HTML.
@@ -143,7 +191,7 @@ public class MarkdownTests
     }
 
     [Fact]
-    public async Task MarkdownifyFilter_ShouldPreserveSafeMarkdown()
+    public async Task MarkdownifyFilter_Default_PreservesSafeMarkdown()
     {
         var services = new ServiceCollection();
         services.AddOptions<MarkdownPipelineOptions>();

@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.DisplayManagement;
 public class NilTests
 {
     [Fact]
-    public void NilShouldEqualToNull()
+    public void Nil_Default_EqualToNull()
     {
         var nil = Nil.Instance;
 
@@ -17,7 +17,7 @@ public class NilTests
     }
 
     [Fact]
-    public void NilShouldBeRecursive()
+    public void Nil_Default_BeRecursive()
     {
         dynamic nil = Nil.Instance;
 
@@ -27,21 +27,21 @@ public class NilTests
     }
 
     [Fact]
-    public void CallingToStringOnNilShouldReturnEmpty()
+    public void CallingToStringOnNil_Default_ReturnsEmpty()
     {
         var nil = Nil.Instance;
         Assert.Equal("", nil.ToString());
     }
 
     [Fact]
-    public void CallingToStringOnDynamicNilShouldReturnEmpty()
+    public void CallingToStringOnDynamicNil_Default_ReturnsEmpty()
     {
         dynamic nil = Nil.Instance;
         Assert.Equal("", nil.Foo.Bar.ToString());
     }
 
     [Fact]
-    public void ConvertingToStringShouldReturnNullString()
+    public void ConvertingToString_Default_ReturnsNullString()
     {
         dynamic nil = Nil.Instance;
         Assert.True((string)nil == null);

@@ -1,20 +1,18 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.CustomSettings.Deployment;
 
 public class CustomSettingsDeploymentStep : DeploymentStep
 {
-    public CustomSettingsDeploymentStep()
-    {
-        Name = "CustomSettings";
-    }
+    public override string Name => "CustomSettings";
 
-    public CustomSettingsDeploymentStep(IStringLocalizer<CustomSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Settings"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Settings;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => CustomSettingsLocalizationSources.CustomSettings;
 
     public bool IncludeAll { get; set; } = true;
 

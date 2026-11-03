@@ -25,11 +25,12 @@ public class SecurityMiddlewareTests
             new object[] { new[] { $"{PermissionsPolicyValue.Accelerometer}={PermissionsPolicyOriginValue.None}"}, "accelerometer=()" },
             new object[] { new[] { $"{PermissionsPolicyValue.AmbientLightSensor}={PermissionsPolicyOriginValue.Any}"}, "ambient-light-sensor=*" },
             new object[] { new[] { $"{PermissionsPolicyValue.Camera}={PermissionsPolicyOriginValue.Self}"}, "camera=self" },
-            new object[] { new[] { $"{PermissionsPolicyValue.EncryptedMedia}={PermissionsPolicyOriginValue.Self} https://www.domain.com" }, "encrypted-media=self https://www.domain.com" },
-            new object[] { new[] { $"{PermissionsPolicyValue.FullScreen}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "fullscreen=self https://www.domain.com https://www.sub.domain.com" },
-            new object[] { new[] { $"{PermissionsPolicyValue.Geolocation}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Gyroscope}={PermissionsPolicyOriginValue.Any}" }, "geolocation=();gyroscope=*" },
-            new object[] { new[] { $"{PermissionsPolicyValue.Magnetometer}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}", $"{PermissionsPolicyValue.Midi}={PermissionsPolicyOriginValue.Self}" }, "magnetometer=();microphone=*;midi=self" },
-            new object[] { new[] { $"{PermissionsPolicyValue.Usb}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Payment}={PermissionsPolicyOriginValue.Self} https://www.domain.com", $"{PermissionsPolicyValue.PictureInPicture}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Push}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "usb=self;payment=self https://www.domain.com;picture-in-picture=self;push=self https://www.domain.com https://www.sub.domain.com" },
+            new object[] { new[] { $"{PermissionsPolicyValue.EncryptedMedia}={PermissionsPolicyOriginValue.Self} https://www.domain.com" }, "encrypted-media=(self \"https://www.domain.com\")" },
+            new object[] { new[] { $"{PermissionsPolicyValue.FullScreen}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "fullscreen=(self \"https://www.domain.com\" \"https://www.sub.domain.com\")" },
+            new object[] { new[] { $"{PermissionsPolicyValue.Midi}=({PermissionsPolicyOriginValue.Self} \"https://www.domain.com\")" }, "midi=(self \"https://www.domain.com\")" },
+            new object[] { new[] { $"{PermissionsPolicyValue.Geolocation}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Gyroscope}={PermissionsPolicyOriginValue.Any}" }, "geolocation=(),gyroscope=*" },
+            new object[] { new[] { $"{PermissionsPolicyValue.Magnetometer}={PermissionsPolicyOriginValue.None}", $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}", $"{PermissionsPolicyValue.Midi}={PermissionsPolicyOriginValue.Self}" }, "magnetometer=(),microphone=*,midi=self" },
+            new object[] { new[] { $"{PermissionsPolicyValue.Usb}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Payment}={PermissionsPolicyOriginValue.Self} https://www.domain.com", $"{PermissionsPolicyValue.PictureInPicture}={PermissionsPolicyOriginValue.Self}", $"{PermissionsPolicyValue.Push}={PermissionsPolicyOriginValue.Self} https://www.domain.com https://www.sub.domain.com" }, "usb=self,payment=(self \"https://www.domain.com\"),picture-in-picture=self,push=(self \"https://www.domain.com\" \"https://www.sub.domain.com\")" },
         };
 
     public static IEnumerable<object[]> ReferrerPolicies =>
@@ -47,7 +48,7 @@ public class SecurityMiddlewareTests
 
     [Theory]
     [MemberData(nameof(ContentSecurityPolicies))]
-    public async Task ContentSecurityPolicyHeaderShouldBeAdded(string[] contentSecurityPolicies, string expectedValue)
+    public async Task ContentSecurityPolicyHeader_Default_BeAdded(string[] contentSecurityPolicies, string expectedValue)
     {
         // Arrange
         var options = new SecurityHeadersOptions
@@ -66,7 +67,7 @@ public class SecurityMiddlewareTests
     }
 
     [Fact]
-    public async Task ContentTypeOptionsHeaderShouldBeAdded()
+    public async Task ContentTypeOptionsHeader_Default_BeAdded()
     {
         // Arrange
         var options = new SecurityHeadersOptions
@@ -86,7 +87,7 @@ public class SecurityMiddlewareTests
 
     [Theory]
     [MemberData(nameof(PermissionsPolicies))]
-    public async Task PermissionsPolicyHeaderShouldBeAdded(string[] permissionsPolicies, string expectedValue)
+    public async Task PermissionsPolicyHeader_Default_BeAdded(string[] permissionsPolicies, string expectedValue)
     {
         // Arrange
         var options = new SecurityHeadersOptions
@@ -106,7 +107,7 @@ public class SecurityMiddlewareTests
 
     [Theory]
     [MemberData(nameof(ReferrerPolicies))]
-    public async Task ReferrerPolicyHeaderShouldBeAdded(string policy, string expectedValue)
+    public async Task ReferrerPolicyHeader_Default_BeAdded(string policy, string expectedValue)
     {
         // Arrange
         var options = new SecurityHeadersOptions

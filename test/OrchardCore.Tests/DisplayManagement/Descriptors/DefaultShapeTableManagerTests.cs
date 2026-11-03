@@ -1,5 +1,6 @@
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Manifest;
@@ -289,14 +290,14 @@ public class DefaultShapeTableManagerTests : IDisposable
 
     public class TestShapeProvider : IShapeTableProvider
     {
-        private static IDictionary<IFeatureInfo, IEnumerable<string>> _featureShapes;
+        private static IDictionary<IFeatureInfo, IEnumerable<string>> s_featureShapes;
 
-        public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes => _featureShapes;
+        public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes => s_featureShapes;
 
         public Action<ShapeTableBuilder> Discover = x => { };
 
         public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
-            => _featureShapes = featureShapes;
+            => s_featureShapes = featureShapes;
 
         ValueTask IShapeTableProvider.DiscoverAsync(ShapeTableBuilder builder)
         {
@@ -315,14 +316,14 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public void ManagerCanBeResolved()
+    public void ManagerCanBeResolved_Default_Succeeds()
     {
         var manager = _serviceProvider.GetService<IShapeTableManager>();
         Assert.NotNull(manager);
     }
 
     [Fact]
-    public async Task DefaultShapeTableIsReturnedForNullOrEmpty()
+    public async Task DefaultShapeTableIsReturnedForNullOrEmpty_Default_Succeeds()
     {
         var manager = _serviceProvider.GetService<IShapeTableManager>();
         var shapeTable1 = await manager.GetShapeTableAsync(null);
@@ -332,7 +333,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task CallbackAlterationsContributeToDescriptor()
+    public async Task CallbackAlterationsContributeToDescriptor_Default_Succeeds()
     {
         Func<ShapeCreatingContext, Task> cb1 = x => { return Task.CompletedTask; };
         Func<ShapeCreatedContext, Task> cb2 = x => { return Task.CompletedTask; };
@@ -357,18 +358,23 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task DefaultPlacementIsReturnedByDefault()
+    public async Task DefaultPlacementIsReturnedByDefault_Default_Succeeds()
     {
+        var shapeType = nameof(DefaultPlacementIsReturnedByDefault_Default_Succeeds);
+
+        _serviceProvider.GetService<TestShapeProvider>().Discover =
+            builder => builder.Describe(shapeType).From(TestFeature());
+
         var manager = _serviceProvider.GetService<IShapeTableManager>();
 
-        var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
+        var hello = (await manager.GetShapeTableAsync(null)).Descriptors[shapeType];
         hello.DefaultPlacement = "Header:5";
         var result = hello.Placement(null);
         Assert.Equal("Header:5", result.Location);
     }
 
     [Fact]
-    public async Task DescribedPlacementIsReturnedIfNotNull()
+    public async Task DescribedPlacementIsReturnedIfNotNull_Default_Succeeds()
     {
         var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
         var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
@@ -398,7 +404,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task TwoArgumentVariationDoesSameThing()
+    public async Task TwoArgumentVariationDoesSameThing_Default_Succeeds()
     {
         var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
         var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
@@ -429,7 +435,7 @@ public class DefaultShapeTableManagerTests : IDisposable
 
     // "Path not supported yet"
     [Fact]
-    internal async Task PathConstraintShouldMatch()
+    internal async Task PathConstraint_Default_Match()
     {
         // all path have a trailing / as per the current implementation
         // todo: (sebros) find a way to 'use' the current implementation in DefaultContentDisplay.BindPlacement instead of emulating it
@@ -451,13 +457,14 @@ public class DefaultShapeTableManagerTests : IDisposable
             var path = rule.Item1;
             var context = rule.Item2;
             var match = rule.Item3;
+            var shapeType = nameof(PathConstraint_Default_Match);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello").From(TestFeature())
+                builder => builder.Describe(shapeType).From(TestFeature())
                                .Placement(ctx => true, new PlacementInfo("Match"));
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
+            var hello = (await manager.GetShapeTableAsync(null)).Descriptors[shapeType];
             //var result = hello.Placement(new ShapePlacementContext { Path = context });
 
             //if (match)
@@ -472,7 +479,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task OnlyShapesFromTheGivenThemeAreProvided()
+    public async Task OnlyShapesFromTheGivenThemeAreProvided_Default_Succeeds()
     {
         _serviceProvider.GetService<TestShapeProvider>();
         var manager = _serviceProvider.GetService<IShapeTableManager>();
@@ -483,7 +490,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task ShapesFromTheBaseThemeAreProvided()
+    public async Task ShapesFromTheBaseThemeAreProvided_Default_Succeeds()
     {
         _serviceProvider.GetService<TestShapeProvider>();
         var manager = _serviceProvider.GetService<IShapeTableManager>();
@@ -494,7 +501,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task DerivedThemesCanOverrideBaseThemeShapeBindings()
+    public async Task DerivedThemesCanOverrideBaseThemeShapeBindings_Default_Succeeds()
     {
         _serviceProvider.GetService<TestShapeProvider>();
         var manager = _serviceProvider.GetService<IShapeTableManager>();
@@ -510,7 +517,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     /// Related to PR: https://github.com/OrchardCMS/OrchardCore/pull/18502
     /// </summary>
     [Fact]
-    public async Task ShapeTableProviderRegisteredInMultipleFeaturesIsProcessedForEachFeature()
+    public async Task ShapeTableProviderRegisteredInMultipleFeaturesIsProcessedForEachFeature_Default_Succeeds()
     {
         // Arrange
         IServiceCollection serviceCollection = new ServiceCollection();
@@ -563,6 +570,115 @@ public class DefaultShapeTableManagerTests : IDisposable
         Assert.True(shapeTable.Descriptors.ContainsKey("Feature2Shape"));
 
         (serviceProvider as IDisposable)?.Dispose();
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task GetShapeTable_FeaturesEnabledAcrossTenants_PreservesTemplateBindings(bool secondFeatureFirst, bool providerOnlyTenantFirst)
+    {
+        // Unique feature IDs isolate each case from the process-wide descriptor cache.
+        var moduleId = $"MultiFeatureModule-{Guid.NewGuid():N}";
+        var module = new TestModuleExtensionInfo(moduleId) { Id = moduleId, SubPath = moduleId };
+        var firstFeature = new FeatureInfo($"{moduleId}.First", module);
+        var secondFeature = new FeatureInfo($"{moduleId}.Second", module);
+        module.Features = [firstFeature, secondFeature];
+
+        var infrastructure = new TestModuleExtensionInfo($"{moduleId}.Infrastructure")
+        {
+            Id = $"{moduleId}.Infrastructure",
+            SubPath = $"{moduleId}.Infrastructure",
+        };
+        var infrastructureFeature = infrastructure.Features.Single();
+        var extensionManager = new TestExtensionManager([infrastructureFeature, firstFeature, secondFeature]);
+
+        IFileInfo[] templateFiles = [Mock.Of<IFileInfo>(file => file.Name == "SharedTemplate.cshtml")];
+        var directoryContents = new Mock<IDirectoryContents>();
+        directoryContents.SetupGet(contents => contents.Exists).Returns(true);
+        directoryContents.Setup(contents => contents.GetEnumerator()).Returns(() => templateFiles.AsEnumerable().GetEnumerator());
+
+        var fileProvider = new Mock<IFileProvider>();
+        fileProvider.Setup(provider => provider.GetDirectoryContents(It.IsAny<string>())).Returns(NotFoundDirectoryContents.Singleton);
+        fileProvider.Setup(provider => provider.GetDirectoryContents($"{module.SubPath}/Views")).Returns(directoryContents.Object);
+        var fileProviderAccessor = Mock.Of<IShapeTemplateFileProviderAccessor>(accessor => accessor.FileProvider == fileProvider.Object);
+        var viewEngine = Mock.Of<IShapeTemplateViewEngine>(engine => engine.TemplateFileExtensions == new[] { ".cshtml" });
+
+        if (providerOnlyTenantFirst)
+        {
+            var providerOnlyTable = await BuildTenantShapeTableAsync([secondFeature], includeTemplateBindings: false);
+            Assert.Contains($"{secondFeature.Id}Shape", providerOnlyTable.Descriptors.Keys);
+            Assert.DoesNotContain("SharedTemplate", providerOnlyTable.Bindings.Keys);
+        }
+
+        IFeatureInfo[][] tenantFeatures = secondFeatureFirst
+            ? [[secondFeature], [firstFeature], [firstFeature, secondFeature]]
+            : [[firstFeature], [firstFeature, secondFeature], [secondFeature]];
+
+        var cachedTemplateFeatures = new HashSet<IFeatureInfo>();
+        var templateDiscoveries = 0;
+
+        foreach (var enabledFeatures in tenantFeatures)
+        {
+            var table = await BuildTenantShapeTableAsync(enabledFeatures);
+
+            if (enabledFeatures.Any(feature => !cachedTemplateFeatures.Contains(feature)))
+            {
+                templateDiscoveries++;
+            }
+
+            cachedTemplateFeatures.UnionWith(enabledFeatures);
+            fileProvider.Verify(provider => provider.GetDirectoryContents($"{module.SubPath}/Views"), Times.Exactly(templateDiscoveries));
+
+            if (enabledFeatures.Contains(secondFeature))
+            {
+                Assert.Contains($"{secondFeature.Id}Shape", table.Descriptors.Keys);
+            }
+
+            Assert.True(table.Bindings.TryGetValue("SharedTemplate", out var binding),
+                $"Template binding is missing for tenant features: {string.Join(", ", enabledFeatures.Select(feature => feature.Id))}");
+            Assert.Equal($"{module.SubPath}/Views/SharedTemplate.cshtml", binding.BindingSource);
+        }
+
+        async Task<ShapeTable> BuildTenantShapeTableAsync(IFeatureInfo[] enabledFeatures, bool includeTemplateBindings = true)
+        {
+            var shellFeaturesManager = new Mock<IShellFeaturesManager>();
+            shellFeaturesManager.Setup(manager => manager.GetEnabledFeaturesAsync())
+                .ReturnsAsync(enabledFeatures.Prepend(infrastructureFeature));
+
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
+            services.AddSingleton<IExtensionManager>(extensionManager);
+            services.AddSingleton(shellFeaturesManager.Object);
+            services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+            services.AddSingleton<ILocalLock, LocalLock>();
+            services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
+            services.AddKeyedSingleton<IDictionary<string, Task<ShapeTable>>>(nameof(DefaultShapeTableManager),
+                new ConcurrentDictionary<string, Task<ShapeTable>>());
+            if (includeTemplateBindings)
+            {
+                services.AddSingleton<IShapeTableProvider>(new ShapeTemplateBindingStrategy(
+                    [new BasicShapeTemplateHarvester()],
+                    shellFeaturesManager.Object,
+                    [viewEngine],
+                    fileProviderAccessor,
+                    NullLogger<ShapeTemplateBindingStrategy>.Instance));
+            }
+
+            if (enabledFeatures.Contains(secondFeature))
+            {
+                services.AddSingleton<IShapeTableProvider>(new TestMultiFeatureShapeProvider([]));
+            }
+
+            using var serviceProvider = services.BuildServiceProvider();
+            var typeFeatureProvider = serviceProvider.GetRequiredService<ITypeFeatureProvider>();
+            typeFeatureProvider.TryAdd(typeof(ShapeTemplateBindingStrategy), infrastructureFeature);
+            typeFeatureProvider.TryAdd(typeof(TestMultiFeatureShapeProvider), secondFeature);
+
+            return await serviceProvider.GetRequiredService<IShapeTableManager>().GetShapeTableAsync(null);
+        }
     }
 
     // New test shape provider that can be registered in multiple features

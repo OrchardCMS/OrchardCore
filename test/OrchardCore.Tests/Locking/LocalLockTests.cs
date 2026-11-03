@@ -8,7 +8,7 @@ public class LocalLockTests
     private static LocalLock CreateLockService() => new LocalLock(NullLogger<LocalLock>.Instance);
 
     [Fact]
-    public async Task Acquire_Then_TryAcquire_SameKey_EnforcesExclusivity()
+    public async Task Acquire_ThenTryAcquireSameKey_EnforcesExclusivity()
     {
         using var localLock = CreateLockService();
 
@@ -33,7 +33,7 @@ public class LocalLockTests
     }
 
     [Fact]
-    public async Task TryAcquire_With_Timeout_Fails_When_Lock_Is_Held()
+    public async Task TryAcquire_TimeoutFailsWhenLockIsHeld_Succeeds()
     {
         using var localLock = CreateLockService();
 
@@ -50,7 +50,7 @@ public class LocalLockTests
     }
 
     [Fact]
-    public async Task Acquire_With_Expiration_Auto_Releases()
+    public async Task Acquire_ExpirationAutoReleases_Succeeds()
     {
         using var localLock = CreateLockService();
 
@@ -76,7 +76,7 @@ public class LocalLockTests
     }
 
     [Fact]
-    public async Task TryAcquire_With_InfiniteTimeout_Succeeds_When_Free()
+    public async Task TryAcquire_InfiniteTimeoutSucceedsWhenFree_Succeeds()
     {
         using var localLock = CreateLockService();
 
@@ -87,7 +87,7 @@ public class LocalLockTests
     }
 
     [Fact]
-    public async Task Different_Keys_Are_Independent()
+    public async Task Different_KeysAre_Independent()
     {
         using var localLock = CreateLockService();
 
@@ -100,7 +100,7 @@ public class LocalLockTests
     }
 
     [Fact]
-    public async Task IsLockAcquired_ReturnsFalse_When_NotHeld()
+    public async Task IsLockAcquired_NotHeld_ReturnsFalse()
     {
         using var localLock = CreateLockService();
 
@@ -114,7 +114,7 @@ public class LocalLockTests
     }
 
     [Fact]
-    public async Task Dispose_LocalLock_Throws_On_Public_Members()
+    public async Task DisposeLocalLock_PublicMembers_Throws()
     {
         var localLock = CreateLockService();
 

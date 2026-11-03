@@ -42,7 +42,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestFooCommand()
+    public async Task FooCommand_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Foo");
         await _handler.ExecuteAsync(commandContext);
@@ -50,7 +50,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestNotExistingCommand()
+    public async Task NotExistingCommand_Default_Succeeds()
     {
         await Assert.ThrowsAsync<InvalidOperationException>(async Task () =>
         {
@@ -60,7 +60,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestCommandWithCustomAlias()
+    public async Task CommandWithCustomAlias_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Bar");
         await _handler.ExecuteAsync(commandContext);
@@ -68,21 +68,21 @@ public class CommandsTests
     }
 
     [Fact]
-    public void TestHelpText()
+    public void HelpText_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Baz");
         Assert.Equal("Baz help", commandContext.CommandDescriptor.HelpText);
     }
 
     [Fact]
-    public void TestEmptyHelpText()
+    public void EmptyHelpText_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Foo");
         Assert.Empty(commandContext.CommandDescriptor.HelpText);
     }
 
     [Fact]
-    public async Task TestCaseInsensitiveForCommand()
+    public async Task CaseInsensitiveForCommand_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("BAZ", new Dictionary<string, string> { { "VERBOSE", "true" } });
         await _handler.ExecuteAsync(commandContext);
@@ -90,7 +90,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestBooleanSwitchForCommand()
+    public async Task BooleanSwitchForCommand_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Baz", new Dictionary<string, string> { { "Verbose", "true" } });
         await _handler.ExecuteAsync(commandContext);
@@ -98,7 +98,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestIntSwitchForCommand()
+    public async Task IntSwitchForCommand_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Baz", new Dictionary<string, string> { { "Level", "2" } });
         await _handler.ExecuteAsync(commandContext);
@@ -106,7 +106,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestStringSwitchForCommand()
+    public async Task StringSwitchForCommand_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Baz", new Dictionary<string, string> { { "User", "OrchardUser" } });
         await _handler.ExecuteAsync(commandContext);
@@ -114,7 +114,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestSwitchForCommandWithoutSupportForIt()
+    public async Task SwitchForCommandWithoutSupportForIt_Default_Succeeds()
     {
         var switches = new Dictionary<string, string> { { "User", "OrchardUser" } };
         var commandContext = CreateCommandContext("Foo", switches);
@@ -122,7 +122,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestCommandThatDoesNotReturnAValue()
+    public async Task CommandThatDoesNotReturnAValue_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Log");
         await _handler.ExecuteAsync(commandContext);
@@ -130,7 +130,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestNotExistingSwitch()
+    public async Task NotExistingSwitch_Default_Succeeds()
     {
         var switches = new Dictionary<string, string> { { "ThisSwitchDoesNotExist", "Insignificant" } };
         var commandContext = CreateCommandContext("Foo", switches);
@@ -138,7 +138,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestCommandArgumentsArePassedCorrectly()
+    public async Task CommandArgumentsArePassedCorrectly_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), ["left to ", "right"]);
         await _handler.ExecuteAsync(commandContext);
@@ -146,7 +146,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestCommandArgumentsArePassedCorrectlyWithAParamsParameters()
+    public async Task CommandArgumentsArePassedCorrectlyWithAParamsParameters_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>(), ["left to ", "right"]);
         await _handler.ExecuteAsync(commandContext);
@@ -154,7 +154,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestCommandArgumentsArePassedCorrectlyWithAParamsParameterAndNoArguments()
+    public async Task CommandArgumentsArePassedCorrectlyWithAParamsParameterAndNoArguments_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>());
         await _handler.ExecuteAsync(commandContext);
@@ -162,7 +162,7 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestCommandArgumentsArePassedCorrectlyWithNormalParametersAndAParamsParameters()
+    public async Task CommandArgumentsArePassedCorrectlyWithNormalParametersAndAParamsParameters_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("ConcatAllParams",
             new Dictionary<string, string>(),
@@ -172,21 +172,21 @@ public class CommandsTests
     }
 
     [Fact]
-    public async Task TestCommandParamsMismatchWithoutParamsNotEnoughArguments()
+    public async Task CommandParamsMismatchWithoutParamsNotEnoughArguments_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), ["left to "]);
         await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
     }
 
     [Fact]
-    public async Task TestCommandParamsMismatchWithoutParamsTooManyArguments()
+    public async Task CommandParamsMismatchWithoutParamsTooManyArguments_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), ["left to "]);
         await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
     }
 
     [Fact]
-    public async Task TestCommandParamsMismatchWithParamsButNotEnoughArguments()
+    public async Task CommandParamsMismatchWithParamsButNotEnoughArguments_Default_Succeeds()
     {
         var commandContext = CreateCommandContext("ConcatAllParams", new Dictionary<string, string>());
         await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));

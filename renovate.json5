@@ -112,12 +112,14 @@
             ],
             enabled: false,
         },
-        // Not updating to ImageSharp v4 yet, see https://github.com/orgs/OrchardCMS/discussions/19306.
+        // Microsoft.CodeAnalysis packages must stay in sync with the Roslyn compiler in global.json (10.0.4xx),
+        // which requires max version 5.9. These are updated manually during .NET SDK upgrades only.
         {
             matchPackageNames: [
-                '/^SixLabors\\.ImageSharp.*$/',
+                'Microsoft.CodeAnalysis.Analyzers',
+                'Microsoft.CodeAnalysis.CSharp',
+                'Microsoft.CodeAnalysis.CSharp.CodeStyle',
             ],
-            matchUpdateTypes: ['major'],
             enabled: false,
         },
 
@@ -167,9 +169,9 @@
             ],
         },
         {
-            groupName: 'SixLabors.ImageSharp.Web packages',
+            groupName: 'NetVips packages',
             matchPackageNames: [
-                '/^SixLabors\\.ImageSharp\\.Web.*$/',
+                '/^NetVips.*$/',
             ],
         },
         {

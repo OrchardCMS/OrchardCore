@@ -1,6 +1,7 @@
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Setup.Services;
@@ -23,7 +24,7 @@ public class ApiControllerTests
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
 
     [Fact]
-    public async Task CallCreateApiMultipleTimes_ShouldCreateTenant_ReturnsSetupToken()
+    public async Task CallCreateApiMultipleTimes_ReturnsSetupToken_CreatesTenant()
     {
         // Arrange
         var controller = CreateController();
@@ -64,7 +65,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldGetNewTenantSetupToken_WhenThePreviousTokenExpired()
+    public async Task GetNewTenantSetupToken_ThePreviousTokenExpired_Succeeds()
     {
         // Arrange
         var controller = CreateController();
@@ -108,7 +109,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldRejectMissingTablePrefix_WhenRequired()
+    public async Task Create_Required_RejectssMissingTablePrefix()
     {
         // Arrange
         var controller = CreateController(requireTablePrefix: true);
@@ -134,7 +135,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldRejectMissingTablePrefix_WhenRequiredAndDatabaseProviderIsPreset()
+    public async Task Create_RequiredAndDatabaseProviderIsPreset_RejectssMissingTablePrefix()
     {
         // Arrange
         var controller = CreateController(
@@ -162,7 +163,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldUsePresetDatabaseConfiguration_WhenConfigured()
+    public async Task Create_Configured_UsesPresetDatabaseConfiguration()
     {
         // Arrange
         const string presetConnectionString = "Server=localhost;Database=Orchard;";
@@ -197,7 +198,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldUsePresetDatabaseProviderAndPostedConnectionString_WhenOnlyProviderIsConfigured()
+    public async Task Create_LyProviderIsConfigured_UsesPresetDatabaseProviderAndPostedConnectionString()
     {
         // Arrange
         var controller = CreateController(
@@ -226,7 +227,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task EditShouldUsePresetDatabaseConfiguration_WhenConfigured()
+    public async Task Edit_Configured_UsesPresetDatabaseConfiguration()
     {
         // Arrange
         const string presetConnectionString = "Server=localhost;Database=Orchard;";
@@ -262,7 +263,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldReturnGenericError_WhenSavingTenantFails()
+    public async Task Create_SavingTenantFails_ReturnsGenericError()
     {
         // Arrange
         var controller = CreateController(throwOnUpdate: true);
@@ -287,7 +288,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldUseConfiguredTablePrefixPattern_WhenConfigured()
+    public async Task Create_Configured_UsesConfiguredTablePrefixPattern()
     {
         // Arrange
         var controller = CreateController(tablePrefixPattern: "{{ ShellSettings.Name }}", schemaPattern: "dbo");
@@ -314,7 +315,7 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task CreateShouldRejectInvalidConfiguredTablePrefixPattern()
+    public async Task Create_Default_RejectsInvalidConfiguredTablePrefixPattern()
     {
         // Arrange
         var controller = CreateController(tablePrefixPattern: "tenant-{{ ShellSettings.Name }}");
@@ -475,6 +476,7 @@ public class ApiControllerTests
             databaseProviders,
             tenantValidator,
             tenantDatabasePatternResolver,
+            Mock.Of<ITempDirectoryProvider>(),
             tenantApiLocalizerMock.Object,
             Mock.Of<ILogger<TenantApiController>>())
         {

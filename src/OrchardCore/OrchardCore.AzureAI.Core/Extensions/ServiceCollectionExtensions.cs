@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Options;
 using OrchardCore.AzureAI.Handlers;
 using OrchardCore.AzureAI.Models;
 using OrchardCore.AzureAI.Services;
@@ -12,6 +13,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAzureAISearchServices(this IServiceCollection services)
     {
         services.AddAzureClientsCore();
+        services.AddSignalOptionsChangeTokenSource<AzureAISearchDefaultOptions>();
         services.AddTransient<IConfigureOptions<AzureAISearchDefaultOptions>, AzureAISearchDefaultOptionsConfigurations>();
         services.AddScoped<AzureAISearchContentFieldMapper>();
         services.AddScoped<IAzureAISearchFieldIndexEvents, DefaultAzureAISearchFieldIndexEvents>();

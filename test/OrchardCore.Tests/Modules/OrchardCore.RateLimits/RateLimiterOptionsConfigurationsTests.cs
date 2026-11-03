@@ -1,21 +1,19 @@
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using System.Text.Json.Nodes;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using OrchardCore.Entities;
-using OrchardCore.Modules;
 using OrchardCore.RateLimits;
+using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
 using OrchardCore.Users.Endpoints.EmailAuthenticator;
-using OrchardCore.RateLimits.Core;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
 public class RateLimiterOptionsConfigurationsTests
 {
     [Fact]
-    public async Task ShouldApplyCustomRouteLimitForMatchingRouteNameAndMethod()
+    public async Task Apply_CustomRouteLimitForMatchingRouteNameAndMethod_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -31,7 +29,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldOnlyApplyCustomRouteLimitToMatchingHttpMethods()
+    public async Task Only_ApplyCustomRouteLimitToMatchingHttpMethods_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -52,7 +50,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyCustomRouteLimitToEndpointNameMetadata()
+    public async Task Apply_CustomRouteLimitToEndpointNameMetadata_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -68,7 +66,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyCustomGroupLimitToMatchingEndpointGroup()
+    public async Task Apply_CustomGroupLimitToMatchingEndpointGroup_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -86,7 +84,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledGlobalPolicy()
+    public async Task Apply_EnabledGlobalPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
 
@@ -105,7 +103,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldIgnoreDisabledPolicies()
+    public async Task Ignore_DisabledPolicies_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var disabledPolicy = CreateGlobalFixedWindowPolicy("Disabled", 1, 60);
@@ -122,10 +120,10 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledEndpointPolicy()
+    public async Task Apply_EnabledEndpointPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
-        var policy = CreateGlobalFixedWindowPolicy("Api", 1, 60);
+        var policy = CreateGlobalFixedWindowPolicy(OrchardCoreConstants.AuthenticationSchemes.Api, 1, 60);
         policy.Scope = RateLimitPolicyScope.Endpoint;
         policy.Path = "/api";
 
@@ -143,7 +141,56 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledGroupPolicyToAnyMatchingGroup()
+    public async Task Apply_EnabledSlidingWindowEndpointPolicy_Succeeds()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var policy = CreateEndpointSlidingWindowPolicy("Health", "/health/live", 10, 59, 1);
+        var options = Configure(new RateLimitsOptions(), [policy]);
+
+        for (var i = 0; i < 10; i++)
+        {
+            using var lease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Health.Live", HttpMethods.Get, "/health/live"), 1, cancellationToken);
+            Assert.True(lease.IsAcquired);
+        }
+
+        using var rejectedLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Health.Live", HttpMethods.Get, "/health/live"), 1, cancellationToken);
+        Assert.False(rejectedLease.IsAcquired);
+    }
+
+    [Fact]
+    public async Task Apply_EnabledTokenBucketEndpointPolicy_Succeeds()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var policy = CreateEndpointTokenBucketPolicy("ApiBurst", "/api", 1, 1, 60);
+        var options = Configure(new RateLimitsOptions(), [policy]);
+
+        using var firstLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Api.Route", HttpMethods.Get, "/api/users"), 1, cancellationToken);
+        using var secondLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Api.Route", HttpMethods.Get, "/api/users"), 1, cancellationToken);
+        using var thirdLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Home.Route", HttpMethods.Get, "/home"), 1, cancellationToken);
+
+        Assert.True(firstLease.IsAcquired);
+        Assert.False(secondLease.IsAcquired);
+        Assert.True(thirdLease.IsAcquired);
+    }
+
+    [Fact]
+    public async Task Apply_EnabledConcurrencyEndpointPolicy_Succeeds()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var policy = CreateEndpointConcurrencyPolicy("ExpensiveApi", "/api/expensive", 1);
+        var options = Configure(new RateLimitsOptions(), [policy]);
+
+        using var firstLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Api.Expensive", HttpMethods.Get, "/api/expensive"), 1, cancellationToken);
+        using var secondLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Api.Expensive", HttpMethods.Get, "/api/expensive"), 1, cancellationToken);
+        using var thirdLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Home.Route", HttpMethods.Get, "/home"), 1, cancellationToken);
+
+        Assert.True(firstLease.IsAcquired);
+        Assert.False(secondLease.IsAcquired);
+        Assert.True(thirdLease.IsAcquired);
+    }
+
+    [Fact]
+    public async Task Apply_EnabledGroupPolicyToAnyMatchingGroup_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var policy = CreateGlobalFixedWindowPolicy("Authentication", 1, 60);
@@ -162,7 +209,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldHandleEnabledPoliciesWithStringifiedNumericLimiterValues()
+    public async Task Handle_EnabledPoliciesWithStringifiedNumericLimiterValues_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var limiter = new RateLimitLimiter
@@ -261,6 +308,76 @@ public class RateLimiterOptionsConfigurationsTests
             IsEnabled = true,
             EnabledUtc = DateTime.UtcNow,
             Scope = RateLimitPolicyScope.Global,
+            Limiters = [limiter],
+        };
+    }
+
+    private static RateLimitPolicy CreateEndpointSlidingWindowPolicy(string name, string path, int permitLimit, int windowSeconds, int segmentsPerWindow)
+    {
+        var limiter = new RateLimitLimiter
+        {
+            Id = IdGenerator.GenerateId(),
+            Source = SlidingWindowRateLimiterSource.SourceName,
+        };
+
+        limiter.Put(new SlidingWindowRateLimiterData
+        {
+            PermitLimit = permitLimit,
+            QueueLimit = 0,
+            WindowSeconds = windowSeconds,
+            SegmentsPerWindow = segmentsPerWindow,
+        });
+
+        return CreateEndpointPolicy(name, path, limiter);
+    }
+
+    private static RateLimitPolicy CreateEndpointTokenBucketPolicy(string name, string path, int tokenLimit, int tokensPerPeriod, int replenishmentPeriodSeconds)
+    {
+        var limiter = new RateLimitLimiter
+        {
+            Id = IdGenerator.GenerateId(),
+            Source = TokenBucketRateLimiterSource.SourceName,
+        };
+
+        limiter.Put(new TokenBucketRateLimiterData
+        {
+            TokenLimit = tokenLimit,
+            QueueLimit = 0,
+            TokensPerPeriod = tokensPerPeriod,
+            ReplenishmentPeriodSeconds = replenishmentPeriodSeconds,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+        });
+
+        return CreateEndpointPolicy(name, path, limiter);
+    }
+
+    private static RateLimitPolicy CreateEndpointConcurrencyPolicy(string name, string path, int permitLimit)
+    {
+        var limiter = new RateLimitLimiter
+        {
+            Id = IdGenerator.GenerateId(),
+            Source = ConcurrencyRateLimiterSource.SourceName,
+        };
+
+        limiter.Put(new ConcurrencyRateLimiterData
+        {
+            PermitLimit = permitLimit,
+            QueueLimit = 0,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+        });
+
+        return CreateEndpointPolicy(name, path, limiter);
+    }
+
+    private static RateLimitPolicy CreateEndpointPolicy(string name, string path, RateLimitLimiter limiter)
+    {
+        return new RateLimitPolicy
+        {
+            Name = name,
+            IsEnabled = true,
+            EnabledUtc = DateTime.UtcNow,
+            Scope = RateLimitPolicyScope.Endpoint,
+            Path = path,
             Limiters = [limiter],
         };
     }

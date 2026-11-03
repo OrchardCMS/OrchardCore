@@ -8,6 +8,7 @@ using OrchardCore.Contents.VersionPruning.Services;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Modules;
+using OrchardCore.Tests.Utilities;
 using YesSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -18,7 +19,7 @@ namespace OrchardCore.Tests.Modules.Contents.VersionPruning;
 
 public class ContentVersionPruningServiceTests : IAsyncLifetime
 {
-    private static readonly DateTime _now = new(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime s_now = new(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     private IStore _store;
     private string _tempFilename;
@@ -69,27 +70,18 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
         _store?.Dispose();
         _store = null;
 
-        if (_tempFilename != null && File.Exists(_tempFilename))
-        {
-            try
-            {
-                File.Delete(_tempFilename);
-            }
-            catch
-            {
-            }
-        }
+        TestFileHelper.TryDelete(_tempFilename);
 
         return ValueTask.CompletedTask;
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_KeepsNewestAndVersionsWithinRetention()
+    public async Task PruneVersionsAsync_Default_KeepssNewestAndVersionsWithinRetention()
     {
         await SaveVersionsAsync(
-            Version("item-1", "v1", "Blog", _now.AddDays(-90)),
-            Version("item-1", "v2", "Blog", _now.AddDays(-10)),
-            Version("item-1", "v3", "Blog", _now.AddDays(-2)));
+            Version("item-1", "v1", "Blog", s_now.AddDays(-90)),
+            Version("item-1", "v2", "Blog", s_now.AddDays(-10)),
+            Version("item-1", "v3", "Blog", s_now.AddDays(-2)));
 
         var settings = new ContentVersionPruningSettings
         {
@@ -107,13 +99,13 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_OnlyPrunesSelectedContentTypes()
+    public async Task PruneVersionsAsync_LyPrunesSelectedContentTypes_Succeeds()
     {
         await SaveVersionsAsync(
-            Version("blog-1", "b1", "Blog", _now.AddDays(-90)),
-            Version("blog-1", "b2", "Blog", _now.AddDays(-80)),
-            Version("page-1", "p1", "Page", _now.AddDays(-90)),
-            Version("page-1", "p2", "Page", _now.AddDays(-80)));
+            Version("blog-1", "b1", "Blog", s_now.AddDays(-90)),
+            Version("blog-1", "b2", "Blog", s_now.AddDays(-80)),
+            Version("page-1", "p1", "Page", s_now.AddDays(-90)),
+            Version("page-1", "p2", "Page", s_now.AddDays(-80)));
 
         var settings = new ContentVersionPruningSettings
         {
@@ -131,12 +123,12 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_NeverDeletesLatestOrPublished()
+    public async Task PruneVersionsAsync_NeverDeletesLatestOrPublished_Succeeds()
     {
         await SaveVersionsAsync(
-            new ContentItem { ContentItemId = "item-1", ContentItemVersionId = "v-latest", ContentType = "Blog", ModifiedUtc = _now.AddDays(-90), Latest = true },
-            new ContentItem { ContentItemId = "item-1", ContentItemVersionId = "v-published", ContentType = "Blog", ModifiedUtc = _now.AddDays(-90), Published = true },
-            Version("item-1", "v-old", "Blog", _now.AddDays(-90)));
+            new ContentItem { ContentItemId = "item-1", ContentItemVersionId = "v-latest", ContentType = "Blog", ModifiedUtc = s_now.AddDays(-90), Latest = true },
+            new ContentItem { ContentItemId = "item-1", ContentItemVersionId = "v-published", ContentType = "Blog", ModifiedUtc = s_now.AddDays(-90), Published = true },
+            Version("item-1", "v-old", "Blog", s_now.AddDays(-90)));
 
         var settings = new ContentVersionPruningSettings
         {
@@ -157,8 +149,8 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     public async Task PruneVersionsAsync_EmptyContentTypes_DeletesNothing()
     {
         await SaveVersionsAsync(
-            Version("item-1", "v1", "Blog", _now.AddDays(-90)),
-            Version("item-1", "v2", "Blog", _now.AddDays(-80)));
+            Version("item-1", "v1", "Blog", s_now.AddDays(-90)),
+            Version("item-1", "v2", "Blog", s_now.AddDays(-80)));
 
         var settings = new ContentVersionPruningSettings
         {
@@ -174,14 +166,14 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_ProcessesMoreThanOneBatch()
+    public async Task PruneVersionsAsync_ProcessesMoreThanOneBatch_Succeeds()
     {
         // Exercises the deletion batching/flush path with more candidates than the internal batch size.
         const int versionCount = 250;
         var versions = new ContentItem[versionCount];
         for (var i = 0; i < versionCount; i++)
         {
-            versions[i] = Version("item-1", $"v{i:D4}", "Blog", _now.AddDays(-100 - i));
+            versions[i] = Version("item-1", $"v{i:D4}", "Blog", s_now.AddDays(-100 - i));
         }
 
         await SaveVersionsAsync(versions);
@@ -200,7 +192,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_ProcessesManyContentItemsAcrossBatches()
+    public async Task PruneVersionsAsync_ProcessesManyContentItemsAcrossBatches_Succeeds()
     {
         // Spans more content items than the per-query content item batch size to verify that the
         // "keep N newest" rule is correctly applied per item across batch boundaries.
@@ -209,8 +201,8 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
         for (var i = 0; i < itemCount; i++)
         {
             var id = $"item-{i:D3}";
-            versions.Add(Version(id, $"{id}-v1", "Blog", _now.AddDays(-90)));
-            versions.Add(Version(id, $"{id}-v2", "Blog", _now.AddDays(-80)));
+            versions.Add(Version(id, $"{id}-v1", "Blog", s_now.AddDays(-90)));
+            versions.Add(Version(id, $"{id}-v2", "Blog", s_now.AddDays(-80)));
         }
 
         await SaveVersionsAsync([.. versions]);
@@ -237,7 +229,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
         await using var session = _store.CreateSession();
 
         var clock = new Mock<IClock>();
-        clock.SetupGet(x => x.UtcNow).Returns(_now);
+        clock.SetupGet(x => x.UtcNow).Returns(s_now);
 
         var service = new ContentVersionPruningService(session, clock.Object, NullLogger<ContentVersionPruningService>.Instance);
 

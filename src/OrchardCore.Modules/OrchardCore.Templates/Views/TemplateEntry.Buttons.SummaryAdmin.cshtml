@@ -1,0 +1,19 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Templates.ViewModels
+
+@model ShapeViewModel<TemplateEntry>
+
+<a asp-action="Edit"
+   asp-controller="Template"
+   asp-route-name="@Model.Value.Name"
+   asp-route-admintemplates="@Model.Value.AdminTemplates"
+   asp-route-returnUrl="@FullRequestPath"
+   class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-action="Delete"
+   asp-controller="Template"
+   asp-route-name="@Model.Value.Name"
+   asp-route-admintemplates="@Model.Value.AdminTemplates"
+   asp-route-returnUrl="@FullRequestPath"
+   class="btn btn-danger btn-sm"
+   data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

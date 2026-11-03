@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public sealed class SingleFlightTests
 {
     [Fact]
-    public async Task ScheduleAsync_CoalescesConcurrentCallsForSameKey()
+    public async Task ScheduleAsync_CoalescesConcurrentCallsForSameKey_Succeeds()
     {
         var singleFlight = new SingleFlight<string, string>();
         var invocations = 0;
@@ -37,7 +37,7 @@ public sealed class SingleFlightTests
     }
 
     [Fact]
-    public async Task ScheduleAsync_RunsFactoryAgainAfterCompletion()
+    public async Task ScheduleAsync_RunsFactoryAgainAfterCompletion_Succeeds()
     {
         var singleFlight = new SingleFlight<string, string>();
         var invocations = 0;
@@ -57,7 +57,7 @@ public sealed class SingleFlightTests
     }
 
     [Fact]
-    public async Task ScheduleAsync_DifferentKeysRunIndependently()
+    public async Task ScheduleAsync_DifferentKeysRunIndependently_Succeeds()
     {
         var singleFlight = new SingleFlight<string, string>();
         var invocations = 0;
@@ -78,7 +78,7 @@ public sealed class SingleFlightTests
     }
 
     [Fact]
-    public async Task ScheduleAsync_FailureIsNotCachedAndAllWaitersObserveException()
+    public async Task ScheduleAsync_FailureIsNotCachedAndAllWaitersObserveException_Succeeds()
     {
         var singleFlight = new SingleFlight<string, string>();
         var invocations = 0;

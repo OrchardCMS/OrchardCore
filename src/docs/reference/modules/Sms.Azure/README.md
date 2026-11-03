@@ -43,9 +43,13 @@ You may configure the **Default Azure Communication Services** using any configu
 
 ```json
 {
-  "OrchardCore_Sms_AzureCommunicationServices": {
-    "PhoneNumber": "",
-    "ConnectionString": ""
+  "OrchardCore": {
+    "Sms": {
+      "Azure": {
+        "PhoneNumber": "",
+        "ConnectionString": ""
+      }
+    }
   }
 }
 ```

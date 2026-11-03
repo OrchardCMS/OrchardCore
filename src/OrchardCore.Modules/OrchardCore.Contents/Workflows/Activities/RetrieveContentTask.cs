@@ -1,33 +1,34 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class RetrieveContentTask : ContentTask
+public class RetrieveContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
     public RetrieveContentTask(
         IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<RetrieveContentTask> localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
     public override string Name => nameof(RetrieveContentTask);
 
-    public override LocalizedString DisplayText => S["Retrieve Content Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<RetrieveContentTask>("Retrieve Content Task");
 
-    public override LocalizedString Category => S["Content"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Retrieved"]);
-    }
+        => Outcome(S["Retrieved"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -44,7 +45,22 @@ public class RetrieveContentTask : ContentTask
 
         workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
         workflowContext.LastResult = contentItem;
+        workflowContext.SetActivityOutput(activityContext, "ContentItem", contentItem);
 
-        return Outcomes("Retrieved");
+        return Outcome("Retrieved");
     }
+
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = LocalizationSource.Create<RetrieveContentTask>("Content item"), Description = LocalizationSource.Create<RetrieveContentTask>("The content item the task retrieved.") }];
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => s_outputs;
+
+    private static readonly ActivityProvidedValue[] s_providedValues =
+    [
+        new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = LocalizationSource.Create<RetrieveContentTask>("The content item the activity retrieved."), Members = WorkflowValueMembers.ContentItem },
+        ActivityProvidedValue.LastResult("contentItem", LocalizationSource.Create<RetrieveContentTask>("The content item the activity retrieved."), WorkflowValueMembers.ContentItem),
+    ];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 }

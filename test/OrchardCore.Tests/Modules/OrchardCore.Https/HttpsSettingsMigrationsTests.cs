@@ -10,7 +10,7 @@ public class HttpsSettingsMigrationsTests
     private const string LegacyEnableStrictTransportSecurityKey = "EnableStrictTransportSecurity";
 
     [Fact]
-    public async Task CreateAsyncMigratesLegacyHstsSetting()
+    public async Task CreateAsyncMigratesLegacyHstsSetting_Default_Succeeds()
     {
         var site = new SiteSettings();
         site.Properties[nameof(HttpsSettings)] = new JsonObject
@@ -33,7 +33,7 @@ public class HttpsSettingsMigrationsTests
     }
 
     [Fact]
-    public async Task CreateAsyncRemovesLegacySettingWithoutOverwritingMigratedValue()
+    public async Task CreateAsyncRemovesLegacySettingWithoutOverwritingMigratedValue_Default_Succeeds()
     {
         var site = new SiteSettings();
         site.Properties[nameof(HttpsSettings)] = new JsonObject

@@ -60,7 +60,8 @@ public class MediaAnchorTag : IAnchorTag
             return Completion.Normal;
         }
 
-        var resolvedUrl = mediaFileStore != null ? mediaFileStore.MapPathToPublicUrl(assetHref) : assetHref;
+        assetHref = assetHref.RemoveQueryString(out string queryString);
+        var resolvedUrl = mediaFileStore != null ? mediaFileStore.MapPathToPublicUrl(assetHref) + queryString : assetHref + queryString;
 
         if (appendVersion != null && fileVersionProvider != null)
         {

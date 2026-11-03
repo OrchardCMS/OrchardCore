@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.DisplayManagement.Notify;
 public class NotifierTests
 {
     [Fact]
-    public async Task SuccessAsync_WithoutMilliseconds_SetsDefaultMilliseconds()
+    public async Task SuccessAsync_OutMilliseconds_SetsDefaultMilliseconds()
     {
         var notifier = new Notifier(NullLogger<Notifier>.Instance);
 
@@ -18,7 +18,7 @@ public class NotifierTests
     }
 
     [Fact]
-    public async Task ErrorAsync_WithoutMilliseconds_DoesNotSetMilliseconds()
+    public async Task ErrorAsync_OutMilliseconds_DoesNotSetMilliseconds()
     {
         var notifier = new Notifier(NullLogger<Notifier>.Instance);
 
@@ -30,7 +30,7 @@ public class NotifierTests
     }
 
     [Fact]
-    public async Task SuccessAsync_WithMilliseconds_SetsMillisecondsOnNotifyEntry()
+    public async Task SuccessAsync_Milliseconds_SetsMillisecondsOnNotifyEntry()
     {
         var notifier = new Notifier(NullLogger<Notifier>.Instance);
 
@@ -42,7 +42,7 @@ public class NotifierTests
     }
 
     [Fact]
-    public void NotifyEntryConverter_RoundTripsMilliseconds()
+    public void NotifyEntryConverter_Default_RoundTripsMilliseconds()
     {
         var options = new JsonSerializerOptions();
         options.Converters.Add(new NotifyEntryConverter(HtmlEncoder.Default));

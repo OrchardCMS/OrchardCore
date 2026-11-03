@@ -1,14 +1,26 @@
 [
   {
-    "action": "min",
-    "name": "trumbowyg.media.tag",
-    "source": "Assets/trumbowyg.media.tag.js",
+    "action": "parcel",
+    "name": "trumbowyg.media",
+    "source": [
+      "Assets/trumbowyg.media.tag.ts",
+      "Assets/trumbowyg.media.url.ts"
+    ],
+    "dest": "wwwroot/Scripts/trumbowyg",
     "tags": ["admin", "dashboard", "js"]
   },
   {
-    "action": "min",
-    "name": "trumbowyg.media.url",
-    "source": "Assets/trumbowyg.media.url.js",
+    "action": "parcel",
+    "name": "html-body-part-editors",
+    "source": [
+      "Assets/ts/html-body-part.ts",
+      "Assets/ts/html-body-part-monaco.ts",
+      "Assets/ts/html-body-part-monaco-settings.ts",
+      "Assets/ts/html-body-part-trumbowyg-settings.ts",
+      "Assets/ts/html-body-part-trumbowyg-editor.ts",
+      "Assets/ts/html-body-part-wysiwyg.ts"
+    ],
+    "dest": "wwwroot/Scripts/html-body-part-editors/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

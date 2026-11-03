@@ -18,52 +18,23 @@
     var vueElementId = $"LocalizedContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+    var translations = Orchard.GetJSLocalizations("content-fields-multiselect-picker");
+    var translationsJson = Json.Serialize(translations).ToString();
 }
 
-<script asp-name="vue-multiselect-wrapper" at="Foot"></script>
-<style asp-name="vue-multiselect" version="2" at="Foot"></style>
+<script asp-name="vue-draggable" at="Foot"></script>
+<style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.LocalizationSets)_FieldWrapper">
     <label asp-for="LocalizationSets" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
-        <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
-
-            <ul class="mb-1 list-group w-100 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
-                <draggable v-model="arrayOfItems">
-                    <li v-for="(item, i) in arrayOfItems"
-                        class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
-                        :key="item.id">
-                        <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span> <span v-show="!item.hasPublished" class="text-muted small">(@T["Not published"])</span></div>
-
-                        <div class="btn-group btn-group-sm align-items-center" role="group">
-                            <button v-on:click="remove(item)" type="button" class="btn btn-secondary content-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
-                        </div>
-                    </li>
-                </draggable>
-            </ul>
-
-            <div class="w-100">
-                <input asp-for="LocalizationSets" type="hidden" v-model="selectedIds" />
-                <vue-multiselect v-model="value" :options="options" track-by="id"
-                                 label="displayText" placeholder="@T["Type to search"]"
-                                 @@search-change="asyncFind" @@select="onSelect"
-                                 :searchable="true" :close-on-select="true" :reset-after="true"
-                                 :show-labels="true" :hide-selected="@multiple"
-                                 :disabled="isDisabled"
-                                 select-label="@T["Select"]" deselect-label="@T["Remove"]">
-                    <template slot="option" slot-scope="props">
-                        <div v-cloak><span>{{ props.option.displayText }}</span><span class="small ms-2" v-show="!props.option.hasPublished">(@T["Not published"])</span></div>
-                    </template>
-                    <template slot="noResult">
-                        @T["No result found"]
-                    </template>
-                </vue-multiselect>
-                @if (!string.IsNullOrEmpty(settings.Hint))
-                {
-                    <span class="hint">@settings.Hint</span>
-                }
-            </div>
+        <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple" data-translations="@translationsJson" data-selected-ids-input-id="@Html.IdFor(x => x.LocalizationSets)" data-selected-ids-input-name="@Html.NameFor(x => x.LocalizationSets)">
         </div>
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+        <span asp-validation-for="LocalizationSets"></span>
     </div>
 </div>
-<script at="Foot" depends-on="vue-multiselect-wrapper">initVueMultiselect(document.querySelector("#@vueElementId"))</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="vuejs, vue-multiselect, vue-draggable" type="module"></script>

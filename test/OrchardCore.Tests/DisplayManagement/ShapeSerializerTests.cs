@@ -35,7 +35,7 @@ public class ShapeSerializerTests
     }
 
     [Fact]
-    public async Task ShouldSerialize()
+    public async Task Serialize_Default_Succeeds()
     {
         var shape = _serviceProvider.GetService<IShapeFactory>();
 
@@ -46,7 +46,7 @@ public class ShapeSerializerTests
     }
 
     [Fact]
-    public async Task ShouldSkipRecursiveShapes()
+    public async Task Skip_RecursiveShapes_Succeeds()
     {
         var shape = _serviceProvider.GetService<IShapeFactory>();
 

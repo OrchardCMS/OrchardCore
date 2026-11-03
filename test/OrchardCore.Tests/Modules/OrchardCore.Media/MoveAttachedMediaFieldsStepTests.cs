@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class MoveAttachedMediaFieldsStepTests
 {
     [Fact]
-    public async Task MoveAttachedMediaFieldsStep_MovesOnlySelectedContentTypes()
+    public async Task MoveAttachedMediaFieldsStep_Default_MovesOnlySelectedContentTypes()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -37,7 +37,7 @@ public class MoveAttachedMediaFieldsStepTests
     }
 
     [Fact]
-    public async Task MoveAttachedMediaFieldsStep_EvaluatesAllContentTypes_WhenFilterIsMissing()
+    public async Task MoveAttachedMediaFieldsStepEvaluatesAllContentTypes_FilterIsMissing_Succeeds()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -55,6 +55,36 @@ public class MoveAttachedMediaFieldsStepTests
         await context.UsingTenantScopeAsync(async scope =>
         {
             await AssertFieldPathAsync(scope, contentItemId, "AllTypesMigrationArticle", "all-shared/report.png", expectedToMove: true);
+        });
+    }
+
+    [Fact]
+    public async Task MoveAttachedMediaFieldsStep_MoreItemsThanBatchSize_MovesAllContentItems()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        // Each content item has a published and a draft version, so 60 items span more than two batches of 50 index rows.
+        const int ContentItemCount = 60;
+        var contentItemIds = new List<string>();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            for (var i = 0; i < ContentItemCount; i++)
+            {
+                contentItemIds.Add(await CreateContentItemWithAttachedEditorAsync(scope, "BatchedMigrationArticle", $"batched-shared/report-{i}.png"));
+            }
+        });
+
+        await RecipeHelpers.RunRecipeAsync(context, CreateRecipe(["BatchedMigrationArticle"]));
+        await context.WaitForHttpBackgroundJobsAsync(TestContext.Current.CancellationToken);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            for (var i = 0; i < ContentItemCount; i++)
+            {
+                await AssertFieldPathAsync(scope, contentItemIds[i], "BatchedMigrationArticle", $"batched-shared/report-{i}.png", expectedToMove: true, $"report-{i}.png");
+            }
         });
     }
 
@@ -101,7 +131,7 @@ public class MoveAttachedMediaFieldsStepTests
         contentItem.Apply(partName, part);
     }
 
-    private static async Task AssertFieldPathAsync(ShellScope scope, string contentItemId, string contentType, string originalPath, bool expectedToMove)
+    private static async Task AssertFieldPathAsync(ShellScope scope, string contentItemId, string contentType, string originalPath, bool expectedToMove, string expectedFileName = "report.png")
     {
         var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
         var mediaFileStore = scope.ServiceProvider.GetRequiredService<IMediaFileStore>();
@@ -118,7 +148,7 @@ public class MoveAttachedMediaFieldsStepTests
             if (expectedToMove)
             {
                 Assert.StartsWith($"mediafields/{contentType}/{contentItemId}/", path, StringComparison.OrdinalIgnoreCase);
-                Assert.Equal(["report.png"], field.GetAttachedFileNames());
+                Assert.Equal([expectedFileName], field.GetAttachedFileNames());
                 Assert.NotNull(await mediaFileStore.GetFileInfoAsync(path));
                 Assert.Null(await mediaFileStore.GetFileInfoAsync(originalPath));
             }

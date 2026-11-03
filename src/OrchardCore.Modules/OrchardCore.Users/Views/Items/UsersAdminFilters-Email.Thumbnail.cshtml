@@ -3,15 +3,11 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "email");
 }
 
-<h4 class="card-title">@T["Email"]</h4>
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <pre class="mb-0">@(term?.ToString() ?? "email:...")</pre>
-    </div>
-</div>
-<p>@T["Filters on the email address of a user."]</p>
-<div class="d-block text-end">
-    <span>
-        <i class="fa-solid fa-sm fa-bars text-primary" aria-hidden="true"></i>
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <h6 class="card-title fw-semibold mb-0">@T["Email"]</h6>
+    <span class="text-primary text-nowrap">
+        <i class="fa-solid fa-sm fa-bars" title="@T["Supports logical operators and groups"]" aria-hidden="true"></i>
     </span>
 </div>
+<div class="mt-1"><code class="small text-nowrap">@(term?.ToString() ?? "email:...")</code></div>
+<p class="card-text small text-body-secondary mt-1 mb-0">@T["Filters on the email address of a user."]</p>

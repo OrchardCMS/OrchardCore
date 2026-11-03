@@ -6,11 +6,4 @@ namespace OrchardCore.Workflows.Drivers;
 
 public sealed class CommitTransactionTaskDisplayDriver : ActivityDisplayDriver<CommitTransactionTask, CommitTransactionTaskViewModel>
 {
-    protected override void EditActivity(CommitTransactionTask activity, CommitTransactionTaskViewModel model)
-    {
-    }
-
-    protected override void UpdateActivity(CommitTransactionTaskViewModel model, CommitTransactionTask activity)
-    {
-    }
 }

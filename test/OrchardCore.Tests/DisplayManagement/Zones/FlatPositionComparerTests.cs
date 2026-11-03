@@ -19,7 +19,7 @@ public class FlatPositionComparerTests
     #region Instance Tests
 
     [Fact]
-    public void Instance_ShouldReturnSameInstance()
+    public void Instance_Default_ReturnsSameInstance()
     {
         // Arrange & Act
         var instance1 = FlatPositionComparer.Instance;
@@ -39,7 +39,7 @@ public class FlatPositionComparerTests
     [InlineData("1", "1", 0)]
     [InlineData("10", "2", 1)]
     [InlineData("2", "10", -1)]
-    public void Compare_SimpleNumbers_ShouldCompareNumerically(string x, string y, int expected)
+    public void Compare_SimpleNumbers_CompareNumerically(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -54,7 +54,7 @@ public class FlatPositionComparerTests
     [InlineData("1.1", "1.1", 0)]
     [InlineData("1.10", "1.2", 1)]
     [InlineData("1.2", "1.10", -1)]
-    public void Compare_DecimalPositions_ShouldCompareNumerically(string x, string y, int expected)
+    public void Compare_DecimalPositions_CompareNumerically(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -69,7 +69,7 @@ public class FlatPositionComparerTests
     [InlineData("1.2.1", "1.1.2", 1)]
     [InlineData("1.1.2", "1.2.1", -1)]
     [InlineData("1.1.1", "1.1.1", 0)]
-    public void Compare_MultiLevelPositions_ShouldCompareCorrectly(string x, string y, int expected)
+    public void Compare_MultiLevelPositions_CompareCorrectly(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -83,7 +83,7 @@ public class FlatPositionComparerTests
     [InlineData("1.1", "1", 1)]
     [InlineData("1.2", "1.2.1", -1)]
     [InlineData("1.2.1", "1.2", 1)]
-    public void Compare_DifferentLevels_ShouldCompareCorrectly(string x, string y, int expected)
+    public void Compare_DifferentLevels_CompareCorrectly(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -98,7 +98,7 @@ public class FlatPositionComparerTests
     [InlineData("1", null, 1)]
     [InlineData(null, "before", 1)]
     [InlineData("before", null, -1)]
-    public void Compare_NullValues_ShouldHandleCorrectly(string x, string y, int expected)
+    public void Compare_NullValues_HandlesCorrectly(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -115,7 +115,7 @@ public class FlatPositionComparerTests
     [InlineData("0", "", 0)]
     [InlineData("   ", "0", 0)]
     [InlineData("0", "   ", 0)]
-    public void Compare_EmptyValues_ShouldTreatAsZero(string x, string y, int expected)
+    public void Compare_EmptyValues_TreatAsZero(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -133,7 +133,7 @@ public class FlatPositionComparerTests
     [InlineData("1", "before", 1)]
     [InlineData("after", "1", 1)]
     [InlineData("1", "after", -1)]
-    public void Compare_KnownPartitions_ShouldNormalizeCorrectly(string x, string y, int expected)
+    public void Compare_KnownPartitions_NormalizeCorrectly(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -146,7 +146,7 @@ public class FlatPositionComparerTests
     [InlineData("BEFORE", "after", -1)]
     [InlineData("After", "BEFORE", 1)]
     [InlineData("BeFoRe", "AfTeR", -1)]
-    public void Compare_KnownPartitions_ShouldBeCaseInsensitive(string x, string y, int expected)
+    public void Compare_KnownPartitions_IsCaseInsensitive(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -161,7 +161,7 @@ public class FlatPositionComparerTests
     [InlineData("alpha", "alpha", 0)]
     [InlineData("Alpha", "alpha", 0)]
     [InlineData("ALPHA", "alpha", 0)]
-    public void Compare_NonNumericStrings_ShouldCompareAlphabetically(string x, string y, int expected)
+    public void Compare_NonNumericStrings_CompareAlphabetically(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -174,7 +174,7 @@ public class FlatPositionComparerTests
     [InlineData("1:test", "2:test", -1)]
     [InlineData("2:test", "1:test", 1)]
     [InlineData("test:", "test", 0)]
-    public void Compare_ColonSeparators_ShouldHandleCorrectly(string x, string y, int expected)
+    public void Compare_ColonSeparators_HandlesCorrectly(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -187,7 +187,7 @@ public class FlatPositionComparerTests
     [InlineData("1.2:3", "1.2:4", -1)]
     [InlineData("1:2.3", "1:2.4", -1)]
     [InlineData("1:2:3", "1:2:4", -1)]
-    public void Compare_MixedSeparators_ShouldHandleCorrectly(string x, string y, int expected)
+    public void Compare_MixedSeparators_HandlesCorrectly(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -201,7 +201,7 @@ public class FlatPositionComparerTests
     [InlineData("1..", "1", 0)]
     [InlineData("test.", "test", 0)]
     [InlineData("test..", "test", 0)]
-    public void Compare_TrailingDots_ShouldBeTrimmed(string x, string y, int expected)
+    public void Compare_TrailingDots_IsTrimmed(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -211,7 +211,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void Compare_SameReference_ShouldReturnZero()
+    public void Compare_SameReference_ReturnsZero()
     {
         // Arrange
         var position = "1.2.3";
@@ -228,7 +228,7 @@ public class FlatPositionComparerTests
     #region IPositioned Comparison Tests
 
     [Fact]
-    public void Compare_IPositioned_ShouldCompareByPosition()
+    public void Compare_IPositioned_CompareByPosition()
     {
         // Arrange
         var item1 = new TestPositioned { Position = "1" };
@@ -242,7 +242,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void Compare_IPositioned_WithNullPositions_ShouldHandleCorrectly()
+    public void Compare_IPositionedWithNullPositions_HandlesCorrectly()
     {
         // Arrange
         var item1 = new TestPositioned { Position = null };
@@ -256,7 +256,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void Compare_IPositioned_SamePositions_ShouldReturnZero()
+    public void Compare_IPositionedSamePositions_ReturnsZero()
     {
         // Arrange
         var item1 = new TestPositioned { Position = "1.2" };
@@ -274,7 +274,7 @@ public class FlatPositionComparerTests
     #region Complex Scenario Tests
 
     [Fact]
-    public void Compare_BasicOrderingRules_ShouldWork()
+    public void Compare_BasicOrderingRules_Works()
     {
         // Test that basic ordering works for key transitions
         Assert.True(_comparer.Compare("before", "1") < 0, "before should come before 1");
@@ -290,7 +290,7 @@ public class FlatPositionComparerTests
     [InlineData("1.after", "1.1", 1)]
     [InlineData("before.1", "1.before", -1)]
     [InlineData("after.1", "1.after", 1)]
-    public void Compare_BeforeAfterInComplexPositions_ShouldWork(string x, string y, int expected)
+    public void Compare_BeforeAfterInComplexPositions_Works(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -304,7 +304,7 @@ public class FlatPositionComparerTests
     [InlineData("text2", "text1", 1)]
     [InlineData("text1.1", "text1.2", -1)]
     [InlineData("text1.alpha", "text1.beta", -1)]
-    public void Compare_TextBasedPositions_ShouldCompareAlphabetically(string x, string y, int expected)
+    public void Compare_TextBasedPositions_CompareAlphabetically(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -314,7 +314,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void Compare_MixedNumericAndText_ShouldHandleCorrectly()
+    public void Compare_MixedNumericAndText_HandlesCorrectly()
     {
         // Test ordering between numbers and strings
         Assert.True(_comparer.Compare("1", "alpha") < 0, "Numbers should come before text");
@@ -330,7 +330,7 @@ public class FlatPositionComparerTests
     [InlineData("0", "00", 0)]
     [InlineData("1", "01", 0)]
     [InlineData("10", "010", 0)]
-    public void Compare_LeadingZeros_ShouldBeNumericallyEqual(string x, string y, int expected)
+    public void Compare_LeadingZeros_IsNumericallyEqual(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -344,7 +344,7 @@ public class FlatPositionComparerTests
     [InlineData("1", "1.0", -1)]
     [InlineData("1.0.0", "1.0", 1)]
     [InlineData("1.0", "1.0.0", -1)]
-    public void Compare_TrailingZeros_ShouldConsiderMoreSpecific(string x, string y, int expected)
+    public void Compare_TrailingZeros_ConsiderMoreSpecific(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -356,7 +356,7 @@ public class FlatPositionComparerTests
     [Theory]
     [InlineData("short", "verylongpositionname")]
     [InlineData("verylongpositionname", "short")]
-    public void Compare_VeryLongStrings_ShouldCompareCorrectly(string x, string y)
+    public void Compare_VeryLongStrings_CompareCorrectly(string x, string y)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -380,7 +380,7 @@ public class FlatPositionComparerTests
     [Theory]
     [InlineData("specialchars!@#", "specialchars$%^")]
     [InlineData("unicode-ñ", "unicode-ö")]
-    public void Compare_SpecialCharacters_ShouldCompareAlphabetically(string x, string y)
+    public void Compare_SpecialCharacters_CompareAlphabetically(string x, string y)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -406,7 +406,7 @@ public class FlatPositionComparerTests
     #region Normalization Tests
 
     [Fact]
-    public void Compare_BeforePartition_ShouldBeNormalized()
+    public void Compare_BeforePartition_IsNormalized()
     {
         // Test that "before" gets normalized to a low value
         Assert.True(_comparer.Compare("before", "0") < 0);
@@ -417,7 +417,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void Compare_AfterPartition_ShouldBeNormalized()
+    public void Compare_AfterPartition_IsNormalized()
     {
         // Test that "after" gets normalized to a high value
         Assert.True(_comparer.Compare("after", "0") > 0);
@@ -429,7 +429,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void Compare_NonNormalizedPartitions_ShouldNotBeSpecial()
+    public void Compare_NonNormalizedPartitions_IsNotSpecial()
     {
         // Test that similar but different strings don't get normalized
         var result1 = _comparer.Compare("beforex", "0");
@@ -442,7 +442,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void Compare_EmptyStringBehavior_ShouldBeTreatedAsZero()
+    public void Compare_EmptyStringBehavior_IsTreatedAsZero()
     {
         // Empty string should be treated as "0"
         Assert.Equal(0, _comparer.Compare("", "0"));
@@ -466,7 +466,7 @@ public class FlatPositionComparerTests
     [InlineData("11", "12.4", -1)]
     [InlineData("12.5", "12", 1)]
     [InlineData("12", "12.5", -1)]
-    public void Compare_DotNotation_ShouldOrderCorrectly(string x, string y, int expected)
+    public void Compare_DotNotation_OrderCorrectly(string x, string y, int expected)
     {
         // Act
         var result = _comparer.Compare(x, y);
@@ -476,7 +476,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void OrderBy_DotNotation_ShouldProduceCorrectSequence()
+    public void OrderBy_DotNotation_ProducesCorrectSequence()
     {
         // Arrange - Positions that simulate shapes from different modules.
         var positions = new[] { "12.5", "11", "12.4", "12", "1", "1.1" };
@@ -506,7 +506,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void OrderBy_EmptyAndNull_ShouldSortCorrectly()
+    public void OrderBy_EmptyAndNull_SortCorrectly()
     {
         // Arrange - null normalizes to "before.", empty/whitespace normalizes to "0".
         var items = new TestPositioned[]
@@ -528,7 +528,7 @@ public class FlatPositionComparerTests
     }
 
     [Fact]
-    public void OrderBy_ComplexScenario_ShouldOrderCorrectly()
+    public void OrderBy_ComplexScenario_OrderCorrectly()
     {
         // Arrange - A realistic scenario with various position formats.
         var positions = new[]
@@ -556,12 +556,199 @@ public class FlatPositionComparerTests
     [InlineData("before", "", -1)]
     [InlineData("", "after", -1)]
     [InlineData("after", "", 1)]
-    public void Compare_EmptyPosition_ShouldBehaveAsZero(string x, string y, int expected)
+    public void Compare_EmptyPosition_IshaveAsZero(string x, string y, int expected)
     {
         // Empty position normalizes to "0", meaning:
         // "before" < "" (0) < any positive number < "after"
         var result = _comparer.Compare(x, y);
         Assert.Equal(expected, result);
+    }
+
+    #endregion
+
+    #region Terminal Sentinel Tests (start / end)
+
+    [Theory]
+    // `start` sorts before every non-sentinel position.
+    [InlineData("start", "before", -1)]
+    [InlineData("before", "start", 1)]
+    [InlineData("start", "0", -1)]
+    [InlineData("0", "start", 1)]
+    [InlineData("start", "1", -1)]
+    [InlineData("start", "after", -1)]
+    [InlineData("after", "start", 1)]
+    [InlineData("start", "end", -1)]
+    [InlineData("end", "start", 1)]
+    // `end` sorts after every non-sentinel position.
+    [InlineData("end", "before", 1)]
+    [InlineData("before", "end", -1)]
+    [InlineData("end", "0", 1)]
+    [InlineData("end", "999", 1)]
+    [InlineData("end", "after", 1)]
+    [InlineData("after", "end", -1)]
+    public void Compare_TerminalSentinels_OrderAtTheExtremes(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    // Free-text positions (e.g. what PrefixPosition() produces) sort after `after` but the
+    // terminal sentinels still bracket them: `start` < text < `end`.
+    [InlineData("start", "am-workspace", -1)]
+    [InlineData("am-workspace", "start", 1)]
+    [InlineData("am-workspace", "end", -1)]
+    [InlineData("end", "am-workspace", 1)]
+    [InlineData("after", "am-workspace", -1)] // documents the pre-existing wart: text sorts after `after`.
+    public void Compare_TerminalSentinels_BracketFreeText(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("start", "START", 0)]
+    [InlineData("end", "END", 0)]
+    [InlineData("EnD", "end", 0)]
+    [InlineData("StArT", "end", -1)]
+    [InlineData("END", "start", 1)]
+    public void Compare_TerminalSentinels_AreCaseInsensitive(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    // Sentinels support sub-ordering just like `before`/`after`.
+    [InlineData("end.50", "end.100", -1)]
+    [InlineData("end.100", "end.50", 1)]
+    [InlineData("end.50", "end.50", 0)]
+    [InlineData("end", "end.1", -1)]
+    [InlineData("end.1", "end", 1)]
+    [InlineData("start.1", "start.2", -1)]
+    [InlineData("start.2", "start.1", 1)]
+    [InlineData("start", "start.1", -1)]
+    public void Compare_TerminalSentinels_SubOrderNumerically(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void OrderBy_FullOrdering_StartBeforeAfterTextEnd()
+    {
+        // Arrange - one value from every band, shuffled.
+        var positions = new[] { "end", "after", "am-beta", "before", "1.5", "start", "10", "0", "am-alpha", "1" };
+
+        // Act
+        var ordered = positions.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert - start < before < numbers < after < free-text (alphabetical) < end.
+        Assert.Equal(
+            ["start", "before", "0", "1", "1.5", "10", "after", "am-alpha", "am-beta", "end"],
+            ordered);
+    }
+
+    [Fact]
+    public void OrderBy_AdminMenuScenario_CustomMenuLandsBeforeToolsAndSettings()
+    {
+        // Arrange - simulates root admin-menu positions: numbered built-ins, a module contributing a
+        // top-level item via PrefixPosition() ("am-..."), and Tools/Settings pinned to the end.
+        var positions = new[] { "end.100", "am-SMS Workspace", "1", "end.50", "2", "100" };
+
+        // Act
+        var ordered = positions.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert - the custom (free-text) item now sorts before Tools (end.50) and Settings (end.100).
+        Assert.Equal(
+            ["1", "2", "100", "am-SMS Workspace", "end.50", "end.100"],
+            ordered);
+    }
+
+    #endregion
+
+    #region Comparer Honesty (total order) Tests
+
+    // A representative value from every band, in strictly ascending canonical order.
+    // Within a band, a bare sentinel sorts before its sub-positions (e.g. `end` < `end.50`),
+    // mirroring how bare `after` sorts before `after.50`.
+    private static readonly string[] s_ascending =
+    [
+        "start", "start.1", "start.2", "before", "before.5", "0", "1", "1.5", "2", "10",
+        "after", "after.50", "am-alpha", "am-beta", "end", "end.50", "end.100",
+    ];
+
+    [Fact]
+    public void Compare_IsAntisymmetric_AcrossEveryBand()
+    {
+        // For any pair, sign(Compare(a, b)) must equal -sign(Compare(b, a)).
+        for (var i = 0; i < s_ascending.Length; i++)
+        {
+            for (var j = 0; j < s_ascending.Length; j++)
+            {
+                var a = s_ascending[i];
+                var b = s_ascending[j];
+
+                var ab = Math.Sign(_comparer.Compare(a, b));
+                var ba = Math.Sign(_comparer.Compare(b, a));
+
+                Assert.True(ab == -ba, $"Antisymmetry violated for '{a}' vs '{b}': {ab} / {ba}");
+            }
+        }
+    }
+
+    [Fact]
+    public void Compare_IsReflexive_AcrossEveryBand()
+    {
+        foreach (var value in s_ascending)
+        {
+            // Use distinct string instances to avoid the ReferenceEquals fast path.
+            var copy = new string(value.ToCharArray());
+            Assert.Equal(0, _comparer.Compare(value, copy));
+        }
+    }
+
+    [Fact]
+    public void Compare_IsTransitive_AcrossEveryBand()
+    {
+        // The canonical array is strictly ascending, so every earlier item must compare less than
+        // every later item (which, with antisymmetry, guarantees a consistent transitive order).
+        for (var i = 0; i < s_ascending.Length; i++)
+        {
+            for (var j = i + 1; j < s_ascending.Length; j++)
+            {
+                var earlier = s_ascending[i];
+                var later = s_ascending[j];
+
+                Assert.True(_comparer.Compare(earlier, later) < 0, $"Expected '{earlier}' < '{later}'.");
+                Assert.True(_comparer.Compare(later, earlier) > 0, $"Expected '{later}' > '{earlier}'.");
+            }
+        }
+    }
+
+    [Fact]
+    public void OrderBy_ShuffledCanonicalList_RestoresCanonicalOrder()
+    {
+        // Arrange - a deterministic shuffle of the canonical order.
+        var shuffled = s_ascending.OrderBy(x => x.Length).ThenByDescending(x => x, StringComparer.Ordinal).ToArray();
+
+        // Act
+        var ordered = shuffled.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert
+        Assert.Equal(s_ascending, ordered);
     }
 
     #endregion

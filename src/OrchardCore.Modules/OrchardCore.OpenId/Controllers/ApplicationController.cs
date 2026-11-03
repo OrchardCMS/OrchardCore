@@ -2,12 +2,15 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
@@ -58,19 +61,22 @@ public sealed class ApplicationController : Controller
     }
 
     [Admin("OpenId/Application", "OpenIdApplication")]
-    public async Task<ActionResult> Index(PagerParameters pagerParameters)
+    public async Task<ActionResult> Index(
+        PagerParameters pagerParameters,
+        string searchText)
     {
         if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-        var count = await _applicationManager.CountAsync();
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
+        // The manager can only page, not filter, so the search runs over the whole set before paging, the
+        // same way the placements list does. The number of applications a tenant registers is small.
         var applications = new List<OpenIdApplicationEntry>();
 
-        await foreach (var application in _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
+        await foreach (var application in _applicationManager.ListAsync(null, null))
         {
             applications.Add(new OpenIdApplicationEntry
             {
@@ -79,12 +85,40 @@ public sealed class ApplicationController : Controller
             });
         }
 
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            applications = applications
+                .Where(x => x.DisplayName != null && x.DisplayName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        var count = applications.Count;
+
+        // Maintain the search when generating page links.
+        RouteData routeData = null;
+
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            routeData = new RouteData();
+            routeData.Values[nameof(searchText)] = searchText;
+        }
+
         var model = new OpenIdApplicationsIndexViewModel
         {
-            Pager = await _shapeFactory.PagerAsync(pager, (int)count),
+            SearchText = searchText,
+            Pager = await _shapeFactory.PagerAsync(pager, count, routeData),
             Applications = applications.OrderBy(x => x.DisplayName)
             .ThenBy(x => x.Id)
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize)
             .ToArray(),
+        };
+
+        // The AdminList shape renders the applications with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<OpenIdApplicationEntry>
+        {
+            Source = model.Applications,
+            Pager = model.Pager,
         };
 
         return View(model);

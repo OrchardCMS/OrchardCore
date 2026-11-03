@@ -20,7 +20,7 @@ public class SmtpOptionsConfigurationTests
     [InlineData("/Outbound", "Outbound")]
     [InlineData("Outbound", "Outbound")]
     [InlineData("Email/Outbound", "Email\\Outbound")]
-    public void Configure_ResolvesPickupDirectoryLocationUnderDefaultTenantBase(string pickupDirectoryLocation, string expectedRelativePath)
+    public void Configure_Default_ResolvesPickupDirectoryLocationUnderDefaultTenantBase(string pickupDirectoryLocation, string expectedRelativePath)
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -46,7 +46,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void Configure_UsesConfiguredPickupDirectoryLocationBaseWithFluidTokens()
+    public void Configure_Default_UsesConfiguredPickupDirectoryLocationBaseWithFluidTokens()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -59,7 +59,7 @@ public class SmtpOptionsConfigurationTests
             pickupDirectoryLocation: "/Outbound",
             shellConfigurationValues: new Dictionary<string, string>
             {
-                ["OrchardCore_Email_Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Drops\{{ ShellSettings.Name }}",
+                ["Email:Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Drops\{{ ShellSettings.Name }}",
             });
 
         var options = new SmtpOptions();
@@ -72,13 +72,64 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Theory]
+    [InlineData("OrchardCore_Email_Smtp:PickupDirectoryLocationBase")]
+    [InlineData("OrchardCore_Email:PickupDirectoryLocationBase")]
+    public void Configure_LegacySection_UsesConfiguredPickupDirectoryLocationBase(string key)
+    {
+        var appDataPath = GetRootedPath("App", "App_Data");
+        var shellSettings = new ShellSettings
+        {
+            Name = "TenantA",
+        };
+        var sut = CreateSut(
+            appDataPath,
+            shellSettings,
+            pickupDirectoryLocation: "/",
+            shellConfigurationValues: new Dictionary<string, string>
+            {
+                [key] = @"{{ AppData }}\Legacy",
+            });
+
+        var options = new SmtpOptions();
+
+        sut.Configure(options);
+
+        Assert.Equal(Path.GetFullPath(Path.Combine(appDataPath, "Legacy")), options.PickupDirectoryLocationBase);
+    }
+
+    [Fact]
+    public void Configure_BothSections_SectionPickupDirectoryLocationBaseWins()
+    {
+        var appDataPath = GetRootedPath("App", "App_Data");
+        var shellSettings = new ShellSettings
+        {
+            Name = "TenantA",
+        };
+        var sut = CreateSut(
+            appDataPath,
+            shellSettings,
+            pickupDirectoryLocation: "/",
+            shellConfigurationValues: new Dictionary<string, string>
+            {
+                ["OrchardCore_Email_Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Legacy",
+                ["Email:Smtp:PickupDirectoryLocationBase"] = @"{{ AppData }}\Current",
+            });
+
+        var options = new SmtpOptions();
+
+        sut.Configure(options);
+
+        Assert.Equal(Path.GetFullPath(Path.Combine(appDataPath, "Current")), options.PickupDirectoryLocationBase);
+    }
+
+    [Theory]
     [InlineData("..\\..\\Shared")]
     [InlineData("~/Emails")]
     [InlineData(".\\Drafts")]
     [InlineData("Email\\..\\Shared")]
     [InlineData("C:\\Emails")]
     [InlineData("\\\\server\\share\\Emails")]
-    public void Configure_DisablesPickupDirectoryOutsideConfiguredBase(string pickupDirectoryLocation)
+    public void Configure_DisablesPickupDirectoryOutsideConfiguredBase_Succeeds(string pickupDirectoryLocation)
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -100,7 +151,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void PostConfigure_ResolvesDefaultPickupDirectoryLocationBase()
+    public void PostConfigure_Default_ResolvesDefaultPickupDirectoryLocationBase()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -130,7 +181,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void PostConfigure_DisablesDefaultPickupDirectoryLocationOutsideConfiguredBase()
+    public void PostConfigure_DisablesDefaultPickupDirectoryLocationOutsideConfiguredBase_Succeeds()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -160,7 +211,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void PostConfigure_UsesSlashRootForConfiguredPickupDirectoryLocation()
+    public void PostConfigure_Default_UsesSlashRootForConfiguredPickupDirectoryLocation()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -224,6 +275,7 @@ public class SmtpOptionsConfigurationTests
             }),
             shellSettings,
             new EphemeralDataProtectionProvider(),
+            new ServiceCollection().BuildServiceProvider(),
             NullLogger<SmtpOptionsConfiguration>.Instance);
     }
 

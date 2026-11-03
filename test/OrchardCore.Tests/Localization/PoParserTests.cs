@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Localization;
 public class PoParserTests
 {
     [Fact]
-    public async Task ParseAsync_ReturnsSimpleEntry()
+    public async Task ParseAsync_Default_ReturnsSimpleEntry()
     {
         // msgid "Unknown system error"
         // msgstr "Error desconegut del sistema"
@@ -17,7 +17,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_IgnoresEntryWithoutTranslation()
+    public async Task ParseAsync_Default_IgnoressEntryWithoutTranslation()
     {
         // "msgid "Unknown system error"
         // "msgstr ""
@@ -27,7 +27,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_IgnoresPoeditHeader()
+    public async Task ParseAsync_Default_IgnoressPoeditHeader()
     {
         // # Translation of kstars.po into Spanish.
         // # This file is distributed under the same license as the kdeedu package.
@@ -55,7 +55,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_SetsContext()
+    public async Task ParseAsync_Default_SetsContext()
     {
         // msgctxt "OrchardCore.Localization"
         // msgid "Unknown system error"
@@ -66,7 +66,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_IgnoresComments()
+    public async Task ParseAsync_Default_IgnoressComments()
     {
         // # translator-comments
         // #. extracted-comments
@@ -86,7 +86,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_OnlyTrimsLeadingAndTrailingQuotes()
+    public async Task ParseAsync_LyTrimsLeadingAndTrailingQuotes_Succeeds()
     {
         // msgid "\"{0}\""
         // msgstr "\"{0}\""
@@ -98,7 +98,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_HandleUnclosedQuote()
+    public async Task ParseAsync_HandleUnclosedQuote_Succeeds()
     {
         // msgctxt "
         // msgid "Foo \"{0}\""
@@ -110,7 +110,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_HandlesMultilineEntry()
+    public async Task ParseAsync_Default_HandlesMultilineEntry()
     {
         // msgid ""
         // "Here is an example of how one might continue a very long string\n"
@@ -126,7 +126,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_PreservesEscapedCharacters()
+    public async Task ParseAsync_Default_PreservesEscapedCharacters()
     {
         // msgid "Line:\t\"{0}\"\n"
         // msgstr "Line:\t\"{0}\"\n"
@@ -138,7 +138,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_ReadsPluralTranslations()
+    public async Task ParseAsync_Default_ReadsPluralTranslations()
     {
         // msgid "book"
         // msgid_plural "books"
@@ -155,7 +155,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_ReadsPluralAndMultilineText()
+    public async Task ParseAsync_Default_ReadsPluralAndMultilineText()
     {
         // msgid ""
         // "Here is an example of how one might continue a very long string\n"
@@ -178,7 +178,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_ReadsMultipleEntries()
+    public async Task ParseAsync_Default_ReadsMultipleEntries()
     {
         // #. "File {0} does not exist"
         // msgctxt "OrchardCore.FileSystems.Media.FileSystemStorageProvider"
@@ -202,7 +202,23 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_ReturnsSimpleEntry()
+    public async Task ParseAsync_Default_DoesNotReuseContextOfEntryWithoutTranslation()
+    {
+        // msgctxt "OrchardCore.Users.Controllers.AccountController"
+        // msgid "Invalid login attempt."
+        // msgstr ""
+
+        // msgid "Unknown system error"
+        // msgstr "Error desconegut del sistema"
+        var entries = await ParseTextAsync("EntryAfterUntranslatedEntryWithContext");
+
+        Assert.Single(entries);
+        Assert.Equal("Unknown system error", entries[0].Key);
+        Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
+    }
+
+    [Fact]
+    public void Parse_Default_ReturnsSimpleEntry()
     {
         // msgid "Unknown system error"
         // msgstr "Error desconegut del sistema"
@@ -213,7 +229,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_IgnoresEntryWithoutTranslation()
+    public void Parse_Default_IgnoressEntryWithoutTranslation()
     {
         // "msgid "Unknown system error"
         // "msgstr ""
@@ -223,7 +239,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_IgnoresPoeditHeader()
+    public void Parse_Default_IgnoressPoeditHeader()
     {
         // # Translation of kstars.po into Spanish.
         // # This file is distributed under the same license as the kdeedu package.
@@ -251,7 +267,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_SetsContext()
+    public void Parse_Default_SetsContext()
     {
         // msgctxt "OrchardCore.Localization"
         // msgid "Unknown system error"
@@ -262,7 +278,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_IgnoresComments()
+    public void Parse_Default_IgnoressComments()
     {
         // # translator-comments
         // #. extracted-comments
@@ -282,7 +298,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_OnlyTrimsLeadingAndTrailingQuotes()
+    public void Parse_LyTrimsLeadingAndTrailingQuotes_Succeeds()
     {
         // msgid "\"{0}\""
         // msgstr "\"{0}\""
@@ -294,7 +310,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_HandleUnclosedQuote()
+    public void Parse_HandleUnclosedQuote_Succeeds()
     {
         // msgctxt "
         // msgid "Foo \"{0}\""
@@ -306,7 +322,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_HandlesMultilineEntry()
+    public void Parse_Default_HandlesMultilineEntry()
     {
         // msgid ""
         // "Here is an example of how one might continue a very long string\n"
@@ -322,7 +338,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_PreservesEscapedCharacters()
+    public void Parse_Default_PreservesEscapedCharacters()
     {
         // msgid "Line:\t\"{0}\"\n"
         // msgstr "Line:\t\"{0}\"\n"
@@ -334,7 +350,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_ReadsPluralTranslations()
+    public void Parse_Default_ReadsPluralTranslations()
     {
         // msgid "book"
         // msgid_plural "books"
@@ -351,7 +367,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_ReadsPluralAndMultilineText()
+    public void Parse_Default_ReadsPluralAndMultilineText()
     {
         // msgid ""
         // "Here is an example of how one might continue a very long string\n"
@@ -374,7 +390,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_ReadsMultipleEntries()
+    public void Parse_Default_ReadsMultipleEntries()
     {
         // #. "File {0} does not exist"
         // msgctxt "OrchardCore.FileSystems.Media.FileSystemStorageProvider"
@@ -395,6 +411,102 @@ public class PoParserTests
 
         Assert.Equal("OrchardCore.FileSystems.Media.Directory|Directory {0} does not exist", entries[1].Key, ignoreCase: true);
         Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
+    }
+
+    [Fact]
+    public async Task ParseAsync_PluralFormsHeader_SetsPluralRuleOnEveryRecord()
+    {
+        var entries = await ParseTextAsync("PluralFormsHeader");
+
+        AssertCzechPluralRule(entries);
+    }
+
+    [Fact]
+    public void Parse_PluralFormsHeader_SetsPluralRuleOnEveryRecord()
+    {
+        var entries = ParseText("PluralFormsHeader");
+
+        AssertCzechPluralRule(entries);
+    }
+
+    [Fact]
+    public void Parse_PoeditHeader_SetsPluralRule()
+    {
+        var entries = ParseText("PoeditHeader");
+
+        var rule = Assert.Single(entries).PluralRule;
+        Assert.NotNull(rule);
+        Assert.Equal(1, rule(0));
+        Assert.Equal(0, rule(1));
+        Assert.Equal(1, rule(2));
+    }
+
+    [Theory]
+    [InlineData("SimpleEntry")]
+    [InlineData("InvalidPluralFormsHeader")]
+    public async Task Parse_WithoutValidPluralFormsHeader_DoesNotSetPluralRule(string resourceName)
+    {
+        var entries = ParseText(resourceName);
+        var asyncEntries = await ParseTextAsync(resourceName);
+
+        Assert.Null(Assert.Single(entries).PluralRule);
+        Assert.Null(Assert.Single(asyncEntries).PluralRule);
+    }
+
+    [Fact]
+    public void Parse_EmptyMessageIdAfterFirstEntry_IsNotReadAsHeader()
+    {
+        using var reader = new StringReader(
+            """
+            msgid "car"
+            msgstr "auto"
+
+            msgid ""
+            msgstr ""
+            "Plural-Forms: nplurals=1; plural=0;\n"
+
+            msgid "ball"
+            msgstr "míč"
+            """);
+
+        var entries = PoParser.Parse(reader).ToArray();
+
+        Assert.Equal(2, entries.Length);
+        Assert.All(entries, entry => Assert.Null(entry.PluralRule));
+    }
+
+    private static void AssertCzechPluralRule(CultureDictionaryRecord[] entries)
+    {
+        Assert.Equal(2, entries.Length);
+        Assert.Equal("orchardcore.localization|ball", entries[0].Key);
+        Assert.Equal(3, entries[0].Translations.Length);
+        Assert.Equal("car", entries[1].Key);
+
+        foreach (var entry in entries)
+        {
+            Assert.NotNull(entry.PluralRule);
+
+            for (var n = 0; n <= 100; n++)
+            {
+                Assert.Equal(PluralizationRule.Czech(n), entry.PluralRule(n));
+            }
+        }
+    }
+
+    [Fact]
+    public void Parse_Default_DoesNotReuseContextOfEntryWithoutTranslation()
+    {
+        // msgctxt "OrchardCore.Users.Controllers.AccountController"
+        // msgid "Invalid login attempt."
+        // msgstr ""
+
+        // msgid "Unknown system error"
+        // msgstr "Error desconegut del sistema"
+        var entries = ParseText("EntryAfterUntranslatedEntryWithContext");
+
+        Assert.Single(entries);
+        Assert.Equal("Unknown system error", entries[0].Key);
+        Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
     }
 
     private static async Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)

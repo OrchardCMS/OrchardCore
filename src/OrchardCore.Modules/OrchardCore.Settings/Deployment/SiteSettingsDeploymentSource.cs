@@ -43,6 +43,14 @@ public sealed class SiteSettingsDeploymentSource
                     data.Add(nameof(ISite.PageSize), site.PageSize);
                     break;
 
+                case "AllowPageSizeSelection":
+                    data.Add(nameof(ISite.AllowPageSizeSelection), site.AllowPageSizeSelection);
+                    break;
+
+                case "PageSizeOptions":
+                    data.Add(nameof(ISite.PageSizeOptions), site.PageSizeOptions is null ? null : JArray.FromObject(site.PageSizeOptions));
+                    break;
+
                 case "ResourceDebugMode":
                     data.Add(nameof(ISite.ResourceDebugMode), JsonValue.Create(site.ResourceDebugMode));
                     break;

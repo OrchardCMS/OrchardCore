@@ -1,4 +1,7 @@
 using System.Security.Claims;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
+using OrchardCore.Security;
 
 namespace OrchardCore.Security.Permissions;
 
@@ -36,7 +39,22 @@ public class Permission
     /// <remarks>
     /// The permission name must be unique across the system.
     /// </remarks>
-    public Permission(string name, string description, bool isSecurityCritical = false) : this(name)
+    [Obsolete($"Use the overload with {nameof(LocalizationSource)} instead.")]
+    public Permission(string name, string description, bool isSecurityCritical = false)
+        : this(name, description is null ? null : LocalizationSource.Create(description), isSecurityCritical)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Permission"/> class with a localization source and security flag.
+    /// </summary>
+    /// <param name="name">The name of the permission.</param>
+    /// <param name="description">The description of the permission. Use <c>LocalizationSource.Create(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
+    /// <param name="isSecurityCritical">Indicates whether the permission is security critical.</param>
+    /// <remarks>
+    /// The permission name must be unique across the system.
+    /// </remarks>
+    public Permission(string name, LocalizationSource description, bool isSecurityCritical = false) : this(name)
     {
         Description = description;
         IsSecurityCritical = isSecurityCritical;
@@ -52,7 +70,23 @@ public class Permission
     /// <remarks>
     /// The permission name must be unique across the system.
     /// </remarks>
+    [Obsolete($"Use the overload with {nameof(LocalizationSource)} instead.")]
     public Permission(string name, string description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
+    {
+        ImpliedBy = impliedBy;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Permission"/> class with a localization source, implying permissions, and security flag.
+    /// </summary>
+    /// <param name="name">The name of the permission.</param>
+    /// <param name="description">The description of the permission. Use <c>LocalizationSource.Create(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
+    /// <param name="impliedBy">The permissions implying this permission.</param>
+    /// <param name="isSecurityCritical">Indicates whether the permission is security critical.</param>
+    /// <remarks>
+    /// The permission name must be unique across the system.
+    /// </remarks>
+    public Permission(string name, LocalizationSource description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
     {
         ImpliedBy = impliedBy;
     }
@@ -68,7 +102,12 @@ public class Permission
     /// <summary>
     /// Gets or sets the description of the permission.
     /// </summary>
-    public string Description { get; set; }
+    /// <remarks>
+    /// The description is not translated. When it has a source type, translate it at display time with
+    /// <see cref="StringLocalizerFactoryExtensions.Localize(IStringLocalizerFactory, LocalizationSource, object[])"/>.
+    /// Descriptions without a source type can be translated with Data Localization.
+    /// </remarks>
+    public LocalizationSource Description { get; set; }
 
     /// <summary>
     /// Gets or sets the category of the permission.
@@ -84,6 +123,15 @@ public class Permission
     /// Gets a value indicating whether the permission is security critical.
     /// </summary>
     public bool IsSecurityCritical { get; }
+
+    private PermissionRequirement _requirement;
+
+    /// <summary>
+    /// Gets the authorization requirement of this permission. The same instance is reused for all the authorization
+    /// checks of the permission, which are made for each displayed content item, so it is not allocated and hashed
+    /// by the authorization handler context on each of them.
+    /// </summary>
+    internal PermissionRequirement Requirement => _requirement ??= new PermissionRequirement(this);
 
     /// <summary>
     /// Converts a <see cref="Permission"/> to a <see cref="Claim"/>.

@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Setup.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -15,7 +16,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tenants.Workflows.Activities;
 
-public class SetupTenantTask : TenantTask
+public class SetupTenantTask : TenantTask, IActivityDescription
 {
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -32,8 +33,9 @@ public class SetupTenantTask : TenantTask
         ISetupService setupService,
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<SetupTenantTask> localizer)
-        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
+        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizerFactory, localizer)
     {
         SetupService = setupService;
         _clock = clock;
@@ -46,9 +48,9 @@ public class SetupTenantTask : TenantTask
 
     public override string Name => nameof(SetupTenantTask);
 
-    public override LocalizedString Category => S["Tenant"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SetupTenantTask>("Setup Tenant Task");
 
-    public override LocalizedString DisplayText => S["Setup Tenant Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public WorkflowExpression<string> SiteName
     {
@@ -105,37 +107,35 @@ public class SetupTenantTask : TenantTask
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (!ShellScope.Context.Settings.IsDefaultShell())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
         if (string.IsNullOrWhiteSpace(tenantName))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (shellSettings.IsRunning())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!shellSettings.IsUninitialized())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var siteName = (await ExpressionEvaluator.EvaluateAsync(SiteName, workflowContext, null))?.Trim();
@@ -144,12 +144,12 @@ public class SetupTenantTask : TenantTask
 
         if (string.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (string.IsNullOrEmpty(adminEmail) || !_emailAddressValidator.Validate(adminEmail))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var adminPassword = (await ExpressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null))?.Trim();
@@ -220,9 +220,9 @@ public class SetupTenantTask : TenantTask
                 updater.ModelState.AddModelError(error.Key, error.Value);
             }
 
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

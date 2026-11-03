@@ -14,7 +14,7 @@ By default, the `ocat-*` classes render a stacked (vertical) form layout equival
 |-----------|---------|---------------|
 | `ocat-wrapper` | Outer wrapper for each form field group | `margin-bottom: 1rem` |
 | `ocat-label` | Label element styling | Same as Bootstrap `.form-label` |
-| `ocat-label-required` | Additional class for required field labels | Appends red `*` indicator |
+| `ocat-label-required` | Additional class for required field labels | Appends a `*` indicator in the `--bs-danger` color, separated from the text by a `0.25rem` inline-start padding so it reads well in LTR and RTL |
 | `ocat-end` | Container for the input and hint content | _(no additional styles)_ |
 | `ocat-end-offset` | Container for input content when no label exists (e.g., standalone checkboxes) | _(no additional styles)_ |
 | `ocat-start` | Leading element container (for push/alignment) | _(no additional styles)_ |
@@ -75,6 +75,33 @@ When building custom admin editor views, use the `ocat-*` classes so your views 
     </div>
 </div>
 ```
+
+### Customizing Content Field Hints
+
+Content field editors render their configured hint with the `Hint_Admin` shape. The default
+`Hint.Admin.cshtml` template displays the hint as text:
+
+```cshtml
+<span class="hint dashed">@Model.Hint</span>
+```
+
+To customize all content field hints, add a `Views/Hint.Admin.cshtml` template to your custom
+admin theme. For example, the following template renders an accessible button with a Bootstrap
+tooltip:
+
+```cshtml
+<button type="button"
+        class="btn btn-link p-0 align-baseline"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="@Model.Hint"
+        aria-label="@Model.Hint">
+    <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+</button>
+```
+
+The shape exposes the configured hint through `Model.Hint`. The default admin theme initializes
+Bootstrap tooltips for elements with the `data-bs-toggle="tooltip"` attribute.
 
 ### Creating a Horizontal Form Layout
 

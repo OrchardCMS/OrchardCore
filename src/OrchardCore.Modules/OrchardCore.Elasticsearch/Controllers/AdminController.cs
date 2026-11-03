@@ -13,11 +13,11 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Indexing;
-using OrchardCore.Liquid;
 using OrchardCore.Elasticsearch.Core.Models;
 using OrchardCore.Elasticsearch.Core.Services;
 using OrchardCore.Elasticsearch.ViewModels;
+using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.Elasticsearch;
 
@@ -65,6 +65,11 @@ public sealed class AdminController : Controller
     [Admin("Elasticsearch/indexinfo/{id}", "Elasticsearch.IndexInfo")]
     public async Task<IActionResult> IndexInfo(string id)
     {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
+        {
+            return Forbid();
+        }
+
         var index = await _indexProfileStore.FindByIdAsync(id);
 
         if (index is null)
@@ -86,6 +91,11 @@ public sealed class AdminController : Controller
     [Admin("Elasticsearch/query/{indexName}", "Elasticsearch.Query")]
     public async Task<IActionResult> QueryIndex(string indexName, string query = null, string parameters = null)
     {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
+        {
+            return Forbid();
+        }
+
         var index = await _indexProfileStore.FindByNameAsync(indexName);
 
         if (index is null)
