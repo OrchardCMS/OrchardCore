@@ -18,10 +18,17 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     [Theory]
     [InlineData("Elastic.Transport")]
     [InlineData("MailKit.Net.SmtpClient")]
+    [InlineData("Npgsql")]
     [InlineData("Azure.Storage.Blobs.BlobContainerClient")]
-    public void AddOpenTelemetry_Default_SamplesClientLibraryTraces(string sourceName)
+    public void AddOpenTelemetry_ConfiguredSources_SamplesTheirTraces(string sourceName)
     {
-        var builder = CreateBuilder([]);
+        var builder = CreateBuilder(new()
+        {
+            ["OrchardCore:OpenTelemetry:Tracing:Sources:0"] = "Elastic.Transport",
+            ["OrchardCore:OpenTelemetry:Tracing:Sources:1"] = "MailKit.Net.SmtpClient",
+            ["OrchardCore:OpenTelemetry:Tracing:Sources:2"] = "Npgsql",
+            ["OrchardCore:OpenTelemetry:Tracing:Sources:3"] = "Azure.*",
+        });
 
         new OrchardCoreBuilder(builder.Services).AddOpenTelemetry();
 
@@ -32,7 +39,6 @@ public class OrchardCoreOpenTelemetryExtensionsTests
         using var activity = source.StartActivity("Operation");
 
         Assert.True(activity?.Recorded);
-        Assert.True(AppContext.TryGetSwitch("Azure.Experimental.EnableActivitySource", out var enabled) && enabled);
     }
 
     [Theory]
@@ -63,13 +69,11 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     [Theory]
     [InlineData("Elastic.Transport")]
     [InlineData("MailKit.Net.SmtpClient")]
+    [InlineData("Npgsql")]
     [InlineData("Azure.Storage.Blobs.BlobContainerClient")]
-    public void AddOpenTelemetry_ClientLibrariesExcluded_DoesNotSampleTheirTraces(string sourceName)
+    public void AddOpenTelemetry_Default_DoesNotCollectOtherLibraries(string sourceName)
     {
-        var builder = CreateBuilder(new()
-        {
-            ["OrchardCore:OpenTelemetry:Tracing:IncludeClientLibraries"] = "false",
-        });
+        var builder = CreateBuilder([]);
 
         new OrchardCoreBuilder(builder.Services).AddOpenTelemetry();
 
@@ -80,6 +84,7 @@ public class OrchardCoreOpenTelemetryExtensionsTests
         using var activity = source.StartActivity("Operation");
 
         Assert.Null(activity);
+        Assert.False(AppContext.TryGetSwitch("Azure.Experimental.EnableActivitySource", out _));
     }
 
     [Theory]

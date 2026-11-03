@@ -18,23 +18,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class OpenTelemetryOrchardCoreBuilderExtensions
 {
-    // Database clients emitting their own traces and metrics, used depending on the database of each tenant.
-    private static readonly string[] s_databaseSources = ["Npgsql", "MySqlConnector"];
-
-    // Client libraries used by Orchard Core modules that trace their own operations: the Elasticsearch client, MailKit
-    // for SMTP, and the Azure SDK clients (Blob Storage, Key Vault, Communication Services, AI Search).
-    private static readonly string[] s_clientLibrarySources = ["Elastic.Transport", "MailKit.Net.SmtpClient", "Azure.*"];
-
-    // The switch enabling the activity sources of the Azure SDK clients, which are experimental and off by default.
-    private const string AzureActivitySourceSwitch = "Azure.Experimental.EnableActivitySource";
-
     // The meter built in .NET that the ASP.NET Core and HttpClient instrumentations don't already collect.
     private static readonly string[] s_runtimeMeters = ["System.Runtime"];
 
     /// <summary>
     /// Configures OpenTelemetry to collect the traces, metrics and logs of the application, from Orchard Core, ASP.NET Core,
-    /// HttpClient, the .NET runtime and the database clients, tagged with their tenant and with resource attributes
-    /// identifying this instance of the application. The options are read from the 'OrchardCore:OpenTelemetry' section,
+    /// HttpClient and the .NET runtime, tagged with their tenant and with resource attributes identifying this
+    /// instance of the application. The options are read from the 'OrchardCore:OpenTelemetry' section, whose
+    /// 'Tracing:Sources' and 'Metrics:Meters' settings collect the telemetry other libraries emit themselves,
     /// and the telemetry is exported over OTLP when an endpoint is configured in 'OrchardCore:OpenTelemetry:Otlp:Endpoint'
     /// or in the standard 'OTEL_EXPORTER_OTLP_ENDPOINT' and 'OTEL_EXPORTER_OTLP_{SIGNAL}_ENDPOINT' configuration values.
     /// </summary>
@@ -67,8 +58,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         openTelemetry.WithTracing(tracing => tracing
             .AddOrchardCoreInstrumentation()
             .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddSource(s_databaseSources));
+            .AddHttpClientInstrumentation());
 
         services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracing) =>
         {
@@ -79,20 +69,13 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
             {
                 tracing.SetSampler(sampler);
             }
-
-            if (options.Enabled && options.Tracing.Enabled && options.Tracing.IncludeClientLibraries)
-            {
-                tracing.AddSource(s_clientLibrarySources);
-                EnableAzureActivitySources();
-            }
         });
 
         openTelemetry.WithMetrics(metrics => metrics
             .AddOrchardCoreInstrumentation()
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
-            .AddMeter(s_runtimeMeters)
-            .AddMeter(s_databaseSources));
+            .AddMeter(s_runtimeMeters));
 
         services.ConfigureOpenTelemetryMeterProvider((serviceProvider, metrics) =>
         {
@@ -199,19 +182,6 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
     private static OrchardCoreOpenTelemetryOptions GetOptions(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredService<IOptions<OrchardCoreOpenTelemetryOptions>>().Value;
-    }
-
-    // Enables the activity sources of the Azure SDK clients, unless the application already decided with the
-    // 'Azure.Experimental.EnableActivitySource' switch or the 'AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE' variable.
-    private static void EnableAzureActivitySources()
-    {
-        if (AppContext.TryGetSwitch(AzureActivitySourceSwitch, out _) ||
-            System.Environment.GetEnvironmentVariable("AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE") is not null)
-        {
-            return;
-        }
-
-        AppContext.SetSwitch(AzureActivitySourceSwitch, true);
     }
 
     // Without a sampler, the SDK uses the standard 'OTEL_TRACES_SAMPLER' value, and otherwise samples all traces.

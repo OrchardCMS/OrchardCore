@@ -99,11 +99,10 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `ServiceInstanceId` | The `service.instance.id` resource attribute identifying this instance of the application. Defaults to the machine name followed by the process id, which is unique for each running instance. |
 | `Tracing:Enabled` | Whether traces are collected. Defaults to `true`. |
 | `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, the standard `OTEL_TRACES_SAMPLER` value is used, and otherwise all traces are sampled. |
-| `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
-| `Tracing:IncludeClientLibraries` | Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to `true`. See [Client libraries](#client-libraries). |
+| `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. See [Other libraries](#other-libraries). |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
-| `Metrics:Meters` | The names of additional `Meter` to collect metrics from. |
+| `Metrics:Meters` | The names of additional `Meter` to collect metrics from. See [Other libraries](#other-libraries). |
 | `Logging:Enabled` | Whether logs are collected. Defaults to `true`. The log levels of the `Logging` section apply. |
 | `Otlp:Endpoint` | The endpoint of the OTLP receiver for all signals, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. An endpoint that isn't an absolute HTTP or HTTPS URI stops the application from starting. |
 | `Otlp:Protocol` | `Grpc` or `HttpProtobuf`. Defaults to the `OTEL_EXPORTER_OTLP_PROTOCOL` value, and otherwise to `Grpc`. |
@@ -150,7 +149,7 @@ The spans of Orchard Core come from the `OrchardCore` activity source:
 
 A failed operation has the `Error` status, the `error.type` attribute and an `exception` event. A background task run is the root of its own trace.
 
-The spans of ASP.NET Core (one for each HTTP request, also tagged with the `orchardcore.tenant.name` of the tenant that served it) and of HttpClient (one for each outgoing HTTP request) are collected too, as well as the ones of the client libraries listed below.
+The spans of ASP.NET Core (one for each HTTP request, also tagged with the `orchardcore.tenant.name` of the tenant that served it) and of HttpClient (one for each outgoing HTTP request) are collected too.
 
 Every span started in the scope of a tenant, including the spans of other libraries, is tagged with `orchardcore.tenant.name`.
 
@@ -182,18 +181,38 @@ The metrics built in .NET are collected too, from these meters:
 | `System.Net.Http`, `System.Net.NameResolution` | `http.client.request.duration`, connections and DNS lookups. |
 | `System.Runtime` | The health of each instance: `dotnet.gc.*`, `dotnet.process.cpu.time`, `dotnet.process.memory.working_set`, `dotnet.thread_pool.*`, `dotnet.exceptions`... |
 
-### Client libraries
+### Other libraries
 
-OpenTelemetry only collects the activity sources and meters it's told about: the telemetry a library emits itself is collected once its source or meter is added. These ones, used by Orchard Core modules, are collected by default:
+Each library is responsible for its own telemetry, and Orchard Core doesn't add any for it. OpenTelemetry only collects the activity sources and meters it's told about, so to collect what a library emits, add its names to the `Tracing:Sources` and `Metrics:Meters` settings. Names ending with `*` match every source or meter starting with that text:
 
-| Library | Used by | Telemetry |
-| --- | --- | --- |
-| Elasticsearch client | Elasticsearch | `Elastic.Transport` spans. |
-| MailKit | SMTP email | `MailKit.Net.SmtpClient` spans. |
-| Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` spans. Their activity sources are experimental, so Orchard Core enables them with the `Azure.Experimental.EnableActivitySource` switch, unless the application already sets it or the `AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE` variable. |
-| Npgsql, MySqlConnector | PostgreSQL and MySQL databases | Spans of the database commands, and connection pool metrics. |
+```json
+{
+  "OrchardCore": {
+    "OpenTelemetry": {
+      "Tracing": {
+        "Sources": [ "Npgsql", "Elastic.Transport", "MailKit.Net.SmtpClient" ]
+      },
+      "Metrics": {
+        "Meters": [ "Npgsql" ]
+      }
+    }
+  }
+}
+```
 
-`Tracing:IncludeClientLibraries` turns the Elasticsearch, MailKit and Azure SDK spans off. Other libraries are added with the `Tracing:Sources` and `Metrics:Meters` settings, and the libraries that don't emit telemetry themselves need an instrumentation package. For instance, the SQL Server client is traced by the `OpenTelemetry.Instrumentation.SqlClient` package, added with the callback of `AddOpenTelemetry()`. StackExchange.Redis, used by the Redis features, emits no telemetry itself either, and its `OpenTelemetry.Instrumentation.StackExchangeRedis` package only traces the connections registered with it, which the ones opened by the Redis features aren't.
+These libraries, used by Orchard Core modules, emit their own telemetry:
+
+| Library | Used by | `Tracing:Sources` | `Metrics:Meters` |
+| --- | --- | --- | --- |
+| Npgsql | PostgreSQL databases | `Npgsql` | `Npgsql` |
+| MySqlConnector | MySQL databases | `MySqlConnector` | `MySqlConnector` |
+| Elasticsearch client | Elasticsearch | `Elastic.Transport` | |
+| MailKit | SMTP email | `MailKit.Net.SmtpClient` | |
+| Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` | |
+
+The activity sources of the Azure SDK are experimental: they also require the `AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE` environment variable set to `true`, or the `Azure.Experimental.EnableActivitySource` application switch.
+
+Names of libraries that emit nothing are ignored. A library that doesn't emit telemetry itself needs an instrumentation package from its own maintainers or from OpenTelemetry, added with the callback of `AddOpenTelemetry()`, e.g. `OpenTelemetry.Instrumentation.SqlClient` for the SQL Server client.
 
 ### Logs
 
