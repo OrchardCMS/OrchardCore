@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AzureAI.Core;
 using OrchardCore.AzureAI.Deployment;
 using OrchardCore.AzureAI.Drivers;
+using OrchardCore.AzureAI.Endpoints.Management;
 using OrchardCore.AzureAI.Flows;
 using OrchardCore.AzureAI.Handlers;
 using OrchardCore.AzureAI.Recipes;
@@ -18,6 +21,7 @@ using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Search;
 using OrchardCore.Search.AzureAI.Migrations;
 using OrchardCore.Secrets;
@@ -85,6 +89,8 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IRemoteManagementCapabilityProvider, AzureAISearchIndexCapabilityProvider>();
+        services.Configure<IndexLifecycleOptions>(options => options.RemoteProviders.Add(AzureAISearchConstants.ProviderName));
         services.AddDisplayDriver<IndexProfile, AzureAISearchIndexProfileDisplayDriver>();
 
         services
@@ -95,6 +101,9 @@ public sealed class ContentsStartup : StartupBase
                 o.Description = S["Create an Azure AI Search index based on site contents."];
             });
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddAzureAISearchIndexDefinitionEndpoints();
 }
 
 [RequireFeatures("OrchardCore.Recipes.Core")]
