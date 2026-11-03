@@ -15,7 +15,9 @@ public static class QueryManagementEndpoints
 {
     public static IEndpointRouteBuilder AddQueryManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet("api/queries", ListAsync)
+        var routes = builder.MapManagementGroup(QueryManagementEndpointConventions.TagName);
+
+        routes.MapGet("api/queries", ListAsync)
             .WithName("ApiListQueries")
             .WithSummary("Lists named queries.")
             .WithDescription("Returns a paged list of stored named queries, optionally filtered by search text or source.")
@@ -34,7 +36,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet("api/queries/sources", ListSourcesAsync)
+        routes.MapGet("api/queries/sources", ListSourcesAsync)
             .WithName("ApiListQuerySources")
             .WithSummary("Lists available query sources.")
             .WithDescription("Returns the query sources that are currently enabled, along with optional source-specific properties schema metadata.")
@@ -52,7 +54,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPost("api/queries", CreateAsync)
+        routes.MapPost("api/queries", CreateAsync)
             .WithName("ApiCreateQuery")
             .WithSummary("Creates a named query.")
             .WithDescription("Creates and stores a named query definition using the requested source and properties bag.")
@@ -68,7 +70,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPost("api/queries/validate", ValidateAsync)
+        routes.MapPost("api/queries/validate", ValidateAsync)
             .WithName("ApiValidateQuery")
             .WithSummary("Validates a named query definition.")
             .WithDescription("Validates a named query definition without persisting it, including any source-specific checks contributed by the active query source.")
@@ -82,7 +84,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet("api/queries/named/{name}", GetAsync)
+        routes.MapGet("api/queries/named/{name}", GetAsync)
             .WithName("ApiGetQuery")
             .WithSummary("Shows one named query.")
             .WithDescription("Returns a stored named query definition including its source, properties bag, and optional result and parameter schema metadata.")
@@ -99,7 +101,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPut("api/queries/named/{name}", UpdateAsync)
+        routes.MapPut("api/queries/named/{name}", UpdateAsync)
             .WithName("ApiUpdateQuery")
             .WithSummary("Updates a named query.")
             .WithDescription("Updates a stored named query definition. The request body name must match the route name.")
@@ -119,7 +121,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementDelete("api/queries/named/{name}", DeleteAsync)
+        routes.MapDelete("api/queries/named/{name}", DeleteAsync)
             .WithName("ApiDeleteQuery")
             .WithSummary("Deletes a named query.")
             .WithDescription("Deletes a stored named query definition.")
@@ -137,7 +139,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPost("api/queries/named/{name}/execute", ExecuteAsync)
+        routes.MapPost("api/queries/named/{name}/execute", ExecuteAsync)
             .WithName("ApiExecuteQuery")
             .WithSummary("Executes a named query.")
             .WithDescription("Executes a stored named query using the supplied JSON parameters object and returns the raw query results.")

@@ -17,7 +17,9 @@ internal static class FeatureManagementEndpoints
 
     public static IEndpointRouteBuilder AddFeatureManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet(RoutePrefix, ListAsync)
+        var routes = builder.MapManagementGroup(FeatureManagementApiEndpointConventions.TagName);
+
+        routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListFeatures")
             .WithSummary("Lists features.")
             .WithDescription("Returns available non-theme features with their enablement state and dependency information.")
@@ -37,7 +39,7 @@ internal static class FeatureManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet(RoutePrefix + "/{featureId}", GetAsync)
+        routes.MapGet(RoutePrefix + "/{featureId}", GetAsync)
             .WithName("ApiGetFeature")
             .WithSummary("Gets a feature.")
             .WithDescription("Returns a single feature with dependency and state details.")
@@ -51,7 +53,7 @@ internal static class FeatureManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix + "/{featureId}:enable", EnableAsync)
+        routes.MapPost(RoutePrefix + "/{featureId}:enable", EnableAsync)
             .WithName("ApiEnableFeature")
             .WithSummary("Enables a feature.")
             .WithDescription("Enables a feature by using the existing shell feature manager dependency resolution.")
@@ -66,7 +68,7 @@ internal static class FeatureManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix + "/{featureId}:disable", DisableAsync)
+        routes.MapPost(RoutePrefix + "/{featureId}:disable", DisableAsync)
             .WithName("ApiDisableFeature")
             .WithSummary("Disables a feature.")
             .WithDescription("Disables a feature by using the existing feature manager dependency checks.")
@@ -278,22 +280,4 @@ internal static class FeatureManagementApiEndpointConventions
 {
     public const string CapabilityName = "features";
     public const string TagName = "Features";
-
-    public static RouteHandlerBuilder MapManagementGet(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapGet(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPost(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPost(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    private static Action<AuthorizationPolicyBuilder> CreateBearerPolicy()
-        => static policy => policy
-            .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-            .AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement))
-            .RequireAuthenticatedUser();
 }

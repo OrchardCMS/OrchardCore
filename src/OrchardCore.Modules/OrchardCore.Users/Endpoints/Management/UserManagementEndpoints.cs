@@ -26,7 +26,9 @@ internal static class UserManagementEndpoints
 
     public static IEndpointRouteBuilder AddUserManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet(RoutePrefix, ListAsync)
+        var routes = builder.MapManagementGroup(UserManagementApiEndpointConventions.TagName);
+
+        routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListUsers")
             .WithSummary("Lists users.")
             .WithDescription("Returns users the caller can list, including role membership and account state without exposing secrets.")
@@ -46,7 +48,7 @@ internal static class UserManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet(RoutePrefix + "/{userId}", GetAsync)
+        routes.MapGet(RoutePrefix + "/{userId}", GetAsync)
             .WithName("ApiGetUser")
             .WithSummary("Gets a user.")
             .WithDescription("Returns a single user with role membership and account state without exposing secrets.")
@@ -60,7 +62,7 @@ internal static class UserManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix, CreateAsync)
+        routes.MapPost(RoutePrefix, CreateAsync)
             .WithName("ApiCreateUser")
             .WithSummary("Creates a user.")
             .WithDescription("Creates a user by using the existing user service and authorized role assignment rules.")
@@ -79,7 +81,7 @@ internal static class UserManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPut(RoutePrefix + "/{userId}", UpdateAsync)
+        routes.MapPut(RoutePrefix + "/{userId}", UpdateAsync)
             .WithName("ApiUpdateUser")
             .WithSummary("Updates a user.")
             .WithDescription("Updates a user by using the existing identity and user services, including authorized role membership changes.")
@@ -98,7 +100,7 @@ internal static class UserManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix + "/{userId}:disable", DisableAsync)
+        routes.MapPost(RoutePrefix + "/{userId}:disable", DisableAsync)
             .WithName("ApiDisableUser")
             .WithSummary("Disables a user.")
             .WithDescription("Disables a user account by using the existing user service safeguards.")
@@ -114,7 +116,7 @@ internal static class UserManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementDelete(RoutePrefix + "/{userId}", DeleteAsync)
+        routes.MapDelete(RoutePrefix + "/{userId}", DeleteAsync)
             .WithName("ApiDeleteUser")
             .WithSummary("Deletes a user.")
             .WithDescription("Deletes a user by using the existing identity manager and resource-based permissions.")
@@ -684,34 +686,4 @@ internal static class UserManagementApiEndpointConventions
 {
     public const string CapabilityName = "users";
     public const string TagName = "Users";
-
-    public static RouteHandlerBuilder MapManagementGet(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapGet(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPost(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPost(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPut(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPut(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementDelete(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapDelete(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    private static Action<AuthorizationPolicyBuilder> CreateBearerPolicy()
-        => static policy => policy
-            .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-            .AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement))
-            .RequireAuthenticatedUser();
 }

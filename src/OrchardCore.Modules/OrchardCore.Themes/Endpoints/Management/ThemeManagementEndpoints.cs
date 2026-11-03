@@ -24,7 +24,9 @@ internal static class ThemeManagementEndpoints
 
     public static IEndpointRouteBuilder AddThemeManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet(RoutePrefix, ListAsync)
+        var routes = builder.MapManagementGroup(ThemeManagementEndpointConventions.TagName);
+
+        routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListThemes")
             .WithSummary("Lists themes.")
             .WithDescription("Returns available site and admin themes with their enablement and current-selection state.")
@@ -45,7 +47,7 @@ internal static class ThemeManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPost(RoutePrefix + "/{themeId}:enable", EnableAsync)
+        routes.MapPost(RoutePrefix + "/{themeId}:enable", EnableAsync)
             .WithName("ApiEnableTheme")
             .WithSummary("Enables a theme.")
             .WithDescription("Enables a theme and its base themes. Repeating the operation for an enabled theme returns its current state.")
@@ -60,7 +62,7 @@ internal static class ThemeManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix + "/{themeId}:set-current", SetCurrentAsync)
+        routes.MapPost(RoutePrefix + "/{themeId}:set-current", SetCurrentAsync)
             .WithName("ApiSetCurrentTheme")
             .WithSummary("Sets the current theme.")
             .WithDescription("Selects a site or admin theme according to its manifest type and enables it when necessary.")
@@ -351,22 +353,4 @@ internal static class ThemeManagementEndpointConventions
 {
     public const string CapabilityName = "themes";
     public const string TagName = "Themes";
-
-    public static RouteHandlerBuilder MapManagementGet(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapGet(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPost(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPost(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    private static Action<AuthorizationPolicyBuilder> CreateBearerPolicy()
-        => static policy => policy
-            .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-            .AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement))
-            .RequireAuthenticatedUser();
 }

@@ -36,7 +36,9 @@ internal static partial class TenantManagementEndpoints
 
     public static IEndpointRouteBuilder AddTenantManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet(RoutePrefix, ListAsync)
+        var routes = builder.MapManagementGroup(TenantManagementApiEndpointConventions.TagName);
+
+        routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListTenants")
             .WithSummary("Lists tenants.")
             .WithDescription("Returns tenants that can be managed from the Default tenant, including exact tenant URLs when they can be derived safely.")
@@ -56,7 +58,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet(RoutePrefix + "/{tenantName}", GetAsync)
+        routes.MapGet(RoutePrefix + "/{tenantName}", GetAsync)
             .WithName("ApiGetTenant")
             .WithSummary("Gets a tenant.")
             .WithDescription("Returns a single tenant with redacted connection details and exact URLs when they can be derived safely.")
@@ -70,7 +72,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix, CreateAsync)
+        routes.MapPost(RoutePrefix, CreateAsync)
             .WithName("ApiCreateTenantManagement")
             .WithSummary("Creates a tenant.")
             .WithDescription("Creates a tenant shell settings document and returns the created tenant with any setup URL that can be derived safely.")
@@ -87,7 +89,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPost(RoutePrefix + "/{tenantName}:install", InstallAsync)
+        routes.MapPost(RoutePrefix + "/{tenantName}:install", InstallAsync)
             .WithName("ApiInstallTenantManagement")
             .WithSummary("Creates and sets up a tenant.")
             .WithDescription("Creates a new tenant, executes its setup recipe, and creates its administrator. Existing names are rejected. If setup fails, the created tenant is preserved for diagnosis and a separate setup retry.")
@@ -107,7 +109,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .ProducesValidationProblem();
 
-        builder.MapManagementPost(RoutePrefix + "/{tenantName}:setup", SetupAsync)
+        routes.MapPost(RoutePrefix + "/{tenantName}:setup", SetupAsync)
             .WithName("ApiSetupTenantManagement")
             .WithSummary("Sets up a tenant.")
             .WithDescription("Initializes a tenant, creates its administrator account, and executes its setup recipe.")
@@ -127,7 +129,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .ProducesValidationProblem();
 
-        builder.MapManagementPut(RoutePrefix + "/{tenantName}", UpdateAsync)
+        routes.MapPut(RoutePrefix + "/{tenantName}", UpdateAsync)
             .WithName("ApiUpdateTenantManagement")
             .WithSummary("Updates a tenant.")
             .WithDescription("Updates mutable tenant settings. Database settings can only be changed while a tenant is uninitialized.")
@@ -145,7 +147,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementDelete(RoutePrefix + "/{tenantName}", DeleteAsync)
+        routes.MapDelete(RoutePrefix + "/{tenantName}", DeleteAsync)
             .WithName("ApiDeleteTenant")
             .WithSummary("Deletes a tenant.")
             .WithDescription("Deletes a disabled or uninitialized tenant when tenant removal is enabled.")
@@ -161,7 +163,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPost(RoutePrefix + "/{tenantName}:start", StartAsync)
+        routes.MapPost(RoutePrefix + "/{tenantName}:start", StartAsync)
             .WithName("ApiStartTenant")
             .WithSummary("Starts a tenant.")
             .WithDescription("Transitions a disabled tenant back to the running state.")
@@ -176,7 +178,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix + "/{tenantName}:stop", StopAsync)
+        routes.MapPost(RoutePrefix + "/{tenantName}:stop", StopAsync)
             .WithName("ApiStopTenant")
             .WithSummary("Stops a tenant.")
             .WithDescription("Transitions a running tenant to the disabled state.")
@@ -192,7 +194,7 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix + "/{tenantName}:enable-remote-management", EnableRemoteManagementAsync)
+        routes.MapPost(RoutePrefix + "/{tenantName}:enable-remote-management", EnableRemoteManagementAsync)
             .WithName("ApiEnableTenantRemoteManagement")
             .WithSummary("Enables remote management for a tenant.")
             .WithDescription("Enables and configures the Remote Management CLI feature and OpenID Connect in a running tenant so the CLI can register its URL and authenticate directly.")
@@ -1211,34 +1213,4 @@ internal static class TenantManagementApiEndpointConventions
 {
     public const string CapabilityName = "tenants";
     public const string TagName = "Tenants";
-
-    public static RouteHandlerBuilder MapManagementGet(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapGet(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPost(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPost(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPut(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPut(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementDelete(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapDelete(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    private static Action<AuthorizationPolicyBuilder> CreateBearerPolicy()
-        => static policy => policy
-            .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-            .AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement))
-            .RequireAuthenticatedUser();
 }

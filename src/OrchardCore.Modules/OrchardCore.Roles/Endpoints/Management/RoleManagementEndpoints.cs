@@ -21,7 +21,9 @@ internal static class RoleManagementEndpoints
 
     public static IEndpointRouteBuilder AddRoleManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet(RoutePrefix, ListAsync)
+        var routes = builder.MapManagementGroup(RoleManagementApiEndpointConventions.TagName);
+
+        routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListRoles")
             .WithSummary("Lists roles.")
             .WithDescription("Returns roles with system-role information and assigned/effective permissions.")
@@ -41,7 +43,7 @@ internal static class RoleManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet(RoutePrefix + "/{roleId}", GetAsync)
+        routes.MapGet(RoutePrefix + "/{roleId}", GetAsync)
             .WithName("ApiGetRole")
             .WithSummary("Gets a role.")
             .WithDescription("Returns a single role with its assigned and effective permissions.")
@@ -55,7 +57,7 @@ internal static class RoleManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix, CreateAsync)
+        routes.MapPost(RoutePrefix, CreateAsync)
             .WithName("ApiCreateRole")
             .WithSummary("Creates a role.")
             .WithDescription("Creates a role and optionally assigns permissions using the existing role manager.")
@@ -72,7 +74,7 @@ internal static class RoleManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementPut(RoutePrefix + "/{roleId}", UpdateAsync)
+        routes.MapPut(RoutePrefix + "/{roleId}", UpdateAsync)
             .WithName("ApiUpdateRole")
             .WithSummary("Updates a role.")
             .WithDescription("Updates a role description and permissions by reusing the existing role manager and permission evaluation rules.")
@@ -90,7 +92,7 @@ internal static class RoleManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementDelete(RoutePrefix + "/{roleId}", DeleteAsync)
+        routes.MapDelete(RoutePrefix + "/{roleId}", DeleteAsync)
             .WithName("ApiDeleteRole")
             .WithSummary("Deletes a role.")
             .WithDescription("Deletes a non-system role.")
@@ -467,36 +469,6 @@ internal static class RoleManagementApiEndpointConventions
 {
     public const string CapabilityName = "roles";
     public const string TagName = "Roles";
-
-    public static RouteHandlerBuilder MapManagementGet(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapGet(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPost(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPost(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPut(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPut(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementDelete(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapDelete(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    private static Action<AuthorizationPolicyBuilder> CreateBearerPolicy()
-        => static policy => policy
-            .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-            .AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement))
-            .RequireAuthenticatedUser();
 }
 
 internal sealed class PermissionCatalog

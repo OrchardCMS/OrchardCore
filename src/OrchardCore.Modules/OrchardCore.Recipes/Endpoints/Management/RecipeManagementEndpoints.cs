@@ -24,7 +24,9 @@ internal static class RecipeManagementEndpoints
 
     public static IEndpointRouteBuilder AddRecipeManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet(RoutePrefix, ListAsync)
+        var routes = builder.MapManagementGroup(RecipeManagementApiEndpointConventions.TagName);
+
+        routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListRecipes")
             .WithSummary("Lists recipes.")
             .WithDescription("Returns executable non-setup recipes, plus recipe-defined variables and current environment values when they can be derived safely.")
@@ -44,7 +46,7 @@ internal static class RecipeManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet(RoutePrefix + "/{recipeId}", GetAsync)
+        routes.MapGet(RoutePrefix + "/{recipeId}", GetAsync)
             .WithName("ApiGetRecipe")
             .WithSummary("Gets a recipe.")
             .WithDescription("Returns a single executable recipe with parameter information that can be derived safely from the recipe and current environment.")
@@ -58,7 +60,7 @@ internal static class RecipeManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix + "/{recipeId}:execute", ExecuteAsync)
+        routes.MapPost(RoutePrefix + "/{recipeId}:execute", ExecuteAsync)
             .WithName("ApiExecuteRecipe")
             .WithSummary("Executes a recipe.")
             .WithDescription("Executes a non-setup recipe by reusing the existing recipe executor and environment providers.")
@@ -410,22 +412,4 @@ internal static class RecipeManagementApiEndpointConventions
 {
     public const string CapabilityName = "recipes";
     public const string TagName = "Recipes";
-
-    public static RouteHandlerBuilder MapManagementGet(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapGet(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPost(this IEndpointRouteBuilder builder, string pattern, Delegate handler)
-        => builder.MapPost(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    private static Action<AuthorizationPolicyBuilder> CreateBearerPolicy()
-        => static policy => policy
-            .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-            .AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement))
-            .RequireAuthenticatedUser();
 }

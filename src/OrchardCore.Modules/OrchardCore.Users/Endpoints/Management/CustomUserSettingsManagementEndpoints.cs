@@ -12,13 +12,15 @@ internal static class CustomUserSettingsManagementEndpoints
 {
     public static IEndpointRouteBuilder AddCustomUserSettingsManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        Configure(builder.MapManagementGet("api/users/settings/types", ListAsync), "ApiListCustomUserSettingsTypes", "types", false)
+        var routes = builder.MapManagementGroup(UserManagementApiEndpointConventions.TagName);
+
+        Configure(routes.MapGet("api/users/settings/types", ListAsync), "ApiListCustomUserSettingsTypes", "types", false)
             .WithSummary("Lists authorized custom user settings types.");
-        Configure(builder.MapManagementGet("api/users/settings/types/{name}/schema", SchemaAsync), "ApiGetCustomUserSettingsSchema", "schema", false, true)
+        Configure(routes.MapGet("api/users/settings/types/{name}/schema", SchemaAsync), "ApiGetCustomUserSettingsSchema", "schema", false, true)
             .WithSummary("Gets a custom user settings schema.");
-        Configure(builder.MapManagementGet("api/users/{userId}/settings/{name}", GetAsync), "ApiGetCustomUserSettings", "show", true, true)
+        Configure(routes.MapGet("api/users/{userId}/settings/{name}", GetAsync), "ApiGetCustomUserSettings", "show", true, true)
             .WithSummary("Gets custom settings for one user.");
-        Configure(builder.MapManagementPut("api/users/{userId}/settings/{name}", UpdateAsync), "ApiUpdateCustomUserSettings", "update", true, true)
+        Configure(routes.MapPut("api/users/{userId}/settings/{name}", UpdateAsync), "ApiUpdateCustomUserSettings", "update", true, true)
             .WithSummary("Updates custom settings on their owning user.")
             .Accepts<JsonObject>("application/json")
             .ProducesValidationProblem();

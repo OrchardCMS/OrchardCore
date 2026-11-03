@@ -17,7 +17,9 @@ internal static class TemplateManagementEndpoints
 
     public static IEndpointRouteBuilder AddTemplateManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapManagementGet(RoutePrefix, ListAsync)
+        var routes = builder.MapManagementGroup(TemplateManagementEndpointConventions.TagName, Permissions.ManageTemplates);
+
+        routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListTemplates")
             .WithSummary("Lists custom templates.")
             .WithDescription("Returns a paged list of stored custom Liquid templates, optionally filtered by name or description.")
@@ -35,7 +37,7 @@ internal static class TemplateManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        builder.MapManagementGet(RoutePrefix + "/{name}", GetAsync)
+        routes.MapGet(RoutePrefix + "/{name}", GetAsync)
             .WithName("ApiGetTemplate")
             .WithSummary("Shows a custom template.")
             .WithDescription("Returns one stored custom Liquid template by its stable, case-insensitive name.")
@@ -49,7 +51,7 @@ internal static class TemplateManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementPost(RoutePrefix, CreateAsync)
+        routes.MapPost(RoutePrefix, CreateAsync)
             .WithName("ApiCreateTemplate")
             .WithSummary("Creates a custom template.")
             .WithDescription("Creates a complete custom Liquid template definition. An identical stable-name retry returns the existing definition; a different definition conflicts.")
@@ -65,7 +67,7 @@ internal static class TemplateManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
-        builder.MapManagementPut(RoutePrefix + "/{name}", UpdateAsync)
+        routes.MapPut(RoutePrefix + "/{name}", UpdateAsync)
             .WithName("ApiUpdateTemplate")
             .WithSummary("Updates a custom template.")
             .WithDescription("Replaces a complete stored custom Liquid template definition. The request body name must match the route name.")
@@ -82,7 +84,7 @@ internal static class TemplateManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        builder.MapManagementDelete(RoutePrefix + "/{name}", DeleteAsync)
+        routes.MapDelete(RoutePrefix + "/{name}", DeleteAsync)
             .WithName("ApiDeleteTemplate")
             .WithSummary("Deletes a custom template.")
             .WithDescription("Deletes a stored custom Liquid template. Repeating the operation after the template is absent succeeds without another mutation.")
@@ -320,36 +322,4 @@ internal static class TemplateManagementEndpointConventions
 {
     public const string CapabilityName = "templates";
     public const string TagName = "Templates";
-
-    public static RouteHandlerBuilder MapManagementGet(this IEndpointRouteBuilder builder, string pattern, Delegate handler) =>
-        builder.MapGet(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPost(this IEndpointRouteBuilder builder, string pattern, Delegate handler) =>
-        builder.MapPost(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementPut(this IEndpointRouteBuilder builder, string pattern, Delegate handler) =>
-        builder.MapPut(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    public static RouteHandlerBuilder MapManagementDelete(this IEndpointRouteBuilder builder, string pattern, Delegate handler) =>
-        builder.MapDelete(pattern, handler)
-            .WithTags(TagName)
-            .DisableAntiforgery()
-            .RequireAuthorization(CreateBearerPolicy());
-
-    private static Action<AuthorizationPolicyBuilder> CreateBearerPolicy() =>
-        static policy => policy
-            .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-            .AddRequirements(
-                new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement),
-                new OrchardCore.Security.PermissionRequirement(Permissions.ManageTemplates))
-            .RequireAuthenticatedUser();
 }
