@@ -203,16 +203,15 @@ Error keys use model property names for top-level errors and paths such as
 
 Validation detects missing/invalid technical names, duplicate type technical or display
 names, duplicate part names, duplicate field names, unknown or non-attachable parts, renaming
-non-reusable attached parts, and unknown field types. These conflicts are validation errors;
-the API does not return `409 Conflict`.
+non-reusable attached parts, and unknown field types. These are validation errors.
 
 Create operations are retry-safe when the client keeps the same technical name and complete
 definition. Names and display names are trimmed, null settings and collections are normalized to
 empty values, and attached `partName` references use the stored definition's casing. If a
 definition with that name already exists, deep equality of the complete normalized definition,
 including array order, settings, attached parts or fields, field types, and values, returns the
-existing definition with `201 Created`. A different definition with the same name returns `400`
-validation Problem Details without changing the existing definition.
+existing definition with `200 OK`. A different definition with the same name returns `409 Conflict`
+Problem Details without changing the existing definition.
 
 ## Content type operations
 
@@ -331,8 +330,8 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 ```
 
 `201 Created` returns the created definition in the same shape and sets `Location` to
-`/api/content-definition/types/PressRelease`. An identical normalized retry also returns the
-existing definition with `201 Created`:
+`/api/content-definition/types/PressRelease`. An identical normalized retry returns the existing
+definition with `200 OK`:
 
 ```json
 {
@@ -357,7 +356,7 @@ existing definition with `201 Created`:
 }
 ```
 
-Also returns `400` validation Problem Details, `401`, or `403`.
+Also returns `400` validation Problem Details, `401`, `403`, or `409`.
 
 ### Update a content type
 
@@ -599,8 +598,8 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 ```
 
 `201 Created` returns the complete definition and sets `Location` to
-`/api/content-definition/parts/ContactPart`. An identical normalized retry also returns the
-existing definition with `201 Created`:
+`/api/content-definition/parts/ContactPart`. An identical normalized retry returns the existing
+definition with `200 OK`:
 
 ```json
 {
@@ -622,7 +621,7 @@ existing definition with `201 Created`:
 }
 ```
 
-Also returns `400`, `401`, or `403`.
+Also returns `400`, `401`, `403`, or `409`.
 
 ### Update a content part
 
@@ -771,8 +770,8 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 ```
 
 `201 Created` returns the field and sets `Location` to
-`/api/content-definition/parts/ContactPart/fields/Email`. An identical normalized retry also
-returns the existing field with `201 Created`:
+`/api/content-definition/parts/ContactPart/fields/Email`. An identical normalized retry returns
+the existing field with `200 OK`:
 
 ```json
 {
@@ -787,7 +786,7 @@ returns the existing field with `201 Created`:
 }
 ```
 
-Also returns `400`, `401`, `403`, or `404` when the part does not exist.
+Also returns `400`, `401`, `403`, `404` when the part does not exist, or `409`.
 
 ### Update a field
 

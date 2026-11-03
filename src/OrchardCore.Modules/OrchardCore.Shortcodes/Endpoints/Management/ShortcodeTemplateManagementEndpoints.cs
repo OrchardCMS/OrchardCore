@@ -23,7 +23,7 @@ internal static class ShortcodeTemplateManagementEndpoints
         Configure(routes.MapPost(RoutePrefix + ":validate", ValidateAsync), "ApiValidateShortcodeTemplate", "Validates a shortcode name and Liquid template without rendering or saving.", "validate", input: true)
             .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreateShortcodeTemplate", "Creates a shortcode template; equivalent stable-name retries return the stored template.", "create", input: true)
-            .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateDefinition>(201).ProducesProblem(409);
+            .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateDefinition>(201).Produces<ShortcodeTemplateDefinition>().ProducesProblem(409);
         Configure(routes.MapPut(RoutePrefix + "/by-name", UpdateAsync), "ApiUpdateShortcodeTemplate", "Replaces a complete shortcode template. The name cannot change.", "update", argument: true, input: true)
             .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateDefinition>().ProducesProblem(404);
         Configure(routes.MapDelete(RoutePrefix + "/by-name", DeleteAsync), "ApiDeleteShortcodeTemplate", "Deletes a shortcode template; a missing template returns 404.", "delete", argument: true, confirmation: true)
@@ -116,6 +116,10 @@ internal static class ShortcodeTemplateManagementEndpoints
         if (result.Status == ShortcodeTemplateMutationStatus.Conflict)
         {
             return TypedResults.Problem("A shortcode template with this name already exists with a different definition.", statusCode: 409);
+        }
+        if (result.Status == ShortcodeTemplateMutationStatus.Existing)
+        {
+            return TypedResults.Ok(Describe(result.Name, result.Template));
         }
         return TypedResults.Created($"{context.Request.PathBase}/{RoutePrefix}/by-name?name={Uri.EscapeDataString(result.Name)}", Describe(result.Name, result.Template));
     }

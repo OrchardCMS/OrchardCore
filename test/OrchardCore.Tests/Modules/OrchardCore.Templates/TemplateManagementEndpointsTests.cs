@@ -24,7 +24,7 @@ public class TemplateManagementEndpointsTests
             templatesManager,
             CreateDefinition("content__article"));
 
-        var created = Assert.IsType<Created<TemplateDefinitionDto>>(result);
+        var created = Assert.IsType<Ok<TemplateDefinitionDto>>(result);
         Assert.Equal("Content__Article", created.Value.Name);
         documentManager.Verify(
             manager => manager.UpdateAsync(It.IsAny<TemplatesDocument>(), It.IsAny<Func<TemplatesDocument, Task>>()),
@@ -134,10 +134,11 @@ public class TemplateManagementEndpointsTests
     }
 
     [Fact]
-    public async Task DeleteAsync_RetryAfterDelete_ReturnsNoContentWithoutSecondMutation()
+    public async Task DeleteAsync_RetryAfterDelete_ReturnsNotFoundWithoutSecondMutation()
     {
         var document = CreateDocument();
         var templatesManager = CreateManager(document, out var documentManager);
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
 
         var first = await TemplateManagementEndpoints.DeleteAsync(
             new DefaultHttpContext(),
@@ -145,13 +146,13 @@ public class TemplateManagementEndpointsTests
             templatesManager,
             "content__article");
         var retry = await TemplateManagementEndpoints.DeleteAsync(
-            new DefaultHttpContext(),
+            new DefaultHttpContext { RequestServices = services },
             CreateAuthorizationService(),
             templatesManager,
             "Content__Article");
 
         Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(first).StatusCode);
-        Assert.IsType<NoContent>(retry);
+        Assert.Equal(StatusCodes.Status404NotFound, Assert.IsAssignableFrom<IStatusCodeHttpResult>(retry).StatusCode);
         documentManager.Verify(
             manager => manager.UpdateAsync(document, It.IsAny<Func<TemplatesDocument, Task>>()),
             Times.Once);

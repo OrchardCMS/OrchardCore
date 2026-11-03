@@ -27,7 +27,7 @@ internal static class LayerManagementEndpoints
         Configure(routes.MapPost(RoutePrefix + ":validate", ValidateAsync), "ApiValidateLayer", "Validates a complete layer definition without evaluating conditions or saving it.", "validate", input: true)
             .Accepts<LayerDefinitionDto>("application/json").Produces<RuleValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreateLayer", "Creates a complete layer definition; identical name retries return the stored definition.", "create", input: true)
-            .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>(201).ProducesProblem(409).ProducesETag();
+            .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>(201).Produces<LayerDefinitionDto>().ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut(RoutePrefix + "/by-name", UpdateAsync), "ApiUpdateLayer", "Replaces a layer definition and all its conditions. The name cannot change.", "update", argument: true, input: true)
             .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>().ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete(RoutePrefix + "/by-name", DeleteAsync), "ApiDeleteLayer", "Deletes an unreferenced layer; a missing layer returns 404.", "delete", argument: true, confirmation: true)
@@ -126,7 +126,7 @@ internal static class LayerManagementEndpoints
         {
             var existing = mutation.Layer;
             return Equivalent(Describe(existing, rules), definition, rules.Describe(result.Rule))
-                ? TypedResults.Created(Location(context, existing.Name), context.WithApiETag(Describe(existing, rules)))
+                ? TypedResults.Ok(Describe(existing, rules))
                 : TypedResults.Problem("A layer with this name already exists with a different definition.", statusCode: 409);
         }
         return TypedResults.Created(Location(context, mutation.Layer.Name), context.WithApiETag(Describe(mutation.Layer, rules)));

@@ -261,10 +261,9 @@ curl -X POST -H 'Authorization: Bearer ACCESS_TOKEN' \
 null `properties` value is normalized to `{}`. If the normalized name already exists, exact
 equality of `name`, canonical `source`, `returnContentItems`, `schema`, `parameterSchema`, and
 `properties` makes the request an equivalent retry. An equivalent retry returns the existing
-definition with `201 Created`; a different definition with the same name returns `409 Conflict`.
+definition with `200 OK`; a different definition with the same name returns `409 Conflict`.
 
-`201 Created` returns the saved or equivalent existing definition and a URL-escaped resource
-location:
+`201 Created` returns the saved definition and a URL-escaped resource location:
 
 ```http
 Location: /api/queries/named/PublishedArticles

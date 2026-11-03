@@ -54,6 +54,35 @@ public class ContentDefinitionApiTests
     }
 
     [Fact]
+    public async Task CreateRoutes_RepeatedRequest_ReturnOkOrConflict()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await EnableFeaturesAsync(context, "OrchardCore.ContentTypes", "OrchardCore.ContentFields");
+        await context.WaitForDeferredTasksAsync(TestContext.Current.CancellationToken);
+
+        foreach (var (route, body, different) in new[]
+        {
+            ("api/content-definition/parts", """{"name":"RetryPart"}""", """{"name":"RetryPart","settings":{"ContentPartSettings":{"attachable":true}}}"""),
+            ("api/content-definition/parts/RetryPart/fields", """{"name":"Text","fieldName":"TextField"}""", """{"name":"Text","fieldName":"NumericField"}"""),
+            ("api/content-definition/types", """{"name":"RetryType","displayName":"Retry"}""", """{"name":"RetryType","displayName":"Different"}"""),
+        })
+        {
+            Assert.Equal(HttpStatusCode.Created, await PostAsync(context, route, body));
+            Assert.Equal(HttpStatusCode.OK, await PostAsync(context, route, body));
+            Assert.Equal(HttpStatusCode.Conflict, await PostAsync(context, route, different));
+        }
+    }
+
+    private static async Task<HttpStatusCode> PostAsync(SiteContext context, string route, string body)
+    {
+        using var content = new StringContent(body, Encoding.UTF8, "application/json");
+        using var response = await context.Client.PostAsync(route, content, TestContext.Current.CancellationToken);
+
+        return response.StatusCode;
+    }
+
+    [Fact]
     public async Task ContentDefinitionService_CreatesAndReadsDefinitions()
     {
         using var context = new SiteContext();
@@ -68,7 +97,7 @@ public class ContentDefinitionApiTests
             var fieldTypes = Invoke<IReadOnlyList<ContentDefinitionFieldTypeDescriptor>>(service, "ListFieldTypes");
             var fieldTypeName = Assert.Single(fieldTypes, x => x.Name == "TextField").Name;
 
-            var part = await InvokeAsync<ContentPartDefinitionDto>(service, "CreatePartAsync", new ContentPartDefinitionDto
+            var part = await InvokeCreateAsync<ContentPartDefinitionDto>(service, "CreatePartAsync", new ContentPartDefinitionDto
             {
                 Name = "RemoteTextPart",
                 Settings = new ContentPartDefinitionSettingsDto
@@ -81,17 +110,17 @@ public class ContentDefinitionApiTests
                 },
             }, new ModelStateDictionary());
             var repeatedPartState = new ModelStateDictionary();
-            var repeatedPart = await InvokeAsync<ContentPartDefinitionDto>(service, "CreatePartAsync", part, repeatedPartState);
+            var repeatedPart = await InvokeCreateAsync<ContentPartDefinitionDto>(service, "CreatePartAsync", part, repeatedPartState);
 
-            var field = await InvokeAsync<ContentPartFieldDefinitionDto>(service, "CreateFieldAsync", "RemoteTextPart", new ContentPartFieldDefinitionDto
+            var field = await InvokeCreateAsync<ContentPartFieldDefinitionDto>(service, "CreateFieldAsync", "RemoteTextPart", new ContentPartFieldDefinitionDto
             {
                 Name = "RemoteText",
                 FieldName = fieldTypeName,
             }, new ModelStateDictionary());
             var repeatedFieldState = new ModelStateDictionary();
-            var repeatedField = await InvokeAsync<ContentPartFieldDefinitionDto>(service, "CreateFieldAsync", "RemoteTextPart", field, repeatedFieldState);
+            var repeatedField = await InvokeCreateAsync<ContentPartFieldDefinitionDto>(service, "CreateFieldAsync", "RemoteTextPart", field, repeatedFieldState);
 
-            var type = await InvokeAsync<ContentTypeDefinitionDto>(service, "CreateTypeAsync", new ContentTypeDefinitionDto
+            var type = await InvokeCreateAsync<ContentTypeDefinitionDto>(service, "CreateTypeAsync", new ContentTypeDefinitionDto
             {
                 Name = "RemoteApiType",
                 DisplayName = "Remote Api Type",
@@ -105,7 +134,7 @@ public class ContentDefinitionApiTests
                 ],
             }, new ModelStateDictionary());
             var repeatedTypeState = new ModelStateDictionary();
-            var repeatedType = await InvokeAsync<ContentTypeDefinitionDto>(service, "CreateTypeAsync", type, repeatedTypeState);
+            var repeatedType = await InvokeCreateAsync<ContentTypeDefinitionDto>(service, "CreateTypeAsync", type, repeatedTypeState);
 
             Assert.NotNull(part);
             Assert.NotNull(field);
@@ -128,21 +157,14 @@ public class ContentDefinitionApiTests
             Assert.Single(await InvokeAsync<IReadOnlyList<ContentTypeDefinitionDto>>(service, "ListTypesAsync"), x => x.Name == "RemoteApiType");
             Assert.Single(await InvokeAsync<IReadOnlyList<ContentPartFieldDefinitionDto>>(service, "ListFieldsAsync", "RemoteTextPart"));
 
-            var typeConflictState = new ModelStateDictionary();
             type.DisplayName = "Different Display Name";
-            await InvokeAsync<ContentTypeDefinitionDto>(service, "CreateTypeAsync", type, typeConflictState);
+            Assert.NotNull(await InvokeConflictAsync(service, "CreateTypeAsync", type, new ModelStateDictionary()));
 
-            var partConflictState = new ModelStateDictionary();
             part.Settings.ContentPartSettings.Reusable = false;
-            await InvokeAsync<ContentPartDefinitionDto>(service, "CreatePartAsync", part, partConflictState);
+            Assert.NotNull(await InvokeConflictAsync(service, "CreatePartAsync", part, new ModelStateDictionary()));
 
-            var fieldConflictState = new ModelStateDictionary();
             field.FieldName = "NumericField";
-            await InvokeAsync<ContentPartFieldDefinitionDto>(service, "CreateFieldAsync", "RemoteTextPart", field, fieldConflictState);
-
-            Assert.False(typeConflictState.IsValid);
-            Assert.False(partConflictState.IsValid);
-            Assert.False(fieldConflictState.IsValid);
+            Assert.NotNull(await InvokeConflictAsync(service, "CreateFieldAsync", "RemoteTextPart", field, new ModelStateDictionary()));
 
             var typeMismatchState = new ModelStateDictionary();
             type.Name = "RenamedRemoteApiType";
@@ -201,7 +223,7 @@ public class ContentDefinitionApiTests
             Assert.NotNull(properties["Hint"]);
 
             var state = new ModelStateDictionary();
-            await InvokeAsync<ContentPartDefinitionDto>(service, "CreatePartAsync", new ContentPartDefinitionDto { Name = "Team" }, state);
+            await InvokeCreateAsync<ContentPartDefinitionDto>(service, "CreatePartAsync", new ContentPartDefinitionDto { Name = "Team" }, state);
             var field = JsonSerializer.Deserialize<ContentPartFieldDefinitionDto>("""
                 {
                   "name": "Roster",
@@ -223,8 +245,8 @@ public class ContentDefinitionApiTests
                 });
             }
 
-            await InvokeAsync<ContentPartFieldDefinitionDto>(service, "CreateFieldAsync", "Team", field, state);
-            await InvokeAsync<ContentTypeDefinitionDto>(service, "CreateTypeAsync", new ContentTypeDefinitionDto
+            await InvokeCreateAsync<ContentPartFieldDefinitionDto>(service, "CreateFieldAsync", "Team", field, state);
+            await InvokeCreateAsync<ContentTypeDefinitionDto>(service, "CreateTypeAsync", new ContentTypeDefinitionDto
             {
                 Name = "Team",
                 DisplayName = "Team",
@@ -290,6 +312,20 @@ public class ContentDefinitionApiTests
         await task;
 
         return (T)task.GetType().GetProperty("Result")!.GetValue(task)!;
+    }
+
+    private static async Task<T> InvokeCreateAsync<T>(object target, string methodName, params object[] arguments)
+    {
+        var result = await InvokeAsync<object>(target, methodName, arguments);
+
+        return (T)result.GetType().GetProperty("Definition").GetValue(result);
+    }
+
+    private static async Task<string> InvokeConflictAsync(object target, string methodName, params object[] arguments)
+    {
+        var result = await InvokeAsync<object>(target, methodName, arguments);
+
+        return (string)result.GetType().GetProperty("ConflictDetail").GetValue(result);
     }
 
     private sealed class DictionarySchema

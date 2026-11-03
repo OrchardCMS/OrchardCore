@@ -33,8 +33,10 @@ public class ShortcodeTemplateManagementTests
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var manager = scope.ServiceProvider.GetRequiredService<ShortcodeTemplatesManager>();
-                var result = Assert.IsType<Created<ShortcodeTemplateDefinition>>(await ShortcodeTemplateManagementEndpoints.CreateAsync(
-                    new DefaultHttpContext(), Authorize(true), manager, definition)).Value;
+                var response = await ShortcodeTemplateManagementEndpoints.CreateAsync(new DefaultHttpContext(), Authorize(true), manager, definition);
+                var result = retry == 0
+                    ? Assert.IsType<Created<ShortcodeTemplateDefinition>>(response).Value
+                    : Assert.IsType<Ok<ShortcodeTemplateDefinition>>(response).Value;
                 Assert.Equal("apiprobe", result.Name);
                 Assert.Equal(definition.Content, result.Content);
                 Assert.DoesNotContain("<script", result.Usage, StringComparison.OrdinalIgnoreCase);
@@ -67,11 +69,10 @@ public class ShortcodeTemplateManagementTests
             Assert.Null(updated.Hint);
             Assert.Empty(updated.Categories);
         });
-        for (var retry = 0; retry < 2; retry++)
-        {
-            await context.UsingTenantScopeAsync(async scope => Assert.IsType<NoContent>(await ShortcodeTemplateManagementEndpoints.DeleteAsync(
-                new DefaultHttpContext(), Authorize(true), scope.ServiceProvider.GetRequiredService<ShortcodeTemplatesManager>(), "APIPROBE")));
-        }
+        await context.UsingTenantScopeAsync(async scope => Assert.IsType<NoContent>(await ShortcodeTemplateManagementEndpoints.DeleteAsync(
+            new DefaultHttpContext(), Authorize(true), scope.ServiceProvider.GetRequiredService<ShortcodeTemplatesManager>(), "APIPROBE")));
+        await context.UsingTenantScopeAsync(async scope => Assert.Equal(404, Assert.IsAssignableFrom<IStatusCodeHttpResult>(await ShortcodeTemplateManagementEndpoints.DeleteAsync(
+            new DefaultHttpContext { RequestServices = scope.ServiceProvider }, Authorize(true), scope.ServiceProvider.GetRequiredService<ShortcodeTemplatesManager>(), "APIPROBE")).StatusCode));
     }
 
     [Fact]

@@ -15,7 +15,7 @@ internal static class SitemapEndpoints
     {
         Configure(routes.MapGet("api/sitemaps", ListAsync), "ApiListSitemaps", "list", "Lists tenant sitemaps and indexes.").Produces<SitemapResponse[]>();
         Configure(routes.MapGet("api/sitemaps/{id}", GetAsync), "ApiGetSitemap", "show", "Shows a sitemap definition.", "id").Produces<SitemapResponse>().ProducesETag();
-        Configure(routes.MapPost("api/sitemaps", CreateAsync), "ApiCreateSitemap", "create", "Creates a sitemap or index. Read back the server-generated ID before retrying.", input: true).Produces<SitemapResponse>().ProducesETag();
+        Configure(routes.MapPost("api/sitemaps", CreateAsync), "ApiCreateSitemap", "create", "Creates a sitemap or index. A retry with the same path and definition returns the stored sitemap, and with another definition a conflict.", input: true).Produces<SitemapResponse>(201).Produces<SitemapResponse>().ProducesETag();
         Configure(routes.MapPut("api/sitemaps/{id}", UpdateAsync), "ApiUpdateSitemap", "update", "Replaces a definition while retaining its sources.", "id", true).Produces<SitemapResponse>().AcceptsIfMatch();
         Configure(routes.MapDelete("api/sitemaps/{id}", DeleteAsync), "ApiDeleteSitemap", "delete", "Deletes a sitemap; a missing ID returns 404.", "id").Produces(204);
         Configure(routes.MapPost("api/sitemaps/{id}:enable", EnableAsync), "ApiEnableSitemap", "enable", "Enables public sitemap routing.", "id").Produces(204);
@@ -65,7 +65,11 @@ internal static class SitemapEndpoints
         var result = await service.SaveAsync(input, id);
         if (result.NotFound) { return context.ApiNotFoundProblem(); }
         if (result.Errors.Count > 0) { return TypedResults.ValidationProblem(result.Errors); }
-        return TypedResults.Ok(context.WithApiETag(Describe(result.Sitemap)));
+        if (result.Conflict) { return TypedResults.Problem("A different sitemap already uses this path.", statusCode: 409); }
+        var response = context.WithApiETag(Describe(result.Sitemap));
+        return id is null && result.Changed
+            ? TypedResults.Created($"{context.Request.PathBase}/api/sitemaps/{Uri.EscapeDataString(result.Sitemap.SitemapId)}", response)
+            : TypedResults.Ok(response);
     }
     internal static async Task<IResult> DeleteAsync(HttpContext context, [FromServices] ISitemapManager manager, string id)
     {

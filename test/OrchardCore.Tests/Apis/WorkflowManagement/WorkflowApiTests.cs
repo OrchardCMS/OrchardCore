@@ -28,7 +28,7 @@ public class WorkflowApiTests
         {
             var service = scope.ServiceProvider.GetRequiredService(GetServiceType("OrchardCore.Workflows.Services.WorkflowApiService", "OrchardCore.Workflows"));
 
-            var workflowType = await InvokeAsync<WorkflowTypeDto>(service, "CreateWorkflowTypeAsync", new WorkflowTypeDto
+            var workflowType = await InvokeCreateAsync(service, "CreateWorkflowTypeAsync", new WorkflowTypeDto
             {
                 Name = "Remote Workflow",
                 IsEnabled = true,
@@ -143,7 +143,7 @@ public class WorkflowApiTests
         {
             var service = scope.ServiceProvider.GetRequiredService(GetServiceType("OrchardCore.Workflows.Services.WorkflowApiService", "OrchardCore.Workflows"));
             var firstState = new ModelStateDictionary();
-            first = await InvokeAsync<WorkflowTypeDto>(service, "CreateWorkflowTypeAsync", definition, firstState);
+            first = Definition(await InvokeAsync<object>(service, "CreateWorkflowTypeAsync", definition, firstState));
             Assert.True(firstState.IsValid);
         });
 
@@ -152,16 +152,17 @@ public class WorkflowApiTests
             var service = scope.ServiceProvider.GetRequiredService(GetServiceType("OrchardCore.Workflows.Services.WorkflowApiService", "OrchardCore.Workflows"));
             var retryState = new ModelStateDictionary();
             definition.Activities[0].ActivityId = null;
-            var retry = await InvokeAsync<WorkflowTypeDto>(service, "CreateWorkflowTypeAsync", definition, retryState);
+            var retry = await InvokeAsync<object>(service, "CreateWorkflowTypeAsync", definition, retryState);
             Assert.True(retryState.IsValid);
-            Assert.Equal(first.WorkflowTypeId, retry.WorkflowTypeId);
+            Assert.True((bool)retry.GetType().GetProperty("IsExisting").GetValue(retry));
+            Assert.Equal(first.WorkflowTypeId, Definition(retry).WorkflowTypeId);
         });
 
         await context.UsingTenantScopeAsync(async scope =>
         {
             var service = scope.ServiceProvider.GetRequiredService(GetServiceType("OrchardCore.Workflows.Services.WorkflowApiService", "OrchardCore.Workflows"));
             var conflictState = new ModelStateDictionary();
-            var conflict = await InvokeAsync<WorkflowTypeDto>(service, "CreateWorkflowTypeAsync", new WorkflowTypeDto
+            var conflict = await InvokeAsync<object>(service, "CreateWorkflowTypeAsync", new WorkflowTypeDto
             {
                 WorkflowTypeId = definition.WorkflowTypeId,
                 Name = definition.Name,
@@ -169,8 +170,9 @@ public class WorkflowApiTests
                 Activities = definition.Activities,
             }, conflictState);
 
-            Assert.False(conflictState.IsValid);
-            Assert.True(conflict.IsEnabled);
+            Assert.True(conflictState.IsValid);
+            Assert.NotNull(conflict.GetType().GetProperty("ConflictDetail").GetValue(conflict));
+            Assert.Null(Definition(conflict));
             Assert.Single(await InvokeAsync<IReadOnlyList<WorkflowTypeDto>>(service, "ListWorkflowTypesAsync"), x => x.WorkflowTypeId == definition.WorkflowTypeId);
             Assert.True(await InvokeAsync<bool>(service, "DeleteWorkflowTypeAsync", definition.WorkflowTypeId));
         });
@@ -243,6 +245,12 @@ public class WorkflowApiTests
 
     private static Type GetServiceType(string fullName, string assemblyName)
         => Type.GetType($"{fullName}, {assemblyName}", throwOnError: true)!;
+
+    private static async Task<WorkflowTypeDto> InvokeCreateAsync(object target, string methodName, params object[] arguments)
+        => Definition(await InvokeAsync<object>(target, methodName, arguments));
+
+    private static WorkflowTypeDto Definition(object result)
+        => (WorkflowTypeDto)result.GetType().GetProperty("Definition").GetValue(result);
 
     private static async Task<T> InvokeAsync<T>(object target, string methodName, params object[] arguments)
     {

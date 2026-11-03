@@ -24,7 +24,7 @@ internal static class PlacementManagementEndpoints
         Configure(routes.MapPost(RoutePrefix + ":validate", ValidateAsync), "ApiValidatePlacement", "Validates placement rules without rendering or saving.", "validate", input: true)
             .Accepts<PlacementDefinition>("application/json").Produces<PlacementValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreatePlacement", "Creates placement rules; equivalent stable-shape retries return the stored rules.", "create", input: true)
-            .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>(201).ProducesProblem(409).ProducesETag();
+            .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>(201).Produces<PlacementDefinition>().ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut(RoutePrefix + "/by-shape", UpdateAsync), "ApiUpdatePlacement", "Replaces complete placement rules; an empty array removes the override.", "update", argument: true, input: true)
             .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>().Produces(204).ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete(RoutePrefix + "/by-shape", DeleteAsync), "ApiDeletePlacement", "Removes stored placement rules; missing rules return 404.", "delete", argument: true, confirmation: true)
@@ -123,6 +123,10 @@ internal static class PlacementManagementEndpoints
         if (result.Status == PlacementMutationStatus.Conflict)
         {
             return TypedResults.Problem("This shape type already has a different placement definition.", statusCode: 409);
+        }
+        if (result.Status == PlacementMutationStatus.Existing)
+        {
+            return TypedResults.Ok(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes });
         }
         return TypedResults.Created($"{context.Request.PathBase}/{RoutePrefix}/by-shape?shapeType={Uri.EscapeDataString(result.ShapeType)}",
             context.WithApiETag(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes }));

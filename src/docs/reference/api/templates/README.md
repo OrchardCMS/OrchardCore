@@ -127,7 +127,7 @@ No request body is accepted.
 
 Creates a complete custom template through the existing `TemplatesManager` document service.
 
-The client supplies the stable name. Repeating a create with the same case-insensitive name, byte-for-byte equal `content`, and ordinally equal `description` returns `201 Created` with the existing canonical representation and performs no write. A request using that name with different content or description returns `409 Conflict`.
+The client supplies the stable name. Repeating a create with the same case-insensitive name, byte-for-byte equal `content`, and ordinally equal `description` returns `200 OK` with the existing canonical representation and performs no write. A request using that name with different content or description returns `409 Conflict`.
 
 Each successful new create updates the single Templates document once and has no partial steps. Simultaneous writers are governed by the shared document manager's configured concurrency checking; the endpoint does not add a separate cross-request lock. After an ambiguous transport or server failure, retry the identical request: it either creates the missing definition, returns the equivalent stored definition, or reports a conflicting definition.
 
@@ -165,7 +165,8 @@ pomi templates schema --operation create
 
 | Status | Meaning |
 | --- | --- |
-| `201 Created` | A definition was created, or an identical stable-name retry found the existing definition. The `Location` header identifies the canonical stored name. |
+| `200 OK` | An identical stable-name retry found the existing definition. |
+| `201 Created` | A definition was created. The `Location` header identifies the canonical stored name. |
 | `400 Bad Request` | The body is missing, `name` is blank, or `content` is blank. |
 | `401 Unauthorized` | The API bearer token is missing or invalid. |
 | `403 Forbidden` | The principal lacks a required permission. |

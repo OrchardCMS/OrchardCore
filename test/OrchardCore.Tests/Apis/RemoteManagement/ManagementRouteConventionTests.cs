@@ -16,6 +16,7 @@ public class ManagementRouteConventionTests
         "OrchardCore.Layers",
         "OrchardCore.Localization",
         "OrchardCore.Media",
+        "OrchardCore.Media.Cache",
         "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",

@@ -61,6 +61,7 @@ internal static class TemplateManagementEndpoints
             })
             .Accepts<TemplateDefinitionDto>("application/json")
             .Produces<TemplateDefinitionDto>(StatusCodes.Status201Created)
+            .Produces<TemplateDefinitionDto>(StatusCodes.Status200OK)
             .ProducesETag()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -185,7 +186,11 @@ internal static class TemplateManagementEndpoints
         }
 
         var created = ToDefinition(result.Name, result.Template);
-        return TypedResults.Created(GetLocation(httpContext, result.Name), httpContext.WithApiETag(created));
+        httpContext.SetApiETag(created);
+
+        return result.Status == TemplateCreateStatus.Existing
+            ? TypedResults.Ok(created)
+            : TypedResults.Created(GetLocation(httpContext, result.Name), created);
     }
 
     internal static async Task<IResult> UpdateAsync(

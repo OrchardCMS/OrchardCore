@@ -25,7 +25,7 @@ internal static class RateLimitEndpoints
         Configure(routes.MapGet(Prefix + "/by-id", GetAsync), "ApiGetRateLimitPolicy", "show", "Shows a rate-limit policy.", ["policyId"])
             .Produces<RateLimitPolicyResponse>();
         Configure(routes.MapPost(Prefix, CreateAsync), "ApiCreateRateLimitPolicy", "create", "Creates a disabled policy; identical name retries return the existing policy.", input: true)
-            .Produces<RateLimitPolicyResponse>(201);
+            .Produces<RateLimitPolicyResponse>(201).Produces<RateLimitPolicyResponse>();
         Configure(routes.MapPut(Prefix + "/by-id", UpdateAsync), "ApiUpdateRateLimitPolicy", "update", "Replaces policy metadata and target; disable first to change its target.", ["policyId"], input: true)
             .Produces<RateLimitPolicyResponse>();
         Configure(routes.MapDelete(Prefix + "/by-id", DeleteAsync), "ApiDeleteRateLimitPolicy", "delete", "Deletes a policy; a missing policy returns 404.", ["policyId"])
@@ -102,7 +102,7 @@ internal static class RateLimitEndpoints
         if (existing is not null)
         {
             return Equal(Definition(existing), Normalize(input))
-                ? TypedResults.Created(Location(context, existing.PolicyId), Describe(existing))
+                ? TypedResults.Ok(Describe(existing))
                 : Conflict("A policy with this name already has a different definition.");
         }
         var policy = new RateLimitPolicy

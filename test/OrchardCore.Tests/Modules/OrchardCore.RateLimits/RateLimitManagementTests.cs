@@ -50,13 +50,28 @@ public class RateLimitManagementTests
     }
 
     [Fact]
+    public async Task Delete_MissingPolicyOrLimiter_ReturnsNotFound()
+    {
+        var policy = Policy();
+        var store = Store(policy);
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
+        var http = new DefaultHttpContext { RequestServices = services };
+        var policies = new RateLimitPolicyMutations(store.Object, Mock.Of<IShellReleaseManager>());
+        var limiters = new RateLimitLimiterMutations(store.Object);
+
+        Assert.Equal(404, Assert.IsType<ProblemHttpResult>(await RateLimitEndpoints.DeleteAsync(http, Authorization(), store.Object, policies, "missing")).StatusCode);
+        Assert.Equal(404, Assert.IsType<ProblemHttpResult>(await RateLimitEndpoints.DeleteLimiterAsync(http, Authorization(), store.Object, limiters, "missing", "limiter")).StatusCode);
+        Assert.Equal(404, Assert.IsType<ProblemHttpResult>(await RateLimitEndpoints.DeleteLimiterAsync(http, Authorization(), store.Object, limiters, policy.PolicyId, "missing")).StatusCode);
+    }
+
+    [Fact]
     public async Task PolicyCreate_RetryAndConflict_DoNotOverwriteExistingState()
     {
         var policy = Policy();
         var store = Store(policy);
         var mutations = new RateLimitPolicyMutations(store.Object, Mock.Of<IShellReleaseManager>());
         var input = new RateLimitPolicyInput { Name = " Policy ", Scope = "Endpoint", Path = "/limited" };
-        var retry = Assert.IsType<Created<RateLimitPolicyResponse>>(await RateLimitEndpoints.CreateAsync(new DefaultHttpContext(),
+        var retry = Assert.IsType<Ok<RateLimitPolicyResponse>>(await RateLimitEndpoints.CreateAsync(new DefaultHttpContext(),
             Authorization(), store.Object, mutations, input));
         Assert.Equal("policy", retry.Value.PolicyId);
         input.Path = "/other";

@@ -120,7 +120,7 @@ Numeric limits and periods must be positive, and `queueLimit` nonnegative. Omitt
 | `path` | string | For `Endpoint` | An absolute request path prefix. |
 | `groupName` | string | For `Group` | The group name. |
 
-A policy is created disabled. `201` returns the policy, with a `Location` header. Repeating the request with the same name and definition also returns `201`, with the existing policy, and doesn't change it. The same name with another definition returns `409`, and an invalid definition `400`.
+A policy is created disabled. `201` returns the policy, with a `Location` header. Repeating the request with the same name and definition returns `200` with the existing policy, and doesn't change it. The same name with another definition returns `409`, and an invalid definition `400`.
 
 ### Update a policy
 

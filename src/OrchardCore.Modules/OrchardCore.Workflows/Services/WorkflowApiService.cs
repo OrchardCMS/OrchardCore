@@ -59,7 +59,7 @@ internal sealed class WorkflowApiService
         return workflowType is null ? null : ToDto(workflowType);
     }
 
-    public async Task<WorkflowTypeDto> CreateWorkflowTypeAsync(WorkflowTypeDto model, ModelStateDictionary modelState)
+    public async Task<WorkflowTypeCreateResult> CreateWorkflowTypeAsync(WorkflowTypeDto model, ModelStateDictionary modelState)
     {
         Normalize(model);
         AssignStableActivityIds(model);
@@ -69,12 +69,10 @@ internal sealed class WorkflowApiService
             if (existing is not null)
             {
                 var existingDto = ToDto(existing);
-                if (!AreEquivalent(model, existingDto))
-                {
-                    modelState.AddModelError(nameof(WorkflowTypeDto.WorkflowTypeId), S["A workflow type with the same identifier already exists with a different definition."]);
-                }
 
-                return existingDto;
+                return AreEquivalent(model, existingDto)
+                    ? new WorkflowTypeCreateResult { Definition = existingDto, IsExisting = true }
+                    : new WorkflowTypeCreateResult { ConflictDetail = S["A workflow type with the same identifier already exists with a different definition."] };
             }
         }
 
@@ -83,12 +81,12 @@ internal sealed class WorkflowApiService
 
         if (!modelState.IsValid)
         {
-            return null;
+            return new WorkflowTypeCreateResult();
         }
 
         workflowType.WorkflowTypeId ??= _workflowTypeIdGenerator.GenerateUniqueId(workflowType);
         await _workflowTypeStore.SaveAsync(workflowType);
-        return ToDto(workflowType);
+        return new WorkflowTypeCreateResult { Definition = ToDto(workflowType) };
     }
 
     public async Task<WorkflowTypeDto> UpdateWorkflowTypeAsync(string workflowTypeId, WorkflowTypeDto model, ModelStateDictionary modelState)
@@ -661,4 +659,14 @@ internal static class WorkflowSchemaBuilder
                 property.Name != nameof(IActivity.Properties))
             .OrderBy(property => property.Name, StringComparer.Ordinal)
             .ToArray();
+}
+
+/// <summary>Reports whether a request created a workflow type, found an equivalent one, or conflicts with a different one.</summary>
+internal sealed class WorkflowTypeCreateResult
+{
+    public WorkflowTypeDto Definition { get; init; }
+
+    public bool IsExisting { get; init; }
+
+    public string ConflictDetail { get; init; }
 }

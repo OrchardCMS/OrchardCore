@@ -36,7 +36,7 @@ public class TemplateManagementApiTests
                 CreateAuthorizationService(),
                 manager,
                 definition),
-            StatusCodes.Status201Created);
+            StatusCodes.Status200OK);
 
         await AssertStatusAsync(context, manager =>
             TemplateManagementEndpoints.CreateAsync(
@@ -90,11 +90,11 @@ public class TemplateManagementApiTests
 
         await AssertStatusAsync(context, manager =>
             TemplateManagementEndpoints.DeleteAsync(
-                new DefaultHttpContext(),
+                new DefaultHttpContext { RequestServices = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider() },
                 CreateAuthorizationService(),
                 manager,
                 name),
-            StatusCodes.Status204NoContent);
+            StatusCodes.Status404NotFound);
     }
 
     private static async Task AssertStatusAsync(

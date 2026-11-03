@@ -43,7 +43,7 @@ public class RoleManagementEndpointsTests
             CreatePermissionCatalog(),
             CreateLocalizer());
 
-        Assert.Equal(StatusCodes.Status201Created, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         roleManager.Verify(manager => manager.CreateAsync(It.IsAny<IRole>()), Times.Never);
     }
 

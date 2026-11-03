@@ -284,10 +284,10 @@ Also returns `401`, `403`, or `404`.
 `POST /api/workflows/types`
 
 The required JSON body uses the workflow type contract. With an explicit stable `workflowTypeId`,
-an equivalent retry returns the existing type with `201 Created`. Equivalence is deep equality of
+an equivalent retry returns the existing type with `200 OK`. Equivalence is deep equality of
 the complete normalized definition, including settings, activity and transition order, IDs,
-coordinates, flags, and properties. The same ID with a different definition returns `400`
-validation Problem Details under `WorkflowTypeId`.
+coordinates, flags, and properties. The same ID with a different definition returns `409`
+Problem Details.
 
 When a stable workflow ID is supplied, an omitted or null activity ID is generated
 deterministically as `{workflowTypeId}-activity-{one-based-index}`. A blank activity ID uses the
@@ -325,7 +325,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
   https://localhost:5001/api/workflows/types
 ```
 
-`201 Created` returns the saved or equivalent existing type and sets `Location` to
+`201 Created` returns the saved type and sets `Location` to
 `/api/workflows/types/{workflowTypeId}`:
 
 ```json

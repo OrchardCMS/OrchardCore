@@ -62,10 +62,12 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Creates a content type definition and optionally configures its attached parts.")
             .WithCliCommand(Cli(["content", "types"], "create", inputMode: CliInputMode.Json))
             .Produces<ContentTypeDefinitionDto>(StatusCodes.Status201Created)
+            .Produces<ContentTypeDefinitionDto>(StatusCodes.Status200OK)
             .ProducesETag()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/types/{name}", UpdateTypeAsync)
             .WithName("ApiUpdateContentTypeDefinition")
@@ -175,10 +177,12 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Creates a content part definition and optionally configures its fields.")
             .WithCliCommand(Cli(["content", "parts"], "create", inputMode: CliInputMode.Json))
             .Produces<ContentPartDefinitionDto>(StatusCodes.Status201Created)
+            .Produces<ContentPartDefinitionDto>(StatusCodes.Status200OK)
             .ProducesETag()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/parts/{name}", UpdatePartAsync)
             .WithName("ApiUpdateContentPartDefinition")
@@ -238,10 +242,12 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Adds a field definition to a content part.")
             .WithCliCommand(Cli(["content", "fields"], "create", arguments: [new CliArgumentMetadata("partName", 0)], inputMode: CliInputMode.Json))
             .Produces<ContentPartFieldDefinitionDto>(StatusCodes.Status201Created)
+            .Produces<ContentPartFieldDefinitionDto>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/parts/{partName}/fields/{fieldName}", UpdateFieldAsync)
             .WithName("ApiUpdateContentPartField")
@@ -303,10 +309,8 @@ internal static class ContentDefinitionApiEndpoints
         }
 
         var modelState = new ModelStateDictionary();
-        var definition = await service.CreateTypeAsync(model, modelState);
-        return !modelState.IsValid
-            ? ValidationProblem(modelState)
-            : TypedResults.Created($"/api/content-definition/types/{definition!.Name}", httpContext.WithApiETag(definition));
+        var result = await service.CreateTypeAsync(model, modelState);
+        return CreateVersionedResponse(httpContext, result, modelState, definition => $"/api/content-definition/types/{definition.Name}");
     }
 
     private static async Task<IResult> UpdateTypeAsync(string name, ContentTypeDefinitionDto model, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -420,10 +424,8 @@ internal static class ContentDefinitionApiEndpoints
         }
 
         var modelState = new ModelStateDictionary();
-        var definition = await service.CreatePartAsync(model, modelState);
-        return !modelState.IsValid
-            ? ValidationProblem(modelState)
-            : TypedResults.Created($"/api/content-definition/parts/{definition!.Name}", httpContext.WithApiETag(definition));
+        var result = await service.CreatePartAsync(model, modelState);
+        return CreateVersionedResponse(httpContext, result, modelState, definition => $"/api/content-definition/parts/{definition.Name}");
     }
 
     private static async Task<IResult> UpdatePartAsync(string name, ContentPartDefinitionDto model, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -491,15 +493,13 @@ internal static class ContentDefinitionApiEndpoints
         }
 
         var modelState = new ModelStateDictionary();
-        var field = await service.CreateFieldAsync(partName, model, modelState);
-        if (field is null && modelState.IsValid)
+        var result = await service.CreateFieldAsync(partName, model, modelState);
+        if (result is null)
         {
             return httpContext.ApiNotFoundProblem();
         }
 
-        return !modelState.IsValid
-            ? ValidationProblem(modelState)
-            : TypedResults.Created($"/api/content-definition/parts/{partName}/fields/{field!.Name}", field);
+        return CreateResponse(result, modelState, field => $"/api/content-definition/parts/{partName}/fields/{field.Name}");
     }
 
     private static async Task<IResult> UpdateFieldAsync(string partName, string fieldName, ContentPartFieldDefinitionDto model, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -527,6 +527,33 @@ internal static class ContentDefinitionApiEndpoints
         }
 
         return await service.DeleteFieldAsync(partName, fieldName) == true ? TypedResults.NoContent() : httpContext.ApiNotFoundProblem();
+    }
+
+    private static IResult CreateVersionedResponse<T>(HttpContext httpContext, ContentDefinitionCreateResult<T> result, ModelStateDictionary modelState, Func<T, string> location)
+        where T : class
+    {
+        if (modelState.IsValid && result.ConflictDetail is null)
+        {
+            httpContext.SetApiETag(result.Definition);
+        }
+
+        return CreateResponse(result, modelState, location);
+    }
+
+    private static IResult CreateResponse<T>(ContentDefinitionCreateResult<T> result, ModelStateDictionary modelState, Func<T, string> location)
+        where T : class
+    {
+        if (!modelState.IsValid)
+        {
+            return ValidationProblem(modelState);
+        }
+
+        if (result.ConflictDetail is not null)
+        {
+            return TypedResults.Problem(detail: result.ConflictDetail, statusCode: StatusCodes.Status409Conflict);
+        }
+
+        return result.IsExisting ? TypedResults.Ok(result.Definition) : TypedResults.Created(location(result.Definition), result.Definition);
     }
 
     private static CliOperationMetadata Cli(

@@ -26,7 +26,7 @@ public class QueryManagementEndpointsTests
             CreateLocalizer(),
             definition);
 
-        Assert.Equal(StatusCodes.Status201Created, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         queryManager.Verify(manager => manager.NewAsync(It.IsAny<string>(), It.IsAny<System.Text.Json.Nodes.JsonNode>()), Times.Never);
         queryManager.Verify(manager => manager.SaveAsync(It.IsAny<Query[]>()), Times.Never);
     }
@@ -116,18 +116,19 @@ public class QueryManagementEndpointsTests
     }
 
     [Fact]
-    public async Task DeleteAsync_MissingQueryReturnsNoContent()
+    public async Task DeleteAsync_MissingQuery_ReturnsNotFound()
     {
         var queryManager = new Mock<IQueryManager>();
         queryManager.Setup(manager => manager.GetQueryAsync("missing")).ReturnsAsync((Query)null);
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
 
         var result = await QueryManagementEndpoints.DeleteAsync(
-            new DefaultHttpContext(),
+            new DefaultHttpContext { RequestServices = services },
             CreateAuthorizationService(),
             queryManager.Object,
             "missing");
 
-        Assert.Equal(StatusCodes.Status204NoContent, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal(StatusCodes.Status404NotFound, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         queryManager.Verify(manager => manager.DeleteQueryAsync(It.IsAny<string[]>()), Times.Never);
     }
 

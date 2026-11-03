@@ -39,7 +39,7 @@ public class LayerManagementApiTests
             {
                 var result = await LayerManagementEndpoints.CreateAsync(new DefaultHttpContext(), Authorize(true),
                     scope.ServiceProvider.GetRequiredService<ILayerService>(), scope.ServiceProvider.GetRequiredService<IRuleManagementService>(), definition);
-                var created = Assert.IsType<Created<LayerDefinitionDto>>(result).Value;
+                var created = retry == 0 ? Assert.IsType<Created<LayerDefinitionDto>>(result).Value : Assert.IsType<Ok<LayerDefinitionDto>>(result).Value;
                 if (conditionId is not null)
                 {
                     Assert.Equal(conditionId, created.Conditions[0].ConditionId);
@@ -71,12 +71,12 @@ public class LayerManagementApiTests
             Assert.Equal("Updated", updated.Description);
             Assert.Equal(conditionId, updated.Conditions[0].ConditionId);
         });
-        for (var retry = 0; retry < 2; retry++)
-        {
-            await context.UsingTenantScopeAsync(async scope =>
-                Assert.IsType<NoContent>(await LayerManagementEndpoints.DeleteAsync(new DefaultHttpContext(), Authorize(true),
-                    scope.ServiceProvider.GetRequiredService<ILayerService>(), name)));
-        }
+        await context.UsingTenantScopeAsync(async scope =>
+            Assert.IsType<NoContent>(await LayerManagementEndpoints.DeleteAsync(new DefaultHttpContext(), Authorize(true),
+                scope.ServiceProvider.GetRequiredService<ILayerService>(), name)));
+        await context.UsingTenantScopeAsync(async scope =>
+            Assert.Equal(404, Assert.IsAssignableFrom<IStatusCodeHttpResult>(await LayerManagementEndpoints.DeleteAsync(new DefaultHttpContext { RequestServices = scope.ServiceProvider }, Authorize(true),
+                scope.ServiceProvider.GetRequiredService<ILayerService>(), name)).StatusCode));
     }
 
     [Fact]

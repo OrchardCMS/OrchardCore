@@ -28,10 +28,10 @@ public class TemplatesOpenApiDiscoveryTests
             .ToArray();
 
         AssertOperation(endpoints, "api/templates", "GET", "ApiListTemplates", "list", null, [200, 400, 401, 403]);
-        AssertOperation(endpoints, "api/templates", "POST", "ApiCreateTemplate", "create", "application/json", [201, 400, 401, 403, 409]);
+        AssertOperation(endpoints, "api/templates", "POST", "ApiCreateTemplate", "create", "application/json", [200, 201, 400, 401, 403, 409]);
         AssertOperation(endpoints, "api/templates/{name}", "GET", "ApiGetTemplate", "show", null, [200, 401, 403, 404]);
         AssertOperation(endpoints, "api/templates/{name}", "PUT", "ApiUpdateTemplate", "update", "application/json", [200, 400, 401, 403, 404]);
-        AssertOperation(endpoints, "api/templates/{name}", "DELETE", "ApiDeleteTemplate", "delete", null, [200, 204, 401, 403]);
+        AssertOperation(endpoints, "api/templates/{name}", "DELETE", "ApiDeleteTemplate", "delete", null, [200, 401, 403, 404]);
     }
 
     [Fact]

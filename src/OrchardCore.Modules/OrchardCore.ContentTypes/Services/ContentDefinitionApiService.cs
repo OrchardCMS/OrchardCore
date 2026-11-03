@@ -119,7 +119,7 @@ internal sealed class ContentDefinitionApiService
             Schema = ContentDefinitionSchemaBuilder.BuildSchema(schema.Type, _serializerOptions),
         };
 
-    public async Task<ContentTypeDefinitionDto> CreateTypeAsync(ContentTypeDefinitionDto model, ModelStateDictionary modelState)
+    public async Task<ContentDefinitionCreateResult<ContentTypeDefinitionDto>> CreateTypeAsync(ContentTypeDefinitionDto model, ModelStateDictionary modelState)
     {
         NormalizeType(model);
         await NormalizePartReferencesAsync(model);
@@ -129,19 +129,17 @@ internal sealed class ContentDefinitionApiService
         if (existing is not null)
         {
             var existingDto = ToDto(existing);
-            if (!AreEquivalent(model, existingDto))
-            {
-                modelState.AddModelError(nameof(ContentTypeDefinitionDto.Name), S["A content type with the same technical name already exists with a different definition."]);
-            }
 
-            return existingDto;
+            return AreEquivalent(model, existingDto)
+                ? ContentDefinitionCreateResult<ContentTypeDefinitionDto>.Existing(existingDto)
+                : ContentDefinitionCreateResult<ContentTypeDefinitionDto>.Conflict(S["A content type with the same technical name already exists with a different definition."]);
         }
 
         await ValidateTypeAsync(model, modelState);
 
         if (!modelState.IsValid)
         {
-            return null;
+            return ContentDefinitionCreateResult<ContentTypeDefinitionDto>.Invalid;
         }
 
         await _contentDefinitionService.AddTypeAsync(model.Name, model.DisplayName);
@@ -149,13 +147,13 @@ internal sealed class ContentDefinitionApiService
         var definition = await BuildTypeDefinitionAsync(model, modelState);
         if (!modelState.IsValid || definition is null)
         {
-            return null;
+            return ContentDefinitionCreateResult<ContentTypeDefinitionDto>.Invalid;
         }
 
         await _contentDefinitionManager.StoreTypeDefinitionAsync(definition);
         await NotifyContentTypeUpdatedAsync(definition);
 
-        return ToDto(definition);
+        return ContentDefinitionCreateResult<ContentTypeDefinitionDto>.Created(ToDto(definition));
     }
 
     public async Task<ContentTypeDefinitionDto> UpdateTypeAsync(string name, ContentTypeDefinitionDto model, ModelStateDictionary modelState)
@@ -203,7 +201,7 @@ internal sealed class ContentDefinitionApiService
         return true;
     }
 
-    public async Task<ContentPartDefinitionDto> CreatePartAsync(ContentPartDefinitionDto model, ModelStateDictionary modelState)
+    public async Task<ContentDefinitionCreateResult<ContentPartDefinitionDto>> CreatePartAsync(ContentPartDefinitionDto model, ModelStateDictionary modelState)
     {
         NormalizePart(model);
         var existing = string.IsNullOrWhiteSpace(model.Name)
@@ -212,19 +210,17 @@ internal sealed class ContentDefinitionApiService
         if (existing is not null)
         {
             var existingDto = ToDto(existing);
-            if (!AreEquivalent(model, existingDto))
-            {
-                modelState.AddModelError(nameof(ContentPartDefinitionDto.Name), S["A content part with the same technical name already exists with a different definition."]);
-            }
 
-            return existingDto;
+            return AreEquivalent(model, existingDto)
+                ? ContentDefinitionCreateResult<ContentPartDefinitionDto>.Existing(existingDto)
+                : ContentDefinitionCreateResult<ContentPartDefinitionDto>.Conflict(S["A content part with the same technical name already exists with a different definition."]);
         }
 
         await ValidatePartAsync(model, modelState);
 
         if (!modelState.IsValid)
         {
-            return null;
+            return ContentDefinitionCreateResult<ContentPartDefinitionDto>.Invalid;
         }
 
         await _contentDefinitionService.AddPartAsync(model.Name);
@@ -232,13 +228,13 @@ internal sealed class ContentDefinitionApiService
         var definition = BuildPartDefinition(model, modelState);
         if (!modelState.IsValid || definition is null)
         {
-            return null;
+            return ContentDefinitionCreateResult<ContentPartDefinitionDto>.Invalid;
         }
 
         await _contentDefinitionManager.StorePartDefinitionAsync(definition);
         await NotifyContentPartUpdatedAsync(definition);
 
-        return ToDto(definition);
+        return ContentDefinitionCreateResult<ContentPartDefinitionDto>.Created(ToDto(definition));
     }
 
     public async Task<ContentPartDefinitionDto> UpdatePartAsync(string name, ContentPartDefinitionDto model, ModelStateDictionary modelState)
@@ -286,7 +282,7 @@ internal sealed class ContentDefinitionApiService
         return true;
     }
 
-    public async Task<ContentPartFieldDefinitionDto> CreateFieldAsync(string partName, ContentPartFieldDefinitionDto model, ModelStateDictionary modelState)
+    public async Task<ContentDefinitionCreateResult<ContentPartFieldDefinitionDto>> CreateFieldAsync(string partName, ContentPartFieldDefinitionDto model, ModelStateDictionary modelState)
     {
         var part = await GetPartAsync(partName);
         if (part is null)
@@ -298,18 +294,16 @@ internal sealed class ContentDefinitionApiService
         var existing = part.Fields.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase));
         if (existing is not null)
         {
-            if (!AreEquivalent(model, existing))
-            {
-                modelState.AddModelError(nameof(ContentPartFieldDefinitionDto.Name), S["A content field with the same name already exists with a different definition."]);
-            }
-
-            return existing;
+            return AreEquivalent(model, existing)
+                ? ContentDefinitionCreateResult<ContentPartFieldDefinitionDto>.Existing(existing)
+                : ContentDefinitionCreateResult<ContentPartFieldDefinitionDto>.Conflict(S["A content field with the same name already exists with a different definition."]);
         }
 
         part.Fields.Add(model);
 
         var updatedPart = await UpdatePartAsync(partName, part, modelState);
-        return updatedPart?.Fields.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase));
+        return ContentDefinitionCreateResult<ContentPartFieldDefinitionDto>.Created(
+            updatedPart?.Fields.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)));
     }
 
     public async Task<ContentPartFieldDefinitionDto> UpdateFieldAsync(string partName, string fieldName, ContentPartFieldDefinitionDto model, ModelStateDictionary modelState)
@@ -683,4 +677,23 @@ internal static class ContentDefinitionSchemaBuilder
                 },
             }) as JsonObject
             ?? [];
+}
+
+/// <summary>Reports whether a request created a named definition, found an equivalent one, or conflicts with a different one.</summary>
+internal sealed class ContentDefinitionCreateResult<T>
+    where T : class
+{
+    public static ContentDefinitionCreateResult<T> Invalid { get; } = new();
+
+    public T Definition { get; private init; }
+
+    public bool IsExisting { get; private init; }
+
+    public string ConflictDetail { get; private init; }
+
+    public static ContentDefinitionCreateResult<T> Created(T definition) => new() { Definition = definition };
+
+    public static ContentDefinitionCreateResult<T> Existing(T definition) => new() { Definition = definition, IsExisting = true };
+
+    public static ContentDefinitionCreateResult<T> Conflict(string detail) => new() { ConflictDetail = detail };
 }

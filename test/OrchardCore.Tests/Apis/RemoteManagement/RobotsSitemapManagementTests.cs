@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Sitemaps.Drivers;
+using OrchardCore.Sitemaps.Endpoints;
 using OrchardCore.Sitemaps.ViewModels;
 using OrchardCore.Contents.Sitemaps;
 using System.Text.Json.Nodes;
@@ -130,6 +131,43 @@ public class RobotsSitemapManagementTests
     }
 
     [Fact]
+    public async Task Delete_MissingSitemapOrSource_ReturnsNotFound()
+    {
+        var fixture = Create();
+        fixture.Document.Sitemaps["map"] = new Sitemap { SitemapId = "map", Name = "Map", Path = "map.xml" };
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
+        var http = new DefaultHttpContext { RequestServices = services };
+
+        Assert.Equal(404, Assert.IsAssignableFrom<IStatusCodeHttpResult>(await SitemapEndpoints.DeleteAsync(http, fixture.Manager, "missing")).StatusCode);
+        Assert.Equal(404, Assert.IsAssignableFrom<IStatusCodeHttpResult>(await SitemapSourceEndpoints.DeleteAsync(http, fixture.Manager, "missing", "source")).StatusCode);
+        Assert.Equal(404, Assert.IsAssignableFrom<IStatusCodeHttpResult>(await SitemapSourceEndpoints.DeleteAsync(http, fixture.Manager, "map", "missing")).StatusCode);
+        fixture.Store.Verify(value => value.UpdateAsync(fixture.Document, null), Times.Never);
+    }
+
+    [Fact]
+    public async Task SaveAsync_RepeatedCreate_ReturnsStoredSitemapOrConflict()
+    {
+        var fixture = Create();
+        var ids = new Mock<ISitemapIdGenerator>();
+        ids.Setup(value => value.GenerateUniqueId()).Returns("first");
+        var service = Management(fixture.Manager, ids.Object);
+        var definition = new SitemapDefinition { Name = "First", Path = "first.xml" };
+        var created = await service.SaveAsync(definition);
+        Assert.True(created.Changed);
+
+        var retry = await service.SaveAsync(new SitemapDefinition { Name = "First", Path = "/FIRST.xml" });
+        Assert.False(retry.Changed);
+        Assert.False(retry.Conflict);
+        Assert.Same(created.Sitemap, retry.Sitemap);
+
+        var different = await service.SaveAsync(new SitemapDefinition { Name = "Other", Path = "first.xml" });
+        Assert.True(different.Conflict);
+        Assert.Null(different.Sitemap);
+        Assert.Equal("First", created.Sitemap.Name);
+        fixture.Store.Verify(value => value.UpdateAsync(fixture.Document, null), Times.Once);
+    }
+
+    [Fact]
     public async Task ExistingManagerInvalidatesIndexesWhenChildChangesOrIsDeleted()
     {
         var fixture = Create();
@@ -202,12 +240,12 @@ public class RobotsSitemapManagementTests
         fixture.Store.Verify(value => value.UpdateAsync(fixture.Document, null), Times.Once);
     }
 
-    private static SitemapManagementService Management(ISitemapManager manager)
+    private static SitemapManagementService Management(ISitemapManager manager, ISitemapIdGenerator ids = null)
     {
         var slug = new Mock<ISlugService>();
         slug.Setup(value => value.Slugify(It.IsAny<string>())).Returns((string value) => value.ToLowerInvariant());
         return new SitemapManagementService(manager, new SitemapHelperService(slug.Object, manager,
-            new StringLocalizer<SitemapHelperService>(new NullStringLocalizerFactory())), Mock.Of<ISitemapIdGenerator>());
+            new StringLocalizer<SitemapHelperService>(new NullStringLocalizerFactory())), ids ?? Mock.Of<ISitemapIdGenerator>());
     }
     private static SitemapSourceManagementService Sources(ISitemapManager manager)
     {

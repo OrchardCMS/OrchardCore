@@ -65,6 +65,7 @@ public static class QueryManagementEndpoints
             })
             .Accepts<QueryDefinitionDto>("application/json")
             .Produces<QueryDefinitionDto>(StatusCodes.Status201Created)
+            .Produces<QueryDefinitionDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -302,7 +303,7 @@ public static class QueryManagementEndpoints
         {
             var existingDefinition = ToDefinitionDto(existing);
             return AreEquivalent(definition, existingDefinition)
-                ? TypedResults.Created($"/api/queries/named/{Uri.EscapeDataString(existing.Name)}", httpContext.WithApiETag(existingDefinition))
+                ? TypedResults.Ok(existingDefinition)
                 : TypedResults.Problem(
                     detail: $"A query named '{definition.Name}' already exists with a different definition.",
                     statusCode: StatusCodes.Status409Conflict);

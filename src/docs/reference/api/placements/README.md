@@ -116,7 +116,7 @@ has no persistent effect.
 complete definition and a tenant-prefixed `Location` for the show operation. An empty array or
 invalid definition returns `400` validation errors.
 
-The shape type is the stable identity. An equivalent retry returns `201` with the stored definition
+The shape type is the stable identity. An equivalent retry returns `200` with the stored definition
 without another mutation. Equivalence compares the complete serialized rule arrays, including
 ordered rules, alternates/wrappers and filter values; JSON object property order is insignificant.
 Omitted optional rule members deserialize to their defaults. Explicit empty arrays and null arrays

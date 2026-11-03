@@ -103,7 +103,7 @@ Malformed JSON or unknown members return `400`. Repeating validation has no pers
 definition and a tenant-prefixed `Location` pointing to the show operation. Usage HTML is sanitized
 and the name is normalized before storage. Invalid definitions return `400` validation errors.
 
-An identical stable-name retry returns `201` and the existing definition without another document
+An identical stable-name retry returns `200` and the existing definition without another document
 mutation. Equivalence compares content, hint, sanitized usage, default value and ordered categories
 using ordinal equality; missing/null categories normalize to an empty array. Name identity is
 case-insensitive. A differing definition under an existing name returns `409` without overwriting it.

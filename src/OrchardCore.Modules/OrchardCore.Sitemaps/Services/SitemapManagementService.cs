@@ -32,13 +32,23 @@ internal sealed class SitemapManagementService
         if (id is not null && existing is null) { return new() { NotFound = true }; }
         if (existing is not null && existing.GetType().Name != input.Kind) { errors["kind"] = ["An existing sitemap's kind cannot change."]; }
         var path = string.IsNullOrWhiteSpace(input.Path) ? _helper.GetSitemapSlug(input.Name) : input.Path;
+        var contained = input.ContainedSitemapIds ?? [];
+        if (id is null && errors.Count == 0)
+        {
+            // The path identifies a sitemap when it's created, as its ID is generated.
+            var relativePath = path.TrimStart('/');
+            var taken = (await _manager.GetSitemapsAsync()).FirstOrDefault(sitemap => string.Equals(sitemap.Path, relativePath, StringComparison.OrdinalIgnoreCase));
+            if (taken is not null)
+            {
+                return IsEquivalent(taken, input, relativePath, contained) ? new() { Sitemap = taken } : new() { Conflict = true };
+            }
+        }
         var validation = new ValidationModel();
         await _helper.ValidatePathAsync(path, validation, id);
         foreach (var entry in validation.ModelState.Where(entry => entry.Value.Errors.Count > 0))
         {
             errors[entry.Key] = entry.Value.Errors.Select(error => error.ErrorMessage).ToArray();
         }
-        var contained = input.ContainedSitemapIds ?? [];
         if (input.Kind == "Sitemap" && contained.Length > 0) { errors["containedSitemapIds"] = ["Only sitemap indexes can contain other sitemaps."]; }
         if (input.Kind == "SitemapIndex")
         {
@@ -67,6 +77,13 @@ internal sealed class SitemapManagementService
         return new() { Sitemap = sitemap, Changed = changed };
     }
 
+    private static bool IsEquivalent(SitemapType sitemap, SitemapDefinition input, string path, string[] contained)
+        => sitemap.GetType().Name == input.Kind
+            && sitemap.Name == input.Name
+            && string.Equals(sitemap.Path, path, StringComparison.OrdinalIgnoreCase)
+            && sitemap.Enabled == input.Enabled
+            && (sitemap.SitemapSources.OfType<SitemapIndexSource>().SingleOrDefault()?.ContainedSitemapIds ?? []).SequenceEqual(contained);
+
     private sealed class ValidationModel : IUpdateModel
     {
         public ModelStateDictionary ModelState { get; } = new();
@@ -83,6 +100,7 @@ internal sealed class SitemapMutationResult
     public SitemapType Sitemap { get; init; }
     public bool Changed { get; init; }
     public bool NotFound { get; init; }
+    public bool Conflict { get; init; }
     public Dictionary<string, string[]> Errors { get; init; } = [];
 }
 

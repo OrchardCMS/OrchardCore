@@ -76,6 +76,7 @@ See [Authentication](authentication/README.md) for the OpenID Connect endpoints 
 
 ## Request and response conventions
 
+- A management action that isn't the creation, replacement or deletion of the resource uses `POST` with a colon before the name of the action, for example `POST /api/content/{contentItemId}:publish` or `POST /api/content:validate`. A path segment names a resource, including a sub-resource replaced by `PUT` such as `/api/content/{contentItemId}/draft`. Routes that predate the management APIs keep their form.
 - JSON property names use the casing shown in request and response examples. They are generated from the shipped endpoint contracts.
 - Send JSON request bodies with `Content-Type: application/json`.
 - Binary upload operations document their required content type on their API page.
@@ -147,6 +148,8 @@ With the [Rate Limits](../modules/RateLimits/README.md) feature, a rejected requ
 ## Retrying mutations
 
 Deleting a resource that doesn't exist returns `404 Not Found` on every management API, with the exception of the legacy routes that predate them, so a client repeating a delete must accept this status. A successful deletion returns what the page of the resource documents.
+
+A create request for a resource whose identity the client chooses, such as a name, is retry-safe: repeating it with an equivalent definition returns `200 OK` with the stored resource and changes nothing, and a different definition under the same identity returns `409 Conflict`.
 
 Do not infer other retry behavior from the HTTP method alone. Each resource page documents the implemented contract for repeated mutations, including:
 

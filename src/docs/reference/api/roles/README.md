@@ -249,8 +249,8 @@ Accept: application/json
 
 ### `201 Created`
 
-The `Location` header is `/api/roles/{escaped-role-name}`. The same status and existing role are
-returned for an equivalent retry. Equivalence requires an ordinal-exact description, including
+The `Location` header is `/api/roles/{escaped-role-name}`. An equivalent retry returns `200 OK`
+with the existing role. Equivalence requires an ordinal-exact description, including
 the distinction between null and empty, and set equality of directly assigned permission claims;
 permission order does not matter.
 
@@ -301,7 +301,8 @@ The actual `permissions` array includes the tenant's entire installed permission
 
 | Status | Meaning |
 | --- | --- |
-| `201 Created` | The role was created, or an existing role was exactly equivalent. |
+| `200 OK` | An existing role was exactly equivalent. |
+| `201 Created` | The role was created. |
 | `400 Bad Request` | Missing/malformed JSON, request validation failure, or an Identity role-manager error. |
 | `401 Unauthorized` | The bearer token is absent or rejected. |
 | `403 Forbidden` | A required permission is missing. |

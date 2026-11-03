@@ -71,6 +71,7 @@ internal static class RoleManagementEndpoints
             })
             .Accepts<RoleCreateRequest>("application/json")
             .Produces<RoleResponse>(StatusCodes.Status201Created)
+            .Produces<RoleResponse>(StatusCodes.Status200OK)
             .ProducesETag()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -219,7 +220,7 @@ internal static class RoleManagementEndpoints
             {
                 httpContext.SetApiETag(VersionState(existing));
 
-                return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(existing.RoleName)}", await ToResponseAsync(existing, authorizationService, roleService, permissionCatalog));
+                return TypedResults.Ok(await ToResponseAsync(existing, authorizationService, roleService, permissionCatalog));
             }
 
             return TypedResults.Problem(

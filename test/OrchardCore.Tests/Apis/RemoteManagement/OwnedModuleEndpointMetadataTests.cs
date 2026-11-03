@@ -39,7 +39,7 @@ public class OwnedModuleEndpointMetadataTests
         AssertOperation(endpoints, "api/tenants/{tenantName}:install", "POST", "ApiInstallTenantManagement", "Tenants", ["tenants"], "install", "application/json", [201, 400, 401, 403, 404, 409, 500]);
         AssertOperation(endpoints, "api/tenants/{tenantName}:setup", "POST", "ApiSetupTenantManagement", "Tenants", ["tenants"], "setup", "application/json", [200, 400, 401, 403, 404, 409, 500]);
         AssertOperation(endpoints, "api/tenants/{tenantName}", "PUT", "ApiUpdateTenantManagement", "Tenants", ["tenants"], "update", "application/json", [200, 400, 401, 403, 404]);
-        AssertOperation(endpoints, "api/tenants/{tenantName}", "DELETE", "ApiDeleteTenant", "Tenants", ["tenants"], "delete", null, [200, 204, 400, 401, 403]);
+        AssertOperation(endpoints, "api/tenants/{tenantName}", "DELETE", "ApiDeleteTenant", "Tenants", ["tenants"], "delete", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/tenants/{tenantName}:start", "POST", "ApiStartTenant", "Tenants", ["tenants"], "start", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/tenants/{tenantName}:stop", "POST", "ApiStopTenant", "Tenants", ["tenants"], "stop", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/tenants/setup-options", "GET", "ApiGetTenantSetupOptions", "Tenants", ["tenants", "setup-options"], "show", null, [200, 401, 403]);
@@ -84,7 +84,7 @@ public class OwnedModuleEndpointMetadataTests
 
         AssertOperation(endpoints, "api/roles", "GET", "ApiListRoles", "Roles", ["roles"], "list", null, [200, 400, 401, 403]);
         AssertOperation(endpoints, "api/roles/{roleId}", "GET", "ApiGetRole", "Roles", ["roles"], "show", null, [200, 401, 403, 404]);
-        AssertOperation(endpoints, "api/roles", "POST", "ApiCreateRole", "Roles", ["roles"], "create", "application/json", [201, 400, 401, 403, 409]);
+        AssertOperation(endpoints, "api/roles", "POST", "ApiCreateRole", "Roles", ["roles"], "create", "application/json", [200, 201, 400, 401, 403, 409]);
         AssertOperation(endpoints, "api/roles/{roleId}", "PUT", "ApiUpdateRole", "Roles", ["roles"], "update", "application/json", [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/roles/{roleId}", "DELETE", "ApiDeleteRole", "Roles", ["roles"], "delete", null, [204, 400, 401, 403, 404]);
 

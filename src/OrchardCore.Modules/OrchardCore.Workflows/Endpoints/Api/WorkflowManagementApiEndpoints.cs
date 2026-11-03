@@ -61,10 +61,12 @@ internal static class WorkflowManagementApiEndpoints
             .WithDescription("Creates a workflow type with its activities and transitions.")
             .WithCliCommand(Cli(["workflow", "types"], "create", inputMode: CliInputMode.Json))
             .Produces<WorkflowTypeDto>(StatusCodes.Status201Created)
+            .Produces<WorkflowTypeDto>(StatusCodes.Status200OK)
             .ProducesETag()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/types/{workflowTypeId}", UpdateWorkflowTypeAsync)
             .WithName("ApiUpdateWorkflowType")
@@ -231,10 +233,22 @@ internal static class WorkflowManagementApiEndpoints
         }
 
         var modelState = new ModelStateDictionary();
-        var workflowType = await service.CreateWorkflowTypeAsync(model, modelState);
-        return !modelState.IsValid
-            ? ValidationProblem(modelState)
-            : TypedResults.Created($"/api/workflows/types/{workflowType!.WorkflowTypeId}", httpContext.WithApiETag(workflowType));
+        var result = await service.CreateWorkflowTypeAsync(model, modelState);
+        if (!modelState.IsValid)
+        {
+            return ValidationProblem(modelState);
+        }
+
+        if (result.ConflictDetail is not null)
+        {
+            return TypedResults.Problem(detail: result.ConflictDetail, statusCode: StatusCodes.Status409Conflict);
+        }
+
+        var definition = httpContext.WithApiETag(result.Definition);
+
+        return result.IsExisting
+            ? TypedResults.Ok(definition)
+            : TypedResults.Created($"/api/workflows/types/{definition.WorkflowTypeId}", definition);
     }
 
     private static async Task<IResult> UpdateWorkflowTypeAsync(string workflowTypeId, WorkflowTypeDto model, WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext)

@@ -42,7 +42,9 @@ public class PlacementManagementTests
                 Assert.Equal(fileStorage, scope.ServiceProvider.GetRequiredService<IPlacementStore>() is FilePlacementsStore);
                 var result = await PlacementManagementEndpoints.CreateAsync(new DefaultHttpContext(), Authorize(true),
                     scope.ServiceProvider.GetRequiredService<PlacementsManager>(), definition);
-                Assert.Equal("RemoteProbe", Assert.IsType<Created<PlacementDefinition>>(result).Value.ShapeType);
+                Assert.Equal("RemoteProbe", retry == 0
+                    ? Assert.IsType<Created<PlacementDefinition>>(result).Value.ShapeType
+                    : Assert.IsType<Ok<PlacementDefinition>>(result).Value.ShapeType);
             });
         }
         await context.UsingTenantScopeAsync(async scope =>
@@ -71,6 +73,19 @@ public class PlacementManagementTests
                 new() { ShapeType = "RemoteProbe", Nodes = [] })));
         }
         await context.UsingTenantScopeAsync(async scope => Assert.Null(await scope.ServiceProvider.GetRequiredService<PlacementsManager>().GetShapePlacementsAsync("RemoteProbe")));
+    }
+
+    [Fact]
+    public async Task Delete_MissingOverride_ReturnsNotFound()
+    {
+        using var context = await CreateContextAsync();
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var result = await PlacementManagementEndpoints.DeleteAsync(new DefaultHttpContext { RequestServices = scope.ServiceProvider }, Authorize(true),
+                scope.ServiceProvider.GetRequiredService<PlacementsManager>(), "MissingShape");
+
+            Assert.Equal(404, Assert.IsType<ProblemHttpResult>(result).StatusCode);
+        });
     }
 
     [Fact]

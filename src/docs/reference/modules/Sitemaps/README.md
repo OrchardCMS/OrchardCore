@@ -204,8 +204,9 @@ sources. Source updates regenerate the sitemap cache identifier.
 }
 ```
 
-Create operations generate IDs. After an uncertain create response, list/read back
-before retrying to avoid duplicate sources. Identical updates and status changes
+Create operations generate IDs. Repeating a sitemap creation with the same path and
+definition returns the stored sitemap, and a different definition conflicts. After an
+uncertain source creation, list/read back before retrying to avoid duplicates. Identical updates and status changes
 avoid unnecessary writes; deleting an absent sitemap or source returns 404.
 
 When SEO is also enabled, `settings sections show/schema/update sitemaps-robots`

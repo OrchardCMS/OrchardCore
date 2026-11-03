@@ -90,7 +90,7 @@ operation instead returns HTTP 200 with `isValid: false` and the same errors.
 
 Updates replace the description and the entire conditions array. Omitted description becomes
 null, and omitted conditions means an empty rule; read the existing definition before editing.
-An identical create retry returns the existing definition, including its generated IDs. A
+An identical create retry returns `200` with the existing definition, including its generated IDs. A
 different definition under the same case-insensitive name returns 409. Identical update retries
 preserve generated IDs and avoid another document update. Explicitly supplied IDs are part of
 the requested identity and must match for a retry to be equivalent. Omitted optional properties

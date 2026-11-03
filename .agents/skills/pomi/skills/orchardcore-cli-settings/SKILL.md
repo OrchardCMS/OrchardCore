@@ -458,8 +458,9 @@ schema before writing `type` plus complete `configuration`. Update/delete source
 commands take sitemap ID followed by source ID. Built-in custom-path and content-type
 sources are supported only when registered; other extensions expose identity.
 
-Create generates an ID: read back after an uncertain result before retrying.
-Updates and status changes can be retried without unnecessary writes. Deleting
+Create generates an ID. Repeating a sitemap create with the same path and definition
+returns the stored sitemap, and another definition conflicts. A source create is not
+retry-safe: read back after an uncertain result before retrying. Updates and status changes can be retried without unnecessary writes. Deleting
 an absent sitemap or source returns 404. Verify public XML, including indexes after changing child paths/status.
 All sitemap operations require `ManageSitemaps` and remote access. Follow the
 existing mutation confirmation policy; deletion commands require `--force`.
