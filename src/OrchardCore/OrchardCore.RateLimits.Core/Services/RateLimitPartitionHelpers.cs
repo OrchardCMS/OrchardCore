@@ -34,16 +34,34 @@ public static class RateLimitPartitionHelpers
         ArgumentException.ThrowIfNullOrWhiteSpace(policyName);
         ArgumentNullException.ThrowIfNull(partitionKeySelector);
 
-        return context => RateLimitPartition.GetSlidingWindowLimiter(
-            partitionKey: CreatePartitionKey(policyName, partitionKeySelector(context)),
-            factory: _ => new SlidingWindowRateLimiterOptions
+        return context => GetSlidingWindowLimiter(
+            CreatePartitionKey(policyName, partitionKeySelector(context)),
+            _ => new SlidingWindowRateLimiterOptions
             {
                 PermitLimit = permitLimit,
                 Window = TimeSpan.FromMinutes(1),
                 SegmentsPerWindow = 6,
                 QueueLimit = 0,
-                AutoReplenishment = true,
             });
+    }
+
+    /// <summary>
+    /// Creates the partition of a sliding-window limiter whose rejected leases tell when to retry.
+    /// </summary>
+    /// <param name="partitionKey">The key of the partition.</param>
+    /// <param name="factory">Creates the options of the limiter. The partitioned limiter replenishes it, as it does for the built-in partition.</param>
+    /// <returns>The partition.</returns>
+    public static RateLimitPartition<string> GetSlidingWindowLimiter(string partitionKey, Func<string, SlidingWindowRateLimiterOptions> factory)
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+
+        return RateLimitPartition.Get(partitionKey, key =>
+        {
+            var options = factory(key);
+            options.AutoReplenishment = false;
+
+            return new SlidingWindowRetryAfterRateLimiter(options);
+        });
     }
 
     /// <summary>

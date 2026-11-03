@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.RateLimits;
 
@@ -6,6 +7,52 @@ namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
 public class RateLimitPartitionHelpersTests
 {
+    [Fact]
+    public async Task GetSlidingWindowLimiter_Rejected_TellsTheWindowAsRetryAfter()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        using var limiter = PartitionedRateLimiter.Create<string, string>(key => RateLimitPartitionHelpers.GetSlidingWindowLimiter(key, _ => new SlidingWindowRateLimiterOptions
+        {
+            PermitLimit = 1,
+            QueueLimit = 0,
+            Window = TimeSpan.FromSeconds(90),
+            SegmentsPerWindow = 3,
+        }));
+
+        using var acquired = await limiter.AcquireAsync("a", 1, cancellationToken);
+        using var rejected = await limiter.AcquireAsync("a", 1, cancellationToken);
+        using var otherPartition = await limiter.AcquireAsync("b", 1, cancellationToken);
+
+        Assert.True(acquired.IsAcquired);
+        Assert.False(rejected.IsAcquired);
+        Assert.True(otherPartition.IsAcquired);
+        Assert.True(rejected.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter));
+        Assert.Equal(TimeSpan.FromSeconds(90), retryAfter);
+    }
+
+    [Fact]
+    public async Task GetSlidingWindowLimiter_WindowElapsed_ReplenishesThePermits()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var partition = RateLimitPartitionHelpers.GetSlidingWindowLimiter("a", _ => new SlidingWindowRateLimiterOptions
+        {
+            PermitLimit = 1,
+            QueueLimit = 0,
+            Window = TimeSpan.FromMilliseconds(50),
+            SegmentsPerWindow = 1,
+        });
+        var limiter = Assert.IsAssignableFrom<ReplenishingRateLimiter>(partition.Factory("a"));
+
+        using var acquired = await limiter.AcquireAsync(1, cancellationToken);
+        await Task.Delay(200, cancellationToken);
+        limiter.TryReplenish();
+        using var afterTheWindow = await limiter.AcquireAsync(1, cancellationToken);
+
+        Assert.False(limiter.IsAutoReplenishing);
+        Assert.True(afterTheWindow.IsAcquired);
+        await limiter.DisposeAsync();
+    }
+
     [Fact]
     public void GetClientPartitionKey_SignedInUser_ReturnsUserKey()
     {

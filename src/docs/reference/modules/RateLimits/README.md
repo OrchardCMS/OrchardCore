@@ -344,7 +344,7 @@ If an endpoint belongs to multiple groups, every matching built-in group limit a
 
 ### Rejection responses
 
-A rejected request gets a `429 Too Many Requests` response with no body. An endpoint whose clients expect errors in another format can register a rejection handler for its route name, which writes the response of every rejected request to that route, whichever limiter rejected it:
+A rejected request gets a `429 Too Many Requests` response with a `Retry-After` header giving the number of seconds to wait: the rest of the window of a fixed window limiter, the time before the permits are back for a token bucket limiter, and the full window of a sliding window limiter. A concurrency limiter has no window, so its rejections have no `Retry-After` header. The response has no body, except under `/api`, where it is a Problem Details with the `rate_limited` [error code](../../api/README.md#error-codes). An endpoint whose clients expect errors in another format can register a rejection handler for its route name, which writes the response of every rejected request to that route, whichever limiter rejected it:
 
 ```csharp
 services.Configure<RateLimitsOptions>(options =>
@@ -356,7 +356,7 @@ services.Configure<RateLimitsOptions>(options =>
 });
 ```
 
-The status code is set to `429` before the handler runs, and the handler can change it. The OpenID token endpoint uses a rejection handler to return an OAuth 2.0 `slow_down` error, with a `Retry-After` header, so that token clients can handle it.
+The status code and the `Retry-After` header are set before the handler runs, and the handler can change them. The OpenID token endpoint uses a rejection handler to return an OAuth 2.0 `slow_down` error, with a `Retry-After` header, so that token clients can handle it.
 
 ### Limits registered by Orchard Core features
 

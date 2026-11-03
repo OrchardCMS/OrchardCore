@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -102,14 +103,31 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
         };
     }
 
-    private ValueTask OnRejectedAsync(OnRejectedContext context, CancellationToken cancellationToken)
+    private async ValueTask OnRejectedAsync(OnRejectedContext context, CancellationToken cancellationToken)
     {
-        if (_rateLimitsOptions.TryGetRouteRejectionHandler(GetEndpointRouteName(context.HttpContext), out var onRejected))
+        // A concurrency limiter has no window, so it doesn't tell when to retry.
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
         {
-            return onRejected(context, cancellationToken);
+            context.HttpContext.Response.Headers.RetryAfter = Math.Max(1, (long)Math.Ceiling(retryAfter.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
         }
 
-        return ValueTask.CompletedTask;
+        if (_rateLimitsOptions.TryGetRouteRejectionHandler(GetEndpointRouteName(context.HttpContext), out var onRejected))
+        {
+            await onRejected(context, cancellationToken);
+
+            return;
+        }
+
+        // Without a body, the API clients of this tenant would get its HTML error page, if any.
+        if (context.HttpContext.Request.Path.StartsWithSegments("/api") &&
+            context.HttpContext.RequestServices.GetService<IProblemDetailsService>() is { } problemDetailsService)
+        {
+            await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = context.HttpContext,
+                ProblemDetails = { Status = StatusCodes.Status429TooManyRequests },
+            });
+        }
     }
 
     private RouteRateLimit FindRouteRateLimit(HttpContext context)

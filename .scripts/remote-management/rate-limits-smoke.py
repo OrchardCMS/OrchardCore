@@ -160,7 +160,8 @@ with tempfile.TemporaryDirectory(prefix='rate-limits-cli-', dir=state_path.paren
         pomi('rate-limits', 'policies', 'enable', policy_id)
         assert pomi('rate-limits', 'policies', 'show', policy_id)['isEnabled']
         request(path, client=None, status=404)
-        request(path, client=None, status=429)
+        _, rejected = request(path, client=None, status=429, raw=True)
+        assert 1 <= int(rejected['Retry-After']) <= 60, rejected['Retry-After']
         pomi('rate-limits', 'policies', 'update', policy_id, body={**definition, 'path': '/changed'}, status=409)
         pomi('rate-limits', 'policies', 'limiters', 'delete', policy_id, 'FixedWindow', '--force', status=409)
         pomi('rate-limits', 'policies', 'disable', policy_id)
@@ -172,6 +173,17 @@ with tempfile.TemporaryDirectory(prefix='rate-limits-cli-', dir=state_path.paren
         for source in configurations:
             pomi('rate-limits', 'policies', 'limiters', 'delete', policy_id, source, '--force')
         assert pomi('rate-limits', 'policies', 'limiters', 'list', policy_id) == []
+        # Clients of the APIs get a machine-readable rejection.
+        api_definition = {**definition, 'name': name + 'Api', 'path': '/api/' + name}
+        api_policy_id = pomi('rate-limits', 'policies', 'create', body=api_definition)['policyId']
+        pomi('rate-limits', 'policies', 'limiters', 'add', api_policy_id, body={'id': 'Sliding', 'source': 'SlidingWindow',
+            'values': {'permitLimit': 1, 'windowSeconds': 60, 'segmentsPerWindow': 4, 'queueLimit': 0}})
+        pomi('rate-limits', 'policies', 'enable', api_policy_id)
+        request(api_definition['path'], client=None, status=(401, 404))
+        text, rejected = request(api_definition['path'], client=None, status=429, raw=True)
+        assert json.loads(text)['code'] == 'rate_limited' and rejected['Retry-After'] == '60', (text, rejected['Retry-After'])
+        pomi('rate-limits', 'policies', 'disable', api_policy_id)
+        pomi('rate-limits', 'policies', 'delete', api_policy_id, '--force')
         print('PASS: four limiter contracts, Pomi/MCP, permission separation, retries, rejected active edits, actual 429 and disable recovery', flush=True)
     finally:
         try:
