@@ -26,7 +26,7 @@ public class CoreShapes : IShapeAttributeProvider
     {
         if (Items == null)
         {
-            if (shape.Items != null && shape.Items.Any())
+            if (shape.Items != null && shape.Items.Count > 0)
             {
                 Items = shape.Items;
             }

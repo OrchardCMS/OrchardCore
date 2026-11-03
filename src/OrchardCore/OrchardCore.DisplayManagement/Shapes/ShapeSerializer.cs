@@ -52,17 +52,17 @@ public class ShapeSerializer
 
         jObject.Add(nameof(ShapeMetadata), metadata);
 
-        if (_shape.Classes != null && _shape.Classes.Any())
+        if (_shape.Classes != null && _shape.Classes.Count > 0)
         {
             jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, s_shapeJsonSerializer));
         }
 
-        if (_shape.Attributes != null && _shape.Attributes.Any())
+        if (_shape.Attributes != null && _shape.Attributes.Count > 0)
         {
             jObject.Add(nameof(_shape.Attributes), JObject.FromObject(_shape.Attributes, s_shapeJsonSerializer));
         }
 
-        if (_shape.Properties != null && _shape.Properties.Any())
+        if (_shape.Properties != null && _shape.Properties.Count > 0)
         {
             jObject.Add(nameof(_shape.Properties), JObject.FromObject(_shape.Properties, s_shapeJsonSerializer));
             FindShapesInProperties(_shape);
