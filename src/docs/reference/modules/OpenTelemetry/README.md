@@ -86,8 +86,9 @@ Prometheus and Mimir store the metrics with their names and attributes converted
 | Which shapes are the slowest, once the `OrchardCore.DisplayManagement` meter is added? | `topk(10, histogram_quantile(0.95, sum by (le, orchardcore_shape_type) (rate(orchardcore_display_shape_duration_seconds_bucket[5m]))))` |
 | How fast does each tenant respond? | `histogram_quantile(0.95, sum by (le, orchardcore_tenant_name) (rate(http_server_request_duration_seconds_bucket[5m])))` |
 | How much memory does each instance use? | `sum by (instance) (dotnet_process_memory_working_set_bytes)` |
+| Which tenants run the most database commands, once the `YesSql` meter is added? | `topk(10, sum by (orchardcore_tenant_name) (rate(db_client_operation_duration_seconds_count[5m])))` |
 
-In Tempo, a TraceQL query such as `{ span.orchardcore.tenant.name = "Default" && duration > 500ms }` finds the slow requests of a tenant, and `{ name =~ "Render shape.*" }` the slow shapes.
+In Tempo, a TraceQL query such as `{ span.orchardcore.tenant.name = "Default" && duration > 500ms }` finds the slow requests of a tenant, `{ name =~ "Render shape.*" }` the slow shapes, and `{ span.db.system.name != nil && duration > 100ms }` the slow database commands, once the `YesSql` activity source is added.
 
 ## Configuration
 
@@ -226,10 +227,10 @@ Each library is responsible for its own telemetry, and Orchard Core doesn't add 
   "OrchardCore": {
     "OpenTelemetry": {
       "Tracing": {
-        "Sources": [ "Npgsql", "Elastic.Transport", "MailKit.Net.SmtpClient" ]
+        "Sources": [ "YesSql", "Elastic.Transport", "MailKit.Net.SmtpClient" ]
       },
       "Metrics": {
-        "Meters": [ "Npgsql" ]
+        "Meters": [ "YesSql" ]
       }
     }
   }
@@ -240,6 +241,7 @@ These libraries, used by Orchard Core modules, emit their own telemetry:
 
 | Library | Used by | `Tracing:Sources` | `Metrics:Meters` |
 | --- | --- | --- | --- |
+| YesSql | All databases | `YesSql` | `YesSql` |
 | Npgsql | PostgreSQL databases | `Npgsql` | `Npgsql` |
 | MySqlConnector | MySQL databases | `MySqlConnector` | `MySqlConnector` |
 | Elasticsearch client | Elasticsearch | `Elastic.Transport` | |
@@ -247,6 +249,24 @@ These libraries, used by Orchard Core modules, emit their own telemetry:
 | Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` | |
 
 Names of libraries that emit nothing are ignored. A library that doesn't emit telemetry itself needs an instrumentation package from its own maintainers or from OpenTelemetry, added with the callback of `AddOpenTelemetry()`, e.g. `OpenTelemetry.Instrumentation.SqlClient` for the SQL Server client.
+
+#### Database telemetry
+
+[YesSql](https://github.com/sebastienros/yessql#telemetry) reports the same telemetry with every database: a span for each command with its table, a span for each flush of a session, the `db.client.operation.duration` histogram, and the number of commands and documents of each session in the `yessql.session.commands` and `yessql.session.documents` histograms. A session running many commands reveals an N+1 query pattern.
+
+- The spans and the metrics of the store of a tenant are tagged with `orchardcore.tenant.name`, whatever the value of `Metrics:IncludeTenantName`.
+- The SQL text is only added to the spans of YesSql with the [`IncludeQueryTextInTelemetry`](../Data/README.md#yessql-options) YesSql option. The spans of the `Npgsql` activity source always include it.
+- The commands run directly on a connection, such as those of the SQL queries of the Queries module, aren't reported by YesSql.
+
+The `Npgsql` and `MySqlConnector` names add what YesSql can't see, such as the state of the connection pools. The Npgsql meter also records `db.client.operation.duration`, so collecting it with the YesSql meter counts each command twice. Drop the instrument of Npgsql with a view, which also drops its measurements of the commands YesSql doesn't run:
+
+```csharp
+builder.Services
+    .AddOrchardCms()
+    .AddOpenTelemetry(openTelemetry => openTelemetry
+        .WithMetrics(metrics => metrics.AddView(instrument =>
+            YesSqlTelemetry.IsDuplicateDriverInstrument(instrument) ? MetricStreamConfiguration.Drop : null)));
+```
 
 ### Logs
 
@@ -276,6 +296,7 @@ To find the slow parts of a site:
 1. Find the slowest shape types with the `orchardcore.display.shape.duration` histogram, filtered by shape type.
 2. Open a slow request in the traces, and its `Render shape` spans, with the templates that rendered them.
 3. Compare the time of a shape with the time of its child shapes: the time a shape spends itself is the work of its template, driver or shape method, such as loading content.
+4. Add `YesSql` to `Tracing:Sources` to see the [database commands](#database-telemetry) nested in these spans, and tell a slow query from many small ones.
 
 See the [Display Management](../DisplayManagement/README.md) module for the shape rendering telemetry.
 
