@@ -11,6 +11,13 @@
     <h1>@T["Allow access to your tenant?"]</h1>
     <p>@T["<strong>{0}</strong> is requesting permission to manage this Orchard Core tenant.", Model.ApplicationName]</p>
 
+    @if (Model.UnverifiedClientHost is not null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @T["This application registered itself, so its name is not verified. If you allow access, it receives your access to this site at <strong>{0}</strong>.", Model.UnverifiedClientHost]
+        </div>
+    }
+
     <div class="saas-permission" role="note">
         <span class="saas-permission__icon" aria-hidden="true">&#10003;</span>
         <div>

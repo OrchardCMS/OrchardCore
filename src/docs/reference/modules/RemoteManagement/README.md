@@ -626,7 +626,8 @@ Every registration creates a separate OpenID application with an identifier
 such as `orchardcore-mcp-<random-id>`. No application is created until a client
 registers. Review or remove these in **Access Control → OpenID Connect →
 Applications**, also linked from the MCP configuration page. Names are supplied
-by clients and are **not verified identities**. Registration issues no token,
+by clients and are **not verified identities**, so the consent page warns about them
+and shows the host that receives the access. Registration issues no token,
 assigns no roles, creates no user, and does not modify Pomi or shared settings.
 The signed-in user must consent and still needs remote management and each
 operation's permissions.

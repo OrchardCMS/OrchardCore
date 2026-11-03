@@ -11,6 +11,13 @@
         <h1 id="authorization-title" class="h3 mb-3">@T["Authorize {0}", Model.ApplicationName]</h1>
         <p class="text-body-secondary mb-4">@T["Review the requested access. Only continue if you started this sign-in request."]</p>
 
+        @if (Model.UnverifiedClientHost is not null)
+        {
+            <div class="alert alert-warning" role="alert">
+                @T["This application registered itself, so its name is not verified. If you allow access, it receives your access to this site at <strong>{0}</strong>.", Model.UnverifiedClientHost]
+            </div>
+        }
+
         @await DisplayAsync(await New.OpenIdConsentScopes(Scope: Model.Scope))
 
         <form asp-controller="Access" asp-action="Authorize" method="post" class="no-multisubmit">

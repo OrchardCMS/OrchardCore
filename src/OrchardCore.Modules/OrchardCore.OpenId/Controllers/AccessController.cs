@@ -15,6 +15,7 @@ using OpenIddict.Server.AspNetCore;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Managers;
+using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.RateLimits;
@@ -172,6 +173,9 @@ public sealed class AccessController : Controller
                 {
                     ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
                     Scope = request.Scope,
+                    UnverifiedClientHost = await McpClientRequestValidation.IsDynamicClientAsync(_applicationManager, request.ClientId, HttpContext.RequestAborted)
+                        ? new Uri(request.RedirectUri).Authority
+                        : null,
                 });
         }
     }
