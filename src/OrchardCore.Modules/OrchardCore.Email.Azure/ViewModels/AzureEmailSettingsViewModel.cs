@@ -1,3 +1,5 @@
+using OrchardCore.Secrets;
+
 namespace OrchardCore.Email.Azure.ViewModels;
 
 public class AzureEmailSettingsViewModel
@@ -7,5 +9,5 @@ public class AzureEmailSettingsViewModel
     [EmailAddress]
     public string DefaultSender { get; set; }
 
-    public string ConnectionString { get; set; }
+    public SecretInputViewModel ConnectionString { get; set; } = new();
 }

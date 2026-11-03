@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileProviders.Internal;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Mvc;
 
@@ -67,8 +68,9 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                             s_pageFileProviders.Add(new PhysicalFileProvider(root));
                         }
 
-                        // Add the module project root.
-                        roots[module.Name] = root;
+                        // Add the module project root, canonicalized so that
+                        // resolved paths can be checked for containment.
+                        roots[module.Name] = PhysicalPathResolver.NormalizeRoot(root);
                     }
                 }
 
@@ -111,15 +113,14 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                 // Try to get the module project root.
                 if (s_roots.TryGetValue(module, out var root) &&
                     // Check for a final or an intermadiate "Pages" segment.
-                    (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/")))
+                    (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/")) &&
+                    // Resolve the subpath relative to "{ModuleProjectDirectory}", but only inside it.
+                    PhysicalPathResolver.TryResolve(root, folder[(module.Length + 1)..], out var folderPath))
                 {
-                    // Resolve the subpath relative to "{ModuleProjectDirectory}".
-                    folder = string.Concat(root, folder.AsSpan(module.Length + 1));
-
-                    if (Directory.Exists(folder))
+                    if (Directory.Exists(folderPath))
                     {
                         // Serve the contents from the file system.
-                        return new PhysicalDirectoryContents(folder);
+                        return new PhysicalDirectoryContents(folderPath);
                     }
                 }
             }
@@ -150,12 +151,10 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                 // Resolve the module id.
                 var module = path[..index];
 
-                // Get the module root folder.
-                if (s_roots.TryGetValue(module, out var root))
+                // Get the module root folder, and resolve "{ModuleProjectDirectory}**/*.*" inside it.
+                if (s_roots.TryGetValue(module, out var root) &&
+                    PhysicalPathResolver.TryResolve(root, path[(module.Length + 1)..], out var filePath))
                 {
-                    // Resolve "{ModuleProjectDirectory}**/*.*".
-                    var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
-
                     if (File.Exists(filePath))
                     {
                         // Serve the file from the physical file system.
@@ -190,12 +189,10 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                 // Resolve the module id.
                 var module = path[..index];
 
-                // Get the module root folder.
-                if (s_roots.TryGetValue(module, out var root))
+                // Get the module root folder, and resolve "{ModuleProjectDirectory}**/*.*" inside it.
+                if (s_roots.TryGetValue(module, out var root) &&
+                    PhysicalPathResolver.TryResolve(root, path[(module.Length + 1)..], out var filePath))
                 {
-                    // Resolve "{ModuleProjectDirectory}**/*.*".
-                    var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
-
                     var directory = Path.GetDirectoryName(filePath);
                     var fileName = Path.GetFileNameWithoutExtension(filePath);
 

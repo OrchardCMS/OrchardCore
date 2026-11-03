@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Environment.Shell;
@@ -19,6 +20,9 @@ using OrchardCore.Roles.Deployment;
 using OrchardCore.Roles.Migrations;
 using OrchardCore.Roles.Recipes;
 using OrchardCore.Roles.Services;
+using OrchardCore.Roles.ViewModels;
+using OrchardCore.Roles.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
@@ -53,7 +57,8 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.Configure<SystemRoleOptions>(options =>
         {
-            var adminRoleName = _shellConfiguration.GetSection("OrchardCore_Roles").GetValue<string>("AdminRoleName");
+            // The 'OrchardCore_Roles' section is deprecated and will be removed in a future major version, use 'Roles' instead.
+            var adminRoleName = _shellConfiguration.GetSectionCompat("Roles", "OrchardCore_Roles").GetValue<string>("AdminRoleName");
 
             if (!string.IsNullOrWhiteSpace(adminRoleName))
             {
@@ -122,6 +127,9 @@ public sealed class RoleUpdaterStartup : StartupBase
         services.AddRolesCoreServices();
         services.AddScoped<RoleManager<IRole>>();
         services.AddScoped<IRoleService, RoleService>();
+
+        // Builds the rows of the roles admin list.
+        services.AddDisplayDriver<RoleEntry, RoleEntryDisplayDriver>();
         services.AddScoped<RoleUpdater>();
         services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
         services.AddScoped<IRoleCreatedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());

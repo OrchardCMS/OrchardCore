@@ -8,6 +8,7 @@ using OrchardCore.Contents.VersionPruning.Services;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Modules;
+using OrchardCore.Tests.Utilities;
 using YesSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -69,16 +70,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
         _store?.Dispose();
         _store = null;
 
-        if (_tempFilename != null && File.Exists(_tempFilename))
-        {
-            try
-            {
-                File.Delete(_tempFilename);
-            }
-            catch
-            {
-            }
-        }
+        TestFileHelper.TryDelete(_tempFilename);
 
         return ValueTask.CompletedTask;
     }

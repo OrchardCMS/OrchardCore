@@ -5,6 +5,7 @@ using OrchardCore.Deployment.Endpoints.Management;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Core;
@@ -19,6 +20,7 @@ using OrchardCore.Deployment.Steps;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.FileStorage;
 using OrchardCore.Modules;
+using OrchardCore.Deployment.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.RemoteManagement;
@@ -75,10 +77,14 @@ public sealed class Startup : StartupBase
             services.AddSingleton<IDeploymentStepDefinition>(new BuiltInDeploymentStepDefinition(type));
         }
 
+        // Builds the rows of the deployment plans admin list.
+        services.AddDisplayDriver<DeploymentPlanEntry, DeploymentPlanEntryDisplayDriver>();
+
         services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 
         services.AddDeployment<DeploymentPlanDeploymentSource, DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepDriver>();
 
         services.AddDeployment<JsonRecipeDeploymentSource, JsonRecipeDeploymentStep, JsonRecipeDeploymentStepDriver>();
+
     }
 }

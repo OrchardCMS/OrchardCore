@@ -9,9 +9,11 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Drivers;
@@ -22,9 +24,10 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOpenIdClientService _clientService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -34,16 +37,18 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     public OpenIdClientSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
         IOpenIdClientService clientService,
         IHttpContextAccessor httpContextAccessor,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _clientService = clientService;
         _httpContextAccessor = httpContextAccessor;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -64,7 +69,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             model.Authority = settings.Authority?.AbsoluteUri;
             model.CallbackPath = settings.CallbackPath;
             model.ClientId = settings.ClientId;
-            model.HasClientSecret = !string.IsNullOrEmpty(settings.ClientSecret);
+            model.ClientSecret = SecretInputViewModel.Create(settings.ClientSecret, settings.ClientSecretSecretName);
             model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
             model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
             model.ResponseMode = settings.ResponseMode;
@@ -108,7 +113,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             return null;
         }
 
-        var previousClientSecret = settings.ClientSecret;
         var model = new OpenIdClientSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
@@ -169,14 +173,23 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             context.Updater.ModelState.AddModelError(Prefix, S["The parameters are written in an incorrect format."]);
         }
 
-        if (!useClientSecret)
+        if (useClientSecret)
         {
-            model.ClientSecret = previousClientSecret = null;
-        }
+            var clientSecret = await model.ClientSecret.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration)),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.ClientSecret)}")
+            {
+                ProtectedValue = settings.ClientSecret,
+                SecretName = settings.ClientSecretSecretName,
+            });
 
-        if (!string.IsNullOrEmpty(model.ClientSecret))
-        {
-            settings.ClientSecret = OpenIdClientSecretEditor.Protect(_dataProtectionProvider, previousClientSecret, model.ClientSecret);
+            if (clientSecret.Succeeded)
+            {
+                settings.ClientSecret = clientSecret.ProtectedValue;
+                settings.ClientSecretSecretName = clientSecret.SecretName;
+            }
         }
 
         foreach (var result in await _clientService.ValidateSettingsAsync(settings))

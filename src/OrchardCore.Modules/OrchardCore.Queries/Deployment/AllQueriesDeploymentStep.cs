@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Queries.Deployment;
 
@@ -8,14 +9,8 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class AllQueriesDeploymentStep : DeploymentStep
 {
-    public AllQueriesDeploymentStep()
-    {
-        Name = "AllQueries";
-    }
+    public override string Name => "AllQueries";
 
-    public AllQueriesDeploymentStep(IStringLocalizer<AllQueriesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 }

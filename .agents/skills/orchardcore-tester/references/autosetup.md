@@ -12,7 +12,7 @@ configuration. The simplest way is environment variables.
 ## How it works
 
 - The `OrchardCore.AutoSetup` feature (`src/OrchardCore.Modules/OrchardCore.AutoSetup/`)
-  reads the configuration section named `OrchardCore_AutoSetup`.
+  reads the configuration section named `OrchardCore:AutoSetup`.
 - `AutoSetupMiddleware` triggers setup when the matched tenant is **uninitialized**
   (i.e. a fresh `App_Data`).
 - On success you get the log line:
@@ -23,15 +23,15 @@ configuration. The simplest way is environment variables.
 Set these before `dotnet run`. The configuration key is built from:
 
 ```
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__<OptionName>
+OrchardCore__AutoSetup__Tenants__0__<OptionName>
 ```
 
 Key rules (these bite people):
 
 - `__` (double underscore) is the **section separator** in .NET configuration.
-- The single `_` in `OrchardCore_AutoSetup` is **literal** — it is part of the
-  section name, not a separator. So the prefix is
-  `OrchardCore__OrchardCore_AutoSetup__`.
+- The section is nested as `OrchardCore:AutoSetup`, so the prefix is
+  `OrchardCore__AutoSetup__`. The deprecated `OrchardCore__OrchardCore_AutoSetup__`
+  prefix still works but should not be used anymore.
 - `Tenants__0__` indexes the first tenant in the `Tenants` array.
 - **Do NOT wrap values in quotes.** With env vars the quotes become literal
   characters in the value, which silently corrupts the admin password/email and
@@ -45,15 +45,15 @@ Key rules (these bite people):
 cd src/OrchardCore.Cms.Web
 PORT=$(cat ../../.orchardcore-port)   # or any free port
 
-OrchardCore__OrchardCore_AutoSetup__AutoSetupPath= \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__ShellName=Default \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteName=TestSite \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteTimeZone=America/Los_Angeles \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminUsername=admin \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail=admin@test.com \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword=Password1! \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider=Sqlite \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName=Blog \
+OrchardCore__AutoSetup__AutoSetupPath= \
+OrchardCore__AutoSetup__Tenants__0__ShellName=Default \
+OrchardCore__AutoSetup__Tenants__0__SiteName=TestSite \
+OrchardCore__AutoSetup__Tenants__0__SiteTimeZone=America/Los_Angeles \
+OrchardCore__AutoSetup__Tenants__0__AdminUsername=admin \
+OrchardCore__AutoSetup__Tenants__0__AdminEmail=admin@test.com \
+OrchardCore__AutoSetup__Tenants__0__AdminPassword=Password1! \
+OrchardCore__AutoSetup__Tenants__0__DatabaseProvider=Sqlite \
+OrchardCore__AutoSetup__Tenants__0__RecipeName=Blog \
 dotnet run -f net10.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
 ```
 
@@ -71,15 +71,15 @@ grep -m1 "successfully provisioned" autosetup-console.log
 ```powershell
 cd src/OrchardCore.Cms.Web
 $port = Get-Content ..\..\.orchardcore-port
-$env:OrchardCore__OrchardCore_AutoSetup__AutoSetupPath = ""
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__ShellName = "Default"
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteName = "TestSite"
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteTimeZone = "America/Los_Angeles"
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminUsername = "admin"
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail = "admin@test.com"
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword = "Password1!"
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider = "Sqlite"
-$env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName = "Blog"
+$env:OrchardCore__AutoSetup__AutoSetupPath = ""
+$env:OrchardCore__AutoSetup__Tenants__0__ShellName = "Default"
+$env:OrchardCore__AutoSetup__Tenants__0__SiteName = "TestSite"
+$env:OrchardCore__AutoSetup__Tenants__0__SiteTimeZone = "America/Los_Angeles"
+$env:OrchardCore__AutoSetup__Tenants__0__AdminUsername = "admin"
+$env:OrchardCore__AutoSetup__Tenants__0__AdminEmail = "admin@test.com"
+$env:OrchardCore__AutoSetup__Tenants__0__AdminPassword = "Password1!"
+$env:OrchardCore__AutoSetup__Tenants__0__DatabaseProvider = "Sqlite"
+$env:OrchardCore__AutoSetup__Tenants__0__RecipeName = "Blog"
 dotnet run -f net10.0 --no-build --urls "http://localhost:$port"
 ```
 
@@ -132,7 +132,7 @@ returns `200`. You can then log in normally (see SKILL.md "Login to Admin").
 |---------|-------------|
 | `The SiteTimeZone field is required.` | Add `...__Tenants__0__SiteTimeZone=...`. |
 | `The single 'Default' tenant should be provided.` | `ShellName` must be `Default` for the root tenant. |
-| `The field 'Tenants' should contain at least one tenant.` | The `OrchardCore_AutoSetup` section wasn't bound — check the literal `_` in the prefix and the `Tenants__0__` index. |
+| `The field 'Tenants' should contain at least one tenant.` | The `OrchardCore:AutoSetup` section wasn't bound — check the `OrchardCore__AutoSetup__` prefix and the `Tenants__0__` index. |
 | Provisioning succeeds but login fails with the configured password | A value was quoted in bash inline-env form, so the quotes ended up in the password. Pass values bare (no surrounding quotes). |
 | Setup never triggers | `App_Data` already has an initialized tenant. Reset it (delete `App_Data`) before starting. |
 | `DatabaseProvider` field is required | Use a valid provider value (`Sqlite`, `SqlConnection`, `Postgres`, `MySql`). |

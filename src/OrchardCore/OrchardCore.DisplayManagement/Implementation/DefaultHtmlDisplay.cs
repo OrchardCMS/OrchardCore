@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
@@ -18,8 +19,8 @@ public class DefaultHtmlDisplay : IHtmlDisplay
     private static readonly ConcurrentDictionary<string, List<string>> s_alternateShapeTypes = [];
 
     private readonly IShapeTableManager _shapeTableManager;
-    private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
-    private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
+    private readonly IShapeDisplayEvents[] _shapeDisplayEvents;
+    private readonly IShapeBindingResolver[] _shapeBindingResolvers;
     private readonly IThemeManager _themeManager;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
@@ -35,8 +36,9 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         IThemeManager themeManager)
     {
         _shapeTableManager = shapeTableManager;
-        _shapeDisplayEvents = shapeDisplayEvents;
-        _shapeBindingResolvers = shapeBindingResolvers;
+        // Arrays are iterated without allocating enumerators, this is done for each rendered shape.
+        _shapeDisplayEvents = shapeDisplayEvents as IShapeDisplayEvents[] ?? shapeDisplayEvents.ToArray();
+        _shapeBindingResolvers = shapeBindingResolvers as IShapeBindingResolver[] ?? shapeBindingResolvers.ToArray();
         _themeManager = themeManager;
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -72,6 +74,17 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         {
             return new HtmlContentString(context.Value.ToString());
         }
+
+        DisplayManagementDiagnostics.ShapesRendered.Add(1);
+
+        using var activity = DisplayManagementDiagnostics.ActivitySource.StartActivity("Render shape");
+        if (activity is not null)
+        {
+            activity.DisplayName = $"Render shape {shapeMetadata.Type}";
+            activity.SetTag("orchardcore.shape.type", shapeMetadata.Type);
+        }
+
+        var startTimestamp = DisplayManagementDiagnostics.ShapeRenderDuration.Enabled ? Stopwatch.GetTimestamp() : 0;
 
         // Copy the current context such that the rendering can customize it if necessary,
         // for instance to change the HtmlFieldPrefix.
@@ -123,7 +136,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 }
 
                 // Now find the actual binding to render, taking alternates into account.
-                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.HasAlternates ? shapeMetadata.Alternates : AlternatesCollection.Empty, shapeTable);
 
                 if (actualBinding == null)
                 {
@@ -137,7 +150,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             }
 
             // Process wrappers.
-            if (shapeMetadata.Wrappers.Count > 0)
+            if (shapeMetadata.HasWrappers)
             {
                 foreach (var frameType in shapeMetadata.Wrappers)
                 {
@@ -189,6 +202,18 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         finally
         {
             await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
+
+            if (startTimestamp != 0)
+            {
+                DisplayManagementDiagnostics.ShapeRenderDuration.Record(
+                    Stopwatch.GetElapsedTime(startTimestamp).TotalSeconds,
+                    new KeyValuePair<string, object>("orchardcore.shape.type", shapeMetadata.Type));
+            }
+
+            if (activity is not null && actualBinding is not null)
+            {
+                activity.SetTag("orchardcore.shape.binding", actualBinding.BindingSource);
+            }
         }
 
         if (_shapeRenderingOptions.CurrentValue.WriteShapeDebugInformation)

@@ -150,6 +150,33 @@ describe("GalleryContainer", () => {
     expect(saved.gridView).toBe(true);
   });
 
+  it("renders in list view when disableThumbnails is set", () => {
+    const wrapper = createWrapper({ disableThumbnails: true });
+    expect(wrapper.find(".mf-gallery-list").exists()).toBe(true);
+    expect(wrapper.find(".mf-gallery-cards").exists()).toBe(false);
+  });
+
+  it("hides the view toggles when disableThumbnails is set", () => {
+    const wrapper = createWrapper({ disableThumbnails: true });
+    expect(wrapper.find(".mf-toolbar-spacer").exists()).toBe(false);
+  });
+
+  it("ignores a saved grid preference when disableThumbnails is set", async () => {
+    localStorage.setItem(
+      "mediaFieldGallery_test-field",
+      JSON.stringify({ size: "lg", gridView: true })
+    );
+
+    const wrapper = createWrapper({ disableThumbnails: true });
+    await flushPromises();
+    await nextTick();
+    wrapper.vm.$forceUpdate();
+    await nextTick();
+
+    expect(wrapper.find(".mf-gallery-list").exists()).toBe(true);
+    expect(wrapper.find(".mf-gallery-cards").exists()).toBe(false);
+  });
+
   it("enforces single item for non-multiple mode (watch fires reorder)", async () => {
     const item1 = makeMediaItem({ mediaPath: "a.jpg", vuekey: "a0" });
     const item2 = makeMediaItem({ mediaPath: "b.jpg", vuekey: "b0" });

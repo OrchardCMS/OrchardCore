@@ -264,7 +264,6 @@ public class AdminControllerTests
             shellReleaseManager,
             new EmptyEndpointDataSource(),
             Options.Create(new RateLimitsOptions()),
-            Mock.Of<IDisplayManager<RateLimitPolicy>>(),
             new StringLocalizer<AdminController>(new NullStringLocalizerFactory()),
             Mock.Of<IHtmlLocalizer<AdminController>>())
         {

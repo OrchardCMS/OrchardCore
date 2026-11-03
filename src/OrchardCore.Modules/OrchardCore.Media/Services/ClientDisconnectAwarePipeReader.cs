@@ -45,7 +45,7 @@ internal sealed class ClientDisconnectAwarePipeReader : PipeReader
 
         try
         {
-            return await _inner.ReadAsync(cancellationToken);
+            return NormalizeCanceledRead(await _inner.ReadAsync(cancellationToken));
         }
         catch (BadHttpRequestException exception) when (IsUnexpectedEndOfRequest(exception))
         {
@@ -64,7 +64,13 @@ internal sealed class ClientDisconnectAwarePipeReader : PipeReader
 
         try
         {
-            return _inner.TryRead(out result);
+            var hasResult = _inner.TryRead(out result);
+            if (hasResult)
+            {
+                result = NormalizeCanceledRead(result);
+            }
+
+            return hasResult;
         }
         catch (BadHttpRequestException exception) when (IsUnexpectedEndOfRequest(exception))
         {
@@ -79,6 +85,19 @@ internal sealed class ClientDisconnectAwarePipeReader : PipeReader
         // only way to distinguish a truncated body from other malformed requests.
         exception.StatusCode == StatusCodes.Status400BadRequest
         && string.Equals(exception.Message, UnexpectedEndOfRequestContent, StringComparison.Ordinal);
+
+    private ReadResult NormalizeCanceledRead(ReadResult result)
+    {
+        if (result.IsCanceled && result.Buffer.IsEmpty)
+        {
+            // tusdotnet can retain an empty slice of a consumed, recycled pipe segment on disconnect.
+            // Neither enumerate that sequence nor advance its stale positions.
+            _disconnected = true;
+            return CanceledReadResult();
+        }
+
+        return result;
+    }
 
     private static ReadResult CanceledReadResult() =>
         new(ReadOnlySequence<byte>.Empty, isCanceled: true, isCompleted: false);

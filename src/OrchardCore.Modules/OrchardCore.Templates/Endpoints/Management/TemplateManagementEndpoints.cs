@@ -15,7 +15,7 @@ internal static class TemplateManagementEndpoints
     private const int DefaultTake = 50;
     public static IEndpointRouteBuilder AddTemplateManagementEndpoints(this IEndpointRouteBuilder builder)
     {
-        var routes = builder.MapManagementGroup(TemplateManagementEndpointConventions.TagName, Permissions.ManageTemplates);
+        var routes = builder.MapManagementGroup(TemplateManagementEndpointConventions.TagName, Permissions.ManageTemplates, OrchardCore.Liquid.Permissions.ManageLiquidTemplates);
 
         routes.MapGet(RoutePrefix, ListAsync)
             .WithName("ApiListTemplates")
@@ -106,7 +106,8 @@ internal static class TemplateManagementEndpoints
         [FromServices] TemplatesManager templatesManager,
         [AsParameters] TemplateListRequest request)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates) ||
+            !await authorizationService.AuthorizeAsync(httpContext.User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
         {
             return httpContext.ApiForbidProblem();
         }
@@ -142,7 +143,8 @@ internal static class TemplateManagementEndpoints
         [FromServices] TemplatesManager templatesManager,
         string name)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates) ||
+            !await authorizationService.AuthorizeAsync(httpContext.User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
         {
             return httpContext.ApiForbidProblem();
         }
@@ -159,7 +161,8 @@ internal static class TemplateManagementEndpoints
         [FromServices] TemplatesManager templatesManager,
         [FromBody] TemplateDefinitionDto definition)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates) ||
+            !await authorizationService.AuthorizeAsync(httpContext.User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
         {
             return httpContext.ApiForbidProblem();
         }
@@ -189,7 +192,8 @@ internal static class TemplateManagementEndpoints
         string name,
         [FromBody] TemplateDefinitionDto definition)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates) ||
+            !await authorizationService.AuthorizeAsync(httpContext.User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
         {
             return httpContext.ApiForbidProblem();
         }
@@ -221,7 +225,8 @@ internal static class TemplateManagementEndpoints
         [FromServices] TemplatesManager templatesManager,
         string name)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTemplates) ||
+            !await authorizationService.AuthorizeAsync(httpContext.User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
         {
             return httpContext.ApiForbidProblem();
         }

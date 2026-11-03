@@ -7,6 +7,7 @@
  * Returns allowed file extensions. In OrchardCore all extensions are allowed client-side
  * (server validates against MediaOptions.AllowedFileExtensions).
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature kept for API compatibility; extension filtering is server-side only.
 export const getAllowedFileExtensions = (_directory: string): string[] => {
   return ["*.*"];
 };

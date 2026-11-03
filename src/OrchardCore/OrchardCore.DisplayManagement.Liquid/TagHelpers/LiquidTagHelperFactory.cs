@@ -21,6 +21,7 @@ public class LiquidTagHelperFactory
     private List<LiquidTagHelperMatching> _matchings;
     private readonly ApplicationPartManager _partManager;
     private readonly ITagHelperFactory _factory;
+    private readonly Lock _lock = new();
 
     public LiquidTagHelperFactory(ApplicationPartManager partManager, ITagHelperFactory factory)
     {
@@ -35,7 +36,7 @@ public class LiquidTagHelperFactory
             return;
         }
 
-        lock (this)
+        lock (_lock)
         {
             if (_matchings == null)
             {

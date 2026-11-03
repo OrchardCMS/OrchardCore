@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Compliance.Redaction;
@@ -10,8 +12,6 @@ using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.AuditTrail.ViewModels;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace OrchardCore.Users.AuditTrail.Controllers;
 
@@ -37,6 +37,11 @@ public sealed class AuditTrailAdminController : Controller
 
     public async Task<ActionResult> Index()
     {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUserAuditTrailSettings))
+        {
+            return Forbid();
+        }
+
         var settings = await _siteService.GetSettingsAsync<AuditTrailUserEventSettings>();
         var redactorSettings = settings.UserSnapshotRedactors ?? new Dictionary<string, string>();
         var redactors = _redactors.ToDictionary(item => item.GetType().Name);
@@ -47,7 +52,7 @@ public sealed class AuditTrailAdminController : Controller
             .Union(await _customUserSettingsService.GetAllSettingsTypeNamesAsync())
             .Where(name => !UserEventHandler.BannedProperties.Contains(name))
             .Order();
-        
+
         return View(new AuditTrailUserEventSettingsViewModel
         {
             UserSnapshotProperties = propertyNames

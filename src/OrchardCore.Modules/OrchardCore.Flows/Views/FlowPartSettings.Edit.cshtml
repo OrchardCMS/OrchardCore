@@ -23,7 +23,7 @@
 <div class="ocat-wrapper">
     <label asp-for="DefaultAlignment" class="ocat-label">@T["What default alignment should be used?"]</label>
     <div class="ocat-end">
-        <select asp-for="DefaultAlignment" class="form-select" id="type-part-alignment-select">
+        <select asp-for="DefaultAlignment" class="form-select">
             <option value="">@T["Please choose an alignment"]</option>
             @foreach (var alignment in Enum.GetValues(typeof(FlowAlignment)))
             {

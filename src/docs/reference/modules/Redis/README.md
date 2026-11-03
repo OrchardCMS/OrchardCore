@@ -41,7 +41,7 @@ First, configure the basic Redis connection in your `appsettings.json`:
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Redis": {
+    "Redis": {
       "Configuration": "<your-redis-connection-string>",
       "InstancePrefix": "MyApp:",
       "AllowAdmin": true

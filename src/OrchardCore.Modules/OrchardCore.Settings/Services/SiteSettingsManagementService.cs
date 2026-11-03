@@ -209,6 +209,7 @@ internal sealed class SiteSettingsManagementService
         AddError("maxPagedCount", SiteSettingsValidator.ValidateMaxPagedCount(_localizer, proposed.MaxPagedCount), errors);
         AddError("pageSize", SiteSettingsValidator.ValidatePageSize(_localizer, proposed.PageSize, proposed.MaxPageSize), errors);
         AddError("baseUrl", SiteSettingsValidator.ValidateBaseUrl(_localizer, proposed.BaseUrl), errors);
+        AddError("cdnBaseUrl", SiteSettingsValidator.ValidateCdnBaseUrl(_localizer, proposed.CdnBaseUrl), errors);
 
         return errors;
     }
@@ -224,7 +225,7 @@ internal sealed class SiteSettingsManagementService
     private static bool Matches(ISite site, ProposedSiteSettings proposed)
         => string.Equals(site.SiteName, proposed.SiteName, StringComparison.Ordinal)
             && string.Equals(site.PageTitleFormat, proposed.PageTitleFormat, StringComparison.Ordinal)
-            && string.Equals(site.BaseUrl, proposed.BaseUrl, StringComparison.Ordinal)
+            && string.Equals(site.BaseUrl, NormalizeUrl(proposed.BaseUrl), StringComparison.Ordinal)
             && string.Equals(site.TimeZoneId, proposed.TimeZoneId, StringComparison.Ordinal)
             && site.PageSize == proposed.PageSize
             && site.MaxPageSize == proposed.MaxPageSize
@@ -232,9 +233,13 @@ internal sealed class SiteSettingsManagementService
             && string.Equals(site.Calendar, proposed.Calendar, StringComparison.Ordinal)
             && site.ResourceDebugMode == proposed.ResourceDebugMode
             && site.UseCdn == proposed.UseCdn
-            && string.Equals(site.CdnBaseUrl, proposed.CdnBaseUrl, StringComparison.Ordinal)
+            && string.Equals(site.CdnBaseUrl, NormalizeUrl(proposed.CdnBaseUrl), StringComparison.Ordinal)
             && site.AppendVersion == proposed.AppendVersion
             && site.CacheMode == proposed.CacheMode;
+
+    // The site stores the normalized form of a URL, with a trailing slash for instance.
+    private static string NormalizeUrl(string url)
+        => string.IsNullOrWhiteSpace(url) ? null : new Uri(url, UriKind.Absolute).AbsoluteUri;
 
     private static void Apply(ISite site, ProposedSiteSettings proposed)
     {

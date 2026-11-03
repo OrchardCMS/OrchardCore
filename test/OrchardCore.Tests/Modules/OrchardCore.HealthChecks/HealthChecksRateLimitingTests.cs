@@ -49,7 +49,7 @@ public class HealthChecksRateLimitingTests
         var shellConfiguration = new ShellConfiguration(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["OrchardCore_HealthChecks:Url"] = "/health/live",
+                ["HealthChecks:Url"] = "/health/live",
             })
             .Build());
 

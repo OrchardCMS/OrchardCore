@@ -24,6 +24,7 @@ public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOption
             options.CallbackPath = settings.CallbackPath;
             options.ClientID = settings.ClientID;
             options.ClientSecret = settings.ClientSecret;
+            options.ClientSecretSecretName = settings.ClientSecretSecretName;
             options.SaveTokens = settings.SaveTokens;
         }
     }

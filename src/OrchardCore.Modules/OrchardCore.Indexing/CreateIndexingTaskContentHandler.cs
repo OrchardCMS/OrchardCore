@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentPreview;
@@ -9,16 +10,22 @@ namespace OrchardCore.Indexing;
 
 public sealed class CreateIndexingTaskContentHandler : ContentHandlerBase
 {
-    private readonly IIndexingTaskManager _indexingTaskManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    private IIndexingTaskManager _indexingTaskManager;
+
     public CreateIndexingTaskContentHandler(
-        IIndexingTaskManager indexingTaskManager,
+        IServiceProvider serviceProvider,
         IHttpContextAccessor httpContextAccessor)
     {
-        _indexingTaskManager = indexingTaskManager;
+        _serviceProvider = serviceProvider;
         _httpContextAccessor = httpContextAccessor;
     }
+
+    // Resolved on demand as content handlers are built for every loaded content item, while indexing
+    // tasks are only created when a content item is modified.
+    private IIndexingTaskManager IndexingTaskManager => _indexingTaskManager ??= _serviceProvider.GetRequiredService<IIndexingTaskManager>();
 
     public override Task UpdatedAsync(UpdateContentContext context)
         => AddUpdateTaskAsync(context.ContentItem);
@@ -36,7 +43,7 @@ public sealed class CreateIndexingTaskContentHandler : ContentHandlerBase
             return Task.CompletedTask;
         }
 
-        return _indexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(context.ContentItem.ContentItemId, IndexingConstants.ContentsIndexSource, RecordIndexingTaskTypes.Delete));
+        return IndexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(context.ContentItem.ContentItemId, IndexingConstants.ContentsIndexSource, RecordIndexingTaskTypes.Delete));
     }
 
     private Task AddUpdateTaskAsync(ContentItem contentItem)
@@ -53,6 +60,6 @@ public sealed class CreateIndexingTaskContentHandler : ContentHandlerBase
             return Task.CompletedTask;
         }
 
-        return _indexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(contentItem.ContentItemId, IndexingConstants.ContentsIndexSource, RecordIndexingTaskTypes.Update));
+        return IndexingTaskManager.CreateTaskAsync(new CreateIndexingTaskContext(contentItem.ContentItemId, IndexingConstants.ContentsIndexSource, RecordIndexingTaskTypes.Update));
     }
 }

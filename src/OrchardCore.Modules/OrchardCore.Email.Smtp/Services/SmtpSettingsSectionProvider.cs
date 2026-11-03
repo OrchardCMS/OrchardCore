@@ -105,6 +105,7 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
             EncryptionMethod = current.EncryptionMethod,
         };
         var clearPassword = false;
+        string password = null;
         void Read<T>(KeyValuePair<string, JsonNode> entry, Action<T> set)
         {
             if (entry.Value is JsonValue node && node.TryGetValue<T>(out var value))
@@ -180,7 +181,7 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
                 case "password":
                     if (entry.Value is JsonValue nodePassword && nodePassword.TryGetValue<string>(out var passwordValue) && !string.IsNullOrWhiteSpace(passwordValue))
                     {
-                        model.Password = passwordValue;
+                        password = passwordValue;
                     }
                     else
                     {
@@ -195,11 +196,11 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
                     break;
             }
         }
-        if (clearPassword && model.Password is not null)
+        if (clearPassword && password is not null)
         {
             errors["password"] = [S["Do not set and clear the password in the same request."]];
         }
-        else if (!clearPassword && model.Password is null && !string.IsNullOrEmpty(current.Password) && !string.Equals(model.Host, current.Host, StringComparison.OrdinalIgnoreCase))
+        else if (!clearPassword && password is null && (!string.IsNullOrEmpty(current.Password) || !string.IsNullOrEmpty(current.PasswordSecretName)) && !string.Equals(model.Host, current.Host, StringComparison.OrdinalIgnoreCase))
         {
             // The stored password must not follow a new destination: require the caller to know it.
             errors["password"] = [S["Provide the password again or clear it when changing the host."]];
@@ -208,16 +209,17 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
         {
             errors["isEnabled"] = [S["Enable the SMTP provider when updating its configuration."]];
         }
-        var changed = _editor.Apply(site, current, model,
+        var changed = _editor.Apply(site, current, model, password,
             (name, message) => errors[char.ToLowerInvariant(name[0]) + name[1..]] = [message],
             () => errors.Count == 0);
         if (errors.Count > 0)
         {
             return new() { Errors = errors };
         }
-        if (clearPassword && !string.IsNullOrEmpty(current.Password))
+        if (clearPassword && (!string.IsNullOrEmpty(current.Password) || !string.IsNullOrEmpty(current.PasswordSecretName)))
         {
             current.Password = null;
+            current.PasswordSecretName = null;
             changed = true;
             _notifier.RequestUpdate<SmtpOptions>();
         }
@@ -237,7 +239,7 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
         Values = new JsonObject
         {
             ["isEnabled"] = settings.IsEnabled ?? _options.CurrentValue.ConfigurationExists(),
-            ["hasPassword"] = !string.IsNullOrEmpty(settings.Password),
+            ["hasPassword"] = !string.IsNullOrEmpty(settings.Password) || !string.IsNullOrEmpty(settings.PasswordSecretName),
             ["defaultSender"] = settings.DefaultSender,
             ["host"] = settings.Host,
             ["port"] = settings.Port,

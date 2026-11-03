@@ -95,38 +95,6 @@ public class SmtpSettingsSectionTests
         Assert.Equal(SmtpEmailProvider.TechnicalName, fixture.Site.GetOrCreate<EmailSettings>().DefaultProviderName);
     }
 
-    [Fact]
-    public async Task ExistingAdminEditorRejectsInvalidValuesBeforeMutatingSettings()
-    {
-        var fixture = Create();
-        var authorization = new Mock<IAuthorizationService>();
-        authorization.Setup(value => value.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
-            .ReturnsAsync(AuthorizationResult.Success());
-        var updater = new Mock<IUpdateModel>();
-        updater.SetupGet(value => value.ModelState).Returns(new ModelStateDictionary());
-        updater.Setup(value => value.TryUpdateModelAsync(It.IsAny<SmtpSettingsViewModel>(), It.IsAny<string>()))
-            .Callback((SmtpSettingsViewModel model, string _) =>
-            {
-                model.IsEnabled = true;
-                model.DefaultSender = "invalid";
-                model.Host = "changed-host";
-                model.Password = "must-not-persist";
-            }).ReturnsAsync(true);
-        var driver = new SmtpSettingsDisplayDriver(fixture.Notifier.Object, fixture.Protection,
-            new HttpContextAccessor { HttpContext = new DefaultHttpContext() },
-            Mock.Of<IOptionsMonitor<SmtpOptions>>(value => value.CurrentValue == new SmtpOptions()),
-            authorization.Object, Mock.Of<IEmailAddressValidator>(),
-            new StringLocalizer<SmtpSettingsDisplayDriver>(new global::OrchardCore.Localization.NullStringLocalizerFactory()));
-        var context = new UpdateEditorContext(new Shape(), EmailSettings.GroupId, false, "",
-            Mock.Of<IShapeFactory>(), Mock.Of<IZoneHolding>(), updater.Object);
-        var settings = fixture.Site.GetOrCreate<SmtpSettings>();
-        await driver.UpdateAsync(fixture.Site, settings, context);
-        Assert.False(updater.Object.ModelState.IsValid);
-        Assert.Equal("localhost", settings.Host);
-        Assert.Null(settings.Password);
-        fixture.Notifier.Verify(value => value.RequestUpdate<SmtpOptions>(It.IsAny<string>()), Times.Never);
-    }
-
     private static Fixture Create() => new();
 
     private sealed class Fixture

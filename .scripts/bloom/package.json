@@ -4,9 +4,21 @@
     "type": "module",
     "dependencies": {
         "@microsoft/signalr": "^8.0.0",
-        "axios": "^1.7.0",
+        "axios": "^1.20.0",
         "debug": "^4.3.4",
         "mitt": "^3.0.0",
+        "monaco-editor": "0.52.2",
         "oidc-client-ts": "^3.1.0"
+    },
+    "scripts": {
+        "check": "vue-tsc --noEmit",
+        "test:unit": "vitest"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^6.0.8",
+        "@vue/test-utils": "^2.4.11",
+        "jsdom": "^29.1.1",
+        "vitest": "4.1.10",
+        "vue": "3.5.40"
     }
 }

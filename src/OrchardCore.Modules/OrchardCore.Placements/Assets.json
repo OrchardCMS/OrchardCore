@@ -1,0 +1,16 @@
+[
+  {
+    "action": "parcel",
+    "name": "placement-edit",
+    "source": "Assets/ts/placement-edit.ts",
+    "dest": "wwwroot/Scripts/placement-edit/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "placements-admin-list",
+    "source": "Assets/ts/placements-admin-list.ts",
+    "dest": "wwwroot/Scripts/placements-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

@@ -9,8 +9,10 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Drivers;
@@ -21,11 +23,12 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     public const string GroupId = EmailSettings.GroupId;
 
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptionsMonitor<SmtpOptions> _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -34,19 +37,21 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
     public SmtpSettingsDisplayDriver(
         IOptionsUpdateNotifier optionsUpdateNotifier,
-        IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         IOptionsMonitor<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options;
         _authorizationService = authorizationService;
         _emailValidator = emailAddressValidator;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -78,8 +83,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             model.RequireCredentials = settings.RequireCredentials;
             model.UseDefaultCredentials = settings.UseDefaultCredentials;
             model.UserName = settings.UserName;
-            // Passwords are write-only; an empty input retains the stored credential.
-            model.Password = null;
+            model.Password = SecretInputViewModel.Create(settings.Password, settings.PasswordSecretName);
             model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
         }).Location("Content:5#SMTP")
         .OnGroup(SettingsGroupId);
@@ -96,10 +100,113 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var editor = new SmtpSettingsEditor(_optionsUpdateNotifier, _dataProtectionProvider, _emailValidator, S);
-        editor.Apply(site, settings, model,
-            (name, message) => context.Updater.ModelState.AddModelError(Prefix, name, message),
-            () => context.Updater.ModelState.IsValid);
+        var emailSettings = site.GetOrCreate<EmailSettings>();
+
+        var hasChanges = model.IsEnabled != settings.IsEnabled;
+
+        if (!model.IsEnabled)
+        {
+            if (hasChanges && emailSettings.DefaultProviderName == SmtpEmailProvider.TechnicalName)
+            {
+                emailSettings.DefaultProviderName = null;
+
+                site.Put(emailSettings);
+            }
+
+            settings.IsEnabled = false;
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(model.DefaultSender))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is a required field."]);
+            }
+            else if (!_emailValidator.Validate(model.DefaultSender))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is invalid."]);
+            }
+
+            if (model.DeliveryMethod == SmtpDeliveryMethod.Network
+                && string.IsNullOrWhiteSpace(model.Host))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
+            }
+            else if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
+                && !SmtpPickupDirectoryResolver.IsValidPickupDirectoryLocation(model.PickupDirectoryLocation))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The pickup directory location is invalid."]);
+            }
+
+            hasChanges |= model.DefaultSender != settings.DefaultSender;
+            hasChanges |= model.Host != settings.Host;
+            hasChanges |= model.Port != settings.Port;
+            hasChanges |= model.AutoSelectEncryption != settings.AutoSelectEncryption;
+            hasChanges |= model.RequireCredentials != settings.RequireCredentials;
+            hasChanges |= model.UseDefaultCredentials != settings.UseDefaultCredentials;
+            hasChanges |= model.EncryptionMethod != settings.EncryptionMethod;
+            hasChanges |= model.UserName != settings.UserName;
+            hasChanges |= model.ProxyHost != settings.ProxyHost;
+            hasChanges |= model.ProxyPort != settings.ProxyPort;
+            hasChanges |= model.IgnoreInvalidSslCertificate != settings.IgnoreInvalidSslCertificate;
+            hasChanges |= model.DeliveryMethod != settings.DeliveryMethod;
+            hasChanges |= model.PickupDirectoryLocation != settings.PickupDirectoryLocation;
+
+            var password = await model.Password.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.Password)}")
+            {
+                ProtectedValue = settings.Password,
+                SecretName = settings.PasswordSecretName,
+            });
+
+            if (password.Succeeded)
+            {
+                hasChanges |= password.ProtectedValue != settings.Password;
+                hasChanges |= password.SecretName != settings.PasswordSecretName;
+
+                settings.Password = password.ProtectedValue;
+                settings.PasswordSecretName = password.SecretName;
+            }
+
+            settings.IsEnabled = true;
+            settings.DefaultSender = model.DefaultSender;
+            settings.Host = model.Host;
+            settings.Port = model.Port;
+            settings.AutoSelectEncryption = model.AutoSelectEncryption;
+            settings.RequireCredentials = model.RequireCredentials;
+            settings.UseDefaultCredentials = model.UseDefaultCredentials;
+            settings.EncryptionMethod = model.EncryptionMethod;
+            settings.UserName = model.UserName;
+            settings.ProxyHost = model.ProxyHost;
+            settings.ProxyPort = model.ProxyPort;
+            settings.IgnoreInvalidSslCertificate = model.IgnoreInvalidSslCertificate;
+            settings.DeliveryMethod = model.DeliveryMethod;
+            settings.PickupDirectoryLocation = string.IsNullOrWhiteSpace(model.PickupDirectoryLocation)
+                ? SmtpPickupDirectoryResolver.DefaultPickupDirectoryLocation
+                : model.PickupDirectoryLocation;
+        }
+
+        if (context.Updater.ModelState.IsValid)
+        {
+            if (settings.IsEnabled == true && string.IsNullOrEmpty(emailSettings.DefaultProviderName))
+            {
+                // If we are enabling the only provider, set it as the default one.
+                emailSettings.DefaultProviderName = SmtpEmailProvider.TechnicalName;
+                site.Put(emailSettings);
+
+                hasChanges = true;
+            }
+
+            if (hasChanges)
+            {
+                _optionsUpdateNotifier
+                    .RequestUpdate<SmtpOptions>()
+                    .RequestUpdate<EmailProviderOptions>()
+                    .RequestUpdate<EmailOptions>();
+            }
+        }
 
         return await EditAsync(site, settings, context);
     }

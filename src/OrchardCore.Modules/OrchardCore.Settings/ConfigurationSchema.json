@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Liquid": {
+          "type": "object",
+          "properties": {
+            "PermittedSiteProperties": {
+              "type": "array",
+              "description": "The names of the entries of the site settings 'Properties' that can be accessed from Liquid templates through the 'Site' accessor, e.g. 'CurrentThemeName' or 'LayerSettings'. By default, no entry is exposed. See https://docs.orchardcore.net/en/latest/reference/modules/Settings/#accessing-settings-in-templates.",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            }
+          }
+        }
+      }
+    }
+  }
+}

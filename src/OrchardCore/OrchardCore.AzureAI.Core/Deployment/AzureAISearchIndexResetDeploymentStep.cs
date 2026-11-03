@@ -1,20 +1,18 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.AzureAI.Deployment;
 
 public class AzureAISearchIndexResetDeploymentStep : DeploymentStep
 {
-    public AzureAISearchIndexResetDeploymentStep()
-    {
-        Name = "AzureAISearchIndexReset";
-    }
+    public override string Name => "AzureAISearchIndexReset";
 
-    public AzureAISearchIndexResetDeploymentStep(IStringLocalizer<AzureAISearchIndexResetDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => AzureAILocalizationSources.ResetAzureAISearchIndices;
 
     public bool IncludeAll { get; set; }
 

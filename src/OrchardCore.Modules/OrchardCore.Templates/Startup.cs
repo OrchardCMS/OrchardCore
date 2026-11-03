@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
@@ -13,6 +14,9 @@ using OrchardCore.Templates.Deployment;
 using OrchardCore.Templates.Endpoints.Management;
 using OrchardCore.Templates.Recipes;
 using OrchardCore.Templates.Services;
+using OrchardCore.Templates.ViewModels;
+using OrchardCore.Templates.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Templates.Settings;
 
 namespace OrchardCore.Templates;
@@ -26,6 +30,9 @@ public sealed class Startup : StartupBase
         services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
         services.AddScoped<PreviewTemplatesProvider>();
         services.AddScoped<TemplatesManager>();
+
+        // Builds the rows of the templates admin list, shared by the site and admin template lists.
+        services.AddDisplayDriver<TemplateEntry, TemplateEntryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddRecipeExecutionStep<TemplateStep>();
@@ -42,6 +49,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<AdminTemplatesManager>();
         services.AddPermissionProvider<AdminTemplatesPermissions>();
+
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

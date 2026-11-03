@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Jint" />
     <PackageReference Include="ncrontab" />
   </ItemGroup>
 

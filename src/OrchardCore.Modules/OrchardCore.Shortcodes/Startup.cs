@@ -3,8 +3,10 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -67,13 +69,18 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
     {
         services.AddScoped<ShortcodeTemplatesManager>();
         services.AddSingleton<IRemoteManagementCapabilityProvider, ShortcodeTemplatesRemoteManagementCapabilityProvider>();
+
+        // Builds the rows of the shortcode templates admin list.
+        services.AddDisplayDriver<ShortcodeTemplateEntry, ShortcodeTemplateEntryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IJSLocalizer, ShortcodesJSLocalizer>();
 
         services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
 
         services.AddScoped<Sc.IShortcodeProvider, TemplateShortcodeProvider>();
         services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
+
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

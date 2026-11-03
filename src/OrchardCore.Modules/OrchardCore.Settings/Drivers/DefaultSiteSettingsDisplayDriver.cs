@@ -82,24 +82,36 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         site.SiteName = model.SiteName;
         site.PageTitleFormat = model.PageTitleFormat;
-        site.BaseUrl = model.BaseUrl;
         site.TimeZoneId = model.TimeZone;
         site.PageSize = model.PageSize.Value;
         site.AllowPageSizeSelection = model.AllowPageSizeSelection;
         site.UseCdn = model.UseCdn;
-        site.CdnBaseUrl = model.CdnBaseUrl;
         site.ResourceDebugMode = model.ResourceDebugMode;
         site.AppendVersion = model.AppendVersion;
         site.CacheMode = model.CacheMode;
 
+        if (SiteSettingsValidator.IsValidUrl(model.BaseUrl, restrictScheme: true))
+        {
+            site.BaseUrl = model.BaseUrl;
+        }
+        else if (!string.IsNullOrEmpty(model.BaseUrl))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+        }
+
+        // The site base URL is always HTTP or HTTPS, while the CDN base URL could be something else (like FTP) as well.
+        if (SiteSettingsValidator.IsValidUrl(model.CdnBaseUrl, restrictScheme: false))
+        {
+            site.CdnBaseUrl = model.CdnBaseUrl;
+        }
+        else if (!string.IsNullOrEmpty(model.CdnBaseUrl))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.CdnBaseUrl), S["The CDN base url must be a fully qualified URL."]);
+        }
+
         if (SiteSettingsValidator.ValidatePageSize(S, model.PageSize.Value, site.MaxPageSize) is { } pageSizeError)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), pageSizeError);
-        }
-
-        if (SiteSettingsValidator.ValidateBaseUrl(S, site.BaseUrl) is { } baseUrlError)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), baseUrlError);
         }
 
         if (TryParsePageSizeOptions(model.PageSizeOptions, out var pageSizeOptions))
@@ -177,4 +189,11 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         return true;
     }
+
+    /// <summary>
+    /// Checks if the provided <paramref name="url"/> is a valid <see cref="Uri"/> and a suitable base URL. The latter
+    /// means that it should end with the path and not contain any query or hash parameters.   
+    /// </summary>
+    /// <param name="url">Raw value to validate</param>
+    /// <param name="restrictScheme">If <see langword="true"/>, only HTTP and HTTPS URLs are allowed.</param>
 }

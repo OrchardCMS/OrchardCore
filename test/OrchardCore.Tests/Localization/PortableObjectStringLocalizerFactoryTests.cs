@@ -1,4 +1,5 @@
 using OrchardCore.Localization;
+using OrchardCore.Localization.PortableObject;
 
 namespace OrchardCore.Tests.Localization;
 
@@ -6,9 +7,62 @@ public class PortableObjectStringLocalizerFactoryTests
 {
     [Fact]
     public async Task LocalizerReturnsTranslationFromInnerClass_Default_Succeeds()
-        => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactory), "ar", "مرحبا");
+        => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactoryStartup), "ar", "مرحبا");
 
-    public class PortableObjectStringLocalizerFactory
+    [Fact]
+    public void Create_Twice_WithSameType_ReturnsSameLocalizerInstance()
+    {
+        // Arrange
+        var localizationManager = new Mock<ILocalizationManager>();
+        var requestLocalizationOptions = Options.Create(new RequestLocalizationOptions{ FallBackToParentUICultures = true });
+        var logger = new Mock<ILogger<PortableObjectStringLocalizerFactory>>();
+        var factory = new PortableObjectStringLocalizerFactory(localizationManager.Object, requestLocalizationOptions, logger.Object);
+
+        // Act
+        var localizer1 = factory.Create(typeof(DummyResource));
+        var localizer2 = factory.Create(typeof(DummyResource));
+
+        // Assert
+        Assert.Same(localizer1, localizer2);
+    }
+
+    [Fact]
+    public void Create_WithDifferentTypes_ReturnsDifferentLocalizerInstances()
+    {
+        // Arrange
+        var localizationManager = new Mock<ILocalizationManager>();
+        var requestLocalizationOptions = Options.Create(new RequestLocalizationOptions { FallBackToParentUICultures = true });
+        var logger = new Mock<ILogger<PortableObjectStringLocalizerFactory>>();
+        var factory = new PortableObjectStringLocalizerFactory(localizationManager.Object, requestLocalizationOptions, logger.Object);
+
+        // Act
+        var localizer1 = factory.Create(typeof(DummyResource));
+        var localizer2 = factory.Create(typeof(AnotherDummyResource));
+
+        // Assert
+        Assert.NotSame(localizer1, localizer2);
+    }
+
+    [Theory]
+    [InlineData("OrchardCore.Tests.Localization.Model")]
+    [InlineData("OrchardCore.Tests.Localization.Outer+Inner")]
+    public void Create_Twice_WithSameBaseNameAndLocation_ReturnsSameLocalizerInstance(string baseName)
+    {
+        // Arrange
+        var localizationManager = new Mock<ILocalizationManager>();
+        var requestLocalizationOptions = Options.Create(new RequestLocalizationOptions { FallBackToParentUICultures = true });
+        var logger = new Mock<ILogger<PortableObjectStringLocalizerFactory>>();
+        var factory = new PortableObjectStringLocalizerFactory(localizationManager.Object, requestLocalizationOptions, logger.Object);
+
+        // Act
+        var localizer1 = factory.Create(baseName, "OrchardCore.Tests");
+        var localizer2 = factory.Create(baseName, "OrchardCore.Tests");
+
+        // Assert
+        Assert.Same(localizer1, localizer2);
+    }
+
+    public class PortableObjectStringLocalizerFactoryStartup
     {
 #pragma warning disable CA1822 // Mark members as static
         public void ConfigureServices(IServiceCollection services)
@@ -45,4 +99,8 @@ public class PortableObjectStringLocalizerFactoryTests
     {
         public string Hello { get; set; }
     }
+
+    private sealed class DummyResource;
+
+    private sealed class AnotherDummyResource;
 }

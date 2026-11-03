@@ -4,12 +4,17 @@ namespace OrchardCore.Data;
 
 public static class ShellSettingsExtensions
 {
-    private const string DatabaseTableOptions = "OrchardCore_Data_TableOptions";
+    private const string DatabaseTableOptions = "Data:TableOptions";
     private const string DefaultDocumentTable = $"{DatabaseTableOptions}:DefaultDocumentTable";
     private const string DefaultTableNameSeparator = $"{DatabaseTableOptions}:DefaultTableNameSeparator";
     private const string DefaultIdentityColumnSize = $"{DatabaseTableOptions}:DefaultIdentityColumnSize";
 
-    private static readonly string[] s_identityColumnSizes = [nameof(Int64), nameof(Int32)];
+    // The 'OrchardCore_Data_TableOptions' section is deprecated and will be removed in a future major version, use 'Data:TableOptions' instead.
+    private const string LegacyDefaultDocumentTable = "OrchardCore_Data_TableOptions:DefaultDocumentTable";
+    private const string LegacyDefaultTableNameSeparator = "OrchardCore_Data_TableOptions:DefaultTableNameSeparator";
+    private const string LegacyDefaultIdentityColumnSize = "OrchardCore_Data_TableOptions:DefaultIdentityColumnSize";
+
+    private static readonly string[] s_identityColumnSizes = { nameof(Int64), nameof(Int32) };
 
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()
@@ -34,7 +39,7 @@ public static class ShellSettingsExtensions
     public static string GetDocumentTable(this ShellSettings shellSettings)
     {
         var documentTable = (!shellSettings.IsInitialized()
-            ? shellSettings[DefaultDocumentTable]
+            ? shellSettings[DefaultDocumentTable] ?? shellSettings[LegacyDefaultDocumentTable]
             : shellSettings["DocumentTable"])
             ?.Trim();
 
@@ -49,7 +54,7 @@ public static class ShellSettingsExtensions
     public static string GetTableNameSeparator(this ShellSettings shellSettings)
     {
         var tableNameSeparator = (!shellSettings.IsInitialized()
-            ? shellSettings[DefaultTableNameSeparator]
+            ? shellSettings[DefaultTableNameSeparator] ?? shellSettings[LegacyDefaultTableNameSeparator]
             : shellSettings["TableNameSeparator"])
             ?.Trim();
 
@@ -72,7 +77,7 @@ public static class ShellSettingsExtensions
     public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
         var identityColumnSize = (!shellSettings.IsInitialized()
-            ? shellSettings[DefaultIdentityColumnSize]
+            ? shellSettings[DefaultIdentityColumnSize] ?? shellSettings[LegacyDefaultIdentityColumnSize]
             : shellSettings["IdentityColumnSize"])
             ?.Trim();
 

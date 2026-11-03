@@ -17,9 +17,11 @@ By default, transliteration happens when the feature is enabled. The following c
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Media_Slugify": {
-      // Enable/Disable Transliteration.
-      "Transilterate": true
+    "Media": {
+      "Slugify": {
+        // Enable/Disable Transliteration.
+        "Transliterate": true
+      }
     }
   }
 }

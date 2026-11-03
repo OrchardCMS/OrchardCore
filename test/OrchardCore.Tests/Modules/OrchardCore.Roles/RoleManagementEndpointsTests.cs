@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Roles.Controllers;
 using OrchardCore.Roles.Endpoints.Management;
 using OrchardCore.Security;
@@ -101,8 +102,8 @@ public class RoleManagementEndpointsTests
 
         var permissionCatalog = new PermissionCatalog(
             [
-                new Permission("ManageUsers") { Description = "Manage users", Category = "Users" },
-                new Permission("ManageRoles") { Description = "Manage roles", Category = "Roles" },
+                new Permission("ManageUsers") { Description = LocalizationSource.Create("Manage users"), Category = "Users" },
+                new Permission("ManageRoles") { Description = LocalizationSource.Create("Manage roles"), Category = "Roles" },
             ],
             new Dictionary<string, string>(StringComparer.Ordinal)
             {

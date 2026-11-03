@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Shortcodes.ViewModels
+
+@model ShapeViewModel<ShortcodeTemplateEntry>
+
+@foreach (var category in Model.Value.ShortcodeTemplate?.Categories ?? [])
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Category"]">
+        <i class="fa-solid fa-tag text-secondary" aria-hidden="true"></i> @category
+    </span>
+}

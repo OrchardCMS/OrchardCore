@@ -15,6 +15,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Localization;
+using OrchardCore.Tests.Utilities;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -70,31 +71,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         _prefixedStore.Dispose();
         _prefixedStore = null;
 
-        if (File.Exists(_tempFilename))
-        {
-            try
-            {
-                File.Delete(_tempFilename);
-            }
-            catch
-            {
-
-            }
-        }
-
-        var prefixFilename = _tempFilename + _prefix;
-
-        if (File.Exists(prefixFilename))
-        {
-            try
-            {
-                File.Delete(prefixFilename);
-            }
-            catch
-            {
-
-            }
-        }
+        TestFileHelper.TryDelete(_tempFilename);
+        TestFileHelper.TryDelete(_tempFilename + _prefix);
 
         return ValueTask.CompletedTask;
     }

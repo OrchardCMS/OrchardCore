@@ -86,6 +86,7 @@ public class TemplatesOpenApiDiscoveryTests
             .ToArray();
         Assert.Contains(RemoteManagementPermissions.AccessRemoteManagement, permissions);
         Assert.Contains(global::OrchardCore.Templates.Permissions.ManageTemplates, permissions);
+        Assert.Contains(global::OrchardCore.Liquid.Permissions.ManageLiquidTemplates, permissions);
 
         var produces = endpoint.Metadata.GetOrderedMetadata<IProducesResponseTypeMetadata>()
             .Select(metadata => metadata.StatusCode)

@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -26,6 +27,7 @@ using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.Endpoints;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Settings;
+using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps;
 
@@ -36,6 +38,11 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
+
+        // Build the rows of the sitemaps, sitemap indexes and sitemap cache admin lists.
+        services.AddDisplayDriver<SitemapListEntry, SitemapListEntryDisplayDriver>();
+        services.AddDisplayDriver<SitemapIndexListEntry, SitemapIndexListEntryDisplayDriver>();
+        services.AddDisplayDriver<SitemapCacheEntry, SitemapCacheEntryDisplayDriver>();
 
         services.Configure<SitemapsOptions>(options =>
         {
@@ -94,6 +101,7 @@ public sealed class Startup : StartupBase
         services.AddJsonDerivedTypeInfo<ContentTypesSitemapSource, SitemapSource>();
         services.AddJsonDerivedTypeInfo<CustomPathSitemapSource, SitemapSource>();
         services.AddJsonDerivedTypeInfo<SitemapIndexSource, SitemapSource>();
+
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

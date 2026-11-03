@@ -3673,6 +3673,69 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "RAJEEV2510",
+      "name": "Rajeev Kumar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49456702?v=4",
+      "profile": "http://techiu.epizy.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vlad2kgithub",
+      "name": "VladAffable",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62915530?v=4",
+      "profile": "https://github.com/vlad2kgithub",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yogixlogic",
+      "name": "YOGESH CHANDEWAR ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68509860?v=4",
+      "profile": "https://github.com/yogixlogic",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "nurullahturkoglu",
+      "name": "Nurullah Türkoğlu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73299153?v=4",
+      "profile": "https://github.com/nurullahturkoglu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Raf-Hs",
+      "name": "Rafael Hernández Silva",
+      "avatar_url": "https://avatars.githubusercontent.com/u/81477606?v=4",
+      "profile": "https://www.raftel-software.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "johnkaram02",
+      "name": "John Karam",
+      "avatar_url": "https://avatars.githubusercontent.com/u/168653085?v=4",
+      "profile": "https://github.com/johnkaram02",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "JohnyKid123",
+      "name": "Alex Venkov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97468479?v=4",
+      "profile": "https://github.com/JohnyKid123",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

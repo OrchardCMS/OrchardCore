@@ -232,7 +232,7 @@ public class DeploymentPlanManagementTests : IDisposable
 
     private DeploymentPlanController Admin(IDeploymentPlanService plans) => new(
         Authorize(DeploymentPermissions.ManageDeploymentPlan), null, [], plans, Options.Create(new PagerOptions()), null,
-        new StringLocalizer<DeploymentPlanController>(new NullStringLocalizerFactory()), Mock.Of<IHtmlLocalizer<DeploymentPlanController>>(),
+        Mock.Of<IStringLocalizerFactory>(), new StringLocalizer<DeploymentPlanController>(new NullStringLocalizerFactory()), Mock.Of<IHtmlLocalizer<DeploymentPlanController>>(),
         Mock.Of<INotifier>(), null)
     {
         ControllerContext = new ControllerContext { HttpContext = Http() },

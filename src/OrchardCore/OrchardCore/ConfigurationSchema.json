@@ -1,0 +1,171 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "State": {
+          "type": "string",
+          "enum": [
+            "Uninitialized",
+            "Initializing",
+            "Running",
+            "Disabled",
+            "Invalid"
+          ],
+          "description": "The tenant state. Usually set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:State'; any section under 'OrchardCore' that defines a valid 'State' is loaded as a tenant, which allows pre-configuring a tenant with the 'Uninitialized' state before it is set up. Tenant settings defined directly under 'OrchardCore' apply to all tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/."
+        },
+        "RequestUrlHost": {
+          "type": "string",
+          "description": "The host name(s) the tenant responds to. Multiple hosts can be separated with a comma or a space. Can also be set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:RequestUrlHost'. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/."
+        },
+        "RequestUrlPrefix": {
+          "type": "string",
+          "description": "The URL path prefix the tenant responds to, e.g. 'mytenant'. Can also be set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:RequestUrlPrefix'. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/."
+        },
+        "DatabaseProvider": {
+          "type": "string",
+          "enum": [
+            "Sqlite",
+            "SqlConnection",
+            "MySql",
+            "Postgres"
+          ],
+          "description": "The database provider of the tenant: 'Sqlite', 'SqlConnection' (SQL Server), 'MySql' or 'Postgres'. Define it with 'ConnectionString' directly under 'OrchardCore' to share the same database configuration between all tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Data/."
+        },
+        "ConnectionString": {
+          "type": "string",
+          "description": "The database connection string of the tenant. Not used by the 'Sqlite' provider. See https://docs.orchardcore.net/en/latest/reference/modules/Data/."
+        },
+        "TablePrefix": {
+          "type": "string",
+          "description": "The prefix of the tenant database tables, allowing several tenants to share the same database. Not used by the 'Sqlite' provider. See https://docs.orchardcore.net/en/latest/reference/modules/Data/."
+        },
+        "Schema": {
+          "type": "string",
+          "description": "The database schema of the tenant tables. Not used by the 'Sqlite' provider. See https://docs.orchardcore.net/en/latest/reference/modules/Data/."
+        },
+        "DatabaseName": {
+          "type": "string",
+          "description": "The file name of the tenant SQLite database, stored in the tenant folder. Setup uses 'OrchardCore.db' when not provided. Only used by the 'Sqlite' provider. See https://docs.orchardcore.net/en/latest/reference/modules/Data/."
+        },
+        "RecipeName": {
+          "type": "string",
+          "examples": [
+            "Agency",
+            "Blank",
+            "Blog",
+            "ComingSoon",
+            "Headless",
+            "SaaS"
+          ],
+          "description": "The name of the recipe preselected when the tenant is set up."
+        },
+        "Features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The identifiers of features that are always enabled for the tenant and can't be disabled."
+        },
+        "ShellActivateLockTimeout": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 30000,
+          "description": "The timeout in milliseconds to acquire a distributed lock before activating a tenant. Only used when the distributed lock implementation is not a local lock, e.g. when the Redis Lock feature is enabled."
+        },
+        "ShellActivateLockExpiration": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 30000,
+          "description": "The expiration in milliseconds of the distributed lock acquired before activating a tenant. Only used when the distributed lock implementation is not a local lock."
+        },
+        "ShellRemovingLockTimeout": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1000,
+          "description": "The timeout in milliseconds to acquire a distributed lock before removing a tenant. A low value is recommended because only one instance is intended to remove a given tenant. Only used when the distributed lock implementation is not a local lock."
+        },
+        "ShellRemovingLockExpiration": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 60000,
+          "description": "The expiration in milliseconds of the distributed lock acquired before removing a tenant. Only used when the distributed lock implementation is not a local lock."
+        },
+        "BackgroundService": {
+          "type": "object",
+          "description": "Configures the host service that runs the background tasks of all tenants. Read from the application configuration only, not per tenant.",
+          "properties": {
+            "ShellWarmup": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether all tenants are loaded when the application starts so that their background tasks run without waiting for a first request. By default, background tasks wait for their tenant to be lazily built on a first matching request."
+            },
+            "PollingTime": {
+              "type": "string",
+              "default": "00:01:00",
+              "description": "The time to wait between two executions of all the background tasks of a given tenant, in the 'hh:mm:ss' format."
+            },
+            "MinimumIdleTime": {
+              "type": "string",
+              "default": "00:00:10",
+              "description": "The minimum idle time before the background tasks of a tenant are triggered, as well as between tasks, in the 'hh:mm:ss' format."
+            }
+          }
+        },
+        "Localization": {
+          "type": "object",
+          "description": "Configures localization.",
+          "properties": {
+            "CultureOptions": {
+              "type": "object",
+              "description": "Configures how cultures are created.",
+              "properties": {
+                "IgnoreSystemSettings": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to ignore the culture settings of the operating system user (e.g. custom date or number formats) so that the current culture doesn't depend on the local computer settings."
+                }
+              }
+            }
+          }
+        },
+        "TempDirectory": {
+          "type": "object",
+          "description": "Configures where temporary files, such as in-progress chunked or resumable uploads and extracted import archives, are stored. See https://docs.orchardcore.net/en/latest/reference/core/temporary-file-storage/.",
+          "properties": {
+            "Path": {
+              "type": "string",
+              "description": "The base path under which tenant-scoped temporary files are stored. When not set, the operating system temporary directory is used. Point it to a larger or shared volume, such as a mounted Azure Files or AWS EFS/FSx share."
+            }
+          }
+        },
+        "StaticFileOptions": {
+          "type": "object",
+          "description": "Configures the static files served from the modules and themes. See https://docs.orchardcore.net/en/latest/reference/modules/Modules/.",
+          "properties": {
+            "CacheControl": {
+              "type": "string",
+              "default": "public, max-age=2592000, s-maxage=31557600",
+              "description": "The 'Cache-Control' header sent with the static files served from the modules and themes."
+            }
+          }
+        },
+        "OrchardCore_BackgroundService": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_BackgroundService' section is deprecated. Use 'OrchardCore:BackgroundService' instead.",
+          "description": "Deprecated. Use 'OrchardCore:BackgroundService' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Localization_CultureOptions": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Localization_CultureOptions' section is deprecated. Use 'OrchardCore:Localization:CultureOptions' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Localization:CultureOptions' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

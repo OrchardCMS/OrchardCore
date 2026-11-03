@@ -4,5 +4,19 @@
     "name": "technical-name-generator",
     "source": "Assets/js/technical-name-generator.js",
     "tags": [ "indexing", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "indexing-admin-index",
+    "source": "Assets/ts/indexing-admin-index.ts",
+    "dest": "wwwroot/Scripts/indexing-admin-index/",
+    "tags": [ "indexing", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "index-profile-fields",
+    "source": "Assets/ts/index-profile-fields.ts",
+    "dest": "wwwroot/Scripts/index-profile-fields/",
+    "tags": [ "indexing", "js" ]
   }
 ]

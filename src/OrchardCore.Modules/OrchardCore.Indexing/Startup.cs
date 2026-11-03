@@ -4,6 +4,7 @@ using OrchardCore.Indexing.Endpoints.Management;
 using OrchardCore.RemoteManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data;
@@ -21,6 +22,7 @@ using OrchardCore.Indexing.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Indexing.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Indexing.Core;
 using OrchardCore.Security.Permissions;
@@ -49,6 +51,7 @@ public sealed class Startup : StartupBase
             .AddDataMigration<IndexOperationMigrations>()
             .AddIndexProvider<IndexProfileIndexProvider>()
             .AddDataMigration<IndexingMigrations>();
+
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

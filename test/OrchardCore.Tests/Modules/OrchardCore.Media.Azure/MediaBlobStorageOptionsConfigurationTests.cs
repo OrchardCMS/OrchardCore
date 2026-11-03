@@ -18,8 +18,8 @@ public class MediaBlobStorageOptionsConfigurationTests
     {
         var (config, logger) = CreateConfiguration(new Dictionary<string, string>
         {
-            ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
-            ["OrchardCore_Media_Azure:ContainerName"] = "{{ ShellSettings.Name }}-media",
+            ["Media:Azure:ConnectionString"] = ValidConnectionString,
+            ["Media:Azure:ContainerName"] = "{{ ShellSettings.Name }}-media",
         }, shellName: "Tenant1");
 
         var options = new MediaBlobStorageOptions();
@@ -40,8 +40,8 @@ public class MediaBlobStorageOptionsConfigurationTests
     {
         var (config, logger) = CreateConfiguration(new Dictionary<string, string>
         {
-            ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
-            ["OrchardCore_Media_Azure:ContainerName"] = rawName,
+            ["Media:Azure:ConnectionString"] = ValidConnectionString,
+            ["Media:Azure:ContainerName"] = rawName,
         });
 
         var options = new MediaBlobStorageOptions();
@@ -58,8 +58,8 @@ public class MediaBlobStorageOptionsConfigurationTests
         var rawName = new string('a', 64);
         var (config, logger) = CreateConfiguration(new Dictionary<string, string>
         {
-            ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
-            ["OrchardCore_Media_Azure:ContainerName"] = rawName,
+            ["Media:Azure:ConnectionString"] = ValidConnectionString,
+            ["Media:Azure:ContainerName"] = rawName,
         });
 
         var options = new MediaBlobStorageOptions();
@@ -69,13 +69,50 @@ public class MediaBlobStorageOptionsConfigurationTests
     }
 
     [Fact]
-    public void CreateContainer_False_RoundTripsFromConfig()
+    public void LegacySection_ConfiguresOptions()
     {
         var (config, _) = CreateConfiguration(new Dictionary<string, string>
         {
             ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
-            ["OrchardCore_Media_Azure:ContainerName"] = "media",
-            ["OrchardCore_Media_Azure:CreateContainer"] = "false",
+            ["OrchardCore_Media_Azure:ContainerName"] = "legacy-media",
+            ["OrchardCore_Media_Azure:BasePath"] = "legacy",
+        });
+
+        var options = new MediaBlobStorageOptions();
+        config.Configure(options);
+
+        Assert.Equal(ValidConnectionString, options.ConnectionString);
+        Assert.Equal("legacy-media", options.ContainerName);
+        Assert.Equal("legacy", options.BasePath);
+    }
+
+    [Fact]
+    public void BothSections_SectionValuesWin()
+    {
+        var (config, _) = CreateConfiguration(new Dictionary<string, string>
+        {
+            ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
+            ["OrchardCore_Media_Azure:ContainerName"] = "legacy-media",
+            ["OrchardCore_Media_Azure:BasePath"] = "legacy",
+            ["Media:Azure:ContainerName"] = "current-media",
+        });
+
+        var options = new MediaBlobStorageOptions();
+        config.Configure(options);
+
+        Assert.Equal(ValidConnectionString, options.ConnectionString);
+        Assert.Equal("current-media", options.ContainerName);
+        Assert.Equal("legacy", options.BasePath);
+    }
+
+    [Fact]
+    public void CreateContainer_False_RoundTripsFromConfig()
+    {
+        var (config, _) = CreateConfiguration(new Dictionary<string, string>
+        {
+            ["Media:Azure:ConnectionString"] = ValidConnectionString,
+            ["Media:Azure:ContainerName"] = "media",
+            ["Media:Azure:CreateContainer"] = "false",
         });
 
         var options = new MediaBlobStorageOptions();
@@ -89,10 +126,10 @@ public class MediaBlobStorageOptionsConfigurationTests
     {
         var (config, _) = CreateConfiguration(new Dictionary<string, string>
         {
-            ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
-            ["OrchardCore_Media_Azure:ContainerName"] = "media",
-            ["OrchardCore_Media_Azure:RemoveContainer"] = "true",
-            ["OrchardCore_Media_Azure:RemoveFilesFromBasePath"] = "true",
+            ["Media:Azure:ConnectionString"] = ValidConnectionString,
+            ["Media:Azure:ContainerName"] = "media",
+            ["Media:Azure:RemoveContainer"] = "true",
+            ["Media:Azure:RemoveFilesFromBasePath"] = "true",
         });
 
         var options = new MediaBlobStorageOptions();

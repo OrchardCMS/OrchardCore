@@ -132,6 +132,9 @@ internal sealed class OpenIdSettingsSectionProvider<T> : ISiteSettingsSectionPro
             {
                 candidate[entry.Key] = OpenIdClientSecretEditor.Protect(_protection,
                     current[entry.Key]?.GetValue<string>(), entry.Value?.GetValue<string>());
+
+                // A secret name wins over the protected value at runtime.
+                candidate["clientSecretSecretName"] = null;
             }
             else
             {
@@ -178,7 +181,8 @@ internal sealed class OpenIdSettingsSectionProvider<T> : ISiteSettingsSectionPro
         }
         if (_protection is not null)
         {
-            values["hasClientSecret"] = !string.IsNullOrEmpty(settings["clientSecret"]?.GetValue<string>());
+            values["hasClientSecret"] = !string.IsNullOrEmpty(settings["clientSecret"]?.GetValue<string>())
+                || !string.IsNullOrEmpty(settings["clientSecretSecretName"]?.GetValue<string>());
             values["hasParameters"] = settings["parameters"] is JsonArray { Count: > 0 };
         }
         return new() { Name = Descriptor.Name, Source = "tenant", Values = values,

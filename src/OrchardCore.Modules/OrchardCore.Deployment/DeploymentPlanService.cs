@@ -125,10 +125,7 @@ public class DeploymentPlanService : IDeploymentPlanService
     /// <inheritdoc />
     public DeploymentStep CloneStep(DeploymentStep step)
     {
-        var clone = JsonSerializer.Deserialize<DeploymentStep>(JsonSerializer.Serialize<DeploymentStep>(step, _jsonOptions), _jsonOptions);
-        // LocalizedString is immutable presentation metadata and does not round-trip all of its constructor state.
-        clone.Category = step.Category;
-        return clone;
+        return JsonSerializer.Deserialize<DeploymentStep>(JsonSerializer.Serialize<DeploymentStep>(step, _jsonOptions), _jsonOptions);
     }
 
     /// <inheritdoc />

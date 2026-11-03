@@ -59,11 +59,16 @@ public static class GetTusFileInfoEndpoint
             return httpContext.ApiForbidProblem();
         }
 
-        var entry = await tusMetadataStore.GetAsync(uploadId);
+        var entry = await tusMetadataStore.GetAsync(uploadId, httpContext.RequestAborted);
 
         if (entry == null || string.IsNullOrEmpty(entry.MediaFilePath))
         {
             return httpContext.ApiNotFoundProblem();
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)entry.MediaFilePath))
+        {
+            return httpContext.ApiForbidProblem();
         }
 
         var fileInfo = await mediaFileStore.GetFileInfoAsync(entry.MediaFilePath);
@@ -73,8 +78,8 @@ public static class GetTusFileInfoEndpoint
             return httpContext.ApiNotFoundProblem();
         }
 
-        // Remove the entry now that the client has retrieved it.
-        await tusMetadataStore.RemoveAsync(uploadId);
+        // Remove the entry now that the client has retrieved it and both authorization checks passed.
+        await tusMetadataStore.RemoveAsync(uploadId, httpContext.RequestAborted);
 
         return TypedResults.Ok(MediaEndpointHelpers.CreateFileResult(fileInfo, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
     }

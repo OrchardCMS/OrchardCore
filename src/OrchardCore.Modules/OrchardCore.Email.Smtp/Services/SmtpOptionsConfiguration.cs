@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Services;
@@ -12,6 +13,7 @@ namespace OrchardCore.Email.Smtp.Services;
 public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
 {
     public const string ProtectorName = "SmtpSettingsConfiguration";
+    public const string PasswordSecretName = "Smtp.Password";
     private const string _pickupDirectoryLocationBaseKey = nameof(SmtpOptions.PickupDirectoryLocationBase);
 
     private readonly ISiteService _siteService;
@@ -20,6 +22,7 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
     private readonly ShellOptions _shellOptions;
     private readonly ShellSettings _shellSettings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     public SmtpOptionsConfiguration(
@@ -29,6 +32,7 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
         IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         ILogger<SmtpOptionsConfiguration> logger)
     {
         _siteService = siteService;
@@ -37,6 +41,7 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         _shellOptions = shellOptions.Value;
         _shellSettings = shellSettings;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -56,21 +61,15 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         options.RequireCredentials = settings.RequireCredentials;
         options.UseDefaultCredentials = settings.UseDefaultCredentials;
         options.UserName = settings.UserName;
-        options.Password = settings.Password;
         options.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
 
-        if (!string.IsNullOrWhiteSpace(settings.Password))
-        {
-            try
-            {
-                var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-                options.Password = protector.Unprotect(settings.Password);
-            }
-            catch
-            {
-                _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
-            }
-        }
+        options.Password = _serviceProvider.GetSecretValueAsync(
+            settings.PasswordSecretName,
+            settings.Password,
+            _dataProtectionProvider.CreateProtector(ProtectorName),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (settings.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
         {
@@ -101,7 +100,7 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         }
     }
 
+    // The 'OrchardCore_Email_Smtp' and 'OrchardCore_Email' sections are deprecated and will be removed in a future major version, use 'Email:Smtp' instead.
     private string GetConfiguredPickupDirectoryLocationBase()
-        => _shellConfiguration.GetSection("OrchardCore_Email_Smtp")[_pickupDirectoryLocationBaseKey]
-            ?? _shellConfiguration.GetSection("OrchardCore_Email")[_pickupDirectoryLocationBaseKey];
+        => _shellConfiguration.GetSectionCompat("Email:Smtp", "OrchardCore_Email_Smtp", "OrchardCore_Email")[_pickupDirectoryLocationBaseKey];
 }

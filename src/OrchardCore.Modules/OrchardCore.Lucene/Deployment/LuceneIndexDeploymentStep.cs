@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Lucene.Deployment;
 
@@ -8,16 +9,13 @@ namespace OrchardCore.Lucene.Deployment;
 /// </summary>
 public class LuceneIndexDeploymentStep : DeploymentStep
 {
-    public LuceneIndexDeploymentStep()
-    {
-        Name = "LuceneIndex";
-    }
+    public override string Name => "LuceneIndex";
 
-    public LuceneIndexDeploymentStep(IStringLocalizer<LuceneIndexDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => LuceneLocalizationSources.LuceneSearchIndexes;
 
     public bool IncludeAll { get; set; } = true;
 

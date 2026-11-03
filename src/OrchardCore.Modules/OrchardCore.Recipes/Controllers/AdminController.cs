@@ -10,6 +10,8 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Recipes.ViewModels;
 
 namespace OrchardCore.Recipes.Controllers;
@@ -57,7 +59,8 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Recipes", "Recipes")]
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Index(
+        [FromServices] IShapeFactory shapeFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
@@ -67,7 +70,7 @@ public sealed class AdminController : Controller
         var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
         var recipes = await GetRecipesAsync(features);
 
-        var model = recipes.Select(recipe => new RecipeViewModel
+        var entries = recipes.Select(recipe => new RecipeEntry
         {
             Name = recipe.Name,
             DisplayName = recipe.DisplayName,
@@ -78,6 +81,30 @@ public sealed class AdminController : Controller
             Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
             Description = recipe.Description,
         }).ToArray();
+
+        var model = new RecipesIndexViewModel();
+
+        // The groups share one layout, so the page offers it once, beside its search bar, and its lists do not
+        // carry a selector of their own.
+        model.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
+        {
+            ListName = RecipesAdminList.Name,
+        }));
+
+        // The page keeps one list per feature, and every list follows the configured layout.
+        foreach (var group in entries.GroupBy(entry => entry.Feature).OrderBy(group => group.Key))
+        {
+            model.Groups.Add(new RecipeGroupViewModel
+            {
+                Feature = group.Key,
+                FilterValue = group.Key + " " + string.Join(' ', group.Select(entry => entry.DisplayName)),
+                List = new AdminListContext<RecipeEntry>
+                {
+                    Source = group.OrderBy(entry => entry.DisplayName).ToArray(),
+                    ShowLayoutSelector = false,
+                },
+            });
+        }
 
         return View(model);
     }

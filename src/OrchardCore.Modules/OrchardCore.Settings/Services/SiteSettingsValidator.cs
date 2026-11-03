@@ -23,7 +23,19 @@ internal static class SiteSettingsValidator
         => maxPagedCount < 0 ? localizer["The maximum paged count must be zero or greater."] : null;
 
     public static string ValidateBaseUrl(IStringLocalizer localizer, string baseUrl)
-        => !string.IsNullOrEmpty(baseUrl) && !Uri.TryCreate(baseUrl, UriKind.Absolute, out _)
+        => !string.IsNullOrEmpty(baseUrl) && !IsValidUrl(baseUrl, restrictScheme: true)
             ? localizer["The Base url must be a fully qualified URL."]
             : null;
+
+    public static string ValidateCdnBaseUrl(IStringLocalizer localizer, string cdnBaseUrl)
+        => !string.IsNullOrEmpty(cdnBaseUrl) && !IsValidUrl(cdnBaseUrl, restrictScheme: false)
+            ? localizer["The CDN base url must be a fully qualified URL."]
+            : null;
+
+    // The site base URL is always HTTP or HTTPS, while the CDN base URL could be something else (like FTP) as well.
+    public static bool IsValidUrl(string url, bool restrictScheme)
+        => Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
+            (!restrictScheme || uri.Scheme is "http" or "https") &&
+            string.IsNullOrEmpty(uri.Query) &&
+            string.IsNullOrEmpty(uri.Fragment);
 }

@@ -51,6 +51,29 @@ public class OpenIdSettingsSectionTests
     }
 
     [Fact]
+    public async Task ClientSecret_WithSecretName_ReplacesTheSecretName()
+    {
+        var settings = new OpenIdClientSettings { ClientId = "existing", ResponseType = "code", ResponseMode = "query", Authority = new Uri("https://login.example.test"), ClientSecretSecretName = "stored-name" };
+        var service = new Mock<IOpenIdClientService>();
+        service.Setup(service => service.GetSettingsAsync()).ReturnsAsync(() => settings);
+        service.Setup(service => service.ValidateSettingsAsync(It.IsAny<OpenIdClientSettings>())).ReturnsAsync(ImmutableArray<ValidationResult>.Empty);
+        service.Setup(service => service.UpdateSettingsAsync(It.IsAny<OpenIdClientSettings>()))
+            .Callback<OpenIdClientSettings>(value => settings = value).Returns(Task.CompletedTask);
+        var services = new ServiceCollection().AddSingleton(service.Object).AddSingleton(Mock.Of<IShellReleaseManager>()).AddSingleton<IDataProtectionProvider>(new EphemeralDataProtectionProvider());
+        new OpenIdClientManagementStartup().ConfigureServices(services);
+        using var provider = services.BuildServiceProvider();
+        var section = provider.GetRequiredService<ISiteSettingsSectionProvider>();
+
+        Assert.True((await section.GetAsync()).Values["hasClientSecret"].GetValue<bool>());
+
+        var result = await section.UpdateAsync(new JsonObject { ["clientSecret"] = "private-test-secret" });
+
+        Assert.True(result.Changed);
+        Assert.Null(settings.ClientSecretSecretName);
+        Assert.NotNull(settings.ClientSecret);
+    }
+
+    [Fact]
     public async Task Server_InvalidSchemaAndSharedValidationDoNotPersistOrReload()
     {
         var settings = new OpenIdServerSettings { AllowClientCredentialsFlow = true, TokenEndpointPath = "/connect/token" };

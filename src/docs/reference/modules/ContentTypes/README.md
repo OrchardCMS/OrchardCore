@@ -19,11 +19,18 @@ The editor returns the selection as a `string[]` on the model.
 | `selectedContentTypes`  | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
 | `htmlName`              | `string`   | The name of the model property to bind the result to.                                  |
 | `stereotype` (optional) | `string`   | A stereotype name to filter the list of content types available to select.             |
+| `displayMode` (optional) | `string`  | `Picker` renders a searchable list that shows the selected content types as tags, instead of checkboxes. |
 
 #### Sample
 
 ```csharp
 @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
+```
+
+The editors of the workflow content events use the picker:
+
+```csharp
+@await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.SelectedContentTypeNames, htmlName = Html.NameFor(m => m.SelectedContentTypeNames), displayMode = "Picker" })
 ```
 
 ## Migrations
@@ -420,7 +427,7 @@ Default values for category and thumbnail can be configured in `appsettings.json
 ```json
 {
     "OrchardCore": {
-        "OrchardCore_ContentTypes": {
+        "ContentTypes": {
             "DefaultCategory": "Widgets",
             "DefaultThumbnailPath": "/media/thumbnails/default.png"
         }

@@ -105,7 +105,7 @@ public class SiteSettingsManagementTests
         Assert.Contains("maxPageSize", result.Errors);
         Assert.Contains("maxPagedCount", result.Errors);
         Assert.Contains("resourceDebugMode", result.Errors);
-        Assert.Equal("https://example.test", site.BaseUrl);
+        Assert.Equal("https://example.test/", site.BaseUrl);
         Assert.Equal(10, site.PageSize);
         Assert.Equal(100, site.MaxPageSize);
         Assert.Equal(500, site.MaxPagedCount);
@@ -129,6 +129,23 @@ public class SiteSettingsManagementTests
         Assert.Equal("Test site", site.SiteName);
         Assert.Equal(10, site.PageSize);
         siteService.Verify(value => value.UpdateSiteSettingsAsync(site), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_SameUrlWithoutTrailingSlash_DoesNotPersist()
+    {
+        var site = CreateSite();
+        var siteService = new Mock<ISiteService>();
+        siteService.Setup(value => value.LoadSiteSettingsAsync()).ReturnsAsync(site);
+        var service = CreateService(siteService);
+
+        var result = await service.UpdateAsync(new ClaimsPrincipal(), new SiteSettingsUpdateRequest
+        {
+            BaseUrl = "https://example.test",
+        });
+
+        Assert.Empty(result.Errors);
+        siteService.Verify(value => value.UpdateSiteSettingsAsync(It.IsAny<ISite>()), Times.Never);
     }
 
     [Fact]

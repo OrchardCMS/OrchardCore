@@ -3,11 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentTypes.Services;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
+using OrchardCore.ContentTypes.Models;
+using OrchardCore.ContentTypes.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Deployment;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -32,7 +36,8 @@ public sealed class Startup : StartupBase
     {
         services.Configure<ContentTypesOptions>(options =>
         {
-            var configSection = _shellConfiguration.GetSection("OrchardCore_ContentTypes");
+            // The 'OrchardCore_ContentTypes' section is deprecated and will be removed in a future major version, use 'ContentTypes' instead.
+            var configSection = _shellConfiguration.GetSectionCompat("ContentTypes", "OrchardCore_ContentTypes");
 
             var defaultThumbnailPath = configSection.GetValue<string>("DefaultThumbnailPath");
             if (!string.IsNullOrWhiteSpace(defaultThumbnailPath))
@@ -51,6 +56,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
         services.AddScoped<ContentDefinitionApiService>();
         services.AddScoped<IStereotypeService, StereotypeService>();
+
+        // Build the rows of the content types and content parts admin lists.
+        services.AddDisplayDriver<ContentTypeEntry, ContentTypeEntryDisplayDriver>();
+        services.AddDisplayDriver<ContentPartEntry, ContentPartEntryDisplayDriver>();
         services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();
         services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();
         services.AddScoped<IContentPartDefinitionDisplayDriver, ContentPartSettingsDisplayDriver>();

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
 
@@ -9,13 +11,19 @@ public sealed class TwilioOptionsConfiguration : IConfigureOptions<TwilioOptions
 {
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger _logger;
 
     public TwilioOptionsConfiguration(
         ISiteService siteService,
-        IDataProtectionProvider dataProtectionProvider)
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
+        ILogger<TwilioOptionsConfiguration> logger)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public void Configure(TwilioOptions options)
@@ -26,11 +34,12 @@ public sealed class TwilioOptionsConfiguration : IConfigureOptions<TwilioOptions
         options.PhoneNumber = settings.PhoneNumber;
         options.AccountSID = settings.AccountSID;
 
-        if (!string.IsNullOrEmpty(settings.AuthToken))
-        {
-            var protector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
-
-            options.AuthToken = protector.Unprotect(settings.AuthToken);
-        }
+        options.AuthToken = _serviceProvider.GetSecretValueAsync(
+            settings.AuthTokenSecretName,
+            settings.AuthToken,
+            _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
     }
 }

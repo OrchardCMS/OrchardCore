@@ -91,6 +91,37 @@ public class MediaPathTests
         }
     }
 
+    public static TheoryData<string> InvalidTenantNames => new()
+    {
+        "",
+        ".",
+        "..",
+        "../..",
+        "../OtherTenant",
+        "Tenant/../..",
+        "/",
+        "/Tenant",
+    };
+
+    [Theory]
+    [MemberData(nameof(InvalidTenantNames))]
+    public void GetMediaPath_TenantNameOutsideTenantsDirectory_Throws(string tenantName)
+    {
+        using var settings = new ShellSettings { Name = tenantName };
+
+        Assert.Throws<ArgumentException>(() => MediaStartup.GetMediaPath(CreateShellOptions(), settings, "Media"));
+    }
+
+    [Fact]
+    public void GetMediaPath_TenantNameEscapingToTheApplicationDirectory_Throws()
+    {
+        // A tenant name that is not validated at creation time must not be able to redirect the tenant
+        // media root to the application's assembly directory.
+        using var settings = new ShellSettings { Name = "../.." };
+
+        Assert.Throws<ArgumentException>(() => MediaStartup.GetMediaPath(CreateShellOptions(), settings, "bin/Release/net10.0"));
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -103,16 +134,12 @@ public class MediaPathTests
                 ["OrchardCore_Media:AllowedFileExtensions:0"] = ".dll",
             })
             .Build();
-        var shellConfiguration = new Mock<IShellConfiguration>();
-        shellConfiguration.Setup(c => c.GetSection("OrchardCore_Media"))
-            .Returns(configuration.GetSection("OrchardCore_Media"));
-
         var siteService = new Mock<ISiteService>();
         siteService.Setup(service => service.GetSiteSettingsAsync()).ReturnsAsync(new SiteSettings());
 
         var services = new ServiceCollection();
         services.AddSingleton(siteService.Object);
-        services.AddSingleton(shellConfiguration.Object);
+        services.AddSingleton<IShellConfiguration>(new ShellConfiguration(configuration));
         using var settings = new ShellSettings { Name = "Tenant" };
         services.AddSingleton(settings);
         services.Configure<ShellOptions>(options =>

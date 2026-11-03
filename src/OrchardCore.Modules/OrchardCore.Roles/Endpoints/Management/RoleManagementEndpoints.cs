@@ -329,7 +329,7 @@ internal static class RoleManagementEndpoints
             .Select(permission => new RolePermissionResponse
             {
                 Name = permission.Name,
-                Description = permission.Description,
+                Description = permission.Description?.Value,
                 Category = permission.Category,
                 FeatureId = permissionCatalog.GetFeatureId(permission.Name),
                 FeatureName = permissionCatalog.GetFeatureName(permission.Name),

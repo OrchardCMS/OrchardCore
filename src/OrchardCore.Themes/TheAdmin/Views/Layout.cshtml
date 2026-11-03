@@ -4,10 +4,12 @@
 
 @inject ThemeTogglerService ThemeTogglerService
 @inject IOptions<AdminOptions> AdminOptions
+@inject IOptionsMonitor<AdminListOptions> AdminListOptions
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
     var adminSettings = Site.GetOrCreate<AdminSettings>();
+    var actionsLayout = AdminListOptions.CurrentValue.DefaultActionsLayout == AdminListActionsLayout.Menu ? "menu" : "buttons";
 
     // Branding and Navbar are pre-rendered to allow resource injection.
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
@@ -43,13 +45,17 @@
 
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
-<body class="preload">
+<body class="preload" data-actions-layout="@actionsLayout" data-more-actions-label="@T["More actions"]">
     <div class="ta-wrapper">
         <nav class="ta-navbar-top navbar text-bg-theme fixed-top">
             <div class="container-fluid">
                 <div class="d-flex w-100 justify-content-between align-items-center">
                     <div class="brand-wrapper">
                         <div class="d-flex w-100 justify-content-between align-items-center">
+                            <button type="button" class="ta-sidebar-toggler" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="@T["Show / hide menu"]">
+                                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                            </button>
+
                             @brandingHtml
 
                             @if (adminSettings.DisplayTitlesInTopbar)
@@ -65,7 +71,9 @@
             </div>
         </nav>
 
-        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+        <div class="ta-sidebar-backdrop"></div>
+
+        <div id="ta-left-sidebar" class="d-flex flex-column align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
                 <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">

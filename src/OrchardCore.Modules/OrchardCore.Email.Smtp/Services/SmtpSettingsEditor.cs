@@ -25,7 +25,7 @@ internal sealed class SmtpSettingsEditor
         S = localizer;
     }
 
-    public bool Apply(ISite site, SmtpSettings settings, SmtpSettingsViewModel model,
+    public bool Apply(ISite site, SmtpSettings settings, SmtpSettingsViewModel model, string password,
         Action<string, string> addError, Func<bool> isValid)
     {
         if (!Enum.IsDefined(model.DeliveryMethod))
@@ -109,7 +109,7 @@ internal sealed class SmtpSettingsEditor
             hasChanges |= model.PickupDirectoryLocation != settings.PickupDirectoryLocation;
 
             // Store the password when there is a new value.
-            if (!string.IsNullOrWhiteSpace(model.Password))
+            if (!string.IsNullOrWhiteSpace(password))
             {
                 // Encrypt the password.
                 var protector = _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName);
@@ -119,7 +119,7 @@ internal sealed class SmtpSettingsEditor
                 {
                     try
                     {
-                        passwordMatches = protector.Unprotect(settings.Password) == model.Password;
+                        passwordMatches = protector.Unprotect(settings.Password) == password;
                     }
                     catch (System.Security.Cryptography.CryptographicException)
                     {
@@ -128,7 +128,14 @@ internal sealed class SmtpSettingsEditor
                 }
                 if (!passwordMatches)
                 {
-                    settings.Password = protector.Protect(model.Password);
+                    settings.Password = protector.Protect(password);
+                    hasChanges = true;
+                }
+
+                // The new value replaces a referenced secret.
+                if (!string.IsNullOrEmpty(settings.PasswordSecretName))
+                {
+                    settings.PasswordSecretName = null;
                     hasChanges = true;
                 }
             }

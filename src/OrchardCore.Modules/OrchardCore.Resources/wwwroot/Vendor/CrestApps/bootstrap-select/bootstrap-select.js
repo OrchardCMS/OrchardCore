@@ -1,5 +1,5 @@
 /*!
- * Bootstrap-select v1.2.4 (https://github.com/CrestApps/bootstrap-select)
+ * Bootstrap-select v1.2.6 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
@@ -478,7 +478,7 @@ var classNames = {
   DROPUP: 'dropup',
   MENU: 'dropdown-menu',
   MENUEND: 'dropdown-menu-end',
-  BUTTONCLASS: 'btn-light',
+  BUTTONCLASS: 'btn-theme',
   POPOVERHEADER: 'popover-header',
   ICONBASE: '',
   TICKICON: 'bs-ok-default'
@@ -2229,6 +2229,27 @@ class Selectpicker {
     } else {
       if (style) button.classList.remove.apply(button.classList, style.split(' '));
       if (buttonClass) button.classList.add.apply(button.classList, buttonClass.split(' '));
+    }
+
+    this.syncMenuTheme();
+  }
+
+  /**
+   * A `btn-light` button always stays light, so its menu has to stay light too.
+   * Pin the menu to Bootstrap's light color mode while the button is
+   * `btn-light`, and release it again when the style changes.
+   */
+  syncMenuTheme () {
+    var menu = this.menu;
+
+    if (!menu || !this.button) return;
+
+    if (this.button.classList.contains('btn-light')) {
+      menu.setAttribute('data-bs-theme', 'light');
+      menu.setAttribute('data-bs-select-theme-pinned', '');
+    } else if (menu.hasAttribute('data-bs-select-theme-pinned')) {
+      menu.removeAttribute('data-bs-theme');
+      menu.removeAttribute('data-bs-select-theme-pinned');
     }
   }
 

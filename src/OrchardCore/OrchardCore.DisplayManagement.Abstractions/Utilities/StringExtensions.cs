@@ -4,7 +4,7 @@ namespace OrchardCore.DisplayManagement.Utilities;
 
 public static class StringExtensions
 {
-    private static readonly SearchValues<char> AlternateChars = SearchValues.Create("-.");
+    private static readonly SearchValues<char> s_alternateChars = SearchValues.Create("-.");
 
     /// <summary>
     /// Encodes dashed and dots so that they don't conflict in filenames.
@@ -24,7 +24,7 @@ public static class StringExtensions
         var span = alternateElement.AsSpan();
 
         // Fast path: no '-' or '.'
-        if (span.IndexOfAny(AlternateChars) < 0)
+        if (span.IndexOfAny(s_alternateChars) < 0)
         {
             return alternateElement;
         }

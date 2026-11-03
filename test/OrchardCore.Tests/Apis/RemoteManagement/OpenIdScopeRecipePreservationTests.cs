@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -65,7 +66,7 @@ public class OpenIdScopeRecipePreservationTests
                 var services = scope.ServiceProvider;
                 var shellSettings = services.GetRequiredService<ShellSettings>();
                 var controller = new ScopeController(manager, services.GetRequiredService<IShapeFactory>(),
-                    services.GetRequiredService<IOptions<PagerOptions>>(), services.GetRequiredService<IStringLocalizer<ScopeController>>(),
+                    services.GetRequiredService<IOptions<PagerOptions>>(), services.GetRequiredService<IStringLocalizer<ScopeController>>(), services.GetRequiredService<IHtmlLocalizer<ScopeController>>(),
                     authorization.Object, shellSettings)
                 {
                     Url = Mock.Of<IUrlHelper>(),

@@ -1,18 +1,13 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Sitemaps.Deployment;
 
 public sealed class AllSitemapsDeploymentStep : DeploymentStep
 {
-    public AllSitemapsDeploymentStep()
-    {
-        Name = "AllSitemaps";
-    }
+    public override string Name => "AllSitemaps";
 
-    public AllSitemapsDeploymentStep(IStringLocalizer<AllSitemapsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 }

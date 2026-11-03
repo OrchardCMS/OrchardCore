@@ -57,6 +57,7 @@ public sealed class OpenIdServerDeploymentSource
             UseReferenceAccessTokens = settings.UseReferenceAccessTokens,
             RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
             RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests,
+            RequireEndSessionConfirmation = settings.RequireEndSessionConfirmation,
         };
 
         result.Steps.Add(new JsonObject

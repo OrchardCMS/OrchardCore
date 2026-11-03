@@ -35,7 +35,7 @@ public abstract class ContentPartIndexHandler<TPart> : IContentPartIndexHandler 
             return BuildIndexAsync(part, buildPartIndexContext);
         }
 
-        return null;
+        return Task.CompletedTask;
     }
 
     public abstract Task BuildIndexAsync(TPart part, BuildPartIndexContext context);

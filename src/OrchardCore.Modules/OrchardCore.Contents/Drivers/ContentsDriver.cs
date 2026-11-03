@@ -31,12 +31,25 @@ public sealed class ContentsDriver : ContentDisplayDriver
         // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
         // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver.
 
-        var results = new List<IDisplayResult>(6)
+        // The '*_SummaryAdmin' shapes are the cells of the admin content lists, they are only built when the content item
+        // is displayed in one of the admin listing display types, instead of being created and placed for every display.
+        var isAdminListing = context.DisplayType is OrchardCoreConstants.DisplayType.SummaryAdmin or OrchardCoreConstants.DisplayType.SummaryAdminGrid;
+
+        var results = new List<IDisplayResult>(isAdminListing ? 8 : 1);
+
+        if (isAdminListing)
         {
-            Factory("ContentsCheckbox_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:10"),
-            Factory("ContentsTags_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
-            Factory("ContentsMeta_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
-        };
+            results.Add(Factory("ContentsCheckbox_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Select:10"));
+            results.Add(Factory("ContentsTitle_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Title:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Title:10"));
+            results.Add(Factory("ContentsType_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Type:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Type:10"));
+            results.Add(Factory("ContentsTags_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Status:10"));
+            results.Add(Factory("ContentsMeta_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Modified:20"));
+        }
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
@@ -57,20 +70,26 @@ public sealed class ContentsDriver : ContentDisplayDriver
                 ctx.Shape.Metadata.Alternates.AddRange(alternates);
             });
 
-            var user = _httpContextAccessor.HttpContext.User;
-
             results.Add(contentsMetadataShape);
-            results.Add(Factory("ContentsButtonEdit_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10"));
-            results.Add(Factory("ContentsButtonActions_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
-                .RenderWhen(async () =>
-                {
-                    var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
-                    var hasDeletePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem);
-                    var hasPreviewPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PreviewContent, contentItem);
-                    var hasClonePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem);
 
-                    return hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission;
-                }));
+            if (isAdminListing)
+            {
+                var user = _httpContextAccessor.HttpContext.User;
+
+                results.Add(Factory("ContentsButtonEdit_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10")
+                    .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:10"));
+                results.Add(Factory("ContentsButtonActions_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
+                    .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:10")
+                    .RenderWhen(async () =>
+                    {
+                        var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
+                        var hasDeletePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem);
+                        var hasPreviewPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PreviewContent, contentItem);
+                        var hasClonePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem);
+
+                        return hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission;
+                    }));
+            }
         }
 
         return Combine(results);

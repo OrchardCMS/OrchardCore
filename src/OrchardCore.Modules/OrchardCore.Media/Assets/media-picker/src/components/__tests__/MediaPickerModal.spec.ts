@@ -72,6 +72,18 @@ async function getModalProps(wrapper: VueWrapper) {
 }
 
 describe("MediaPickerModal", () => {
+  it("passes the configured upload size to the gallery mount", async () => {
+    const wrapper = createWrapper({ maxFileSize: 1234567 });
+    setContainerRef(wrapper);
+    wrapper.findComponent({ name: "VueFinalModal" }).vm.$emit("opened");
+    await flushPromises();
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      expect.objectContaining({ maxFileSize: 1234567 }),
+    );
+    wrapper.unmount();
+  });
+
   beforeEach(() => {
     setupTranslations();
     vi.clearAllMocks();
@@ -271,6 +283,38 @@ describe("MediaPickerModal", () => {
     expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
     const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
     expect(callArgs.allowedExtensions).toBe(".jpg,.png");
+  });
+
+  it("passes disableThumbnails to media picker mount config", async () => {
+    const wrapper = createWrapper({ disableThumbnails: true });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.disableThumbnails).toBe(true);
+  });
+
+  it("defaults disableThumbnails to false in the mount config", async () => {
+    const wrapper = createWrapper();
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.disableThumbnails).toBe(false);
   });
 
   it("onSelectionChange callback updates selectedCount", async () => {

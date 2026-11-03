@@ -52,6 +52,18 @@ using OrchardCore.OpenId;
 )]
 
 [assembly: Feature(
+    Id = OpenIdConstants.Features.Secrets,
+    Name = "OpenID Connect Secrets",
+    Description = "Allows storing OpenID Connect signing and encryption keys as secrets.",
+    Dependencies =
+    [
+        OpenIdConstants.Features.Server,
+        "OrchardCore.Secrets",
+    ],
+    Category = "OpenID Connect"
+)]
+
+[assembly: Feature(
     Id = OpenIdConstants.Features.Validation,
     Name = "OpenID Connect Token Validation",
     Description = "Validates tokens issued by the local OpenID Connect authorization server or other trusted servers supporting JWT and OpenID Connect discovery.",

@@ -1,0 +1,7 @@
+@model OrchardCore.Workflows.ViewModels.ActivityViewModel<OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent>
+@using OrchardCore.Workflows.Helpers
+
+<header>
+    <h4><i class="fa-solid fa-flag-checkered" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Data Pipeline Run Completed"])</h4>
+</header>
+<span>@(string.IsNullOrEmpty(Model.Activity.Status) ? T["Any run"] : T["{0} runs", Model.Activity.Status])</span>

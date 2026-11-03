@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing.Core;
@@ -108,21 +109,12 @@ public sealed class AdminController : Controller
 
         var viewModel = new AdminIndexViewModel
         {
-            Models = [],
+            Models = result.Models.ToList(),
             Options = options,
             Pager = await shapeFactory.PagerAsync(pager, result.Count, routeData),
             Sources = sourceGroups.SelectMany(x => x.Sources).ToArray(),
             SourceGroups = sourceGroups,
         };
-
-        foreach (var record in result.Models)
-        {
-            viewModel.Models.Add(new ModelEntry<IndexProfile>
-            {
-                Model = record,
-                Shape = await _displayManager.BuildDisplayAsync(record, _updateModelAccessor.ModelUpdater, "SummaryAdmin"),
-            });
-        }
 
         viewModel.Options.BulkActions =
         [
@@ -131,6 +123,13 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Rebuild"], nameof(IndexingEntityAction.Rebuild)),
             new SelectListItem(S["Delete"], nameof(IndexingEntityAction.Remove)),
         ];
+
+        // The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
+        viewModel.List = new AdminListContext<IndexProfile>
+        {
+            Source = viewModel.Models,
+            Pager = viewModel.Pager,
+        };
 
         return View(viewModel);
     }

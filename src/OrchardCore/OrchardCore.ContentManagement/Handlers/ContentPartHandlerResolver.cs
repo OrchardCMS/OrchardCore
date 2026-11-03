@@ -8,6 +8,9 @@ public class ContentPartHandlerResolver : IContentPartHandlerResolver
     private readonly IServiceProvider _serviceProvider;
     private readonly ContentOptions _contentOptions;
 
+    // The handlers are scoped services, they are resolved once per scope as they are requested for each content item.
+    private readonly Dictionary<string, List<IContentPartHandler>> _handlers = [];
+
     public ContentPartHandlerResolver(
         IServiceProvider serviceProvider,
         IOptions<ContentOptions> contentDisplayOptions
@@ -19,16 +22,23 @@ public class ContentPartHandlerResolver : IContentPartHandlerResolver
 
     public IList<IContentPartHandler> GetHandlers(string partName)
     {
-        var services = new List<IContentPartHandler>();
-
-        if (_contentOptions.ContentPartOptionsLookup.TryGetValue(partName, out var contentPartOption))
+        if (_handlers.TryGetValue(partName, out var handlers))
         {
-            foreach (var handlerOption in contentPartOption.Handlers)
+            return handlers;
+        }
+
+        handlers = [];
+
+        if (_contentOptions.ContentPartOptionsLookup.TryGetValue(partName, out var contentPartOption) && contentPartOption.Handlers.Count > 0)
+        {
+            for (var i = 0; i < contentPartOption.Handlers.Count; i++)
             {
-                services.Add((IContentPartHandler)_serviceProvider.GetRequiredService(handlerOption));
+                handlers.Add((IContentPartHandler)_serviceProvider.GetRequiredService(contentPartOption.Handlers[i]));
             }
         }
 
-        return services;
+        _handlers[partName] = handlers;
+
+        return handlers;
     }
 }

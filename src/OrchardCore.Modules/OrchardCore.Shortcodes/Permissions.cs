@@ -9,9 +9,6 @@ public sealed class Permissions : IPermissionProvider
         ShortcodesPermissions.ManageShortcodeTemplates,
     ];
 
-    [Obsolete("This will be removed in a future release. Instead use 'ShortcodesPermissions.ManageShortcodeTemplates'.")]
-    public static readonly Permission ManageShortcodeTemplates = ShortcodesPermissions.ManageShortcodeTemplates;
-
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 

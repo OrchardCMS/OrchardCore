@@ -240,6 +240,14 @@ internal sealed class ContentApiService
             }
 
             contentItem.Merge(model);
+
+            // The payload can add content whose edition requires more permissions, like Liquid.
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem))
+            {
+                await _session.CancelAsync();
+                return new ContentItem { ContentItemId = string.Empty };
+            }
+
             var validationResult = await _contentManager.ValidateAsync(contentItem);
             if (!validationResult.Succeeded)
             {
@@ -285,6 +293,13 @@ internal sealed class ContentApiService
             // retained from an earlier write cannot bypass validation.
             var candidate = contentItem.Clone();
             candidate.Merge(model, s_updateJsonMergeSettings);
+
+            // The payload can add content whose edition requires more permissions, like Liquid.
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, candidate))
+            {
+                return new ContentItem { ContentItemId = string.Empty };
+            }
+
             await ValidatePayloadAsync(null, candidate, candidate.ContentType, modelState);
             if (!modelState.IsValid)
             {

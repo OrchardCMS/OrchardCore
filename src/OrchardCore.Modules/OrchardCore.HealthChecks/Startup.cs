@@ -25,7 +25,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<IHealthChecksResponseWriter, DefaultHealthChecksResponseWriter>();
         services.AddHealthChecks();
 
-        services.Configure<HealthChecksOptions>(_shellConfiguration.GetSection("OrchardCore_HealthChecks"));
+        // The 'OrchardCore_HealthChecks' section is deprecated and will be removed in a future major version, use 'HealthChecks' instead.
+        services.Configure<HealthChecksOptions>(_shellConfiguration.GetSectionCompat("HealthChecks", "OrchardCore_HealthChecks"));
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

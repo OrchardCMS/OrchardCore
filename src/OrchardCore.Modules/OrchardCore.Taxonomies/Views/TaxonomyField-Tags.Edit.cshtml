@@ -1,4 +1,5 @@
 @model OrchardCore.Taxonomies.ViewModels.EditTagTaxonomyFieldViewModel
+@using System.Text.Json
 @using OrchardCore.Taxonomies.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields
@@ -25,10 +26,12 @@
 
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+    var translations = Orchard.GetJSLocalizations("taxonomies-tags-editor");
+    var translationsJson = Json.Serialize(translations).ToString();
 }
 
-<script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
-<style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect:2"></style>
+<script asp-name="vue-multiselect" at="Foot"></script>
+<style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect"></style>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
     <label class="ocat-label @(taxonomySettings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
@@ -46,42 +49,11 @@
         }
         else
         {
-            <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl">
-
-                <div class="w-100">
-                    <input asp-for="TermContentItemIds" type="hidden" v-model="selectedTagTermsIds" />
-
-                    <vue-multiselect asp-validation-class-for="TermContentItemIds" v-model="selectedTagTerms"
-                                placeholder="@(string.IsNullOrEmpty(taxonomySettings.Placeholder) ? T["Type to search"] : taxonomySettings.Placeholder)"
-                                select-label="@T["Select"]"
-                                deselect-label="@T["Remove"]"
-                                :options="selectableTagTerms"
-                                :multiple="@((!taxonomySettings.Unique).ToString().ToLower())"
-                                :show-labels="false"
-                                :close-on-select="@taxonomySettings.Unique.ToString().ToLower()"
-                                :disabled="isDisabled"
-                                track-by="contentItemId"
-                                label="displayText"
-                                @@select="onSelect"
-                                @@remove="onRemove"
-                                :taggable="@open.ToString().ToLower()"
-                                tag-position="bottom"
-                                tag-placeholder="@T["Press enter to create a tag"]"
-                                @@tag="createTagTerm">
-                        <template slot="noResult">
-                            @T["No tags found"]
-                        </template>
-                        <template slot="noOptions">
-                            @T["No tags found"]
-                        </template>
-                    </vue-multiselect>
-                </div>
-
+            <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-unique="@taxonomySettings.Unique.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl" data-translations="@translationsJson" data-placeholder="@taxonomySettings.Placeholder" data-selected-ids-input-id="@Html.IdFor(x => x.TermContentItemIds)" data-selected-ids-input-name="@Html.NameFor(x => x.TermContentItemIds)">
+                <div class="tags-editor-mount w-100"></div>
             </div>
 
-            <script depends-on="tags-editor" at="Foot">
-                initializeTagsEditor(document.querySelector("#@vueElementId"));
-            </script>
+            <script asp-src="~/OrchardCore.Taxonomies/Scripts/taxonomy-field-tags/taxonomy-field-tags.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/taxonomy-field-tags/taxonomy-field-tags.js" at="Foot" depends-on="vuejs, vue-multiselect" type="module"></script>
 
             <span asp-validation-for="TermContentItemIds"></span>
         }

@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.OpenId.ViewModels
+
+@model ShapeViewModel<OpenIdApplicationEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Edit" asp-controller="Application" asp-route-id="@Model.Value.Id">@Model.Value.DisplayName</a>

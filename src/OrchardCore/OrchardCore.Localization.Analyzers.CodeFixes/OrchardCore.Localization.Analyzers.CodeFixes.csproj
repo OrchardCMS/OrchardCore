@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <!-- Packed into the OrchardCore.Abstractions package next to the analyzers. Kept in its own assembly because the
+         compiler does not load the Workspaces layer that code fixes depend on. -->
+    <IsPackable>false</IsPackable>
+    <Description>Code fixes for the Orchard Core localization analyzers.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Localization.Analyzers\OrchardCore.Localization.Analyzers.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

@@ -1,4 +1,4 @@
-/// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
+import type * as Monaco from "monaco-editor";
 
 const liquidTags = [
     "if",
@@ -88,13 +88,13 @@ interface ILiquidContextInfo {
     inObject: boolean;
 }
 
-function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.Position, triggerCharacter?: string|undefined): ILiquidContextInfo {
-    var inTag: boolean = false;
-    var inObject: boolean = false;
-    var showTags: boolean = false;
-    var showFilters: boolean = false;
+function getLiquidContextInfo(model: Monaco.editor.ITextModel, position: Monaco.Position): ILiquidContextInfo {
+    let inTag: boolean = false;
+    let inObject: boolean = false;
+    let showTags: boolean = false;
+    let showFilters: boolean = false;
 
-    var findStart = model.findPreviousMatch("\\{(%|\\{)", position, true, false, null, true);
+    const findStart = model.findPreviousMatch("\\{(%|\\{)", position, true, false, null, true);
     if (findStart && findStart.matches && !position.isBefore(findStart.range.getEndPosition())) {
         if (findStart.matches[1] == "%") {
             inTag = true;
@@ -102,12 +102,12 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
             inObject = true;
         }
 
-        var searchPattern = inTag ? "%}" : "}}";
-        var findEnd = model.findNextMatch(searchPattern, position, false, false, null, true);
-        var currentRange = findEnd ? findStart.range.plusRange(findEnd.range) : findStart.range.setEndPosition(position.lineNumber, position.column);
+        const searchPattern = inTag ? "%}" : "}}";
+        const findEnd = model.findNextMatch(searchPattern, position, false, false, null, true);
+        const currentRange = findEnd ? findStart.range.plusRange(findEnd.range) : findStart.range.setEndPosition(position.lineNumber, position.column);
         if (currentRange.containsPosition(position)) {
             if (inTag) {
-                var findTagName = model.findNextMatch("\\{%\\s*([a-zA-Z-_]+)", findStart.range.getStartPosition(), true, false, null, true);
+                const findTagName = model.findNextMatch("\\{%\\s*([a-zA-Z-_]+)", findStart.range.getStartPosition(), true, false, null, true);
                 if (findTagName && currentRange.containsRange(findTagName.range) && findTagName.matches && findTagName.matches.length > 1) {
                     if (findTagName.matches[1] == "assign") {
                         showFilters = true;
@@ -131,19 +131,23 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
     } as ILiquidContextInfo;
 }
 
-const completionItemProvider: monaco.languages.CompletionItemProvider = {
+// A factory rather than a module-level constant: `new monaco.Range(...)` and the
+// CompletionItemKind/InsertTextRule enums below are real values, not just types, so this needs the
+// actual `monaco` instance passed into ConfigureLiquidIntellisense - captured here via closure -
+// rather than a bare global (the ES module build doesn't expose one, unlike the old AMD loader).
+const createCompletionItemProvider = (monaco: typeof Monaco): Monaco.languages.CompletionItemProvider => ({
     triggerCharacters: [" "],
-    provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position, context: monaco.languages.CompletionContext, token: monaco.CancellationToken) => {
-        var items: string[] = [];
+    provideCompletionItems: (model: Monaco.editor.ITextModel, position: Monaco.Position, context: Monaco.languages.CompletionContext) => {
+        let items: string[] = [];
 
         if (context.triggerCharacter == " ") {
-            var startTrigger = model.getValueInRange(new monaco.Range(position.lineNumber, position.column - 3, position.lineNumber, position.column - 1));
+            const startTrigger = model.getValueInRange(new monaco.Range(position.lineNumber, position.column - 3, position.lineNumber, position.column - 1));
             if (startTrigger != "{%" && !startTrigger.endsWith("|")) {
                 return null;
             }
         }
 
-        var liquidContext: ILiquidContextInfo = getLiquidContextInfo(model, position, context.triggerCharacter);
+        const liquidContext: ILiquidContextInfo = getLiquidContextInfo(model, position);
         if (liquidContext.showFilters) {
             items = liquidFilters;
         } else if (liquidContext.showTags) {
@@ -158,16 +162,16 @@ const completionItemProvider: monaco.languages.CompletionItemProvider = {
                 kind: monaco.languages.CompletionItemKind.Keyword,
                 insertText: value,
                 insertTextRules: monaco.languages.CompletionItemInsertTextRule.KeepWhitespace,
-            } as monaco.languages.CompletionItem;
+            } as Monaco.languages.CompletionItem;
         });
 
-        return { suggestions } as monaco.languages.ProviderResult<monaco.languages.CompletionList>;
+        return { suggestions } as Monaco.languages.ProviderResult<Monaco.languages.CompletionList>;
     },
-};
+});
 
-function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
+function ConfigureLiquidIntellisense(monaco: typeof Monaco, suggestHtml: boolean = true) {
     if (suggestHtml) {
-        var modeConfiguration: monaco.languages.html.ModeConfiguration = {
+        const modeConfiguration: Monaco.languages.html.ModeConfiguration = {
             completionItems: true,
             colors: true,
             foldingRanges: true,
@@ -176,19 +180,19 @@ function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
             documentFormattingEdits: true,
             documentRangeFormattingEdits: true,
         };
-        var options: monaco.languages.html.Options = {
+        const options: Monaco.languages.html.Options = {
             format: monaco.languages.html.htmlDefaults.options.format,
             suggest: { html5: true },
         };
         monaco.languages.html.registerHTMLLanguageService("liquid", options, modeConfiguration);
     }
 
-    monaco.languages.registerCompletionItemProvider("liquid", completionItemProvider);
+    monaco.languages.registerCompletionItemProvider("liquid", createCompletionItemProvider(monaco));
 }
 
 declare global {
     interface Window {
-        ConfigureLiquidIntellisense: (monaco: any, suggestHtml?: boolean) => void;
+        ConfigureLiquidIntellisense: (monaco: typeof Monaco, suggestHtml?: boolean) => void;
         liquidFilters: string[];
         liquidTags: string[];
     }

@@ -18,6 +18,7 @@ public static class FeatureHelper
     {
         await page.GotoAsync($"{prefix}/Admin/Features");
         await page.Locator($"#btn-disable-{featureName.Replace('.', '_')}").ClickAsync();
+        await page.Locator("#modalOkButton").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

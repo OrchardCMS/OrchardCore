@@ -1,0 +1,56 @@
+@model OrchardCore.DataPipelines.Deployment.DataPipelinesDeploymentStepViewModel
+
+@{
+    var pipelinesId = $"{Html.IdFor(m => m.PipelineIds)}_Wrapper";
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <span class="hint">@T["Exports data pipelines with their published definition, or their draft when they were never published. Secrets, such as passwords, aren't exported."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IncludeAll" data-hides="@pipelinesId" />
+            <label class="form-check-label" asp-for="IncludeAll">@T["Include all the data pipelines"]</label>
+            <span class="hint dashed">@T["Including the ones created after this step. Uncheck it to export the selected pipelines only."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper @(Model.IncludeAll ? "d-none" : null)" id="@pipelinesId">
+    <label class="ocat-label">@T["Pipelines"]</label>
+    <div class="ocat-end">
+        @if (Model.Pipelines.Count == 0)
+        {
+            <span class="hint">@T["There is no data pipeline yet."]</span>
+        }
+        @foreach (var pipeline in Model.Pipelines)
+        {
+            var id = $"{Html.IdFor(m => m.PipelineIds)}_{pipeline.PipelineId}";
+
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="@Html.NameFor(m => m.PipelineIds)" value="@pipeline.PipelineId" id="@id" checked="@Model.PipelineIds.Contains(pipeline.PipelineId)" />
+                <label class="form-check-label" for="@id">@pipeline.Name</label>
+            </div>
+        }
+        <span class="hint">@T["The pipelines to export."]</span>
+    </div>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        // The list of the pipelines only matters when not all of them are included.
+        document.querySelectorAll('input[data-hides]').forEach(function (toggle) {
+            var target = document.getElementById(toggle.dataset.hides);
+
+            if (target) {
+                toggle.addEventListener('change', function () {
+                    target.classList.toggle('d-none', this.checked);
+                });
+            }
+        });
+    });
+</script>

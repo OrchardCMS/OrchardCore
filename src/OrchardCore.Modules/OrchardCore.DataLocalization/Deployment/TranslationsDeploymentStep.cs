@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataLocalization.Deployment;
 
@@ -8,16 +9,10 @@ namespace OrchardCore.DataLocalization.Deployment;
 /// </summary>
 public class TranslationsDeploymentStep : DeploymentStep
 {
-    public TranslationsDeploymentStep()
-    {
-        Name = "Translations";
-    }
+    public override string Name => "Translations";
 
-    public TranslationsDeploymentStep(IStringLocalizer<TranslationsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Internationalization"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => DataLocalizationLocalizationSources.Internationalization;
 
     /// <summary>
     /// Gets or sets whether to include all cultures or selected cultures.

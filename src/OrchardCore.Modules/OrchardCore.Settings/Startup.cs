@@ -89,7 +89,7 @@ public sealed class LiquidStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<SettingsLiquidOptions>(_configuration.GetSection("OrchardCore_Settings_Liquid"));
+        services.Configure<SettingsLiquidOptions>(_configuration.GetSection("Liquid"));
 
         services.AddSingleton<ISitePropertiesLiquidMapper, SitePropertiesLiquidMapper>();
         services.Configure<TemplateOptions>(o =>

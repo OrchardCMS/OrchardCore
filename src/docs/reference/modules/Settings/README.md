@@ -21,7 +21,7 @@ The built-in **General** group is available in the admin under **Settings** > **
 | `Calendar`          | The default calendar system.                                                |
 | `PageSize`          | The default number of items per page.                                       |
 | `MaxPageSize`       | The maximum page size a client can request.                                 |
-| `MaxPagedCount`     | The maximum number of items that can be paged through.                      |
+| `MaxPagedCount`     | The maximum number of items that can be paged through. When `0`, the `OrchardCore:Navigation:PagerOptions:MaxPagedCount` configuration value is used. |
 | `UseCdn` / `CdnBaseUrl` | Whether to serve framework assets from a CDN, and the CDN base URL.     |
 | `ResourceDebugMode` | Whether to serve debuggable (non-minified) versions of resources.           |
 | `AppendVersion`     | Whether to append a version token to static asset URLs for cache busting.   |
@@ -85,7 +85,7 @@ This accessor has all properties of `ISite`, with two security limitations:
    ```json
    {
      "OrchardCore": {
-       "OrchardCore_Settings_Liquid": {
+       "Liquid": {
          "PermittedSiteProperties": [
            "ExternalRegistrationSettings",
            "ExternalLoginSettings",

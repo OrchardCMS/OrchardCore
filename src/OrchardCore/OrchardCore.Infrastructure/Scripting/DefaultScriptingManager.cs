@@ -60,7 +60,18 @@ public class DefaultScriptingManager : IScriptingManager
 
         var scope = engine.CreateScope(GetMethods(scopedMethodProviders), ShellScope.Services, fileProvider, basePath);
 
-        return engine.Evaluate(scope, script);
+        try
+        {
+            return engine.Evaluate(scope, script);
+        }
+        finally
+        {
+            // A scope may own state an engine wants back — the JavaScript engine reuses its engines between
+            // evaluations and only learns the evaluation is over from here. The 'finally' is the point: a
+            // script that throws has still left its declarations behind, and skipping the release on that
+            // path is exactly how the next evaluation would inherit them.
+            DisposeScope(scope);
+        }
     }
 
     public async Task<object> EvaluateAsync(string directive,
@@ -82,7 +93,17 @@ public class DefaultScriptingManager : IScriptingManager
 
         var scope = engine.CreateScope(GetMethods(scopedMethodProviders), ShellScope.Services, fileProvider, basePath);
 
-        return await engine.EvaluateAsync(scope, script, cancellationToken);
+        try
+        {
+            // Awaited here rather than returned, so that the scope is released after the evaluation has
+            // actually finished. An engine cannot be reset while an asynchronous evaluation it started is
+            // still outstanding.
+            return await engine.EvaluateAsync(scope, script, cancellationToken);
+        }
+        finally
+        {
+            DisposeScope(scope);
+        }
     }
 
     public IScriptingEngine GetScriptingEngine(string prefix)
@@ -112,6 +133,15 @@ public class DefaultScriptingManager : IScriptingManager
         // shadow a registered one of the same name.
         return _globalMethods.Concat(scopedMethodProviders.SelectMany(static provider => provider.GetMethods()));
     }
+
+    /// <summary>
+    /// Releases a scope that holds resources. <see cref="IScriptingScope"/> is a marker interface and most
+    /// implementations hold nothing, so the capability is discovered rather than required: adding
+    /// <see cref="IDisposable"/> to the interface would break every engine implemented outside this
+    /// repository.
+    /// </summary>
+    private static void DisposeScope(IScriptingScope scope)
+        => (scope as IDisposable)?.Dispose();
 
     private static bool TryParseDirective(string directive, out string prefix, out string script)
     {

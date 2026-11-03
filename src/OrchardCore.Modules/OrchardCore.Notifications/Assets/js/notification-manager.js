@@ -1,4 +1,4 @@
-notificationManager = function () {
+window.notificationManager = function () {
 
     const removeItem = (values, value) => {
         const index = values.indexOf(value);
@@ -62,7 +62,13 @@ notificationManager = function () {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ messageId: messageId })
-                    }).then(response => response.json())
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to mark the notification as read (HTTP ' + response.status + ').');
+                        }
+
+                        return response.json();
+                    })
                         .then(result => {
                             if (result.updated) {
 
@@ -95,6 +101,11 @@ notificationManager = function () {
                             if (targetUrl) {
                                 window.location.href = targetUrl;
                             }
+                        })
+                        .catch(error => {
+                            // Allow the message to be marked as read again on the next click.
+                            removeItem(reading, messageId);
+                            console.error(error);
                         });
                 });
             });

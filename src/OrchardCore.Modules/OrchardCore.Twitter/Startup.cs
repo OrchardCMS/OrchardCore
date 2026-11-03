@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Twitter.Drivers;
 using OrchardCore.Twitter.Recipes;
@@ -56,6 +57,16 @@ public sealed class TwitterStartup : StartupBase
                     },
                 })
             );
+    }
+}
+
+[Feature(TwitterConstants.Features.Twitter)]
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, TwitterSecretMigrationDisplayDriver>();
     }
 }
 

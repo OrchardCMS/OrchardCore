@@ -1,30 +1,42 @@
-///<reference path="../Lib/jquery/typings.d.ts" />
+import observeAndInit from "@orchardcore/bloom/helpers/observeAndInit";
+import { dispatchFieldChange } from "@orchardcore/bloom/helpers/editorLifecycle";
 
-$(() => {
-    const generateWorkflowUrl = function () {
-        const workflowTypeId: string = $('[data-workflow-type-id]').data('workflow-type-id');
-        const activityId: string = $('[data-activity-id]').data('activity-id');
-        var tokenLifeSpan = $('#token-lifespan').val();
-        const generateUrl: string = $('[data-generate-url]').data('generate-url') + `?workflowTypeId=${workflowTypeId}&activityId=${activityId}&tokenLifeSpan=${tokenLifeSpan}`;
-        const antiforgeryHeaderName: string = $('[data-antiforgery-header-name]').data('antiforgery-header-name');
-        const antiforgeryToken: string = $('[data-antiforgery-token]').data('antiforgery-token');
-        const headers: any = {};
+// Initializes the "Regenerate" button of every HttpRequestEvent editor, including editors injected after
+// the page loaded (the workflow designer panel). The workflow type and activity come from the closest
+// wrapper carrying data-workflow-type-id / data-activity-id, not from the first one on the page.
+const initWorkflowUrlGenerator = (button: HTMLElement) => {
+    const root = button.closest<HTMLElement>("[data-workflow-type-id]") ?? document.body;
+    const activityRoot = button.closest<HTMLElement>("[data-activity-id]") ?? root;
+    const urlInput = root.querySelector<HTMLInputElement>("[data-workflow-url-text]");
+    const tokenLifeSpanInput = root.querySelector<HTMLInputElement>("[data-token-lifespan]");
 
-        headers[antiforgeryHeaderName] = antiforgeryToken;
-
-        $.post({
-            url: generateUrl,
-            headers: headers
-        }).done(url => {
-            $('#workflow-url-text').val(url);
+    const generateWorkflowUrl = async () => {
+        const query = new URLSearchParams({
+            workflowTypeId: root.dataset.workflowTypeId ?? "",
+            activityId: activityRoot.dataset.activityId ?? "",
+            tokenLifeSpan: tokenLifeSpanInput?.value ?? "0",
         });
+
+        const headers: Record<string, string> = {};
+        headers[button.dataset.antiforgeryHeaderName ?? ""] = button.dataset.antiforgeryToken ?? "";
+
+        const response = await fetch(`${button.dataset.generateUrl}?${query}`, { method: "POST", headers });
+
+        if (!response.ok || !urlInput) {
+            return;
+        }
+
+        urlInput.value = await response.text();
+        dispatchFieldChange(urlInput);
     };
 
-    $('#generate-url-button').on('click', e => {
-        generateWorkflowUrl();
+    button.addEventListener("click", () => {
+        generateWorkflowUrl().catch((error: unknown) => console.error(error));
     });
 
-    if ($('#workflow-url-text').val() == '') {
-        generateWorkflowUrl();
+    if (urlInput?.value === "") {
+        generateWorkflowUrl().catch((error: unknown) => console.error(error));
     }
-});
+};
+
+observeAndInit("[data-generate-url]", initWorkflowUrlGenerator);

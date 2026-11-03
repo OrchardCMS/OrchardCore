@@ -77,6 +77,51 @@ public class RecipeExecutorTests
         });
     }
 
+    [Fact]
+    public async Task ExecuteAsync_PassesTheCancellationTokenToScripts()
+    {
+        var scriptingManager = new TokenRecordingScriptingManager();
+
+        var shellContext = new ShellContext
+        {
+            Settings = new ShellSettings().AsDefaultShell().AsRunning(),
+            ServiceProvider = new ServiceCollection()
+                .AddScripting()
+                .AddSingleton<IScriptingManager>(scriptingManager)
+                .AddSingleton<IDistributedLock, LocalLock>()
+                .AddLogging()
+                .BuildServiceProvider(),
+        };
+
+        await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
+        {
+            var localizerMock = new Mock<IStringLocalizer<RecipeExecutor>>();
+            localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
+                .Returns((string name) => new LocalizedString(name, name));
+
+            var shellHostMock = new Mock<IShellHost>();
+            shellHostMock.Setup(h => h.GetScopeAsync(It.IsAny<ShellSettings>()))
+                .Returns(GetScopeAsync);
+
+            var recipeExecutor = new RecipeExecutor(
+                shellHostMock.Object,
+                scope.ShellContext.Settings,
+                [],
+                new Mock<ILogger<RecipeExecutor>>().Object,
+                localizerMock.Object);
+
+            using var cancellationTokenSource = new CancellationTokenSource();
+
+            var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe3") };
+            await recipeExecutor.ExecuteAsync(Guid.NewGuid().ToString("n"), recipeDescriptor, new Dictionary<string, object>(), cancellationTokenSource.Token);
+
+            // The token bounds the whole recipe, so the scripts its steps contain have to be stopped by it as
+            // well rather than only the gaps between the steps.
+            Assert.NotEmpty(scriptingManager.CancellationTokens);
+            Assert.All(scriptingManager.CancellationTokens, token => Assert.Equal(cancellationTokenSource.Token, token));
+        });
+    }
+
     private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
 
     private static ShellContext CreateShellContext() => new()
@@ -97,6 +142,25 @@ public class RecipeExecutorTests
         var path = $"Recipes.RecipeFiles.{recipeName}.json";
 
         return new EmbeddedFileProvider(assembly).GetFileInfo(path);
+    }
+
+    private sealed class TokenRecordingScriptingManager : IScriptingManager
+    {
+        public List<CancellationToken> CancellationTokens { get; } = [];
+
+        public IReadOnlyList<IGlobalMethodProvider> GlobalMethodProviders { get; } = [];
+
+        public IScriptingEngine GetScriptingEngine(string prefix) => null;
+
+        public object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
+            => throw new NotSupportedException();
+
+        public Task<object> EvaluateAsync(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders, CancellationToken cancellationToken = default)
+        {
+            CancellationTokens.Add(cancellationToken);
+
+            return Task.FromResult<object>("value");
+        }
     }
 
     private sealed class RecipeEventHandler : IRecipeEventHandler
