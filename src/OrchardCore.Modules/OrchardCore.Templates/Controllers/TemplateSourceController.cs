@@ -38,8 +38,6 @@ public sealed class TemplateSourceController : Controller
     private readonly TemplateAlternatesService _templateAlternatesService;
     private readonly ShapeTemplateFiles _shapeTemplateFiles;
     private readonly ActiveThemes _activeThemes;
-    private readonly TemplatesManager _templatesManager;
-    private readonly AdminTemplatesManager _adminTemplatesManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
@@ -53,8 +51,6 @@ public sealed class TemplateSourceController : Controller
         TemplateAlternatesService templateAlternatesService,
         ShapeTemplateFiles shapeTemplateFiles,
         ActiveThemes activeThemes,
-        TemplatesManager templatesManager,
-        AdminTemplatesManager adminTemplatesManager,
         IShapeFactory shapeFactory,
         IOptions<PagerOptions> pagerOptions,
         INotifier notifier,
@@ -66,8 +62,6 @@ public sealed class TemplateSourceController : Controller
         _templateAlternatesService = templateAlternatesService;
         _shapeTemplateFiles = shapeTemplateFiles;
         _activeThemes = activeThemes;
-        _templatesManager = templatesManager;
-        _adminTemplatesManager = adminTemplatesManager;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
@@ -346,17 +340,14 @@ public sealed class TemplateSourceController : Controller
         }
 
         var templateSource = _sourceTemplatesService.GetSource(source);
-        var template = templateSource == null ? null : await SourceTemplatesService.FindTemplateAsync(templateSource, name, adminTemplates, scope);
+        var entry = templateSource == null ? null : await _sourceTemplatesService.GetEntryAsync(templateSource, name, adminTemplates, scope);
 
-        if (template == null)
+        if (entry == null)
         {
             return NotFound();
         }
 
-        var entry = (await _sourceTemplatesService.GetEntriesAsync(templateSource, adminTemplates, scope))
-            .First(entry => string.Equals(entry.Template.Name, template.Name, StringComparison.OrdinalIgnoreCase));
-
-        entry.HasAlternates = (await _templateAlternatesService.GetTemplatesWithAlternatesAsync(adminTemplates)).Contains(template.Name);
+        entry.HasAlternates = (await _templateAlternatesService.GetTemplatesWithAlternatesAsync(adminTemplates)).Contains(entry.Template.Name);
 
         ViewData["ReturnUrl"] = returnUrl;
 
@@ -364,7 +355,7 @@ public sealed class TemplateSourceController : Controller
         {
             Source = templateSource,
             Entry = entry,
-            Content = await _sourceTemplatesService.ReadAsync(template),
+            Content = await _sourceTemplatesService.ReadAsync(entry.Template),
         });
     }
 
@@ -376,15 +367,14 @@ public sealed class TemplateSourceController : Controller
         }
 
         var templateSource = _sourceTemplatesService.GetSource(source);
-        var template = templateSource == null ? null : await SourceTemplatesService.FindTemplateAsync(templateSource, name, adminTemplates, scope);
+        var entry = templateSource == null ? null : await _sourceTemplatesService.GetEntryAsync(templateSource, name, adminTemplates, scope);
 
-        if (template == null)
+        if (entry == null)
         {
             return NotFound();
         }
 
-        var entry = (await _sourceTemplatesService.GetEntriesAsync(templateSource, adminTemplates, scope))
-            .First(entry => string.Equals(entry.Template.Name, template.Name, StringComparison.OrdinalIgnoreCase));
+        var template = entry.Template;
 
         IEnumerable<TemplateAlternate> alternates = await _templateAlternatesService.GetAlternatesAsync(template.Name, adminTemplates);
 
@@ -406,17 +396,10 @@ public sealed class TemplateSourceController : Controller
             .ThenBy(alternate => alternate.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        var localTemplates = adminTemplates
-            ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-            : await _templatesManager.GetTemplatesDocumentAsync();
+        var localTemplates = await _sourceTemplatesService.GetTemplatesDocumentAsync(adminTemplates);
 
         // The templates the active theme and the features have for these names.
-        var themeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
-        var renderedBy = themeId == null
-            ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            : (await _shapeTemplateFiles.GetTemplatesAsync(themeId))
-                .GroupBy(template => template.Name, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(group => group.Key, group => group.First().ExtensionId, StringComparer.OrdinalIgnoreCase);
+        var renderedBy = await _shapeTemplateFiles.GetRenderingExtensionsAsync(await _activeThemes.GetThemeIdAsync(adminTemplates));
 
         var pager = new Pager(pagerParameters, _pagerOptions);
         var routeData = new RouteData();

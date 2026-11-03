@@ -95,6 +95,16 @@ public sealed class SourceTemplatesService
     }
 
     /// <summary>
+    /// Gets a template of a source by its name, with the state of its local override.
+    /// </summary>
+    /// <returns>The entry, or <see langword="null"/> when the source has no such template.</returns>
+    public async Task<SourceTemplateEntry> GetEntryAsync(ITemplateSource source, string name, bool adminTemplates, string scope)
+        => string.IsNullOrEmpty(name)
+            ? null
+            : (await GetEntriesAsync(source, adminTemplates, scope))
+                .FirstOrDefault(entry => string.Equals(entry.Template.Name, name, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
     /// Finds a template of a source by its name.
     /// </summary>
     /// <returns>The template, or <see langword="null"/> when the source has no such template.</returns>
@@ -164,9 +174,7 @@ public sealed class SourceTemplatesService
             return false;
         }
 
-        var localTemplates = adminTemplates
-            ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-            : await _templatesManager.LoadTemplatesDocumentAsync();
+        var localTemplates = await LoadTemplatesDocumentAsync(adminTemplates);
 
         localTemplates.Templates.TryGetValue(template.Name, out var localTemplate);
 
@@ -183,9 +191,7 @@ public sealed class SourceTemplatesService
             Description = localTemplate?.Description ?? $"Cloned from {template.ExtensionId} ({template.RelativePath}).",
         };
 
-        await (adminTemplates
-            ? _adminTemplatesManager.UpdateTemplateAsync(template.Name, clone)
-            : _templatesManager.UpdateTemplateAsync(template.Name, clone));
+        await UpdateTemplateAsync(template.Name, clone, adminTemplates);
 
         var overrides = await _overridesManager.LoadOverridesDocumentAsync(adminTemplates);
 
@@ -218,9 +224,7 @@ public sealed class SourceTemplatesService
             return false;
         }
 
-        var localTemplates = adminTemplates
-            ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-            : await _templatesManager.LoadTemplatesDocumentAsync();
+        var localTemplates = await LoadTemplatesDocumentAsync(adminTemplates);
 
         if (localTemplates.Templates.ContainsKey(name))
         {
@@ -240,9 +244,7 @@ public sealed class SourceTemplatesService
             Description = $"Cloned from {template.ExtensionId} ({template.RelativePath}) as an alternate of {template.Name}.",
         };
 
-        await (adminTemplates
-            ? _adminTemplatesManager.UpdateTemplateAsync(name, clone)
-            : _templatesManager.UpdateTemplateAsync(name, clone));
+        await UpdateTemplateAsync(name, clone, adminTemplates);
 
         return true;
     }
@@ -253,9 +255,7 @@ public sealed class SourceTemplatesService
     /// <returns>Whether a local template was deleted.</returns>
     public async Task<bool> DeleteAsync(string name, bool adminTemplates)
     {
-        var localTemplates = adminTemplates
-            ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-            : await _templatesManager.LoadTemplatesDocumentAsync();
+        var localTemplates = await LoadTemplatesDocumentAsync(adminTemplates);
 
         if (!localTemplates.Templates.ContainsKey(name))
         {
@@ -282,8 +282,22 @@ public sealed class SourceTemplatesService
     public static string ComputeHash(string content)
         => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes((content ?? string.Empty).ReplaceLineEndings("\n"))));
 
-    private async Task<TemplatesDocument> GetTemplatesDocumentAsync(bool adminTemplates)
+    /// <summary>
+    /// Gets the local templates from the cache, for sharing and without any change.
+    /// </summary>
+    /// <param name="adminTemplates">Whether to get the admin templates.</param>
+    public async Task<TemplatesDocument> GetTemplatesDocumentAsync(bool adminTemplates)
         => adminTemplates
             ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
             : await _templatesManager.GetTemplatesDocumentAsync();
+
+    private async Task<TemplatesDocument> LoadTemplatesDocumentAsync(bool adminTemplates)
+        => adminTemplates
+            ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+            : await _templatesManager.LoadTemplatesDocumentAsync();
+
+    private Task UpdateTemplateAsync(string name, Template template, bool adminTemplates)
+        => adminTemplates
+            ? _adminTemplatesManager.UpdateTemplateAsync(name, template)
+            : _templatesManager.UpdateTemplateAsync(name, template);
 }

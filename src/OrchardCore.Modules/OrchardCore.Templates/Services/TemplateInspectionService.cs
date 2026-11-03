@@ -24,8 +24,7 @@ public sealed class TemplateInspectionService
     private readonly IShapeTableManager _shapeTableManager;
     private readonly ShapeTemplateFiles _shapeTemplateFiles;
     private readonly ActiveThemes _activeThemes;
-    private readonly TemplatesManager _templatesManager;
-    private readonly AdminTemplatesManager _adminTemplatesManager;
+    private readonly SourceTemplatesService _sourceTemplatesService;
     private readonly ILogger _logger;
 
     public TemplateInspectionService(
@@ -36,8 +35,7 @@ public sealed class TemplateInspectionService
         IShapeTableManager shapeTableManager,
         ShapeTemplateFiles shapeTemplateFiles,
         ActiveThemes activeThemes,
-        TemplatesManager templatesManager,
-        AdminTemplatesManager adminTemplatesManager,
+        SourceTemplatesService sourceTemplatesService,
         ILogger<TemplateInspectionService> logger)
     {
         _shapeInspector = shapeInspector;
@@ -47,8 +45,7 @@ public sealed class TemplateInspectionService
         _shapeTableManager = shapeTableManager;
         _shapeTemplateFiles = shapeTemplateFiles;
         _activeThemes = activeThemes;
-        _templatesManager = templatesManager;
-        _adminTemplatesManager = adminTemplatesManager;
+        _sourceTemplatesService = sourceTemplatesService;
         _logger = logger;
     }
 
@@ -95,9 +92,7 @@ public sealed class TemplateInspectionService
     {
         var themeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
         var bindings = themeId == null ? null : (await _shapeTableManager.GetShapeTableAsync(themeId)).Bindings;
-        var localTemplates = adminTemplates
-            ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-            : await _templatesManager.GetTemplatesDocumentAsync();
+        var localTemplates = await _sourceTemplatesService.GetTemplatesDocumentAsync(adminTemplates);
 
         foreach (var shape in shapes)
         {

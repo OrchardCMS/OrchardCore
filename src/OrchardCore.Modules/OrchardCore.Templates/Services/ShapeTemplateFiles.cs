@@ -19,6 +19,8 @@ public sealed class ShapeTemplateFiles
     private readonly IShapeTemplateFileProviderAccessor _fileProviderAccessor;
     private readonly IEnumerable<IShapeTemplateViewEngine> _viewEngines;
 
+    private (IExtensionInfo Extension, string Prefix)[] _extensionsByPath;
+
     public ShapeTemplateFiles(
         IShapeTableManager shapeTableManager,
         IExtensionManager extensionManager,
@@ -65,6 +67,18 @@ public sealed class ShapeTemplateFiles
 
         return templates;
     }
+
+    /// <summary>
+    /// Gets the extensions whose template files render the shapes of a theme.
+    /// </summary>
+    /// <param name="themeId">The theme whose shape table is listed, if any.</param>
+    /// <returns>The extension identifiers by template name, none when there is no theme.</returns>
+    public async Task<IReadOnlyDictionary<string, string>> GetRenderingExtensionsAsync(string themeId)
+        => themeId == null
+            ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            : (await GetTemplatesAsync(themeId))
+                .GroupBy(template => template.Name, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key, group => group.First().ExtensionId, StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Finds the template file a shape binding renders, e.g. to tell which file renders a shape.
@@ -134,13 +148,14 @@ public sealed class ShapeTemplateFiles
     }
 
     // The longest paths first, so that an extension nested in another one's folder is not taken for it.
-    private IExtensionInfo[] GetExtensionsByPath()
-        => _extensionManager.GetExtensions()
+    private (IExtensionInfo Extension, string Prefix)[] GetExtensionsByPath()
+        => _extensionsByPath ??= _extensionManager.GetExtensions()
             .Where(extension => !string.IsNullOrEmpty(extension.SubPath))
             .OrderByDescending(extension => extension.SubPath.Length)
+            .Select(extension => (extension, extension.SubPath.TrimEnd('/') + '/'))
             .ToArray();
 
-    private static bool TryGetTemplateFile(string bindingSource, IExtensionInfo[] extensions, out IExtensionInfo extension, out string filePath, out string relativePath)
+    private static bool TryGetTemplateFile(string bindingSource, (IExtensionInfo Extension, string Prefix)[] extensions, out IExtensionInfo extension, out string filePath, out string relativePath)
     {
         extension = null;
         filePath = null;
@@ -152,15 +167,16 @@ public sealed class ShapeTemplateFiles
         }
 
         var path = bindingSource.Replace('\\', '/');
-        extension = extensions.FirstOrDefault(extension => path.StartsWith(extension.SubPath.TrimEnd('/') + '/', StringComparison.OrdinalIgnoreCase));
+        var match = extensions.FirstOrDefault(item => path.StartsWith(item.Prefix, StringComparison.OrdinalIgnoreCase));
 
-        if (extension == null)
+        if (match.Extension == null)
         {
             return false;
         }
 
+        extension = match.Extension;
         filePath = path;
-        relativePath = path[(extension.SubPath.TrimEnd('/').Length + 1)..];
+        relativePath = path[match.Prefix.Length..];
 
         return true;
     }

@@ -73,17 +73,17 @@ public sealed class FeatureTemplateSource : ITemplateSource
             scope = null;
         }
 
-        if (!string.IsNullOrEmpty(scope) && !modules.Any(module => string.Equals(module.Id, scope, StringComparison.OrdinalIgnoreCase)))
-        {
-            return [];
-        }
-
         // The module templates by shape, of the modules in the order of the enabled features, so that the last one,
         // a module depending on the others, wins, as it does in the shape table.
         var templatesByModule = modules.ToDictionary(
             module => module.Id,
             module => _shapeTemplateFiles.GetExtensionTemplates([module.Id]),
             StringComparer.OrdinalIgnoreCase);
+
+        if (!string.IsNullOrEmpty(scope) && !templatesByModule.ContainsKey(scope))
+        {
+            return [];
+        }
 
         var winners = new Dictionary<string, SourceTemplate>(StringComparer.OrdinalIgnoreCase);
 
@@ -96,17 +96,12 @@ public sealed class FeatureTemplateSource : ITemplateSource
         }
 
         // The templates rendering the shapes with the active theme, which overrides the module templates.
-        var themeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
-        var renderedBy = themeId == null
-            ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            : (await _shapeTemplateFiles.GetTemplatesAsync(themeId))
-                .GroupBy(template => template.Name, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(group => group.Key, group => group.First().ExtensionId, StringComparer.OrdinalIgnoreCase);
+        var renderedBy = await _shapeTemplateFiles.GetRenderingExtensionsAsync(await _activeThemes.GetThemeIdAsync(adminTemplates));
 
         // All the features list one template by shape, the one of the module that wins.
         var templates = string.IsNullOrEmpty(scope)
             ? winners.Values.ToList()
-            : templatesByModule.First(pair => string.Equals(pair.Key, scope, StringComparison.OrdinalIgnoreCase)).Value;
+            : templatesByModule[scope];
 
         foreach (var template in templates)
         {

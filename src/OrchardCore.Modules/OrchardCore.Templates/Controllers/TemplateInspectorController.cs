@@ -30,8 +30,6 @@ public sealed class TemplateInspectorController : Controller
     private readonly ISession _session;
     private readonly TemplateInspectionService _templateInspectionService;
     private readonly SourceTemplatesService _sourceTemplatesService;
-    private readonly TemplatesManager _templatesManager;
-    private readonly AdminTemplatesManager _adminTemplatesManager;
 
     internal readonly IStringLocalizer S;
 
@@ -41,8 +39,6 @@ public sealed class TemplateInspectorController : Controller
         ISession session,
         TemplateInspectionService templateInspectionService,
         SourceTemplatesService sourceTemplatesService,
-        TemplatesManager templatesManager,
-        AdminTemplatesManager adminTemplatesManager,
         IStringLocalizer<TemplateInspectorController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -50,8 +46,6 @@ public sealed class TemplateInspectorController : Controller
         _session = session;
         _templateInspectionService = templateInspectionService;
         _sourceTemplatesService = sourceTemplatesService;
-        _templatesManager = templatesManager;
-        _adminTemplatesManager = adminTemplatesManager;
         S = stringLocalizer;
     }
 
@@ -95,9 +89,7 @@ public sealed class TemplateInspectorController : Controller
                 return Forbid();
             }
 
-            var localTemplates = adminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync();
+            var localTemplates = await _sourceTemplatesService.GetTemplatesDocumentAsync(adminTemplates);
 
             (model.Shapes, model.Error) = await _templateInspectionService.InspectAsync(contentItem, displayType, adminTemplates);
             model.ContentItem = contentItem;
