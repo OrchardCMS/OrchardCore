@@ -280,6 +280,41 @@ public class PasskeyControllerTests
     }
 
     [Fact]
+    public async Task Login_WithUnconfirmedEmail_LetsUserRequestConfirmationEmail()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync();
+        using var authenticator = new TestPasskeyAuthenticator();
+
+        var registrationClient = CreateClient(context, out _);
+        await LoginWithPasswordAsync(registrationClient);
+        await RegisterPasskeyAsync(registrationClient, authenticator, "My laptop");
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            scope.ServiceProvider.GetRequiredService<IOptionsMonitor<RegistrationOptions>>().CurrentValue.UsersMustValidateEmail = true;
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+            var user = await userManager.FindByNameAsync(AdminUserName) as User;
+
+            user.EmailConfirmed = false;
+
+            await userManager.UpdateAsync(user);
+        });
+
+        var client = CreateClient(context, out var cookies);
+
+        // Act
+        var response = await LoginWithPasskeyAsync(client, authenticator);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Contains("ConfirmEmailSent", response.Headers.Location.ToString());
+        Assert.Null(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+        Assert.NotNull(cookies.GetCookies(client.BaseAddress)["orchemail_" + context.TenantName]);
+    }
+
+    [Fact]
     public async Task Delete_WithPasskeyId_RemovesPasskey()
     {
         // Arrange

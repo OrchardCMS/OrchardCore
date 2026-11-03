@@ -15,6 +15,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -295,6 +296,12 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
 
             if (loginResult != null)
             {
+                if (loginResult is EmailConfirmationRequiredResult)
+                {
+                    // The passkey has been verified, so the user can request a new confirmation email.
+                    await SignInEmailConfirmationUserAsync(await UserManager.GetUserIdAsync(user));
+                }
+
                 return loginResult;
             }
         }
