@@ -22,6 +22,8 @@ internal static partial class ContentManagementApiEndpoints
 {
     internal const string Capability = "content-items";
 
+    internal const int MaximumBulkItems = 100;
+
     public static IEndpointRouteBuilder AddContentManagementApiEndpoints(this IEndpointRouteBuilder builder)
     {
         var group = builder.MapGroup("api/content")
@@ -217,6 +219,23 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        // The action is on the collection, whose route can't be below the group of the items.
+        builder.MapPost("api/content:bulk", BulkAsync)
+            .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api })
+            .RequireAuthorization(policy => policy.AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)))
+            .DisableAntiforgery()
+            .WithName("ApiBulkContentItems")
+            .WithTags("Content Items")
+            .WithSummary("Publishes, unpublishes, or deletes several content items.")
+            .WithDescription("Applies the action to each content item with its own authorization, and returns a status for each one.")
+            .WithCliCommand(Cli(["content", "items"], "bulk", inputMode: CliInputMode.Json, requiresConfirmation: true,
+                tableColumns: [new("results[].contentItemId", "Id"), new("results[].status", "Status")]))
+            .Accepts<ContentItemsBulkRequest>("application/json")
+            .Produces<ContentItemsBulkResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
+
         AddVersionEndpoints(group);
         return builder;
     }
@@ -380,6 +399,42 @@ internal static partial class ContentManagementApiEndpoints
         }
 
         return contentItem is null ? TypedResults.NoContent() : Results.Json(contentItem, service.SerializerOptions);
+    }
+
+    private static async Task<IResult> BulkAsync(ContentItemsBulkRequest request, ContentApiService service, HttpContext httpContext)
+    {
+        if (!await HasAccessAsync(httpContext))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        var errors = ValidateBulkRequest(request);
+        if (errors.Count > 0)
+        {
+            return TypedResults.ValidationProblem(errors);
+        }
+
+        return TypedResults.Ok(await service.BulkAsync(httpContext.User, request.Action, request.ContentItemIds));
+    }
+
+    internal static Dictionary<string, string[]> ValidateBulkRequest(ContentItemsBulkRequest request)
+    {
+        var errors = new Dictionary<string, string[]>();
+        if (request?.Action is not ("publish" or "unpublish" or "delete"))
+        {
+            errors["action"] = ["Use publish, unpublish or delete."];
+        }
+
+        if (request?.ContentItemIds is not { Length: > 0 } ids || ids.Any(string.IsNullOrWhiteSpace))
+        {
+            errors["contentItemIds"] = ["At least one nonempty content item identifier is required."];
+        }
+        else if (ids.Length > MaximumBulkItems)
+        {
+            errors["contentItemIds"] = [$"At most {MaximumBulkItems} content items are allowed."];
+        }
+
+        return errors;
     }
 
     private static Task<IResult> ValidateCreateAsync(JsonObject model, ContentApiService service, HttpContext httpContext)

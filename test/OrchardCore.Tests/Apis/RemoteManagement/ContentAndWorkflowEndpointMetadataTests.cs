@@ -34,6 +34,7 @@ public class ContentAndWorkflowEndpointMetadataTests
             AssertOperation(endpoints, "/api/content/{contentItemId}/publish", "POST", "ApiPublishContentItem", ["content", "items"], "publish");
             AssertOperation(endpoints, "/api/content/{contentItemId}:clone", "POST", "ApiCloneContentItem", ["content", "items"], "clone");
             AssertOperation(endpoints, "/api/content/{contentItemId}:discard-draft", "POST", "ApiDiscardContentItemDraft", ["content", "items"], "discard-draft");
+            AssertOperation(endpoints, "api/content:bulk", "POST", "ApiBulkContentItems", ["content", "items"], "bulk", CliInputMode.Json);
             AssertOperation(endpoints, "/api/content/schema/{contentType}", "GET", "ApiGetContentItemSchema", ["content", "items"], "schema");
             AssertOperation(endpoints, "/api/content/{contentItemId}/versions", "GET", "ApiListContentItemVersions", ["content", "versions"], "list");
             AssertOperation(endpoints, "/api/content/versions/{contentItemVersionId}", "GET", "ApiGetContentItemVersion", ["content", "versions"], "show");

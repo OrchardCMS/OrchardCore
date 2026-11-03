@@ -1,11 +1,18 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents;
+using OrchardCore.Contents.Endpoints.Api;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Json;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -255,6 +262,91 @@ public class ContentItemManagementApiTests
             Assert.Null(await manager.GetAsync(id, VersionOptions.Draft));
             Assert.NotNull(await manager.GetAsync(id, VersionOptions.Published));
         });
+    }
+
+    [Fact]
+    public async Task BulkAsync_MixedItems_ReportsAStatusForEach()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+            var manager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+            var user = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "Test")], nameof(StubIdentity)));
+            var item = await service.SaveAsync(user, new ContentItem { ContentType = "BlogPost", DisplayText = "Bulk" }, publish: false, allowCreate: true, allowUpdate: true);
+
+            var response = await service.BulkAsync(user, "publish", [item.ContentItemId, item.ContentItemId, "missing"]);
+
+            Assert.Equal(2, response.Results.Count);
+            Assert.Equal(200, response.Results[0].Status);
+            Assert.Equal(404, response.Results[1].Status);
+            Assert.True((await manager.GetAsync(item.ContentItemId, VersionOptions.Latest)).Published);
+        });
+    }
+
+    [Theory]
+    [InlineData("archive", 1, "action")]
+    [InlineData("publish", 0, "contentItemIds")]
+    [InlineData("publish", 101, "contentItemIds")]
+    public void ValidateBulkRequest_InvalidRequest_ReturnsTheError(string action, int count, string expectedKey)
+    {
+        var errors = ContentManagementApiEndpoints.ValidateBulkRequest(new ContentItemsBulkRequest
+        {
+            Action = action,
+            ContentItemIds = Enumerable.Range(0, count).Select(index => "id" + index).ToArray(),
+        });
+
+        Assert.Equal(expectedKey, Assert.Single(errors).Key);
+    }
+
+    [Theory]
+    [InlineData("publish", 1)]
+    [InlineData("unpublish", 100)]
+    [InlineData("delete", 100)]
+    public void ValidateBulkRequest_ValidRequest_ReturnsNoError(string action, int count)
+    {
+        var errors = ContentManagementApiEndpoints.ValidateBulkRequest(new ContentItemsBulkRequest
+        {
+            Action = action,
+            ContentItemIds = Enumerable.Range(0, count).Select(index => "id" + index).ToArray(),
+        });
+
+        Assert.Empty(errors);
+    }
+
+    [Fact]
+    public async Task BulkAsync_UnauthorizedItem_IsReportedAndOthersProceed()
+    {
+        var authorized = new ContentItem { ContentItemId = "allowed" };
+        var forbidden = new ContentItem { ContentItemId = "denied" };
+        var authorization = new Mock<IAuthorizationService>();
+        authorization
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync((ClaimsPrincipal _, object resource, IEnumerable<IAuthorizationRequirement> _) =>
+                ReferenceEquals(resource, forbidden) ? AuthorizationResult.Failed() : AuthorizationResult.Success());
+        var manager = new Mock<IContentManager>();
+        manager.Setup(value => value.GetAsync("allowed", It.IsAny<VersionOptions>())).ReturnsAsync(authorized);
+        manager.Setup(value => value.GetAsync("denied", It.IsAny<VersionOptions>())).ReturnsAsync(forbidden);
+        var service = new ContentApiService(
+            manager.Object,
+            Mock.Of<IContentDefinitionManager>(),
+            authorization.Object,
+            Mock.Of<IUpdateModelAccessor>(),
+            Mock.Of<YesSql.ISession>(),
+            Options.Create(new DocumentJsonSerializerOptions()),
+            Mock.Of<IContentItemDisplayManager>(),
+            Mock.Of<IDisplayHelper>(),
+            Options.Create(new ContentOptions()),
+            Mock.Of<IContentsAdminListFilterParser>(),
+            Mock.Of<IContentsAdminListQueryService>());
+
+        var response = await service.BulkAsync(new ClaimsPrincipal(new ClaimsIdentity()), "delete", ["denied", "allowed"]);
+
+        Assert.Equal([403, 200], response.Results.Select(result => result.Status));
+        manager.Verify(value => value.RemoveAsync(authorized), Times.Once);
+        manager.Verify(value => value.RemoveAsync(forbidden), Times.Never);
     }
 
     [Fact]

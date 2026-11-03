@@ -81,6 +81,7 @@ All request and response bodies use `application/json`.
 | `POST` | `/api/content/{contentItemId}:clone` | Clone into a new draft item |
 | `POST` | `/api/content/{contentItemId}:discard-draft` | Discard the draft version |
 | `DELETE` | `/api/content/{contentItemId}` | Delete the latest version |
+| `POST` | `/api/content:bulk` | Publish, unpublish, or delete several items |
 | `POST` | `/api/content/validate` | Validate a create/existing draft payload |
 | `POST` | `/api/content/{contentItemId}/validate` | Validate an update |
 | `GET` | `/api/content/{contentItemId}/render` | Render a version |
@@ -717,6 +718,39 @@ curl -X DELETE -H "Authorization: Bearer $TOKEN" \
 
 Also returns `204`, `401`, or `403`.
 
+### Bulk publish, unpublish, or delete
+
+`POST /api/content:bulk`
+
+```json
+{
+  "action": "publish",
+  "contentItemIds": ["4xyz6d8qk2s9r1n7m5p3t0vabc", "4unknown"]
+}
+```
+
+| Body property | Type | Constraints |
+| --- | --- | --- |
+| `action` | string | `publish`, `unpublish`, or `delete`. |
+| `contentItemIds` | array of string | From 1 through 100 nonempty identifiers. Duplicates are applied once. |
+
+Each item goes through the same lookup and permission check as its single-item route. An item the
+caller can't change, or that doesn't exist, doesn't stop the others. `200 OK` returns a `status` per
+item, which is what the single-item route would return: `200`, `403`, or `404`.
+
+```json
+{
+  "action": "publish",
+  "results": [
+    { "contentItemId": "4xyz6d8qk2s9r1n7m5p3t0vabc", "status": 200 },
+    { "contentItemId": "4unknown", "status": 404 }
+  ]
+}
+```
+
+Also returns `400` Validation Problem Details for an invalid request, `401`, or `403` without
+`AccessContentApi` or `AccessRemoteManagement`. The changes are saved together when the request ends.
+
 ### Validate a content item payload
 
 `POST /api/content/validate`
@@ -972,7 +1006,7 @@ All five version operations also return `401` for missing authentication and
 
 ## Endpoint coverage and sources
 
-This page covers all 21 routes mapped by:
+This page covers all 22 routes mapped by:
 
 * `src/OrchardCore.Modules/OrchardCore.Contents/Endpoints/Api/ContentManagementApiEndpoints.cs`
 * `src/OrchardCore.Modules/OrchardCore.Contents/Endpoints/Api/ContentVersionApiEndpoints.cs`

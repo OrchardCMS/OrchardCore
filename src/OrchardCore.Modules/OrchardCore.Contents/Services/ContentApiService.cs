@@ -737,6 +737,34 @@ internal sealed class ContentApiService
         return contentItem;
     }
 
+    /// <summary>
+    /// Applies a lifecycle action to each content item, with the authorization of that action on each item.
+    /// A content item that is unknown or forbidden is reported and doesn't stop the others.
+    /// </summary>
+    public async Task<ContentItemsBulkResponse> BulkAsync(ClaimsPrincipal user, string action, IEnumerable<string> contentItemIds)
+    {
+        var response = new ContentItemsBulkResponse { Action = action };
+
+        foreach (var contentItemId in contentItemIds.Distinct(StringComparer.Ordinal))
+        {
+            var contentItem = action switch
+            {
+                "publish" => await PublishAsync(user, contentItemId),
+                "unpublish" => await UnpublishAsync(user, contentItemId),
+                "delete" => await DeleteAsync(user, contentItemId),
+                _ => throw new ArgumentOutOfRangeException(nameof(action)),
+            };
+
+            response.Results.Add(new ContentItemBulkResult
+            {
+                ContentItemId = contentItemId,
+                Status = contentItem is null ? 404 : IsForbidden(contentItem) ? 403 : 200,
+            });
+        }
+
+        return response;
+    }
+
     public async Task<ContentItemRenderResponse> RenderAsync(ClaimsPrincipal user, string contentItemId, string version, string displayType)
     {
         var contentItem = await _contentManager.GetAsync(contentItemId, GetVersionOptions(version, defaultToPublished: true));

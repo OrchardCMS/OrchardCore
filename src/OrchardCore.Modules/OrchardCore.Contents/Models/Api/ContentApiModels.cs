@@ -31,6 +31,51 @@ public sealed class ContentItemsResponse
     public List<ContentItem> Items { get; set; } = [];
 }
 
+/// <summary>
+/// A lifecycle action to apply to several content items.
+/// </summary>
+public sealed class ContentItemsBulkRequest
+{
+    /// <summary>
+    /// Gets or sets the action: <c>publish</c>, <c>unpublish</c>, or <c>delete</c>.
+    /// </summary>
+    [JsonPropertyName("action")]
+    public string Action { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifiers of the content items.
+    /// </summary>
+    [JsonPropertyName("contentItemIds")]
+    public string[] ContentItemIds { get; set; }
+}
+
+/// <summary>
+/// The outcome of a bulk action for each requested content item.
+/// </summary>
+public sealed class ContentItemsBulkResponse
+{
+    [JsonPropertyName("action")]
+    public string Action { get; set; }
+
+    [JsonPropertyName("results")]
+    public List<ContentItemBulkResult> Results { get; set; } = [];
+}
+
+/// <summary>
+/// The outcome of a bulk action for one content item.
+/// </summary>
+public sealed class ContentItemBulkResult
+{
+    [JsonPropertyName("contentItemId")]
+    public string ContentItemId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the HTTP status the action would return on its own: <c>200</c>, <c>403</c>, or <c>404</c>.
+    /// </summary>
+    [JsonPropertyName("status")]
+    public int Status { get; set; }
+}
+
 public sealed class ContentItemValidationResponse
 {
     [JsonPropertyName("isValid")]
