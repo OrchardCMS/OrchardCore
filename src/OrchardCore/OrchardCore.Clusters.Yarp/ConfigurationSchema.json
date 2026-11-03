@@ -14,7 +14,7 @@
             },
             "ProxySecret": {
               "type": "string",
-              "description": "The secret sent with the forwarded requests, and required from another instance for a request not to be forwarded again. Required when 'Enabled' is true, and shared by the instances having 'Enabled' set to true."
+              "description": "The secret sent with the forwarded requests, and required from another instance for a request not to be forwarded again. Required when 'Enabled' is true, and shared by the instances having 'Enabled' set to true. Must only contain visible ASCII characters."
             },
             "MaxIdleTime": {
               "type": "string",

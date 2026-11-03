@@ -110,6 +110,12 @@ public sealed class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
             throw new InvalidOperationException("Tenant clustering is enabled but the ProxySecret is not configured.");
         }
 
+        // This value is sent in a request header, an invalid value would make all the forwarded requests fail.
+        if (!configuration.ProxySecret.All(c => c is > ' ' and <= '~'))
+        {
+            throw new InvalidOperationException("The tenant clusters ProxySecret must only contain visible ASCII characters.");
+        }
+
         return options;
     }
 

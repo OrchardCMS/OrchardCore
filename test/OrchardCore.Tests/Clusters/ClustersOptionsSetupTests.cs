@@ -175,6 +175,24 @@ public class ClustersOptionsSetupTests
         Assert.Equal("Tenant clustering is enabled but the ProxySecret is not configured.", exception.Message);
     }
 
+    [Theory]
+    [InlineData("with space")]
+    [InlineData("caf\u00e9")]
+    [InlineData("line\nbreak")]
+    public void Configure_ProxySecretNotValidInHeader_Throws(string proxySecret)
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore:Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:ProxySecret"] = proxySecret,
+            ["OrchardCore:Clusters:Routes:RouteTemplate:ClusterId"] = "cluster1",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "16383",
+        }));
+
+        Assert.Equal("The tenant clusters ProxySecret must only contain visible ASCII characters.", exception.Message);
+    }
+
     [Fact]
     public void Configure_DisabledWithoutProxySecret_DoesNotThrow()
     {
