@@ -86,7 +86,7 @@ public class DeploymentPlanManagementTests : IDisposable
             Assert.Equal(new[] { "recipe", "file" }, plan.DeploymentSteps.Select(step => step.Id));
             Assert.Equal(string.Empty, Assert.IsType<CustomFileDeploymentStep>(plan.DeploymentSteps[1]).FileContent);
             Assert.True(StepWrite(await DeploymentStepEndpoints.DeleteAsync(Http(), Authorized(), plans, id, "file")).Changed);
-            Assert.False(StepWrite(await DeploymentStepEndpoints.DeleteAsync(Http(), Authorized(), plans, id, "file")).Changed);
+            Assert.Equal(404, Status(await DeploymentStepEndpoints.DeleteAsync(Http(), Authorized(), plans, id, "file")));
             Assert.Equal("recipe", Assert.Single(plan.DeploymentSteps).Id);
         });
     }
@@ -197,7 +197,7 @@ public class DeploymentPlanManagementTests : IDisposable
             Assert.Equal("Gamma", plan.Name);
             Assert.Equal(new[] { "file", "recipe" }, plan.DeploymentSteps.Select(step => step.Id));
             Assert.True(Write(await DeploymentPlanEndpoints.DeleteAsync(Http(), Authorized(), plans, id)).Changed);
-            Assert.False(Write(await DeploymentPlanEndpoints.DeleteAsync(Http(), Authorized(), plans, id)).Changed);
+            Assert.Equal(404, Status(await DeploymentPlanEndpoints.DeleteAsync(Http(), Authorized(), plans, id)));
             Assert.Equal(404, Status(await DeploymentPlanEndpoints.GetAsync(Http(), Authorized(), plans, id)));
         });
     }

@@ -97,9 +97,9 @@ public class LocalizationManagementTests
 
     [Theory]
     [InlineData(false, "FR", 200)]
-    [InlineData(true, "de", 200)]
+    [InlineData(true, "de", 404)]
     [InlineData(true, "EN", 400)]
-    [InlineData(true, "unknown-culture", 400)]
+    [InlineData(true, "unknown-culture", 404)]
     [InlineData(false, "unknown-culture", 400)]
     public async Task Cultures_RetryOrInvalidChange_DoesNotPersist(bool remove, string culture, int status)
     {
@@ -187,7 +187,7 @@ public class LocalizationManagementTests
         var deleted = await TranslationManagementEndpoints.DeleteAsync(fixture.Context, fixture.Authorization.Object, fixture.Localization.Object, fixture.Manager.Object, deletion);
         Assert.True(Assert.IsType<TranslationResult>(((IValueHttpResult)deleted).Value).Changed);
         var repeated = await TranslationManagementEndpoints.DeleteAsync(fixture.Context, fixture.Authorization.Object, fixture.Localization.Object, fixture.Manager.Object, deletion);
-        Assert.False(Assert.IsType<TranslationResult>(((IValueHttpResult)repeated).Value).Changed);
+        Assert.Equal(404, ((IStatusCodeHttpResult)repeated).StatusCode);
         Assert.Equal("Conserver", Assert.Single(fixture.Document.Translations["fr"]).Value);
         Assert.Equal("English page", Assert.Single(fixture.Document.Translations["en"]).Value);
         fixture.Manager.Verify(service => service.UpdateTranslationAsync("fr", It.IsAny<IEnumerable<Translation>>()), Times.Exactly(2));

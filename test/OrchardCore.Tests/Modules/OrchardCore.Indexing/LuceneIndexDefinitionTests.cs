@@ -151,13 +151,13 @@ public class LuceneIndexDefinitionTests
     }
 
     [Fact]
-    public async Task Delete_MissingProfileIsIdempotentAndWrongProviderIsNotDeleted()
+    public async Task Delete_MissingProfileOrWrongProvider_ReturnsNotFoundWithoutDeleting()
     {
         using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
         var http = new DefaultHttpContext { RequestServices = services };
         var profiles = new Mock<IIndexProfileManager>();
         var management = new Mock<IIndexProfileManagementService>(MockBehavior.Strict);
-        Assert.Equal(204, Status(await LuceneIndexDefinitionEndpoints.DeleteAsync(http, Authorize(), profiles.Object, management.Object, "missing")));
+        Assert.Equal(404, Status(await LuceneIndexDefinitionEndpoints.DeleteAsync(http, Authorize(), profiles.Object, management.Object, "missing")));
         var profile = Profile();
         profile.ProviderName = "Other";
         profiles.Setup(value => value.FindByIdAsync("id")).ReturnsAsync(profile);

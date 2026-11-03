@@ -16,6 +16,7 @@ using OrchardCore.Email;
 using OrchardCore.Modules;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Models;
@@ -91,6 +92,33 @@ public class TenantManagementEndpointsTests
         Assert.True(response.CanDelete);
         Assert.False(response.CanStart);
         Assert.False(response.CanStop);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_MissingTenant_ReturnsNotFound()
+    {
+        var authorization = new Mock<IAuthorizationService>();
+        authorization.Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(AuthorizationResult.Success());
+        var shellHost = new Mock<IShellHost>();
+        ShellSettings missing = null;
+        shellHost.Setup(host => host.TryGetSettings("Missing", out missing)).Returns(false);
+        var localizer = new Mock<IStringLocalizer<TenantApiController>>();
+        localizer.Setup(value => value[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
+
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
+        var result = await TenantManagementEndpoints.DeleteAsync(
+            new DefaultHttpContext { RequestServices = services },
+            "Missing",
+            shellHost.Object,
+            new ShellSettings { Name = ShellSettings.DefaultShellName },
+            Mock.Of<IShellRemovalManager>(),
+            authorization.Object,
+            Options.Create(new global::OrchardCore.Tenants.TenantsOptions { TenantRemovalAllowed = true }),
+            localizer.Object,
+            Mock.Of<ILogger<TenantApiController>>());
+
+        Assert.Equal(StatusCodes.Status404NotFound, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
     }
 
     [Fact]

@@ -63,7 +63,7 @@ public class DeploymentArtifactEndpointTests
             await download.ExecuteAsync(context);
             Assert.Equal(bytes, output.ToArray());
             Assert.True(Assert.IsType<Ok<DeploymentArtifactDeleteResponse>>(await DeploymentArtifactEndpoints.DeleteAsync(context, allowed, store, artifact.Id)).Value.Changed);
-            Assert.False(Assert.IsType<Ok<DeploymentArtifactDeleteResponse>>(await DeploymentArtifactEndpoints.DeleteAsync(context, allowed, store, artifact.Id)).Value.Changed);
+            Assert.Equal(404, Status(await DeploymentArtifactEndpoints.DeleteAsync(context, allowed, store, artifact.Id)));
         }
         finally
         {

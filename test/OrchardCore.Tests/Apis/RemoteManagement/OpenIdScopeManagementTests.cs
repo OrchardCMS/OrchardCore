@@ -100,7 +100,7 @@ public class OpenIdScopeManagementTests
             var services = scope.ServiceProvider;
             var manager = services.GetRequiredService<IOpenIdScopeManager>();
             Assert.Null(await manager.FindByNameAsync("api-scope"));
-            Assert.IsType<NoContent>(await OpenIdScopeManagementEndpoints.DeleteAsync(new DefaultHttpContext { RequestServices = services }, Authorize(), manager, "api-scope"));
+            Assert.Equal(404, Assert.IsType<ProblemHttpResult>(await OpenIdScopeManagementEndpoints.DeleteAsync(new DefaultHttpContext { RequestServices = services }, Authorize(), manager, "api-scope")).StatusCode);
         });
     }
 

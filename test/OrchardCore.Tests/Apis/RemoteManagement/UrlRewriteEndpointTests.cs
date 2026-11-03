@@ -152,7 +152,7 @@ public class UrlRewriteEndpointTests : IDisposable
         await site.UsingTenantScopeAsync(async scope =>
         {
             var manager = scope.ServiceProvider.GetRequiredService<IRewriteRulesManager>();
-            Assert.IsType<NoContent>(await RewriteManagementEndpoints.DeleteAsync(Http(), Authorized(), manager, "first"));
+            Assert.Equal(404, Status(await RewriteManagementEndpoints.DeleteAsync(Http(), Authorized(), manager, "first")));
             Assert.Equal(404, Status(await RewriteManagementEndpoints.GetAsync(Http(), Authorized(), manager, "first")));
         });
     }

@@ -54,7 +54,7 @@ public class FeatureProfileManagementEndpointsTests
         Assert.Equal(200, Status(await FeatureProfileManagementEndpoints.UpdateAsync(http, authorization, shell, manager, "profile", Definition("Renamed"))));
         Assert.Equal("Renamed", document.FeatureProfiles["profile"].Name);
         Assert.IsType<NoContent>(await FeatureProfileManagementEndpoints.DeleteAsync(http, authorization, shell, manager, "profile"));
-        Assert.IsType<NoContent>(await FeatureProfileManagementEndpoints.DeleteAsync(http, authorization, shell, manager, "profile"));
+        Assert.Equal(404, Status(await FeatureProfileManagementEndpoints.DeleteAsync(http, authorization, shell, manager, "profile")));
         Assert.Equal(404, Status(await FeatureProfileManagementEndpoints.GetAsync(http, authorization, shell, manager, "profile")));
         Assert.Equal(404, Status(await FeatureProfileManagementEndpoints.UpdateAsync(http, authorization, shell, manager, "profile", Definition())));
     }

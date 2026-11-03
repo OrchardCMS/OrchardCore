@@ -37,6 +37,7 @@ python3 .scripts/remote-management/widgets-smoke.py <fixture.json>
 python3 .scripts/remote-management/shortcodes-smoke.py <fixture.json>
 python3 .scripts/remote-management/placements-smoke.py <fixture.json>
 python3 .scripts/remote-management/optimistic-concurrency-smoke.py <fixture.json>
+python3 .scripts/remote-management/delete-contract-smoke.py <fixture.json>
 ```
 
 `verify-fixture.py` checks discovery, command/operation ID uniqueness, every
@@ -45,6 +46,10 @@ existing-user authorization, and malformed folder input. Explicit exceptions
 match APIs that resolve missing resources before per-resource authorization;
 these are not counted as evidence that existing resources are protected.
 The existing-user probes provide separate checks for that distinction.
+
+`delete-contract-smoke.py` deletes a missing resource on every management API
+with a real bearer token and expects a 404 problem. Remote deployment routes
+require HTTPS, so start the fixture with `OC_FIXTURE_HTTPS=1`.
 
 `smoke-fixture.py` drives real CLI processes through content definition and
 unpublished content creation, validation, readback, confirmation refusal,
@@ -467,7 +472,7 @@ disposable tenant. Culture-picker verification uses this same homepage command.
 
 `openid-scopes-smoke.py` verifies scope mutations, semantic retries, conflicts,
 invalid/denied writes, full field replacement, HTTP/Pomi/MCP readback and MCP
-with CLI disabled. It deletes the synthetic scope after checking repeated deletion.
+with CLI disabled. It deletes the synthetic scope and checks that deleting it again returns 404.
 
 
 `openid-applications-smoke.py` checks application CRUD, private secret inputs,
