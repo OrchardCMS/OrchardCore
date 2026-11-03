@@ -225,7 +225,7 @@ public class RoleManagementEndpointsTests
     [Fact]
     public async Task CreateAsync_SecurityCriticalPermissionCallerHolds_Succeeds()
     {
-        var critical = new Permission("Critical", "Critical", [], true);
+        var critical = new Permission("Critical", LocalizationSource.Create("Critical"), [], true);
         var roleManager = RolesMockHelper.MockRoleManager<IRole>();
         roleManager.Setup(manager => manager.CreateAsync(It.IsAny<IRole>())).ReturnsAsync(IdentityResult.Success);
 
