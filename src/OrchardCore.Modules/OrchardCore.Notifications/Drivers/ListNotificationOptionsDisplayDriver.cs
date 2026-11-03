@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Models;
@@ -27,6 +28,12 @@ public sealed class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNot
     public override Task<IDisplayResult> EditAsync(ListNotificationOptions model, BuildEditorContext context)
     {
         model.FilterResult.MapTo(model);
+
+        // A type that isn't registered can be filtered on with the search text: list it, so that it is kept when another filter changes.
+        if (!string.IsNullOrEmpty(model.Type) && model.Types?.Exists(item => item.Value == model.Type) == false)
+        {
+            model.Types.Add(new SelectListItem(model.Type, model.Type));
+        }
 
         return CombineAsync(
             Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model))
