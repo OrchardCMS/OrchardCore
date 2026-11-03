@@ -231,6 +231,18 @@ public sealed class SourceTemplatesTests : IDisposable
         Assert.False(entry.IsCloned || entry.IsModified || entry.IsSourceChanged);
     }
 
+    [Theory]
+    [InlineData("Views/Foo.liquid", true, null, true)]
+    [InlineData("Views/Foo.cshtml", true, null, false)]
+    [InlineData("Views/Foo.liquid", false, null, false)]
+    [InlineData("Views/Foo.liquid", true, "SiteTheme", false)]
+    public void CanClone_Template_OnlyWhenLiquidAndRenderingItsShape(string filePath, bool isInUse, string overriddenBy, bool expected)
+    {
+        var template = new SourceTemplate { FilePath = filePath, IsInUse = isInUse, OverriddenBy = overriddenBy };
+
+        Assert.Equal(expected, template.CanClone);
+    }
+
     [Fact]
     public async Task CloneAsync_RazorTemplate_ReturnsFalse()
     {

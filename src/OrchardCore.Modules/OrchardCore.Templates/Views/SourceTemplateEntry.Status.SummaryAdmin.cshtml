@@ -8,7 +8,7 @@
 
 @if (entry.Template.IsLiquid)
 {
-    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@(entry.Template.IsInUse ? T["The template can be cloned as a local template."] : T["The template can be cloned once its theme is active."])">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@(entry.Template.CanClone ? T["The template can be cloned as a local template."] : entry.Template.IsInUse ? T["The template can't be cloned, as it doesn't render its shape."] : T["The template can be cloned once its theme is active."])">
         <i class="fa-solid fa-code text-secondary" aria-hidden="true"></i>
         @T["Liquid"]
     </span>

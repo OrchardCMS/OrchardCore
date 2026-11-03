@@ -50,7 +50,8 @@ public sealed class SourceTemplate
     public bool IsLiquid => FilePath?.EndsWith(".liquid", StringComparison.OrdinalIgnoreCase) == true;
 
     /// <summary>
-    /// Gets whether the template can be cloned as a local template: a Liquid template in use.
+    /// Gets whether the template can be cloned as a local template: a Liquid template in use, that renders its shape.
+    /// A local template cloned from a template that another one overrides would change what the shape renders.
     /// </summary>
-    public bool CanClone => IsLiquid && IsInUse;
+    public bool CanClone => IsLiquid && IsInUse && OverriddenBy == null;
 }
