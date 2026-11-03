@@ -6,23 +6,35 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Tenant Clusters options.
 /// </summary>
-public class ClustersOptions
+public sealed class ClustersOptions
 {
-    // The identifier of the route template used by the clusters proxy.
-    public static readonly string RouteTemplate = nameof(RouteTemplate);
+    /// <summary>
+    /// The application configuration section holding the tenant clusters configuration.
+    /// </summary>
+    public const string ConfigurationSection = "OrchardCore:Clusters";
 
     /// <summary>
-    /// Wether tenant clusters is enabled or not.
+    /// The identifier of the route template used by the clusters proxy.
+    /// </summary>
+    public const string RouteTemplate = nameof(RouteTemplate);
+
+    /// <summary>
+    /// The number of available tenant cluster slots.
+    /// </summary>
+    public const int SlotsCount = 16384;
+
+    /// <summary>
+    /// Whether this instance forwards the requests to the tenant clusters.
     /// </summary>
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// The maximum idle time before a tenant is released.
+    /// The maximum idle time before a tenant is released on this instance.
     /// </summary>
     public TimeSpan? MaxIdleTime { get; set; }
 
     /// <summary>
     /// List of all single <see cref="ClusterOptions"/>.
     /// </summary>
-    public List<ClusterOptions> Clusters { get; set; } = new();
+    public List<ClusterOptions> Clusters { get; set; } = [];
 }

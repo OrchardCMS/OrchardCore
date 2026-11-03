@@ -18,10 +18,14 @@ public static class ClustersProxyBuilderExtensions
     public static IReverseProxyBuilder AddTenantClusters(this IReverseProxyBuilder builder)
     {
         builder.Services.AddSingleton<IConfigureOptions<ClustersOptions>, ClustersOptionsSetup>();
+
+        // An invalid configuration should prevent the host from starting, instead of failing on each request.
+        builder.Services.AddOptions<ClustersOptions>().ValidateOnStart();
+
         builder.Services.AddSingleton<IOptionsChangeTokenSource<ClustersOptions>>(serviceProvider =>
             new ConfigurationChangeTokenSource<ClustersOptions>(
                 Options.DefaultName,
-                serviceProvider.GetRequiredService<IConfiguration>().GetSection("OrchardCore_Clusters")));
+                serviceProvider.GetRequiredService<IConfiguration>().GetSection(ClustersOptions.ConfigurationSection)));
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ClustersProxyMatcherPolicy>());
 
         return builder.AddConfigFilter<ClustersProxyConfigFilter>();

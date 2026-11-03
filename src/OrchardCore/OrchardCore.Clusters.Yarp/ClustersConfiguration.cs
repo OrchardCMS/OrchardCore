@@ -6,17 +6,12 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Tenant Clusters configuration.
 /// </summary>
-public class ClustersConfiguration
+internal sealed class ClustersConfiguration
 {
     /// <summary>
-    /// Wether tenant clusters is enabled or not.
+    /// Whether this instance forwards the requests to the tenant clusters.
     /// </summary>
     public bool Enabled { get; init; }
-
-    /// <summary>
-    /// The hosts that incoming requests should match.
-    /// </summary>
-    public string[] Hosts { get; init; }
 
     /// <summary>
     /// The maximum idle time before a tenant is released.

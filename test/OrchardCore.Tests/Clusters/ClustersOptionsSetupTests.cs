@@ -3,35 +3,36 @@ using System.Linq;
 using System.Threading;
 using global::Microsoft.Extensions.Configuration;
 using global::Microsoft.Extensions.DependencyInjection;
+using global::Microsoft.Extensions.Logging.Abstractions;
 using global::Microsoft.Extensions.Options;
 using OrchardCore.Clusters;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Clusters;
 
 public class ClustersOptionsSetupTests
 {
     [Fact]
-    public void MonitorReloadsClustersOptionsWhenConfigurationChanges()
+    public void Monitor_ConfigurationChanges_ReloadsClustersOptions()
     {
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["OrchardCore_Clusters:Enabled"] = "false",
-                ["OrchardCore_Clusters:MaxIdleTime"] = "01:00:00",
-                ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = "0",
-                ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = "16383",
+                ["OrchardCore:Clusters:Enabled"] = "false",
+                ["OrchardCore:Clusters:MaxIdleTime"] = "01:00:00",
+                ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+                ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "16383",
             })
             .Build();
 
         var services = new ServiceCollection();
         services.AddOptions();
+        services.AddLogging();
         services.AddSingleton<global::Microsoft.Extensions.Configuration.IConfiguration>(configuration);
         services.AddSingleton<IConfigureOptions<ClustersOptions>, ClustersOptionsSetup>();
         services.AddSingleton<IOptionsChangeTokenSource<ClustersOptions>>(
             new ConfigurationChangeTokenSource<ClustersOptions>(
                 Options.DefaultName,
-                configuration.GetSection("OrchardCore_Clusters")));
+                configuration.GetSection(ClustersOptions.ConfigurationSection)));
 
         using var serviceProvider = services.BuildServiceProvider();
         var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<ClustersOptions>>();
@@ -42,16 +43,14 @@ public class ClustersOptionsSetupTests
 
         Assert.False(initialOptions.Enabled);
         Assert.Equal(TimeSpan.FromHours(1), initialOptions.MaxIdleTime);
-        Assert.Single(initialOptions.Clusters);
-        Assert.Equal("cluster1", initialOptions.Clusters[0].ClusterId);
-        Assert.Equal(0, initialOptions.Clusters[0].SlotMin);
-        Assert.Equal(16383, initialOptions.Clusters[0].SlotMax);
+        Assert.Empty(initialOptions.Clusters);
 
-        configuration["OrchardCore_Clusters:Enabled"] = "true";
-        configuration["OrchardCore_Clusters:MaxIdleTime"] = "00:00:30";
-        configuration["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = "8191";
-        configuration["OrchardCore_Clusters:Clusters:cluster2:SlotRange:0"] = "8192";
-        configuration["OrchardCore_Clusters:Clusters:cluster2:SlotRange:1"] = "16383";
+        configuration["OrchardCore:Clusters:Enabled"] = "true";
+        configuration["OrchardCore:Clusters:Routes:RouteTemplate:ClusterId"] = "cluster1";
+        configuration["OrchardCore:Clusters:MaxIdleTime"] = "00:00:30";
+        configuration["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "8191";
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:0"] = "8192";
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:1"] = "16383";
         configuration.Reload();
 
         Assert.True(changeToken.Wait(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken));
@@ -79,23 +78,23 @@ public class ClustersOptionsSetupTests
     }
 
     [Fact]
-    public void ConfigureThrowsWhenEnabledWithoutClusters()
+    public void Configure_EnabledWithoutClusters_Throws()
     {
         var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
         {
-            ["OrchardCore_Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:Enabled"] = "true",
         }));
 
         Assert.Equal("Tenant clustering is enabled but no clusters are configured.", exception.Message);
     }
 
     [Fact]
-    public void ConfigureThrowsWhenEnabledClusterSlotRangeHasWrongLength()
+    public void Configure_SlotRangeWithWrongLength_Throws()
     {
         var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
         {
-            ["OrchardCore_Clusters:Enabled"] = "true",
-            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+            ["OrchardCore:Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
         }));
 
         Assert.Equal("The tenant cluster 'cluster1' must define a SlotRange with exactly two values.", exception.Message);
@@ -104,44 +103,117 @@ public class ClustersOptionsSetupTests
     [Theory]
     [InlineData("-1", "100")]
     [InlineData("100", "16384")]
-    public void ConfigureThrowsWhenEnabledClusterSlotRangeIsOutsideAllowedSlots(string slotMin, string slotMax)
+    public void Configure_SlotRangeOutsideAllowedSlots_Throws(string slotMin, string slotMax)
     {
         var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
         {
-            ["OrchardCore_Clusters:Enabled"] = "true",
-            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = slotMin,
-            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = slotMax,
+            ["OrchardCore:Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = slotMin,
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = slotMax,
         }));
 
-        Assert.Equal($"The tenant cluster 'cluster1' SlotRange must be within 0 and {ShellSettings.ClusterSlotsCount - 1}.", exception.Message);
+        Assert.Equal($"The tenant cluster 'cluster1' SlotRange must be within 0 and {ClustersOptions.SlotsCount - 1}.", exception.Message);
     }
 
     [Fact]
-    public void ConfigureThrowsWhenEnabledClusterSlotRangeIsInverted()
+    public void Configure_InvertedSlotRange_Throws()
     {
         var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
         {
-            ["OrchardCore_Clusters:Enabled"] = "true",
-            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = "100",
-            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = "99",
+            ["OrchardCore:Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "100",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "99",
         }));
 
         Assert.Equal("The tenant cluster 'cluster1' SlotRange minimum must be less than or equal to the maximum.", exception.Message);
     }
 
     [Fact]
-    public void ConfigureThrowsWhenEnabledClusterSlotRangesOverlap()
+    public void Configure_OverlappingSlotRanges_Throws()
     {
         var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
         {
-            ["OrchardCore_Clusters:Enabled"] = "true",
-            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = "0",
-            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = "100",
-            ["OrchardCore_Clusters:Clusters:cluster2:SlotRange:0"] = "100",
-            ["OrchardCore_Clusters:Clusters:cluster2:SlotRange:1"] = "200",
+            ["OrchardCore:Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "100",
+            ["OrchardCore:Clusters:Clusters:cluster2:SlotRange:0"] = "100",
+            ["OrchardCore:Clusters:Clusters:cluster2:SlotRange:1"] = "200",
         }));
 
         Assert.Contains("SlotRange overlaps with the tenant cluster", exception.Message);
+    }
+
+    [Fact]
+    public void Configure_EnabledWithoutRouteTemplate_Throws()
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore:Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "16383",
+        }));
+
+        Assert.Equal("Tenant clustering is enabled but the 'RouteTemplate' route is not configured.", exception.Message);
+    }
+
+    [Fact]
+    public void Configure_DisabledWithInvalidClusters_DoesNotThrow()
+    {
+        var options = Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore:Clusters:MaxIdleTime"] = "00:00:30",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+        });
+
+        Assert.False(options.Enabled);
+        Assert.Equal(TimeSpan.FromSeconds(30), options.MaxIdleTime);
+        Assert.Empty(options.Clusters);
+    }
+
+    [Fact]
+    public void Configure_InvalidReload_KeepsLastValidOptions()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["OrchardCore:Clusters:Enabled"] = "true",
+                ["OrchardCore:Clusters:MaxIdleTime"] = "01:00:00",
+                ["OrchardCore:Clusters:Routes:RouteTemplate:ClusterId"] = "cluster1",
+                ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+                ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "16383",
+            })
+            .Build();
+
+        var setup = new ClustersOptionsSetup(configuration, NullLogger<ClustersOptionsSetup>.Instance);
+        setup.Configure(new ClustersOptions());
+
+        configuration["OrchardCore:Clusters:MaxIdleTime"] = "00:00:30";
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:0"] = "0";
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:1"] = "100";
+
+        var options = new ClustersOptions();
+        setup.Configure(options);
+
+        Assert.True(options.Enabled);
+        Assert.Equal(TimeSpan.FromHours(1), options.MaxIdleTime);
+        Assert.Equal("cluster1", Assert.Single(options.Clusters).ClusterId);
+
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:0"] = "16384";
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:1"] = "16384";
+        Assert.Equal("cluster1", Assert.Single(ConfigureWith(setup).Clusters).ClusterId);
+
+        configuration["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "100";
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:0"] = "101";
+        configuration["OrchardCore:Clusters:Clusters:cluster2:SlotRange:1"] = "16383";
+        Assert.Equal(2, ConfigureWith(setup).Clusters.Count);
+    }
+
+    private static ClustersOptions ConfigureWith(ClustersOptionsSetup setup)
+    {
+        var options = new ClustersOptions();
+        setup.Configure(options);
+
+        return options;
     }
 
     private static ClustersOptions Configure(Dictionary<string, string> values)
@@ -150,11 +222,6 @@ public class ClustersOptionsSetupTests
             .AddInMemoryCollection(values)
             .Build();
 
-        var options = new ClustersOptions();
-        var setup = new ClustersOptionsSetup(configuration);
-
-        setup.Configure(options);
-
-        return options;
+        return ConfigureWith(new ClustersOptionsSetup(configuration, NullLogger<ClustersOptionsSetup>.Instance));
     }
 }

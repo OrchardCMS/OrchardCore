@@ -8,14 +8,12 @@ builder.Host.UseNLogHost();
 builder.Services
     .AddOrchardCms()
     .AddSetupFeatures("OrchardCore.AutoSetup")
-    .AddClusteredTenantInactivityCheck()
-    ;
+    .AddClusteredTenantInactivityCheck();
 
 builder.Services
     .AddReverseProxy()
     .AddTenantClusters()
-    .LoadFromConfig(builder.Configuration.GetSection("OrchardCore_Clusters"))
-    ;
+    .LoadFromConfig(builder.Configuration.GetSection(ClustersOptions.ConfigurationSection));
 
 var app = builder.Build();
 
@@ -25,6 +23,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
 app.UseOrchardCore();
 
 app.MapReverseProxy(proxyPipeline =>
@@ -33,8 +32,7 @@ app.MapReverseProxy(proxyPipeline =>
         .UseTenantClusters()
         .UseSessionAffinity()
         .UseLoadBalancing()
-        .UsePassiveHealthChecks()
-        ;
+        .UsePassiveHealthChecks();
 });
 
 await app.RunAsync();

@@ -3,7 +3,7 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Tenant Cluster configuration.
 /// </summary>
-public class ClusterConfiguration
+internal sealed class ClusterConfiguration
 {
     /// <summary>
     /// The tenant slot range that should include 2 limits (min and max).
