@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -132,25 +131,15 @@ public class ShellContextFactory : IShellContextFactory
     /// </summary>
     private static async Task<ShellContext> MeasureAsync(ShellSettings settings, Func<ShellSettings, Task<ShellContext>> createAsync)
     {
-        using var activity = OrchardCoreTelemetry.StartTenantActivity("Build tenant container", settings.Name);
-        var startTimestamp = Stopwatch.GetTimestamp();
-        Exception exception = null;
+        ShellContext context = null;
 
-        try
-        {
-            return await createAsync(settings);
-        }
-        catch (Exception ex)
-        {
-            exception = ex;
-            OrchardCoreTelemetry.RecordException(activity, ex);
+        await OrchardCoreTelemetry.MeasureTenantOperationAsync(
+            "Build tenant container",
+            OrchardCoreTelemetry.TenantContainerDuration,
+            settings.Name,
+            async () => context = await createAsync(settings));
 
-            throw;
-        }
-        finally
-        {
-            OrchardCoreTelemetry.RecordDuration(OrchardCoreTelemetry.TenantContainerDuration, startTimestamp, settings.Name, exception);
-        }
+        return context;
     }
 
     /// <summary>

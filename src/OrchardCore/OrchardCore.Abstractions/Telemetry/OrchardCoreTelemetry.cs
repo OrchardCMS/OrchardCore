@@ -81,12 +81,38 @@ public static class OrchardCoreTelemetry
     /// <summary>
     /// Starts an <see cref="Activity"/> related to a tenant, if anything listens.
     /// </summary>
-    internal static Activity StartTenantActivity(string name, string tenantName, ActivityKind kind = ActivityKind.Internal)
+    internal static Activity StartTenantActivity(string name, string tenantName)
     {
-        var activity = ActivitySource.StartActivity(name, kind);
+        var activity = ActivitySource.StartActivity(name);
         activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.TenantName, tenantName);
 
         return activity;
+    }
+
+    /// <summary>
+    /// Traces an operation of a tenant and records its duration on a histogram, if anything listens.
+    /// </summary>
+    internal static async Task MeasureTenantOperationAsync(string name, Histogram<double> histogram, string tenantName, Func<Task> operation)
+    {
+        using var activity = StartTenantActivity(name, tenantName);
+        var startTimestamp = Stopwatch.GetTimestamp();
+        Exception exception = null;
+
+        try
+        {
+            await operation();
+        }
+        catch (Exception ex)
+        {
+            exception = ex;
+            RecordException(activity, ex);
+
+            throw;
+        }
+        finally
+        {
+            RecordDuration(histogram, startTimestamp, tenantName, exception);
+        }
     }
 
     /// <summary>
