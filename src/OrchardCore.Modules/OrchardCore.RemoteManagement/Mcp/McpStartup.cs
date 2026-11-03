@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -65,7 +66,12 @@ public sealed class McpStartup : StartupBase
                 {
                     if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
                     {
-                        context.Response.Headers.Append("WWW-Authenticate", $"Bearer resource_metadata=\"{metadataUrl}\", scope=\"{RemoteManagementConstants.ManagementScope}\"");
+                        // Extend the bearer challenge: clients stop at a second one and miss the metadata URL.
+                        var challenge = context.Response.Headers.WWWAuthenticate.ToString();
+                        var parameters = challenge.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+                            ? ", " + challenge["Bearer ".Length..]
+                            : string.Empty;
+                        context.Response.Headers.WWWAuthenticate = $"Bearer resource_metadata=\"{metadataUrl}\", scope=\"{RemoteManagementConstants.ManagementScope}\"{parameters}";
                     }
 
                     return Task.CompletedTask;
@@ -89,10 +95,18 @@ public sealed class McpStartup : StartupBase
         }).AllowAnonymous().ExcludeFromDescription();
 
         routes.MapMcp("mcp")
-            .RequireAuthorization(policy => policy
-                .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
-                .RequireAuthenticatedUser()
-                .AddRequirements(new PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)))
+            .RequireAuthorization(ConfigureAccessPolicy)
             .DisableAntiforgery();
+
+        // Stateless servers have no event stream or session. The protocol requires 405 here,
+        // which a tenant's catch-all content routes would otherwise turn into 404.
+        routes.MapMethods("mcp", [HttpMethods.Get, HttpMethods.Delete], () => Results.StatusCode(StatusCodes.Status405MethodNotAllowed))
+            .RequireAuthorization(ConfigureAccessPolicy)
+            .ExcludeFromDescription();
     }
+
+    private static void ConfigureAccessPolicy(AuthorizationPolicyBuilder policy) => policy
+        .AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
+        .RequireAuthenticatedUser()
+        .AddRequirements(new PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement));
 }

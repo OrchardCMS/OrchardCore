@@ -32,13 +32,39 @@ public class McpHttpTests
         using var client = app.GetTestClient();
         using var response = await SendAsync(client, "tools/list");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.Contains("/tenant-a/.well-known/oauth-protected-resource/mcp", response.Headers.WwwAuthenticate.ToString());
+        var challenge = Assert.Single(response.Headers.WwwAuthenticate);
+        Assert.Equal("Bearer", challenge.Scheme);
+        Assert.Contains("/tenant-a/.well-known/oauth-protected-resource/mcp", challenge.Parameter);
 
         using var metadata = await client.GetAsync("/tenant-a/.well-known/oauth-protected-resource/mcp", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, metadata.StatusCode);
         using var document = JsonDocument.Parse(await metadata.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.Equal("http://localhost/tenant-a/mcp", document.RootElement.GetProperty("resource").GetString());
         Assert.Equal("http://localhost/tenant-a/", document.RootElement.GetProperty("authorization_servers")[0].GetString());
+    }
+
+    [Fact]
+    public async Task Mcp_InvalidToken_KeepsErrorInSingleChallenge()
+    {
+        await using var app = await CreateApplicationAsync();
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "invalid");
+        using var response = await SendAsync(client, "tools/list");
+        var challenge = Assert.Single(response.Headers.WwwAuthenticate);
+        Assert.Contains("resource_metadata=", challenge.Parameter);
+        Assert.Contains("error=\"invalid_token\"", challenge.Parameter);
+    }
+
+    [Theory]
+    [InlineData("GET")]
+    [InlineData("DELETE")]
+    public async Task Mcp_StatelessStreamRequest_ReturnsMethodNotAllowed(string method)
+    {
+        await using var app = await CreateApplicationAsync();
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "allowed");
+        using var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), "/tenant-a/mcp"), TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
     }
 
     [Theory]
@@ -200,6 +226,13 @@ public class McpHttpTests
         public TestBearerHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
             : base(options, logger, encoder)
         {
+        }
+
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            Response.StatusCode = StatusCodes.Status401Unauthorized;
+            Response.Headers.WWWAuthenticate = Request.Headers.Authorization.Count > 0 ? "Bearer error=\"invalid_token\"" : "Bearer";
+            return Task.CompletedTask;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
