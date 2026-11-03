@@ -274,19 +274,6 @@ internal static class CliUtilities
         }
     }
 
-    public static byte[] DecodeBase64Url(string value)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value);
-        var normalized = value.Replace('-', '+').Replace('_', '/');
-        var padding = normalized.Length % 4;
-        if (padding > 0)
-        {
-            normalized = normalized.PadRight(normalized.Length + (4 - padding), '=');
-        }
-
-        return Convert.FromBase64String(normalized);
-    }
-
     public static string Base64UrlEncode(byte[] bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);

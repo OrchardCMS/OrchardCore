@@ -363,11 +363,6 @@ internal sealed partial class CliApplication
                 }, CliJsonContext.Default.LoginOutput), cancellationToken);
             }
 
-            if (!_credentialStore.SupportsPersistentHumanTokens)
-            {
-                throw new CliException("Persistent human credentials require an OS-protected credential store. This platform is not supported; use per-command client credentials instead.");
-            }
-
             var jsonQr = parseResult.GetValue(qrOption) != QrCodeMode.Never
                 && CliUtilities.ParseOutputFormat(parseResult.GetValue(_outputOption)) == OutputFormat.Json;
             var tokenSet = grantType switch

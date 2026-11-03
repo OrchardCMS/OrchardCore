@@ -46,10 +46,6 @@ internal sealed partial class CliApplication
         wait.Arguments.Add(waitId);
         wait.SetAction(async (parseResult, cancellationToken) =>
         {
-            if (!_credentialStore.SupportsPersistentHumanTokens)
-            {
-                throw new CliException("Credential storage is not available on this platform.");
-            }
             var store = new DeviceLoginSessionStore(_paths);
             var id = parseResult.GetValue(waitId)!;
             using var lease = store.Acquire(id);
