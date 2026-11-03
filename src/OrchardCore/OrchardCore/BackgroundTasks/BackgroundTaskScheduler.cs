@@ -5,18 +5,13 @@ namespace OrchardCore.BackgroundTasks;
 
 public sealed class BackgroundTaskScheduler
 {
-    /// <summary>
-    /// The default number of completed runs kept in <see cref="BackgroundTaskState.RecentRuns"/>.
-    /// </summary>
-    public const int DefaultMaxRecentRuns = 10;
-
     private readonly IClock _clock;
     private readonly int _maxRecentRuns;
     private readonly Lock _lock = new();
     private BackgroundTaskTrigger _trigger;
 
     public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
-        : this(tenant, name, referenceTime, clock, DefaultMaxRecentRuns)
+        : this(tenant, name, referenceTime, clock, BackgroundServiceOptions.DefaultMaxRecentRuns)
     {
     }
 

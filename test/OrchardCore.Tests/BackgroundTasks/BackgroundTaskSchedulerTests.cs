@@ -1,4 +1,5 @@
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Tests.BackgroundTasks;
 
@@ -353,7 +354,7 @@ public class BackgroundTaskSchedulerTests
         FakeClock clock,
         string schedule,
         bool enable = true,
-        int maxRecentRuns = BackgroundTaskScheduler.DefaultMaxRecentRuns,
+        int maxRecentRuns = BackgroundServiceOptions.DefaultMaxRecentRuns,
         DateTime? referenceTime = null)
     {
         return new BackgroundTaskScheduler(Tenant, TaskName, referenceTime ?? _referenceTime, clock, maxRecentRuns)

@@ -3,6 +3,11 @@ namespace OrchardCore.Modules;
 public class BackgroundServiceOptions
 {
     /// <summary>
+    /// The default value of <see cref="MaxRecentRuns" />.
+    /// </summary>
+    public const int DefaultMaxRecentRuns = 10;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the shell should be warmed up.
     /// </summary>
     public bool ShellWarmup { get; set; }
@@ -20,5 +25,5 @@ public class BackgroundServiceOptions
     /// <summary>
     /// Gets or sets the number of completed runs kept in memory for each background task, to be shown with its execution state.
     /// </summary>
-    public int MaxRecentRuns { get; set; } = 10;
+    public int MaxRecentRuns { get; set; } = DefaultMaxRecentRuns;
 }
