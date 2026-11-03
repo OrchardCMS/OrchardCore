@@ -1,11 +1,17 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Admin;
 using OrchardCore.Data.Documents;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Manifest;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -13,8 +19,11 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
+using OrchardCore.Navigation;
+using OrchardCore.Templates.Controllers;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
+using OrchardCore.Templates.ViewModels;
 using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Templates;
@@ -387,6 +396,227 @@ public sealed class SourceTemplatesTests : IDisposable
         Assert.Equal([FeatureTemplateSource.AllFeaturesScope, "Base.Module", "Dependent.Module"], scopes);
     }
 
+    [Fact]
+    public async Task IndexBulkActionPOST_Reset_OnlyResetsClonesOfTheListedTemplates()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Edited.liquid", "source");
+        AddFile("SiteTheme", "Views/ByHand.liquid", "source");
+        AddFile("SiteTheme", "Views/FromOtherTheme.liquid", "source");
+        AddFile("SiteTheme", "Views/NotSelected.liquid", "source");
+
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+
+        foreach (var entry in await service.GetEntriesAsync(source, adminTemplates: false, scope: null))
+        {
+            if (entry.Template.Name is "Edited" or "NotSelected")
+            {
+                Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+            }
+        }
+
+        _templates.Templates["Edited"].Content = "edited";
+        _templates.Templates["NotSelected"].Content = "edited";
+        _templates.Templates["ByHand"] = new Template { Content = "by hand" };
+        _templates.Templates["FromOtherTheme"] = new Template { Content = "other" };
+        _overrides.Overrides["FromOtherTheme"] = new TemplateOverride { ExtensionId = "OtherTheme", RelativePath = "Views/FromOtherTheme.liquid", Hash = SourceTemplatesService.ComputeHash("other") };
+
+        await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Reset },
+            ["Edited", "ByHand", "FromOtherTheme"]);
+
+        Assert.Equal("source", _templates.Templates["Edited"].Content);
+        Assert.Equal("by hand", _templates.Templates["ByHand"].Content);
+        Assert.Equal("other", _templates.Templates["FromOtherTheme"].Content);
+        Assert.Equal("edited", _templates.Templates["NotSelected"].Content);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_ResetInInactiveTheme_ChangesNothing()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("OtherTheme");
+        AddFile("OtherTheme", "Views/Layout.liquid", "source");
+        _templates.Templates["Layout"] = new Template { Content = "edited" };
+        _overrides.Overrides["Layout"] = new TemplateOverride { ExtensionId = "OtherTheme", RelativePath = "Views/Layout.liquid", Hash = SourceTemplatesService.ComputeHash("source") };
+
+        await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Reset, Scope = "OtherTheme" },
+            ["Layout"]);
+
+        Assert.Equal("edited", _templates.Templates["Layout"].Content);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_Clone_OnlyClonesLiquidTemplatesWithoutOverride()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Liquid.liquid", "source");
+        AddFile("SiteTheme", "Views/Razor.cshtml", "source");
+        AddFile("SiteTheme", "Views/ByHand.liquid", "source");
+        AddFile("SiteTheme", "Views/NotSelected.liquid", "source");
+        _templates.Templates["ByHand"] = new Template { Content = "by hand" };
+
+        await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Clone },
+            ["Liquid", "Razor", "ByHand"]);
+
+        Assert.Equal(["ByHand", "Liquid"], _templates.Templates.Keys.Order());
+        Assert.Equal("by hand", _templates.Templates["ByHand"].Content);
+        Assert.Equal(["Liquid"], _overrides.Overrides.Keys);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_Remove_DeletesSelectedOverridesAndForgetsTheirClones()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Cloned.liquid", "source");
+        AddFile("SiteTheme", "Views/ByHand.liquid", "source");
+        AddFile("SiteTheme", "Views/NotSelected.liquid", "source");
+
+        var controller = CreateController();
+
+        await controller.IndexBulkActionPOST(ThemeTemplateSource.SourceName, new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Clone }, ["Cloned", "NotSelected"]);
+        _templates.Templates["ByHand"] = new Template { Content = "by hand" };
+
+        await controller.IndexBulkActionPOST(ThemeTemplateSource.SourceName, new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Remove }, ["Cloned", "ByHand"]);
+
+        Assert.Equal(["NotSelected"], _templates.Templates.Keys);
+        Assert.Equal(["NotSelected"], _overrides.Overrides.Keys);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_FilteredList_RedirectsToTheSameList()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        var result = Assert.IsType<RedirectToActionResult>(await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions
+            {
+                BulkAction = SourceTemplatesBulkAction.Clone,
+                Scope = "SiteTheme",
+                Search = "Lay",
+                Filter = SourceTemplatesFilter.NotOverridden,
+                Area = SourceTemplatesArea.All,
+                Language = SourceTemplatesLanguage.Liquid,
+            },
+            ["Layout"]));
+
+        Assert.Equal("SiteTheme", result.RouteValues["Options.Scope"]);
+        Assert.Equal("Lay", result.RouteValues["Options.Search"]);
+        Assert.Equal(SourceTemplatesFilter.NotOverridden, result.RouteValues["Options.Filter"]);
+        Assert.Equal(SourceTemplatesArea.All, result.RouteValues["Options.Area"]);
+        Assert.Equal(SourceTemplatesLanguage.Liquid, result.RouteValues["Options.Language"]);
+    }
+
+    [Fact]
+    public async Task Reset_TemplateWrittenByHand_ReplacesItAndMonitorsIt()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+        _templates.Templates["Layout"] = new Template { Content = "by hand", Description = "Mine" };
+
+        await CreateController().Reset(ThemeTemplateSource.SourceName, "Layout");
+
+        Assert.Equal("source", _templates.Templates["Layout"].Content);
+        Assert.Equal("Mine", _templates.Templates["Layout"].Description);
+        Assert.Contains("Layout", _overrides.Overrides.Keys);
+    }
+
+    [Fact]
+    public async Task Clone_ReturnUrlOfAnotherSite_RedirectsToTheList()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        var controller = CreateController();
+        controller.Url = Mock.Of<IUrlHelper>(helper => helper.IsLocalUrl("https://example.com/") == false);
+
+        var result = await controller.Clone(ThemeTemplateSource.SourceName, "Layout", returnUrl: "https://example.com/");
+
+        Assert.Equal(nameof(TemplateSourceController.Index), Assert.IsType<RedirectToActionResult>(result).ActionName);
+    }
+
+    [Fact]
+    public async Task Delete_NoLocalTemplate_ReturnsNotFound()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        Assert.IsType<NotFoundResult>(await CreateController().Delete(ThemeTemplateSource.SourceName, "Layout"));
+    }
+
+    [Fact]
+    public async Task CloneAs_NameIsNotAnAlternate_ReturnsNotFoundWithoutCreatingIt()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        Assert.IsType<NotFoundResult>(await CreateController().CloneAs(ThemeTemplateSource.SourceName, "Layout", "AnyTemplate"));
+        Assert.Empty(_templates.Templates);
+    }
+
+    [Fact]
+    public async Task Actions_NotAuthorized_ForbidWithoutChangingTemplates()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+        _templates.Templates["Layout"] = new Template { Content = "by hand" };
+
+        var controller = CreateController(authorized: false);
+        var source = ThemeTemplateSource.SourceName;
+
+        Assert.IsType<ForbidResult>(await controller.Index(source, new SourceTemplatesOptions(), new PagerParameters()));
+        Assert.IsType<ForbidResult>(await controller.Display(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.Alternates(source, "Layout", new PagerParameters()));
+        Assert.IsType<ForbidResult>(await controller.Clone(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.CloneAs(source, "Layout", "Layout__Other"));
+        Assert.IsType<ForbidResult>(await controller.Reset(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.Delete(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.IndexBulkActionPOST(source, new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Remove }, ["Layout"]));
+
+        Assert.Equal("by hand", _templates.Templates["Layout"].Content);
+    }
+
+    private TemplateSourceController CreateController(bool authorized = true)
+    {
+        var authorizationService = new Mock<IAuthorizationService>();
+        authorizationService
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(authorized ? AuthorizationResult.Success() : AuthorizationResult.Failed());
+
+        var localizer = new Mock<IStringLocalizer<TemplateSourceController>>();
+        localizer.Setup(localizer => localizer[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
+
+        var htmlLocalizer = new Mock<IHtmlLocalizer<TemplateSourceController>>();
+        htmlLocalizer.Setup(localizer => localizer[It.IsAny<string>(), It.IsAny<object[]>()]).Returns((string name, object[] _) => new LocalizedHtmlString(name, name));
+
+        return new TemplateSourceController(
+            authorizationService.Object,
+            CreateService(),
+            new TemplateAlternatesService([]),
+            CreateShapeTemplateFiles(),
+            CreateActiveThemes(),
+            Mock.Of<IShapeFactory>(),
+            Options.Create(new PagerOptions()),
+            Mock.Of<INotifier>(),
+            localizer.Object,
+            htmlLocalizer.Object)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity("Test")) },
+            },
+            Url = Mock.Of<IUrlHelper>(),
+        };
+    }
+
     private void Bind(string shapeType, string extensionId, string relativePath)
         => _bindings[shapeType] = CreateBinding(shapeType, extensionId, relativePath);
 
@@ -485,7 +715,7 @@ public sealed class SourceTemplatesTests : IDisposable
         return new ShapeTemplateFiles(shapeTableManager.Object, CreateExtensionManager(), fileProviderAccessor.Object, [liquid.Object, razor.Object]);
     }
 
-    private ThemeTemplateSource CreateSource()
+    private ActiveThemes CreateActiveThemes()
     {
         var siteThemeService = new Mock<ISiteThemeService>();
         siteThemeService.Setup(service => service.GetSiteThemeNameAsync()).ReturnsAsync(() => _siteThemeId);
@@ -493,13 +723,18 @@ public sealed class SourceTemplatesTests : IDisposable
         var adminThemeService = new Mock<IAdminThemeService>();
         adminThemeService.Setup(service => service.GetAdminThemeNameAsync()).ReturnsAsync("AdminTheme");
 
+        return new ActiveThemes([siteThemeService.Object], [adminThemeService.Object]);
+    }
+
+    private ThemeTemplateSource CreateSource()
+    {
         var localizer = new Mock<IStringLocalizer<ThemeTemplateSource>>();
         localizer.Setup(localizer => localizer[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
 
         return new ThemeTemplateSource(
             CreateShapeTemplateFiles(),
             CreateExtensionManager(),
-            new ActiveThemes([siteThemeService.Object], [adminThemeService.Object]),
+            CreateActiveThemes(),
             localizer.Object);
     }
 
