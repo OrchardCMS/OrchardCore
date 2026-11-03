@@ -28,8 +28,18 @@ Every operation requires an `Api` scheme bearer token, **Access remote managemen
 | `POST` | `/api/indexes/lucene` | `ApiCreateLuceneIndexDefinition` | `indexes lucene create` | `indexes-lucene` |
 | `PUT` | `/api/indexes/lucene/by-id?id={id}` | `ApiUpdateLuceneIndexDefinition` | `indexes lucene update <id>` | `indexes-lucene` |
 | `DELETE` | `/api/indexes/lucene/by-id?id={id}` | `ApiDeleteLuceneIndexDefinition` | `indexes lucene delete <id> --force` | `indexes-lucene` |
+| `GET` | `/api/indexes/elasticsearch/analyzers` | `ApiListElasticsearchIndexAnalyzers` | `indexes elasticsearch analyzers` | `indexes-elasticsearch` |
+| `GET` | `/api/indexes/elasticsearch/by-id?id={id}` | `ApiGetElasticsearchIndexDefinition` | `indexes elasticsearch show <id>` | `indexes-elasticsearch` |
+| `POST` | `/api/indexes/elasticsearch` | `ApiCreateElasticsearchIndexDefinition` | `indexes elasticsearch create` | `indexes-elasticsearch` |
+| `PUT` | `/api/indexes/elasticsearch/by-id?id={id}` | `ApiUpdateElasticsearchIndexDefinition` | `indexes elasticsearch update <id>` | `indexes-elasticsearch` |
+| `DELETE` | `/api/indexes/elasticsearch/by-id?id={id}` | `ApiDeleteElasticsearchIndexDefinition` | `indexes elasticsearch delete <id> --force` | `indexes-elasticsearch` |
+| `GET` | `/api/indexes/azure-ai-search/analyzers` | `ApiListAzureAISearchIndexAnalyzers` | `indexes azure-ai-search analyzers` | `indexes-azure-ai-search` |
+| `GET` | `/api/indexes/azure-ai-search/by-id?id={id}` | `ApiGetAzureAISearchIndexDefinition` | `indexes azure-ai-search show <id>` | `indexes-azure-ai-search` |
+| `POST` | `/api/indexes/azure-ai-search` | `ApiCreateAzureAISearchIndexDefinition` | `indexes azure-ai-search create` | `indexes-azure-ai-search` |
+| `PUT` | `/api/indexes/azure-ai-search/by-id?id={id}` | `ApiUpdateAzureAISearchIndexDefinition` | `indexes azure-ai-search update <id>` | `indexes-azure-ai-search` |
+| `DELETE` | `/api/indexes/azure-ai-search/by-id?id={id}` | `ApiDeleteAzureAISearchIndexDefinition` | `indexes azure-ai-search delete <id> --force` | `indexes-azure-ai-search` |
 
-All these operations are MCP tools, except `reset`, `rebuild` and Lucene `delete`, for which Pomi asks a confirmation: they need `AllowConfirmationRequiredTools`. See [MCP server](../../modules/RemoteManagement/README.md#mcp-server).
+All these operations are MCP tools, except `reset`, `rebuild` and the provider `delete` operations, for which Pomi asks a confirmation: they need `AllowConfirmationRequiredTools`. See [MCP server](../../modules/RemoteManagement/README.md#mcp-server).
 
 ## Index profiles
 
@@ -238,6 +248,36 @@ An equivalent definition doesn't write anything. A different `indexName` or an i
 
 Removes the provider index and the profile, and returns `204`. An absent profile also returns `204`, so a repeated delete converges. `503` means the provider rejected the operation or the profile couldn't be removed: inspect the index before retrying.
 
+## Elasticsearch and Azure AI Search content indexes
+
+The `OrchardCore.Elasticsearch` and `OrchardCore.AzureAI` features, with `OrchardCore.Contents`, add the same five operations as Lucene under `/api/indexes/elasticsearch` and `/api/indexes/azure-ai-search`, and the lifecycle operations for their content indexes. They need `AccessRemoteManagement` and `ManageIndexes`.
+
+A definition has these properties. Unknown ones are rejected, so that field mappings, which are computed from the content types, can't be supplied.
+
+| Property | Required | Default | Description |
+| --- | --- | --- | --- |
+| `name` | Yes | | The unique administrative display name, without surrounding whitespace. |
+| `indexName` | Yes | | The provider index name, which the provider validates. It can't change after creation. |
+| `indexLatest` | No | `false` | Whether to index the latest version, including drafts. |
+| `indexedContentTypes` | Yes | | The unique content types of the index, from 1 to 200. |
+| `culture` | No | `any` | The content culture. |
+| `analyzerName` | No | `standard`, `standard.lucene` | One of the analyzers listed by the `analyzers` operation. |
+| `queryAnalyzerName` | No | `standard`, `standard.lucene` | One of the analyzers listed by the `analyzers` operation. |
+| `defaultSearchFields` | No | The full text field | The fields searched by the default query. |
+| `storeSourceData` | No | `true` | Elasticsearch only. Whether to store the source documents. |
+
+```json
+{
+  "name": "Articles",
+  "indexName": "articles",
+  "indexedContentTypes": ["Article"]
+}
+```
+
+A successful creation returns `201 Created` with `id` and `definition`, and repeating it with the same definition returns `200 OK`. A different definition with the same name returns `409`. When the server of the provider is unavailable or rejects the index, the creation returns `503` and the profile isn't kept.
+
+An update doesn't change the remote index: run `rebuild` to apply it. The Elasticsearch default query type and its custom query aren't part of a definition: they are kept on update, and managed from the admin page.
+
 ## Errors
 
 Failures use Problem Details, except invalid definitions, which use a validation problem keyed by property.
@@ -247,5 +287,7 @@ Failures use Problem Details, except invalid definitions, which use a validation
 - [Discovery endpoints](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Indexing/Endpoints/Management/IndexDiscoveryEndpoints.cs)
 - [Lifecycle endpoints](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Indexing/Endpoints/Management/IndexLifecycleEndpoints.cs)
 - [Lucene endpoints](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Lucene/Endpoints/Management/LuceneIndexDefinitionEndpoints.cs)
+- [Elasticsearch endpoints](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Elasticsearch/Endpoints/Management/ElasticsearchIndexDefinitionEndpoints.cs)
+- [Azure AI Search endpoints](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.AzureAI/Endpoints/Management/AzureAISearchIndexDefinitionEndpoints.cs)
 - [Indexing module](../../modules/Indexing/README.md)
 - [Lucene module](../../modules/Lucene/README.md)

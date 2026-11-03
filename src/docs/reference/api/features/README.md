@@ -30,6 +30,7 @@ For a tenant at `https://cms.example.com/acme`, the collection URL is `https://c
 | --- | --- | --- | --- | --- |
 | `GET` | `/api/features` | `ApiListFeatures` | List and filter non-theme features. | `ManageFeatures` |
 | `GET` | `/api/features/{featureId}` | `ApiGetFeature` | Get one feature. | `ManageFeatures` |
+| `GET` | `/api/features/{featureId}/preview?action={enable\|disable}` | `ApiPreviewFeatureChange` | Preview what enabling or disabling a feature would change. | `ManageFeatures` |
 | `POST` | `/api/features/{featureId}:enable` | `ApiEnableFeature` | Enable a feature and its dependencies. | `ManageFeatures` |
 | `POST` | `/api/features/{featureId}:disable` | `ApiDisableFeature` | Disable a feature after dependency checks. | `ManageFeatures` |
 
@@ -181,6 +182,62 @@ Accept: application/json
 | `401 Unauthorized` | The bearer token is absent or rejected. |
 | `403 Forbidden` | A required permission is missing. |
 | `404 Not Found` | No non-theme feature has the supplied ID. |
+
+## Preview a feature change
+
+Returns what enabling or disabling a feature would change, following the dependency resolution of the shell feature manager. A preview changes nothing, which also makes it a read-only MCP tool, `features_preview`.
+
+```http
+GET /api/features/OrchardCore.Facebook.Login/preview?action=enable&force=true
+Authorization: Bearer <access-token>
+```
+
+```bash
+pomi features preview OrchardCore.Facebook.Login --action enable --api-force true
+```
+
+### Parameters
+
+| Parameter | Location | Required | Description |
+| --- | --- | --- | --- |
+| `featureId` | Path | Yes | The feature identifier. |
+| `action` | Query | Yes | `enable` or `disable`. |
+| `force` | Query | No | Whether the action would be sent with `force`. Defaults to `false`. |
+
+### `200 OK`
+
+```json
+{
+  "featureId": "OrchardCore.Facebook.Login",
+  "action": "enable",
+  "isEnabled": false,
+  "isAllowed": true,
+  "requiresForce": true,
+  "blockedReason": null,
+  "featuresToEnable": ["OrchardCore.Facebook", "OrchardCore.Users.ExternalAuthentication", "OrchardCore.Facebook.Login"],
+  "featuresToDisable": [],
+  "dependencyOnlyFeaturesToDisable": []
+}
+```
+
+| Property | Description |
+| --- | --- |
+| `isAllowed` | Whether the action would apply with the supplied `force` value. |
+| `requiresForce` | Whether other features have to change along with this one, in which case the action changes nothing without `force`. |
+| `blockedReason` | Why the action can't apply whatever the value of `force`: the feature is always enabled, or only enabled as a dependency of another feature. |
+| `featuresToEnable` | The features that would be enabled, dependencies first. They are listed even when `force` is missing. |
+| `featuresToDisable` | The features that would be disabled, dependents first. They are listed even when `force` is missing. |
+| `dependencyOnlyFeaturesToDisable` | The features enabled by dependency only that no remaining feature needs anymore. |
+
+### Responses
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` | The preview. |
+| `400 Bad Request` | The action is neither `enable` nor `disable`. |
+| `401 Unauthorized` | The request has no API credentials. |
+| `403 Forbidden` | The caller can't manage features. |
+| `404 Not Found` | The feature doesn't exist or the active feature profile doesn't allow it. |
 
 ## Enable a feature
 
@@ -363,9 +420,10 @@ Authentication-policy responses are produced by the configured `Api` authenticat
 
 ## Endpoint coverage and sources
 
-This page covers all 4 routes mapped by:
+This page covers all 5 routes mapped by:
 
 - `src/OrchardCore.Modules/OrchardCore.Features/Endpoints/Management/FeatureManagementEndpoints.cs`
+- `src/OrchardCore.Modules/OrchardCore.Features/Endpoints/Management/FeaturePreviewEndpoints.cs`
 
 Feature registration, permissions, behavior, and metadata were cross-checked against:
 

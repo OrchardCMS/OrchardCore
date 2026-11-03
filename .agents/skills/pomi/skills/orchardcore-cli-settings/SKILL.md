@@ -159,6 +159,14 @@ pomi settings show
 
 ## Typed module settings sections
 
+Sections also cover `admin`, `recaptcha`, `reverse-proxy`, `google-analytics`,
+`google-tag-manager`, `google-authentication`, `github-authentication`,
+`microsoft-account`, `microsoft-entra-id`, `twitter`, `twitter-signin`, `facebook`,
+`facebook-login`, `facebook-pixel`, `sms` and `sms-twilio`, once their feature is
+enabled. Their secrets are write-only: put them in a body file rather than on the
+command line, read `has<Name>` back, and use `clear<Name>` to remove one. MCP
+refuses updates to a section with a secret.
+
 Discover the enabled sections available to this identity, then read the selected
 section's values, ownership and actual update schema:
 

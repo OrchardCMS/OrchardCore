@@ -20,10 +20,15 @@ because commands and schemas are dynamic.
 ```bash
 pomi features list --search Media --skip 0 --take 200
 pomi features show OrchardCore.Media
+pomi features preview OrchardCore.Media --action disable
 pomi features enable OrchardCore.Media
 pomi features disable OrchardCore.Media --force
 pomi api refresh --force
 ```
+
+`features preview` changes nothing: it lists the features an `enable` or a
+`disable` would change, and whether it needs `--api-force true`. Run it before a
+change whose dependencies you don't know.
 
 `--force` skips the CLI confirmation only. The feature API's separate
 `--api-force true` option includes missing dependencies (enable) or enabled
@@ -117,6 +122,10 @@ pomi indexes lucene create --body-file index.json
 pomi indexes lucene show INDEX_ID
 pomi indexes lucene update INDEX_ID --body-file index.json
 pomi indexes lucene delete INDEX_ID --force
+pomi indexes elasticsearch analyzers
+pomi indexes elasticsearch create --body-file index.json
+pomi indexes azure-ai-search analyzers
+pomi indexes azure-ai-search create --body-file index.json
 ```
 
 Minimal `index.json`, after defining the `Article` content type:

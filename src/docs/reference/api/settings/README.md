@@ -330,6 +330,45 @@ settings reuse the admin editor's validation. Supplied maps replace the full map
 omitted properties remain unchanged. Configuration-owned sections are read-only.
 See the [security header contract and example](../../modules/Security/README.md#remote-management).
 
+### Provider sections
+
+These sections expose the settings of an admin page, with the permission of that page and the same validation: a required property is required on every update, including when it isn't supplied. A section appears when its feature is enabled.
+
+| Section | Feature | Permission | Properties |
+| --- | --- | --- | --- |
+| `admin` | `OrchardCore.Admin` | `ManageAdminSettings` | `displayThemeToggler`, `displayMenuFilter`, `displayQuickNavigation`, `displayNewMenu`, `displayTitlesInTopbar`, `showBreadcrumb`, `menuBehavior`, `listLayout`, `actionsLayout`, `allowUserListLayoutSelection` |
+| `facebook` | `OrchardCore.Facebook` | `ManageFacebookApp` | `appId` (required), `appSecret`, `sdkJs` (required), `fbInit`, `fbInitParams`, `version` |
+| `facebook-login` | `OrchardCore.Facebook.Login` | `ManageFacebookApp` | `callbackPath`, `saveTokens` |
+| `facebook-pixel` | `OrchardCore.Facebook.Pixel` | `ManageFacebookApp` | `pixelId`, `conversionsApiAccessToken`, `conversionsApiTestEventCode` |
+| `github-authentication` | `OrchardCore.GitHub.Authentication` | `ManageGitHubAuthentication` | `clientId` (required), `clientSecret`, `callbackPath`, `saveTokens` |
+| `google-analytics` | `OrchardCore.Google.Analytics` | `ManageGoogleAnalytics` | `trackingId` (required) |
+| `google-authentication` | `OrchardCore.Google.GoogleAuthentication` | `ManageGoogleAuthentication` | `clientId` (required), `clientSecret`, `callbackPath`, `saveTokens` |
+| `google-tag-manager` | `OrchardCore.Google.TagManager` | `ManageGoogleTagManager` | `containerId` (required) |
+| `microsoft-account` | `OrchardCore.Microsoft.Authentication.MicrosoftAccount` | `ManageMicrosoftAuthentication` | `appId` (required), `appSecret`, `callbackPath`, `saveTokens` |
+| `microsoft-entra-id` | `OrchardCore.Microsoft.Authentication.AzureAD` | `ManageMicrosoftAuthentication` | `displayName`, `appId`, `tenantId` (required), `callbackPath`, `saveTokens` |
+| `recaptcha` | `OrchardCore.ReCaptcha` | `ManageReCaptchaSettings` | `siteKey`, `secretKey` |
+| `reverse-proxy` | `OrchardCore.ReverseProxy` | `ManageReverseProxySettings` | `enableXForwardedFor`, `enableXForwardedHost`, `enableXForwardedProto` |
+| `sms` | `OrchardCore.Sms` | `ManageSmsSettings` | `defaultProvider`, the name of an enabled provider or null |
+| `sms-twilio` | `OrchardCore.Sms` | `ManageSmsSettings` | `isEnabled`, `phoneNumber`, `accountSid`, `authToken` |
+| `twitter` | `OrchardCore.Twitter` | `ManageTwitter` | `consumerKey` (required), `consumerSecret`, `accessToken` (required), `accessTokenSecret` |
+| `twitter-signin` | `OrchardCore.Twitter.Signin` | `ManageTwitterSignin` | `callbackPath`, `saveTokens` |
+
+Each section's `schema` operation gives the types and formats. The rules below apply to all of them.
+
+- **Secrets.** `appSecret`, `clientSecret`, `secretKey`, `conversionsApiAccessToken`, `authToken`, `consumerSecret`, `accessToken` and `accessTokenSecret` are `writeOnly`: they are never returned. The readback has `has<Name>` instead, for example `hasClientSecret`, and `clear<Name>` removes the value. Setting and clearing a secret in the same request returns 400.
+- **Secret references.** A secret of the Secrets module is referenced from the admin page. The readback gives its name in `<name>SecretName`, and a new value replaces the reference.
+- **HTTPS and MCP.** The sections with a secret, and the authentication sections, require HTTPS. MCP refuses to update a section with a secret, so these updates go through the HTTP API or Pomi. `reverse-proxy` accepts plain HTTP, since a proxy terminating TLS only looks like HTTPS once its forwarded headers are enabled.
+- **Reloads.** The authentication sections, `facebook` and `reverse-proxy` reload the tenant when they change. A login provider without its credentials stays unavailable, and logs a warning.
+- **Configuration.** `reverse-proxy` is read-only, with `source: configuration`, when `ConfigureReverseProxySettings()` overrides it. Its known networks and proxies aren't managed by this section, as they aren't by the admin page.
+- **Twilio.** Enabling the provider requires its phone number, account and token, and makes it the default provider when there is none. Disabling it clears it as the default provider. While it is disabled, an update can only enable it or clear the token.
+- **Empty values.** An empty string is stored as null, as in the admin pages, except for `fbInitParams`, whose current value is kept.
+
+```bash
+pomi settings sections schema google-authentication
+pomi settings sections update google-authentication --body-file google.json
+pomi settings sections show google-authentication
+```
+
 ### Layer zones section
 
 The `layer-zones` section is contributed by `OrchardCore.Layers`. All four section
