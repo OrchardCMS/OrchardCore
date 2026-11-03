@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.GraphQL\OrchardCore.ContentManagement.GraphQL.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Deployment.Core\OrchardCore.Deployment.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />

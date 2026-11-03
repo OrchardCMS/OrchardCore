@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Deployment.Core\OrchardCore.Deployment.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement.Liquid\OrchardCore.DisplayManagement.Liquid.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />

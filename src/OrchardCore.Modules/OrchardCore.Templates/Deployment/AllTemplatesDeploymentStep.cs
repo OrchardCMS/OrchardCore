@@ -18,4 +18,10 @@ public class AllTemplatesDeploymentStep : DeploymentStep
     public override LocalizationSource Title => TemplatesLocalizationSources.AllTemplates;
 
     public bool ExportAsFiles { get; set; }
+
+    /// <summary>
+    /// Gets or sets the exact names of the templates to export. All of them are exported when it is <see langword="null"/> or empty.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string[] Names { get; set; }
 }

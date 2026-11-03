@@ -75,3 +75,12 @@ public sealed class Startup : StartupBase
         routes.AddLayerWidgetEndpoints();
     }
 }
+
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ExportStartup : StartupBase
+{
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddLayerExportEndpoints();
+    }
+}

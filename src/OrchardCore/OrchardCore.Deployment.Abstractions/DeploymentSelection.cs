@@ -8,4 +8,7 @@ public static class DeploymentSelection
 
     /// <summary>Clears selections when all entries are included; otherwise preserves order and duplicates.</summary>
     public static string[] Normalize(bool includeAll, string[] names) => includeAll ? [] : names ?? [];
+
+    /// <summary>Checks whether an entry passes an optional filter of exact names; no names means no filter.</summary>
+    public static bool IsSelected(string[] names, string name) => names is not { Length: > 0 } || names.Contains(name, StringComparer.Ordinal);
 }

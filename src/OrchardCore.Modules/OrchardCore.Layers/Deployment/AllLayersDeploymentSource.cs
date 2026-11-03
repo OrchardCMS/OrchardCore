@@ -33,8 +33,14 @@ public sealed class AllLayersDeploymentSource
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Layers",
-            ["Layers"] = JArray.FromObject(layers.Layers, _jsonSerializerOptions),
+            ["Layers"] = JArray.FromObject(layers.Layers.Where(layer => DeploymentSelection.IsSelected(step.Names, layer.Name)).ToArray(), _jsonSerializerOptions),
         });
+
+        // The settings are shared by all the layers, so they aren't part of a selection.
+        if (step.Names is { Length: > 0 })
+        {
+            return;
+        }
 
         var layerSettings = await _siteService.GetSettingsAsync<LayerSettings>();
 

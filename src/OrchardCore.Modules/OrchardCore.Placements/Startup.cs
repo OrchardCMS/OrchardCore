@@ -72,4 +72,9 @@ public class DeploymentStartup : StartupBase
         services.AddDeployment<PlacementsDeploymentSource, PlacementsDeploymentStep, PlacementsDeploymentStepDriver>();
         services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<PlacementsDeploymentStep>(nameof(PlacementsDeploymentStep)));
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddPlacementExportEndpoints();
+    }
 }

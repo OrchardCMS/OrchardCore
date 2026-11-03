@@ -26,7 +26,7 @@ public sealed class PlacementsDeploymentSource
         var placementObjects = new JsonObject();
         var placements = await _placementsManager.ListShapePlacementsAsync();
 
-        foreach (var placement in placements)
+        foreach (var placement in placements.Where(placement => DeploymentSelection.IsSelected(step.Names, placement.Key)))
         {
             placementObjects[placement.Key] = JArray.FromObject(placement.Value, _jsonSerializerOptions);
         }

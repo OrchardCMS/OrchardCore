@@ -180,7 +180,7 @@ internal static class PlacementManagementEndpoints
     private static Task<bool> AuthorizedAsync(HttpContext context, IAuthorizationService authorization) =>
         authorization.AuthorizeAsync(context.User, Permissions.ManagePlacements);
 
-    private static async Task<PlacementDefinition> FindAsync(PlacementsManager manager, string shapeType)
+    internal static async Task<PlacementDefinition> FindAsync(PlacementsManager manager, string shapeType)
     {
         var placements = await manager.ListShapePlacementsAsync();
         var entry = placements.FirstOrDefault(entry => string.Equals(entry.Key, shapeType, StringComparison.OrdinalIgnoreCase));

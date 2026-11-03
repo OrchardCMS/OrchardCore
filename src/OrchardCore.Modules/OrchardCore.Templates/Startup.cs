@@ -58,6 +58,15 @@ public sealed class Startup : StartupBase
     }
 }
 
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ExportStartup : StartupBase
+{
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddTemplateExportEndpoints();
+    }
+}
+
 [Feature("OrchardCore.AdminTemplates")]
 public sealed class AdminTemplatesStartup : StartupBase
 {

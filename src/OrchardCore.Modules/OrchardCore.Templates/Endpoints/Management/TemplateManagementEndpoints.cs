@@ -280,7 +280,7 @@ internal static class TemplateManagementEndpoints
         return null;
     }
 
-    private static bool TryGetDefinition(TemplatesDocument document, string name, out TemplateDefinitionDto definition)
+    internal static bool TryGetDefinition(TemplatesDocument document, string name, out TemplateDefinitionDto definition)
     {
         var entry = document.Templates.FirstOrDefault(entry =>
             string.Equals(entry.Key, name, StringComparison.OrdinalIgnoreCase));

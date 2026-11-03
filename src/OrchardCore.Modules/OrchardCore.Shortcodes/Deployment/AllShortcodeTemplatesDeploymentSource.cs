@@ -19,7 +19,7 @@ public sealed class AllShortcodeTemplatesDeploymentSource
         var templateObjects = new JsonObject();
         var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
 
-        foreach (var template in templates.ShortcodeTemplates)
+        foreach (var template in templates.ShortcodeTemplates.Where(template => DeploymentSelection.IsSelected(step.Names, template.Key)))
         {
             templateObjects[template.Key] = JObject.FromObject(template.Value);
         }

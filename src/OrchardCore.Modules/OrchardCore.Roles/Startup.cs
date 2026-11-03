@@ -117,6 +117,11 @@ public sealed class DeploymentStartup : StartupBase
         services.AddDeployment<AllRolesDeploymentSource, AllRolesDeploymentStep, AllRolesDeploymentStepDriver>();
         services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllRolesDeploymentStep>(nameof(AllRolesDeploymentStep)));
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddRoleExportEndpoints();
+    }
 }
 
 [Feature("OrchardCore.Roles.Core")]

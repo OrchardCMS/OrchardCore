@@ -119,4 +119,9 @@ public sealed class ShortcodeTemplatesDeploymentStartup : StartupBase
         services.AddDeployment<AllShortcodeTemplatesDeploymentSource, AllShortcodeTemplatesDeploymentStep, AllShortcodeTemplatesDeploymentStepDriver>();
         services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllShortcodeTemplatesDeploymentStep>(nameof(AllShortcodeTemplatesDeploymentStep)));
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddShortcodeTemplateExportEndpoints();
+    }
 }

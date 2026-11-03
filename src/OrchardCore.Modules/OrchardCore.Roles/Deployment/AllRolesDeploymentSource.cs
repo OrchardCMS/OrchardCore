@@ -29,7 +29,7 @@ public sealed class AllRolesDeploymentSource
         var permissions = new JsonArray();
         var tasks = new List<Task>();
 
-        foreach (var role in allRoles)
+        foreach (var role in allRoles.Where(role => DeploymentSelection.IsSelected(step.Names, role.RoleName)))
         {
             var currentRole = await _roleManager.FindByNameAsync(role.RoleName);
 
