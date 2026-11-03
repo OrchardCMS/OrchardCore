@@ -202,6 +202,40 @@ public class McpToolTests
     }
 
     [Theory]
+    [InlineData("""{"writeOnly":true}""", true)]
+    [InlineData("""{"type":"array","items":{"type":"object","properties":{"key":{"writeOnly":true}}}}""", true)]
+    [InlineData("""{"writeOnly":false}""", false)]
+    [InlineData("""{"type":"string"}""", false)]
+    public void CreateTools_WriteOnlyBodyProperty_IsExcluded(string property, bool excluded)
+    {
+        var document = Document();
+        document["components"]["schemas"]["Widget"]["properties"]["secret"] = JsonNode.Parse(property);
+
+        var tools = McpToolCatalog.CreateTools([CreateEndpoint()], document);
+
+        Assert.Equal(excluded ? 0 : 1, tools.Count);
+    }
+
+    [Fact]
+    public async Task InvokeEndpointAsync_AnyTool_MarksTheDispatchedRequest()
+    {
+        await using var services = CreateServices();
+        var parent = CreateContext(services);
+        var marked = false;
+        var endpoint = CreateEndpoint(handler: context =>
+        {
+            marked = context.IsMcpToolCall();
+            return Task.CompletedTask;
+        });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
+
+        await InvokeAsync(tool, parent, """{"path":{"id":"a"},"body":{}}""");
+
+        Assert.True(marked);
+        Assert.False(parent.IsMcpToolCall());
+    }
+
+    [Theory]
     [InlineData("create", false, false)]
     [InlineData("create", true, true)]
     [InlineData("update", false, true)]

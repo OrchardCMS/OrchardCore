@@ -150,6 +150,12 @@ internal sealed class McpToolCatalog
                     schema["$defs"] = definitions;
                 }
 
+                // A write-only value is a secret, whichever way the operation declares it.
+                if (schema.DeclaresWriteOnlyValue())
+                {
+                    break;
+                }
+
                 RewriteReferences(schema);
                 var readOnly = HttpMethods.IsGet(method) || HttpMethods.IsHead(method);
                 tools.Add(new McpToolDefinition

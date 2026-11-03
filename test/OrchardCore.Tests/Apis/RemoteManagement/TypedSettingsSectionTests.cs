@@ -125,6 +125,36 @@ public class TypedSettingsSectionTests
     }
 
     [Theory]
+    [InlineData(true, false, 403)]
+    [InlineData(false, false, 200)]
+    [InlineData(true, true, 200)]
+    public async Task Update_SectionWithSecrets_IsRefusedOverMcpOnly(bool writeOnly, bool http, int expected)
+    {
+        var context = new DefaultHttpContext();
+        if (!http)
+        {
+            context.MarkAsMcpToolCall();
+        }
+
+        var section = new Mock<ISiteSettingsSectionProvider>();
+        section.SetupGet(provider => provider.Descriptor).Returns(new SiteSettingsSectionDescriptor { Name = "mail" });
+        section.SetupGet(provider => provider.ReadPermission).Returns(RemoteManagementPermissions.AccessRemoteManagement);
+        section.SetupGet(provider => provider.UpdatePermission).Returns(RemoteManagementPermissions.AccessRemoteManagement);
+        section.Setup(provider => provider.GetSchema()).Returns(new JsonObject
+        {
+            ["properties"] = new JsonObject { ["password"] = new JsonObject { ["writeOnly"] = writeOnly } },
+        });
+        section.Setup(provider => provider.GetAsync()).ReturnsAsync(new SiteSettingsSectionResponse { Name = "mail" });
+        section.Setup(provider => provider.UpdateAsync(It.IsAny<JsonObject>())).ReturnsAsync(new SiteSettingsSectionUpdateResult());
+
+        var result = await SiteSettingsSectionEndpoints.UpdateAsync(context, Authorize(RemoteManagementPermissions.AccessRemoteManagement),
+            [section.Object], "mail", new JsonObject { ["host"] = "mail.example.com" });
+
+        Assert.Equal(expected, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        section.Verify(provider => provider.UpdateAsync(It.IsAny<JsonObject>()), expected == 200 ? Times.Once : Times.Never);
+    }
+
+    [Theory]
     [InlineData("http", 8443, false)]
     [InlineData("https", 0, false)]
     [InlineData("https", 8443, true)]

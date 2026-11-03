@@ -746,7 +746,7 @@ Requests carrying an `Origin` header must match the tenant URL's scheme and host
 
 Tools are projected from the active tenant's management endpoints and generated
 OpenAPI document. Tool names join the CLI command group and verb with underscores:
-for example, `features_list`, `features_show`, and `features_disable`. After changing
+for example, `features_list`, `features_show`, and `features_enable`. After changing
 enabled features, clients should refresh `tools/list`; stateless servers do not send
 unsolicited tool-list change notifications.
 
@@ -779,8 +779,11 @@ Duplicate tool names are excluded to prevent ambiguous dispatch.
 
 Tool arguments and results reach the model's context and the client's transcript, so
 operations that take or return credentials are excluded too: those with `SecretProperties`
-or `SecretResponse`, such as creating users or rotating client secrets, and those setting
-`ExcludedFromMcp`, such as enabling remote management, which can return a new client secret.
+or `SecretResponse`, such as creating users or rotating client secrets, those setting
+`ExcludedFromMcp`, such as enabling remote management, which can return a new client secret,
+and those whose OpenAPI input schema declares a `writeOnly` value. Settings sections take a
+free-form body, so `settings_sections_update` stays a tool but refuses the sections whose
+schema declares a `writeOnly` value, such as `smtp` and the OpenID sections.
 Use Pomi or the HTTP APIs for these operations and for file transfers.
 
 Write operations other than plain creations are marked as potentially destructive using

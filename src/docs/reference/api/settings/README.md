@@ -251,6 +251,10 @@ Eligible MCP tools are `settings_sections_list`, `settings_sections_show`,
 handlers and preserve module permissions, ownership checks and HTTPS requirements.
 They remain available with the MCP feature enabled and the CLI feature disabled.
 
+`settings_sections_update` refuses a section whose schema declares a `writeOnly` value,
+such as `smtp` and the OpenID sections, with `403`: tool arguments reach the model's
+context and transcript, so secrets are only accepted through Pomi and the HTTP API.
+
 ### HTTPS section
 
 The `https` section is available with `OrchardCore.Https` and requires

@@ -109,6 +109,11 @@ internal static class SiteSettingsSectionEndpoints
         {
             return TypedResults.Problem("This settings section can only be changed over HTTPS.", statusCode: 403);
         }
+        // Tool arguments reach the model's context and transcript, so secrets stay on the HTTP API and Pomi.
+        if (context.IsMcpToolCall() && provider.GetSchema().DeclaresWriteOnlyValue())
+        {
+            return TypedResults.Problem("This settings section accepts secrets, so it can't be changed through MCP. Use the HTTP API or Pomi.", statusCode: 403);
+        }
         if (values is null)
         {
             return TypedResults.Problem("A settings object is required.", statusCode: 400);

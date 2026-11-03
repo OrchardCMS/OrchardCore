@@ -70,6 +70,7 @@ internal sealed class McpToolInvoker
             User = parent.User,
             RequestAborted = cancellationToken,
         };
+        context.MarkAsMcpToolCall();
         context.SetEndpoint(tool.Endpoint);
         context.Request.Method = tool.Method;
         context.Request.Scheme = parent.Request.Scheme;
