@@ -38,6 +38,7 @@ python3 .scripts/remote-management/shortcodes-smoke.py <fixture.json>
 python3 .scripts/remote-management/placements-smoke.py <fixture.json>
 python3 .scripts/remote-management/optimistic-concurrency-smoke.py <fixture.json>
 python3 .scripts/remote-management/delete-contract-smoke.py <fixture.json>
+python3 .scripts/remote-management/elasticsearch-live-smoke.py <fixture.json> [elasticsearch-url]
 ```
 
 `verify-fixture.py` checks discovery, command/operation ID uniqueness, every
@@ -512,6 +513,35 @@ redaction, retries and MCP behavior. It also checks the Elasticsearch and Azure 
 Search definition routes, validation and the 503 of an unavailable provider. No
 search server is involved, so it does not prove that an index gets created. The
 fixture is left with many features enabled: discard it afterward.
+
+### Elasticsearch against a real server
+
+`elasticsearch-live-smoke.py` verifies the Elasticsearch index definitions and
+lifecycle operations against a real server, through HTTP, Pomi and MCP, and asks
+the server directly for every claim about an index. It skips with a message and
+exit code 0 when no URL is given. It only accepts loopback URLs, as it creates and
+removes indexes. Azure AI Search has no local emulator, so it can't be tested this way.
+
+```bash
+docker run -d --name oc-es-smoke -p 127.0.0.1:9200:9200 -e discovery.type=single-node \
+  -e xpack.security.enabled=false -e 'ES_JAVA_OPTS=-Xms512m -Xmx512m' \
+  docker.elastic.co/elasticsearch/elasticsearch:8.19.5
+OrchardCore__Search__Elasticsearch__Url=http://127.0.0.1 \
+  OrchardCore__Search__Elasticsearch__Ports__0=9200 \
+  python3 .scripts/remote-management/start-fixture.py
+python3 .scripts/remote-management/elasticsearch-live-smoke.py <fixture.json> http://127.0.0.1:9200 --container oc-es-smoke
+docker rm -f oc-es-smoke
+```
+
+The server can also be given with `OC_FIXTURE_ELASTICSEARCH_URL`. With `--container`,
+the script stops and restarts that container to check that an outage is reported
+cleanly, without a profile written or lost, and that the index catches up afterward.
+Without it, those checks are skipped. Two more checks depend on how the fixture
+was started: add `OrchardCore__RemoteManagement__Mcp__AllowConfirmationRequiredTools=true`
+to call the MCP reset, rebuild and delete tools, which are otherwise checked to be
+refused, and `OrchardCore__Search__Elasticsearch__Analyzers__custom__type=stop` to
+use a configured analyzer. The section is `Search:Elasticsearch`: the variables
+`OrchardCore__Elasticsearch__*` aren't read, and the fixture then answers `503`.
 
 ### SMTP administration
 

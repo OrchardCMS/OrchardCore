@@ -2,7 +2,7 @@
 """Verify the provider settings sections, the feature preview and the provider index definitions on an HTTPS fixture.
 
 Elasticsearch and Azure AI Search have no server here: this proves the routes, their validation and the 503 of an
-unavailable provider, not that an index is created on a real server.
+unavailable provider, not that an index is created on a real server, which elasticsearch-live-smoke.py does for the first.
 """
 import json
 import os
