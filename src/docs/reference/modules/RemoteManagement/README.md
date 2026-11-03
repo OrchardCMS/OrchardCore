@@ -676,9 +676,11 @@ limited to 100 characters, scopes to 256, and request bodies to 16 KiB.
 Unsupported metadata such as requested roles, client IDs, secrets, or remote
 logo/document URLs is ignored; it is never fetched or granted.
 
-Registration is anonymous but bounded to **10 attempts per minute per tenant
-per application instance**, with no queue. Rate-limited requests return `429`
-with `Retry-After: 60`. Automatic registration stops at **1,000 automatically registered
+Registration is anonymous but bounded to **10 attempts per minute per remote address**,
+and **100 per minute per tenant per application instance**, with no queue. Rate-limited
+requests return `429` with `Retry-After: 60`. Behind a reverse proxy, forward the client
+address with the Reverse Proxy feature, otherwise all callers share the limit of the proxy's
+address. Automatic registration stops at **1,000 automatically registered
 applications** by default; capacity or unconfigured authentication returns `503`. When full,
 registrations older than a day that no user authorized are removed to make room.
 The application count and creation are protected by the configured tenant

@@ -177,20 +177,47 @@ internal sealed class McpRedirectUriException : ValidationException
 
 internal sealed class McpRegistrationCapacityException : Exception;
 
-/// <summary>Bounds anonymous registration attempts per tenant and application instance.</summary>
+/// <summary>
+/// Bounds anonymous registration attempts per remote address, so one caller can't lock out the others,
+/// and with a higher ceiling per tenant and application instance, against callers using many addresses.
+/// </summary>
 public sealed class McpClientRegistrationLimiter : IDisposable
 {
-    private readonly FixedWindowRateLimiter _limiter = new(new FixedWindowRateLimiterOptions
+    private const int AddressPermitLimit = 10;
+    private const int TenantPermitLimit = 100;
+
+    private readonly PartitionedRateLimiter<string> _addressLimiter = PartitionedRateLimiter.Create<string, string>(address =>
+        RateLimitPartition.GetFixedWindowLimiter(address, _ => CreateOptions(AddressPermitLimit)));
+
+    private readonly PartitionedRateLimiter<string> _tenantLimiter = PartitionedRateLimiter.Create<string, string>(_ =>
+        RateLimitPartition.GetFixedWindowLimiter(string.Empty, _ => CreateOptions(TenantPermitLimit)));
+
+    private readonly PartitionedRateLimiter<string> _limiter;
+
+    /// <summary>Initializes the McpClientRegistrationLimiter service.</summary>
+    public McpClientRegistrationLimiter()
     {
-        PermitLimit = 10,
-        Window = TimeSpan.FromMinutes(1),
-        QueueLimit = 0,
-        AutoReplenishment = true,
-    });
+        // The address comes first, so the attempts it rejects don't consume the budget of the tenant.
+        _limiter = PartitionedRateLimiter.CreateChained(_addressLimiter, _tenantLimiter);
+    }
 
     /// <summary>Attempts to acquire a registration permit without queuing.</summary>
-    public RateLimitLease AttemptAcquire() => _limiter.AttemptAcquire();
+    /// <param name="remoteAddress">The remote address of the caller, when known.</param>
+    public RateLimitLease AttemptAcquire(string remoteAddress) => _limiter.AttemptAcquire(remoteAddress ?? "unknown");
 
     /// <inheritdoc />
-    public void Dispose() => _limiter.Dispose();
+    public void Dispose()
+    {
+        // A chained limiter doesn't dispose the limiters it chains.
+        _limiter.Dispose();
+        _addressLimiter.Dispose();
+        _tenantLimiter.Dispose();
+    }
+
+    private static FixedWindowRateLimiterOptions CreateOptions(int permitLimit) => new()
+    {
+        PermitLimit = permitLimit,
+        Window = TimeSpan.FromMinutes(1),
+        QueueLimit = 0,
+    };
 }

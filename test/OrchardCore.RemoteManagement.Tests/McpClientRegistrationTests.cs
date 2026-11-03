@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
@@ -182,6 +183,59 @@ public class McpClientRegistrationTests
         Assert.Equal(429, Assert.IsType<ObjectResult>(await controller.Register(ValidRequest(), TestContext.Current.CancellationToken)).StatusCode);
         Assert.Equal("60", controller.Response.Headers.RetryAfter);
         fixture.Applications.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Registration_OneAddressOverItsLimit_DoesNotLockOutOthers()
+    {
+        var fixture = new Fixture();
+        using var limiter = new McpClientRegistrationLimiter();
+        var attacker = fixture.CreateController(limiter, ready: false);
+        attacker.HttpContext.Connection.RemoteIpAddress = IPAddress.Parse("203.0.113.1");
+        for (var i = 0; i < 10; i++)
+        {
+            Assert.Equal(503, Assert.IsType<ObjectResult>(await attacker.Register(ValidRequest(), TestContext.Current.CancellationToken)).StatusCode);
+        }
+
+        Assert.Equal(429, Assert.IsType<ObjectResult>(await attacker.Register(ValidRequest(), TestContext.Current.CancellationToken)).StatusCode);
+
+        var other = fixture.CreateController(limiter, ready: false);
+        other.HttpContext.Connection.RemoteIpAddress = IPAddress.Parse("203.0.113.2");
+
+        Assert.Equal(503, Assert.IsType<ObjectResult>(await other.Register(ValidRequest(), TestContext.Current.CancellationToken)).StatusCode);
+    }
+
+    [Fact]
+    public void Limiter_ManyAddresses_StopsAtTheTenantCeiling()
+    {
+        using var limiter = new McpClientRegistrationLimiter();
+        var acquired = 0;
+        for (var i = 0; i < 150; i++)
+        {
+            using var lease = limiter.AttemptAcquire("address-" + i);
+            acquired += lease.IsAcquired ? 1 : 0;
+        }
+
+        Assert.Equal(100, acquired);
+    }
+
+    [Fact]
+    public void Limiter_AddressOverItsLimit_DoesNotConsumeTheTenantCeiling()
+    {
+        using var limiter = new McpClientRegistrationLimiter();
+        for (var i = 0; i < 500; i++)
+        {
+            using var lease = limiter.AttemptAcquire("attacker");
+        }
+
+        var acquired = 0;
+        for (var i = 0; i < 90; i++)
+        {
+            using var lease = limiter.AttemptAcquire("address-" + i);
+            acquired += lease.IsAcquired ? 1 : 0;
+        }
+
+        Assert.Equal(90, acquired);
     }
 
     [Theory]

@@ -38,7 +38,7 @@ public sealed class McpClientRegistrationController : Controller
             return NotFound();
         }
 
-        using var permit = _limiter.AttemptAcquire();
+        using var permit = _limiter.AttemptAcquire(HttpContext.Connection.RemoteIpAddress?.ToString());
         if (!permit.IsAcquired)
         {
             Response.Headers.RetryAfter = "60";
