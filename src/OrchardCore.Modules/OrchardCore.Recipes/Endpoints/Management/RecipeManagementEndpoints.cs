@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
@@ -220,7 +221,7 @@ internal static class RecipeManagementEndpoints
         var (started, execution) = await recipeExecutions.TryStartAsync(executionId, recipeId, recipe.Name);
         if (!started)
         {
-            return DescribeExistingExecution(httpContext, execution, recipeId, recipe, localizer);
+            return DescribeExistingExecution(execution, recipeId, recipe, localizer);
         }
 
         try
@@ -285,7 +286,7 @@ internal static class RecipeManagementEndpoints
     }
 
     // Repeating a request reports the outcome of the first one, it never executes the recipe again.
-    private static IResult DescribeExistingExecution(HttpContext httpContext, RecipeExecution execution, string recipeId, RecipeDescriptor recipe, IStringLocalizer localizer)
+    private static IResult DescribeExistingExecution(RecipeExecution execution, string recipeId, RecipeDescriptor recipe, IStringLocalizer localizer)
     {
         if (execution.RecipeId != recipeId)
         {
@@ -309,7 +310,7 @@ internal static class RecipeManagementEndpoints
         };
     }
 
-    private static IResult ExecutionFailed(string executionId, string detail, IStringLocalizer localizer)
+    private static ProblemHttpResult ExecutionFailed(string executionId, string detail, IStringLocalizer localizer)
         => TypedResults.Problem(
             title: localizer["Recipe execution failed."],
             detail: detail,
