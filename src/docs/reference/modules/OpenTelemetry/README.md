@@ -99,7 +99,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Otlp:Endpoint` | The endpoint of the OTLP receiver, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. |
 | `Otlp:Protocol` | `Grpc` or `HttpProtobuf`. Defaults to the `OTEL_EXPORTER_OTLP_PROTOCOL` value, and otherwise to `Grpc`. |
 
-The standard `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_PROTOCOL` and `OTEL_EXPORTER_OTLP_HEADERS` [configuration values](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) are also supported, the latter to pass an API key to a hosted backend, as well as `OTEL_METRIC_EXPORT_INTERVAL`. The `Otlp` section takes precedence over them. `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` take precedence over the values of the section.
+The standard `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_PROTOCOL` and `OTEL_EXPORTER_OTLP_HEADERS` [configuration values](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) are also supported, the latter to pass an API key to a hosted backend, as well as `OTEL_METRIC_EXPORT_INTERVAL` and the `OTEL_BSP_*` and `OTEL_BLRP_*` settings of the batches of traces and logs. The `Otlp` section takes precedence over them. `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` take precedence over the values of the section.
 
 ## Collected telemetry
 

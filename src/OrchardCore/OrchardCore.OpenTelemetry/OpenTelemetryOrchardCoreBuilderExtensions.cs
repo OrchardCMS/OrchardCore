@@ -127,7 +127,15 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         {
             if (CreateOtlpExporterOptions(serviceProvider, OtlpExporterOptionsFactory.Traces, options => options.Tracing.Enabled) is { } exporterOptions)
             {
-                tracing.AddProcessor(new BatchActivityExportProcessor(new OtlpTraceExporter(exporterOptions)));
+                // Reads the standard 'OTEL_BSP_*' environment variables.
+                var batchOptions = new BatchExportActivityProcessorOptions();
+
+                tracing.AddProcessor(new BatchActivityExportProcessor(
+                    new OtlpTraceExporter(exporterOptions),
+                    batchOptions.MaxQueueSize,
+                    batchOptions.ScheduledDelayMilliseconds,
+                    batchOptions.ExporterTimeoutMilliseconds,
+                    batchOptions.MaxExportBatchSize));
             }
         });
 
@@ -149,7 +157,15 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         {
             if (CreateOtlpExporterOptions(serviceProvider, OtlpExporterOptionsFactory.Logs, options => options.Logging.Enabled) is { } exporterOptions)
             {
-                logging.AddProcessor(new BatchLogRecordExportProcessor(new OtlpLogExporter(exporterOptions)));
+                // Reads the standard 'OTEL_BLRP_*' environment variables.
+                var batchOptions = new BatchExportLogRecordProcessorOptions();
+
+                logging.AddProcessor(new BatchLogRecordExportProcessor(
+                    new OtlpLogExporter(exporterOptions),
+                    batchOptions.MaxQueueSize,
+                    batchOptions.ScheduledDelayMilliseconds,
+                    batchOptions.ExporterTimeoutMilliseconds,
+                    batchOptions.MaxExportBatchSize));
             }
         });
 
