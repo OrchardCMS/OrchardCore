@@ -18,21 +18,18 @@ internal static class OtlpExporterOptionsFactory
     /// </summary>
     public static OtlpExporterOptions Create(OrchardCoreOpenTelemetryOptions options, IConfiguration configuration, string signal)
     {
-        var endpoint = options.Otlp.Endpoint;
-        var protocol = options.Otlp.Protocol;
-
-        if (string.IsNullOrWhiteSpace(endpoint))
-        {
-            endpoint = configuration?["OTEL_EXPORTER_OTLP_ENDPOINT"];
-            protocol = configuration?["OTEL_EXPORTER_OTLP_PROTOCOL"] == "http/protobuf"
-                ? OtlpExportProtocol.HttpProtobuf
-                : OtlpExportProtocol.Grpc;
-        }
+        var endpoint = string.IsNullOrWhiteSpace(options.Otlp.Endpoint)
+            ? configuration?["OTEL_EXPORTER_OTLP_ENDPOINT"]
+            : options.Otlp.Endpoint;
 
         if (string.IsNullOrWhiteSpace(endpoint))
         {
             return null;
         }
+
+        var protocol = options.Otlp.Protocol ?? (configuration?["OTEL_EXPORTER_OTLP_PROTOCOL"] == "http/protobuf"
+            ? OtlpExportProtocol.HttpProtobuf
+            : OtlpExportProtocol.Grpc);
 
         // The base endpoint is shared by all signals, each one being exported to its own path over HTTP.
         if (protocol == OtlpExportProtocol.HttpProtobuf)

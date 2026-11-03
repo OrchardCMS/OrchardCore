@@ -98,8 +98,7 @@
                     "Grpc",
                     "HttpProtobuf"
                   ],
-                  "default": "Grpc",
-                  "description": "The protocol used to export to the endpoint."
+                  "description": "The protocol used to export to the endpoint. When not set, the 'OTEL_EXPORTER_OTLP_PROTOCOL' configuration value is used, and otherwise 'Grpc'."
                 }
               }
             }

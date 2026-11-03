@@ -123,7 +123,8 @@ public sealed class OpenTelemetryOtlpOptions
     public string Endpoint { get; set; }
 
     /// <summary>
-    /// Gets or sets the protocol used to export to <see cref="Endpoint"/>. Defaults to <see cref="OtlpExportProtocol.Grpc"/>.
+    /// Gets or sets the protocol used to export to the endpoint. When not set, the 'OTEL_EXPORTER_OTLP_PROTOCOL'
+    /// configuration value is used, and otherwise <see cref="OtlpExportProtocol.Grpc"/>.
     /// </summary>
-    public OtlpExportProtocol Protocol { get; set; } = OtlpExportProtocol.Grpc;
+    public OtlpExportProtocol? Protocol { get; set; }
 }

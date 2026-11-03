@@ -142,6 +142,44 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     }
 
     [Fact]
+    public void OtlpExporterOptionsFactory_SectionProtocolWithStandardEndpoint_UsesSectionProtocol()
+    {
+        var options = new OrchardCoreOpenTelemetryOptions();
+        options.Otlp.Protocol = OtlpExportProtocol.HttpProtobuf;
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://collector:4318",
+            })
+            .Build();
+
+        var exporterOptions = OtlpExporterOptionsFactory.Create(options, configuration, OtlpExporterOptionsFactory.Traces);
+
+        Assert.Equal(new Uri("http://collector:4318/v1/traces"), exporterOptions.Endpoint);
+        Assert.Equal(OtlpExportProtocol.HttpProtobuf, exporterOptions.Protocol);
+    }
+
+    [Fact]
+    public void OtlpExporterOptionsFactory_SectionEndpointWithStandardProtocol_UsesStandardProtocol()
+    {
+        var options = new OrchardCoreOpenTelemetryOptions();
+        options.Otlp.Endpoint = "http://collector:4318";
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["OTEL_EXPORTER_OTLP_PROTOCOL"] = "http/protobuf",
+            })
+            .Build();
+
+        var exporterOptions = OtlpExporterOptionsFactory.Create(options, configuration, OtlpExporterOptionsFactory.Metrics);
+
+        Assert.Equal(new Uri("http://collector:4318/v1/metrics"), exporterOptions.Endpoint);
+        Assert.Equal(OtlpExportProtocol.HttpProtobuf, exporterOptions.Protocol);
+    }
+
+    [Fact]
     public void OtlpExporterOptionsFactory_NoEndpoint_ReturnsNull()
     {
         Assert.Null(OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), new ConfigurationBuilder().Build(), OtlpExporterOptionsFactory.Metrics));
