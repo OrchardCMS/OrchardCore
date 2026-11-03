@@ -231,12 +231,14 @@ Configure these environment variables for the process running `pomi`:
 | --- | --- |
 | `OC_CLIENT_ID` | `orchard-automation` |
 | `OC_CLIENT_SECRET` | The secret saved in step 2 |
+| `OC_CONTEXT` | The name of the context these credentials belong to |
 
 In CI, inject the secret from the CI system's secret store. For a local test in
 Bash or Zsh, this prompt reads it without displaying it or putting its literal
 value in shell history:
 
 ```bash
+export OC_CONTEXT=production-automation
 export OC_CLIENT_ID=orchard-automation
 printf 'Client secret: '
 IFS= read -r -s OC_CLIENT_SECRET
@@ -253,8 +255,23 @@ pomi context add production-automation https://cms.example.com/tenant-a/ --curre
 A context stores the tenant address and discovery metadata, not your automation
 secret. Setting these variables before discovery also lets the CLI fetch the
 authenticated manifest and tenant-specific commands without browser login.
-The same variables apply to every `pomi` command in that environment, so use
-`--context` explicitly and supply credentials registered in that target tenant.
+
+These credentials are only valid in one tenant, so Pomi limits where it sends them:
+
+| Situation | Credentials sent to the token endpoint |
+| --- | --- |
+| `OC_CONTEXT` names the context | `OC_CLIENT_ID` and `OC_CLIENT_SECRET`, instead of any stored login of the context |
+| `OC_CONTEXT` names another context | The stored login of the context, if any |
+| `OC_CONTEXT` is not set and the context has a stored login | The stored login |
+| `OC_CONTEXT` is not set, the context has no stored login, and the command names it, with `--context` or a context argument | `OC_CLIENT_ID` and `OC_CLIENT_SECRET` |
+| `OC_CONTEXT` is not set, the context has no stored login, and it is the only saved context | `OC_CLIENT_ID` and `OC_CLIENT_SECRET` |
+| `OC_CONTEXT` is not set, the context has no stored login, and it is the current one among several | None |
+
+When it doesn't send them, Pomi writes a warning to standard error that gives the reason. Set
+`OC_CONTEXT` whenever these variables are present in an environment that can reach several
+tenants. It only limits the variables: use `--context` or `pomi context use` to select the context
+of a command. Variables supplied without `OC_CONTEXT` are still sent to a context named by a
+command, so supply them only to the processes that manage their tenant.
 
 ### 4. Verify authentication and run a command
 
@@ -295,12 +312,12 @@ pomi --context production-automation login --grant client-credentials \
 
 These explicit secret options are also available on `pomi api invoke`. They apply
 to that invocation only; dynamic resource commands use `OC_CLIENT_ID` and
-`OC_CLIENT_SECRET`.
+`OC_CLIENT_SECRET` as described in step 3.
 
 When finished with the local test, clear the variables:
 
 ```bash
-unset OC_CLIENT_ID OC_CLIENT_SECRET
+unset OC_CONTEXT OC_CLIENT_ID OC_CLIENT_SECRET
 ```
 
 `pomi logout` removes saved human credentials; it does not disable an automation
@@ -357,8 +374,9 @@ takes precedence.
 | `invalid_scope` | The application allows `orchardcore.management`, and that scope exists in the target tenant. Do not request `offline_access` for this flow. |
 | `403` when fetching metadata | The application's selected role needs **Access remote management API**. |
 | Login succeeds but a command returns `403` | The application role also needs that operation's permissions. |
-| A command asks for login after a successful check | The check did not save a session. Supply `OC_CLIENT_ID` and `OC_CLIENT_SECRET` to the command's process. |
-| Authentication targets an unexpected tenant or client | Check `pomi context show`, the explicit `--context`, and any inherited `OC_CLIENT_ID` / `OC_CLIENT_SECRET` variables. |
+| A command asks for login after a successful check | The check did not save a session. Supply `OC_CLIENT_ID` and `OC_CLIENT_SECRET` to the command's process, with `OC_CONTEXT` naming the context. |
+| Authentication targets an unexpected tenant or client | Check `pomi context show`, the explicit `--context`, and any inherited `OC_CONTEXT` / `OC_CLIENT_ID` / `OC_CLIENT_SECRET` variables. |
+| A warning says that `OC_CLIENT_ID` and `OC_CLIENT_SECRET` were not used | Pomi kept them from a context they may not belong to. Set `OC_CONTEXT` to the context they belong to, as described in [step 3](#3-supply-credentials-and-register-the-context). |
 
 See the [client-credentials HTTP contract](../../api/authentication/README.md#client-credentials)
 for token endpoint parameters and OAuth error responses.

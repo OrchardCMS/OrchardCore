@@ -11,6 +11,10 @@ env = os.environ.copy()
 env.update({key: value for key, value in state.items() if key.startswith('OC_')})
 env['OC_CONFIG_HOME'] = os.environ.get('OC_FIXTURE_CONFIG_HOME', state['OC_CONFIG_HOME'])
 env['OC_CLIENT_ID'] = os.environ.get('OC_FIXTURE_CLIENT_ID', state['OC_CLIENT_ID'])
+contexts = Path(env['OC_CONFIG_HOME']) / 'contexts.json'
+if contexts.exists():
+    # These credentials are for whichever context the smoke test selected last.
+    env['OC_CONTEXT'] = json.loads(contexts.read_text()).get('currentContext') or ''
 if os.environ.get('OC_FIXTURE_HUMAN') == '1':
     env.pop('OC_CLIENT_ID', None)
     env.pop('OC_CLIENT_SECRET', None)

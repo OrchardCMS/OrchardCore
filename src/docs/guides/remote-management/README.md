@@ -796,7 +796,8 @@ For a complete setup walkthrough, see [Client credentials for automation](../../
 For unattended jobs, register a separate **confidential** OpenID application
 with client-credentials flow, the `orchardcore.management` scope, and minimal
 roles. Inject `OC_CLIENT_ID` and `OC_CLIENT_SECRET` through your CI secret
-facility, then run ordinary commands:
+facility, with `OC_CONTEXT` naming the only context they apply to, then run
+ordinary commands:
 
 ```bash
 pomi --context production content items list --output json

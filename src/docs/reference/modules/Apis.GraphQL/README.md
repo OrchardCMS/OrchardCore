@@ -253,7 +253,7 @@ Queries and introspection require `ExecuteGraphQL`. Mutations additionally
 require `ExecuteGraphQLMutations`, and fields/resolvers can impose further
 permissions. The CLI sends the token from `pomi login`, refreshing it when
 needed, or obtains a client-credentials token using `OC_CLIENT_ID` and
-`OC_CLIENT_SECRET`. It does not change roles, permissions, or schema visibility.
+`OC_CLIENT_SECRET` when [they apply to the context](../RemoteManagement/README.md#3-supply-credentials-and-register-the-context). It does not change roles, permissions, or schema visibility.
 
 ### Results, errors, and mutations
 

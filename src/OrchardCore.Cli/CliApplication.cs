@@ -16,6 +16,9 @@ internal sealed partial class CliApplication
     private static readonly TimeSpan OpenApiTtl = TimeSpan.FromMinutes(30);
     private static readonly TimeSpan DocumentationTtl = TimeSpan.FromHours(12);
     private static readonly Uri DocumentationIndexUri = new("https://docs.orchardcore.net/en/latest/search/search_index.json");
+    private const string EnvironmentClientIdVariable = "OC_CLIENT_ID";
+    private const string EnvironmentClientSecretVariable = "OC_CLIENT_SECRET";
+    private const string EnvironmentContextVariable = "OC_CONTEXT";
     private readonly RootCommand _rootCommand;
     private readonly CliPaths _paths;
     private readonly HttpClient _httpClient;
@@ -26,6 +29,9 @@ internal sealed partial class CliApplication
     private readonly CliConfiguration _configuration;
     private readonly Option<string?> _outputOption;
     private readonly Option<string?> _contextOption;
+    private readonly Func<string, string?> _environment;
+    private string? _namedContext;
+    private bool _environmentCredentialsWarningWritten;
 
     internal RootCommand RootCommand => _rootCommand;
 
@@ -39,7 +45,8 @@ internal sealed partial class CliApplication
         OAuthClient oauthClient,
         CliConfiguration configuration,
         Option<string?> outputOption,
-        Option<string?> contextOption)
+        Option<string?> contextOption,
+        Func<string, string?> environment)
     {
         _rootCommand = rootCommand;
         _paths = paths;
@@ -51,9 +58,10 @@ internal sealed partial class CliApplication
         _configuration = configuration;
         _outputOption = outputOption;
         _contextOption = contextOption;
+        _environment = environment;
     }
 
-    public static async Task<CliApplication> CreateAsync(string[] args, CliPaths paths, HttpClient httpClient, CancellationToken cancellationToken, ICredentialStore? credentialStore = null)
+    public static async Task<CliApplication> CreateAsync(string[] args, CliPaths paths, HttpClient httpClient, CancellationToken cancellationToken, ICredentialStore? credentialStore = null, Func<string, string?>? environment = null)
     {
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(paths);
@@ -82,7 +90,10 @@ internal sealed partial class CliApplication
         root.Options.Add(outputOption);
         root.Options.Add(contextOption);
 
-        var app = new CliApplication(root, paths, httpClient, contextStore, cacheService, credentialStore, oauthClient, configuration, outputOption, contextOption);
+        var app = new CliApplication(root, paths, httpClient, contextStore, cacheService, credentialStore, oauthClient, configuration, outputOption, contextOption, environment ?? global::System.Environment.GetEnvironmentVariable)
+        {
+            _namedContext = ReadRequestedContext(args),
+        };
         app.AddStaticCommands();
         // Bare invocation and explicit help must use the same cached command tree.
         await app.AddDynamicCommandsAsync(args.Length == 0 ? ["--help"] : args, cancellationToken);
@@ -217,7 +228,7 @@ internal sealed partial class CliApplication
             }
             catch (HttpRequestException exception) when (exception.StatusCode is HttpStatusCode.Unauthorized)
             {
-                await Console.Error.WriteLineAsync($"Warning: the tenant requires authentication to list its commands. Run 'pomi login {context.Name}' or set OC_CLIENT_ID and OC_CLIENT_SECRET.");
+                await Console.Error.WriteLineAsync($"Warning: the tenant requires authentication to list its commands. Run 'pomi login {context.Name}', or set OC_CLIENT_ID and OC_CLIENT_SECRET with OC_CONTEXT={context.Name}.");
                 return;
             }
             catch (HttpRequestException exception) when (exception.StatusCode is HttpStatusCode.Forbidden)
@@ -1409,13 +1420,12 @@ internal sealed partial class CliApplication
 
     private async Task<string?> ResolveAccessTokenAsync(TenantContextRecord context, string? clientId, string? clientSecretEnv, bool clientSecretStdin, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(clientId))
+        if (string.IsNullOrWhiteSpace(clientId)
+            && !string.IsNullOrWhiteSpace(_environment(EnvironmentClientIdVariable))
+            && await CanUseEnvironmentCredentialsAsync(context, cancellationToken))
         {
-            clientId = global::System.Environment.GetEnvironmentVariable("OC_CLIENT_ID");
-            if (!string.IsNullOrWhiteSpace(clientId))
-            {
-                clientSecretEnv = "OC_CLIENT_SECRET";
-            }
+            clientId = _environment(EnvironmentClientIdVariable);
+            clientSecretEnv = EnvironmentClientSecretVariable;
         }
 
         if (!string.IsNullOrWhiteSpace(clientId))
@@ -1446,6 +1456,57 @@ internal sealed partial class CliApplication
         }
 
         return stored.AccessToken;
+    }
+
+    private async Task<bool> CanUseEnvironmentCredentialsAsync(TenantContextRecord context, CancellationToken cancellationToken)
+    {
+        var scopedContext = _environment(EnvironmentContextVariable);
+        var isScoped = !string.IsNullOrWhiteSpace(scopedContext);
+        if (isScoped && string.Equals(scopedContext, context.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var hasStoredCredentials = await _credentialStore.GetAsync(GetCredentialKey(context), cancellationToken) is not null;
+        var isNamed = string.Equals(_namedContext, context.Name, StringComparison.OrdinalIgnoreCase);
+        if (AppliesEnvironmentCredentials(context.Name, scopedContext, hasStoredCredentials, isNamed, _configuration.Contexts.Count))
+        {
+            return true;
+        }
+
+        // A deployment scoping its variables to one context doesn't need telling that another keeps its login.
+        if (!_environmentCredentialsWarningWritten && !(isScoped && hasStoredCredentials))
+        {
+            _environmentCredentialsWarningWritten = true;
+            var reason = isScoped
+                ? $"{EnvironmentContextVariable} names another context"
+                : hasStoredCredentials
+                    ? $"context '{context.Name}' has stored credentials, which they would replace"
+                    : $"several contexts are saved and '{context.Name}' wasn't named";
+            await Console.Error.WriteLineAsync(
+                $"Warning: {EnvironmentClientIdVariable} and {EnvironmentClientSecretVariable} were not used, because {reason}. To use them for this context, set {EnvironmentContextVariable}={context.Name}.");
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Decides whether the client credentials of the environment can be sent to the token endpoint of a
+    /// context, as they are only valid for one tenant and must not reach the others.
+    /// </summary>
+    /// <param name="contextName">The context a token is needed for.</param>
+    /// <param name="scopedContext">The value of <c>OC_CONTEXT</c>, the only context the variables apply to when set.</param>
+    /// <param name="hasStoredCredentials">Whether the context has its own stored credentials.</param>
+    /// <param name="isNamed">Whether the command names the context, rather than falling back to the current one.</param>
+    /// <param name="contextCount">The number of saved contexts.</param>
+    internal static bool AppliesEnvironmentCredentials(string contextName, string? scopedContext, bool hasStoredCredentials, bool isNamed, int contextCount)
+    {
+        if (!string.IsNullOrWhiteSpace(scopedContext))
+        {
+            return string.Equals(scopedContext, contextName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return !hasStoredCredentials && (isNamed || contextCount == 1);
     }
 
     private static async Task<HttpContent?> ResolveDynamicJsonBodyAsync(
@@ -1968,6 +2029,11 @@ internal sealed partial class CliApplication
     private TenantContextRecord RequireContext(string? name)
     {
         var context = ContextStore.FindContext(_configuration, name);
+        if (context is not null && !string.IsNullOrWhiteSpace(name))
+        {
+            _namedContext = name;
+        }
+
         return context ?? throw new CliException(name is null
             ? "No context is selected. Add one with 'pomi context add <name> <url>'."
             : $"Context '{name}' was not found.");
@@ -2051,11 +2117,11 @@ internal sealed partial class CliApplication
         return 0;
     }
 
-    private static async Task<string> ReadClientSecretAsync(string? environmentVariable, bool readFromStdin, CancellationToken cancellationToken)
+    private async Task<string> ReadClientSecretAsync(string? environmentVariable, bool readFromStdin, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrWhiteSpace(environmentVariable))
         {
-            var value = global::System.Environment.GetEnvironmentVariable(environmentVariable);
+            var value = _environment(environmentVariable);
             if (!string.IsNullOrWhiteSpace(value))
             {
                 return value;
