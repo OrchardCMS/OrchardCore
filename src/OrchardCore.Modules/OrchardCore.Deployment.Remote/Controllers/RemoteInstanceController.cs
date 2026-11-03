@@ -29,6 +29,8 @@ public sealed class RemoteInstanceController : Controller
     private readonly INotifier _notifier;
     private readonly RemoteInstanceService _service;
 
+    private readonly IStringLocalizer _validationLocalizer;
+
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
 
@@ -39,6 +41,7 @@ public sealed class RemoteInstanceController : Controller
         IShapeFactory shapeFactory,
         IStringLocalizer<RemoteInstanceController> stringLocalizer,
         IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
+        IStringLocalizerFactory stringLocalizerFactory,
         INotifier notifier
         )
     {
@@ -46,6 +49,7 @@ public sealed class RemoteInstanceController : Controller
         _pagerOptions = pagerOptions.Value;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;
+        _validationLocalizer = stringLocalizerFactory.Create(typeof(RemoteDeploymentValidation));
         H = htmlLocalizer;
         _notifier = notifier;
         _service = service;
@@ -270,7 +274,7 @@ public sealed class RemoteInstanceController : Controller
             foreach (var error in errors)
             {
 #pragma warning disable OCLOC104 // The messages are declared in RemoteDeploymentValidation.
-                ModelState.AddModelError(field, S[error]);
+                ModelState.AddModelError(field, _validationLocalizer[error]);
 #pragma warning restore OCLOC104
             }
         }
