@@ -53,6 +53,9 @@ missing_resource_status = {
     'settings sections show': 404, 'settings sections update': 404,
     'settings sections schema': 404,
     'content localizations list': 404, 'content localizations create': 404,
+    # Scoped to the caller's own uploads and operations, with no shared resource to protect.
+    'deployment artifacts show': 404, 'deployment artifacts delete': 200,
+    'deployment artifacts download': 404, 'deployment operations show': 404,
 }
 ids = set()
 capabilities = {capability['id'] for capability in manifest['capabilities']}
