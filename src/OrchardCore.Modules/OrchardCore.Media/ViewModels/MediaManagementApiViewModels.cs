@@ -242,7 +242,15 @@ public sealed class DeleteMediaResultDto
 /// </summary>
 public sealed class DeleteMediaListResultDto
 {
+    /// <summary>
+    /// Gets or sets the paths of the files that were deleted.
+    /// </summary>
     public IReadOnlyList<string> Paths { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the requested paths for which no file was found.
+    /// </summary>
+    public IReadOnlyList<string> MissingPaths { get; set; } = [];
 }
 
 /// <summary>

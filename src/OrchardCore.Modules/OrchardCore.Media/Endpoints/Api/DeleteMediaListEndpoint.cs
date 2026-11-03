@@ -20,7 +20,7 @@ public static class DeleteMediaListEndpoint
         builder.MapManagementPost("api/media/files:delete", HandleAsync)
             .WithName("ApiDeleteMediaList")
             .WithSummary("Deletes multiple media files.")
-            .WithDescription("Deletes a batch of media files after verifying that the caller can manage each requested folder.")
+            .WithDescription("Deletes a batch of media files after verifying that the caller can manage each requested folder. Paths that don't exist are reported in the result.")
             .WithCliCommand(new CliOperationMetadata(["media", "files"], "delete-batch")
             {
                 Capability = MediaApiEndpointConventions.CapabilityName,
@@ -56,9 +56,20 @@ public static class DeleteMediaListEndpoint
         IMediaFileStore mediaFileStore,
         List<string> paths)
     {
-        var result = await DeleteAsync(httpContext, authorizationService, mediaFileStore, paths);
+        if (await AuthorizeAsync(httpContext, authorizationService, paths) is { } problem)
+        {
+            return problem;
+        }
 
-        return result ?? TypedResults.Ok();
+        foreach (var path in paths)
+        {
+            if (!await mediaFileStore.TryDeleteFileAsync(path))
+            {
+                return httpContext.ApiNotFoundProblem();
+            }
+        }
+
+        return TypedResults.Ok();
     }
 
     private static async Task<IResult> HandleManagementAsync(
@@ -67,15 +78,30 @@ public static class DeleteMediaListEndpoint
         IMediaFileStore mediaFileStore,
         List<string> paths)
     {
-        var result = await DeleteAsync(httpContext, authorizationService, mediaFileStore, paths);
+        if (await AuthorizeAsync(httpContext, authorizationService, paths) is { } problem)
+        {
+            return problem;
+        }
 
-        return result ?? TypedResults.Ok(new DeleteMediaListResultDto { Paths = paths });
+        return TypedResults.Ok(await DeleteAllAsync(mediaFileStore, paths));
     }
 
-    private static async Task<IResult> DeleteAsync(
+    internal static async Task<DeleteMediaListResultDto> DeleteAllAsync(IMediaFileStore mediaFileStore, IEnumerable<string> paths)
+    {
+        var deleted = new List<string>();
+        var missing = new List<string>();
+
+        foreach (var path in paths)
+        {
+            (await mediaFileStore.TryDeleteFileAsync(path) ? deleted : missing).Add(path);
+        }
+
+        return new DeleteMediaListResultDto { Paths = deleted, MissingPaths = missing };
+    }
+
+    private static async Task<IResult> AuthorizeAsync(
         HttpContext httpContext,
         IAuthorizationService authorizationService,
-        IMediaFileStore mediaFileStore,
         List<string> paths)
     {
         if (paths == null)
@@ -93,14 +119,6 @@ public static class DeleteMediaListEndpoint
             if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)path))
             {
                 return httpContext.ApiForbidProblem();
-            }
-        }
-
-        foreach (var path in paths)
-        {
-            if (!await mediaFileStore.TryDeleteFileAsync(path))
-            {
-                return httpContext.ApiNotFoundProblem();
             }
         }
 
