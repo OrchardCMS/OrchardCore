@@ -10,7 +10,15 @@
     <span class="saas-eyebrow">@T["Device verification"]</span>
     <h1>@T["Connect a trusted device"]</h1>
 
-    @if (string.IsNullOrEmpty(Model.UserCode) || !string.IsNullOrEmpty(Model.Error))
+    @if (Model.Result == VerifyViewModel.ApprovedResult)
+    {
+        <div class="alert alert-success" role="status">@T["The device is authorized. You can close this page and return to it."]</div>
+    }
+    else if (Model.Result == VerifyViewModel.DeniedResult)
+    {
+        <div class="alert alert-info" role="status">@T["The request was cancelled. The device did not receive access."]</div>
+    }
+    else if (string.IsNullOrEmpty(Model.UserCode) || !string.IsNullOrEmpty(Model.Error))
     {
         @if (!string.IsNullOrEmpty(Model.Error) && !string.IsNullOrEmpty(Model.ErrorDescription))
         {

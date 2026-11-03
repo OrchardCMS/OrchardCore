@@ -377,7 +377,7 @@ public sealed class AccessController : Controller
             });
         }
 
-        return View(new VerifyViewModel());
+        return View(new VerifyViewModel { Result = Request.Query[VerifyViewModel.ResultParameter] });
     }
 
     [ActionName(nameof(Verify)), DisableCors]
@@ -464,7 +464,7 @@ public sealed class AccessController : Controller
 
         return Forbid(new AuthenticationProperties
         {
-            RedirectUri = "/",
+            RedirectUri = GetVerificationResultUrl(VerifyViewModel.DeniedResult),
         }, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
@@ -834,9 +834,13 @@ public sealed class AccessController : Controller
 
         return SignIn(
             new ClaimsPrincipal(identity),
-            new AuthenticationProperties { RedirectUri = "/" },
+            new AuthenticationProperties { RedirectUri = GetVerificationResultUrl(VerifyViewModel.ApprovedResult) },
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
+
+    // The user continues on the device: stay on this tenant's page, as the site's home may not exist.
+    private string GetVerificationResultUrl(string result) =>
+        Request.PathBase + Request.Path + QueryString.Create(VerifyViewModel.ResultParameter, result);
 
     private string GetPresentedUserCode(AuthenticationProperties properties = null)
     {
