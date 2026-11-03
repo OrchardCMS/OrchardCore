@@ -257,7 +257,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var notification = await FindCurrentUserNotificationAsync(notificationId);
+        var notification = await _notificationManager.FindForUserAsync(notificationId, HttpContext.User);
 
         if (notification != null)
         {
@@ -281,7 +281,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var notification = await FindCurrentUserNotificationAsync(notificationId);
+        var notification = await _notificationManager.FindForUserAsync(notificationId, HttpContext.User);
 
         if (notification != null)
         {
@@ -299,10 +299,9 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var notification = await FindCurrentUserNotificationAsync(notificationId);
+        var notification = await _notificationManager.FindVisibleForUserAsync(_visibilityEvaluator, notificationId, HttpContext.User);
 
-        if (notification == null ||
-            await _visibilityEvaluator.EvaluateAsync(notification, HttpContext.User) == NotificationVisibility.Hidden)
+        if (notification == null)
         {
             return NotFound();
         }
@@ -312,18 +311,6 @@ public sealed class AdminController : Controller, IUpdateModel
         var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, OrchardCoreConstants.DisplayType.DetailAdmin);
 
         return View(shape);
-    }
-
-    private async Task<Notification> FindCurrentUserNotificationAsync(string notificationId)
-    {
-        if (string.IsNullOrWhiteSpace(notificationId))
-        {
-            return null;
-        }
-
-        var notification = await _notificationManager.FindByIdAsync(notificationId);
-
-        return notification?.UserId == CurrentUserId() ? notification : null;
     }
 
     private IActionResult RedirectTo(string returnUrl)

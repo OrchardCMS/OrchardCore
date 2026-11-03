@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -40,11 +39,9 @@ public static class MarkAsReadEndpoints
             return TypedResults.Forbid();
         }
 
-        var notification = await notificationManager.FindByIdAsync(model.MessageId);
+        var notification = await notificationManager.FindVisibleForUserAsync(visibilityEvaluator, model.MessageId, user);
 
-        if (notification == null ||
-            notification.UserId != user.FindFirstValue(ClaimTypes.NameIdentifier) ||
-            await visibilityEvaluator.EvaluateAsync(notification, user) == NotificationVisibility.Hidden)
+        if (notification == null)
         {
             return TypedResults.NotFound();
         }

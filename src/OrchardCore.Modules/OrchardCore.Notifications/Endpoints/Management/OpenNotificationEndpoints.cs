@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -46,23 +45,16 @@ public static class OpenNotificationEndpoints
             return TypedResults.Forbid();
         }
 
-        var notification = await notificationManager.FindByIdAsync(notificationId, httpContext.RequestAborted);
+        var notification = await notificationManager.FindVisibleForUserAsync(visibilityEvaluator, notificationId, user, httpContext.RequestAborted);
 
-        if (notification == null || notification.UserId != user.FindFirstValue(ClaimTypes.NameIdentifier))
-        {
-            return TypedResults.NotFound();
-        }
-
-        var visibility = await visibilityEvaluator.EvaluateAsync(notification, user, httpContext.RequestAborted);
-
-        if (visibility == NotificationVisibility.Hidden)
+        if (notification == null)
         {
             return TypedResults.NotFound();
         }
 
         await notificationManager.MarkAsReadAsync(notification, httpContext.RequestAborted);
 
-        if (visibility == NotificationVisibility.Visible)
+        if (await visibilityEvaluator.EvaluateAsync(notification, user, httpContext.RequestAborted) == NotificationVisibility.Visible)
         {
             var url = NotificationUrlHelper.Resolve(notification.Url, httpContext.Request.PathBase);
 
