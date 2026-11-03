@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using NCrontab;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
@@ -389,6 +390,13 @@ public sealed class BackgroundTaskController : Controller
 
         var defaultSettings = task.GetDefaultSettings();
 
+        // An empty schedule is bound as null, it would otherwise be stored as the default schedule of the settings.
+        var schedule = model.Schedule?.Trim() ?? string.Empty;
+        if (CrontabSchedule.TryParse(schedule) is null)
+        {
+            ModelState.AddModelError(nameof(BackgroundTaskViewModel.Schedule), S["The schedule must be a valid cron expression."]);
+        }
+
         if (ModelState.IsValid)
         {
             var document = await _backgroundTaskManager.LoadDocumentAsync();
@@ -398,7 +406,7 @@ public sealed class BackgroundTaskController : Controller
             }
 
             settings.Title = defaultSettings.Title;
-            settings.Schedule = model.Schedule?.Trim();
+            settings.Schedule = schedule;
             settings.Description = model.Description;
             settings.LockTimeout = model.LockTimeout;
             settings.LockExpiration = model.LockExpiration;

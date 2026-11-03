@@ -259,6 +259,38 @@ public class BackgroundTaskControllerTests
         Assert.Equal(4, state.GetProperty("RunCount").GetInt64());
     }
 
+    [Theory]
+    [InlineData("not a cron expression")]
+    [InlineData("")]
+    [InlineData(null)]
+    public async Task Edit_InvalidSchedule_ReturnsViewWithErrorAndKeepsSettings(string schedule)
+    {
+        var notifier = new TestNotifier();
+        var controller = CreateController(CreateMonitor().Object, notifier);
+
+        var result = await controller.Edit(new BackgroundTaskViewModel { Name = _firstTaskName, Schedule = schedule });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.True(controller.ModelState.ContainsKey(nameof(BackgroundTaskViewModel.Schedule)));
+        Assert.Empty(notifier.Entries);
+
+        var model = Assert.IsType<BackgroundTaskDetailsViewModel>(Assert.IsType<ViewResult>(await controller.Details(_firstTaskName)).Model);
+        Assert.Equal("*/10 * * * *", model.Schedule);
+    }
+
+    [Fact]
+    public async Task Edit_ValidSchedule_TrimsAndStoresSchedule()
+    {
+        var controller = CreateController(CreateMonitor().Object, new TestNotifier());
+
+        var result = await controller.Edit(new BackgroundTaskViewModel { Name = _firstTaskName, Schedule = " 0 0 * * * " });
+
+        Assert.IsType<RedirectToActionResult>(result);
+
+        var model = Assert.IsType<BackgroundTaskDetailsViewModel>(Assert.IsType<ViewResult>(await controller.Details(_firstTaskName)).Model);
+        Assert.Equal("0 0 * * *", model.Schedule);
+    }
+
     private static Mock<IBackgroundTaskMonitor> CreateMonitor(params BackgroundTaskState[] states)
     {
         var monitor = new Mock<IBackgroundTaskMonitor>();

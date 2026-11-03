@@ -13,7 +13,7 @@ This video shows the list of tasks, running a task on demand, investigating a fa
 After enabling the feature, you'll be able to manage background tasks under Tools → Background Tasks. This includes the following:
 
 - Enable or disable a task.
-- Change the schedule of the task, i.e. how frequently it runs, with [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression).
+- Change the schedule of the task, i.e. how frequently it runs, with [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression). A schedule that is not a valid cron expression is rejected.
 - Whether to build the tenant routing pipeline for the task, allowing it to generate correct routes.
 - See the execution state of each task: when it last ran, whether that run succeeded or failed and with which error, how long it took, and when it is expected to run next.
 - Run a task on demand.
