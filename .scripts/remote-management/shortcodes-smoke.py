@@ -158,8 +158,8 @@ with tempfile.TemporaryDirectory(prefix='shortcodes-cli-', dir=state_path.parent
         print('Stored shortcode templates render and invalidate cached definitions: passed', flush=True)
 
         ids, commands, names = catalog()
-        assert len([command for command in commands if command.startswith('shortcodes templates ')]) == 6
-        assert len([tool_name for tool_name in names if tool_name.startswith('shortcodes_templates_')]) == 5
+        assert len([command for command in commands if command.startswith('shortcodes templates ') and not command.endswith(' export')]) == 6
+        assert len([tool_name for tool_name in names if tool_name.startswith('shortcodes_templates_') and not tool_name.endswith('_export')]) == 5
         feature('OrchardCore.RemoteManagement.Cli', False)
         assert not catalog()[1]
         assert tool('show', {'query': {'name': saved_name}})['name'] == saved_name

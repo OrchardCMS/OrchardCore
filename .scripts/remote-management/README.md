@@ -39,6 +39,8 @@ python3 .scripts/remote-management/placements-smoke.py <fixture.json>
 python3 .scripts/remote-management/optimistic-concurrency-smoke.py <fixture.json>
 python3 .scripts/remote-management/delete-contract-smoke.py <fixture.json>
 python3 .scripts/remote-management/elasticsearch-live-smoke.py <fixture.json> [elasticsearch-url]
+python3 .scripts/remote-management/openapi-examples-smoke.py <fixture.json>
+python3 .scripts/remote-management/recipe-export-smoke.py <fixture.json>
 ```
 
 `verify-fixture.py` checks discovery, command/operation ID uniqueness, every
@@ -503,6 +505,24 @@ against the isolated loopback fixture. This checks generated Pomi plan/step
 commands, explicit schemas, retries, invalid patch preservation, HTTP permissions,
 MCP creation/ordering and cleanup. It enables Deployment and MCP in the fixture
 and removes its temporary plan on completion.
+
+### OpenAPI examples
+
+Run `openapi-examples-smoke.py <fixture.json>` to post every request example of the
+OpenAPI document to its endpoint, compare the response examples with the actual
+responses, and check credentials in examples are placeholders. It also verifies
+Pomi help and MCP tools do not surface examples. It creates the `Article` content
+type the content examples expect, and the example resources stay in the fixture.
+
+### Per-resource recipe exports
+
+Run `recipe-export-smoke.py <fixture.json>` against a fixture started with
+`OC_FIXTURE_HTTPS=1`. For queries, roles, templates, layers, placements and shortcode
+templates, it exports one resource through HTTP, Pomi and MCP and checks the recipe has
+one step with that resource alone. It verifies the 401, 403 and 404 answers, that Export
+with the resource permission is enough, and it then deletes the resources, imports each
+recipe through deployment artifacts and operations, and compares them with the originals.
+Last, it disables Deployment to check the routes go away, and enables it again.
 
 ### Provider coverage
 
