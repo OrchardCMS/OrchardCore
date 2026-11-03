@@ -16,6 +16,16 @@ public static class RemoteManagementConstants
     public const int ProtocolMinorVersion = 0;
 
     /// <summary>
+    /// The oldest CLI version compatible with the management APIs, which the CLI refuses to use when it is older.
+    /// </summary>
+    public const string MinimumCliVersion = "1.0.0";
+
+    /// <summary>
+    /// The CLI version recommended for the management APIs.
+    /// </summary>
+    public const string RecommendedCliVersion = "1.0.0";
+
+    /// <summary>
     /// The default public OpenID Connect client identifier used by the CLI.
     /// </summary>
     public const string CliClientId = "orchardcore-cli";

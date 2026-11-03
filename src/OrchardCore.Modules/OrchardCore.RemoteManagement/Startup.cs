@@ -69,10 +69,15 @@ public sealed class Startup : StartupBase
         return TypedResults.Ok();
     }
 
-    private static Ok<RemoteManagementManifest> HandleBootstrap(
+    internal static Ok<RemoteManagementManifest> HandleBootstrap(
         HttpRequest request,
-        RemoteManagementManifestService manifestService) =>
-        TypedResults.Ok(manifestService.CreateBootstrap(request));
+        RemoteManagementManifestService manifestService)
+    {
+        // The document reflects the host of the request, so a shared cache must not serve it to another host.
+        request.HttpContext.Response.Headers.CacheControl = "no-store";
+
+        return TypedResults.Ok(manifestService.CreateBootstrap(request));
+    }
 
     [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> HandleManifestAsync(

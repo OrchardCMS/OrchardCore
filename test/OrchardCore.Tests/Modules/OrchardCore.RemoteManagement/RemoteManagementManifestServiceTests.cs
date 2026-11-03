@@ -62,6 +62,19 @@ public class RemoteManagementManifestServiceTests
     }
 
     [Fact]
+    public void HandleBootstrap_AnyRequest_IsNotStored()
+    {
+        var context = new DefaultHttpContext();
+        context.Request.Scheme = "https";
+        context.Request.Host = new HostString("cms.example.com");
+
+        var result = global::OrchardCore.RemoteManagement.Startup.HandleBootstrap(context.Request, CreateService(new OpenIddictServerOptions()));
+
+        Assert.Equal("no-store", context.Response.Headers.CacheControl);
+        Assert.Equal(new Uri("https://cms.example.com/"), result.Value.Authentication.Authority);
+    }
+
+    [Fact]
     public void CreateBootstrap_CustomIssuer_UsesConfiguredAuthority()
     {
         var options = new OpenIddictServerOptions

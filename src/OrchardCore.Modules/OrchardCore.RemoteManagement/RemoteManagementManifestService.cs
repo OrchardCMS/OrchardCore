@@ -49,8 +49,8 @@ internal sealed class RemoteManagementManifestService
         manifest.JsonSchemaDialect = s_jsonSchemaDialect;
         if (_cliEnabled)
         {
-            manifest.MinimumCliVersion = "1.0.0";
-            manifest.RecommendedCliVersion = "1.0.0";
+            manifest.MinimumCliVersion = RemoteManagementConstants.MinimumCliVersion;
+            manifest.RecommendedCliVersion = RemoteManagementConstants.RecommendedCliVersion;
         }
         manifest.DocumentationIndexUrl = new Uri("https://docs.orchardcore.net/en/latest/search/search_index.json");
 

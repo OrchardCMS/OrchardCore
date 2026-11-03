@@ -33,7 +33,7 @@ public sealed class McpStartup : StartupBase
         services.AddScoped<McpToolInvoker>();
         services.AddMcpServer(options =>
         {
-            options.ServerInfo = new Implementation { Name = "OrchardCore", Version = "1.0.0" };
+            options.ServerInfo = new Implementation { Name = "OrchardCore", Version = Modules.Manifest.ManifestConstants.OrchardCoreVersion };
             options.ScopeRequests = false;
         })
             .WithHttpTransport(options => options.SessionMode = HttpServerSessionMode.Stateless)

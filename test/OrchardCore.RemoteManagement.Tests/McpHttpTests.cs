@@ -166,6 +166,20 @@ public class McpHttpTests
         Assert.DoesNotContain("\"isError\":true", body);
     }
 
+    [Fact]
+    public async Task Mcp_Initialize_ReportsTheOrchardCoreVersion()
+    {
+        await using var app = await CreateApplicationAsync();
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "allowed");
+
+        using var response = await SendAsync(client, "initialize", """{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"test","version":"1"}}""");
+
+        Assert.Contains($$"""
+            "version":"{{OrchardCore.Modules.Manifest.ManifestConstants.OrchardCoreVersion}}"
+            """, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
     [Theory]
     [InlineData("dynamic-resource", HttpStatusCode.OK)]
     [InlineData("dynamic-other-resource", HttpStatusCode.Forbidden)]
