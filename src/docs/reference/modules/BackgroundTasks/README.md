@@ -14,6 +14,8 @@ After enabling the feature, you'll be able to manage background tasks under Tool
 
 ## Remote administration
 
+See the [Background tasks API](../../api/background-tasks/README.md) for the complete contract.
+
 The enabled feature exposes registered tenant tasks at `api/background-tasks`.
 Every operation requires API bearer authentication, `AccessRemoteManagement`, and
 `ManageBackgroundTasks`. Pomi and MCP use the same existing tenant credentials;
@@ -55,7 +57,7 @@ and expiration are nonnegative milliseconds; locking is atomic only when both ar
 positive and a distributed lock is registered. Omitted numeric/Boolean properties
 reset to zero/false, and an omitted description becomes null. Schedule is required.
 
-The existing administration editor now uses this shared validation and rejects
+The administration editor uses this shared validation and rejects
 invalid cron or negative lock settings before saving. Invalid persisted settings
 can be repaired through update; disabling remains available, but enabling requires
 valid settings. Identical updates and status changes do not rewrite the document.

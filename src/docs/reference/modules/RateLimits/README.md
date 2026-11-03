@@ -420,6 +420,8 @@ Rate limiting is not a replacement for authentication, authorization, captcha, l
 
 ## Remote administration
 
+See the [Rate Limits API](../../api/rate-limits/README.md) for the complete contract.
+
 When `OrchardCore.RateLimits` is enabled, tenant management exposes policies at
 `api/rate-limits/policies` and built-in limiter schemas at
 `api/rate-limits/limiter-types`. Every operation requires API bearer authentication,

@@ -115,6 +115,8 @@ which includes a header row. Stored rule order values are zero-based.
 
 ## Remote management
 
+See the [URL Rewriting API](../../api/url-rewriting/README.md) for the complete contract.
+
 When this feature is enabled, its management endpoints require both
 `AccessRemoteManagement` and `ManageUrlRewritingRules` through the API authentication
 scheme. Pomi and MCP reuse these endpoints and the existing rewrite manager.

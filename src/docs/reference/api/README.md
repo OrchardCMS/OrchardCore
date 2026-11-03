@@ -4,7 +4,7 @@ The Orchard Core management APIs expose tenant administration operations through
 
 Each API belongs to the feature that owns the underlying resource. Consequently, the operations available to a tenant depend on its enabled features.
 
-This reference currently covers 21 feature-owned management resource groups and two protocol groups. A tenant exposes only the groups contributed by its enabled features.
+This reference covers 30 feature-owned management resource groups and two protocol groups. A tenant exposes only the groups contributed by its enabled features.
 
 ## Before you begin
 
@@ -47,16 +47,25 @@ See [Authentication](authentication/README.md) for the OpenID Connect endpoints 
 - [Shortcode templates](shortcode-templates/README.md)
 - [Templates](templates/README.md)
 - [Themes](themes/README.md)
+- [Sitemaps](sitemaps/README.md)
+- [URL Rewriting](url-rewriting/README.md)
 - [Workflows](workflows/README.md)
 
 ### Administration
 
+- [Audit Trail](audit-trail/README.md)
+- [Background tasks](background-tasks/README.md)
 - [Custom settings](custom-settings/README.md)
+- [Deployment](deployment/README.md)
+- [Email](email/README.md)
 - [Features](features/README.md)
 - [Home Route](home-route/README.md)
+- [Indexes](indexes/README.md)
 - [OpenID applications and scopes](openid/README.md)
 - [Localization and dynamic translations](localization/README.md)
+- [Rate Limits](rate-limits/README.md)
 - [Recipes](recipes/README.md)
+- [Remote Deployment](deployment-remote/README.md)
 - [Roles](roles/README.md)
 - [Site settings](settings/README.md)
 - [Users](users/README.md)

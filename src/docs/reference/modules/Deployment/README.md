@@ -152,8 +152,8 @@ between sites.
 
 List accepts `search`, `skip` and `take` (1–200, default 50), with stable name and
 identifier ordering. List and show return only the plan identifier, name and step
-count; embedded recipe JSON and custom-file contents are not returned. The same
-operations are exposed through the tenant MCP catalog.
+count; embedded recipe JSON and custom-file contents are not returned. See the
+[Deployment API](../../api/deployment/README.md) for the complete contract.
 
 The admin controller uses the same plan validation, query and mutation service.
 Admin presentation and its existing permissions remain in the controller. Step
@@ -322,7 +322,7 @@ and an `application/octet-stream` request body, or use
 Import permission, runs the file-creation pipeline and the same bounded package
 validator as admin imports, and returns private artifact metadata without executing
 the recipe. Rejected packages are not persisted. Stream uploads are not exposed as
-MCP tools. Export creation and import execution workflows are implemented separately.
+MCP tools.
 
 ## Videos
 
@@ -338,7 +338,9 @@ Both return HTTP 202 with an operation ID and status location. Use
 `pomi deployment operations export --request-id <id> --plan-id <plan>` or
 `pomi deployment operations import --request-id <id> --artifact-id <artifact> --force`.
 Use `pomi deployment operations show <id>` to observe progress. These JSON
-operations are also available through MCP.
+operations are also available through MCP, except queuing an import, which needs
+[`AllowConfirmationRequiredTools`](../RemoteManagement/README.md#tools). See the
+[Deployment API](../../api/deployment/README.md) for the complete contract.
 
 The worker polls every minute. Exports capture the plan configuration at submission;
 imports use an owned, validated upload. Reusing a request ID for identical kind and

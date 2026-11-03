@@ -49,6 +49,8 @@ All paths are relative to the tenant URL:
 | `POST` | `/api/users/{userId}:send-reset` | `ApiSendUserPasswordReset` | Send the password reset email. | Resource-aware `EditUsers` |
 | `DELETE` | `/api/users/{userId}` | `ApiDeleteUser` | Delete an account. | Resource-aware `DeleteUsers` |
 
+The `OrchardCore.Users.CustomUserSettings` feature adds the [custom user settings](#custom-user-settings) routes.
+
 ## User representation
 
 | Property | Type | Description |
@@ -500,6 +502,71 @@ Accept: application/json
 | `403 Forbidden` | The caller cannot delete this user. |
 | `404 Not Found` | The user manager cannot resolve `userId`. |
 
+## Custom user settings
+
+Enable `OrchardCore.Users.CustomUserSettings` to manage the settings content types of the `CustomUserSettings` stereotype. The admin editor and these operations use the same services. See [Custom Users Settings](../../modules/Users/CustomUserSettings/README.md).
+
+| Method | Path | Operation ID | Pomi command |
+| --- | --- | --- | --- |
+| `GET` | `/api/users/settings/types` | `ApiListCustomUserSettingsTypes` | `users settings types` |
+| `GET` | `/api/users/settings/types/{name}/schema` | `ApiGetCustomUserSettingsSchema` | `users settings schema <name>` |
+| `GET` | `/api/users/{userId}/settings/{name}` | `ApiGetCustomUserSettings` | `users settings show <userId> <name>` |
+| `PUT` | `/api/users/{userId}/settings/{name}` | `ApiUpdateCustomUserSettings` | `users settings update <userId> <name> --stdin` |
+
+These operations are also MCP tools.
+
+### Permissions
+
+Every operation requires `AccessRemoteManagement` and the permission of the settings type, `ManageOwnCustomUserSettings_{name}`, which `ManageUsers` implies. Reading the values of a user also requires the resource-aware `ViewUsers` for this user, and updating them `EditUsers`. A caller lacking one of these for the user gets `403`. A type the caller can't manage is left out of the list and returns `404`, like an unknown type or user.
+
+### List the types
+
+`GET /api/users/settings/types`
+
+```json
+{
+  "items": [{ "name": "UserProfile", "displayName": "User Profile" }]
+}
+```
+
+### Get a schema
+
+`GET /api/users/settings/types/UserProfile/schema`
+
+`200` returns the JSON Schema of the type's payload. It depends on the content parts of the type, so read it before composing an update.
+
+### Show the settings of a user
+
+`GET /api/users/{userId}/settings/UserProfile`
+
+`200` returns the settings as a content item envelope, with `ContentType`, `DisplayText` and the declared content parts. Content identities, ownership, publication state and account fields aren't part of it. Part and field names keep the casing of their definition.
+
+```json
+{
+  "ContentType": "UserProfile",
+  "DisplayText": "",
+  "UserProfile": {
+    "FirstName": { "Text": "Ada" }
+  }
+}
+```
+
+### Update the settings of a user
+
+`PUT /api/users/{userId}/settings/UserProfile`
+
+The request requires HTTPS: otherwise it returns `400`. The body is a partial envelope, which `ContentType`, if present, must match. Omitted values are kept, arrays are replaced, and an explicit null value is merged. Parts and field containers must be objects.
+
+```json
+{
+  "UserProfile": {
+    "FirstName": { "Text": "Grace" }
+  }
+}
+```
+
+`200` returns the complete envelope. A body that isn't allowed by the type, or a value rejected by a content handler, returns a `400` validation problem. The owning user is saved only when the result is valid, no standalone content item is created, and the other settings of the user are kept. An equivalent request doesn't write anything, so it can be retried.
+
 ## Error and validation responses
 
 Application-level errors use `application/problem+json`. English messages shown here are localizable except for endpoint-supplied invariant role/enable messages.
@@ -617,9 +684,10 @@ validation problems.
 
 ## Endpoint coverage and sources
 
-This page covers all 9 routes mapped by:
+This page covers all 13 routes mapped by:
 
 - `src/OrchardCore.Modules/OrchardCore.Users/Endpoints/Management/UserManagementEndpoints.cs`
+- `src/OrchardCore.Modules/OrchardCore.Users/Endpoints/Management/CustomUserSettingsManagementEndpoints.cs`
 
 Registration, permissions, user/role authorization, Identity validation, account safeguards, filters, and metadata were cross-checked against:
 

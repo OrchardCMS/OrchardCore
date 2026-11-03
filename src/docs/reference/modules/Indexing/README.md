@@ -176,6 +176,8 @@ To reset all indices:
 
 ## Remote index discovery
 
+See the [Indexes API](../../api/indexes/README.md) for the complete contract.
+
 With `OrchardCore.Indexing` enabled, the tenant exposes the `indexes` remote-management
 capability. Discovery requires API bearer authentication, `AccessRemoteManagement`
 and `ManageIndexes`. The same permission checks apply to in-process MCP invocation.

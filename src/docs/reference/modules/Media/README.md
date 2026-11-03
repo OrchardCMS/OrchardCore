@@ -854,6 +854,8 @@ empty arrays clear selections. Invalid patches leave the step unchanged.
 
 ## Remote administration
 
+See the [Media API](../../api/media/README.md#image-profiles-and-media-cache) for the complete contract.
+
 With Remote Management enabled, `pomi media profiles list/show/create/update/delete`
 manage named image profiles. Create and update accept JSON with `name`, `hint`,
 `width`, `height`, `mode`, `format`, `quality`, `backgroundColor`, and `autoOrient`.
@@ -878,7 +880,8 @@ resized image cache; `remote` purges the configured remote asset cache. An absen
 provider returns 503, and a provider failure is reported instead of successful
 purging. Profile commands require `ManageMediaProfiles`, cache commands require
 `ManageAssetCache`; both also require `AccessRemoteManagement` and API bearer
-authentication. These commands are available through MCP using the same policies.
+authentication. These commands are available through MCP using the same policies, except
+deleting and purging, which need [`AllowConfirmationRequiredTools`](../RemoteManagement/README.md#tools).
 
 Two typed settings sections require `ManageMediaApiSettings`:
 

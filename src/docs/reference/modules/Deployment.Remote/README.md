@@ -83,6 +83,8 @@ Use separate role assignments when operators should be allowed to deploy but sho
 
 ## OAuth, Pomi and MCP management
 
+See the [Remote Deployment API](../../api/deployment-remote/README.md) for the complete contract.
+
 Enable Remote Deployment and remote management in the selected tenant, then refresh
 Pomi discovery. Setup with `--enable-remote-management` already provides a client
 credentials context; automation does not need an interactive login.
@@ -129,10 +131,12 @@ as the admin action. Redirects are disabled, so deployment credentials cannot fo
 a redirect to another location. The HTTP request has a two-minute timeout. A remote
 error, timeout or disconnected request can occur after import has started: inspect
 the destination before sending again. Sending is not idempotent and has no automatic
-retry. The existing receiver now stages uploads through the shared bounded package
-validator and returns an error status when recipe execution fails, instead of reporting
-HTTP 200. Imports can partially commit before failure.
+retry. The receiver stages uploads through the shared bounded package validator and
+returns an error status when recipe execution fails. Imports can partially commit before
+failure.
 
-The JSON management operations are also available through the tenant MCP catalog.
+The JSON management operations are also available through the tenant MCP catalog, except
+those taking an API key, and deleting and sending, which need
+[`AllowConfirmationRequiredTools`](../RemoteManagement/README.md#tools).
 The binary package continues to travel directly from the source site to the configured
 destination; it is not embedded into tool results.

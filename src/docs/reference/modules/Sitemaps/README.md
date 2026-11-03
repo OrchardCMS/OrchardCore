@@ -161,6 +161,8 @@ BSD-3
 
 ## Remote administration
 
+See the [Sitemaps API](../../api/sitemaps/README.md) for the complete contract.
+
 With Remote Management enabled, sitemap administration is available through
 OpenAPI, Pomi and MCP. Operations require API bearer authentication,
 `AccessRemoteManagement`, and `ManageSitemaps`.

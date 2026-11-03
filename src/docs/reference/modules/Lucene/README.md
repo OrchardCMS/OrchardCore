@@ -372,11 +372,12 @@ With `OrchardCore.Lucene` and content support enabled, the `indexes-lucene`
 management capability exposes typed Lucene content index definitions. Requests need
 the API authentication scheme, `AccessRemoteManagement`, and `ManageIndexes`.
 Pomi and tenant MCP use the same endpoints and permissions. Enable remote management
-separately; enabling Lucene alone does not provision OAuth credentials.
+separately; enabling Lucene alone does not provision OAuth credentials. See the
+[Indexes API](../../api/indexes/README.md) for the complete contract.
 
 ```shell
 pomi indexes providers list
-pomi indexes list --page 1 --page-size 50
+pomi indexes list --skip 0 --take 50
 pomi indexes lucene analyzers
 pomi indexes lucene create --body-file articles-index.json
 pomi indexes lucene show INDEX_ID

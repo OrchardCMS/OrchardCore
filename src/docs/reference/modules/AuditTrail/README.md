@@ -108,6 +108,8 @@ License: Software License Agreement (BSD License)
 
 ## Remote event search
 
+See the [Audit Trail API](../../api/audit-trail/README.md) for the complete contract.
+
 When Audit Trail is enabled, `api/audit-trail/events` provides a bounded metadata
 search using the same filter parser and query service as the administration UI.
 Operations require API bearer authentication, `AccessRemoteManagement`, and

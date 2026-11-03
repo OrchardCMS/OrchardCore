@@ -431,6 +431,8 @@ existing configuration ownership.
 
 ### Managing custom user settings remotely
 
+See the [User API](../../api/users/README.md#custom-user-settings) for the complete contract.
+
 Enable `OrchardCore.Users.CustomUserSettings` to expose the settings content types
 with the `CustomUserSettings` stereotype. The feature adds these Pomi commands,
 HTTP endpoints, and corresponding MCP tools:

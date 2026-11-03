@@ -222,17 +222,26 @@ nav:
               - Placements: reference/api/placements/README.md
               - Queries: reference/api/queries/README.md
               - Shortcode templates: reference/api/shortcode-templates/README.md
+              - Sitemaps: reference/api/sitemaps/README.md
               - Templates: reference/api/templates/README.md
               - Layers: reference/api/layers/README.md
               - Themes: reference/api/themes/README.md
+              - URL Rewriting: reference/api/url-rewriting/README.md
               - Workflows: reference/api/workflows/README.md
           - Administration:
+              - Audit Trail: reference/api/audit-trail/README.md
+              - Background tasks: reference/api/background-tasks/README.md
               - Custom settings: reference/api/custom-settings/README.md
+              - Deployment: reference/api/deployment/README.md
+              - Email: reference/api/email/README.md
               - Features: reference/api/features/README.md
               - Home Route: reference/api/home-route/README.md
+              - Indexes: reference/api/indexes/README.md
               - OpenID management: reference/api/openid/README.md
               - Localization: reference/api/localization/README.md
+              - Rate Limits: reference/api/rate-limits/README.md
               - Recipes: reference/api/recipes/README.md
+              - Remote Deployment: reference/api/deployment-remote/README.md
               - Roles: reference/api/roles/README.md
               - Site settings: reference/api/settings/README.md
               - Users: reference/api/users/README.md

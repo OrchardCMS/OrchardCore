@@ -73,6 +73,8 @@ Paths in parameters are media-store-relative and use `/`, for example `images/lo
 | `POST` | `/api/media/files:move-batch` | Move several files between folders | Manage Media + both folders |
 | `GET` | `/api/media/uploads/{uploadId}` | Resolve a completed TUS upload | Manage Media |
 
+The [image profile and media cache operations](#image-profiles-and-media-cache) have their own permissions.
+
 ## Common representations
 
 JSON property names are camel-cased.
@@ -837,6 +839,92 @@ curl -H 'Authorization: Bearer ACCESS_TOKEN' \
 
 Other responses: `401`, `403`, `404` when metadata is absent/incomplete or its media file no longer exists.
 
+### Image profiles and media cache
+
+Named image profiles belong to the **Media** feature. The cache operations need the **Media Cache** feature (`OrchardCore.Media.Cache`). These operations have their own permissions, as the table of [endpoints](#profile-and-cache-endpoints) shows, and don't need `ManageMediaContent`.
+
+#### Profile and cache endpoints
+
+| Method | Path | Operation ID | Pomi command | Permission |
+| --- | --- | --- | --- | --- |
+| `GET` | `/api/media/profiles` | `ApiListMediaProfiles` | `media profiles list` | `ManageMediaProfiles` |
+| `GET` | `/api/media/profiles/by-name?name={name}` | `ApiGetMediaProfile` | `media profiles show <name>` | `ManageMediaProfiles` |
+| `POST` | `/api/media/profiles` | `ApiCreateMediaProfile` | `media profiles create` | `ManageMediaProfiles` |
+| `PUT` | `/api/media/profiles/by-name?name={name}` | `ApiUpdateMediaProfile` | `media profiles update <name>` | `ManageMediaProfiles` |
+| `DELETE` | `/api/media/profiles/by-name?name={name}` | `ApiDeleteMediaProfile` | `media profiles delete <name> --force` | `ManageMediaProfiles` |
+| `GET` | `/api/media/cache` | `ApiGetMediaCache` | `media cache show` | `ManageAssetCache` |
+| `POST` | `/api/media/cache/purge?cache={cache}` | `ApiPurgeMediaCache` | `media cache purge <cache> --force` | `ManageAssetCache` |
+
+Deleting a profile and purging a cache are only MCP tools with `AllowConfirmationRequiredTools`, see [MCP server](../../modules/RemoteManagement/README.md#mcp-server).
+
+#### Profile definition
+
+```json
+{
+  "name": "thumbnail",
+  "hint": "Small preview",
+  "width": 240,
+  "height": 240,
+  "mode": "Crop",
+  "format": "WebP",
+  "quality": 80,
+  "backgroundColor": "#ffffff",
+  "autoOrient": true
+}
+```
+
+| Property | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | Yes | At most 128 characters, without control characters. Case-insensitive, and stored in invariant lowercase. |
+| `hint` | string | No | An administrative hint. |
+| `width`, `height` | integer | No | Nonnegative, `0` leaves the dimension unspecified. Without tokenized image URLs, a value must be one of the configured supported sizes. |
+| `mode` | string | No | `Undefined` (default), `Max`, `Crop`, `Pad`, `BoxPad`, `Min` or `Stretch`. Names are case-sensitive. |
+| `format` | string | No | `Undefined` (default), `Gif`, `Jpg`, `Png` or `WebP`. Names are case-sensitive. |
+| `quality` | integer | No | `0` to `100`, where `0` uses the default of the engine. Default `100`. |
+| `backgroundColor` | string | No | Three or six hexadecimal digits, optionally prefixed by `#`. |
+| `autoOrient` | boolean | No | Whether the orientation of the image is applied. Default `true`. |
+
+An unknown `mode` or `format` returns a `400` Problem Details, and other invalid values a `400` validation problem keyed by property.
+
+#### List profiles
+
+`GET /api/media/profiles` accepts `skip` (default `0`, minimum `0`) and `take` (default `50`, range `1`–`200`). `200` returns an array of definitions ordered by name, without a count. Other values return `400`.
+
+#### Show a profile
+
+`GET /api/media/profiles/by-name?name=thumbnail` returns the definition. A blank `name` returns `400`, and an absent profile `404`.
+
+#### Create a profile
+
+`POST /api/media/profiles` returns `200` with the stored definition. Repeating the request with an identical definition returns `200` without writing again, which makes it retry-safe. The same name with another definition returns `409`.
+
+#### Update a profile
+
+`PUT /api/media/profiles/by-name?name=thumbnail` replaces the complete definition. A different `name` in the body renames the profile; a name used by another profile returns `409`. An absent profile returns `404`. An identical definition doesn't write anything.
+
+#### Delete a profile
+
+`DELETE /api/media/profiles/by-name?name=thumbnail` returns `204`. An absent profile returns `404`, so a client repeating a delete must accept this status.
+
+#### Show the caches
+
+`GET /api/media/cache` tells which providers are configured, without paths or credentials:
+
+```json
+{ "remoteConfigured": true, "resizedConfigured": true }
+```
+
+#### Purge a cache
+
+`POST /api/media/cache/purge?cache=resized` purges one cache of the tenant, and has no body. `cache` is `resized`, for the resized images, or `remote`, for the remote asset cache.
+
+| Status | Meaning |
+| --- | --- |
+| `204` | The cache is purged. Repeating the request converges. |
+| `400` | `cache` has another value. |
+| `500` | The provider couldn't complete the purge. |
+| `503` | The selected cache isn't configured in this tenant. |
+
 ## Legacy Media API relationship
 
 The module also maps older `api/media/*` routes such as `GetMediaItems`, `CreateFolder`, `Upload`, and `MoveMediaList`. They are marked `ExcludeFromDescription()` and are not remote-management/OpenAPI operations. They use the configurable `MediaApi` cookie-or-bearer policy, retain legacy parameter and response shapes, and mutation routes apply the legacy antiforgery behavior. Remote clients should use the routes documented above.
@@ -845,12 +933,12 @@ The TUS protocol route `/api/media/tus` is supplied by `OrchardCore.Media.Tus`; 
 
 ## Endpoint coverage and sources
 
-This page covers all **18 distinct OpenAPI-discovered Media route/method operations** mapped by `OrchardCore.Media`. When `OrchardCore.Media.Tus` is enabled, its startup currently registers the completed-upload route a second time.
+This page covers all **25 distinct OpenAPI-discovered Media route/method operations** mapped by `OrchardCore.Media`, including the profile and cache ones. When `OrchardCore.Media.Tus` is enabled, its startup currently registers the completed-upload route a second time.
 
 Source-derived from:
 
 - `OrchardCore.Media/Startup.cs`, `Manifest.cs`, `PermissionProvider.cs`, and `Services/MediaRemoteManagementCapabilityProvider.cs`
-- every file under `OrchardCore.Media/Endpoints/Api/`
+- every file under `OrchardCore.Media/Endpoints/Api/` and `OrchardCore.Media/Endpoints/Management/`
 - `OrchardCore.Media/ViewModels/MediaApiViewModels.cs` and `MediaManagementApiViewModels.cs`
 - `OrchardCore.Media.Core/MediaPermissions.cs`
 - `MediaAndQueriesOpenApiDiscoveryTests.cs` and `MediaEndpointHelpersTests.cs`

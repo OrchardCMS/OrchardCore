@@ -132,6 +132,8 @@ Email settings can be configured using the `Settings` recipe step:
 
 ## Remote email administration
 
+See the [Email API](../../api/email/README.md) for the complete contract.
+
 Remote Management exposes the typed `email` settings section and `email test`
 when the Email feature is enabled. Both require `AccessRemoteManagement` and
 `ManageEmailSettings`; existing admin pages use the same provider selection and
@@ -162,7 +164,7 @@ Example `email-test.json`:
 Omit `provider` to use the runtime default. Tests accept a single recipient, a
 subject up to 256 characters and a plain-text body up to 16384 characters. A
 successful request returns HTTP 204, meaning the provider accepted the message;
-it does not prove arrival in the recipient's inbox. Invalid input returns 400; an unavailable provider or delivery failure returns 502
-without connection details or secrets.
+it does not prove arrival in the recipient's inbox. Invalid input or an invalid or disabled
+provider returns 400; a delivery failure returns 502 without connection details or secrets.
 Sending is not idempotent: retrying may send another message. Local pickup delivery
 can verify message generation without external mail delivery.
