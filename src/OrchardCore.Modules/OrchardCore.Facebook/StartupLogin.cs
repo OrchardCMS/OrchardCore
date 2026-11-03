@@ -12,6 +12,7 @@ using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook;
 
@@ -23,6 +24,7 @@ public sealed class StartupLogin : StartupBase
         services.AddNavigationProvider<AdminMenuLogin>();
 
         services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
+        services.AddScoped<ISiteSettingsSectionProvider, FacebookLoginSettingsSectionProvider>();
         services.AddSiteDisplayDriver<FacebookLoginSettingsDisplayDriver>();
         services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
 

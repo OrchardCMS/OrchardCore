@@ -9,6 +9,7 @@ using OrchardCore.Facebook.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Options;
 using Polly;
@@ -20,6 +21,7 @@ public sealed class StartupPixel : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ISiteSettingsSectionProvider, FacebookPixelSettingsSectionProvider>();
         services.AddSiteDisplayDriver<FacebookPixelSettingsDisplayDriver>();
         services.AddPermissionProvider<PixelPermissionProvider>();
         services.AddNavigationProvider<AdminMenuPixel>();

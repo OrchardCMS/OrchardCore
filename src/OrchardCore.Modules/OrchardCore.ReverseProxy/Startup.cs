@@ -7,9 +7,11 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.ReverseProxy.Configuration;
 using OrchardCore.ReverseProxy.Drivers;
+using OrchardCore.ReverseProxy.Services;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
+using OrchardCore.Settings;
 
 namespace OrchardCore.ReverseProxy;
 
@@ -27,6 +29,7 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
+        services.AddScoped<ISiteSettingsSectionProvider, ReverseProxySettingsSectionProvider>();
         services.AddSiteDisplayDriver<ReverseProxySettingsDisplayDriver>();
 
         services.AddTransient<IConfigureOptions<ReverseProxySettings>, ReverseProxySettingsConfiguration>();
