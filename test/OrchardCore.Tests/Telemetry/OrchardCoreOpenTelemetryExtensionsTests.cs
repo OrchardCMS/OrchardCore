@@ -349,6 +349,21 @@ public class OrchardCoreOpenTelemetryExtensionsTests
         Assert.Equal(expected, OtlpExporterOptionsFactory.GetTemporalityPreference(configuration));
     }
 
+    [Theory]
+    [InlineData("base2_exponential_bucket_histogram", true)]
+    [InlineData("BASE2_EXPONENTIAL_BUCKET_HISTOGRAM", true)]
+    [InlineData("explicit_bucket_histogram", false)]
+    [InlineData("invalid", false)]
+    [InlineData(null, false)]
+    public void UsesExponentialHistograms_StandardConfiguration_ReturnsPreference(string value, bool expected)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { ["OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION"] = value })
+            .Build();
+
+        Assert.Equal(expected, OtlpExporterOptionsFactory.UsesExponentialHistograms(configuration));
+    }
+
     [Fact]
     public void TenantMetrics_Created_PublishesInstrumentsWithTheVersionOfTheMeter()
     {

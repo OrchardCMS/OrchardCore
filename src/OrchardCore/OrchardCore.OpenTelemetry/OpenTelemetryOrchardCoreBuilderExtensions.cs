@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -147,6 +148,8 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         {
             if (CreateOtlpExporterOptions(serviceProvider, OtlpExporterOptionsFactory.Metrics, options => options.Metrics.Enabled) is { } exporterOptions)
             {
+                var configuration = serviceProvider.GetService<IConfiguration>();
+
                 // Reads the standard 'OTEL_METRIC_EXPORT_INTERVAL' and 'OTEL_METRIC_EXPORT_TIMEOUT' environment variables.
                 var readerOptions = new PeriodicExportingMetricReaderOptions();
 
@@ -155,8 +158,13 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
                     readerOptions.ExportIntervalMilliseconds ?? 60_000,
                     readerOptions.ExportTimeoutMilliseconds ?? 30_000)
                 {
-                    TemporalityPreference = OtlpExporterOptionsFactory.GetTemporalityPreference(serviceProvider.GetService<IConfiguration>()),
+                    TemporalityPreference = OtlpExporterOptionsFactory.GetTemporalityPreference(configuration),
                 });
+
+                if (OtlpExporterOptionsFactory.UsesExponentialHistograms(configuration))
+                {
+                    metrics.AddView(instrument => IsHistogram(instrument) ? new Base2ExponentialBucketHistogramConfiguration() : null);
+                }
             }
         });
 
@@ -180,6 +188,13 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
     }
 
     private sealed class OpenTelemetryMarker;
+
+    private static bool IsHistogram(Instrument instrument)
+    {
+        var type = instrument.GetType();
+
+        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Histogram<>);
+    }
 
     private static OrchardCoreOpenTelemetryOptions GetOptions(IServiceProvider serviceProvider)
     {

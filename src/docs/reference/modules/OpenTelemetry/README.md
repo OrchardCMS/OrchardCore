@@ -18,7 +18,16 @@ builder.Services
     .AddOpenTelemetry();
 ```
 
-The `OrchardCore.Cms.Web` application of the repository does it when `builder.Configuration.HasOtlpEndpoint()` tells that an OTLP endpoint is configured, so that setting one is enough to export its telemetry, and nothing is collected otherwise.
+Calling `AddOpenTelemetry()` collects the telemetry even when nothing exports it, as exporters can also be added with the callback or by the application. When OTLP is the only exporter, check that an endpoint is configured first, which is what the `OrchardCore.Cms.Web` application of the repository does, so that setting one is enough to export its telemetry:
+
+```csharp
+var orchardCore = builder.Services.AddOrchardCms();
+
+if (builder.Configuration.HasOtlpEndpoint())
+{
+    orchardCore.AddOpenTelemetry();
+}
+```
 
 The telemetry is exported over OTLP once an endpoint is configured, either in the `OrchardCore:OpenTelemetry:Otlp` section or with the standard `OTEL_EXPORTER_OTLP_ENDPOINT` configuration value, e.g. as an environment variable:
 
@@ -109,6 +118,7 @@ The standard [OTLP exporter values](https://opentelemetry.io/docs/languages/sdk-
 | `OTEL_EXPORTER_OTLP_TIMEOUT` | The time to wait for the receiver, in milliseconds. |
 | `OTEL_EXPORTER_OTLP_COMPRESSION` | `gzip` or `none`. |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `cumulative`, `delta` or `lowmemory`. Defaults to `cumulative`. Some backends require `delta`. |
+| `OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION` | `explicit_bucket_histogram` or `base2_exponential_bucket_histogram`. Defaults to `explicit_bucket_histogram`. |
 
 Each of the first five values also exists for a single signal, which takes precedence, with `TRACES`, `METRICS` or `LOGS` after `OTLP`. For instance, `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` only sets the endpoint of the traces, and is used as is, without adding a path to it. Only the signals with an endpoint are exported.
 

@@ -116,6 +116,14 @@ internal static class OtlpExporterOptionsFactory
             : MetricReaderTemporalityPreference.Cumulative;
     }
 
+    /// <summary>
+    /// Returns whether the standard configuration value asks for the histograms to be exported with exponential buckets.
+    /// </summary>
+    public static bool UsesExponentialHistograms(IConfiguration configuration)
+    {
+        return string.Equals(configuration?[GetKey("METRICS_DEFAULT_HISTOGRAM_AGGREGATION")], "base2_exponential_bucket_histogram", StringComparison.OrdinalIgnoreCase);
+    }
+
     // The value of a signal takes precedence over the one shared by all signals.
     private static string GetValue(IConfiguration configuration, string name, string signal)
     {
