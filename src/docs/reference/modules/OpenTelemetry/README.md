@@ -120,7 +120,7 @@ The spans of Orchard Core come from the `OrchardCore` activity source:
 | `Execute recipe {recipe}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name` |
 | `Execute recipe step {step}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name`, `orchardcore.recipe.step.name` |
 
-A failed operation has the `Error` status, the `error.type` attribute and an `exception` event. A background task run is the root of its own trace.
+A failed operation has the `Error` status and the `error.type` attribute, as well as an `exception` event when an exception made it fail. A background task run is the root of its own trace.
 
 The spans of ASP.NET Core (one for each HTTP request, also tagged with the `orchardcore.tenant.name` of the tenant that served it) and of HttpClient (one for each outgoing HTTP request) are collected too, as well as the ones of the client libraries listed below.
 
