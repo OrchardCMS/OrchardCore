@@ -317,10 +317,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
             }
         }
 
-        if (!(await _passkeyService.UpdateUsedPasskeyAsync(user, result.Passkey)).Succeeded)
-        {
-            return LoginError(S["Invalid login attempt."], returnUrl);
-        }
+        await _passkeyService.UpdateUsedPasskeyAsync(user, result.Passkey);
 
         var rememberMe = loginSettings.AllowRememberMe
             ? model.RememberMe

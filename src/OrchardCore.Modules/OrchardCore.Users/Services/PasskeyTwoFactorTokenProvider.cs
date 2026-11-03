@@ -42,6 +42,8 @@ public sealed class PasskeyTwoFactorTokenProvider : IUserTwoFactorTokenProvider<
             return false;
         }
 
-        return (await passkeyService.UpdateUsedPasskeyAsync(user, result.Passkey)).Succeeded;
+        await passkeyService.UpdateUsedPasskeyAsync(user, result.Passkey);
+
+        return true;
     }
 }

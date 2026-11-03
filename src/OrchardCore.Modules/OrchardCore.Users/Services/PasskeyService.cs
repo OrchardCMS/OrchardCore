@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Users.Services;
 
@@ -24,17 +25,23 @@ public sealed class PasskeyService
 
     private readonly IPasskeyHandler<IUser> _passkeyHandler;
     private readonly UserManager<IUser> _userManager;
+    private readonly IUserPasskeyStore<IUser> _passkeyStore;
+    private readonly ISession _session;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IClock _clock;
 
     public PasskeyService(
         IPasskeyHandler<IUser> passkeyHandler,
         UserManager<IUser> userManager,
+        IUserPasskeyStore<IUser> passkeyStore,
+        ISession session,
         IHttpContextAccessor httpContextAccessor,
         IClock clock)
     {
         _passkeyHandler = passkeyHandler;
         _userManager = userManager;
+        _passkeyStore = passkeyStore;
+        _session = session;
         _httpContextAccessor = httpContextAccessor;
         _clock = clock;
     }
@@ -135,12 +142,18 @@ public sealed class PasskeyService
     /// <summary>
     /// Saves a passkey after it was used to sign in, with its new signature counter and the time it was used.
     /// </summary>
+    /// <remarks>
+    /// Logging in doesn't update the user, so it doesn't run the user validators nor the user updated handlers:
+    /// a user who can't be updated can still log in, as with a password, and audit trails and workflows only see the login.
+    /// </remarks>
     /// <param name="user">The user who signed in.</param>
     /// <param name="passkey">The passkey returned by <see cref="PerformAssertionAsync(string)"/>.</param>
-    public Task<IdentityResult> UpdateUsedPasskeyAsync(IUser user, UserPasskeyInfo passkey)
+    public async Task UpdateUsedPasskeyAsync(IUser user, UserPasskeyInfo passkey)
     {
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(passkey);
+
+        await _passkeyStore.AddOrUpdatePasskeyAsync(user, passkey, HttpContext.RequestAborted);
 
         if (user is User u)
         {
@@ -150,9 +163,9 @@ public sealed class PasskeyService
             {
                 userPasskey.LastUsedUtc = _clock.UtcNow;
             }
-        }
 
-        return _userManager.AddOrUpdatePasskeyAsync(user, passkey);
+            await _session.SaveAsync(u, cancellationToken: HttpContext.RequestAborted);
+        }
     }
 
     private HttpContext HttpContext
