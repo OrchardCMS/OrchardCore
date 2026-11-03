@@ -20,7 +20,7 @@
             <p class="text-muted mb-0 me-auto">@Model.Description</p>
             <div class="d-flex gap-1 ms-auto">
                 <a asp-action="Edit" asp-route-name="@Model.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                <partial name="_BackgroundTaskActions" model="new BackgroundTaskActionsViewModel { Name = Model.Name, Enable = Model.Enable, IsMonitored = Model.IsMonitored, State = state }" />
+                <partial name="_BackgroundTaskActions" model="Model" />
             </div>
         </div>
 
@@ -41,7 +41,7 @@
                         {
                             <dl class="row mb-0">
                                 <dt class="col-sm-5">@T["Status"]</dt>
-                                <dd class="col-sm-7" data-status>
+                                <dd class="col-sm-7">
                                     @switch (state.Status)
                                     {
                                         case BackgroundTaskStatus.Running:
@@ -80,7 +80,7 @@
                                 @if (state.LastRun is not null)
                                 {
                                     <dt class="col-sm-5">@T["Last run duration"]</dt>
-                                    <dd class="col-sm-7" data-last-duration><partial name="_BackgroundTaskDuration" model="state.LastRun.Duration" /></dd>
+                                    <dd class="col-sm-7"><partial name="_BackgroundTaskDuration" model="state.LastRun.Duration" /></dd>
 
                                     <dt class="col-sm-5">@T["Last run triggered by"]</dt>
                                     <dd class="col-sm-7">@(state.LastRun.Trigger == BackgroundTaskTrigger.Manual ? T["Run now"] : T["Schedule"])</dd>
@@ -143,7 +143,7 @@
                             </dd>
 
                             <dt class="col-sm-5">@T["Schedule"]</dt>
-                            <dd class="col-sm-7" data-schedule>
+                            <dd class="col-sm-7">
                                 <code>@Model.Schedule</code>
                                 @if (!string.Equals(Model.Schedule, Model.DefaultSchedule, StringComparison.Ordinal))
                                 {

@@ -152,7 +152,6 @@ public class BackgroundTaskControllerTests
         Assert.Same(firstState, model.Tasks.Single(task => task.Name == _firstTaskName).State);
         Assert.Null(model.Tasks.Single(task => task.Name == _secondTaskName).State);
         Assert.Contains(model.Options.BulkActions, action => action.Value == nameof(BackgroundTaskBulkAction.Run));
-        Assert.Equal("*/10 * * * *", model.Tasks.Single(task => task.Name == _firstTaskName).Schedule);
     }
 
     [Fact]
@@ -243,9 +242,8 @@ public class BackgroundTaskControllerTests
     [Fact]
     public async Task States_Default_ReturnsStatusOfTenantTasks()
     {
-        var lastStartTime = new DateTime(2026, 1, 15, 10, 0, 0, DateTimeKind.Utc);
         var monitor = CreateMonitor(
-            new BackgroundTaskState { Name = _firstTaskName, Tenant = Tenant, Status = BackgroundTaskStatus.Running, LastStartTime = lastStartTime, RunCount = 4 });
+            new BackgroundTaskState { Name = _firstTaskName, Tenant = Tenant, Status = BackgroundTaskStatus.Running, RunCount = 4 });
 
         var controller = CreateController(monitor.Object, new TestNotifier());
 
@@ -255,7 +253,6 @@ public class BackgroundTaskControllerTests
         var state = Assert.Single(json.EnumerateArray());
         Assert.Equal(_firstTaskName, state.GetProperty("Name").GetString());
         Assert.Equal("Running", state.GetProperty("Status").GetString());
-        Assert.Equal(lastStartTime, state.GetProperty("LastStartTime").GetDateTime());
         Assert.Equal(4, state.GetProperty("RunCount").GetInt64());
     }
 

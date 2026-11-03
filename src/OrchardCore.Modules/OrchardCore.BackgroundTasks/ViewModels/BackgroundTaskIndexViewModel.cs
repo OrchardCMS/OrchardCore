@@ -37,8 +37,6 @@ public class BackgroundTaskEntry
 
     public string Description { get; set; }
 
-    public string Schedule { get; set; }
-
     /// <summary>
     /// Whether the execution state of the task is available, i.e. whether the background service is registered.
     /// </summary>

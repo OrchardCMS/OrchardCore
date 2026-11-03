@@ -93,7 +93,6 @@ public sealed class BackgroundTaskController : Controller
                 Title = defaultSettings.Title,
                 Description = settings.Description,
                 Enable = settings.Enable,
-                Schedule = settings.Schedule,
                 IsMonitored = _backgroundTaskMonitor is not null,
                 State = state,
             };
@@ -314,7 +313,6 @@ public sealed class BackgroundTaskController : Controller
         {
             state.Name,
             Status = state.Status.ToString(),
-            state.LastStartTime,
             state.RunCount,
         }));
     }

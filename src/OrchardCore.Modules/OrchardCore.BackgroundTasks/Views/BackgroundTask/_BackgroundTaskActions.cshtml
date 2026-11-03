@@ -1,4 +1,4 @@
-@model BackgroundTaskActionsViewModel
+@model BackgroundTaskDetailsViewModel
 
 <div class="btn-group">
     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-task-actions>
@@ -22,25 +22,17 @@
                 }
             </li>
         }
-        @if (Model.ShowDetails)
-        {
-            <li>
-                <a asp-action="Details" asp-route-name="@Model.Name" class="dropdown-item">
-                    <i class="fa-solid fa-circle-info fa-fw text-info" aria-hidden="true"></i> @T["Details"]
-                </a>
-            </li>
-        }
         <li><hr class="dropdown-divider"></li>
         <li>
             @if (Model.Enable)
             {
-                <a asp-action="Disable" asp-route-name="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="dropdown-item text-danger" data-url-af="UnsafeUrl" data-toggle-task>
+                <a asp-action="Disable" asp-route-name="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="dropdown-item text-danger" data-url-af="UnsafeUrl">
                     <i class="fa-solid fa-ban fa-fw" aria-hidden="true"></i> @T["Disable"]
                 </a>
             }
             else
             {
-                <a asp-action="Enable" asp-route-name="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-url-af="UnsafeUrl" data-toggle-task>
+                <a asp-action="Enable" asp-route-name="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-url-af="UnsafeUrl">
                     <i class="fa-solid fa-check fa-fw text-success" aria-hidden="true"></i> @T["Enable"]
                 </a>
             }
