@@ -41,6 +41,28 @@ public class OpenApiCliParserTests
     }
 
     [Fact]
+    public void Parse_ExamplesOnBodiesAndResponses_DoNotChangeTheCommand()
+    {
+        // Examples hold arbitrary JSON, including what looks like a reference, a schema or a secret.
+        const string Example = """{"$ref":"#/components/schemas/Missing","type":"object","properties":{"apiKey":{"type":"string","writeOnly":true}},"password":"Replace-Me-1","list":[1,null,true]}""";
+        const string Schema = """{"type":"object","required":["name"],"properties":{"name":{"type":"string"}}}""";
+        var withExamples = """
+            {"paths":{"/api/widgets":{"post":{"x-oc-cli":{"commandGroup":["widgets"],"verb":"create"},
+              "requestBody":{"content":{"application/json":{"schema":SCHEMA,"example":EXAMPLE}}},
+              "responses":{"201":{"content":{"application/json":{"schema":{"type":"object"},"example":EXAMPLE}}}}}}}}
+            """.Replace("SCHEMA", Schema, StringComparison.Ordinal).Replace("EXAMPLE", Example, StringComparison.Ordinal);
+
+        var operation = Assert.Single(OpenApiCliParser.Parse(withExamples));
+        var expected = Assert.Single(OpenApiCliParser.Parse(CreateDocument(Schema)));
+
+        Assert.Equal(expected.RequestBodySchema!.ToJsonString(), operation.RequestBodySchema!.ToJsonString());
+        Assert.Equal(expected.RequestBodyProperties.Select(property => property.Name), operation.RequestBodyProperties.Select(property => property.Name));
+        Assert.Empty(operation.CliMetadata.SecretProperties);
+        Assert.Empty(operation.WriteOnlyProperties);
+        Assert.False(operation.RequestBodyHasWriteOnlyValue);
+    }
+
+    [Fact]
     public void Parse_RecursiveSchema_Terminates()
     {
         var operation = Assert.Single(OpenApiCliParser.Parse(CreateDocument("""{"$ref":"#/components/schemas/Tree"}""")));

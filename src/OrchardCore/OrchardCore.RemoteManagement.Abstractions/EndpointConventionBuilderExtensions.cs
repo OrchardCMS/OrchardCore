@@ -76,4 +76,19 @@ public static class EndpointConventionBuilderExtensions
         return builder.WithMetadata(new ResourceVersionMetadata { AcceptsIfMatch = true })
             .ProducesProblem(StatusCodes.Status412PreconditionFailed);
     }
+
+    /// <summary>
+    /// Sets the request and response examples of the endpoint in the OpenAPI document. The request example has
+    /// to be accepted by the endpoint, and a credential in it has to be an obvious placeholder.
+    /// </summary>
+    /// <param name="builder">The route handler builder.</param>
+    /// <param name="request">The JSON of the request example, or <see langword="null"/> when the operation has none.</param>
+    /// <param name="response">The JSON of the example of the successful responses, or <see langword="null"/> when the operation has none.</param>
+    /// <returns>The route handler builder.</returns>
+    public static RouteHandlerBuilder WithOpenApiExample(this RouteHandlerBuilder builder, string request = null, string response = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return builder.WithMetadata(new OpenApiExampleMetadata(request, response));
+    }
 }

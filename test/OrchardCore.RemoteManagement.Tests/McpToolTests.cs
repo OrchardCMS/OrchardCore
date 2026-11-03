@@ -61,6 +61,22 @@ public class McpToolTests
     }
 
     [Fact]
+    public void CreateTools_ExamplesInTheDocument_LeaveTheToolUnchanged()
+    {
+        var expected = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint()], Document()));
+        var document = Document();
+        var operation = document["paths"]["/api/widgets/{id}"]["put"];
+        operation["requestBody"]["content"]["application/json"]["example"] = JsonNode.Parse("""{"title":"Example","password":"Replace-Me-1"}""");
+        operation["responses"] = JsonNode.Parse("""{"200":{"content":{"application/json":{"example":{"title":"Example"}}}}}""");
+
+        var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint()], document));
+
+        Assert.Equal(expected.Tool.InputSchema.GetRawText(), tool.Tool.InputSchema.GetRawText());
+        Assert.Equal(expected.Tool.Description, tool.Tool.Description);
+        Assert.DoesNotContain("Replace-Me-1", tool.Tool.InputSchema.GetRawText(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CreateTools_TenantEndpointCollections_DoNotLeakOtherTenantTools()
     {
         Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint()], Document()));
