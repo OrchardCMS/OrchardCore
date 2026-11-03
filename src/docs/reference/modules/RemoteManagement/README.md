@@ -15,6 +15,8 @@ Start with the illustrated [first-tenant walkthrough](../../../guides/remote-man
 - [Discovery and manifest](../../api/discovery/README.md)
 - [Authentication](../../api/authentication/README.md)
 
+Before exposing a tenant, read [Security and hardening](#security-and-hardening).
+
 ## Enable and configure
 
 The shared **Remote Management** feature (`OrchardCore.RemoteManagement`) enables
@@ -31,8 +33,7 @@ For Pomi, enable **Remote Management CLI** under **Configuration → Features**.
 Open **Settings → Remote Management**, then **Configure Pomi CLI**. The CLI action
 configures shared authentication and the `orchardcore-cli` public native application,
 its loopback callback, and device authorization. Existing applications and unrelated
-OpenID settings are preserved. Existing tenants using Pomi should explicitly enable
-this feature to retain CLI discovery after upgrading.
+OpenID settings are preserved.
 
 The shared **Configure Remote Management** action checks and repairs the authorization
 code flow, refresh tokens, client credentials, local token validation, and the
@@ -429,7 +430,7 @@ Next-command hints omit `--context` when the suggested context is already the
 current default. Hints targeting another context include its name explicitly,
 so copying the command keeps the intended tenant selected.
 
-The default `--output auto` writes human-readable messages in a terminal (tables for lists) and JSON when redirected to a pipe or file. Use `--output human` to keep readable messages even when redirected. Use `--output json` explicitly for automation, or `--output table|csv|tsv|yaml|toml|none` for other representations. Tables may shorten long non-URL cells; HTTP and HTTPS URLs remain complete. JSON preserves the full response. TOML omits properties whose value is `null`; root arrays and scalar values are emitted under `items` and `value`, respectively. JSON request bodies can come from `--body`, `--body-file`, or `--stdin`. Binary request bodies use `--file` or `--stdin`. Discovered option and argument names use lower kebab-case. List commands use zero-based `--skip` and `--take` options for paging.
+The default `--output auto` writes human-readable messages in a terminal (tables for lists) and JSON when redirected to a pipe or file. Use `--output human` to keep readable messages even when redirected. Use `--output json` explicitly for automation, or `--output table|csv|tsv|yaml|toml|none` for other representations. Tables may shorten long non-URL cells; HTTP and HTTPS URLs remain complete. JSON preserves the full response. TOML omits properties whose value is `null`; root arrays and scalar values are emitted under `items` and `value`, respectively. JSON request bodies can come from `--body`, `--body-file`, or `--stdin`. Binary request bodies use `--file` or `--stdin`. Discovered option and argument names use lower kebab-case. List commands that page their results use zero-based `--skip` and `--take` options.
 
 Every resource that accepts a request body exposes a `schema` verb. When all input operations use the same shape, the schema is returned directly:
 
@@ -857,3 +858,56 @@ Other write operations, and these when enabled, are marked as potentially destru
 MCP tool annotations; clients should obtain user confirmation before invoking them.
 Annotations are advisory and do not add an interactive confirmation step on the server.
 Plain creations are not marked.
+
+## Security and hardening
+
+Remote management gives clients the same administrative power as the admin UI, from outside of it. This section gathers what to decide before enabling it, and links to the details.
+
+### Who can enable remote management
+
+**Manage remote management configuration** (`ManageRemoteManagementConfiguration`) controls who can change how a tenant is managed remotely. The Administrator role has it by default, next to **Access remote management API** (`AccessRemoteManagement`). Grant it only to people who could already administer the tenant.
+
+| Action | Required permissions |
+| --- | --- |
+| The actions of **Settings → Remote Management**, on the tenant itself | `ManageRemoteManagementConfiguration` and `ManageServerSettings`, see [Enable and configure](#enable-and-configure) |
+| [`POST /api/tenants/{tenantName}:enable-remote-management`](../../api/tenants/README.md#enable-remote-management-for-a-tenant) and [`:disable-remote-management`](../../api/tenants/README.md#disable-remote-management-for-a-tenant), from the Default tenant | `ManageTenants` and `ManageRemoteManagementConfiguration` |
+| `enableRemoteManagement` when [installing a tenant](../../api/tenants/README.md#install-a-tenant), from the Default tenant | `ManageTenants` and `ManageRemoteManagementConfiguration` |
+
+The operations from the Default tenant record an event in the **Tenant remote management** category of its audit trail when **Audit Trail** is enabled there. Enable it to keep track of them. Disabling remote management stops the APIs and `/mcp`, but keeps the OpenID applications, their scopes and the settings: delete the applications you no longer want in the OpenID administration.
+
+The feature only opens a door: `AccessRemoteManagement` and the `orchardcore.management` scope don't authorize any operation by themselves, and each operation checks its own permissions. Creating or updating a role or an OpenID application can only grant the permissions the caller holds, see the [Roles](../../api/roles/README.md) and [OpenID](../../api/openid/README.md) APIs.
+
+### What `provisionClient` grants
+
+`provisionClient`, `enableRemoteManagement` and Pomi's `--provision-client` and `--enable-remote-management` create a confidential application that has the **administrator role of the target tenant**. It keeps this access independently of any user account, and even when the password of the administrator changes.
+
+- The secret is returned once, with `Cache-Control: no-store`. Pomi saves it in a new context and leaves it out of its output. See [what Pomi stores](../../../guides/remote-management/README.md#optional-unattended-remote-management).
+- Each request creates another application: it doesn't rotate the previous ones. Delete the application to revoke its access, as `pomi logout` only removes the local copy.
+- The operation is written to the log, and to the audit trail as above. It isn't an MCP tool, as it returns a secret.
+- For a job that needs less, register a [limited application](#client-credentials-for-automation) rather than provisioning one.
+
+### MCP clients
+
+- **Automatic registration is anonymous.** Anyone who can reach a tenant with MCP authentication configured can create a public OpenID application, within [its limits](#registration-endpoint-and-limits). This grants nothing by itself, as a signed-in user with the required permissions must still consent, but client names are [not verified](#automatic-client-registration): a consent request can impersonate a known client. Train the users who approve them to check the host that the consent page shows.
+- **Turn it off when you don't need it.** Set `AllowDynamicClientRegistration` to `false`, lower `MaximumApplications`, and use [manual registration](#manual-registration-and-unattended-clients) for a known list of clients. Turning it off doesn't delete the existing applications or revoke their tokens.
+- **Destructive operations are left out by default.** A model can invoke a tool without asking anyone, so the operations for which Pomi asks a confirmation aren't tools unless `AllowConfirmationRequiredTools` is set, see [Tools](#tools). Setting it lets a model delete data or execute recipes with the permissions of the user who consented, and the annotations marking these tools are only advisory. Set it only for clients that ask before each call.
+- **Secrets stay out of tools.** Tool arguments and results reach the model's context and the client's transcript, so the [operations taking or returning credentials](#tools) aren't tools, and `settings_sections_update` refuses the sections that accept secrets. Use Pomi or the HTTP APIs for them.
+- **Audience.** `/mcp` requires the token of an automatically registered client to target that exact URL, see [Automatic client registration](#automatic-client-registration). This check is specific to `/mcp`: the same token is also accepted by the management APIs of the tenant, with the same permissions.
+
+Grant the people who connect MCP clients only the permissions they want a model to use, as a tool runs with theirs.
+
+### Credentials on the client
+
+On macOS, Linux and other Unix-like systems, Pomi stores tokens and application secrets as **plaintext** owner-only files under `~/.orchardcore/credentials`. Windows uses Windows Credential Manager. On a shared machine or a backed-up home directory, treat these files as administrative access to the tenant, see [Contexts and login](#contexts-and-login). In CI, inject the secret from a secret store instead, and set `OC_CONTEXT` so that it can't reach another tenant, see [Client credentials for automation](#client-credentials-for-automation).
+
+Use HTTPS for every context; HTTP is only accepted for loopback addresses. See [Endpoint and credential boundaries](#endpoint-and-credential-boundaries).
+
+### Rate limits
+
+Enable the [Rate Limits](../RateLimits/README.md) feature on tenants reachable from the internet.
+
+- It limits the device authorization and verification endpoints to 30 requests per minute per remote address, as they don't require an authenticated client. See [Rate limiting](../OpenId/README.md#rate-limiting).
+- [Automatic MCP client registration](#registration-endpoint-and-limits) has its own limits of 10 attempts per minute per remote address and 100 per tenant, with or without this feature.
+- Behind a reverse proxy, forward the client address with the [Reverse Proxy](../ReverseProxy/README.md) feature, otherwise all callers share the budget of the proxy's address.
+
+The seeded Default Global Policy also limits discovery, management and token requests, so [budget automation traffic](../../api/rate-limits/README.md) accordingly.
