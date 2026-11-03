@@ -87,7 +87,7 @@ def tool(verb, arguments=None, client='cli-https', status=200):
     content = json.loads(result['content'][0]['text'])
     assert content['statusCode'] == status, content
     assert result.get('isError', False) == (status >= 400)
-    return json.loads(content['body']) if content['body'] else None
+    return content['body']
 
 
 def hsts_header():

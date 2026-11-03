@@ -134,7 +134,7 @@ def tool(verb, body=None, client='cli-fixture', status=200):
         'params': {'name': 'settings_sections_' + verb, 'arguments': arguments}}, client=client)['result']
     content = json.loads(result['content'][0]['text'])
     assert content['statusCode'] == status, (verb, content['statusCode'], status)
-    return json.loads(content['body']) if content['body'] else None
+    return content['body']
 
 
 with tempfile.TemporaryDirectory(prefix='search-settings-cli-', dir=state_path.parent) as config_home:

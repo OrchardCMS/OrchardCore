@@ -88,7 +88,7 @@ def tool(name, arguments):
         'params': {'name': name, 'arguments': arguments}})['result']
     content = json.loads(result['content'][0]['text'])
     assert content['statusCode'] == 200, (name, content['statusCode'])
-    return json.loads(content['body']) if content['body'] else None
+    return content['body']
 
 
 with tempfile.TemporaryDirectory(prefix='deployment-cli-', dir=state_path.parent) as config_home:

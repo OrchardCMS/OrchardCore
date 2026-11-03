@@ -80,7 +80,7 @@ def tool(resource, verb, arguments=None, client='cli-openid-applications', statu
     content = json.loads(text)
     assert content['statusCode'] == status, content
     assert result.get('isError', False) == (status >= 400)
-    return json.loads(content['body']) if content['body'] else None
+    return content['body']
 
 
 with tempfile.TemporaryDirectory(prefix='openid-discovery-cli-', dir=state_path.parent) as config_home:

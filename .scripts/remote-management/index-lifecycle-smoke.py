@@ -89,7 +89,7 @@ def operation_tool(command, arguments, status=200):
         'params': {'name': 'indexes_' + command, 'arguments': {'query': arguments}}}, client='cli-indexes')['result']
     content = json.loads(result['content'][0]['text'])
     assert content['statusCode'] == status, (command, content['statusCode'], status)
-    return json.loads(content['body']) if content['body'] else None
+    return content['body']
 
 
 def completed(operation, transport='http'):

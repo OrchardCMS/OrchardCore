@@ -96,7 +96,7 @@ def tool(name, arguments):
         'params': {'name': name, 'arguments': arguments}})['result']
     content = json.loads(result['content'][0]['text'])
     assert content['statusCode'] in (200, 204), (name, content['statusCode'])
-    return json.loads(content['body']) if content['body'] else None
+    return content['body']
 
 
 class LocalSmtp(socketserver.StreamRequestHandler):
