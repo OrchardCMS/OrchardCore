@@ -39,7 +39,7 @@ The service builds absolute URLs from the effective request scheme, host, and `P
 
 ## OpenAPI security
 
-The OpenAPI document at `/openapi/v1.json` declares an HTTP `Bearer` security scheme in `components.securitySchemes`, and every operation authenticating with the `Api` scheme references it in `security`. The authority and grants depend on the tenant and the request, so read them from the bootstrap document or the manifest rather than from the OpenAPI document.
+The OpenAPI document at `/openapi/v1.json` declares an HTTP `Bearer` security scheme in `components.securitySchemes`, and every operation authenticating with the `Api` scheme references it in `security`. The operations of the CLI allowing anonymous access, which check permissions themselves or are public, declare it as optional with `[{}, {"Bearer": []}]`. The authority and grants depend on the tenant and the request, so read them from the bootstrap document or the manifest rather than from the OpenAPI document.
 
 ## API revision and cache freshness
 

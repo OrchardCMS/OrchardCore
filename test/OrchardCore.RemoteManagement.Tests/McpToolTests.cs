@@ -171,6 +171,17 @@ public class McpToolTests
         Assert.False(ManagementSecurityOperationTransformer.RequiresBearerToken([new CliOperationMetadata(["widgets"], "show")]));
     }
 
+    [Fact]
+    public void AllowsOptionalBearerToken_AnonymousCliOperation_ReturnsTrue()
+    {
+        var policy = new AuthorizationPolicyBuilder(OrchardCoreConstants.AuthenticationSchemes.Api).RequireAuthenticatedUser().Build();
+        var cli = new CliOperationMetadata(["widgets"], "show");
+
+        Assert.True(ManagementSecurityOperationTransformer.AllowsOptionalBearerToken([cli, new AllowAnonymousAttribute()]));
+        Assert.False(ManagementSecurityOperationTransformer.AllowsOptionalBearerToken([cli, policy]));
+        Assert.False(ManagementSecurityOperationTransformer.AllowsOptionalBearerToken([new AllowAnonymousAttribute()]));
+    }
+
     private static Task<CallToolResult> InvokeAsync(McpToolDefinition tool, HttpContext parent, string arguments) =>
         McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(arguments), parent, NullLogger.Instance, CancellationToken.None);
 

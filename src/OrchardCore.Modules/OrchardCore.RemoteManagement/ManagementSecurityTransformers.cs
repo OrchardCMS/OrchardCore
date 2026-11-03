@@ -28,7 +28,8 @@ internal sealed class ManagementSecurityDocumentTransformer : IOpenApiDocumentTr
 }
 
 /// <summary>
-/// Marks the operations authenticating with the API scheme as using the scheme of the document.
+/// Marks the operations authenticating with the API scheme as using the scheme of the document. The
+/// operations of the CLI allowing anonymous access declare it as optional, as a token can be sent to them.
 /// </summary>
 internal sealed class ManagementSecurityOperationTransformer : IOpenApiOperationTransformer
 {
@@ -37,13 +38,29 @@ internal sealed class ManagementSecurityOperationTransformer : IOpenApiOperation
         if (RequiresBearerToken(context.Description.ActionDescriptor.EndpointMetadata))
         {
             operation.Security ??= [];
-            operation.Security.Add(new OpenApiSecurityRequirement
-            {
-                [new OpenApiSecuritySchemeReference(ManagementSecurityDocumentTransformer.SchemeName, context.Document)] = [],
-            });
+            operation.Security.Add(CreateRequirement(context.Document));
+        }
+        else if (AllowsOptionalBearerToken(context.Description.ActionDescriptor.EndpointMetadata))
+        {
+            // An empty requirement is how OpenAPI tells that the operation can be called without credentials.
+            operation.Security ??= [];
+            operation.Security.Add(new OpenApiSecurityRequirement());
+            operation.Security.Add(CreateRequirement(context.Document));
         }
 
         return Task.CompletedTask;
+    }
+
+    private static OpenApiSecurityRequirement CreateRequirement(OpenApiDocument document) => new()
+    {
+        [new OpenApiSecuritySchemeReference(ManagementSecurityDocumentTransformer.SchemeName, document)] = [],
+    };
+
+    internal static bool AllowsOptionalBearerToken(IEnumerable<object> metadata)
+    {
+        var items = metadata as IReadOnlyCollection<object> ?? metadata.ToArray();
+
+        return items.OfType<IAllowAnonymous>().Any() && items.OfType<CliOperationMetadata>().Any();
     }
 
     internal static bool RequiresBearerToken(IEnumerable<object> metadata)
