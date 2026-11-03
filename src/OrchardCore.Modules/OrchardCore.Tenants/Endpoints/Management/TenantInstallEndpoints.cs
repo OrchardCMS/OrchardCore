@@ -54,6 +54,12 @@ internal static partial class TenantManagementEndpoints
             return authError;
         }
 
+        // The application is an administrator of the tenant, which managing tenants doesn't imply.
+        if (request.EnableRemoteManagement && !await authorizationService.AuthorizeAsync(httpContext.User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
         return await WithSetupLockAsync(tenantName, distributedLock, localizer, async () =>
         {
             if (shellHost.TryGetSettings(tenantName, out _))
@@ -97,6 +103,7 @@ internal static partial class TenantManagementEndpoints
 
                     tenant.ClientCredentials = credentials;
                     httpContext.Response.Headers.CacheControl = "no-store";
+                    logger.LogWarning("'{UserName}' provisioned the administrative application '{ClientId}' for the tenant '{TenantName}'.", httpContext.User.Identity?.Name, credentials.ClientId, tenantName);
                 }
 
                 return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(tenantName)}", tenant);

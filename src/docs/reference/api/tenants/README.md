@@ -996,6 +996,8 @@ pipeline's error message.
 
 ## Enable Remote Management for a tenant
 
+Creating an administrative application, here or with `enableRemoteManagement` when installing a tenant, also requires the `ManageRemoteManagementConfiguration` permission on the Default tenant, and is written to the log.
+
 The optional query boolean `provisionClient=true` also creates a new administrative
 confidential application and returns its `clientCredentials` once, with
 `Cache-Control: no-store`. Omission preserves the enable/configure-only behavior.

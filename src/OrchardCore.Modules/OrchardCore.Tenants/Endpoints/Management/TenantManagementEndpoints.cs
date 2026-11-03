@@ -221,11 +221,18 @@ internal static partial class TenantManagementEndpoints
         [FromServices] ShellSettings currentShellSettings,
         [FromServices] IAuthorizationService authorizationService,
         [FromServices] IStringLocalizer<TenantApiController> localizer,
+        [FromServices] ILogger<TenantApiController> logger,
         [FromQuery] bool provisionClient = false)
     {
         if (await AuthorizeManageTenantsAsync(httpContext, authorizationService, currentShellSettings, localizer) is { } authError)
         {
             return authError;
+        }
+
+        // The application is an administrator of the tenant, which managing tenants doesn't imply.
+        if (provisionClient && !await authorizationService.AuthorizeAsync(httpContext.User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
+        {
+            return httpContext.ApiForbidProblem();
         }
 
         if (!shellHost.TryGetSettings(tenantName, out var settings))
@@ -257,6 +264,7 @@ internal static partial class TenantManagementEndpoints
         if (credentials is not null)
         {
             httpContext.Response.Headers.CacheControl = "no-store";
+            logger.LogWarning("'{UserName}' provisioned the administrative application '{ClientId}' for the tenant '{TenantName}'.", httpContext.User.Identity?.Name, credentials.ClientId, settings.Name);
         }
 
         return TypedResults.Ok(new TenantOperationResponse
