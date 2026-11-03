@@ -718,16 +718,112 @@ html:has(.action-bar-bottom) {
   --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }
 
-.CodeMirror {
+html .CodeMirror {
   height: auto;
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
 }
 
-.CodeMirror-gutters {
+html .CodeMirror-gutters {
   background-color: var(--bs-secondary-bg);
   color: var(--bs-secondary-color);
+}
+
+html[dir="ltr"] .CodeMirror-gutters {
+  border-right-color: var(--bs-border-color);
+}
+
+html[dir="rtl"] .CodeMirror-gutters {
+  border-left-color: var(--bs-border-color);
+}
+
+html .CodeMirror-linenumber {
+  color: var(--bs-secondary-color);
+}
+
+html[dir="ltr"] .CodeMirror-cursor {
+  border-left-color: var(--bs-body-color);
+}
+
+html[dir="rtl"] .CodeMirror-cursor {
+  border-right-color: var(--bs-body-color);
+}
+
+[data-bs-theme=dark] .CodeMirror-selected {
+  background: rgba(var(--bs-primary-rgb), 0.25);
+}
+
+[data-bs-theme=dark] .CodeMirror-focused .CodeMirror-selected {
+  background: rgba(var(--bs-primary-rgb), 0.35);
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-header,
+[data-bs-theme=dark] .cm-s-default .cm-def,
+[data-bs-theme=dark] .cm-s-default .cm-attribute,
+[data-bs-theme=dark] .cm-s-default .cm-link {
+  color: #82aaff;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-quote,
+[data-bs-theme=dark] .cm-s-default .cm-tag {
+  color: #7fd88f;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-keyword {
+  color: #c792ea;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-atom,
+[data-bs-theme=dark] .cm-s-default .cm-builtin {
+  color: #f78c6c;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-number {
+  color: #f7b267;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-variable-2 {
+  color: #80cbc4;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-variable-3,
+[data-bs-theme=dark] .cm-s-default .cm-type {
+  color: #4ec9b0;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-comment {
+  color: #8b949e;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-string {
+  color: #c3e88d;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-string-2 {
+  color: #ffcb6b;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-meta,
+[data-bs-theme=dark] .cm-s-default .cm-qualifier,
+[data-bs-theme=dark] .cm-s-default .cm-hr {
+  color: #a0a8b3;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-bracket {
+  color: #d7c99a;
+}
+
+[data-bs-theme=dark] .cm-s-default .cm-error {
+  color: #ff6b6b;
+}
+
+[data-bs-theme=dark] div.CodeMirror span.CodeMirror-matchingbracket {
+  color: #7fd88f;
+}
+
+[data-bs-theme=dark] div.CodeMirror span.CodeMirror-nonmatchingbracket {
+  color: #ff6b6b;
 }
 
 .CodeMirror-fullscreen {

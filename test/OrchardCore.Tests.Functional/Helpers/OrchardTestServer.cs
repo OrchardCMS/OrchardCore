@@ -18,8 +18,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
     // Capture the original values once at process start, then clear the env vars so
     // ShellSettingsManager can't re-apply them with highest priority — each host gets
     // its per-fixture connection string via tenants.json and builder.Configuration instead.
-    private static readonly string _originalConnectionString = CaptureAndClear("OrchardCore__ConnectionString");
-    private static readonly string _originalDatabaseProvider = CaptureAndClear("OrchardCore__DatabaseProvider");
+    private static readonly string s_originalConnectionString = CaptureAndClear("OrchardCore__ConnectionString");
+    private static readonly string s_originalDatabaseProvider = CaptureAndClear("OrchardCore__DatabaseProvider");
 
     private static string CaptureAndClear(string variable)
     {
@@ -42,7 +42,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
     public static string CurrentConnectionString => s_currentConnectionString;
 
     internal static bool IsPostgresConfigured =>
-        _originalDatabaseProvider == "Postgres" && !string.IsNullOrEmpty(_originalConnectionString);
+        s_originalDatabaseProvider == "Postgres" && !string.IsNullOrEmpty(s_originalConnectionString);
 
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
@@ -233,17 +233,17 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
         string connectionString = null;
-        if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
+        if (!string.IsNullOrEmpty(s_originalConnectionString) && !string.IsNullOrEmpty(s_originalDatabaseProvider))
         {
-            connectionString = _originalConnectionString;
+            connectionString = s_originalConnectionString;
 
             if (!string.IsNullOrEmpty(instanceId))
             {
-                var dbName = ExtractDatabaseName(_originalConnectionString);
+                var dbName = ExtractDatabaseName(s_originalConnectionString);
                 if (dbName is not null)
                 {
-                    connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
-                    EnsureCleanDatabase(connectionString, _originalDatabaseProvider);
+                    connectionString = ReplaceDatabaseName(s_originalConnectionString, $"{dbName}_{instanceId}");
+                    EnsureCleanDatabase(connectionString, s_originalDatabaseProvider);
                 }
             }
 
@@ -257,7 +257,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
                 {
                     ["Default"] = new Dictionary<string, string>
                     {
-                        ["DatabaseProvider"] = _originalDatabaseProvider,
+                        ["DatabaseProvider"] = s_originalDatabaseProvider,
                         ["ConnectionString"] = connectionString,
                     },
                 }));
@@ -265,7 +265,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             // Override the env-var-sourced configuration keys so ShellSettingsManager
             // doesn't re-apply the original values with highest priority.
             builder.Configuration["OrchardCore:ConnectionString"] = connectionString;
-            builder.Configuration["OrchardCore:DatabaseProvider"] = _originalDatabaseProvider;
+            builder.Configuration["OrchardCore:DatabaseProvider"] = s_originalDatabaseProvider;
         }
 
         // Disable YesSql concurrency checks during setup. Each recipe step runs in a new
