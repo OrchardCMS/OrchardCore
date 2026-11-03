@@ -153,6 +153,8 @@ Every accepted request creates a new operation with a new identifier: the reques
 | `state` | `Pending`, `Running`, `Completed`, `Failed`, `Uncertain` |
 | `outcome` | `Failed`, `Completed`, `Busy`, `ProviderUnavailable`, `ProviderMissing`, `ProviderRejected`, `NotFound`, `Unsupported`, `Unverified`, `LockExpired`, or null while unknown |
 
+`ProviderMissing` means the provider answered that the index doesn't exist, which a `rebuild` repairs. `ProviderUnavailable` means a required service isn't registered, or the provider's server couldn't answer. A `rebuild` that can't recreate the index on the server reports `ProviderRejected`, and it may be the reason. The cursor doesn't move, so content changed in the meantime is indexed by the next `synchronize` once the server is back.
+
 `lastTaskId` is the last confirmed cursor. `skippedTasks` counts the tasks skipped because their document kept failing to build; the logs name these records, see [Indexing batch failures](../../modules/Indexing/README.md#indexing-batch-failures).
 
 After 30 minutes without a transition, pending or running work reads as `Uncertain`. This doesn't cancel the work or prove it stopped, so inspect the index before requesting more. A missing `id` returns `400`, and an unknown operation `404`.
@@ -216,7 +218,7 @@ The definition is abbreviated in this example; responses contain every property.
 
 `GET /api/indexes/lucene/by-id?id=4x7qk2m9w`
 
-`200` returns the identifier and the definition. A missing `id` returns `400`.
+`200` returns the identifier and the definition, with its version in the `ETag` header. A missing `id` returns `400`.
 
 ### Create a definition
 
@@ -226,8 +228,8 @@ Creates the profile and the provider index, and schedules a synchronization with
 
 | Status | Meaning |
 | --- | --- |
-| `201` | Created, with a `Location` header. |
-| `200` | An equivalent definition already exists under this name, and is returned unchanged. |
+| `201` | Created, with `Location` and `ETag` headers. |
+| `200` | An equivalent definition already exists under this name, and is returned unchanged with its `ETag` header. |
 | `400` | An invalid definition, with a validation problem keyed by property. |
 | `409` | The name holds a different definition, or the provider index name is taken. |
 | `503` | The provider is unavailable or rejected the operation. Inspect the outcome before retrying. |
@@ -240,13 +242,13 @@ Creates the profile and the provider index, and schedules a synchronization with
 
 Replaces the editable values with the complete definition, while keeping unknown extension data. Omitted optional properties get their default. Updating doesn't reindex: queue the appropriate lifecycle operation after changing what affects the indexed data.
 
-An equivalent definition doesn't write anything. A different `indexName` or an invalid definition returns `400`, and an absent profile `404`. Renaming doesn't update the queries and settings that refer to `name`.
+An equivalent definition doesn't write anything. A different `indexName` or an invalid definition returns `400`, and an absent profile `404`. The optional `If-Match` header returns `412` when the definition changed since it was read, see [Optimistic concurrency](../README.md#optimistic-concurrency). Renaming doesn't update the queries and settings that refer to `name`.
 
 ### Delete a definition
 
 `DELETE /api/indexes/lucene/by-id?id=4x7qk2m9w`
 
-Removes the provider index and the profile, and returns `204`. An absent profile returns `404`. `503` means the provider rejected the operation or the profile couldn't be removed: inspect the index before retrying.
+Removes the provider index and the profile, and returns `204`. An absent profile returns `404`. `503` means the provider couldn't answer or rejected the operation, or the profile couldn't be removed: inspect the index before retrying. When the provider doesn't answer, the profile is kept, so that its index isn't left behind.
 
 ## Elasticsearch and Azure AI Search content indexes
 
@@ -274,9 +276,11 @@ A definition has these properties. Unknown ones are rejected, so that field mapp
 }
 ```
 
-A successful creation returns `201 Created` with `id` and `definition`, and repeating it with the same definition returns `200 OK`. A different definition with the same name returns `409`. When the server of the provider is unavailable or rejects the index, the creation returns `503` and the profile isn't kept.
+A successful creation returns `201 Created` with `id` and `definition`, and repeating it with the same definition returns `200 OK`, both with the version in the `ETag` header. A different definition with the same name returns `409`. When the server of the provider is unavailable or rejects the index, the creation returns `503` and the profile isn't kept. This includes an index of that name that already exists on the server without a profile: it isn't overwritten, so remove it from the server or use another `indexName`.
 
-An update doesn't change the remote index: run `rebuild` to apply it. The Elasticsearch default query type and its custom query aren't part of a definition: they are kept on update, and managed from the admin page.
+An update only changes the profile, even while the server is down, and accepts the optional `If-Match` header. It doesn't change the remote index: run `rebuild` to apply it. The Elasticsearch default query type and its custom query aren't part of a definition: they are kept on update, and managed from the admin page.
+
+With `storeSourceData` set to `false`, Elasticsearch keeps only the identifier of each document: a query returns no other field, and a query with `returnContentItems` returns no content items.
 
 ## Errors
 

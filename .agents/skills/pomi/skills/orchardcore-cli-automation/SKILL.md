@@ -124,6 +124,9 @@ pomi indexes lucene update INDEX_ID --body-file index.json
 pomi indexes lucene delete INDEX_ID --force
 pomi indexes elasticsearch analyzers
 pomi indexes elasticsearch create --body-file index.json
+pomi indexes elasticsearch show INDEX_ID --show-etag
+pomi indexes elasticsearch update INDEX_ID --if-match '"ETAG"' --body-file index.json
+pomi indexes elasticsearch delete INDEX_ID --force
 pomi indexes azure-ai-search analyzers
 pomi indexes azure-ai-search create --body-file index.json
 ```
