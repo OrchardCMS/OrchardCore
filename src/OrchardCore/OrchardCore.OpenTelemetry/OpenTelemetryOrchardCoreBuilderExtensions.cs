@@ -36,7 +36,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
     /// HttpClient, the .NET runtime and the database clients, tagged with their tenant and with resource attributes
     /// identifying this instance of the application. The options are read from the 'OrchardCore:OpenTelemetry' section,
     /// and the telemetry is exported over OTLP when an endpoint is configured in 'OrchardCore:OpenTelemetry:Otlp:Endpoint'
-    /// or in the standard 'OTEL_EXPORTER_OTLP_ENDPOINT' configuration value.
+    /// or in the standard 'OTEL_EXPORTER_OTLP_ENDPOINT' and 'OTEL_EXPORTER_OTLP_{SIGNAL}_ENDPOINT' configuration values.
     /// </summary>
     /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
     /// <param name="configure">Optional callback to further configure OpenTelemetry, e.g. to add other instrumentations or exporters.</param>
@@ -67,15 +67,19 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         openTelemetry.WithTracing(tracing => tracing
             .AddOrchardCoreInstrumentation()
             .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .SetSampler(serviceProvider => CreateSampler(GetOptions(serviceProvider))));
+            .AddHttpClientInstrumentation());
 
         services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracing) =>
         {
             var options = GetOptions(serviceProvider);
             tracing.AddSource(options.Tracing.Sources);
 
-            if (options.Tracing.IncludeClientLibraries)
+            if (CreateSampler(options) is { } sampler)
+            {
+                tracing.SetSampler(sampler);
+            }
+
+            if (options.Enabled && options.Tracing.Enabled && options.Tracing.IncludeClientLibraries)
             {
                 tracing.AddSource(s_clientLibrarySources);
                 EnableAzureActivitySources();
@@ -127,7 +131,15 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         {
             if (CreateOtlpExporterOptions(serviceProvider, OtlpExporterOptionsFactory.Traces, options => options.Tracing.Enabled) is { } exporterOptions)
             {
-                tracing.AddProcessor(new BatchActivityExportProcessor(new OtlpTraceExporter(exporterOptions)));
+                // Reads the standard 'OTEL_BSP_*' environment variables.
+                var batchOptions = new BatchExportActivityProcessorOptions();
+
+                tracing.AddProcessor(new BatchActivityExportProcessor(
+                    new OtlpTraceExporter(exporterOptions),
+                    batchOptions.MaxQueueSize,
+                    batchOptions.ScheduledDelayMilliseconds,
+                    batchOptions.ExporterTimeoutMilliseconds,
+                    batchOptions.MaxExportBatchSize));
             }
         });
 
@@ -141,7 +153,10 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
                 metrics.AddReader(new PeriodicExportingMetricReader(
                     new OtlpMetricExporter(exporterOptions),
                     readerOptions.ExportIntervalMilliseconds ?? 60_000,
-                    readerOptions.ExportTimeoutMilliseconds ?? 30_000));
+                    readerOptions.ExportTimeoutMilliseconds ?? 30_000)
+                {
+                    TemporalityPreference = OtlpExporterOptionsFactory.GetTemporalityPreference(serviceProvider.GetService<IConfiguration>()),
+                });
             }
         });
 
@@ -149,7 +164,15 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         {
             if (CreateOtlpExporterOptions(serviceProvider, OtlpExporterOptionsFactory.Logs, options => options.Logging.Enabled) is { } exporterOptions)
             {
-                logging.AddProcessor(new BatchLogRecordExportProcessor(new OtlpLogExporter(exporterOptions)));
+                // Reads the standard 'OTEL_BLRP_*' environment variables.
+                var batchOptions = new BatchExportLogRecordProcessorOptions();
+
+                logging.AddProcessor(new BatchLogRecordExportProcessor(
+                    new OtlpLogExporter(exporterOptions),
+                    batchOptions.MaxQueueSize,
+                    batchOptions.ScheduledDelayMilliseconds,
+                    batchOptions.ExporterTimeoutMilliseconds,
+                    batchOptions.MaxExportBatchSize));
             }
         });
 
@@ -176,6 +199,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
         AppContext.SetSwitch(AzureActivitySourceSwitch, true);
     }
 
+    // Without a sampler, the SDK uses the standard 'OTEL_TRACES_SAMPLER' value, and otherwise samples all traces.
     private static Sampler CreateSampler(OrchardCoreOpenTelemetryOptions options)
     {
         if (!options.Enabled || !options.Tracing.Enabled)
@@ -185,7 +209,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
 
         return options.Tracing.SamplingRatio is { } samplingRatio
             ? new ParentBasedSampler(new TraceIdRatioBasedSampler(samplingRatio))
-            : new ParentBasedSampler(new AlwaysOnSampler());
+            : null;
     }
 
     private static OtlpExporterOptions CreateOtlpExporterOptions(

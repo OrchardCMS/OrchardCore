@@ -18,7 +18,7 @@ builder.Services
     .AddOpenTelemetry();
 ```
 
-The `OrchardCore.Cms.Web` application of the repository already does it, so that setting an OTLP endpoint is enough to export its telemetry.
+The `OrchardCore.Cms.Web` application of the repository does it when `builder.Configuration.HasOtlpEndpoint()` tells that an OTLP endpoint is configured, so that setting one is enough to export its telemetry, and nothing is collected otherwise.
 
 The telemetry is exported over OTLP once an endpoint is configured, either in the `OrchardCore:OpenTelemetry:Otlp` section or with the standard `OTEL_EXPORTER_OTLP_ENDPOINT` configuration value, e.g. as an environment variable:
 
@@ -122,7 +122,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `ServiceName` | The `service.name` resource attribute. Defaults to the application name. |
 | `ServiceInstanceId` | The `service.instance.id` resource attribute identifying this instance of the application. Defaults to the machine name followed by the process id, which is unique for each running instance. |
 | `Tracing:Enabled` | Whether traces are collected. Defaults to `true`. |
-| `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, all traces are sampled. |
+| `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, the standard `OTEL_TRACES_SAMPLER` value is used, and otherwise all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. |
 | `Tracing:IncludeClientLibraries` | Whether the traces of the client libraries used by Orchard Core modules are collected: the Elasticsearch client, MailKit for SMTP, and the Azure SDK clients. Defaults to `true`. See [Client libraries](#client-libraries). |
 | `Tracing:SlowShapeThreshold` | The duration from which the rendering of a shape is traced with its own span. Defaults to `00:00:00.050` (50 milliseconds), `00:00:00` traces every shape. |
@@ -131,10 +131,28 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
 | `Metrics:Meters` | The names of additional `Meter` to collect metrics from. |
 | `Logging:Enabled` | Whether logs are collected. Defaults to `true`. The log levels of the `Logging` section apply. |
-| `Otlp:Endpoint` | The endpoint of the OTLP receiver, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. |
-| `Otlp:Protocol` | `Grpc` (default) or `HttpProtobuf`. |
+| `Otlp:Endpoint` | The endpoint of the OTLP receiver for all signals, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. An endpoint that isn't an absolute HTTP or HTTPS URI stops the application from starting. |
+| `Otlp:Protocol` | `Grpc` or `HttpProtobuf`. Defaults to the `OTEL_EXPORTER_OTLP_PROTOCOL` value, and otherwise to `Grpc`. |
 
-The standard `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_PROTOCOL` and `OTEL_EXPORTER_OTLP_HEADERS` [configuration values](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) are also supported, the latter to pass an API key to a hosted backend, as well as `OTEL_METRIC_EXPORT_INTERVAL`. The `Otlp` section takes precedence over them. `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` take precedence over the values of the section.
+The standard [OTLP exporter values](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) are also supported, from the configuration of the application, e.g. environment variables. The `Otlp` section takes precedence over them.
+
+| Value | Description |
+| --- | --- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | The endpoint of the OTLP receiver for all signals. Over HTTP, the path of each signal is added to it. |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `grpc` or `http/protobuf`. Defaults to `grpc`. |
+| `OTEL_EXPORTER_OTLP_HEADERS` | The headers sent to the receiver, e.g. to pass an API key to a hosted backend. |
+| `OTEL_EXPORTER_OTLP_TIMEOUT` | The time to wait for the receiver, in milliseconds. |
+| `OTEL_EXPORTER_OTLP_COMPRESSION` | `gzip` or `none`. |
+| `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `cumulative`, `delta` or `lowmemory`. Defaults to `cumulative`. Some backends require `delta`. |
+
+Each of the first five values also exists for a single signal, which takes precedence, with `TRACES`, `METRICS` or `LOGS` after `OTLP`. For instance, `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` only sets the endpoint of the traces, and is used as is, without adding a path to it. Only the signals with an endpoint are exported.
+
+The other standard values are read by the OpenTelemetry SDK itself:
+
+- `OTEL_SDK_DISABLED` turns everything off.
+- `OTEL_TRACES_SAMPLER` and `OTEL_TRACES_SAMPLER_ARG` set the sampler, when `Tracing:SamplingRatio` isn't set.
+- `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` take precedence over the values of the section.
+- `OTEL_METRIC_EXPORT_INTERVAL`, `OTEL_METRIC_EXPORT_TIMEOUT` and the `OTEL_BSP_*` and `OTEL_BLRP_*` settings of the batches of traces and logs are only read from environment variables.
 
 ## Collected telemetry
 
@@ -165,6 +183,8 @@ A failed operation has the `Error` status, the `error.type` attribute and an `ex
 The spans of ASP.NET Core (one for each HTTP request, also tagged with the `orchardcore.tenant.name` of the tenant that served it, the number of database operations it ran, `orchardcore.db.operations`, and their total duration in seconds, `orchardcore.db.duration`) and of HttpClient (one for each outgoing HTTP request) are collected too, as well as the ones of the client libraries listed below.
 
 Every span started in the scope of a tenant, including the spans of other libraries, is tagged with `orchardcore.tenant.name`.
+
+A recipe step that reports errors without throwing an exception has no `exception` event, and its `error.type` is the `RecipeExecutionException` that makes the recipe fail.
 
 ### Metrics
 
@@ -234,10 +254,6 @@ The rendering of shapes is traced too: the `OrchardCore.DisplayManagement` activ
 }
 ```
 
-This video shows how to read these traces and metrics in the Aspire dashboard.
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/r6aAa3TrLus" title="OpenTelemetry in Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 To find the slow parts of a site:
 
 1. Find the slowest shape types with the `orchardcore.display.shape.duration` histogram, filtered by shape type.
@@ -280,4 +296,4 @@ catch (Exception ex)
 
 A module can also use its own `ActivitySource` or `Meter`, and add its name to the `Tracing:Sources` or `Metrics:Meters` settings.
 
-As these sources only depend on `System.Diagnostics`, the Orchard Core telemetry can also be watched without OpenTelemetry, e.g. with `dotnet-counters monitor --counters OrchardCore,System.Runtime`.
+As these sources only depend on `System.Diagnostics`, the Orchard Core telemetry can also be watched without OpenTelemetry, e.g. with `dotnet-counters monitor --counters OrchardCore,System.Runtime`. The `orchardcore.tenants` and `orchardcore.tenants.loaded` gauges are the exception, as they are only observed once `AddOrchardCoreInstrumentation()` or `AddOpenTelemetry()` has configured the metrics.

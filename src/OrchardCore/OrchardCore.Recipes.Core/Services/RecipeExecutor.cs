@@ -185,7 +185,9 @@ public class RecipeExecutor : IRecipeExecutor
 
         if (recipeStep.Errors.Count > 0)
         {
+            // The errors of a step make the recipe fail with this exception once the step is completed.
             activity?.SetStatus(ActivityStatusCode.Error, string.Join(' ', recipeStep.Errors));
+            activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.ErrorType, typeof(RecipeExecutionException).FullName);
         }
     }
 

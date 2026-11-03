@@ -209,6 +209,8 @@ internal sealed class ModularBackgroundService : BackgroundService
 
                     await handlers.InvokeAsync((handler, context, token) => handler.ExecutingAsync(context, token), context, stoppingToken, _logger);
 
+                    var startTimestamp = Stopwatch.GetTimestamp();
+
                     try
                     {
                         if (_logger.IsEnabled(LogLevel.Information))
@@ -217,18 +219,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                         }
 
                         scheduler.Run();
-
-                        var startTimestamp = Stopwatch.GetTimestamp();
-                        try
-                        {
-                            await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            RecordBackgroundTaskDuration(startTimestamp, tenant, taskName, ex);
-
-                            throw;
-                        }
+                        await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
                         RecordBackgroundTaskDuration(startTimestamp, tenant, taskName);
 
@@ -242,6 +233,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                         _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         context.Exception = ex;
                         OrchardCoreTelemetry.RecordException(activity, ex);
+                        RecordBackgroundTaskDuration(startTimestamp, tenant, taskName, ex);
 
                         await scope.HandleExceptionAsync(ex);
                     }

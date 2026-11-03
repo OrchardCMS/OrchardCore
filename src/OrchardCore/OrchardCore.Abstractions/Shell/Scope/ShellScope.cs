@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
@@ -333,14 +332,11 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         // The tenant gets activated here.
         if (!ShellContext.IsActivated)
         {
-            var tenantName = ShellContext.Settings.Name;
-            using var activity = OrchardCoreTelemetry.StartTenantActivity("Activate tenant", tenantName);
-            var startTimestamp = Stopwatch.GetTimestamp();
-            Exception exception = null;
-
-            try
-            {
-                await new ShellScope(ShellContext).UsingAsync(async scope =>
+            await OrchardCoreTelemetry.MeasureTenantOperationAsync(
+                "Activate tenant",
+                OrchardCoreTelemetry.TenantActivationDuration,
+                ShellContext.Settings.Name,
+                () => new ShellScope(ShellContext).UsingAsync(async scope =>
                 {
                     var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
                     foreach (var tenantEvent in tenantEvents)
@@ -352,19 +348,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                     {
                         await tenantEvent.ActivatedAsync();
                     }
-                }, activateShell: false);
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                OrchardCoreTelemetry.RecordException(activity, ex);
-
-                throw;
-            }
-            finally
-            {
-                OrchardCoreTelemetry.RecordDuration(OrchardCoreTelemetry.TenantActivationDuration, startTimestamp, tenantName, exception);
-            }
+                }, activateShell: false));
 
             ShellContext.IsActivated = true;
         }
