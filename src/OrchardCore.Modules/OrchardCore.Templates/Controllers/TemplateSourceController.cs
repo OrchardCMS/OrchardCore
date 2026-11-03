@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Modules;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -204,15 +203,15 @@ public sealed class TemplateSourceController : Controller
             ?
             [
                 new SelectListItem(S["Clone"], nameof(SourceTemplatesBulkAction.Clone)),
-                new SelectListItem(S["Reset to source"], nameof(SourceTemplatesBulkAction.Reset)),
-                new SelectListItem(S["Delete override"], nameof(SourceTemplatesBulkAction.Remove)),
+                new SelectListItem(S["Reset"], nameof(SourceTemplatesBulkAction.Reset)),
+                new SelectListItem(S["Delete"], nameof(SourceTemplatesBulkAction.Remove)),
             ]
             :
             [
-                new SelectListItem(S["Delete override"], nameof(SourceTemplatesBulkAction.Remove)),
+                new SelectListItem(S["Delete"], nameof(SourceTemplatesBulkAction.Remove)),
             ];
 
-        var search = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+        var search = await _shapeFactory.CreateAsync(AdminListConstants.SearchShapeType, Arguments.From(new
         {
             Name = _optionsSearch,
             Value = options.Search,
@@ -423,7 +422,7 @@ public sealed class TemplateSourceController : Controller
         // The templates rendering the alternates, to view them from the source listing them.
         var sourceTemplates = await _sourceTemplatesService.FindSourceTemplatesAsync(pageAlternates.Select(alternate => alternate.Name), adminTemplates);
 
-        var searchShape = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+        var searchShape = await _shapeFactory.CreateAsync(AdminListConstants.SearchShapeType, Arguments.From(new
         {
             Name = nameof(search),
             Value = search,
@@ -440,7 +439,6 @@ public sealed class TemplateSourceController : Controller
         {
             Source = templateSource,
             Entry = entry,
-            Search = search,
             Alternates = new AdminListContext<TemplateAlternateEntry>
             {
                 Source = pageAlternates

@@ -24,11 +24,6 @@ public class SourceTemplateViewModel
     public OrchardCore.Admin.AdminListContext Alternates { get; set; }
 
     /// <summary>
-    /// The search of the alternates, on the alternates page.
-    /// </summary>
-    public string Search { get; set; }
-
-    /// <summary>
     /// The content of the source template.
     /// </summary>
     public string Content { get; set; }

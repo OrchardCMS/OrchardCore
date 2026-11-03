@@ -62,7 +62,6 @@ public sealed class ShapeInspector : IShapeDisplayEvents
             var shape = _rendering.Pop();
             var metadata = context.Shape.Metadata;
 
-            shape.DisplayType = metadata.DisplayType;
             shape.Differentiator = metadata.Differentiator;
             shape.Alternates = metadata.Alternates.Reverse().Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         }

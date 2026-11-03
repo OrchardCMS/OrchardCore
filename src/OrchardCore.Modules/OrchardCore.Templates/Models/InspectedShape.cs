@@ -11,11 +11,6 @@ public sealed class InspectedShape
     public string Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the display type the shape is rendered in, e.g. <c>Detail</c>.
-    /// </summary>
-    public string DisplayType { get; set; }
-
-    /// <summary>
     /// Gets or sets the differentiator of the shape in its zone, e.g. the name of a part or a field.
     /// </summary>
     public string Differentiator { get; set; }

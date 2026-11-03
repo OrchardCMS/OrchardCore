@@ -5,13 +5,7 @@
     // The content picker of the inspected content item, in its published version when it has one, like the search results.
     object[] selected = Model.ContentItem == null
         ? []
-        : [new
-        {
-            id = Model.ContentItem.ContentItemId,
-            displayText = string.IsNullOrWhiteSpace(Model.ContentItem.DisplayText) ? Model.ContentItem.ContentItemId : Model.ContentItem.DisplayText,
-            hasPublished = Model.ContentItem.Published,
-            isClickable = false,
-        }];
+        : [OrchardCore.Templates.Controllers.TemplateInspectorController.ToPickerItem(Model.ContentItem)];
     var selectedItems = System.Text.Json.JsonSerializer.Serialize(selected);
     var searchUrl = Url.Action("SearchContentItems", "TemplateInspector", new { area = "OrchardCore.Templates", adminTemplates = Model.AdminTemplates });
     var translations = System.Text.Json.JsonSerializer.Serialize(Orchard.GetJSLocalizations("content-fields-multiselect-picker"));
