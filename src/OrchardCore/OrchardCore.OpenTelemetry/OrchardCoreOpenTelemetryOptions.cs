@@ -71,6 +71,12 @@ public sealed class OpenTelemetryTracingOptions
     /// Gets or sets the names of additional <see cref="System.Diagnostics.ActivitySource"/> to collect traces from.
     /// </summary>
     public string[] Sources { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the duration from which the rendering of a shape is traced with its own span.
+    /// Defaults to 50 milliseconds. <see cref="TimeSpan.Zero"/> traces every shape.
+    /// </summary>
+    public TimeSpan SlowShapeThreshold { get; set; } = TimeSpan.FromMilliseconds(50);
 }
 
 /// <summary>

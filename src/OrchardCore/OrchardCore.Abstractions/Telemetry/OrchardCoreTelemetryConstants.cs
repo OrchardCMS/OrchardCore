@@ -54,6 +54,21 @@ public static class OrchardCoreTelemetryConstants
         /// The type of the error that ended the operation, as defined by the OpenTelemetry semantic conventions.
         /// </summary>
         public const string ErrorType = "error.type";
+
+        /// <summary>
+        /// The type of a shape, e.g. 'Content' or 'MenuItem'.
+        /// </summary>
+        public const string ShapeType = "orchardcore.shape.type";
+
+        /// <summary>
+        /// The source of the binding that rendered a shape, e.g. the path of its template.
+        /// </summary>
+        public const string ShapeBinding = "orchardcore.shape.binding";
+
+        /// <summary>
+        /// Whether the content of a shape was found in its cache: 'hit' or 'miss'.
+        /// </summary>
+        public const string ShapeCacheResult = "orchardcore.shape.cache.result";
     }
 
     /// <summary>
@@ -85,6 +100,11 @@ public static class OrchardCoreTelemetryConstants
         /// The duration, in seconds, of running a background task.
         /// </summary>
         public const string BackgroundTaskDuration = "orchardcore.background_task.duration";
+
+        /// <summary>
+        /// The number of lookups of the content of a cached shape, by result.
+        /// </summary>
+        public const string ShapeCacheLookups = "orchardcore.shape.cache.lookups";
 
         /// <summary>
         /// The number of tenants by state.

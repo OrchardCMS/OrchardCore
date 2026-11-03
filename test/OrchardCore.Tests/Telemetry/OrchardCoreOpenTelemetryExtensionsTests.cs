@@ -116,6 +116,21 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     }
 
     [Fact]
+    public void AddOpenTelemetry_SlowShapeThreshold_SetsTheTelemetryOptions()
+    {
+        var builder = CreateBuilder(new()
+        {
+            ["OrchardCore:OpenTelemetry:Tracing:SlowShapeThreshold"] = "00:00:01",
+        });
+
+        new OrchardCoreBuilder(builder.Services).AddOpenTelemetry();
+
+        using var host = builder.Build();
+
+        Assert.Equal(TimeSpan.FromSeconds(1), host.Services.GetRequiredService<IOptions<OrchardCoreTelemetryOptions>>().Value.SlowShapeThreshold);
+    }
+
+    [Fact]
     public void AddOpenTelemetry_CalledTwice_RegistersOnce()
     {
         var builder = CreateBuilder([]);

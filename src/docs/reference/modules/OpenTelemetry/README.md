@@ -73,7 +73,8 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
       "Tracing": {
         "Enabled": true,
         "SamplingRatio": 0.25,
-        "Sources": [ "MyCompany.MyModule" ]
+        "Sources": [ "MyCompany.MyModule" ],
+        "SlowShapeThreshold": "00:00:00.050"
       },
       "Metrics": {
         "Enabled": true,
@@ -100,6 +101,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Tracing:Enabled` | Whether traces are collected. Defaults to `true`. |
 | `Tracing:SamplingRatio` | The ratio, from `0` to `1`, of the traces that are sampled. A trace started by a sampled parent, e.g. in another service, is always sampled. When not set, the standard `OTEL_TRACES_SAMPLER` value is used, and otherwise all traces are sampled. |
 | `Tracing:Sources` | The names of additional `ActivitySource` to collect traces from. See [Other libraries](#other-libraries). |
+| `Tracing:SlowShapeThreshold` | The duration from which the rendering of a shape is traced with its own span. Defaults to `00:00:00.050` (50 milliseconds), `00:00:00` traces every shape. |
 | `Metrics:Enabled` | Whether metrics are collected. Defaults to `true`. |
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
 | `Metrics:Meters` | The names of additional `Meter` to collect metrics from. See [Other libraries](#other-libraries). |
@@ -146,6 +148,9 @@ The spans of Orchard Core come from the `OrchardCore` activity source:
 | `Run background task {task}` | Internal | `orchardcore.tenant.name`, `orchardcore.background_task.name` |
 | `Execute recipe {recipe}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name` |
 | `Execute recipe step {step}` | Internal | `orchardcore.tenant.name`, `orchardcore.recipe.name`, `orchardcore.recipe.step.name` |
+| `Render shape {type}` | Internal | `orchardcore.tenant.name`, `orchardcore.shape.type`, `orchardcore.shape.binding` (the template or the shape method that rendered it) |
+
+A `Render shape` span is only emitted for a shape whose rendering took longer than `Tracing:SlowShapeThreshold`. It's created once the rendering is known to be slow, so it's a child of the request rather than of the shape that rendered it.
 
 A failed operation has the `Error` status, the `error.type` attribute and an `exception` event. A background task run is the root of its own trace.
 
@@ -168,6 +173,7 @@ The metrics of Orchard Core come from the `OrchardCore` meter:
 | `orchardcore.tenant.activation.duration` | Histogram | `s` | `orchardcore.tenant.name`, `error.type` | Duration of activating a tenant. |
 | `orchardcore.tenant.releases` | Counter | `{release}` | `orchardcore.tenant.name`, `orchardcore.tenant.release.reason` | Number of times a tenant was released: `reload`, `release` or `remove`. |
 | `orchardcore.background_task.duration` | Histogram | `s` | `orchardcore.tenant.name`, `orchardcore.background_task.name`, `error.type` | Duration of running a background task. |
+| `orchardcore.shape.cache.lookups` | Counter | `{lookup}` | `orchardcore.tenant.name`, `orchardcore.shape.type`, `orchardcore.shape.cache.result` | Number of lookups of the content of a cached shape: `hit` or `miss`. Only recorded when the Dynamic Cache feature is enabled. |
 
 `error.type` is only set when the operation failed.
 
@@ -210,8 +216,6 @@ These libraries, used by Orchard Core modules, emit their own telemetry:
 | MailKit | SMTP email | `MailKit.Net.SmtpClient` | |
 | Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` | |
 
-The activity sources of the Azure SDK are experimental: they also require the `AZURE_EXPERIMENTAL_ENABLE_ACTIVITY_SOURCE` environment variable set to `true`, or the `Azure.Experimental.EnableActivitySource` application switch.
-
 Names of libraries that emit nothing are ignored. A library that doesn't emit telemetry itself needs an instrumentation package from its own maintainers or from OpenTelemetry, added with the callback of `AddOpenTelemetry()`, e.g. `OpenTelemetry.Instrumentation.SqlClient` for the SQL Server client.
 
 ### Logs
@@ -220,7 +224,7 @@ The logs written through `ILogger` are exported with their structured attributes
 
 ## Investigating performance
 
-The rendering of shapes is traced too: the `OrchardCore.DisplayManagement` activity source emits a `Render shape {type}` span for each rendered shape, nested like the shapes, with the `orchardcore.shape.type` attribute and the `orchardcore.shape.binding` attribute, the template or the shape method that rendered it. The meter of the same name records the `orchardcore.display.shapes_rendered` counter, and the `orchardcore.display.shape.duration` histogram of the rendering durations by shape type. As a page renders many shapes, they are only collected when they are added to the configuration:
+The shapes slower than `Tracing:SlowShapeThreshold` are traced by default, which tells which templates make a page slow. To see every shape, nested as it's rendered, the `OrchardCore.DisplayManagement` activity source emits a `Render shape {type}` span for each rendered shape, nested like the shapes, with the `orchardcore.shape.type` attribute and the `orchardcore.shape.binding` attribute, the template or the shape method that rendered it. The meter of the same name records the `orchardcore.display.shapes_rendered` counter, and the `orchardcore.display.shape.duration` histogram of the rendering durations by shape type. As a page renders many shapes, they are only collected when they are added to the configuration, and a shape traced this way doesn't get a second span when it's slow:
 
 ```json
 {
