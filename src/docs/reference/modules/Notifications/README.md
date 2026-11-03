@@ -103,7 +103,7 @@ A message has these properties, of which only the `Subject` is required:
 | Property | Description |
 |---|---|
 | `Subject` | The title of the notification. It cannot contain HTML. |
-| `Summary` | A short description shown under the subject in the navbar and the notification center. It can contain HTML. |
+| `Summary` | A short description shown under the subject in the navbar and the notification center. It can contain HTML, which is sanitized when it is shown. |
 | `TextBody`, `HtmlBody`, `IsHtmlPreferred` | The body sent by the notification methods, for example in an email. The notification center shows it on the page of the notification. |
 | `Url` | The page the notification points to. See [Linking a notification to a page](#linking-a-notification-to-a-page). |
 | `Type` | The kind of notification, for example `Mention`. See [Notification types](#notification-types). |
@@ -126,7 +126,7 @@ await _notificationService.SendAsync(user, new NotificationMessage
 });
 ```
 
-The URL is either an application-relative URL starting with `~/`, resolved against the URL prefix of the tenant when the notification is opened, or an absolute `http` or `https` URL. Any other URL, for example a `javascript:` URL, is ignored and a warning is logged.
+The URL is either an application-relative URL starting with `~/`, resolved against the URL prefix of the tenant when the notification is opened, a local path starting with `/`, used as is, or an absolute `http` or `https` URL. Any other URL, for example a `javascript:` URL, is ignored and a warning is logged.
 
 The subject of the notification links to it in the navbar and in the notification center. Opening the link goes through `/Notifications/Open/{notificationId}`, which marks the notification as read, then redirects to its URL. A notification without a URL opens its page in the notification center, which shows its body.
 
@@ -312,9 +312,13 @@ A handler decides one of these, and the most restrictive decision of all handler
 | `context.Restrict()` | The notification is listed and counted, but its subject, summary, body and URL are replaced by a message saying the user no longer has access to it. The user can still mark it as read or delete it. |
 | `context.Hide()` | The notification is neither listed nor counted, and cannot be opened. |
 
+A restricted notification always uses the default templates, not the [alternates of its type](#customizing-how-a-notification-is-shown). The display drivers of a module are still called for it, so those showing data of the notification must not do it when `INotificationVisibilityEvaluator.EvaluateAsync()` returns `Restricted`.
+
 The decisions are kept for the rest of the request. When no handler is registered, the notifications are counted and paged by the database as before.
 
-When a handler is registered, the unread count of the navbar is computed from the unread notifications the handlers did not hide, up to `MaxEvaluatedUnreadNotifications` (100 by default): a larger count is shown as that number followed by a plus sign. In the notification center, the hidden notifications are removed from the shown page, and its total count only excludes the hidden notifications of that page.
+A notification is hidden when a handler throws an exception, as its access could not be checked. The exception is logged.
+
+When a handler is registered, the unread count of the navbar is computed by evaluating the most recent unread notifications, up to `MaxEvaluatedUnreadNotifications` (100 by default). When the user has more, the count of those that are not hidden is followed by a plus sign, for example `100+`. In the notification center, the hidden notifications are removed from the shown page, and its total count only excludes the hidden notifications of that page.
 
 !!! tip
     A handler is a safety net that runs on every display. When the change is known, for example when a user leaves a team, also delete or update their notifications with `INotificationManager`, so they are not loaded only to be hidden. The navbar is cached per user: `INotificationManager` refreshes it, while a visibility change alone is only reflected when the cache entry expires.
@@ -445,19 +449,21 @@ services.AddDisplayDriver<Notification, TaskAssignedNotificationDisplayDriver>()
 With a template for each shape, in the `Views` folder of the module:
 
 ```cshtml title="TaskAssignedNotificationProject.cshtml"
-@model TaskAssignedInfo
+@model ShapeViewModel<TaskAssignedInfo>
 
-<span class="small text-body-secondary">@Model.ProjectName &middot; @T["by {0}", Model.AssignedBy]</span>
+<span class="small text-body-secondary">@Model.Value.ProjectName &middot; @T["by {0}", Model.Value.AssignedBy]</span>
 ```
 
 ```cshtml title="TaskAssignedNotificationDue.cshtml"
-@model TaskAssignedInfo
+@model ShapeViewModel<TaskAssignedInfo>
 
-@if (Model.DueUtc != null)
+@if (Model.Value.DueUtc != null)
 {
-    <p>@T["Due on {0}", await DisplayAsync(await New.DateTime(Utc: Model.DueUtc, Format: "D"))]</p>
+    <p>@T["Due on {0}", await DisplayAsync(await New.DateTime(Utc: Model.Value.DueUtc, Format: "D"))]</p>
 }
 ```
+
+`View()` wraps the model in a `ShapeViewModel<T>`, whose `Value` is the model. The templates need `@using OrchardCore.DisplayManagement.Views`, in their `_ViewImports.cshtml` for example.
 
 In the navbar, the `Meta` zone is one line of small muted text, with a dot between its shapes: render plain text there rather than badges, and keep buttons for the `Actions` zone.
 
