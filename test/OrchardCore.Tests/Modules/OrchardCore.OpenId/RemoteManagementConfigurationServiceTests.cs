@@ -31,8 +31,6 @@ public class RemoteManagementConfigurationServiceTests
         };
         var validationSettings = new OpenIdValidationSettings
         {
-            Authority = new Uri("https://identity.example.com"),
-            MetadataAddress = new Uri("https://identity.example.com/metadata"),
             Audience = "preserved-audience",
         };
         OpenIdScopeDescriptor createdScope = null;
@@ -49,7 +47,7 @@ public class RemoteManagementConfigurationServiceTests
         Assert.True(serverSettings.AllowClientCredentialsFlow);
         Assert.False(serverSettings.AllowDeviceAuthorizationFlow);
         Assert.True(serverSettings.AllowRefreshTokenFlow);
-        Assert.True(serverSettings.RequireProofKeyForCodeExchange);
+        Assert.False(serverSettings.RequireProofKeyForCodeExchange);
         Assert.Equal("TestTenant", validationSettings.Tenant);
         Assert.Null(validationSettings.Authority);
         Assert.Null(validationSettings.MetadataAddress);
@@ -78,6 +76,28 @@ public class RemoteManagementConfigurationServiceTests
         Assert.Contains("orchardcore", updatedScope.Resources);
         Assert.True(settings.AllowDeviceAuthorizationFlow);
         Assert.Equal("/custom/device", settings.DeviceAuthorizationEndpointPath);
+    }
+
+    [Fact]
+    public async Task ConfigureAsync_ExternalIssuer_IsPreservedAndRejected()
+    {
+        var validationSettings = new OpenIdValidationSettings { Authority = new Uri("https://identity.example.com") };
+        var service = CreateService(validationSettings: validationSettings);
+
+        await Assert.ThrowsAsync<ValidationException>(service.ConfigureAsync);
+
+        Assert.Equal(new Uri("https://identity.example.com"), validationSettings.Authority);
+    }
+
+    [Fact]
+    public async Task ConfigureAsync_OtherTenantIssuer_IsPreservedAndRejected()
+    {
+        var validationSettings = new OpenIdValidationSettings { Tenant = "OtherTenant" };
+        var service = CreateService(validationSettings: validationSettings);
+
+        await Assert.ThrowsAsync<ValidationException>(service.ConfigureAsync);
+
+        Assert.Equal("OtherTenant", validationSettings.Tenant);
     }
 
     [Fact]

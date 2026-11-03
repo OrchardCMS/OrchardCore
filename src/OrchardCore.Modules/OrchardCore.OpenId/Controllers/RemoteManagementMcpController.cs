@@ -54,7 +54,16 @@ public sealed class RemoteManagementMcpController : Controller
             return Forbid();
         }
 
-        await configuration.ConfigureAsync();
+        try
+        {
+            await configuration.ConfigureAsync();
+        }
+        catch (ValidationException exception)
+        {
+            await _notifier.ErrorAsync(H["Remote Management could not be configured: {0}", exception.Message]);
+            return RedirectToAction(nameof(Index));
+        }
+
         await _notifier.SuccessAsync(H["MCP authentication is configured. Compatible clients can register automatically when connecting."]);
         await _shellHost.ReleaseShellContextAsync(_shellSettings);
         return RedirectToAction(nameof(Index));

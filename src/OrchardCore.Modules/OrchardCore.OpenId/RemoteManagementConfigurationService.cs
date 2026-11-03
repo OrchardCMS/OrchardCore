@@ -59,7 +59,6 @@ public sealed class RemoteManagementConfigurationService
             AuthorizationCodeFlowConfigured = server.AllowAuthorizationCodeFlow,
             ClientCredentialsFlowConfigured = server.AllowClientCredentialsFlow,
             RefreshFlowConfigured = server.AllowRefreshTokenFlow,
-            ProofKeyForCodeExchangeRequired = server.RequireProofKeyForCodeExchange,
             ValidationConfigured =
                 string.Equals(validation.Tenant, _shellSettings.Name, StringComparison.Ordinal) &&
                 validation.Authority is null,
@@ -69,7 +68,9 @@ public sealed class RemoteManagementConfigurationService
 
     /// <summary>
     /// Repairs shared authentication settings while preserving client registrations and unrelated grants.
+    /// PKCE is left to the remote client applications, so it isn't imposed on the tenant's existing clients.
     /// </summary>
+    /// <exception cref="ValidationException">The tenant validates tokens from another issuer.</exception>
     public async Task ConfigureAsync()
     {
         var server = await _serverService.LoadSettingsAsync();
@@ -80,8 +81,14 @@ public sealed class RemoteManagementConfigurationService
         server.AllowAuthorizationCodeFlow = true;
         server.AllowClientCredentialsFlow = true;
         server.AllowRefreshTokenFlow = true;
-        server.RequireProofKeyForCodeExchange = true;
         var validation = await _validationService.LoadSettingsAsync();
+        if (validation.Authority is not null ||
+            (!string.IsNullOrEmpty(validation.Tenant) && !string.Equals(validation.Tenant, _shellSettings.Name, StringComparison.Ordinal)))
+        {
+            // Replacing these would break the clients using tokens of that issuer.
+            throw new ValidationException("This tenant validates tokens from another issuer. Remote Management requires it to validate its own tokens, so change the OpenID validation settings first.");
+        }
+
         validation.Tenant = _shellSettings.Name;
         validation.Authority = null;
         validation.MetadataAddress = null;

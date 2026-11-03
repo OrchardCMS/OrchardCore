@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -54,7 +55,16 @@ public sealed class RemoteManagementCliController : Controller
             return Forbid();
         }
 
-        await _tenantConfiguration.ConfigureAsync();
+        try
+        {
+            await _tenantConfiguration.ConfigureAsync();
+        }
+        catch (ValidationException exception)
+        {
+            await _notifier.ErrorAsync(H["Remote Management could not be configured: {0}", exception.Message]);
+            return RedirectToAction(nameof(Index));
+        }
+
         await _cliConfiguration.ConfigureAsync();
         await _notifier.SuccessAsync(H["Pomi CLI authentication was configured successfully."]);
         await _shellHost.ReleaseShellContextAsync(_shellSettings);

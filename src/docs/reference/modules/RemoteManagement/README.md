@@ -34,9 +34,13 @@ its loopback callback, and device authorization. Existing applications and unrel
 OpenID settings are preserved. Existing tenants using Pomi should explicitly enable
 this feature to retain CLI discovery after upgrading.
 
-The shared **Configure Remote Management** action checks and repairs authorization
-code with PKCE, refresh tokens, client credentials, local token validation, and the
+The shared **Configure Remote Management** action checks and repairs the authorization
+code flow, refresh tokens, client credentials, local token validation, and the
 `orchardcore.management` scope. It creates neither a CLI nor an MCP application.
+The Pomi and MCP applications require PKCE individually, so the tenant's other authorization
+code clients keep working. A tenant validating tokens from an external identity provider or
+another tenant can't be configured until its OpenID validation settings are changed, because
+that would break the clients using those tokens.
 Each client action configures these shared requirements as well, so it can be used
 on a freshly enabled tenant.
 

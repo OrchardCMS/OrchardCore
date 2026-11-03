@@ -242,9 +242,16 @@ internal static partial class TenantManagementEndpoints
         }
 
         var credentials = provisionClient ? RemoteManagementClientCredentials.Generate() : null;
-        if (!await RemoteManagementProvisioning.ConfigureAsync(shellHost, settings, credentials))
+        try
         {
-            return httpContext.ApiBadRequestProblem(detail: localizer["Remote management could not be enabled for tenant '{0}'. Check its active feature profile.", tenantName]);
+            if (!await RemoteManagementProvisioning.ConfigureAsync(shellHost, settings, credentials))
+            {
+                return httpContext.ApiBadRequestProblem(detail: localizer["Remote management could not be enabled for tenant '{0}'. Check its active feature profile.", tenantName]);
+            }
+        }
+        catch (ValidationException exception)
+        {
+            return TypedResults.Problem(title: localizer["Conflict"], detail: exception.Message, statusCode: StatusCodes.Status409Conflict);
         }
 
         if (credentials is not null)
