@@ -960,11 +960,6 @@ msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
-msgid "The shapes are those the content item renders by itself: the shapes a template of the site theme renders in its own markup are not listed."
-msgstr ""
-
-#: Views/TemplateInspector/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "The template rendering the shape is bound to this name"
 msgstr ""
 
