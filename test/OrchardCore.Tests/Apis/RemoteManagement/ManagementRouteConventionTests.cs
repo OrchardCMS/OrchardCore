@@ -66,6 +66,7 @@ public class ManagementRouteConventionTests
                 "api/content/versions/{contentItemVersionId}:restore",
                 "api/deployment/operations:export",
                 "api/deployment/operations:import",
+                "api/deployment/operations:validate",
                 "api/deployment/targets/{id}:send",
                 "api/email:test",
                 "api/layers:validate",

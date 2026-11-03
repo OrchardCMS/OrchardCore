@@ -1,10 +1,14 @@
+using System.IO.Compression;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Deployment.Core.Services;
@@ -15,6 +19,8 @@ using OrchardCore.Deployment.Artifacts;
 using OrchardCore.Deployment.Endpoints.Management;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -170,6 +176,119 @@ public class DeploymentArtifactEndpointTests
     }
 
     [Fact]
+    public void ValidatePackage_Endpoint_IsReadOnlyWithoutConfirmation()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.AddAuthorization();
+        var app = builder.Build();
+        app.AddDeploymentOperationEndpoints();
+
+        var metadata = ((IEndpointRouteBuilder)app).DataSources.SelectMany(source => source.Endpoints).OfType<RouteEndpoint>()
+            .Single(endpoint => endpoint.RoutePattern.RawText == "api/deployment/operations:validate")
+            .Metadata.GetRequiredMetadata<CliOperationMetadata>();
+
+        Assert.Equal(["deployment", "operations"], metadata.CommandGroup);
+        Assert.Equal("validate", metadata.Verb);
+        Assert.True(metadata.ReadOnly);
+        Assert.True(metadata.LongRunning);
+        Assert.False(metadata.RequiresConfirmation);
+        Assert.Equal(CliInputMode.Options, metadata.InputMode);
+    }
+
+    [Fact]
+    public async Task ValidatePackage_WithoutImportPermission_IsForbidden()
+    {
+        await using var scenario = new ValidationScenario();
+        var artifact = await scenario.CreateArtifactAsync(DeploymentArtifactKind.Import, "Recipe.json", "{\"steps\":[]}");
+
+        var result = await scenario.ValidateAsync(artifact.Id, Authorize(RemoteManagementPermissions.AccessRemoteManagement, DeploymentPermissions.ManageDeploymentPlan, DeploymentPermissions.Export));
+
+        Assert.Equal(403, Status(result));
+        Assert.Equal(403, Status(await scenario.ValidateAsync(artifact.Id, Authorize(DeploymentPermissions.Import))));
+        Assert.Empty(Directory.GetFileSystemEntries(scenario.Staging));
+    }
+
+    [Fact]
+    public async Task ValidatePackage_ArtifactThatCantBeImported_IsNotFound()
+    {
+        await using var scenario = new ValidationScenario();
+        var export = await scenario.CreateArtifactAsync(DeploymentArtifactKind.Export, "Recipe.json", "{\"steps\":[]}");
+        var import = await scenario.CreateArtifactAsync(DeploymentArtifactKind.Import, "Recipe.json", "{\"steps\":[]}");
+
+        Assert.Equal(404, Status(await scenario.ValidateAsync(export.Id)));
+        Assert.Equal(404, Status(await scenario.ValidateAsync(Guid.NewGuid().ToString("n"))));
+        Assert.Equal(400, Status(await scenario.ValidateAsync(" ")));
+        scenario.Context.User = Principal("user", "validator");
+        Assert.Equal(404, Status(await scenario.ValidateAsync(import.Id)));
+        Assert.Empty(Directory.GetFileSystemEntries(scenario.Staging));
+    }
+
+    [Fact]
+    public async Task ValidatePackage_ValidZip_ResolvesFilesAndLeavesNothingBehind()
+    {
+        await using var scenario = new ValidationScenario();
+        var artifact = await scenario.CreateArtifactAsync(DeploymentArtifactKind.Import, "package.zip", CreateZip(
+            ("Recipe.json", """{"steps":[{"name":"Known","a":"[file:text('files/present.txt')]"}]}"""),
+            ("files/present.txt", "content")));
+        var before = scenario.Snapshot();
+
+        var value = Assert.IsType<Ok<RecipeValidationResult>>(await scenario.ValidateAsync(artifact.Id)).Value;
+
+        Assert.True(value.Valid);
+        Assert.Equal(1, value.StepCount);
+        Assert.Empty(value.Findings);
+        Assert.Contains("doesn't guarantee", value.Notice);
+        Assert.Equal(before, scenario.Snapshot());
+        Assert.Empty(Directory.GetFileSystemEntries(scenario.Staging));
+    }
+
+    [Fact]
+    public async Task ValidatePackage_StepAndFileProblems_AreReportedAndLeaveNothingBehind()
+    {
+        await using var scenario = new ValidationScenario();
+        var artifact = await scenario.CreateArtifactAsync(DeploymentArtifactKind.Import, "package.zip", CreateZip(
+            ("Recipe.json", """{"steps":[{"name":"Unknown"},{"name":"Known","a":"[file:text('../../outside.txt')]"}]}""")));
+        var before = scenario.Snapshot();
+
+        var value = Assert.IsType<Ok<RecipeValidationResult>>(await scenario.ValidateAsync(artifact.Id)).Value;
+
+        Assert.False(value.Valid);
+        Assert.Equal(
+            [("unknown-step", 0, "Unknown"), ("file-not-found", 1, "Known")],
+            value.Findings.Select(finding => (finding.Code, finding.StepIndex.Value, finding.StepName)));
+        Assert.Equal(before, scenario.Snapshot());
+        Assert.Empty(Directory.GetFileSystemEntries(scenario.Staging));
+    }
+
+    [Theory]
+    [InlineData("traversal")]
+    [InlineData("no-recipe")]
+    [InlineData("invalid-json")]
+    [InlineData("not-a-zip")]
+    [InlineData("too-many-entries")]
+    public async Task ValidatePackage_UnsafePackage_IsInvalidAndLeavesNothingBehind(string kind)
+    {
+        await using var scenario = new ValidationScenario(new DeploymentPackageOptions { MaxEntries = 2 });
+        var package = kind switch
+        {
+            "traversal" => CreateZip(("../Recipe.json", "{\"steps\":[]}")),
+            "no-recipe" => CreateZip(("other.json", "{}")),
+            "invalid-json" => CreateZip(("Recipe.json", "{")),
+            "too-many-entries" => CreateZip(("Recipe.json", "{\"steps\":[]}"), ("a", "a"), ("b", "b")),
+            _ => Encoding.UTF8.GetBytes("not a zip"),
+        };
+        var artifact = await scenario.CreateArtifactAsync(DeploymentArtifactKind.Import, "package.zip", package);
+        var before = scenario.Snapshot();
+
+        var value = Assert.IsType<Ok<RecipeValidationResult>>(await scenario.ValidateAsync(artifact.Id)).Value;
+
+        Assert.False(value.Valid);
+        Assert.Equal("package-invalid", Assert.Single(value.Findings).Code);
+        Assert.Equal(before, scenario.Snapshot());
+        Assert.Empty(Directory.GetFileSystemEntries(scenario.Staging));
+    }
+
+    [Fact]
     public async Task ExportSubmission_RequiresExportPermission_DeduplicatesAndSanitizesStatus()
     {
         var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("n"));
@@ -218,6 +337,91 @@ public class DeploymentArtifactEndpointTests
         Assert.NotEqual(DeploymentArtifactOwner.Get(first), DeploymentArtifactOwner.Get(second));
         Assert.Null(DeploymentArtifactOwner.Get(Principal("unknown", "same")));
         Assert.Null(DeploymentArtifactOwner.Get(new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", "same")]))));
+    }
+
+    private static byte[] CreateZip(params (string Path, string Content)[] entries)
+    {
+        using var output = new MemoryStream();
+        using (var zip = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            foreach (var (path, content) in entries)
+            {
+                using var writer = new StreamWriter(zip.CreateEntry(path).Open());
+                writer.Write(content);
+            }
+        }
+
+        return output.ToArray();
+    }
+
+    private sealed class KnownStep : NamedRecipeStepHandler
+    {
+        public KnownStep()
+            : base("Known")
+        {
+        }
+
+        protected override Task HandleAsync(RecipeExecutionContext context) => throw new InvalidOperationException("A validation must not execute a step.");
+    }
+
+    private sealed class ValidationScenario : IAsyncDisposable
+    {
+        private readonly string _root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("n"));
+        private readonly ServiceProvider _services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
+        private readonly DeploymentArtifactStore _artifacts;
+        private readonly DeploymentPackageService _packages;
+        private readonly RecipeValidator _validator;
+
+        public ValidationScenario(DeploymentPackageOptions options = null)
+        {
+            Staging = Path.Combine(_root, "staging");
+            Directory.CreateDirectory(Staging);
+            var clock = new Mock<IClock>();
+            clock.SetupGet(value => value.UtcNow).Returns(() => DateTime.UtcNow);
+            _artifacts = new DeploymentArtifactStore(Options.Create(new ShellOptions { ShellsApplicationDataPath = _root, ShellsContainerName = "Sites" }),
+                new ShellSettings { Name = "Tenant" }, Options.Create(new DeploymentArtifactOptions()), clock.Object);
+            var temporary = new Mock<ITempDirectoryProvider>();
+            temporary.Setup(value => value.CreateTempSubdirectory()).Returns(() => Directory.CreateDirectory(Path.Combine(Staging, Guid.NewGuid().ToString("n"))).FullName);
+            _packages = new DeploymentPackageService(temporary.Object, Options.Create(options ?? new DeploymentPackageOptions()));
+            IRecipeStepHandler[] handlers = [new KnownStep()];
+            _validator = new RecipeValidator(handlers, [], _services.GetRequiredService<IStringLocalizer<RecipeValidator>>());
+            Context = new DefaultHttpContext { RequestServices = _services, User = Principal("application", "validator") };
+        }
+
+        public string Staging { get; }
+
+        public DefaultHttpContext Context { get; }
+
+        public Task<DeploymentArtifact> CreateArtifactAsync(DeploymentArtifactKind kind, string fileName, string content)
+            => CreateArtifactAsync(kind, fileName, Encoding.UTF8.GetBytes(content));
+
+        public async Task<DeploymentArtifact> CreateArtifactAsync(DeploymentArtifactKind kind, string fileName, byte[] content)
+        {
+            using var input = new MemoryStream(content);
+
+            return await _artifacts.CreateAsync(DeploymentArtifactOwner.Get(Context.User), kind, fileName,
+                fileName.EndsWith(".zip", StringComparison.Ordinal) ? "application/zip" : "application/json", input, TestContext.Current.CancellationToken);
+        }
+
+        public Task<IResult> ValidateAsync(string artifactId, IAuthorizationService authorization = null)
+            => DeploymentOperationEndpoints.ValidateAsync(Context,
+                authorization ?? Authorize(RemoteManagementPermissions.AccessRemoteManagement, DeploymentPermissions.Import),
+                _artifacts, _packages, _validator, new DeploymentValidateRequest { ArtifactId = artifactId });
+
+        // Every file of the tenant with its content, to tell that nothing was added, changed or removed.
+        public string[] Snapshot() => Directory.GetFiles(_root, "*", SearchOption.AllDirectories)
+            .Order(StringComparer.Ordinal)
+            .Select(path => path + ":" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))))
+            .ToArray();
+
+        public async ValueTask DisposeAsync()
+        {
+            await _services.DisposeAsync();
+            if (Directory.Exists(_root))
+            {
+                Directory.Delete(_root, recursive: true);
+            }
+        }
     }
 
     private static ClaimsPrincipal Principal(string kind, string subject) => new(new ClaimsIdentity(

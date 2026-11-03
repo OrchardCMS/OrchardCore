@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment.Artifacts;
+using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Operations;
 using OrchardCore.Deployment.Steps;
 using OrchardCore.Json;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -24,6 +27,8 @@ internal static class DeploymentOperationEndpoints
             "Queues a deployment plan snapshot for export.").Produces<DeploymentOperationResponse>(202);
         Configure(routes.MapPost("api/deployment/operations:import", ImportAsync), "ApiQueueDeploymentImport", "import",
             "Queues an owned uploaded artifact for import; recipe execution may partially commit.").Produces<DeploymentOperationResponse>(202);
+        Configure(routes.MapPost("api/deployment/operations:validate", ValidateAsync), "ApiValidateDeploymentPackage", "validate",
+            "Validates an owned uploaded artifact without importing it, and doesn't create an operation. A valid result doesn't guarantee that the import succeeds, since a step can still fail on its data.").Produces<RecipeValidationResult>();
         Configure(routes.MapGet("api/deployment/operations/{id}", GetAsync), "ApiGetDeploymentOperation", "show",
             "Shows the caller's deployment operation state.").Produces<DeploymentOperationResponse>();
     }
@@ -32,7 +37,7 @@ internal static class DeploymentOperationEndpoints
     {
         var metadata = new CliOperationMetadata(["deployment", "operations"], verb)
         {
-            Capability = "deployment-plans", RequiresConfirmation = verb == "import",
+            Capability = "deployment-plans", RequiresConfirmation = verb == "import", ReadOnly = verb == "validate", LongRunning = verb == "validate",
         };
         if (verb == "show") { metadata.Arguments.Add(new CliArgumentMetadata("id", 0)); }
         return builder.WithName(name).WithSummary(summary).WithTags("Deployment Management").WithCliCommand(metadata)
@@ -74,6 +79,36 @@ internal static class DeploymentOperationEndpoints
         var artifact = await artifacts.FindAsync(request.ArtifactId, owner);
         if (artifact is null || artifact.Kind != DeploymentArtifactKind.Import) { return context.ApiNotFoundProblem(); }
         return await AcceptAsync(context, operations, owner, request.RequestId, DeploymentOperationKind.Import, artifact.Id);
+    }
+
+    internal static async Task<IResult> ValidateAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
+        [FromServices] DeploymentArtifactStore artifacts, [FromServices] DeploymentPackageService packages,
+        [FromServices] IRecipeValidator validator, [FromBody] DeploymentValidateRequest request)
+    {
+        var owner = await OwnerAsync(context, authorization, DeploymentPermissions.Import);
+        if (owner is null) { return context.ApiForbidProblem(); }
+        if (string.IsNullOrWhiteSpace(request?.ArtifactId)) { return TypedResults.Problem("Provide the ID of an uploaded artifact.", statusCode: 400); }
+        using var lease = await artifacts.OpenAsync(request.ArtifactId, owner);
+        if (lease is null || lease.Artifact.Kind != DeploymentArtifactKind.Import) { return context.ApiNotFoundProblem(); }
+        try
+        {
+            // The package is staged like for an import, which applies its limits and removes its files in the end.
+            using var package = await packages.StageAsync(lease.Stream, lease.Artifact.FileName, context.RequestAborted);
+            return TypedResults.Ok(await validator.ValidateAsync(new RecipeDescriptor
+            {
+                FileProvider = package.FileProvider,
+                BasePath = "",
+                RecipeFileInfo = package.FileProvider.GetFileInfo("Recipe.json"),
+            }, context.RequestAborted));
+        }
+        catch (InvalidDataException exception)
+        {
+            return TypedResults.Ok(validator.CreateFailure("package-invalid", exception.Message));
+        }
+        catch (JsonException)
+        {
+            return TypedResults.Ok(validator.CreateFailure("package-invalid", "The Recipe.json file of the deployment package isn't valid JSON."));
+        }
     }
 
     internal static async Task<IResult> GetAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -136,6 +171,13 @@ public sealed class DeploymentImportRequest
 {
     /// <summary>Gets or sets the caller-generated request ID; retries do not replay execution.</summary>
     public string RequestId { get; set; }
+    /// <summary>Gets or sets the caller-owned import artifact ID.</summary>
+    public string ArtifactId { get; set; }
+}
+
+/// <summary>Requests the validation of a previously uploaded import artifact, without importing it.</summary>
+public sealed class DeploymentValidateRequest
+{
     /// <summary>Gets or sets the caller-owned import artifact ID.</summary>
     public string ArtifactId { get; set; }
 }
