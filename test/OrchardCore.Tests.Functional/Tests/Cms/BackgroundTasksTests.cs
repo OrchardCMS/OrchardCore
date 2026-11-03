@@ -162,6 +162,52 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task Polling_TaskEntersAndLeavesRunningFilter_UpdatesList()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        // Wait for the first poll, which gets the status of the tasks that are not on the page.
+        var statesResponse = page.WaitForResponseAsync(response => response.Url.Contains("/Admin/BackgroundTasks/States", StringComparison.OrdinalIgnoreCase));
+        await page.GotoAndAssertOkAsync("/Admin/BackgroundTasks?Options.Status=running");
+        await statesResponse;
+
+        var row = page.Locator($"li[data-task-name='{SlowTestBackgroundTask.TaskName}']");
+        await Assertions.Expect(row).ToHaveCountAsync(0);
+
+        var otherPage = await Fixture.CreatePageAsync();
+        await otherPage.LoginAsync();
+        await RunNowAsync(otherPage, await GotoLoadedTaskRowAsync(otherPage, SlowTestBackgroundTask.TaskName));
+        await otherPage.CloseAsync();
+
+        await Assertions.Expect(row).ToHaveCountAsync(1, new LocatorAssertionsToHaveCountOptions { Timeout = _runTimeout });
+        await Assertions.Expect(row).ToHaveCountAsync(0, new LocatorAssertionsToHaveCountOptions { Timeout = _runTimeout });
+
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task EnableAndDisable_Task_ShowsNextRunOfItsSettings()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        var row = await GotoLoadedTaskRowAsync(page, SlowTestBackgroundTask.TaskName);
+
+        // The page is rendered before the background service knows about the new settings of the task.
+        await row.Locator("a", new LocatorLocatorOptions { HasText = "Enable" }).ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Assertions.Expect(row.Locator("[data-next-run]")).Not.ToContainTextAsync("invalid schedule");
+        await Assertions.Expect(row.Locator("[data-next-run]")).Not.ToContainTextAsync("not scheduled");
+
+        await row.Locator("a", new LocatorLocatorOptions { HasText = "Disable" }).ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Assertions.Expect(row.Locator("[data-next-run]")).ToContainTextAsync("not scheduled");
+
+        await page.CloseAsync();
+    }
+
     private static async Task<int> GetRunCountAsync(ILocator task)
         => int.Parse(await task.GetAttributeAsync("data-task-run-count") ?? "0", System.Globalization.CultureInfo.InvariantCulture);
 
@@ -214,6 +260,19 @@ public sealed class SucceedingTestBackgroundTask : IBackgroundTask
 
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         => Task.Delay(200, cancellationToken);
+}
+
+[BackgroundTask(
+    Title = "Functional Test Slow Task",
+    Schedule = "0 0 1 1 *",
+    Enable = false,
+    Description = "A task that runs longer than the polling of the admin pages, on demand in the functional tests.")]
+public sealed class SlowTestBackgroundTask : IBackgroundTask
+{
+    public static readonly string TaskName = typeof(SlowTestBackgroundTask).FullName;
+
+    public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        => Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
 }
 
 [BackgroundTask(
