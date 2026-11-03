@@ -33,6 +33,34 @@ public class CacheServiceTests
         Assert.True(result.CacheRecord.ExpiresAt > DateTimeOffset.UtcNow);
     }
 
+    [Theory]
+    [InlineData(HttpStatusCode.Unauthorized)]
+    [InlineData(HttpStatusCode.Forbidden)]
+    public async Task GetOrRefreshAsync_WhenAccessIsRejected_DoesNotUseStaleCache(HttpStatusCode status)
+    {
+        var tenantUrl = "https://example.com/tenant/";
+        var paths = new CliPaths(TestPaths.CreateScratchDirectory(nameof(GetOrRefreshAsync_WhenAccessIsRejected_DoesNotUseStaleCache) + status));
+        var service = new CacheService(paths);
+        await service.WriteAsync(tenantUrl, CacheKind.Manifest, new CachedContentRecord
+        {
+            Url = tenantUrl,
+            Content = "{\"ok\":true}",
+            FetchedAt = DateTimeOffset.UtcNow.AddHours(-2),
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(-5),
+        }, CancellationToken.None);
+
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(() => service.GetOrRefreshAsync(
+            tenantUrl,
+            CacheKind.Manifest,
+            new Uri(tenantUrl),
+            TimeSpan.FromMinutes(10),
+            force: false,
+            (_, _) => Task.FromResult(CreateResponse(status, null)),
+            CancellationToken.None));
+
+        Assert.Equal(status, exception.StatusCode);
+    }
+
     [Fact]
     public async Task GetOrRefreshAsync_WhenRefreshFails_UsesStaleCache()
     {

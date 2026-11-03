@@ -276,6 +276,11 @@ internal sealed class OAuthClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
+        {
+            throw new CliException($"The tenant rejected the client credentials of '{clientId}'. Check the client identifier, its secret, and the requested scope.");
+        }
+
         response.EnsureSuccessStatusCode();
         var tokenResponse = CliUtilities.ParseTokenResponse(content);
         return new StoredToken

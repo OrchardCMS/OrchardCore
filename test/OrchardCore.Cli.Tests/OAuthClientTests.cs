@@ -30,6 +30,21 @@ public class OAuthClientTests
     }
 
     [Theory]
+    [InlineData(HttpStatusCode.BadRequest)]
+    [InlineData(HttpStatusCode.Unauthorized)]
+    public async Task ClientCredentials_RejectedSecret_ExplainsTheFailure(HttpStatusCode status)
+    {
+        using var http = new HttpClient(new TestHandler(_ => Task.FromResult(new HttpResponseMessage(status))));
+        var client = new OAuthClient(http, TextWriter.Null);
+
+        var exception = await Assert.ThrowsAsync<CliException>(() => client.ClientCredentialsAsync(
+            "https://example.test/connect/token", "pipeline", "wrong", "orchardcore.management", "https://example.test/", TestContext.Current.CancellationToken));
+
+        Assert.Contains("rejected the client credentials of 'pipeline'", exception.Message);
+        Assert.DoesNotContain("wrong", exception.Message);
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task DeviceLogin_JsonQr_EmitsPngBeforePollingWithoutPrivateCodes(bool completeUrl)

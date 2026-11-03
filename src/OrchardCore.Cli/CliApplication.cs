@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -213,6 +214,16 @@ internal sealed partial class CliApplication
             {
                 _ = await RefreshOpenApiAsync(context, force: false, allowStale: false, cancellationToken);
                 cached = await _cacheService.ReadAsync(cacheKey, CacheKind.OpenApi, cancellationToken);
+            }
+            catch (HttpRequestException exception) when (exception.StatusCode is HttpStatusCode.Unauthorized)
+            {
+                await Console.Error.WriteLineAsync($"Warning: the tenant requires authentication to list its commands. Run 'pomi login {context.Name}' or set OC_CLIENT_ID and OC_CLIENT_SECRET.");
+                return;
+            }
+            catch (HttpRequestException exception) when (exception.StatusCode is HttpStatusCode.Forbidden)
+            {
+                await Console.Error.WriteLineAsync($"Warning: the identity of context '{context.Name}' doesn't have the AccessRemoteManagement permission on this tenant, so its commands can't be listed.");
+                return;
             }
             catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or CliException or JsonException)
             {

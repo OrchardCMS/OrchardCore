@@ -124,7 +124,7 @@ internal sealed class CacheService
         }
         catch (Exception exception) when (
             cached is not null &&
-            exception is HttpRequestException or TaskCanceledException)
+            exception is HttpRequestException { StatusCode: not (HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden) } or TaskCanceledException)
         {
             return new CachedContentResult
             {
