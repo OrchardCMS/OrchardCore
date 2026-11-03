@@ -44,10 +44,26 @@ The upload action continues to run the file-creation event pipeline before stagi
 for persistence or transfer without repacking. Dispose that stream before disposing
 the staged package; disposing the package removes both the original and extracted files.
 
-Hosts can configure `DeploymentPackageOptions` through the options system. Defaults
-are 100 MiB input, 500 MiB expanded data, and 10,000 archive entries; all limits must
-be positive. Byte limits are enforced while copying streams. These checks do not
-make recipe execution transactional or guarantee that each recipe step succeeds.
+Hosts can configure `DeploymentPackageOptions` through the options system, or in the
+`OrchardCore:Deployment:Package` configuration section, which a tenant can override
+under `OrchardCore:{TenantName}:Deployment:Package`. Defaults are 100 MiB input, 500 MiB
+expanded data, and 10,000 archive entries; all limits must be positive. Byte limits are
+enforced while copying streams. These checks do not make recipe execution transactional
+or guarantee that each recipe step succeeds.
+
+```json
+{
+  "OrchardCore": {
+    "Deployment": {
+      "Package": {
+        "MaxUploadBytes": 104857600,
+        "MaxExpandedBytes": 524288000,
+        "MaxEntries": 10000
+      }
+    }
+  }
+}
+```
 
 Importing a package executes its recipe immediately. The steps run in the order in which they appear in `Recipe.json`.
 
@@ -330,10 +346,44 @@ payload returns the existing operation; a different payload conflicts. A success
 export reports its artifact ID for download. Status requires the same owner and
 current Export or Import permission. It does not reveal the captured configuration.
 
+An operation runs as the caller who submitted it. The caller's identity and
+authorization claims are captured at submission and checked again when the worker starts:
+an operation whose caller no longer has the Export or Import permission fails with
+`execution_failed`. Exports read their sources as this caller, and import recipes see it
+as the current user. The claims are stored encrypted with the tenant's data protection
+keys, and removed when the operation ends.
+
 States are `pending`, `running`, `succeeded`, `failed` and `uncertain`. An abandoned
 execution becomes uncertain and is never automatically replayed. Imports can
 partially commit before failure or interruption; review the target site before
 submitting a new request ID.
+
+A tenant background task removes the operations that ended more than seven days ago,
+in the same 15-minute run as the artifact cleanup, up to 100 per run. Their status is then
+no longer available, and their request ID can be used again. Change this duration with
+`Retention` in the `OrchardCore:Deployment:Operations` configuration section, using
+the `d.hh:mm:ss` format, or with `DeploymentOperationOptions`. A zero value keeps them.
+
+```json
+{
+  "OrchardCore": {
+    "Deployment": {
+      "Operations": {
+        "Retention": "7.00:00:00"
+      }
+    }
+  }
+}
+```
+
+### Operations on a web farm
+
+Operations and artifacts are stored in the tenant's `App_Data` folder, on the local disk
+of the node that accepted the request, and only that node executes them. On a web farm,
+a status or download request routed to another node returns a 404 response, and an
+operation is lost when its node is replaced. Either share `App_Data` across the nodes
+with a file system that supports exclusive file locks, or use sticky routing so that all
+the requests of a management client reach the same node.
 
 ### Additional feature-owned step contracts
 
