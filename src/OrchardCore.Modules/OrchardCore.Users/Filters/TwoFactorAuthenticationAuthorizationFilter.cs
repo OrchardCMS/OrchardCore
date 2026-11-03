@@ -59,13 +59,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
             }
         }
 
-        // A user who signed in with multiple factors, for instance with a passkey, already meets the requirement.
-        if (context.HttpContext.User.HasClaim(UserConstants.AuthenticationMethodsClaimType, UserConstants.MultiFactorAuthenticationMethod))
-        {
-            return;
-        }
-
-        if (context.HttpContext.User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
+        if (context.HttpContext.User.IsTwoFactorSetupPending())
         {
             var user = await _userManager.GetUserAsync(context.HttpContext.User);
 

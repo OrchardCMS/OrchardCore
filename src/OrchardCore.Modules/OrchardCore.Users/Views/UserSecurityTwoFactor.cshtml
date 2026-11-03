@@ -10,9 +10,7 @@
     return;
 }
 
-@* A user who logged in with multiple factors, for instance with a passkey, isn't asked to enable it. *@
-@if (User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType) &&
-    !User.HasClaim(UserConstants.AuthenticationMethodsClaimType, UserConstants.MultiFactorAuthenticationMethod))
+@if (User.IsTwoFactorSetupPending())
 {
     <div class="alert alert-danger text-center py-3">
         @T["Two-factor authentication must be enabled before proceeding."]
