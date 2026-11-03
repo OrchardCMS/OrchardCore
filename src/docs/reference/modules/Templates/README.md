@@ -23,7 +23,7 @@ The same actions are available as bulk actions on the selected templates. The bu
 
 Razor (`.cshtml`) templates can only be viewed, as local templates are written in Liquid: use them as a reference to write a Liquid template with the same name, with the **Create override** button.
 
-The templates of a theme that is not active can only be viewed: a local template applies at once to the active theme, so cloning the template of another theme would render the active theme with it. Select the theme on the **Themes** page first.
+The templates of a theme that is not active can only be viewed: a local template applies at once to the active theme, so cloning the template of another theme would render the active theme with it. Select the theme on the **Themes** page first. A local template with the same name can still be edited or deleted from this list, which applies to the active theme.
 
 The status of each template shows whether it is overridden, and monitors the templates cloned from this list:
 
