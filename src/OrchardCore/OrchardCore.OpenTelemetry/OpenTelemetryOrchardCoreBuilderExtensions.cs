@@ -75,7 +75,7 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
             var options = GetOptions(serviceProvider);
             tracing.AddSource(options.Tracing.Sources);
 
-            if (options.Tracing.IncludeClientLibraries)
+            if (options.Enabled && options.Tracing.Enabled && options.Tracing.IncludeClientLibraries)
             {
                 tracing.AddSource(s_clientLibrarySources);
                 EnableAzureActivitySources();
