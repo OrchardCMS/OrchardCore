@@ -4,6 +4,74 @@ namespace OrchardCore.Cli.Tests;
 
 public class OpenApiCliParserTests
 {
+    [Theory]
+    [InlineData("""{"type":"object","properties":{"apiKey":{"type":"string","writeOnly":true},"name":{"type":"string"}}}""", "apiKey", true)]
+    [InlineData("""{"type":"object","properties":{"apiKey":{"$ref":"#/components/schemas/Secret"},"name":{"type":"string"}}}""", "apiKey", true)]
+    [InlineData("""{"type":"object","properties":{"apiKey":{"$ref":"#/components/schemas/Plain","writeOnly":true},"name":{"type":"string"}}}""", "apiKey", true)]
+    [InlineData("""{"type":"object","properties":{"nested":{"type":"object","properties":{"apiKey":{"type":"string","writeOnly":true}}},"name":{"type":"string"}}}""", "nested", true)]
+    [InlineData("""{"type":"object","properties":{"nested":{"anyOf":[{"$ref":"#/components/schemas/Holder"},{"type":"null"}]},"name":{"type":"string"}}}""", "nested", true)]
+    [InlineData("""{"type":"object","properties":{"list":{"type":"array","items":{"$ref":"#/components/schemas/Holder"}},"name":{"type":"string"}}}""", "list", true)]
+    [InlineData("""{"type":"object","properties":{"name":{"type":"string","writeOnly":false}}}""", null, false)]
+    public void Parse_WriteOnlySchema_TreatsPropertyAsSecret(string bodySchema, string? expectedSecret, bool expectedWriteOnly)
+    {
+        var operation = Assert.Single(OpenApiCliParser.Parse(CreateDocument(bodySchema)));
+
+        Assert.Equal(expectedSecret is null ? [] : [expectedSecret], operation.CliMetadata.SecretProperties);
+        Assert.Equal(expectedWriteOnly, operation.RequestBodyHasWriteOnlyValue);
+        Assert.Equal(expectedWriteOnly, operation.WriteOnlyProperties.Contains("apiKey"));
+    }
+
+    [Fact]
+    public void Parse_WriteOnlyInsideAnArrayBody_FlagsTheBodyWithoutProperties()
+    {
+        var operation = Assert.Single(OpenApiCliParser.Parse(CreateDocument("""{"type":"array","items":{"$ref":"#/components/schemas/Holder"}}""")));
+
+        Assert.Empty(operation.CliMetadata.SecretProperties);
+        Assert.True(operation.RequestBodyHasWriteOnlyValue);
+    }
+
+    [Fact]
+    public void Parse_TwoPropertiesReferenceOneSecretSchema_MarksBoth()
+    {
+        var operation = Assert.Single(OpenApiCliParser.Parse(CreateDocument(
+            """{"type":"object","properties":{"nested":{"type":"object","properties":{"first":{"$ref":"#/components/schemas/Secret"},"second":{"$ref":"#/components/schemas/Secret"}}}}}""")));
+
+        Assert.Contains("first", operation.WriteOnlyProperties);
+        Assert.Contains("second", operation.WriteOnlyProperties);
+    }
+
+    [Fact]
+    public void Parse_RecursiveSchema_Terminates()
+    {
+        var operation = Assert.Single(OpenApiCliParser.Parse(CreateDocument("""{"$ref":"#/components/schemas/Tree"}""")));
+
+        Assert.False(operation.RequestBodyHasWriteOnlyValue);
+    }
+
+    [Fact]
+    public void Parse_AlreadyDeclaredSecret_IsNotDuplicated()
+    {
+        var operation = Assert.Single(OpenApiCliParser.Parse("""
+            {"paths":{"/api/widgets":{"post":{"x-oc-cli":{"commandGroup":["widgets"],"verb":"create","secretProperties":["APIKEY"]},
+              "requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"apiKey":{"type":"string","writeOnly":true}}}}}}}}}}
+            """));
+
+        Assert.Equal("APIKEY", Assert.Single(operation.CliMetadata.SecretProperties));
+    }
+
+    private static string CreateDocument(string bodySchema) => """
+        {
+          "paths":{"/api/widgets":{"post":{"x-oc-cli":{"commandGroup":["widgets"],"verb":"create"},
+            "requestBody":{"content":{"application/json":{"schema":BODY_SCHEMA}}}}}},
+          "components":{"schemas":{
+            "Secret":{"type":"string","writeOnly":true},
+            "Plain":{"type":"string"},
+            "Holder":{"type":"object","properties":{"apiKey":{"type":"string","writeOnly":true}}},
+            "Tree":{"type":"object","properties":{"children":{"type":"array","items":{"$ref":"#/components/schemas/Tree"}}}}
+          }}
+        }
+        """.Replace("BODY_SCHEMA", bodySchema, StringComparison.Ordinal);
+
     [Fact]
     public void Parse_PresentationMetadata_ReadsIt()
     {

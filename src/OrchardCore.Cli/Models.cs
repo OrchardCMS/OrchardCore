@@ -224,6 +224,12 @@ internal sealed class OpenApiOperationDefinition
     public string? RequestContentType { get; set; }
 
     public JsonNode? RequestBodySchema { get; set; }
+
+    /// <summary>Gets or sets whether the request body schema has a value marked <c>writeOnly</c>, at any depth.</summary>
+    public bool RequestBodyHasWriteOnlyValue { get; set; }
+
+    /// <summary>Gets the names of the request body properties marked <c>writeOnly</c>, at any depth.</summary>
+    public HashSet<string> WriteOnlyProperties { get; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 internal sealed class DocumentationIndex

@@ -235,6 +235,7 @@ internal static class OpenApiCliParser
         }
 
         operation.RequestBodySchema = CreateStandaloneSchema(bodySchema, root);
+        operation.RequestBodyHasWriteOnlyValue = CollectWriteOnlyProperties(bodySchema, root, [], operation.WriteOnlyProperties);
 
         if (!ReadSchemaTypes(bodySchema).Contains("object"))
         {
@@ -269,7 +270,84 @@ internal static class OpenApiCliParser
             }
 
             operation.RequestBodyProperties.Add(definition);
+
+            // A value marked writeOnly is a secret however it is declared, also inside this property.
+            if (CollectWriteOnlyProperties(property.Value, root, [], operation.WriteOnlyProperties)
+                && !operation.CliMetadata.SecretProperties.Contains(property.Name, StringComparer.OrdinalIgnoreCase))
+            {
+                operation.CliMetadata.SecretProperties.Add(property.Name);
+            }
         }
+    }
+
+    // Returns whether the schema or anything below it is marked writeOnly, and collects the names of such properties.
+    private static bool CollectWriteOnlyProperties(JsonElement schema, JsonElement root, HashSet<string> visitedReferences, HashSet<string> names)
+    {
+        if (schema.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        var found = schema.TryGetProperty("writeOnly", out var writeOnly) && writeOnly.ValueKind == JsonValueKind.True;
+        if (schema.TryGetProperty("$ref", out var reference)
+            && reference.ValueKind == JsonValueKind.String
+            && reference.GetString() is { } pointer
+            && pointer.StartsWith("#/", StringComparison.Ordinal)
+            && visitedReferences.Add(pointer))
+        {
+            found |= CollectWriteOnlyProperties(ResolveJsonPointer(root, pointer), root, visitedReferences, names);
+        }
+
+        foreach (var keyword in new[] { "properties", "patternProperties" })
+        {
+            if (schema.TryGetProperty(keyword, out var properties) && properties.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var property in properties.EnumerateObject())
+                {
+                    found |= CollectWriteOnlyProperties(property.Value, root, visitedReferences, names);
+
+                    // Checked apart, as a schema that two properties reference is only visited once.
+                    if (IsMarkedWriteOnly(property.Value, root))
+                    {
+                        found = true;
+                        names.Add(property.Name);
+                    }
+                }
+            }
+        }
+
+        foreach (var keyword in new[] { "items", "additionalProperties" })
+        {
+            if (schema.TryGetProperty(keyword, out var child))
+            {
+                found |= CollectWriteOnlyProperties(child, root, visitedReferences, names);
+            }
+        }
+
+        foreach (var keyword in new[] { "allOf", "anyOf", "oneOf", "prefixItems" })
+        {
+            if (schema.TryGetProperty(keyword, out var children) && children.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var child in children.EnumerateArray())
+                {
+                    found |= CollectWriteOnlyProperties(child, root, visitedReferences, names);
+                }
+            }
+        }
+
+        return found;
+    }
+
+    private static bool IsMarkedWriteOnly(JsonElement schema, JsonElement root)
+    {
+        // OpenAPI 3.1 allows the keyword next to a reference, or a reference to a marked schema.
+        if (schema.TryGetProperty("writeOnly", out var writeOnly) && writeOnly.ValueKind == JsonValueKind.True)
+        {
+            return true;
+        }
+
+        var resolved = ResolveReferences(schema, root);
+        return resolved.ValueKind == JsonValueKind.Object && resolved.TryGetProperty("writeOnly", out writeOnly) && writeOnly.ValueKind == JsonValueKind.True;
     }
 
     private static JsonObject CreateStandaloneSchema(JsonElement schemaElement, JsonElement root)

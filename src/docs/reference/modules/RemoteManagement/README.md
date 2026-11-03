@@ -575,6 +575,13 @@ resource:
 | `ItemsProperty` | `itemsProperty` | The response property holding the rows of a list, for table output without `TableColumns`. Without it, Pomi looks for `items`. |
 | `SetupPasswordProperty` | `setupPasswordProperty` | The body property holding the password of a new administrator. Pomi requires it and applies the setup password rules before sending the request. |
 
+Set `SecretProperties` to the body properties that must not appear on a command line. Pomi replaces
+their options with `--<property>-env`, `--<property>-file` and `--<property>-stdin`, prompts for a
+required one without echoing it, and removes `--body` from the command, leaving `--body-file` and
+`--stdin`. It treats a property the same way when its JSON Schema in the OpenAPI document has
+`writeOnly: true`, or contains a value that does, and doesn't print a property marked `writeOnly` if a
+response returns it.
+
 Set `FileResponse = true` for responses that Pomi must stream to disk. The transformer
 emits `fileResponse: true`; Pomi requires `--output-file` and reserves a new private
 file before sending the request. Existing files are never overwritten and failed

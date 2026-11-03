@@ -989,7 +989,7 @@ internal sealed partial class CliApplication
         }
 
         var forceOption = new Option<bool>("--force") { Description = "Confirm destructive operations without a prompt" };
-        var bodyOption = operation.CliMetadata.SecretProperties.Count == 0
+        var bodyOption = operation.CliMetadata.SecretProperties.Count == 0 && !operation.RequestBodyHasWriteOnlyValue
             ? new Option<string?>("--body") { Description = "Inline JSON request body" }
             : null;
         var bodyFileOption = new Option<FileInfo?>("--body-file") { Description = "Read the JSON request body from a file" };
@@ -1154,10 +1154,50 @@ internal sealed partial class CliApplication
             var accessToken = await ResolveAccessTokenAsync(context, null, null, false, cancellationToken);
             var response = await SendApiRequestAsync(context, operation.Method, routePath, query, headers, body, accessToken, cancellationToken, download);
             var outputJson = secretOutput is not null ? await secretOutput.WriteAsync(response.Json, cancellationToken)
-                : provisioningSupported ? await CaptureProvisionedContextAsync(response.Json, cancellationToken) : response.Json;
+                : RemoveWriteOnlyProperties(provisioningSupported ? await CaptureProvisionedContextAsync(response.Json, cancellationToken) : response.Json, operation);
             IReadOnlyList<CliTableColumnMetadata>? tableColumns = secretOutput is null && operation.CliMetadata.TableColumns.Count > 0 ? [.. operation.CliMetadata.TableColumns] : null;
             return await WriteOutputAsync(parseResult, outputJson, cancellationToken, tableColumns, response.HttpMethod, response.StatusCode, operation.CliMetadata);
         });
+    }
+
+    // The server is not meant to return such a value, but if it does the CLI must not print it.
+    internal static JsonElement RemoveWriteOnlyProperties(JsonElement json, OpenApiOperationDefinition operation)
+    {
+        if (operation.WriteOnlyProperties.Count == 0 || json.ValueKind is not (JsonValueKind.Object or JsonValueKind.Array))
+        {
+            return json;
+        }
+
+        var node = JsonNode.Parse(json.GetRawText())!;
+        return RemoveProperties(node, operation.WriteOnlyProperties) ? CliUtilities.ToJsonElement(node) : json;
+    }
+
+    private static bool RemoveProperties(JsonNode? node, HashSet<string> names)
+    {
+        var removed = false;
+        if (node is JsonObject jsonObject)
+        {
+            foreach (var property in jsonObject.ToArray())
+            {
+                if (names.Contains(property.Key))
+                {
+                    removed |= jsonObject.Remove(property.Key);
+                }
+                else
+                {
+                    removed |= RemoveProperties(property.Value, names);
+                }
+            }
+        }
+        else if (node is JsonArray jsonArray)
+        {
+            foreach (var item in jsonArray)
+            {
+                removed |= RemoveProperties(item, names);
+            }
+        }
+
+        return removed;
     }
 
     private Command? EnsureCommandPath(IReadOnlyList<string> commandGroup, string verb, string description)
