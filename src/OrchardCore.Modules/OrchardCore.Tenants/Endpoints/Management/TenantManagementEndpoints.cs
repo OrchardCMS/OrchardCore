@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.AuditTrail.Services;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -24,6 +27,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Recipes.Models;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.AuditTrail;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
@@ -231,8 +235,9 @@ internal static partial class TenantManagementEndpoints
             return authError;
         }
 
-        // The application is an administrator of the tenant, which managing tenants doesn't imply.
-        if (provisionClient && !await authorizationService.AuthorizeAsync(httpContext.User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
+        // This rewrites the OpenID settings of the tenant, and the application
+        // is an administrator of the tenant, which managing tenants doesn't imply.
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
         {
             return httpContext.ApiForbidProblem();
         }
@@ -269,6 +274,8 @@ internal static partial class TenantManagementEndpoints
             logger.LogWarning("'{UserName}' provisioned the administrative application '{ClientId}' for the tenant '{TenantName}'.", httpContext.User.Identity?.Name, credentials.ClientId, settings.Name);
         }
 
+        await RecordRemoteManagementEventAsync(httpContext, TenantRemoteManagementAuditTrailEventConfiguration.Enabled, settings.Name, credentials?.ClientId);
+
         return TypedResults.Ok(new TenantOperationResponse
         {
             Name = settings.Name,
@@ -277,6 +284,28 @@ internal static partial class TenantManagementEndpoints
             State = settings.State.ToString(),
             Url = GetTenantUrls(httpContext, settings).FirstOrDefault(),
         });
+    }
+
+    // The audit trail is an optional feature of the tenant running these endpoints.
+    private static async Task RecordRemoteManagementEventAsync(HttpContext httpContext, string eventName, string tenantName, string clientId = null)
+    {
+        var auditTrailManager = httpContext.RequestServices?.GetService<IAuditTrailManager>();
+        if (auditTrailManager is null)
+        {
+            return;
+        }
+
+        await auditTrailManager.RecordEventAsync(new AuditTrailContext<TenantRemoteManagementAuditEvent>(
+            eventName,
+            TenantRemoteManagementAuditTrailEventConfiguration.CategoryName,
+            tenantName,
+            httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier),
+            httpContext.User.Identity?.Name,
+            new TenantRemoteManagementAuditEvent
+            {
+                TenantName = tenantName,
+                ClientId = clientId,
+            }));
     }
 
     internal static async Task<IResult> ListAsync(

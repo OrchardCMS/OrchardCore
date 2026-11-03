@@ -17,6 +17,7 @@ using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.AuditTrail;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Services;
@@ -104,6 +105,7 @@ internal static partial class TenantManagementEndpoints
                     tenant.ClientCredentials = credentials;
                     httpContext.Response.Headers.CacheControl = "no-store";
                     logger.LogWarning("'{UserName}' provisioned the administrative application '{ClientId}' for the tenant '{TenantName}'.", httpContext.User.Identity?.Name, credentials.ClientId, tenantName);
+                    await RecordRemoteManagementEventAsync(httpContext, TenantRemoteManagementAuditTrailEventConfiguration.Enabled, tenantName, credentials.ClientId);
                 }
 
                 return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(tenantName)}", tenant);

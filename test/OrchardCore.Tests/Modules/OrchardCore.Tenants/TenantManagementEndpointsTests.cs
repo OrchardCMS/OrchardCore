@@ -19,6 +19,7 @@ using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Models;
 using OrchardCore.RemoteManagement;
+using OrchardCore.Security;
 using OrchardCore.Setup.Services;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Endpoints.Management;
@@ -137,6 +138,35 @@ public class TenantManagementEndpointsTests
         Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         Assert.Equal(TenantState.Running, defaultSettings.State);
         shellHost.Verify(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task EnableRemoteManagementAsync_WithoutConfigurationPermission_IsForbidden(bool provisionClient)
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var authorizationService = new Mock<IAuthorizationService>();
+        authorizationService
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync((ClaimsPrincipal _, object _, IEnumerable<IAuthorizationRequirement> requirements) =>
+                requirements.OfType<PermissionRequirement>().Any(requirement => requirement.Permission.Name == RemoteManagementPermissions.ManageRemoteManagementConfiguration.Name)
+                    ? AuthorizationResult.Failed()
+                    : AuthorizationResult.Success());
+        var shellHost = new Mock<IShellHost>(MockBehavior.Strict);
+
+        var result = await TenantManagementEndpoints.EnableRemoteManagementAsync(
+            CreateHttpContext(),
+            "TenantA",
+            shellHost.Object,
+            defaultSettings,
+            authorizationService.Object,
+            CreateLocalizer(),
+            Mock.Of<ILogger<TenantApiController>>(),
+            provisionClient);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        shellHost.VerifyNoOtherCalls();
     }
 
     [Theory]

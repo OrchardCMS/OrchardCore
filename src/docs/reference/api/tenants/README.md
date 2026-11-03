@@ -996,7 +996,11 @@ pipeline's error message.
 
 ## Enable Remote Management for a tenant
 
-Creating an administrative application, here or with `enableRemoteManagement` when installing a tenant, also requires the `ManageRemoteManagementConfiguration` permission on the Default tenant, and is written to the log.
+This operation, like `enableRemoteManagement` when installing a tenant, also requires the
+`ManageRemoteManagementConfiguration` permission on the Default tenant, because it rewrites the
+OpenID settings of the target tenant and can create an administrator of it. Each use records an
+event in the **Tenant remote management** category of the Default tenant's audit trail when the
+**Audit Trail** feature is enabled there, and creating an application is also written to the log.
 
 The optional query boolean `provisionClient=true` also creates a new administrative
 confidential application and returns its `clientCredentials` once, with
