@@ -555,6 +555,11 @@ formats, including `--output none`. HTTP clients still receive the one-time resp
 and must store it privately. The operation is not exposed as an MCP tool. This flag
 does not replace endpoint authorization.
 
+Set `ProvisioningProperty` on an operation that can create an administrative application,
+to the name of the boolean parameter or body property requesting it. Pomi then offers it as
+an option and saves the returned credentials in a new context. Such an operation also needs
+`ExcludedFromMcp = true` when it can return credentials depending on its input.
+
 Register an `IRemoteManagementCapabilityProvider` when the feature also needs to report a versioned capability in the authenticated manifest. CLI metadata describes discoverability only; endpoint authorization remains mandatory.
 
 ## Endpoint and credential boundaries
@@ -673,8 +678,9 @@ logo/document URLs is ignored; it is never fetched or granted.
 
 Registration is anonymous but bounded to **10 attempts per minute per tenant
 per application instance**, with no queue. Rate-limited requests return `429`
-with `Retry-After: 60`. Automatic registration stops at **1,000 total OpenID
-applications** by default; capacity or unconfigured authentication returns `503`.
+with `Retry-After: 60`. Automatic registration stops at **1,000 automatically registered
+applications** by default; capacity or unconfigured authentication returns `503`. When full,
+registrations older than a day that no user authorized are removed to make room.
 The application count and creation are protected by the configured tenant
 lock. Deploy a distributed lock provider for coordination across nodes, and
 apply any additional global rate limits at your ingress.

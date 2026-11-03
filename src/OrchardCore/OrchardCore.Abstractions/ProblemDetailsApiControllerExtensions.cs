@@ -171,6 +171,27 @@ public static class ProblemDetailsApiControllerExtensions
     }
 
     /// <summary>
+    /// Returns a Problem with a 400 Bad Request status code when the paging values are invalid, or <c>null</c> when they are valid.
+    /// </summary>
+    public static IResult ApiPagingProblem(this HttpContext httpContext, int skip, int take)
+    {
+        const int MaximumTake = 200;
+
+        if (skip >= 0 && take is >= 1 and <= MaximumTake)
+        {
+            return null;
+        }
+
+        var S = httpContext.RequestServices.GetRequiredService<
+            IStringLocalizer<ProblemDetailsApiLocalization>
+        >();
+
+        return httpContext.ApiBadRequestProblem(detail: take > MaximumTake
+            ? S["Take cannot exceed {0}.", MaximumTake]
+            : S["Skip must be zero or greater and take must be greater than zero."]);
+    }
+
+    /// <summary>
     /// Returns a Problem with a 404 Not Found status code, for a minimal API endpoint.
     /// </summary>
     public static IResult ApiNotFoundProblem(

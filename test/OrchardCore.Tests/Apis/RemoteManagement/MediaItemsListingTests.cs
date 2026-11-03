@@ -113,7 +113,7 @@ public class MediaItemsListingTests
         await using var app = builder.Build();
         app.AddGetAllMediaItemsEndpoint().AddGetFoldersEndpoint().AddGetMediaItemsEndpoint().AddMoveMediaListEndpoint();
         var endpoint = ((IEndpointRouteBuilder)app).DataSources.SelectMany(source => source.Endpoints)
-            .OfType<RouteEndpoint>().Single(value => value.RoutePattern.RawText == route);
+            .OfType<RouteEndpoint>().Single(value => value.RoutePattern.RawText?.TrimStart('/') == route);
         using var body = new MemoryStream();
         var context = new DefaultHttpContext { RequestServices = app.Services };
         context.Request.Scheme = "https";

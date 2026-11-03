@@ -92,7 +92,7 @@ internal static class FeatureManagementEndpoints
         var skip = request.Skip ?? 0;
         var take = request.Take ?? 50;
 
-        if (ValidatePaging(skip, take) is { } pagingError)
+        if (httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }
@@ -203,21 +203,6 @@ internal static class FeatureManagementEndpoints
             ExtensionId = feature.Descriptor.Extension.Id,
             ExtensionName = feature.Descriptor.Extension.Manifest.Name,
         };
-
-    private static Microsoft.AspNetCore.Http.HttpResults.ProblemHttpResult ValidatePaging(int skip, int take)
-    {
-        if (skip < 0 || take < 1)
-        {
-            return TypedResults.Problem(title: "Bad request", detail: "Skip must be zero or greater and take must be greater than zero.", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (take > 200)
-        {
-            return TypedResults.Problem(title: "Bad request", detail: "Take cannot exceed 200.", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        return null;
-    }
 
     private static bool MatchesFilter(ModuleFeature feature, FeatureListRequest request)
     {

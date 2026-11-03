@@ -62,7 +62,7 @@ public static class GetMediaItemsEndpoint
         var skip = request.Skip ?? 0;
         var take = request.Take ?? MediaEndpointHelpers.DefaultTake;
 
-        if (isManagementEndpoint && MediaEndpointHelpers.ValidatePaging(skip, take) is { } pagingError)
+        if (isManagementEndpoint && httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }

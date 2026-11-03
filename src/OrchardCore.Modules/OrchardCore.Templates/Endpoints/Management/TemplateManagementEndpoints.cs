@@ -13,8 +13,6 @@ internal static class TemplateManagementEndpoints
 {
     private const string RoutePrefix = "api/templates";
     private const int DefaultTake = 50;
-    private const int MaximumTake = 200;
-
     public static IEndpointRouteBuilder AddTemplateManagementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routes = builder.MapManagementGroup(TemplateManagementEndpointConventions.TagName, Permissions.ManageTemplates);
@@ -115,7 +113,7 @@ internal static class TemplateManagementEndpoints
 
         var skip = request.Skip ?? 0;
         var take = request.Take ?? DefaultTake;
-        if (ValidatePaging(skip, take) is { } pagingError)
+        if (httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }
@@ -257,25 +255,6 @@ internal static class TemplateManagementEndpoints
         {
             return TypedResults.Problem(
                 detail: "The template content is required.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        return null;
-    }
-
-    private static Microsoft.AspNetCore.Http.HttpResults.ProblemHttpResult ValidatePaging(int skip, int take)
-    {
-        if (skip < 0 || take < 1)
-        {
-            return TypedResults.Problem(
-                detail: "Skip must be zero or greater and take must be greater than zero.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (take > MaximumTake)
-        {
-            return TypedResults.Problem(
-                detail: $"Take cannot exceed {MaximumTake}.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

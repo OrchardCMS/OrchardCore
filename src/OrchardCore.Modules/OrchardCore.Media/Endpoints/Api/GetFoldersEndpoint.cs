@@ -51,7 +51,7 @@ public static class GetFoldersEndpoint
         var skip = request.Skip ?? 0;
         var take = request.Take ?? (isManagementEndpoint ? MediaEndpointHelpers.DefaultTake : 0);
 
-        if (isManagementEndpoint && MediaEndpointHelpers.ValidatePaging(skip, take) is { } pagingError)
+        if (isManagementEndpoint && httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }

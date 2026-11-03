@@ -98,6 +98,7 @@ internal static partial class TenantManagementEndpoints
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 SecretProperties = { "password", "connectionString" },
+                ProvisioningProperty = "enableRemoteManagement",
             })
             .Accepts<TenantInstallRequest>("application/json")
             .Produces<TenantResponse>(StatusCodes.Status201Created)
@@ -203,6 +204,7 @@ internal static partial class TenantManagementEndpoints
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 ExcludedFromMcp = true,
+                ProvisioningProperty = "provisionClient",
             })
             .Produces<TenantOperationResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -290,7 +292,7 @@ internal static partial class TenantManagementEndpoints
         var skip = request.Skip ?? 0;
         var take = request.Take ?? 20;
 
-        if (ValidatePaging(httpContext, skip, take, localizer) is { } pagingError)
+        if (httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }
@@ -947,21 +949,6 @@ internal static partial class TenantManagementEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ManageTenants))
         {
             return httpContext.ApiForbidProblem();
-        }
-
-        return null;
-    }
-
-    private static IResult ValidatePaging(HttpContext httpContext, int skip, int take, IStringLocalizer<TenantApiController> localizer)
-    {
-        if (skip < 0 || take < 1)
-        {
-            return httpContext.ApiBadRequestProblem(detail: localizer["Skip must be zero or greater and take must be greater than zero."]);
-        }
-
-        if (take > 200)
-        {
-            return httpContext.ApiBadRequestProblem(detail: localizer["Take cannot exceed 200."]);
         }
 
         return null;

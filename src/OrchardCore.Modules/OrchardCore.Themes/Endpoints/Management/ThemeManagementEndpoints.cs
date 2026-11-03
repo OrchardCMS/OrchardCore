@@ -20,8 +20,6 @@ internal static class ThemeManagementEndpoints
 {
     private const string RoutePrefix = "api/themes";
     private const int DefaultTake = 50;
-    private const int MaximumTake = 200;
-
     public static IEndpointRouteBuilder AddThemeManagementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routes = builder.MapManagementGroup(ThemeManagementEndpointConventions.TagName);
@@ -95,7 +93,7 @@ internal static class ThemeManagementEndpoints
 
         var skip = request.Skip ?? 0;
         var take = request.Take ?? DefaultTake;
-        if (ValidatePaging(skip, take) is { } pagingError)
+        if (httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }
@@ -297,27 +295,6 @@ internal static class ThemeManagementEndpoints
         return (!request.Admin.HasValue || request.Admin.Value == theme.IsAdmin) &&
             (!request.Enabled.HasValue || request.Enabled.Value == theme.IsEnabled) &&
             (!request.Current.HasValue || request.Current.Value == theme.IsCurrent);
-    }
-
-    private static ProblemHttpResult ValidatePaging(int skip, int take)
-    {
-        if (skip < 0 || take < 1)
-        {
-            return TypedResults.Problem(
-                title: "Bad request",
-                detail: "Skip must be zero or greater and take must be greater than zero.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (take > MaximumTake)
-        {
-            return TypedResults.Problem(
-                title: "Bad request",
-                detail: $"Take cannot exceed {MaximumTake}.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        return null;
     }
 
     internal sealed class ThemeListRequest

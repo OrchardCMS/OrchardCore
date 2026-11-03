@@ -38,22 +38,6 @@ internal static class MediaEndpointHelpers
             && !name.Contains('/')
             && !name.Contains('\\');
 
-    public static Microsoft.AspNetCore.Http.HttpResults.ProblemHttpResult ValidatePaging(int skip, int take)
-    {
-        if (skip < 0 || take < 1)
-        {
-            return TypedResults.Problem(
-                detail: "Skip must be zero or greater and take must be greater than zero.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        return take > MaximumTake
-            ? TypedResults.Problem(
-                detail: $"Take cannot exceed {MaximumTake}.",
-                statusCode: StatusCodes.Status400BadRequest)
-            : null;
-    }
-
     public static string GetFileName(IMediaFileStore mediaFileStore, string path)
         => Path.GetFileName(mediaFileStore.NormalizePath(path));
 
