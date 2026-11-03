@@ -4,12 +4,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseNLogHost();
 
-builder.Services
+var orchardCore = builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup")
-    // Exports traces, metrics and logs once an OTLP endpoint is configured, e.g. with the 'OTEL_EXPORTER_OTLP_ENDPOINT' environment variable.
-    // See https://docs.orchardcore.net/en/latest/reference/modules/OpenTelemetry/.
-    .AddOpenTelemetry();
+    .AddSetupFeatures("OrchardCore.AutoSetup");
+
+// Exports traces, metrics and logs when an OTLP endpoint is configured, e.g. with the 'OTEL_EXPORTER_OTLP_ENDPOINT' environment variable.
+// Without one nothing would be exported, so nothing is collected.
+// See https://docs.orchardcore.net/en/latest/reference/modules/OpenTelemetry/.
+if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]) ||
+    !string.IsNullOrWhiteSpace(builder.Configuration["OrchardCore:OpenTelemetry:Otlp:Endpoint"]))
+{
+    orchardCore.AddOpenTelemetry();
+}
 
 var app = builder.Build();
 

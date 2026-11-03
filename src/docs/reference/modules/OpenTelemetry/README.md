@@ -18,7 +18,7 @@ builder.Services
     .AddOpenTelemetry();
 ```
 
-The `OrchardCore.Cms.Web` application of the repository already does it, so that setting an OTLP endpoint is enough to export its telemetry.
+The `OrchardCore.Cms.Web` application of the repository does it when an OTLP endpoint is configured, so that setting one is enough to export its telemetry, and nothing is collected otherwise.
 
 The telemetry is exported over OTLP once an endpoint is configured, either in the `OrchardCore:OpenTelemetry:Otlp` section or with the standard `OTEL_EXPORTER_OTLP_ENDPOINT` configuration value, e.g. as an environment variable:
 
