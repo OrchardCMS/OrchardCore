@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "RemoteManagement": {
+          "type": "object",
+          "properties": {
+            "Mcp": {
+              "type": "object",
+              "description": "The management operations exposed as MCP tools. Requires the 'OrchardCore.RemoteManagement.Mcp' feature. See https://docs.orchardcore.net/en/latest/reference/modules/RemoteManagement/.",
+              "properties": {
+                "AllowConfirmationRequiredTools": {
+                  "type": "boolean",
+                  "description": "Whether the operations that Pomi asks its users to confirm, such as executing a recipe or deleting a tenant, are exposed as MCP tools.",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -94,7 +94,7 @@ with tempfile.TemporaryDirectory(prefix='lucene-indexes-cli-', dir=state_path.pa
     request('api/features/OrchardCore.RemoteManagement.Mcp:enable?force=true', 'POST')
     request('api/features/OrchardCore.Lucene:enable?force=true', 'POST')
     pomi('api', 'refresh', '--force')
-    assert len(catalog()) == 5
+    assert len(catalog()) == 4
     assert 'standardanalyzer' in pomi('indexes', 'lucene', 'analyzers')
     pomi('content', 'types', 'create', body={'name': name, 'displayName': name,
         'settings': {'ContentTypeSettings': {'creatable': True, 'draftable': True, 'versionable': True}},
@@ -135,11 +135,12 @@ with tempfile.TemporaryDirectory(prefix='lucene-indexes-cli-', dir=state_path.pa
             request(path, client='cli-indexes', status=404)
         finally:
             request('api/features/OrchardCore.Lucene:enable?force=true', 'POST')
-        assert len(catalog()) == 5
+        assert len(catalog()) == 4
         assert request(path, client='cli-indexes') == changed
         pomi('api', 'refresh', '--force')
         pomi('indexes', 'lucene', 'delete', index_id, '--force')
-        tool('delete', {'query': {'id': index_id}}, status=204)
+        assert not [tool_name for tool_name in catalog() if tool_name.endswith('_delete')], 'deleting needs a confirmation, so it is not a tool'
+        request(path, 'DELETE', client='cli-indexes', status=204)
     finally:
         request(path, 'DELETE', client='cli-indexes', status=204)
         pomi('content', 'types', 'delete', name, '--force', client='cli-fixture')

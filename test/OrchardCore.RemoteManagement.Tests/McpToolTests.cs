@@ -202,6 +202,28 @@ public class McpToolTests
     }
 
     [Theory]
+    [InlineData(null, false)]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    public void CreateTools_ConfirmationRequired_IsExcludedUnlessAllowed(bool? allowed, bool expected)
+    {
+        var metadata = new CliOperationMetadata(["widgets"], "update") { RequiresConfirmation = true };
+        var options = allowed is null ? null : new McpToolOptions { AllowConfirmationRequiredTools = allowed.Value };
+
+        var tools = McpToolCatalog.CreateTools([CreateEndpoint(metadata)], Document(), options);
+
+        Assert.Equal(expected, tools.Count == 1);
+    }
+
+    [Fact]
+    public void CreateTools_SecretOperation_StaysExcludedWhenConfirmationIsAllowed()
+    {
+        var metadata = new CliOperationMetadata(["widgets"], "update") { RequiresConfirmation = true, SecretResponse = true };
+
+        Assert.Empty(McpToolCatalog.CreateTools([CreateEndpoint(metadata)], Document(), new McpToolOptions { AllowConfirmationRequiredTools = true }));
+    }
+
+    [Theory]
     [InlineData("""{"writeOnly":true}""", true)]
     [InlineData("""{"type":"array","items":{"type":"object","properties":{"key":{"writeOnly":true}}}}""", true)]
     [InlineData("""{"writeOnly":false}""", false)]
@@ -243,7 +265,7 @@ public class McpToolTests
     {
         var metadata = new CliOperationMetadata(["widgets"], verb) { RequiresConfirmation = requiresConfirmation };
 
-        var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint(metadata)], Document()));
+        var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint(metadata)], Document(), new McpToolOptions { AllowConfirmationRequiredTools = true }));
 
         Assert.Equal(expected, tool.Tool.Annotations.DestructiveHint);
     }

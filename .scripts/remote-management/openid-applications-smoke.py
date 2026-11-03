@@ -167,8 +167,8 @@ with tempfile.TemporaryDirectory(prefix='openid-applications-cli-', dir=state_pa
         request('api/features/OrchardCore.RemoteManagement.Cli:disable', 'POST')
         try:
             assert tool('applications', 'show', {'query': {'clientId': name}}) == changed
-            tool('applications', 'delete', {'query': {'clientId': name}}, status=204)
-            tool('applications', 'delete', {'query': {'clientId': name}}, status=204)
+            request(path, 'DELETE', status=204)
+            request(path, 'DELETE', status=204)
         finally:
             request('api/features/OrchardCore.RemoteManagement.Cli:enable?force=true', 'POST')
         authenticate_application(expected_error='invalid_client')

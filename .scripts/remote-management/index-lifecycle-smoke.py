@@ -155,13 +155,14 @@ with tempfile.TemporaryDirectory(prefix='lucene-lifecycle-cli-', dir=state_path.
         print('PASS: HTTP synchronization and Pomi reset complete and preserve indexed content', flush=True)
         definition['indexedContentTypes'] = [name + 'Other']
         pomi('indexes', 'lucene', 'update', index_id, body=definition)
-        completed(operation_tool('rebuild', {'id': index_id}, status=202), 'mcp')
+        # Rebuilding needs a confirmation, so it is not a tool, while reading its operation is.
+        completed(request('api/indexes/by-id:rebuild?id=' + index_id, 'POST', client='cli-indexes', status=202), 'mcp')
         assert count() == 0, 'rebuild must remove documents excluded by the new definition'
         definition['indexedContentTypes'] = [name]
         pomi('indexes', 'lucene', 'update', index_id, body=definition)
         last = completed(pomi('indexes', 'rebuild', index_id, '--force'))
         assert count() == 1, 'rebuild must restore pre-existing content from indexing tasks'
-        print('PASS: MCP/Pomi rebuilds change real query results and restore existing content', flush=True)
+        print('PASS: HTTP/Pomi rebuilds change real query results and restore existing content', flush=True)
         request('api/indexes/by-id:reset?id=' + index_id, 'POST', client='cli-discovery', status=403)
         request('api/indexes/operations/by-id?id=' + last['id'], client='cli-discovery', status=403)
         request('api/indexes/operations/by-id?id=' + last['id'], client=None, status=401)

@@ -121,8 +121,8 @@ with tempfile.TemporaryDirectory(prefix='openid-scopes-cli-', dir=state_path.par
         request('api/features/OrchardCore.RemoteManagement.Cli:disable', 'POST')
         try:
             assert tool('scopes', 'show', {'query': {'name': name}}) == changed
-            tool('scopes', 'delete', {'query': {'name': name}}, status=204)
-            tool('scopes', 'delete', {'query': {'name': name}}, status=204)
+            request(path, 'DELETE', client='cli-openid-scopes', status=204)
+            request(path, 'DELETE', client='cli-openid-scopes', status=204)
         finally:
             request('api/features/OrchardCore.RemoteManagement.Cli:enable?force=true', 'POST')
         pomi('openid', 'scopes', 'show', name, status=404)

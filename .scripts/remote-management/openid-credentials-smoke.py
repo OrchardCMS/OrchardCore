@@ -180,7 +180,8 @@ with tempfile.TemporaryDirectory(prefix='openid-credentials-cli-', dir=state_pat
             credentials = request(rotate_path, 'POST')
             set_application_secret(credentials['clientSecret'])
             authenticate(application_secret)
-            tool('applications_credentials', 'revoke', {'query': {'clientId': name}}, status=204)
+            assert_tool_excluded('applications_credentials', 'revoke')
+            request(revoke_path, 'POST', status=204)
             authenticate(application_secret, expected_error='invalid_client')
         finally:
             request('api/features/OrchardCore.RemoteManagement.Cli:enable?force=true', 'POST')

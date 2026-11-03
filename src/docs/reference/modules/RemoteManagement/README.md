@@ -786,6 +786,24 @@ free-form body, so `settings_sections_update` stays a tool but refuses the secti
 schema declares a `writeOnly` value, such as `smtp` and the OpenID sections.
 Use Pomi or the HTTP APIs for these operations and for file transfers.
 
-Write operations other than plain creations are marked as potentially destructive using
+The operations for which Pomi asks a confirmation (`RequiresConfirmation`), such as executing
+a recipe, deleting or stopping a tenant, importing a deployment package or any deletion, are
+left out too: a model can invoke a tool without asking anyone. Enable them for a tenant with
+`AllowConfirmationRequiredTools`, which is off by default:
+
+```json
+{
+  "OrchardCore": {
+    "RemoteManagement": {
+      "Mcp": {
+        "AllowConfirmationRequiredTools": true
+      }
+    }
+  }
+}
+```
+
+Other write operations, and these when enabled, are marked as potentially destructive using
 MCP tool annotations; clients should obtain user confirmation before invoking them.
 Annotations are advisory and do not add an interactive confirmation step on the server.
+Plain creations are not marked.

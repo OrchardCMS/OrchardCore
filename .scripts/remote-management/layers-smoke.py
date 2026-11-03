@@ -179,7 +179,7 @@ with tempfile.TemporaryDirectory(prefix='layers-cli-', dir=state_path.parent) as
 
         ids, commands, names = catalog()
         assert len([command for command in commands if command.startswith('layers ') and not command.startswith('layers widgets ')]) == 7
-        assert len([tool_name for tool_name in names if tool_name.startswith('layers_') and not tool_name.startswith('layers_widgets_')]) == 7
+        assert len([tool_name for tool_name in names if tool_name.startswith('layers_') and not tool_name.startswith('layers_widgets_')]) == 6
         feature('OrchardCore.RemoteManagement.Cli', False)
         assert not catalog()[1]
         assert tool('show', {'query': {'name': name}})['name'] == name

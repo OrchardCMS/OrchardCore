@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using ModelContextProtocol.Protocol;
 
@@ -13,11 +14,13 @@ internal sealed class McpToolCatalog
 {
     private readonly McpEndpointRegistry _registry;
     private readonly IOpenApiDocumentProvider _documents;
+    private readonly McpToolOptions _options;
 
-    public McpToolCatalog(McpEndpointRegistry registry, [FromKeyedServices("v1")] IOpenApiDocumentProvider documents)
+    public McpToolCatalog(McpEndpointRegistry registry, [FromKeyedServices("v1")] IOpenApiDocumentProvider documents, IOptions<McpToolOptions> options)
     {
         _registry = registry;
         _documents = documents;
+        _options = options.Value;
     }
 
     public async Task<IReadOnlyList<McpToolDefinition>> GetToolsAsync(CancellationToken cancellationToken)
@@ -29,10 +32,10 @@ internal sealed class McpToolCatalog
 
         var document = await _documents.GetOpenApiDocumentAsync(cancellationToken);
         var json = JsonNode.Parse(await document.SerializeAsJsonAsync(OpenApiSpecVersion.OpenApi3_1, cancellationToken));
-        return _registry.Tools = CreateTools(_registry.DataSources.SelectMany(source => source.Endpoints).OfType<RouteEndpoint>(), json);
+        return _registry.Tools = CreateTools(_registry.DataSources.SelectMany(source => source.Endpoints).OfType<RouteEndpoint>(), json, _options);
     }
 
-    internal static IReadOnlyList<McpToolDefinition> CreateTools(IEnumerable<RouteEndpoint> endpoints, JsonNode document)
+    internal static IReadOnlyList<McpToolDefinition> CreateTools(IEnumerable<RouteEndpoint> endpoints, JsonNode document, McpToolOptions options = null)
     {
         var tools = new List<McpToolDefinition>();
         foreach (var endpoint in endpoints)
@@ -46,6 +49,13 @@ internal sealed class McpToolCatalog
             // Tool arguments and results reach the model's context and transcript, so credentials
             // stay on the HTTP API and Pomi, which keep them out of commands and output.
             if (metadata.ExcludedFromMcp || metadata.SecretResponse || metadata.SecretProperties.Count > 0)
+            {
+                continue;
+            }
+
+            // A model can invoke a tool without asking anyone, so the operations Pomi
+            // asks its users to confirm need the host's consent to become tools.
+            if (metadata.RequiresConfirmation && options?.AllowConfirmationRequiredTools != true)
             {
                 continue;
             }

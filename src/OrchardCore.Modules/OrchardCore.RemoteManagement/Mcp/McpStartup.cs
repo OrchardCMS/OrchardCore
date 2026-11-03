@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol.AspNetCore;
 using ModelContextProtocol.Protocol;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Security;
 
@@ -23,6 +25,8 @@ public sealed class McpStartup : StartupBase
     /// <inheritdoc />
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddOptions<McpToolOptions>().Configure<IShellConfiguration>((options, configuration) =>
+            configuration.GetSection("RemoteManagement:Mcp").Bind(options));
         services.AddSingleton<McpEndpointRegistry>();
         services.AddScoped<McpToolCatalog>();
         services.AddScoped<McpToolInvoker>();

@@ -10,11 +10,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.RemoteManagement;
 using OrchardCore.RemoteManagement.Mcp;
 using OrchardCore.Security;
@@ -160,6 +162,23 @@ public class McpHttpTests
         Assert.DoesNotContain("\"isError\":true", body);
     }
 
+    [Theory]
+    [InlineData(null, false)]
+    [InlineData("true", true)]
+    public async Task Mcp_ConfirmationRequiredOperation_IsAToolOnlyWhenConfigured(string allowed, bool listed)
+    {
+        await using var app = await CreateApplicationAsync(allowed is null ? [] : new() { ["RemoteManagement:Mcp:AllowConfirmationRequiredTools"] = allowed });
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "allowed");
+
+        using var list = await SendAsync(client, "tools/list");
+        Assert.Equal(listed, (await list.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Contains("widgets_delete"));
+
+        using var call = await SendAsync(client, "tools/call", """{"name":"widgets_delete","arguments":{"path":{"id":"42"}}}""");
+        var body = await call.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        Assert.Equal(listed, !body.Contains("Unknown or unavailable"));
+    }
+
     private static Task<HttpResponseMessage> SendAsync(HttpClient client, string method, string parameters = "{}")
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "/tenant-a/mcp")
@@ -171,11 +190,12 @@ public class McpHttpTests
         return client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
-    private static async Task<WebApplication> CreateApplicationAsync()
+    private static async Task<WebApplication> CreateApplicationAsync(Dictionary<string, string> configuration = null)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddSingleton<IShellConfiguration>(new ShellConfiguration(new ConfigurationBuilder().AddInMemoryCollection(configuration ?? []).Build()));
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddOpenApi();
         builder.Services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, TestBearerHandler>(OrchardCoreConstants.AuthenticationSchemes.Api, _ => { });
@@ -198,6 +218,10 @@ public class McpHttpTests
         app.MapPut("api/widgets/{id}", (string id, WidgetInput input) => Results.Json(new { id, input.Title }))
             .WithName("ApiUpdateWidget")
             .WithCliCommand(new CliOperationMetadata(["widgets"], "update"))
+            .RequireAuthorization(policy => policy.AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api).RequireClaim("widgets"));
+        app.MapDelete("api/widgets/{id}", (string id) => Results.Json(new { id }))
+            .WithName("ApiDeleteWidget")
+            .WithCliCommand(new CliOperationMetadata(["widgets"], "delete") { RequiresConfirmation = true })
             .RequireAuthorization(policy => policy.AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api).RequireClaim("widgets"));
         await app.StartAsync();
         return app;

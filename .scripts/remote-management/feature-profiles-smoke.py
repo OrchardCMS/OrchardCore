@@ -94,7 +94,7 @@ with tempfile.TemporaryDirectory(prefix='feature-profiles-cli-', dir=state_path.
     request('api/features/OrchardCore.RemoteManagement.Mcp:enable?force=true', 'POST')
     request('api/features/OrchardCore.Tenants.FeatureProfiles:enable?force=true', 'POST')
     pomi('api', 'refresh', '--force')
-    assert len(catalog()) == 6
+    assert len(catalog()) == 5
     schema = pomi('tenants', 'feature-profiles', 'schema')
     assert 'Include' in json.dumps(schema) and 'Exclude' in json.dumps(schema)
     path = 'api/tenants/feature-profiles/by-id?' + urllib.parse.urlencode({'id': name})
@@ -132,7 +132,7 @@ with tempfile.TemporaryDirectory(prefix='feature-profiles-cli-', dir=state_path.
         request('api/features/OrchardCore.RemoteManagement.Cli:disable', 'POST')
         try:
             assert tool('show', {'query': {'id': name}}) == cleared
-            assert len(catalog()) == 6
+            assert len(catalog()) == 5
         finally:
             request('api/features/OrchardCore.RemoteManagement.Cli:enable?force=true', 'POST')
         request('api/features/OrchardCore.Tenants.FeatureProfiles:disable', 'POST')
@@ -141,11 +141,12 @@ with tempfile.TemporaryDirectory(prefix='feature-profiles-cli-', dir=state_path.
             request(path, client='cli-feature-profiles', status=404)
         finally:
             request('api/features/OrchardCore.Tenants.FeatureProfiles:enable?force=true', 'POST')
-        assert len(catalog()) == 6
+        assert len(catalog()) == 5
         assert request(path, client='cli-feature-profiles') == cleared
         pomi('api', 'refresh', '--force')
         pomi('tenants', 'feature-profiles', 'delete', name, '--force')
-        tool('delete', {'query': {'id': name}}, status=204)
+        assert not [tool_name for tool_name in catalog() if tool_name.endswith('_delete')], 'deleting needs a confirmation, so it is not a tool'
+        request(path, 'DELETE', client='cli-feature-profiles', status=204)
         request(path, client='cli-feature-profiles', status=404)
     finally:
         request(path, 'DELETE', client='cli-feature-profiles', status=204)
