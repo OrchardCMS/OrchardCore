@@ -179,6 +179,11 @@ If a command is missing from help, run `pomi api refresh --force` explicitly;
   refresh discovery before concluding.
 - Inspect Validation Problem Details and correct the named property.
 - Retry only according to the operation's documented idempotency contract.
+- Exit code `2` with the error code `timeout` means the request ran out of time, not that
+  the change failed: the server may still complete it, so read the state before retrying.
+  Requests have 30 seconds, and operations that do their work before responding, such as
+  `tenants install` and `recipes execute`, have 10 minutes. Wait longer with
+  `--request-timeout <seconds>` on the command, or `OC_REQUEST_TIMEOUT` for the process.
 - Never print setup passwords, access tokens, refresh tokens, client secrets,
   or unredacted connection strings.
 

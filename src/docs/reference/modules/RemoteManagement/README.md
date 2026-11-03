@@ -100,13 +100,9 @@ These permissions prevent access by other operating-system users but do not
 encrypt tokens at rest. Protect the user account and home directory as you
 would for other development credentials.
 
-The CLI does not read or migrate tokens previously written to macOS Keychain or
-Linux Secret Service, avoiding an operating-system credential prompt. Sign in
-once per context after upgrading; legacy entries can be removed with the
-platform's credential-management tools. Tokens from older name-only file
-credentials also require one new login because the current key binds the tenant
-URL, authority, and client ID. Those obsolete files are not migrated or removed
-by a logout of the new login.
+The CLI doesn't use macOS Keychain or Linux Secret Service, which avoids an
+operating-system credential prompt. A stored token is bound to its tenant URL,
+authority, and client ID.
 
 For a terminal without a browser, use device authorization:
 
@@ -512,13 +508,11 @@ Every static and discovered command supports `--help`. OpenAPI metadata is cache
 The CLI is distributed as standalone native archives and NativeAOT .NET tool
 packages for Linux, Windows, and macOS on x64 and Arm64. See
 [installation instructions](../../../guides/remote-management/README.md#install-as-a-net-tool)
-for installing from the fork's workflow artifacts with the .NET 10 SDK or later.
+for installing with the .NET 10 SDK or later.
 
-The executable is named `pomi` (`pomi.exe` on Windows). Its NuGet package ID
-remains `OrchardCore.Cli`. Existing contexts, credential storage, and `OC_*`
-environment variables continue to work. After updating, change script invocations
-to `pomi` and regenerate shell completion. The server authentication client ID
-`orchardcore-cli` and OpenAPI extension `x-oc-cli` remain stable for compatibility.
+The executable is named `pomi` (`pomi.exe` on Windows). Its NuGet package ID is
+`OrchardCore.Cli`, its server authentication client ID `orchardcore-cli`, and its
+OpenAPI extension `x-oc-cli`.
 
 Each request has 30 seconds to complete. Operations that do their work before they respond, such as `tenants install`,
 `tenants setup` and `recipes execute`, have 10 minutes. A binary upload and the body of a response saved with
@@ -649,8 +643,7 @@ configured public URL when a proxy returns a redirect.
 Credentials are keyed by context name, exact tenant URL, authority, and client
 ID. Reusing a context name for another tenant is rejected: choose a different
 name or explicitly delete the old context. This also separates credentials
-when two local configuration directories use the same context name. Older
-name-only credential entries are not reused; sign in once after upgrading.
+when two local configuration directories use the same context name.
 Unix credentials remain shared owner-only files under `~/.orchardcore/credentials`,
 so ordinary CLI commands do not prompt for operating-system keychain access.
 

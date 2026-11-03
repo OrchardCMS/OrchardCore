@@ -17,7 +17,7 @@ internal class CliException : Exception
 
 internal static class CliUtilities
 {
-    public static string CliVersion => typeof(Program).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
+    public static string CliVersion => typeof(Program).Assembly.GetName().Version?.ToString(3) ?? RemoteManagementConstants.MinimumCliVersion;
 
     public static OutputFormat ParseOutputFormat(string? value)
     {

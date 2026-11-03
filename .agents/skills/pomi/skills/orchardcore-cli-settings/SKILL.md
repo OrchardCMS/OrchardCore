@@ -25,7 +25,8 @@ restores runtime fallback. The host-owned Default SMTP provider is separate.
 
 SMTP password input is write-only. Omit it to retain the stored credential; use
 `clearPassword: true` to remove it. Never combine clearing and setting. Keep the
-input file private and do not place credentials in command arguments. Readback
+input file private and do not place credentials in command arguments: `--body` refuses
+a property that the section schema marks write-only, so use `--body-file` or `--stdin`. Readback
 contains `hasPassword`, not the secret or encrypted value. Invalid patches preserve
 settings, and equivalent updates do not refresh options.
 
@@ -474,6 +475,7 @@ validate updates; HTTPS and the corresponding ManageServerSettings,
 ManageClientSettings, or ManageValidationSettings permission are required.
 Changed settings reload the tenant. Preserve working token endpoints and flows
 when automating through the current context. Client secrets and extra parameters
-are write-only; use private JSON input, omit to retain, and send null to clear.
+are write-only; use private JSON input with `--body-file` or `--stdin`, omit to retain,
+and send null to clear.
 Read presence flags and verify readback/discovery after the reload. This does not
 replace application/scopes commands or modify host-owned certificate material.

@@ -224,6 +224,13 @@ Each application is tenant-local. Do not proxy the Default-tenant identity into 
 child; use its own returned context for content and design work. The administrator
 user remains available for human sign-in with the password in the handoff file.
 
+## Slow installations
+
+`tenants install`, `tenants setup` and `recipes execute` wait up to 10 minutes for the
+server, as a recipe runs before they respond. For a larger recipe, pass
+`--request-timeout <seconds>`. After a timeout, don't repeat the command: the setup may
+still be running, so read `tenants show <tenant>` and `tenants setup-status <tenant>`.
+
 ## Inspect, reload and disable
 
 From the Default-tenant context:
