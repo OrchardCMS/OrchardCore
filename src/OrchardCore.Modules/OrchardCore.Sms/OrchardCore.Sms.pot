@@ -131,6 +131,30 @@ msgctxt "OrchardCore.Sms.Drivers.TwilioSettingsDisplayDriver"
 msgid "You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."
 msgstr ""
 
+#. Format arguments: {0}: name
+#: Services/SmsSettingsSectionProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Sms.Services.SmsSettingsSectionProvider"
+msgid "The SMS provider '{0}' does not exist or is not enabled."
+msgstr ""
+
+#: Services/TwilioSettingsSectionProvider.cs
+msgctxt "OrchardCore.Sms.Services.TwilioSettingsSectionProvider"
+msgid "Enable the Twilio provider when updating its configuration."
+msgstr ""
+
+#: Services/TwilioSettingsSectionProvider.cs
+msgctxt "OrchardCore.Sms.Services.TwilioSettingsSectionProvider"
+msgid "Please provide a valid phone number."
+msgstr ""
+
+#. Format arguments: {0}: "accountSid", "authToken", "phoneNumber"
+#: Services/TwilioSettingsSectionProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Sms.Services.TwilioSettingsSectionProvider"
+msgid "The {0} property is required."
+msgstr ""
+
 #: Views/Admin/Test.cshtml
 msgctxt "OrchardCore.Sms.Views.Admin.Test"
 msgid "No SMS providers are available. Enable at least one SMS provider feature."

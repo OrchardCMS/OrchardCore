@@ -91,6 +91,13 @@ msgctxt "OrchardCore.Twitter.Permissions"
 msgid "Manage X (Twitter) settings"
 msgstr ""
 
+#. Format arguments: {0}: "accessToken"
+#: Services/TwitterSettingsSectionProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Twitter.Services.TwitterSettingsSectionProvider"
+msgid "The {0} property is required."
+msgstr ""
+
 #: Services/TwitterSettingsService.cs
 msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
 msgid "Access Token Secret is required"
