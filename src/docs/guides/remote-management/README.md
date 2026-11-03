@@ -647,6 +647,10 @@ does not receive a success message. Errors appear on standard error. In human
 output, API failures start with **An error occurred**, followed by the failed
 request and the server's explanation, including field validation messages when
 provided. HTTP connection and JSON parsing failures also use readable messages.
+A request that doesn't complete in 30 seconds fails with exit code `2`, like a connection
+failure, as opposed to exit code `130` when you interrupt the command. Binary uploads with
+`--file` or `--stdin` have no time limit, and neither has the body of a response saved with
+`--output-file`.
 With `--output json` (or redirected `auto`), API errors retain their structured
 JSON envelope and exit codes. `--output none` suppresses results, not errors.
 

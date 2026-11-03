@@ -30,6 +30,7 @@ internal sealed partial class CliApplication
     private readonly Option<string?> _outputOption;
     private readonly Option<string?> _contextOption;
     private readonly Func<string, string?> _environment;
+    private readonly TimeSpan _requestTimeout;
     private string? _namedContext;
     private bool _environmentCredentialsWarningWritten;
 
@@ -46,7 +47,8 @@ internal sealed partial class CliApplication
         CliConfiguration configuration,
         Option<string?> outputOption,
         Option<string?> contextOption,
-        Func<string, string?> environment)
+        Func<string, string?> environment,
+        TimeSpan requestTimeout)
     {
         _rootCommand = rootCommand;
         _paths = paths;
@@ -59,9 +61,10 @@ internal sealed partial class CliApplication
         _outputOption = outputOption;
         _contextOption = contextOption;
         _environment = environment;
+        _requestTimeout = requestTimeout;
     }
 
-    public static async Task<CliApplication> CreateAsync(string[] args, CliPaths paths, HttpClient httpClient, CancellationToken cancellationToken, ICredentialStore? credentialStore = null, Func<string, string?>? environment = null)
+    public static async Task<CliApplication> CreateAsync(string[] args, CliPaths paths, HttpClient httpClient, CancellationToken cancellationToken, ICredentialStore? credentialStore = null, Func<string, string?>? environment = null, TimeSpan? requestTimeout = null)
     {
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(paths);
@@ -71,7 +74,8 @@ internal sealed partial class CliApplication
         var cacheService = new CacheService(paths);
         credentialStore ??= CredentialStoreFactory.CreateDefault(paths);
         var configuration = await contextStore.LoadAsync(cancellationToken);
-        var oauthClient = new OAuthClient(httpClient, Console.Error, cache: cacheService);
+        var effectiveRequestTimeout = requestTimeout ?? CliHttp.DefaultRequestTimeout;
+        var oauthClient = new OAuthClient(httpClient, Console.Error, cache: cacheService, requestTimeout: effectiveRequestTimeout);
 
         var outputOption = new Option<string?>("--output")
         {
@@ -90,7 +94,7 @@ internal sealed partial class CliApplication
         root.Options.Add(outputOption);
         root.Options.Add(contextOption);
 
-        var app = new CliApplication(root, paths, httpClient, contextStore, cacheService, credentialStore, oauthClient, configuration, outputOption, contextOption, environment ?? global::System.Environment.GetEnvironmentVariable)
+        var app = new CliApplication(root, paths, httpClient, contextStore, cacheService, credentialStore, oauthClient, configuration, outputOption, contextOption, environment ?? global::System.Environment.GetEnvironmentVariable, effectiveRequestTimeout)
         {
             _namedContext = ReadRequestedContext(args),
         };
@@ -100,7 +104,9 @@ internal sealed partial class CliApplication
         return app;
     }
 
-    public async Task<int> InvokeAsync(string[] args, TextWriter? errorWriter = null)
+    public Task<int> InvokeAsync(string[] args, TextWriter? errorWriter = null) => RunAsync(args, errorWriter, CancellationToken.None);
+
+    internal async Task<int> RunAsync(string[] args, TextWriter? errorWriter, CancellationToken cancellationToken)
     {
         var format = CliUtilities.ParseOutputFormat("auto");
         var writer = errorWriter ?? Console.Error;
@@ -137,14 +143,14 @@ internal sealed partial class CliApplication
                         current = parent;
                     }
 
-                    await _rootCommand.Parse([.. commandPath, "--help"]).InvokeAsync(invocation);
+                    await _rootCommand.Parse([.. commandPath, "--help"]).InvokeAsync(invocation, cancellationToken);
                 }
 
                 return 1;
             }
 
             format = CliUtilities.ParseOutputFormat(parsed.GetValue(_outputOption));
-            return await parsed.InvokeAsync(invocation);
+            return await parsed.InvokeAsync(invocation, cancellationToken);
         }
         catch (ApiException exception)
         {
@@ -165,6 +171,15 @@ internal sealed partial class CliApplication
         {
             await WriteErrorAsync("invalid_json", exception.Message, format, writer);
             return 3;
+        }
+        catch (TaskCanceledException exception) when (CliHttp.IsTimeout(exception))
+        {
+            await WriteErrorAsync(
+                "timeout",
+                "The request timed out. Check that the tenant is reachable and try again. A change the server already started may still complete.",
+                format,
+                writer);
+            return 2;
         }
     }
 
@@ -207,7 +222,7 @@ internal sealed partial class CliApplication
                 var manifestUri = CliUriPolicy.RequireTenantEndpoint(new Uri(context.TenantUrl), GetManagementManifestUri(context).AbsoluteUri);
                 using var request = new HttpRequestMessage(HttpMethod.Head, manifestUri);
                 AddAuthorization(request, await ResolveAccessTokenAsync(context, null, null, false, cancellationToken));
-                using var response = await _httpClient.SendAsync(request, cancellationToken);
+                using var response = await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, cancellationToken);
                 if (await _cacheService.ObserveApiRevisionAsync(cacheKey, response, cancellationToken))
                 {
                     cached = await _cacheService.ReadAsync(cacheKey, CacheKind.OpenApi, cancellationToken);
@@ -1246,7 +1261,7 @@ internal sealed partial class CliApplication
                 var request = new HttpRequestMessage(HttpMethod.Get, manifestUri);
                 CacheService.AddIfNoneMatchHeader(request, eTag);
                 AddAuthorization(request, accessToken);
-                return await _httpClient.SendAsync(request, token);
+                return await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, token);
             },
             cancellationToken);
 
@@ -1283,7 +1298,7 @@ internal sealed partial class CliApplication
                 var request = new HttpRequestMessage(HttpMethod.Get, openApiUri);
                 CacheService.AddIfNoneMatchHeader(request, eTag);
                 AddAuthorization(request, accessToken);
-                return await _httpClient.SendAsync(request, token);
+                return await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, token);
             },
             cancellationToken);
 
@@ -1307,7 +1322,7 @@ internal sealed partial class CliApplication
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, DocumentationIndexUri);
                 CacheService.AddIfNoneMatchHeader(request, eTag);
-                return await _httpClient.SendAsync(request, token);
+                return await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, token);
             },
             cancellationToken);
 
@@ -1344,16 +1359,42 @@ internal sealed partial class CliApplication
             }
         }
 
-        using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        // An upload takes as long as its stream needs, and a download as long as the response does.
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        if (body is not StreamContent)
+        {
+            timeout.CancelAfter(_requestTimeout);
+        }
+
+        try
+        {
+            return await SendApiRequestAsync(context, request, timeout, download, cancellationToken);
+        }
+        catch (OperationCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw CliHttp.CreateTimeoutException(exception);
+        }
+    }
+
+    private async Task<CommandOutput> SendApiRequestAsync(
+        TenantContextRecord context,
+        HttpRequestMessage request,
+        CancellationTokenSource timeout,
+        SecretOutputFile? download,
+        CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
         await _cacheService.ObserveApiRevisionAsync(context.TenantUrl, response, cancellationToken);
         var contentType = response.Content.Headers.ContentType?.MediaType;
         if (download is not null && response.IsSuccessStatusCode)
         {
+            timeout.CancelAfter(Timeout.InfiniteTimeSpan);
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
             var saved = await download.WriteStreamAsync(stream, cancellationToken);
             return new CommandOutput { Json = saved, HttpMethod = request.Method.Method, StatusCode = (int)response.StatusCode };
         }
-        var payload = response.Content is null ? string.Empty : await response.Content.ReadAsStringAsync(cancellationToken);
+        timeout.CancelAfter(_requestTimeout);
+        var payload = response.Content is null ? string.Empty : await response.Content.ReadAsStringAsync(timeout.Token);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -2066,7 +2107,8 @@ internal sealed partial class CliApplication
     private async Task<RemoteManagementManifest> FetchBootstrapAsync(string tenantUrl, CancellationToken cancellationToken)
     {
         var discoveryUri = new Uri(new Uri(tenantUrl, UriKind.Absolute), RemoteManagementConstants.BootstrapPath);
-        using var response = await _httpClient.GetAsync(discoveryUri, cancellationToken);
+        using var request = new HttpRequestMessage(HttpMethod.Get, discoveryUri);
+        using var response = await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, cancellationToken);
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             throw new CliException(

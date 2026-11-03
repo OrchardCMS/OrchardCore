@@ -17,14 +17,16 @@ internal sealed class OAuthClient
     private readonly TextWriter _stderr;
     private readonly Action<string> _launchBrowser;
     private readonly CacheService? _cache;
+    private readonly TimeSpan _requestTimeout;
     private Uri? _discoveryAuthority;
 
-    public OAuthClient(HttpClient httpClient, TextWriter stderr, Action<string>? launchBrowser = null, CacheService? cache = null)
+    public OAuthClient(HttpClient httpClient, TextWriter stderr, Action<string>? launchBrowser = null, CacheService? cache = null, TimeSpan? requestTimeout = null)
     {
         _httpClient = httpClient;
         _stderr = stderr;
         _launchBrowser = launchBrowser ?? LaunchBrowser;
         _cache = cache;
+        _requestTimeout = requestTimeout ?? CliHttp.DefaultRequestTimeout;
     }
 
     /// <summary>Gets the OpenID Connect discovery document of an authority, from the cache unless <paramref name="refresh"/> is set.</summary>
@@ -42,7 +44,8 @@ internal sealed class OAuthClient
         var discoveryUri = new Uri($"{authority.AbsoluteUri.TrimEnd('/')}/.well-known/openid-configuration");
         try
         {
-            using var response = await _httpClient.GetAsync(discoveryUri, cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Get, discoveryUri);
+            using var response = await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, cancellationToken);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             var discovery = ParseDiscovery(authority, content);
@@ -139,7 +142,7 @@ internal sealed class OAuthClient
     {
         try
         {
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, cancellationToken);
 
             // These are about the request, like the pending state of a device login, not the endpoint.
             if (!response.IsSuccessStatusCode
@@ -182,7 +185,17 @@ internal sealed class OAuthClient
             await _stderr.WriteLineAsync($"Open this URL in a browser on this computer: {authorizationUri}");
         }
 
-        var (code, returnedState) = await listener.WaitForCallbackAsync(state, discovery.Issuer, cancellationToken);
+        string code;
+        string returnedState;
+        try
+        {
+            (code, returnedState) = await listener.WaitForCallbackAsync(state, discovery.Issuer, cancellationToken);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new CliException("The browser didn't complete the login in time. Run 'pomi login' again.");
+        }
+
         if (!string.Equals(returnedState, state, StringComparison.Ordinal))
         {
             throw new CliException("OAuth state validation failed.");

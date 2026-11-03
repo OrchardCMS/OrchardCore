@@ -64,7 +64,7 @@ internal sealed partial class CliApplication
         AddAuthorization(request, accessToken);
 
         // Do not retry: a mutation may already have committed when a connection fails.
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, cancellationToken);
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         JsonDocument? document = null;
         try
