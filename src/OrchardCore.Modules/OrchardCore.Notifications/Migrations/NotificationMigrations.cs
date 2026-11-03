@@ -78,24 +78,26 @@ public sealed class NotificationMigrations : DataMigration
 
     private async Task CreateTypeIndexesAsync()
     {
+        // 'DocumentId' comes last in these indexes, as a database can't seek on the columns that follow it.
+
         // Lists the notifications of a user by type in the notification center.
         await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
             .CreateIndex("IDX_NotificationIndex_UserId_Type",
-                "DocumentId",
                 "UserId",
                 "Type",
                 "IsRead",
-                "CreatedAtUtc"),
+                "CreatedAtUtc",
+                "DocumentId"),
             collection: NotificationConstants.NotificationCollection
         );
 
         // Finds the notifications of a record, see 'INotificationManager'.
         await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
             .CreateIndex("IDX_NotificationIndex_Type_ReferenceId",
-                "DocumentId",
                 "Type",
                 "ReferenceId",
-                "UserId"),
+                "UserId",
+                "DocumentId"),
             collection: NotificationConstants.NotificationCollection
         );
     }
