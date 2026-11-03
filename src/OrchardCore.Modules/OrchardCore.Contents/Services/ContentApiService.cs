@@ -16,6 +16,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Models;
+using OrchardCore.Contents.Security;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Json;
@@ -107,6 +108,16 @@ internal sealed class ContentApiService
         var response = new ContentItemsResponse { Skip = skip, Take = take };
         if (allowedTypes.Count == 0)
         {
+            return response;
+        }
+
+        // Only per-item permissions, like viewing one's own items, require reading every item to count them.
+        if (status?.ToLowerInvariant() is not ("draft" or "latest") &&
+            await CanViewAllItemsAsync(user, typeDefinitions.Where(definition => allowedTypes.Contains(definition.Name))))
+        {
+            var published = _session.Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(allowedTypes.ToArray()) && index.Published);
+            response.TotalCount = await published.CountAsync();
+            response.Items = (await published.OrderByDescending(index => index.ModifiedUtc).ThenBy(index => index.Id).Skip(skip).Take(take).ListAsync()).ToList();
             return response;
         }
 
@@ -428,6 +439,20 @@ internal sealed class ContentApiService
             IsValid = modelState.IsValid,
             Errors = modelState.ToDictionary(entry => entry.Key, entry => entry.Value.Errors.Select(x => x.ErrorMessage).ToArray()),
         };
+    }
+
+    private async Task<bool> CanViewAllItemsAsync(ClaimsPrincipal user, IEnumerable<ContentTypeDefinition> definitions)
+    {
+        var template = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
+        foreach (var definition in definitions)
+        {
+            if (!await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(template, definition)))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     internal static Task<bool> CanViewContentItemAsync(

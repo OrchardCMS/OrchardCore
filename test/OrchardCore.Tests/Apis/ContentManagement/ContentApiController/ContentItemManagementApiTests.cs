@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Services;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
@@ -47,6 +48,25 @@ public class ContentItemManagementApiTests
 
         permissions.AuthorizedPermissions = [CommonPermissions.AccessContentApi, CommonPermissions.DeleteContent];
         Assert.Equal(HttpStatusCode.OK, (await context.Client.DeleteAsync($"api/content/{id}", TestContext.Current.CancellationToken)).StatusCode);
+    }
+
+    [Fact]
+    public async Task List_TotalCount_OnlyCountsItemsTheCallerCanView()
+    {
+        var permissions = new PermissionsContext();
+        using var context = new BlogPostApiControllerContext { PermissionsContext = permissions };
+        await context.InitializeAsync();
+        permissions.UsePermissionsContext = true;
+
+        permissions.AuthorizedPermissions = [RemoteManagementPermissions.AccessRemoteManagement, CommonPermissions.AccessContentApi, CommonPermissions.ListContent, CommonPermissions.ViewContent];
+        var all = await (await context.Client.GetAsync("api/content?contentType=BlogPost&take=1", TestContext.Current.CancellationToken)).Content.ReadAsAsync<ContentItemsResponse>();
+        Assert.True(all.TotalCount >= 1);
+        Assert.Single(all.Items);
+
+        permissions.AuthorizedPermissions = [RemoteManagementPermissions.AccessRemoteManagement, CommonPermissions.AccessContentApi, CommonPermissions.ListContent];
+        var none = await (await context.Client.GetAsync("api/content?contentType=BlogPost&take=1", TestContext.Current.CancellationToken)).Content.ReadAsAsync<ContentItemsResponse>();
+        Assert.Equal(0, none.TotalCount);
+        Assert.Empty(none.Items);
     }
 
     [Fact]
