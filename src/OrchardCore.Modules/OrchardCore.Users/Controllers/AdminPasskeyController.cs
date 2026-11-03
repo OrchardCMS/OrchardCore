@@ -51,9 +51,19 @@ public sealed class AdminPasskeyController : Controller
             return Forbid();
         }
 
-        foreach (var passkey in await _userManager.GetPasskeysAsync(user))
+        if (user is not User u)
         {
-            await _userManager.RemovePasskeyAsync(user, passkey.CredentialId);
+            return NotFound();
+        }
+
+        // All at once, so that the user is only updated once.
+        u.Passkeys.Clear();
+
+        if (!(await _userManager.UpdateAsync(u)).Succeeded)
+        {
+            await _notifier.ErrorAsync(H["The passkeys of the user couldn't be removed."]);
+
+            return RedirectToAction(nameof(AdminController.Index), typeof(AdminController).ControllerName());
         }
 
         // Don't leave two-factor authentication enabled without any method to complete it.
