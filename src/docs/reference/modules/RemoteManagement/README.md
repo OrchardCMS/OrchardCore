@@ -756,7 +756,8 @@ from CLI metadata also apply when the client omits `body`.
 
 Calls execute the existing endpoint with the caller's tenant services, bearer token,
 authorization policies, endpoint filters, and API validation. A tool result contains
-text with a JSON object containing the HTTP `statusCode` and response `body` string.
+text with a JSON object containing the HTTP `statusCode` and the response `body`, as
+JSON when the response is JSON and as a string otherwise.
 HTTP errors set MCP `isError` to `true`. Operation permissions are evaluated at call
 time; discovery does not promise that a caller can invoke every listed tool.
 

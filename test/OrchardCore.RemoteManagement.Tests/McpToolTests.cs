@@ -158,6 +158,30 @@ public class McpToolTests
     private static Task<CallToolResult> InvokeAsync(McpToolDefinition tool, HttpContext parent, string arguments) =>
         McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(arguments), parent, NullLogger.Instance, CancellationToken.None);
 
+    [Fact]
+    public async Task InvokeEndpoint_JsonResponse_IsEmbeddedInResult()
+    {
+        await using var services = CreateServices();
+        var endpoint = CreateEndpoint(handler: context => context.Response.WriteAsync("{\"saved\":\"it's\"}"));
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
+
+        var result = await InvokeAsync(tool, CreateContext(services), """{"path":{"id":"a"},"body":{}}""");
+
+        Assert.Equal("""{"statusCode":200,"body":{"saved":"it's"}}""", Assert.IsType<TextContentBlock>(Assert.Single(result.Content)).Text);
+    }
+
+    [Fact]
+    public async Task InvokeEndpoint_TextResponse_IsReturnedAsString()
+    {
+        await using var services = CreateServices();
+        var endpoint = CreateEndpoint(handler: context => context.Response.WriteAsync("not json"));
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], Document()));
+
+        var result = await InvokeAsync(tool, CreateContext(services), """{"path":{"id":"a"},"body":{}}""");
+
+        Assert.Equal("""{"statusCode":200,"body":"not json"}""", Assert.IsType<TextContentBlock>(Assert.Single(result.Content)).Text);
+    }
+
     [Theory]
     [InlineData(nameof(CliOperationMetadata.SecretResponse))]
     [InlineData(nameof(CliOperationMetadata.SecretProperties))]

@@ -1,5 +1,7 @@
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +14,9 @@ namespace OrchardCore.RemoteManagement.Mcp;
 
 internal sealed class McpToolInvoker
 {
+    // Tool results are read by models, not rendered as HTML, so quotes stay readable.
+    private static readonly JsonSerializerOptions s_resultSerializerOptions = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
     private readonly McpToolCatalog _catalog;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<McpToolInvoker> _logger;
@@ -155,7 +160,7 @@ internal sealed class McpToolInvoker
             return new CallToolResult
             {
                 IsError = context.Response.StatusCode >= StatusCodes.Status400BadRequest,
-                Content = [new TextContentBlock { Text = JsonSerializer.Serialize(new { statusCode = context.Response.StatusCode, body = responseBody }) }],
+                Content = [new TextContentBlock { Text = FormatResult(context.Response.StatusCode, responseBody) }],
             };
         }
         catch (BadHttpRequestException exception)
@@ -171,6 +176,21 @@ internal sealed class McpToolInvoker
             logger.LogError(exception, "MCP tool {ToolName} failed.", tool.Tool.Name);
             return Error("The management operation failed. See the tenant logs for details.");
         }
+    }
+
+    private static string FormatResult(int statusCode, string body)
+    {
+        JsonNode content;
+        try
+        {
+            content = string.IsNullOrEmpty(body) ? null : JsonNode.Parse(body);
+        }
+        catch (JsonException)
+        {
+            content = JsonValue.Create(body);
+        }
+
+        return new JsonObject { ["statusCode"] = statusCode, ["body"] = content }.ToJsonString(s_resultSerializerOptions);
     }
 
     private static CallToolResult Error(string message) => new()
