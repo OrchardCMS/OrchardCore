@@ -270,7 +270,7 @@ public class McpClientRegistrationTests
         transaction.Request["resource"] = resource;
         var sharedOptions = transaction.Options;
         var context = new ValidateAuthorizationRequestContext(transaction);
-        await new McpAuthorizationRequestHandler(fixture.Applications.Object, fixture.OptionsFactory.Object).HandleAsync(context);
+        await new McpAuthorizationRequestHandler(fixture.Applications.Object, new McpServerOptionsCache(fixture.OptionsFactory.Object)).HandleAsync(context);
         Assert.Equal(rejected, context.IsRejected);
         Assert.Empty(sharedOptions.Resources);
         if (!rejected)
@@ -293,7 +293,7 @@ public class McpClientRegistrationTests
         var transaction = Transaction();
         transaction.Request["resource"] = resource;
         var context = new ValidateTokenRequestContext(transaction);
-        await new McpTokenRequestHandler(fixture.Applications.Object, fixture.OptionsFactory.Object).HandleAsync(context);
+        await new McpTokenRequestHandler(fixture.Applications.Object, new McpServerOptionsCache(fixture.OptionsFactory.Object)).HandleAsync(context);
         Assert.Equal(rejected, context.IsRejected);
     }
 
@@ -312,11 +312,46 @@ public class McpClientRegistrationTests
     }
 
     [Fact]
+    public void OptionsCache_SameTenantUrl_BuildsTheOptionsOnce()
+    {
+        var factory = new Mock<IOptionsFactory<OpenIddictServerOptions>>();
+        factory.Setup(value => value.Create(It.IsAny<string>())).Returns(() => new OpenIddictServerOptions());
+        var cache = new McpServerOptionsCache(factory.Object);
+
+        var first = cache.GetOptions(new Uri("https://site.example/tenant-a"));
+        var again = cache.GetOptions(new Uri("https://site.example/tenant-a/"));
+        var other = cache.GetOptions(new Uri("https://other.example/tenant-a"));
+
+        Assert.Same(first, again);
+        Assert.NotSame(first, other);
+        Assert.Equal(new Uri("https://site.example/tenant-a/mcp"), Assert.Single(first.Resources));
+        Assert.Equal(new Uri("https://other.example/tenant-a/mcp"), Assert.Single(other.Resources));
+        factory.Verify(value => value.Create(It.IsAny<string>()), Times.Exactly(2));
+    }
+
+    [Fact]
+    public void OptionsCache_ManyHosts_StaysBounded()
+    {
+        var factory = new Mock<IOptionsFactory<OpenIddictServerOptions>>();
+        factory.Setup(value => value.Create(It.IsAny<string>())).Returns(() => new OpenIddictServerOptions());
+        var cache = new McpServerOptionsCache(factory.Object);
+        var first = cache.GetOptions(new Uri("https://host-first.example"));
+
+        for (var i = 0; i < 100; i++)
+        {
+            Assert.Contains(new Uri($"https://host-{i}.example/mcp"), cache.GetOptions(new Uri($"https://host-{i}.example")).Resources);
+        }
+
+        // The first entry was evicted, so its options are built again.
+        Assert.NotSame(first, cache.GetOptions(new Uri("https://host-first.example")));
+    }
+
+    [Fact]
     public async Task ExistingClients_KeepTheirAuthorizationBehavior()
     {
         var fixture = new Fixture();
         var context = new ValidateAuthorizationRequestContext(Transaction());
-        await new McpAuthorizationRequestHandler(fixture.Applications.Object, fixture.OptionsFactory.Object).HandleAsync(context);
+        await new McpAuthorizationRequestHandler(fixture.Applications.Object, new McpServerOptionsCache(fixture.OptionsFactory.Object)).HandleAsync(context);
         Assert.False(context.IsRejected);
         fixture.OptionsFactory.VerifyNoOtherCalls();
     }

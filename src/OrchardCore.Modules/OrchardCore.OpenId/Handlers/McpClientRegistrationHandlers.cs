@@ -33,13 +33,13 @@ public sealed class McpRegistrationMetadataHandler : IOpenIddictServerHandler<Ha
 public sealed class McpAuthorizationRequestHandler : IOpenIddictServerHandler<ValidateAuthorizationRequestContext>
 {
     private readonly IOpenIdApplicationManager _applications;
-    private readonly IOptionsFactory<OpenIddictServerOptions> _optionsFactory;
+    private readonly McpServerOptionsCache _options;
 
     /// <summary>Initializes the McpAuthorizationRequestHandler service.</summary>
-    public McpAuthorizationRequestHandler(IOpenIdApplicationManager applications, IOptionsFactory<OpenIddictServerOptions> optionsFactory)
+    public McpAuthorizationRequestHandler(IOpenIdApplicationManager applications, McpServerOptionsCache options)
     {
         _applications = applications;
-        _optionsFactory = optionsFactory;
+        _options = options;
     }
 
     /// <inheritdoc />
@@ -61,7 +61,9 @@ public sealed class McpAuthorizationRequestHandler : IOpenIddictServerHandler<Va
 
         if (!context.IsRejected)
         {
-            McpClientRequestValidation.ConfigureRequestResource(context.Transaction, _optionsFactory);
+            // Use separate options for this request. Never mutate the cached tenant options
+            // or disable OpenIddict's resource and application permission validators.
+            context.Transaction.Options = _options.GetOptions(context.Transaction.BaseUri);
         }
     }
 }
@@ -70,13 +72,13 @@ public sealed class McpAuthorizationRequestHandler : IOpenIddictServerHandler<Va
 public sealed class McpTokenRequestHandler : IOpenIddictServerHandler<ValidateTokenRequestContext>
 {
     private readonly IOpenIdApplicationManager _applications;
-    private readonly IOptionsFactory<OpenIddictServerOptions> _optionsFactory;
+    private readonly McpServerOptionsCache _options;
 
     /// <summary>Initializes the McpTokenRequestHandler service.</summary>
-    public McpTokenRequestHandler(IOpenIdApplicationManager applications, IOptionsFactory<OpenIddictServerOptions> optionsFactory)
+    public McpTokenRequestHandler(IOpenIdApplicationManager applications, McpServerOptionsCache options)
     {
         _applications = applications;
-        _optionsFactory = optionsFactory;
+        _options = options;
     }
 
     /// <inheritdoc />
@@ -94,7 +96,9 @@ public sealed class McpTokenRequestHandler : IOpenIddictServerHandler<ValidateTo
 
         if (!context.IsRejected)
         {
-            McpClientRequestValidation.ConfigureRequestResource(context.Transaction, _optionsFactory);
+            // Use separate options for this request. Never mutate the cached tenant options
+            // or disable OpenIddict's resource and application permission validators.
+            context.Transaction.Options = _options.GetOptions(context.Transaction.BaseUri);
         }
     }
 }
@@ -122,15 +126,6 @@ public sealed class McpTokenResourceHandler : IOpenIddictServerHandler<ProcessSi
 
 internal static class McpClientRequestValidation
 {
-    internal static void ConfigureRequestResource(OpenIddictServerTransaction transaction, IOptionsFactory<OpenIddictServerOptions> optionsFactory)
-    {
-        // Build a separate options instance for this request. Never mutate the cached tenant options
-        // or disable OpenIddict's resource and application permission validators.
-        var options = optionsFactory.Create(Options.DefaultName);
-        options.Resources.Add(new Uri(GetTenantEndpoint(transaction.BaseUri, "mcp")));
-        transaction.Options = options;
-    }
-
     // OpenIddict may supply a tenant PathBase without a trailing slash.
     internal static string GetTenantEndpoint(Uri baseUri, string path) =>
         new Uri(new Uri(baseUri.AbsoluteUri.TrimEnd('/') + "/"), path).AbsoluteUri;
