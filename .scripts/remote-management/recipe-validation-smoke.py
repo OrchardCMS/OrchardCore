@@ -131,7 +131,7 @@ def digest_database():
                 rows = sorted(repr(row) for row in connection.execute(f'SELECT * FROM "{table}"'))
                 if table == 'OpenId_Document':
                     rows = [row for row in rows if 'OpenIdToken' not in row]
-                digest[f'{file.name}/{table}'] = (len(rows), hashlib.sha256('\n'.join(rows).encode()).hexdigest())
+                digest[f'{file.relative_to(root)}/{table}'] = (len(rows), hashlib.sha256('\n'.join(rows).encode()).hexdigest())
         finally:
             connection.close()
     return digest
@@ -366,7 +366,8 @@ with tempfile.TemporaryDirectory(prefix='recipe-validation-') as config_home:
     current = completed(operation)
     assert current['state'] == 'succeeded', current
     applied = tenant_state()
-    assert applied['database'] != current_state['database'] and applied['files'] != current_state['files'], 'The import changed nothing.'
+    unchanged = [key for key in ('database', 'files') if applied[key] == current_state[key]]
+    assert not unchanged, ('The import changed nothing in', unchanged, current)
     assert 'OrchardCore.Sitemaps' in applied['features'], 'The import changed no feature.'
     print('Importing the validated package changes the compared state.', flush=True)
 
