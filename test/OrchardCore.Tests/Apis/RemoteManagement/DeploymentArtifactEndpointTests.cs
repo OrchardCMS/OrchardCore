@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
@@ -141,7 +142,7 @@ public class DeploymentArtifactEndpointTests
         clock.SetupGet(value => value.UtcNow).Returns(() => DateTime.UtcNow);
         var settings = Options.Create(new ShellOptions { ShellsApplicationDataPath = root, ShellsContainerName = "Sites" });
         var tenant = new ShellSettings { Name = "Tenant" };
-        var operations = new DeploymentOperationStore(settings, tenant, clock.Object);
+        var operations = new DeploymentOperationStore(settings, tenant, Options.Create(new DeploymentOperationOptions()), new EphemeralDataProtectionProvider(), clock.Object);
         var artifacts = new DeploymentArtifactStore(settings, tenant, Options.Create(new DeploymentArtifactOptions()), clock.Object);
         try
         {
@@ -176,7 +177,7 @@ public class DeploymentArtifactEndpointTests
         var clock = new Mock<IClock>();
         clock.SetupGet(value => value.UtcNow).Returns(() => DateTime.UtcNow);
         var operations = new DeploymentOperationStore(Options.Create(new ShellOptions { ShellsApplicationDataPath = root, ShellsContainerName = "Sites" }),
-            new ShellSettings { Name = "Tenant" }, clock.Object);
+            new ShellSettings { Name = "Tenant" }, Options.Create(new DeploymentOperationOptions()), new EphemeralDataProtectionProvider(), clock.Object);
         try
         {
             var context = new DefaultHttpContext { RequestServices = services, User = Principal("application", "submitter") };

@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -16,7 +18,10 @@ internal sealed record DeploymentOperation
     public string Owner { get; init; }
     public DeploymentOperationKind Kind { get; init; }
     public string Payload { get; init; }
+    // The caller's claims are only stored protected, and only until the operation completes.
+    [JsonIgnore]
     public DeploymentExecutionIdentity Identity { get; init; }
+    public string ProtectedIdentity { get; init; }
     public DeploymentOperationState State { get; init; }
     public string ArtifactId { get; init; }
     public string ErrorCode { get; init; }
@@ -29,12 +34,19 @@ internal sealed record DeploymentOperation
 internal sealed class DeploymentOperationStore
 {
     private readonly string _root;
+    private readonly string _active;
+    private readonly DeploymentOperationOptions _options;
+    private readonly IDataProtector _protector;
     private readonly IClock _clock;
 
-    public DeploymentOperationStore(IOptions<ShellOptions> options, ShellSettings tenant, IClock clock)
+    public DeploymentOperationStore(IOptions<ShellOptions> options, ShellSettings tenant,
+        IOptions<DeploymentOperationOptions> operationOptions, IDataProtectionProvider dataProtectionProvider, IClock clock)
     {
         _root = Path.Combine(options.Value.ShellsApplicationDataPath, options.Value.ShellsContainerName,
             tenant.Name, "DeploymentOperations");
+        _active = Path.Combine(_root, "active");
+        _options = operationOptions.Value;
+        _protector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment.Operations.Identity");
         _clock = clock;
     }
 
@@ -47,8 +59,7 @@ internal sealed class DeploymentOperationStore
         if (requestId.Length > 128 || !Enum.IsDefined(kind)) { throw new ArgumentException("Invalid deployment request."); }
         var id = RequestIdentity(owner, requestId);
         var folder = Folder(id);
-        if (OperatingSystem.IsWindows()) { Directory.CreateDirectory(folder); }
-        else { Directory.CreateDirectory(folder, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute); }
+        CreatePrivateDirectory(folder);
         var existing = await ReadAsync(id, cancellationToken);
         if (existing is not null) { return Match(existing, owner, kind, payload); }
         FileStream reservation;
@@ -68,6 +79,8 @@ internal sealed class DeploymentOperationStore
         }
         var operation = new DeploymentOperation { Id = id, Owner = owner, Kind = kind, Payload = payload,
             Identity = identity, State = DeploymentOperationState.Pending, CreatedUtc = _clock.UtcNow, UpdatedUtc = _clock.UtcNow, };
+        CreatePrivateDirectory(_active);
+        await File.WriteAllBytesAsync(Path.Combine(_active, id), [], cancellationToken);
         await WriteAsync(operation, cancellationToken);
         return operation;
     }
@@ -96,7 +109,12 @@ internal sealed class DeploymentOperationStore
 
     public async Task<DeploymentOperationClaim> ClaimAsync(string id, CancellationToken cancellationToken)
     {
-        if (!ValidId(id) || !Directory.Exists(Folder(id))) { return null; }
+        if (!ValidId(id)) { return null; }
+        if (!Directory.Exists(Folder(id)))
+        {
+            RemoveActiveMarker(id);
+            return null;
+        }
         FileStream guard;
         try { guard = Guard(Folder(id)); }
         catch (IOException) { return null; }
@@ -105,11 +123,16 @@ internal sealed class DeploymentOperationStore
             var operation = await ReadAsync(id, cancellationToken);
             if (operation?.State == DeploymentOperationState.Running)
             {
-                await WriteAsync(operation with { State = DeploymentOperationState.Uncertain,
+                await WriteAsync(operation with { State = DeploymentOperationState.Uncertain, Identity = null,
                     ErrorCode = "execution_interrupted", UpdatedUtc = _clock.UtcNow }, cancellationToken);
+                RemoveActiveMarker(id);
                 return null;
             }
-            if (operation?.State != DeploymentOperationState.Pending) { return null; }
+            if (operation?.State != DeploymentOperationState.Pending)
+            {
+                RemoveActiveMarker(id);
+                return null;
+            }
             operation = operation with { State = DeploymentOperationState.Running, UpdatedUtc = _clock.UtcNow, };
             await WriteAsync(operation, cancellationToken);
             var claim = new DeploymentOperationClaim(this, operation, guard);
@@ -119,27 +142,71 @@ internal sealed class DeploymentOperationStore
         finally { guard?.Dispose(); }
     }
 
-    public async Task<IReadOnlyList<string>> PendingAsync(CancellationToken cancellationToken)
+    // Only pending and running operations have a marker, so that the worker doesn't read
+    // every retained operation each time it polls. Stale markers are removed by ClaimAsync.
+    public Task<IReadOnlyList<string>> PendingAsync(CancellationToken cancellationToken)
     {
-        var result = new List<string>();
-        if (!Directory.Exists(_root)) { return result; }
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<string> result = Directory.Exists(_active)
+            ? Directory.EnumerateFiles(_active).Select(Path.GetFileName).Where(ValidId).ToArray()
+            : [];
+        return Task.FromResult(result);
+    }
+
+    /// <summary>Removes the operations that ended longer than the retention ago, in a bounded batch.</summary>
+    public async Task<int> PruneAsync(int take = 100, CancellationToken cancellationToken = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(take);
+        if (_options.Retention <= TimeSpan.Zero || !Directory.Exists(_root)) { return 0; }
+        var deleted = 0;
         foreach (var folder in Directory.EnumerateDirectories(_root))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var id = Path.GetFileName(folder);
-            if (!ValidId(id)) { continue; }
-            var operation = await ReadAsync(id, cancellationToken);
-            if (operation?.State is DeploymentOperationState.Pending or DeploymentOperationState.Running)
+            if (ValidId(id) && await ExpiredAsync(id, folder, cancellationToken) && await DeleteExpiredAsync(id, folder, cancellationToken))
             {
-                result.Add(id);
+                deleted++;
+                if (deleted == take) { break; }
             }
         }
-        return result;
+        return deleted;
+    }
+
+    private async Task<bool> ExpiredAsync(string id, string folder, CancellationToken cancellationToken)
+    {
+        // A folder without a record is an acceptance that was interrupted before publishing it.
+        var operation = await ReadAsync(id, cancellationToken);
+        if (operation?.State is DeploymentOperationState.Pending or DeploymentOperationState.Running) { return false; }
+        return (operation?.UpdatedUtc ?? Directory.GetLastWriteTimeUtc(folder)) + _options.Retention <= _clock.UtcNow;
+    }
+
+    private async Task<bool> DeleteExpiredAsync(string id, string folder, CancellationToken cancellationToken)
+    {
+        FileStream guard;
+        try { guard = Guard(folder); }
+        catch (IOException) { return false; }
+        using (guard)
+        {
+            // A retry may have published the operation while we were acquiring the guard.
+            if (!await ExpiredAsync(id, folder, cancellationToken)) { return false; }
+            File.Delete(Path.Combine(folder, "operation.json"));
+            RemoveActiveMarker(id);
+        }
+        try { Directory.Delete(folder, recursive: true); }
+        catch (IOException) { /* The record is gone, an empty folder is removed on a later run. */ }
+        return true;
     }
 
     private static bool ValidId(string id) => id is { Length: 64 } && id.All(char.IsAsciiHexDigit);
     private string Folder(string id) => Path.Combine(_root, id);
     private static FileStream Guard(string folder) => new(Path.Combine(folder, "lease"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+    private void RemoveActiveMarker(string id) => File.Delete(Path.Combine(_active, id));
+
+    private static void CreatePrivateDirectory(string path)
+    {
+        if (OperatingSystem.IsWindows()) { Directory.CreateDirectory(path); }
+        else { Directory.CreateDirectory(path, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute); }
+    }
 
     private async Task<DeploymentOperation> ReadAsync(string id, CancellationToken cancellationToken)
     {
@@ -148,17 +215,28 @@ internal sealed class DeploymentOperationStore
             // Readers must permit atomic replacement on Windows as well as Unix.
             await using var stream = new FileStream(Path.Combine(Folder(id), "operation.json"), FileMode.Open,
                 FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 4096, FileOptions.Asynchronous);
-            return await JsonSerializer.DeserializeAsync<DeploymentOperation>(stream, cancellationToken: cancellationToken);
+            var operation = await JsonSerializer.DeserializeAsync<DeploymentOperation>(stream, cancellationToken: cancellationToken);
+            return operation?.ProtectedIdentity is null ? operation
+                : operation with { ProtectedIdentity = null, Identity = UnprotectIdentity(operation.ProtectedIdentity) };
         }
         catch (FileNotFoundException) { return null; }
         catch (DirectoryNotFoundException) { return null; }
+    }
+
+    private DeploymentExecutionIdentity UnprotectIdentity(string value)
+    {
+        try { return JsonSerializer.Deserialize<DeploymentExecutionIdentity>(_protector.Unprotect(value)); }
+        // Without the keys there is no identity, and the operation is refused when it executes.
+        catch (CryptographicException) { return null; }
     }
 
     private async Task WriteAsync(DeploymentOperation operation, CancellationToken cancellationToken)
     {
         var folder = Folder(operation.Id);
         var temporary = Path.Combine(folder, "pending.json");
-        await File.WriteAllTextAsync(temporary, JsonSerializer.Serialize(operation), cancellationToken);
+        var stored = operation.Identity is null ? operation
+            : operation with { ProtectedIdentity = _protector.Protect(JsonSerializer.Serialize(operation.Identity)) };
+        await File.WriteAllTextAsync(temporary, JsonSerializer.Serialize(stored), cancellationToken);
         var destination = Path.Combine(folder, "operation.json");
         if (File.Exists(destination))
         {
@@ -192,8 +270,10 @@ internal sealed class DeploymentOperationStore
             {
                 throw new InvalidOperationException("Invalid deployment completion.");
             }
+            // The identity has no further use, and retries don't need it either.
             await _store.WriteAsync(Operation with { State = state, ArtifactId = artifactId, ErrorCode = errorCode,
-                UpdatedUtc = _store._clock.UtcNow }, cancellationToken);
+                Identity = null, UpdatedUtc = _store._clock.UtcNow }, cancellationToken);
+            _store.RemoveActiveMarker(Operation.Id);
             _completed = true;
         }
 
