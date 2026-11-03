@@ -53,7 +53,9 @@ public class ClustersProxyConfigFilter : IProxyConfigFilter
                 },
             })
                 // Defines a header to be sent by the proxy request.
-                .WithTransformRequestHeader(RequestHeaderNames.FromClustersProxy, "true"));
+                .WithTransformRequestHeader(RequestHeaderNames.FromClustersProxy, "true")
+                // Backends resolve the tenant from the request, so they need the host requested by the client.
+                .WithTransformUseOriginalHostHeader());
         }
 
         return new ValueTask<RouteConfig>(route);
