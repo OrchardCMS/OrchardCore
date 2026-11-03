@@ -18,6 +18,7 @@ assert urllib.parse.urlparse(base).hostname in ('127.0.0.1', 'localhost', '::1')
 wrapper = Path(__file__).with_name('pomi-fixture.py')
 suffix = secrets.token_hex(4)
 checked = []
+retried = []
 
 
 def fetch_token():
@@ -61,6 +62,13 @@ def verify(label, path, update, *, change=None, create=None):
     assert first and first.startswith('"'), (label, first)
     _, again, _ = request(path, status=200)
     assert first == again, (label, 'the version changes between two reads', first, again)
+    if create:
+        # A retry that returns the stored resource returns its version too.
+        retry_status, retry_etag, retry_body = request(*create)
+        assert retry_status in (200, 409), (label, 'create retry', retry_status, retry_body)
+        if retry_status == 200:
+            assert retry_etag == first, (label, 'the retry and the read disagree', retry_etag, first)
+            retried.append(label)
 
     # A write without If-Match keeps working, so existing callers do.
     _, unconditional, _ = request(path, 'PUT', update, status=200)
@@ -177,7 +185,7 @@ verify('workflow types', 'api/workflows/types/' + created['workflowTypeId'], {**
 
 # Sitemaps
 sitemap = {'name': 'Occ' + suffix, 'path': 'occ-' + suffix + '.xml', 'enabled': True, 'kind': 'Sitemap', 'containedSitemapIds': []}
-_, _, created = request('api/sitemaps', 'POST', sitemap, status=200)
+_, _, created = request('api/sitemaps', 'POST', sitemap, status=201)
 verify('sitemaps', 'api/sitemaps/' + created['id'], sitemap, change=lambda update: {**update, 'name': 'OccChanged' + suffix})
 
 # Site settings, whose updates are partial
@@ -242,4 +250,4 @@ assert 'roles_update' in tools and 'If-Match' not in json.dumps(tools['roles_upd
 request('api/layers/by-name?name=' + layer, 'DELETE')
 request('api/placements/by-shape?shapeType=' + shape, 'DELETE')
 request('api/templates/' + template, 'DELETE')
-print(json.dumps({'status': 'passed', 'resources': checked}))
+print(json.dumps({'status': 'passed', 'resources': checked, 'retried': retried}))
