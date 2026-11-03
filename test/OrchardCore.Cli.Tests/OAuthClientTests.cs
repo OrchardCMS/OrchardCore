@@ -29,6 +29,21 @@ public class OAuthClientTests
         Assert.Equal(32, System.Buffers.Binary.BinaryPrimitives.ReadInt32BigEndian(icon.AsSpan(20, 4)));
     }
 
+    [Fact]
+    public async Task Refresh_RevokedToken_AsksToSignInAgain()
+    {
+        using var http = new HttpClient(new TestHandler(_ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest))));
+        var client = new OAuthClient(http, TextWriter.Null);
+
+        var exception = await Assert.ThrowsAsync<CliException>(() => client.RefreshAsync(
+            new TenantContextRecord { Name = "production", TenantUrl = "https://example.test/", ClientId = "orchardcore-cli" },
+            new OidcDiscoveryDocument { Issuer = "https://example.test/", TokenEndpoint = "https://example.test/connect/token" },
+            new StoredToken { AccessToken = "expired", RefreshToken = "revoked" },
+            TestContext.Current.CancellationToken));
+
+        Assert.Contains("pomi login production", exception.Message);
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.BadRequest)]
     [InlineData(HttpStatusCode.Unauthorized)]

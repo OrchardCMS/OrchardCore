@@ -249,6 +249,11 @@ internal sealed class OAuthClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
+        {
+            throw new CliException($"The stored login of context '{context.Name}' has expired or was revoked. Run 'pomi login {context.Name}' again.");
+        }
+
         response.EnsureSuccessStatusCode();
         var tokenResponse = CliUtilities.ParseTokenResponse(content);
         var refreshed = CliUtilities.CreateStoredToken(tokenResponse, discovery);
