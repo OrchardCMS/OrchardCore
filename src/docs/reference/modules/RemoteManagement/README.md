@@ -579,6 +579,7 @@ resource:
 | `RequestSchemaPath` | `requestSchemaPath` | The path returning the JSON Schema of a request body that depends on the arguments, which the OpenAPI document can't describe, such as `api/settings/sections/{name}/schema`. Pomi refuses `--body` when it contains a property that this schema marks `writeOnly`. |
 | `NextSteps` | `nextSteps` | The commands suggested after the operation succeeds, see below. |
 | `LongRunning` | `longRunning` | The operation does its work before it responds, which can take minutes. Pomi waits up to 10 minutes for its response instead of 30 seconds. Don't set it on an operation that queues its work and returns `202`. |
+| `ReadOnly` | `readOnly` | An operation using a method that usually changes something, such as a `POST` that validates its input, changes nothing. Its MCP tool is annotated as read-only, and Pomi doesn't report a change. |
 
 Human-readable output shows the first of the `NextSteps` whose condition matches the response:
 

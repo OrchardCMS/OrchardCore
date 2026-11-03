@@ -1,6 +1,6 @@
 # Recipe management API (`OrchardCore.Recipes`)
 
-The Recipe management API discovers and executes non-setup Orchard Core recipes. It reports recipe metadata, declared variables, and values supplied by registered recipe environment providers.
+The Recipe management API discovers, validates and executes non-setup Orchard Core recipes. It reports recipe metadata, declared variables, and values supplied by registered recipe environment providers.
 
 The owning feature is `OrchardCore.Recipes` (**Recipes**), which is always enabled. Enable and configure `OrchardCore.RemoteManagement` before calling these endpoints; see [Remote Management authentication](../authentication/README.md).
 
@@ -28,6 +28,7 @@ All paths are relative to the tenant URL:
 | --- | --- | --- | --- | --- |
 | `GET` | `/api/recipes` | `ApiListRecipes` | List and filter executable recipes. | `ManageRecipes` |
 | `GET` | `/api/recipes/{recipeId}` | `ApiGetRecipe` | Get one executable recipe. | `ManageRecipes` |
+| `POST` | `/api/recipes/{recipeId}:validate` | `ApiValidateRecipe` | Check a recipe without applying anything. | `ManageRecipes` |
 | `POST` | `/api/recipes/{recipeId}:execute` | `ApiExecuteRecipe` | Execute a recipe with environment overrides. | `ManageRecipes` |
 | `GET` | `/api/recipes/executions/{executionId}` | `ApiGetRecipeExecution` | Get the status of a recipe execution. | `ManageRecipes` |
 
@@ -221,6 +222,80 @@ Accept: application/json
 | --- | --- |
 | `200 OK` | The recipe. |
 | `401 Unauthorized` | The bearer token is absent or rejected. |
+| `403 Forbidden` | A required permission is missing. |
+| `404 Not Found` | The opaque recipe ID is not present in the current harvested set. |
+
+## Validate a recipe
+
+```http
+POST /api/recipes/{recipeId}:validate
+```
+
+The operation checks what can be checked without applying anything, and changes nothing. It has no request body. Validation needs the same permissions as execution and finds the same recipes, so an identity that can't execute a recipe can't learn anything from validating it. With Pomi, run `pomi recipes validate <recipe-id>`. It's also an MCP tool annotated as read-only, `recipes_validate`.
+
+!!! warning
+    A valid result doesn't guarantee that execution succeeds. Nothing is applied and scripts aren't evaluated, so a step can still fail on its data, and steps that ran before it stay applied.
+
+`200 OK` returns the result, including for an invalid recipe:
+
+```json
+{
+  "valid": false,
+  "notice": "A valid result doesn't guarantee that execution succeeds: nothing was applied, scripts weren't evaluated, and a step can still fail on its data.",
+  "stepCount": 2,
+  "errorCount": 1,
+  "warningCount": 0,
+  "findings": [
+    {
+      "severity": "error",
+      "code": "unknown-step",
+      "message": "No enabled feature handles the step 'Contnet'. The execution would skip this step and still succeed.",
+      "stepIndex": 1,
+      "stepName": "Contnet"
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `valid` | boolean | Whether there is no finding of the `error` severity. |
+| `notice` | string | The statement that a valid result is not a guarantee. |
+| `stepCount` | integer | The number of steps of the recipe. |
+| `errorCount` | integer | The number of `error` findings. |
+| `warningCount` | integer | The number of `warning` findings. |
+| `findings` | array of objects | The findings, in the order of the steps. |
+
+Each finding has a `severity`, a stable `code`, a `message`, the zero-based `stepIndex` and the `stepName`, which are `null` when they don't apply. The severity is `error` when the recipe can't be applied as written, `warning` for something likely wrong or that can't be verified, and `info` for a limit of the validation on this step.
+
+| Code | Severity | Checked |
+| --- | --- | --- |
+| `recipe-invalid-json`, `recipe-not-object`, `recipe-unreadable` | `error` | The file is a readable JSON object. A file that isn't valid JSON when the recipes are harvested isn't listed at all, and returns `404 Not Found`. |
+| `recipe-no-steps`, `recipe-invalid-variables` | `error` | The recipe has a `steps` array, and `variables` is an object. Without a `steps` array, an execution does nothing and succeeds. |
+| `step-not-object`, `step-no-name` | `error` | A step is an object with a `name` string. An execution fails on the first, and skips the second. |
+| `unknown-step` | `error` | A handler of an enabled feature processes the step. An execution skips a step without a handler and still succeeds. |
+| `step-handler-unverified` | `warning` | A step has no known handler, but an earlier step changes the features or a registered handler doesn't declare its steps, so the step can't be proven wrong. |
+| `feature-not-found` | `error` or `warning` | A `Feature` step names existing features and themes. An execution ignores the others. It's an `error` for a feature to enable, and a `warning` for one to disable. |
+| `theme-not-found`, `theme-not-enabled` | `error`, `warning` | A `Themes` step selects a theme that exists and is enabled, or that an earlier step enables. An execution selects a missing theme anyway. |
+| `recipe-not-found`, `recipes-no-values` | `error` | A `Recipes` step names recipes that exist. |
+| `file-not-found`, `file-script-invalid` | `error` | A `[file:text('path')]` or `[file:base64('path')]` script, or the `SourcePath` of a `media` step, resolves to a file of the recipe. A path outside of it isn't found. |
+| `media-no-files`, `media-target-invalid`, `media-extension-not-allowed` | `error` | A `media` step has files, whose target paths and extensions are allowed. |
+| `media-no-source` | `warning` | A file of a `media` step has no source. An execution skips it. |
+| `step-invalid` | `error` | The properties of a step that has a validator have the expected types. |
+| `scripts-not-evaluated`, `feature-not-evaluated`, `theme-not-evaluated` | `info`, `warning` | A value that only the execution knows, since it comes from a script. |
+| `commands-not-validated`, `inner-recipes-not-validated`, `media-url-not-fetched` | `info` | What a `Command` or `Recipes` step does, and the URL of a `media` file. |
+
+Validation can't tell:
+
+- whether a step succeeds on its data, for instance a content item that a handler refuses, except for the steps above;
+- what a script returns, as running it could have effects;
+- which steps a feature provides before it's enabled: a step that needs a feature an earlier step enables gets a `warning`, and a step that needs a feature an earlier step disables isn't reported;
+- what the steps of an inner recipe do, as only the existence of the recipe is checked.
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` | The result of the validation, whether the recipe is valid or not. |
+| `401 Unauthorized` | Missing or invalid bearer token. |
 | `403 Forbidden` | A required permission is missing. |
 | `404 Not Found` | The opaque recipe ID is not present in the current harvested set. |
 

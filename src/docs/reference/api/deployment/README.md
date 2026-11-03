@@ -14,7 +14,7 @@ Every operation requires an `Api` scheme bearer token and **Access remote manage
 | Uploading an artifact | `Import` |
 | Showing, downloading or deleting an artifact | `Export` for an export artifact, `Import` for an import artifact |
 | Queuing or showing an export | `Export` |
-| Queuing or showing an import | `Import` |
+| Validating a package, queuing or showing an import | `Import` |
 
 `ManageDeploymentPlan` doesn't allow executing a plan: managing plans and steps never runs an export.
 
@@ -46,12 +46,13 @@ Artifacts and operations belong to the identity that created them: the tenant, i
 | `DELETE` | `/api/deployment/artifacts/{id}` | `ApiDeleteDeploymentArtifact` | `deployment artifacts delete <id> --force` | `Export` or `Import` |
 | `GET` | `/api/deployment/artifacts/{id}/content` | `ApiDownloadDeploymentArtifact` | `deployment artifacts download <id> --output-file <path>` | `Export` or `Import` |
 | `POST` | `/api/deployment/operations:export` | `ApiQueueDeploymentExport` | `deployment operations export` | `Export` |
+| `POST` | `/api/deployment/operations:validate` | `ApiValidateDeploymentPackage` | `deployment operations validate` | `Import` |
 | `POST` | `/api/deployment/operations:import` | `ApiQueueDeploymentImport` | `deployment operations import --force` | `Import` |
 | `GET` | `/api/deployment/operations/{id}` | `ApiGetDeploymentOperation` | `deployment operations show <id>` | `Export` or `Import` |
 
 ### MCP
 
-The JSON operations are exposed as tools of the [tenant MCP server](../../modules/RemoteManagement/README.md#mcp-server). Uploads and downloads aren't, as they transfer binary content. The operations for which Pomi asks a confirmation, that is deleting and queuing an import, are only tools when `AllowConfirmationRequiredTools` is set.
+The JSON operations are exposed as tools of the [tenant MCP server](../../modules/RemoteManagement/README.md#mcp-server). Uploads and downloads aren't, as they transfer binary content. The operations for which Pomi asks a confirmation, that is deleting and queuing an import, are only tools when `AllowConfirmationRequiredTools` is set. Validating a package is a tool annotated as read-only.
 
 ## Plans
 
@@ -331,6 +332,27 @@ An interrupted execution becomes `uncertain` and is never replayed. An import ca
 ```
 
 The operation captures a snapshot of the plan's configuration when it is accepted. Download the package from the returned `artifactId` once the state is `succeeded`.
+
+### Validate a package
+
+`POST /api/deployment/operations:validate`
+
+```json
+{ "artifactId": "2f1c0a9e5b7d4e8c" }
+```
+
+`artifactId` must be an import artifact uploaded by the same identity, as for an import. The operation reads the package without importing it. It stages the package in the temporary folder with the same checks and limits as an import, including those on paths, then [checks its recipe like a recipe](../recipes/README.md#validate-a-recipe), with its file references resolved inside of the package. It doesn't create an operation, and removes the staged files whatever the outcome. The artifact stays until it expires or is deleted.
+
+!!! warning
+    A valid result doesn't guarantee that the import succeeds. Nothing is applied and scripts aren't evaluated, so a step can still fail on its data, and steps that ran before it stay applied.
+
+`200` returns the [result of the validation](../recipes/README.md#validate-a-recipe), including for an invalid package. A package that can't be staged, because a limit was lowered since it was uploaded for instance, has a single `package-invalid` finding. An upload already refuses such a package with `400`, without storing it, so most invalid archives don't reach this operation.
+
+| Status | Meaning |
+| --- | --- |
+| `200` | The result of the validation, whether the package is valid or not. |
+| `400` | No `artifactId`. |
+| `404` | The import artifact doesn't exist, has expired, belongs to another identity, or is an export artifact. |
 
 ### Queue an import
 

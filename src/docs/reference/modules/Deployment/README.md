@@ -355,7 +355,10 @@ MCP tools.
 Both return HTTP 202 with an operation ID and status location. Use
 `pomi deployment operations export --request-id <id> --plan-id <plan>` or
 `pomi deployment operations import --request-id <id> --artifact-id <artifact> --force`.
-Use `pomi deployment operations show <id>` to observe progress. These JSON
+Use `pomi deployment operations show <id>` to observe progress. Before an import,
+`pomi deployment operations validate --artifact-id <artifact>`, or
+`POST api/deployment/operations:validate`, reads the package and checks its recipe without
+applying anything, which doesn't guarantee that the import succeeds. These JSON
 operations are also available through MCP, except queuing an import, which needs
 [`AllowConfirmationRequiredTools`](../RemoteManagement/README.md#tools). See the
 [Deployment API](../../api/deployment/README.md) for the complete contract.

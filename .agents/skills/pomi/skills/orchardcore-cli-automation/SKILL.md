@@ -75,6 +75,7 @@ See the [profile API contract](https://github.com/OrchardCMS/OrchardCore/blob/ma
 ```bash
 pomi recipes list --search setup --take 200
 pomi recipes show <recipe-id>
+pomi recipes validate <recipe-id>
 pomi recipes schema --operation execute
 pomi recipes execute <recipe-id> --body-file parameters.json --force
 ```
@@ -84,6 +85,14 @@ a new execution and is not generally retry-idempotent; do not automatically
 repeat it after an ambiguous failure. To be able to recover the outcome, send a
 `requestId` you generate: repeating it reports the first outcome instead of executing
 again, and `pomi recipes executions show <execution-id>` returns the status.
+
+Validate before executing, as an execution silently skips a step without a handler
+and an unknown feature, then reports a success. `recipes validate` applies nothing and
+evaluates no script. Read `valid` and `findings` in its JSON output: the command exits
+with `0` whatever the result. `valid: true` doesn't guarantee that execution succeeds,
+since a step can still fail on its data, so verify the effects afterwards. A
+`step-handler-unverified` warning means a step's handler can't be checked before an
+earlier step enables its feature, not that it is missing.
 
 ## Queries
 
@@ -407,6 +416,7 @@ pomi deployment operations show OPERATION_ID
 pomi deployment artifacts show ARTIFACT_ID
 pomi deployment artifacts download ARTIFACT_ID --output-file ./release.zip
 pomi deployment artifacts upload release.zip --file ./release.zip
+pomi deployment operations validate --artifact-id ARTIFACT_ID
 pomi deployment operations import --request-id release-import-001 --artifact-id ARTIFACT_ID --force
 pomi deployment artifacts delete ARTIFACT_ID --force
 ```
@@ -416,6 +426,9 @@ a bounded wait until succeeded, failed or uncertain. The background worker polls
 every minute; pending/running means work is still outstanding. On export success,
 use its returned artifact ID for download. Downloads require a new local file and
 never overwrite an existing file. Upload validates ZIP/JSON without executing it.
+`operations validate` also checks the recipe's steps, features and file references like
+`recipes validate`, applying nothing and creating no operation; read `valid` in its
+output, and don't take `valid: true` as a guarantee that the import succeeds.
 Use the upload response's artifact ID for import and verify destination effects
 after success. Artifacts expire after 24 hours by default.
 
