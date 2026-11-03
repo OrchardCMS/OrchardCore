@@ -29,6 +29,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
         services.AddScoped<PreviewTemplatesProvider>();
         services.AddScoped<TemplatesManager>();
+        services.AddScoped<TemplateOverridesManager>();
 
         // Builds the rows of the templates admin list, shared by the site and admin template lists.
         services.AddDisplayDriver<TemplateEntry, TemplateEntryDisplayDriver>();

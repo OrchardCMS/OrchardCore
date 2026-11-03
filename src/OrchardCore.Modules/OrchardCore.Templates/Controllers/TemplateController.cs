@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -26,6 +25,7 @@ public sealed class TemplateController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly TemplatesManager _templatesManager;
     private readonly AdminTemplatesManager _adminTemplatesManager;
+    private readonly TemplateOverridesManager _templateOverridesManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
@@ -37,6 +37,7 @@ public sealed class TemplateController : Controller
         IAuthorizationService authorizationService,
         TemplatesManager templatesManager,
         AdminTemplatesManager adminTemplatesManager,
+        TemplateOverridesManager templateOverridesManager,
         IShapeFactory shapeFactory,
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<TemplateController> stringLocalizer,
@@ -46,6 +47,7 @@ public sealed class TemplateController : Controller
         _authorizationService = authorizationService;
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
+        _templateOverridesManager = templateOverridesManager;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
@@ -286,7 +288,7 @@ public sealed class TemplateController : Controller
 
             if (!string.Equals(sourceName, model.Name, StringComparison.OrdinalIgnoreCase))
             {
-                await ForgetClonesAsync([sourceName], model.AdminTemplates);
+                await _templateOverridesManager.ForgetClonesAsync([sourceName], model.AdminTemplates);
             }
 
             if (submit != "SaveAndContinue")
@@ -325,7 +327,7 @@ public sealed class TemplateController : Controller
                 ? _adminTemplatesManager.RemoveTemplateAsync(name)
                 : _templatesManager.RemoveTemplateAsync(name));
 
-        await ForgetClonesAsync([name], adminTemplates);
+        await _templateOverridesManager.ForgetClonesAsync([name], adminTemplates);
 
         await _notifier.SuccessAsync(H["Template deleted successfully."]);
 
@@ -362,7 +364,7 @@ public sealed class TemplateController : Controller
                             : _templatesManager.RemoveTemplateAsync(id));
                     }
 
-                    await ForgetClonesAsync(checkedContentItemIds, options.AdminTemplates);
+                    await _templateOverridesManager.ForgetClonesAsync(checkedContentItemIds, options.AdminTemplates);
 
                     await _notifier.SuccessAsync(H["Templates successfully removed."]);
                 }
@@ -431,9 +433,4 @@ public sealed class TemplateController : Controller
             ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
         }
     }
-
-    // The Assisted Templates feature records where the cloned templates come from: a template that is deleted or
-    // renamed is no longer a clone.
-    private Task ForgetClonesAsync(IEnumerable<string> names, bool adminTemplates)
-        => HttpContext.RequestServices.GetService<SourceTemplatesService>()?.ForgetClonesAsync(names, adminTemplates) ?? Task.CompletedTask;
 }

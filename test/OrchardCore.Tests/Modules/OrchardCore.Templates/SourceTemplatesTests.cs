@@ -199,9 +199,9 @@ public sealed class SourceTemplatesTests : IDisposable
         var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
         Assert.True(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: false));
 
-        // The clone is deleted from the Templates list, which doesn't know the clone records, then written by hand.
+        // The clone is deleted from the Templates list, whether the Assisted Templates feature is enabled or not, then written by hand.
         _templates.Templates.Remove("Layout");
-        await service.ForgetClonesAsync(["Layout"], adminTemplates: false);
+        await CreateOverridesManager().ForgetClonesAsync(["Layout"], adminTemplates: false);
         _templates.Templates["Layout"] = new Template { Content = "by hand" };
 
         entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
@@ -426,10 +426,12 @@ public sealed class SourceTemplatesTests : IDisposable
             CreateShapeTemplateFiles(),
             new TemplatesManager(CreateDocumentManager(_templates)),
             new AdminTemplatesManager(CreateDocumentManager(_adminTemplates)),
-            CreateDocumentManager(_overrides),
-            CreateDocumentManager(_adminOverrides),
+            CreateOverridesManager(),
             clock.Object);
     }
+
+    private TemplateOverridesManager CreateOverridesManager()
+        => new(CreateDocumentManager(_overrides), CreateDocumentManager(_adminOverrides));
 
     // The tests change and read the same document, as a store would after it is committed.
     private static IDocumentManager<TDocument> CreateDocumentManager<TDocument>(TDocument document)

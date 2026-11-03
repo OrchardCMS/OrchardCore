@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-using OrchardCore.Documents;
 using OrchardCore.Modules;
 using OrchardCore.Templates.Models;
 
@@ -16,8 +15,7 @@ public sealed class SourceTemplatesService
     private readonly ShapeTemplateFiles _shapeTemplateFiles;
     private readonly TemplatesManager _templatesManager;
     private readonly AdminTemplatesManager _adminTemplatesManager;
-    private readonly IDocumentManager<TemplateOverridesDocument> _overridesManager;
-    private readonly IDocumentManager<AdminTemplateOverridesDocument> _adminOverridesManager;
+    private readonly TemplateOverridesManager _overridesManager;
     private readonly IClock _clock;
 
     public SourceTemplatesService(
@@ -25,8 +23,7 @@ public sealed class SourceTemplatesService
         ShapeTemplateFiles shapeTemplateFiles,
         TemplatesManager templatesManager,
         AdminTemplatesManager adminTemplatesManager,
-        IDocumentManager<TemplateOverridesDocument> overridesManager,
-        IDocumentManager<AdminTemplateOverridesDocument> adminOverridesManager,
+        TemplateOverridesManager overridesManager,
         IClock clock)
     {
         _sources = sources;
@@ -34,7 +31,6 @@ public sealed class SourceTemplatesService
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
         _overridesManager = overridesManager;
-        _adminOverridesManager = adminOverridesManager;
         _clock = clock;
     }
 
@@ -59,7 +55,7 @@ public sealed class SourceTemplatesService
     {
         var templates = await source.GetTemplatesAsync(adminTemplates, scope);
         var localTemplates = await GetTemplatesDocumentAsync(adminTemplates);
-        var overrides = await GetOverridesDocumentAsync(adminTemplates);
+        var overrides = await _overridesManager.GetOverridesDocumentAsync(adminTemplates);
 
         List<SourceTemplateEntry> entries = [];
 
@@ -163,7 +159,7 @@ public sealed class SourceTemplatesService
             ? _adminTemplatesManager.UpdateTemplateAsync(template.Name, clone)
             : _templatesManager.UpdateTemplateAsync(template.Name, clone));
 
-        var overrides = await LoadOverridesDocumentAsync(adminTemplates);
+        var overrides = await _overridesManager.LoadOverridesDocumentAsync(adminTemplates);
 
         overrides.Overrides[template.Name] = new TemplateOverride
         {
@@ -174,7 +170,7 @@ public sealed class SourceTemplatesService
             ClonedUtc = _clock.UtcNow,
         };
 
-        await UpdateOverridesDocumentAsync(overrides, adminTemplates);
+        await _overridesManager.UpdateOverridesDocumentAsync(overrides, adminTemplates);
 
         return true;
     }
@@ -242,36 +238,9 @@ public sealed class SourceTemplatesService
             ? _adminTemplatesManager.RemoveTemplateAsync(name)
             : _templatesManager.RemoveTemplateAsync(name));
 
-        var overrides = await LoadOverridesDocumentAsync(adminTemplates);
-
-        if (overrides.Overrides.Remove(name))
-        {
-            await UpdateOverridesDocumentAsync(overrides, adminTemplates);
-        }
+        await _overridesManager.ForgetClonesAsync([name], adminTemplates);
 
         return true;
-    }
-
-    /// <summary>
-    /// Forgets where local templates were cloned from, once they are deleted or renamed, so that a template
-    /// created later with one of these names is not taken for a clone.
-    /// </summary>
-    /// <param name="names">The names of the local templates.</param>
-    /// <param name="adminTemplates">Whether they are admin templates.</param>
-    public async Task ForgetClonesAsync(IEnumerable<string> names, bool adminTemplates)
-    {
-        var overrides = await LoadOverridesDocumentAsync(adminTemplates);
-        var removed = false;
-
-        foreach (var name in names)
-        {
-            removed |= overrides.Overrides.Remove(name);
-        }
-
-        if (removed)
-        {
-            await UpdateOverridesDocumentAsync(overrides, adminTemplates);
-        }
     }
 
     private static bool IsClonedFrom(TemplateOverride record, SourceTemplate template)
@@ -289,19 +258,4 @@ public sealed class SourceTemplatesService
         => adminTemplates
             ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
             : await _templatesManager.GetTemplatesDocumentAsync();
-
-    private async Task<TemplateOverridesDocument> GetOverridesDocumentAsync(bool adminTemplates)
-        => adminTemplates
-            ? await _adminOverridesManager.GetOrCreateImmutableAsync()
-            : await _overridesManager.GetOrCreateImmutableAsync();
-
-    private async Task<TemplateOverridesDocument> LoadOverridesDocumentAsync(bool adminTemplates)
-        => adminTemplates
-            ? await _adminOverridesManager.GetOrCreateMutableAsync()
-            : await _overridesManager.GetOrCreateMutableAsync();
-
-    private Task UpdateOverridesDocumentAsync(TemplateOverridesDocument document, bool adminTemplates)
-        => adminTemplates
-            ? _adminOverridesManager.UpdateAsync((AdminTemplateOverridesDocument)document)
-            : _overridesManager.UpdateAsync(document);
 }
