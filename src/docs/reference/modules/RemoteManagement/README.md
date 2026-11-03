@@ -44,6 +44,11 @@ that would break the clients using those tokens.
 Each client action configures these shared requirements as well, so it can be used
 on a freshly enabled tenant.
 
+These actions rewrite the OpenID server settings, so they require **View and edit the OpenID Connect
+server settings** (`ManageServerSettings`) in addition to `ManageRemoteManagementConfiguration`. An endpoint path is only set when it is
+empty, and any path counts as configured: clients discover the endpoints from the server's metadata,
+so a customized path keeps working.
+
 For automated deployments, the **Orchard Core Remote Management** recipe configures
 only shared authentication. Use **Orchard Core Remote Management CLI**
 (`RemoteManagementCli`) for Pomi; its `RemoteManagementCliConfiguration` step creates

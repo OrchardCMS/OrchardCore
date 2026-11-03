@@ -49,7 +49,9 @@ public sealed class RemoteManagementMcpController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfigureAutomatic([FromServices] IRemoteManagementTenantConfigurationService configuration)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
+        // Configuring rewrites the OpenID server settings, which managing remote management doesn't imply.
+        if (!await _authorizationService.AuthorizeAsync(User, RemoteManagementPermissions.ManageRemoteManagementConfiguration) ||
+            !await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageServerSettings))
         {
             return Forbid();
         }
@@ -72,7 +74,9 @@ public sealed class RemoteManagementMcpController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Configure(RemoteManagementMcpViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
+        // Configuring rewrites the OpenID server settings, which managing remote management doesn't imply.
+        if (!await _authorizationService.AuthorizeAsync(User, RemoteManagementPermissions.ManageRemoteManagementConfiguration) ||
+            !await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageServerSettings))
         {
             return Forbid();
         }

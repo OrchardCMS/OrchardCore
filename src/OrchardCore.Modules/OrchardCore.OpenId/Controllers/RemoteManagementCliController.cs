@@ -50,7 +50,9 @@ public sealed class RemoteManagementCliController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Configure()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
+        // Configuring rewrites the OpenID server settings, which managing remote management doesn't imply.
+        if (!await _authorizationService.AuthorizeAsync(User, RemoteManagementPermissions.ManageRemoteManagementConfiguration) ||
+            !await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageServerSettings))
         {
             return Forbid();
         }

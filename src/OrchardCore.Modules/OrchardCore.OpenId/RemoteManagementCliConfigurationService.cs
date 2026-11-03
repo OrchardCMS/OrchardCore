@@ -67,16 +67,24 @@ public sealed class RemoteManagementCliConfigurationService : IRemoteManagementC
 
         var server = await _serverService.GetSettingsAsync();
         return applicationConfigured && server.AllowDeviceAuthorizationFlow &&
-            server.DeviceAuthorizationEndpointPath == "/connect/device" &&
-            server.EndUserVerificationEndpointPath == "/connect/verify";
+            server.DeviceAuthorizationEndpointPath.HasValue &&
+            server.EndUserVerificationEndpointPath.HasValue;
     }
 
     /// <inheritdoc />
     public async Task ConfigureAsync()
     {
         var server = await _serverService.LoadSettingsAsync();
-        server.DeviceAuthorizationEndpointPath = "/connect/device";
-        server.EndUserVerificationEndpointPath = "/connect/verify";
+        if (!server.DeviceAuthorizationEndpointPath.HasValue)
+        {
+            server.DeviceAuthorizationEndpointPath = "/connect/device";
+        }
+
+        if (!server.EndUserVerificationEndpointPath.HasValue)
+        {
+            server.EndUserVerificationEndpointPath = "/connect/verify";
+        }
+
         server.AllowDeviceAuthorizationFlow = true;
         var errors = (await _serverService.ValidateSettingsAsync(server))
             .Where(result => result != System.ComponentModel.DataAnnotations.ValidationResult.Success)

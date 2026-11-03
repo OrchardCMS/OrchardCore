@@ -79,6 +79,48 @@ public class RemoteManagementConfigurationServiceTests
     }
 
     [Fact]
+    public async Task ConfigureAsync_CustomEndpointPaths_ArePreservedAndAccepted()
+    {
+        var scope = new object();
+        var manager = new Mock<IOpenIdScopeManager>();
+        manager.Setup(value => value.FindByNameAsync("orchardcore.management", It.IsAny<CancellationToken>())).ReturnsAsync(scope);
+        manager.Setup(value => value.GetResourcesAsync(scope, It.IsAny<CancellationToken>())).ReturnsAsync(ImmutableArray.Create("orchardcore"));
+        var settings = new OpenIdServerSettings
+        {
+            AuthorizationEndpointPath = "/custom/authorize",
+            TokenEndpointPath = "/custom/token",
+            LogoutEndpointPath = "/custom/logout",
+            RevocationEndpointPath = "/custom/revoke",
+        };
+        var service = CreateService(manager, settings);
+
+        await service.ConfigureAsync();
+
+        Assert.Equal("/custom/authorize", settings.AuthorizationEndpointPath);
+        Assert.Equal("/custom/token", settings.TokenEndpointPath);
+        Assert.Equal("/custom/logout", settings.LogoutEndpointPath);
+        Assert.Equal("/custom/revoke", settings.RevocationEndpointPath);
+        Assert.True((await service.GetStatusAsync()).ServerEndpointsConfigured);
+    }
+
+    [Fact]
+    public async Task ConfigureAsync_MissingEndpointPaths_UsesTheDefaultPaths()
+    {
+        var settings = new OpenIdServerSettings { TokenEndpointPath = "/custom/token" };
+        var service = CreateService(serverSettings: settings);
+
+        Assert.False((await service.GetStatusAsync()).ServerEndpointsConfigured);
+
+        await service.ConfigureAsync();
+
+        Assert.Equal("/connect/authorize", settings.AuthorizationEndpointPath);
+        Assert.Equal("/custom/token", settings.TokenEndpointPath);
+        Assert.Equal("/connect/logout", settings.LogoutEndpointPath);
+        Assert.Equal("/connect/revoke", settings.RevocationEndpointPath);
+        Assert.True((await service.GetStatusAsync()).ServerEndpointsConfigured);
+    }
+
+    [Fact]
     public async Task ConfigureAsync_ExternalIssuer_IsPreservedAndRejected()
     {
         var validationSettings = new OpenIdValidationSettings { Authority = new Uri("https://identity.example.com") };

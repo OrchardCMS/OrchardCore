@@ -52,10 +52,10 @@ public sealed class RemoteManagementConfigurationService
         return new RemoteManagementConfigurationStatus
         {
             ServerEndpointsConfigured =
-                server.AuthorizationEndpointPath == "/connect/authorize" &&
-                server.TokenEndpointPath == "/connect/token" &&
-                server.LogoutEndpointPath == "/connect/logout" &&
-                server.RevocationEndpointPath == "/connect/revoke",
+                server.AuthorizationEndpointPath.HasValue &&
+                server.TokenEndpointPath.HasValue &&
+                server.LogoutEndpointPath.HasValue &&
+                server.RevocationEndpointPath.HasValue,
             AuthorizationCodeFlowConfigured = server.AllowAuthorizationCodeFlow,
             ClientCredentialsFlowConfigured = server.AllowClientCredentialsFlow,
             RefreshFlowConfigured = server.AllowRefreshTokenFlow,
@@ -67,17 +67,34 @@ public sealed class RemoteManagementConfigurationService
     }
 
     /// <summary>
-    /// Repairs shared authentication settings while preserving client registrations and unrelated grants.
+    /// Repairs shared authentication settings while preserving client registrations, unrelated grants and
+    /// customized endpoint paths, as clients discover the endpoints from the server's metadata.
     /// PKCE is left to the remote client applications, so it isn't imposed on the tenant's existing clients.
     /// </summary>
     /// <exception cref="ValidationException">The tenant validates tokens from another issuer.</exception>
     public async Task ConfigureAsync()
     {
         var server = await _serverService.LoadSettingsAsync();
-        server.AuthorizationEndpointPath = "/connect/authorize";
-        server.TokenEndpointPath = "/connect/token";
-        server.LogoutEndpointPath = "/connect/logout";
-        server.RevocationEndpointPath = "/connect/revoke";
+        if (!server.AuthorizationEndpointPath.HasValue)
+        {
+            server.AuthorizationEndpointPath = "/connect/authorize";
+        }
+
+        if (!server.TokenEndpointPath.HasValue)
+        {
+            server.TokenEndpointPath = "/connect/token";
+        }
+
+        if (!server.LogoutEndpointPath.HasValue)
+        {
+            server.LogoutEndpointPath = "/connect/logout";
+        }
+
+        if (!server.RevocationEndpointPath.HasValue)
+        {
+            server.RevocationEndpointPath = "/connect/revoke";
+        }
+
         server.AllowAuthorizationCodeFlow = true;
         server.AllowClientCredentialsFlow = true;
         server.AllowRefreshTokenFlow = true;
