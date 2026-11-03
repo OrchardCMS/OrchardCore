@@ -39,9 +39,10 @@ internal static partial class ContentManagementApiEndpoints
             .WithName("ApiListContentItems")
             .WithTags("Content Items")
             .WithSummary("Lists content items.")
-            .WithDescription("Lists published, latest, or draft content items that the current user can access.")
+            .WithDescription("Lists published, latest, or draft content items that the current user can access, with an optional filter in the syntax of the admin list and a sort of modifiedUtc, publishedUtc, or displayText.")
             .WithCliCommand(Cli(["content", "items"], "list"))
             .Produces<ContentItemsResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
@@ -197,10 +198,20 @@ internal static partial class ContentManagementApiEndpoints
         return builder;
     }
 
-    private static async Task<IResult> ListAsync(ContentApiService service, HttpContext httpContext, string contentType = null, string status = "published", int skip = 0, int take = 20)
-        => !await HasAccessAsync(httpContext)
-            ? httpContext.ApiForbidProblem()
-            : Results.Json(await service.ListAsync(httpContext.User, contentType, status, skip, take), service.SerializerOptions);
+    private static async Task<IResult> ListAsync(ContentApiService service, HttpContext httpContext, string contentType = null, string status = "published", int skip = 0, int take = 20, string q = null, string sort = null)
+    {
+        if (!await HasAccessAsync(httpContext))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        if (!ContentApiService.TryParseOrder(sort, out var order))
+        {
+            return TypedResults.Problem(title: "Bad request", detail: "Sort must be modifiedUtc, publishedUtc, or displayText.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        return Results.Json(await service.ListAsync(httpContext.User, contentType, status, skip, take, q, order), service.SerializerOptions);
+    }
 
     [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> GetAsync(string contentItemId, ContentApiService service, HttpContext httpContext, string version = "published")

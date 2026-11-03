@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -17,11 +18,13 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Security;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Json;
 using OrchardCore.RemoteManagement;
 using YesSql;
+using YesSql.Filters.Nodes;
 using YesSql.Services;
 
 namespace OrchardCore.Contents.Services;
@@ -63,6 +66,8 @@ internal sealed class ContentApiService
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IDisplayHelper _displayHelper;
     private readonly ContentOptions _contentOptions;
+    private readonly IContentsAdminListFilterParser _contentsAdminListFilterParser;
+    private readonly IContentsAdminListQueryService _contentsAdminListQueryService;
 
     public ContentApiService(
         IContentManager contentManager,
@@ -73,7 +78,9 @@ internal sealed class ContentApiService
         IOptions<DocumentJsonSerializerOptions> serializerOptions,
         IContentItemDisplayManager contentItemDisplayManager,
         IDisplayHelper displayHelper,
-        IOptions<ContentOptions> contentOptions)
+        IOptions<ContentOptions> contentOptions,
+        IContentsAdminListFilterParser contentsAdminListFilterParser,
+        IContentsAdminListQueryService contentsAdminListQueryService)
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
@@ -84,11 +91,36 @@ internal sealed class ContentApiService
         _contentItemDisplayManager = contentItemDisplayManager;
         _displayHelper = displayHelper;
         _contentOptions = contentOptions.Value;
+        _contentsAdminListFilterParser = contentsAdminListFilterParser;
+        _contentsAdminListQueryService = contentsAdminListQueryService;
     }
 
     public JsonSerializerOptions SerializerOptions => _serializerOptions.SerializerOptions;
 
-    public async Task<ContentItemsResponse> ListAsync(ClaimsPrincipal user, string contentType, string status, int skip, int take)
+    /// <summary>
+    /// Maps the value of the sort parameter of the list to the order of the admin list.
+    /// </summary>
+    /// <returns><see langword="false"/> when the value isn't supported.</returns>
+    internal static bool TryParseOrder(string sort, out ContentsOrder order)
+    {
+        switch (sort?.ToLowerInvariant())
+        {
+            case null or "" or "modifiedutc":
+                order = ContentsOrder.Modified;
+                return true;
+            case "publishedutc":
+                order = ContentsOrder.Published;
+                return true;
+            case "displaytext":
+                order = ContentsOrder.Title;
+                return true;
+            default:
+                order = default;
+                return false;
+        }
+    }
+
+    public async Task<ContentItemsResponse> ListAsync(ClaimsPrincipal user, string contentType, string status, int skip, int take, string filter = null, ContentsOrder order = ContentsOrder.Modified)
     {
         take = Math.Clamp(take, 1, 100);
         skip = Math.Max(skip, 0);
@@ -119,31 +151,61 @@ internal sealed class ContentApiService
         // Only per-item permissions, like viewing one's own items, require reading the items to filter them.
         if (await CanViewAllItemsAsync(user, allowedTypes, normalizedStatus))
         {
-            var query = CreateListQuery(allowedTypes, normalizedStatus);
+            var query = await CreateListQueryAsync(allowedTypes, contentType, normalizedStatus, filter, order);
             response.TotalCount = await query.CountAsync();
             response.Items = (await query.Skip(skip).Take(take).ListAsync()).ToList();
             return response;
         }
 
         return await ScanAuthorizedItemsAsync(
-            async offset => await CreateListQuery(allowedTypes, normalizedStatus).Skip(offset).Take(AuthorizationBatchSize).ListAsync(),
+            async offset => await (await CreateListQueryAsync(allowedTypes, contentType, normalizedStatus, filter, order)).Skip(offset).Take(AuthorizationBatchSize).ListAsync(),
             contentItem => CanViewContentItemAsync(_authorizationService, user, contentItem),
             skip,
             take);
     }
 
-    private IQuery<ContentItem> CreateListQuery(List<string> contentTypes, string status)
+    private async Task<IQuery<ContentItem>> CreateListQueryAsync(List<string> contentTypes, string contentType, string status, string filter, ContentsOrder order)
     {
-        var query = _session.Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(contentTypes.ToArray()));
-        query = status switch
+        if (string.IsNullOrWhiteSpace(filter))
         {
-            "draft" => query.Where(index => index.Latest && !index.Published),
-            "latest" => query.Where(index => index.Latest),
-            _ => query.Where(index => index.Published),
-        };
+            var query = _session.Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(contentTypes.ToArray()));
+            query = status switch
+            {
+                "draft" => query.Where(index => index.Latest && !index.Published),
+                "latest" => query.Where(index => index.Latest),
+                _ => query.Where(index => index.Published),
+            };
 
-        return query.OrderByDescending(index => index.ModifiedUtc).ThenBy(index => index.Id);
+            return order switch
+            {
+                ContentsOrder.Published => query.OrderByDescending(index => index.PublishedUtc).ThenBy(index => index.Id),
+                ContentsOrder.Title => query.OrderBy(index => index.DisplayText).ThenBy(index => index.Id),
+                _ => query.OrderByDescending(index => index.ModifiedUtc).ThenBy(index => index.Id),
+            };
+        }
+
+        // The filter syntax of the admin list. The status, type and sort of the request replace the ones of the filter,
+        // and its terms can only narrow the content types the caller was authorized to list.
+        var filterResult = _contentsAdminListFilterParser.Parse(filter);
+        filterResult.TryAddOrReplace(new NamedTermNode("status", new UnaryNode(GetFilterStatus(status).ToString(), OperateNodeQuotes.None)));
+        filterResult.TryAddOrReplace(new NamedTermNode("sort", new UnaryNode(order.ToString(), OperateNodeQuotes.None)));
+        if (!string.IsNullOrWhiteSpace(contentType))
+        {
+            filterResult.TryAddOrReplace(new ContentTypeFilterNode(contentType));
+        }
+
+        var filtered = await _contentsAdminListQueryService.QueryAsync(new ContentOptionsViewModel { FilterResult = filterResult }, NoopUpdateModel.Instance);
+
+        return filtered.With<ContentItemIndex>(index => index.ContentType.IsIn(contentTypes.ToArray()));
     }
+
+    private static ContentsStatus GetFilterStatus(string status)
+        => status switch
+        {
+            "draft" => ContentsStatus.Draft,
+            "latest" => ContentsStatus.Latest,
+            _ => ContentsStatus.Published,
+        };
 
     /// <summary>
     /// Reads a page of the items a caller can view, when that can only be checked on each item. The scan stops as soon
@@ -719,6 +781,20 @@ internal sealed class ContentApiService
                 modelState.AddModelError(string.Empty, error.ErrorMessage);
             }
         }
+    }
+
+    // The admin list filters that read their values from a form have none here.
+    private sealed class NoopUpdateModel : IUpdateModel
+    {
+        public static NoopUpdateModel Instance { get; } = new();
+
+        public ModelStateDictionary ModelState { get; } = new();
+
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model) where TModel : class => Task.FromResult(false);
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class => Task.FromResult(false);
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class => Task.FromResult(false);
+        public bool TryValidateModel(object model) => true;
+        public bool TryValidateModel(object model, string prefix) => true;
     }
 }
 

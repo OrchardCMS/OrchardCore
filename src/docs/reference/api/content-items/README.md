@@ -255,15 +255,17 @@ code and the field errors; `--output json` preserves the structured error respon
 | `status` | string | `published` | `published`, `draft`, or `latest`; any other value selects published. |
 | `skip` | integer | `0` | Values below `0` are normalized to `0`. |
 | `take` | integer | `20` | Clamped to the inclusive range `1` through `100`. |
+| `q` | string | none | A filter in the syntax of the admin content list. Text matches the display text, and named terms such as `stereotype:Widget` also apply. The `status`, `sort`, and, when set, `contentType` parameters replace the same terms in the filter. Without `contentType`, a filter only returns content types that are listable. |
+| `sort` | string | `modifiedUtc` | `modifiedUtc` or `publishedUtc`, newest first, or `displayText`, ascending. Case-insensitive. Any other value returns `400`. |
 
 ```bash
 curl -H "Authorization: Bearer $TOKEN" \
-  "https://localhost:5001/api/content?contentType=Article&status=published&skip=0&take=20"
+  "https://localhost:5001/api/content?contentType=Article&status=published&q=reference&sort=displayText&skip=0&take=20"
 ```
 
 The service first checks `ListContent` once per content type against a synthetic item. Types or
-items the caller cannot access are omitted rather than producing `403`. Results are ordered by
-`ModifiedUtc` descending and then index ID ascending.
+items the caller cannot access are omitted rather than producing `403`. Results follow `sort`, and
+then index ID ascending.
 
 A caller who can view the items of others in all the listed types, with `ViewContent` for published
 items and `PreviewContent` for the others, is paged in the database and gets an exact `totalCount`.
@@ -303,7 +305,7 @@ the list. The property is omitted when `totalCount` is exact.
 }
 ```
 
-Also returns `401` or `403`.
+Also returns `400` for an unsupported `sort`, `401`, or `403`.
 
 ### Get a content item
 

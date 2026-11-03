@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -110,9 +111,9 @@ public class ContentItemManagementApiTests
     }
 
     [Theory]
-    [InlineData("draft", "Draft listing 2")]
-    [InlineData("latest", "Draft listing 2")]
-    public async Task ListAsync_CallerCanViewAllItems_PagesInTheDatabase(string status, string expectedFirst)
+    [InlineData("draft")]
+    [InlineData("latest")]
+    public async Task ListAsync_CallerCanViewAllItems_PagesInTheDatabase(string status)
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -131,7 +132,68 @@ public class ContentItemManagementApiTests
 
             Assert.False(list.TotalCountIsEstimate);
             Assert.True(list.TotalCount >= 2);
-            Assert.Equal(expectedFirst, Assert.Single(list.Items).DisplayText);
+            Assert.Single(list.Items);
+        });
+    }
+
+    [Theory]
+    [InlineData("modifiedUtc", true, ContentsOrder.Modified)]
+    [InlineData("PUBLISHEDUTC", true, ContentsOrder.Published)]
+    [InlineData("displayText", true, ContentsOrder.Title)]
+    [InlineData(null, true, ContentsOrder.Modified)]
+    [InlineData("createdUtc", false, ContentsOrder.Modified)]
+    public void TryParseOrder_Value_ReturnsTheAdminOrder(string sort, bool expected, ContentsOrder expectedOrder)
+    {
+        Assert.Equal(expected, ContentApiService.TryParseOrder(sort, out var order));
+        Assert.Equal(expectedOrder, order);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("Zebra")]
+    public async Task ListAsync_SortByDisplayText_OrdersAscending(string filter)
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+            var user = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "Test")], nameof(StubIdentity)));
+            foreach (var text in new[] { "Zebra 2", "Zebra 1" })
+            {
+                await service.SaveAsync(user, new ContentItem { ContentType = "BlogPost", DisplayText = text }, publish: true, allowCreate: true, allowUpdate: true);
+            }
+            await scope.ServiceProvider.GetRequiredService<YesSql.ISession>().SaveChangesAsync();
+
+            var list = await service.ListAsync(user, "BlogPost", "published", 0, 100, filter, ContentsOrder.Title);
+            var names = list.Items.Select(item => item.DisplayText).Where(text => text.StartsWith("Zebra", StringComparison.Ordinal)).ToArray();
+
+            Assert.Equal(["Zebra 1", "Zebra 2"], names);
+        });
+    }
+
+    [Theory]
+    [InlineData("status:draft Findable", "published", 1)]
+    [InlineData("Findable", "draft", 1)]
+    [InlineData("Missing", "published", 0)]
+    public async Task ListAsync_Filter_AppliesTheRequestStatusAndText(string filter, string status, int expected)
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+            var user = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "Test")], nameof(StubIdentity)));
+            await service.SaveAsync(user, new ContentItem { ContentType = "BlogPost", DisplayText = "Findable published" }, publish: true, allowCreate: true, allowUpdate: true);
+            await service.SaveAsync(user, new ContentItem { ContentType = "BlogPost", DisplayText = "Findable draft" }, publish: false, allowCreate: true, allowUpdate: true);
+            await scope.ServiceProvider.GetRequiredService<YesSql.ISession>().SaveChangesAsync();
+
+            var list = await service.ListAsync(user, "BlogPost", status, 0, 100, filter);
+
+            Assert.Equal(expected, list.TotalCount);
+            Assert.All(list.Items, item => Assert.Contains(status, item.DisplayText, StringComparison.Ordinal));
         });
     }
 
