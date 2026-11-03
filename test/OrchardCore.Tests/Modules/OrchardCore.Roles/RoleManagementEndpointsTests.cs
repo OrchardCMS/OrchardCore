@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -130,6 +131,111 @@ public class RoleManagementEndpointsTests
         Assert.False(response.Permissions.Single(permission => permission.Name == "ManageRoles").IsAssigned);
     }
 
+    [Fact]
+    public async Task CreateAsync_PermissionCallerDoesNotHold_ReturnsForbidden()
+    {
+        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+
+        var result = await RoleManagementEndpoints.CreateAsync(
+            new DefaultHttpContext(),
+            new RoleManagementEndpoints.RoleCreateRequest
+            {
+                RoleName = "Escalated",
+                PermissionNames = ["ManageContent", "ManageTenants"],
+            },
+            CreateAuthorizationService("ManageRoles", "ManageContent"),
+            roleManager.Object,
+            CreateRoleService().Object,
+            CreatePermissionCatalog("ManageContent", "ManageTenants"),
+            CreateLocalizer());
+
+        var problem = Assert.IsType<ProblemHttpResult>(result);
+        Assert.Equal(StatusCodes.Status403Forbidden, problem.StatusCode);
+        Assert.Contains("ManageTenants", problem.ProblemDetails.Detail);
+        Assert.DoesNotContain("ManageContent", problem.ProblemDetails.Detail);
+        roleManager.Verify(manager => manager.CreateAsync(It.IsAny<IRole>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_NewPermissionCallerDoesNotHold_ReturnsForbiddenAndKeepsRole()
+    {
+        var role = new Role { RoleName = "Editors", RoleDescription = "Before", RoleClaims = [RoleClaim.Create("ManageContent")] };
+        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        roleManager.Setup(manager => manager.FindByIdAsync("Editors")).ReturnsAsync(role);
+
+        var result = await RoleManagementEndpoints.UpdateAsync(
+            new DefaultHttpContext(),
+            "Editors",
+            new RoleManagementEndpoints.RoleUpdateRequest { RoleDescription = "After", PermissionNames = ["ManageContent", "ManageTenants"] },
+            CreateAuthorizationService("ManageRoles", "ManageContent"),
+            roleManager.Object,
+            CreateRoleService().Object,
+            CreatePermissionCatalog("ManageContent", "ManageTenants"),
+            CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status403Forbidden, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal("Before", role.RoleDescription);
+        Assert.Equal(["ManageContent"], role.RoleClaims.Select(claim => claim.ClaimValue));
+        roleManager.Verify(manager => manager.UpdateAsync(It.IsAny<IRole>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ExistingPermissionCallerDoesNotHold_CanRemoveIt()
+    {
+        var role = new Role { RoleName = "Editors", RoleClaims = [RoleClaim.Create("ManageContent"), RoleClaim.Create("ManageTenants")] };
+        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        roleManager.Setup(manager => manager.FindByIdAsync("Editors")).ReturnsAsync(role);
+        roleManager.Setup(manager => manager.UpdateAsync(role)).ReturnsAsync(IdentityResult.Success);
+
+        var result = await RoleManagementEndpoints.UpdateAsync(
+            new DefaultHttpContext(),
+            "Editors",
+            new RoleManagementEndpoints.RoleUpdateRequest { PermissionNames = ["ManageContent"] },
+            CreateAuthorizationService("ManageRoles"),
+            roleManager.Object,
+            CreateRoleService().Object,
+            CreatePermissionCatalog("ManageContent", "ManageTenants"),
+            CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal(["ManageContent"], role.RoleClaims.Select(claim => claim.ClaimValue));
+    }
+
+    [Fact]
+    public async Task CreateAsync_SecurityCriticalPermissionCallerHolds_Succeeds()
+    {
+        var critical = new Permission("Critical", "Critical", [], true);
+        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        roleManager.Setup(manager => manager.CreateAsync(It.IsAny<IRole>())).ReturnsAsync(IdentityResult.Success);
+
+        var result = await RoleManagementEndpoints.CreateAsync(
+            new DefaultHttpContext(),
+            new RoleManagementEndpoints.RoleCreateRequest { RoleName = "Operators", PermissionNames = ["Critical"] },
+            CreateAuthorizationService("ManageRoles", "Critical"),
+            roleManager.Object,
+            CreateRoleService().Object,
+            new PermissionCatalog([critical], new Dictionary<string, string>(), new Dictionary<string, string>()),
+            CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status201Created, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+    }
+
+    private static IAuthorizationService CreateAuthorizationService(params string[] heldPermissions)
+    {
+        var authorizationService = new Mock<IAuthorizationService>();
+        authorizationService
+            .Setup(service => service.AuthorizeAsync(
+                It.IsAny<System.Security.Claims.ClaimsPrincipal>(),
+                It.IsAny<object>(),
+                It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync((System.Security.Claims.ClaimsPrincipal _, object _, IEnumerable<IAuthorizationRequirement> requirements) =>
+                requirements.OfType<PermissionRequirement>().All(requirement => heldPermissions.Contains(requirement.Permission.Name))
+                    ? AuthorizationResult.Success()
+                    : AuthorizationResult.Failed());
+
+        return authorizationService.Object;
+    }
+
     private static IAuthorizationService CreateAuthorizationService()
     {
         var authorizationService = new Mock<IAuthorizationService>();
@@ -154,6 +260,12 @@ public class RoleManagementEndpointsTests
     private static PermissionCatalog CreatePermissionCatalog()
         => new(
             [new Permission("ManageContent")],
+            new Dictionary<string, string>(StringComparer.Ordinal),
+            new Dictionary<string, string>(StringComparer.Ordinal));
+
+    private static PermissionCatalog CreatePermissionCatalog(params string[] permissionNames)
+        => new(
+            permissionNames.Select(name => new Permission(name)),
             new Dictionary<string, string>(StringComparer.Ordinal),
             new Dictionary<string, string>(StringComparer.Ordinal));
 

@@ -18,7 +18,11 @@ Operations then enforce:
 | List, get | **View Roles** (`ViewRoles`) |
 | Create, update, delete | **Manage Roles** (`ManageRoles`), a security-critical permission |
 
-`ManageRoles` implies `ViewRoles`. Antiforgery validation is disabled. An absent or invalid token produces `401 Unauthorized`; an authenticated principal missing a required permission produces `403 Forbidden`.
+`ManageRoles` implies `ViewRoles`.
+
+Create and update also authorize the caller for each permission they grant. A request that adds a permission the caller doesn't hold, security-critical or not, returns `403 Forbidden` and names the missing permissions. On update, permissions the role already has can be kept or removed without holding them. Callers in the administrator role, and the site's super user, hold every permission.
+
+Antiforgery validation is disabled. An absent or invalid token produces `401 Unauthorized`; an authenticated principal missing a required permission produces `403 Forbidden`.
 
 ## Base route
 

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -192,6 +193,11 @@ internal static class RoleManagementEndpoints
             return httpContext.ApiValidationProblem(modelState: modelState);
         }
 
+        if (await GetUnauthorizedPermissionsAsync(httpContext, authorizationService, permissionCatalog, permissionNames) is { Length: > 0 } unauthorizedPermissions)
+        {
+            return PermissionGrantForbidden(unauthorizedPermissions, localizer);
+        }
+
         if (await roleManager.FindByNameAsync(roleName) is Role existing)
         {
             var assignedPermissions = existing.RoleClaims
@@ -231,7 +237,7 @@ internal static class RoleManagementEndpoints
         return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(role.RoleName)}", await ToResponseAsync(role, authorizationService, roleService, permissionCatalog));
     }
 
-    internal static async Task<IResult> UpdateAsync(HttpContext httpContext, string roleId, RoleUpdateRequest request, IAuthorizationService authorizationService, RoleManager<IRole> roleManager, IRoleService roleService, PermissionCatalog permissionCatalog)
+    internal static async Task<IResult> UpdateAsync(HttpContext httpContext, string roleId, RoleUpdateRequest request, IAuthorizationService authorizationService, RoleManager<IRole> roleManager, IRoleService roleService, PermissionCatalog permissionCatalog, IStringLocalizer<AdminController> localizer)
     {
         if (request is null)
         {
@@ -248,8 +254,6 @@ internal static class RoleManagementEndpoints
             return TypedResults.Problem(title: "Not found", detail: "Role not found.", statusCode: StatusCodes.Status404NotFound);
         }
 
-        role.RoleDescription = request.RoleDescription ?? role.RoleDescription;
-
         var modelState = new ModelStateDictionary();
         if (request.PermissionNames is not null && !await roleService.IsAdminRoleAsync(role.RoleName))
         {
@@ -259,9 +263,22 @@ internal static class RoleManagementEndpoints
                 return httpContext.ApiValidationProblem(modelState: modelState);
             }
 
+            // Only new grants are checked: a caller can keep or remove a permission it doesn't hold.
+            var assignedPermissions = role.RoleClaims
+                .Where(claim => claim.ClaimType == Permission.ClaimType)
+                .Select(claim => claim.ClaimValue)
+                .ToHashSet(StringComparer.Ordinal);
+
+            if (await GetUnauthorizedPermissionsAsync(httpContext, authorizationService, permissionCatalog, permissionNames.Where(permissionName => !assignedPermissions.Contains(permissionName))) is { Length: > 0 } unauthorizedPermissions)
+            {
+                return PermissionGrantForbidden(unauthorizedPermissions, localizer);
+            }
+
             role.RoleClaims.RemoveAll(claim => claim.ClaimType == Permission.ClaimType);
             role.RoleClaims.AddRange(permissionNames.Select(RoleClaim.Create));
         }
+
+        role.RoleDescription = request.RoleDescription ?? role.RoleDescription;
 
         var result = await roleManager.UpdateAsync(role);
         if (!result.Succeeded)
@@ -369,6 +386,30 @@ internal static class RoleManagementEndpoints
 
         return validated.ToArray();
     }
+
+    // Authorizes the caller against each permission, which includes the permissions implying it. Administrators
+    // and the site's super user hold every permission, security-critical ones included, like in the admin UI.
+    private static async Task<string[]> GetUnauthorizedPermissionsAsync(HttpContext httpContext, IAuthorizationService authorizationService, PermissionCatalog permissionCatalog, IEnumerable<string> permissionNames)
+    {
+        var names = permissionNames.ToHashSet(StringComparer.Ordinal);
+        var unauthorized = new List<string>();
+
+        foreach (var permission in permissionCatalog.Permissions.Where(permission => names.Contains(permission.Name)))
+        {
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, permission))
+            {
+                unauthorized.Add(permission.Name);
+            }
+        }
+
+        return unauthorized.ToArray();
+    }
+
+    private static ProblemHttpResult PermissionGrantForbidden(IEnumerable<string> permissionNames, IStringLocalizer<AdminController> localizer)
+        => TypedResults.Problem(
+            title: localizer["Forbidden"],
+            detail: localizer["You can only grant permissions that you hold. Missing permissions: {0}.", string.Join(", ", permissionNames)],
+            statusCode: StatusCodes.Status403Forbidden);
 
     private static async Task<HashSet<string>> GetEffectivePermissionsAsync(Role role, IAuthorizationService authorizationService, IEnumerable<Permission> permissions)
     {
