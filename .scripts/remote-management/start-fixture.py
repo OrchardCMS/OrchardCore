@@ -103,7 +103,9 @@ listen_urls = url
 ssl_context = None
 certificate = None
 env = os.environ.copy()
-env.update({"ASPNETCORE_ENVIRONMENT": "Development", "ORCHARD_APP_DATA": str(root / "App_Data")})
+env.update({"ASPNETCORE_ENVIRONMENT": "Development", "ORCHARD_APP_DATA": str(root / "App_Data"),
+            # Keep temporary files, such as staged packages, out of the folder that every local tenant shares.
+            "OrchardCore__TempDirectory__Path": str(root / "Temp")})
 if os.environ.get("OC_FIXTURE_HTTPS") == "1":
     # Use the already trusted development certificate; never change trust settings from a test.
     subprocess.run(["dotnet", "dev-certs", "https", "--check", "--trust"], check=True, capture_output=True, timeout=30)

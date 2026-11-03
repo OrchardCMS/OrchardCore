@@ -41,6 +41,7 @@ python3 .scripts/remote-management/delete-contract-smoke.py <fixture.json>
 python3 .scripts/remote-management/elasticsearch-live-smoke.py <fixture.json> [elasticsearch-url]
 python3 .scripts/remote-management/openapi-examples-smoke.py <fixture.json>
 python3 .scripts/remote-management/recipe-export-smoke.py <fixture.json>
+python3 .scripts/remote-management/recipe-validation-smoke.py <fixture.json>
 ```
 
 `verify-fixture.py` checks discovery, command/operation ID uniqueness, every
@@ -49,6 +50,13 @@ existing-user authorization, and malformed folder input. Explicit exceptions
 match APIs that resolve missing resources before per-resource authorization;
 these are not counted as evidence that existing resources are protected.
 The existing-user probes provide separate checks for that distinction.
+
+`recipe-validation-smoke.py` validates recipes it adds to the fixture and deployment
+packages over HTTP, Pomi and MCP, and compares the features, settings, files, database
+rows and temporary files of the tenant before and after, which must be identical. It
+then imports packages to show what a result doesn't prove and that the comparison
+notices a change. It waits for the deployment worker, which takes a few minutes, and
+needs a fixture from `start-fixture.py`, which keeps temporary files in its folder.
 
 `delete-contract-smoke.py` deletes a missing resource on every management API
 with a real bearer token and expects a 404 problem. Remote deployment routes
