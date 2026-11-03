@@ -515,6 +515,11 @@ curl -G -H 'Authorization: Bearer ACCESS_TOKEN' \
 below the root. Folders are excluded from both `items` and `totalCount`; paging
 applies to files only. Use `GET /api/media/folders` to list folders.
 
+A request with `skip` at `0` reads the media store. For about 30 seconds, requests from the
+same caller with the same `extensions` and a `skip` greater than `0` page over that listing,
+so the pages of one walk are consistent and don't read the store again. They don't show
+changes made in the meantime, which the next request with `skip` at `0` picks up.
+
 The corresponding CLI commands are:
 
 ```bash
@@ -623,7 +628,7 @@ curl -X PUT -H 'Authorization: Bearer ACCESS_TOKEN' \
 
 `200 OK` returns the created file representation.
 
-Other responses: `400` Validation Problem Details for a missing file name, disallowed extension, or existing target; `400` Problem Details for storage failures; `401`; `403`; `413` when the body exceeds `maxFileSize`; `500` for an unexpected upload failure.
+Other responses: `400` Validation Problem Details for a missing file name, disallowed extension, or existing target; `400` Problem Details for storage failures; `401`; `403`; `413` when the body exceeds `maxFileSize`; `500` with a generic message for an unexpected upload failure, whose details are in the logs.
 
 Example `413`:
 
@@ -757,18 +762,21 @@ curl -X POST -H 'Authorization: Bearer ACCESS_TOKEN' \
   'https://cms.example.com/tenant-a/api/media/files:delete'
 ```
 
-`200 OK` echoes the requested paths after all deletions succeed:
+`200 OK` lists the deleted paths, and the requested paths for which no file was found. A
+missing path doesn't stop the batch:
 
 ```json
 {
   "paths": [
-    "archive/logo.png",
+    "archive/logo.png"
+  ],
+  "missingPaths": [
     "archive/banner.jpg"
   ]
 }
 ```
 
-Other responses: `401`; `403`; `404` if `paths` is null or any deletion fails. Deletions before a failure are not rolled back.
+Other responses: `401`; `403`; `404` if `paths` is null.
 
 ### Move several files
 

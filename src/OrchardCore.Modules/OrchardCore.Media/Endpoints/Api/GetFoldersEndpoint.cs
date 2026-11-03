@@ -73,6 +73,11 @@ public static class GetFoldersEndpoint
             return httpContext.ApiNotFoundProblem();
         }
 
+        if (!isManagementEndpoint)
+        {
+            return await GetLegacyPageAsync(httpContext, authorizationService, mediaFileStore, path, skip, take);
+        }
+
         var folders = new List<FileStoreEntryDto>();
 
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
@@ -89,27 +94,84 @@ public static class GetFoldersEndpoint
         }
 
         folders.Sort((left, right) => StringComparer.OrdinalIgnoreCase.Compare(left.DirectoryPath, right.DirectoryPath));
-        var page = take > 0 ? folders.Skip(skip).Take(take).ToList() : folders;
+        var page = folders.Skip(skip).Take(take).ToList();
 
-        // Check HasChildren for the page only (not all folders), considering only accessible sub-folders.
-        var hasChildrenTasks = page.Select(async folder =>
+        await SetHasChildrenAsync(httpContext, authorizationService, mediaFileStore, page);
+
+        return TypedResults.Ok(new MediaListResponse
+        {
+            Skip = skip,
+            Take = take,
+            TotalCount = folders.Count,
+            Items = page,
+        });
+    }
+
+    // Reads the store in its own order and stops as soon as the page is known, without a total count.
+    private static async Task<IResult> GetLegacyPageAsync(
+        HttpContext httpContext,
+        IAuthorizationService authorizationService,
+        IMediaFileStore mediaFileStore,
+        string path,
+        int skip,
+        int take)
+    {
+        var isPaginated = take > 0;
+        var page = new List<FileStoreEntryDto>();
+        var hasMore = false;
+        var authorizedCount = 0;
+
+        await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
+        {
+            // Only include folders the user is permitted to access.
+            // This must happen before counting so that skip/take offsets are
+            // calculated against authorized entries only.
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+            {
+                continue;
+            }
+
+            authorizedCount++;
+
+            if (isPaginated)
+            {
+                // Skip entries before the requested offset.
+                if (authorizedCount <= skip)
+                {
+                    continue;
+                }
+
+                // Collect up to 'take' entries for the page.
+                if (page.Count < take)
+                {
+                    page.Add(MediaEndpointHelpers.CreateFolderResult(entry));
+                }
+                else
+                {
+                    // We found one more beyond the page, so there are more folders.
+                    hasMore = true;
+                    break;
+                }
+            }
+            else
+            {
+                page.Add(MediaEndpointHelpers.CreateFolderResult(entry));
+            }
+        }
+
+        await SetHasChildrenAsync(httpContext, authorizationService, mediaFileStore, page);
+
+        return TypedResults.Ok(new PaginatedFoldersDto { Items = page, HasMore = hasMore });
+    }
+
+    // Checks HasChildren for the page only (not all folders), considering only accessible sub-folders.
+    private static Task SetHasChildrenAsync(
+        HttpContext httpContext,
+        IAuthorizationService authorizationService,
+        IMediaFileStore mediaFileStore,
+        List<FileStoreEntryDto> page)
+        => Task.WhenAll(page.Select(async folder =>
         {
             folder.HasChildren = await MediaEndpointHelpers.HasSubDirectoriesAsync(mediaFileStore, authorizationService, httpContext.User, folder.DirectoryPath);
-        });
-        await Task.WhenAll(hasChildrenTasks);
-
-        return isManagementEndpoint
-            ? TypedResults.Ok(new MediaListResponse
-            {
-                Skip = skip,
-                Take = take,
-                TotalCount = folders.Count,
-                Items = page,
-            })
-            : TypedResults.Ok(new PaginatedFoldersDto
-            {
-                Items = page,
-                HasMore = take > 0 && skip + page.Count < folders.Count,
-            });
-    }
+        }));
 }
