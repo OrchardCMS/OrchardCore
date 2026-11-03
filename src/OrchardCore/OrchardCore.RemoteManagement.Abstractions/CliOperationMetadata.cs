@@ -62,6 +62,28 @@ public sealed class CliOperationMetadata
     public IList<string> SecretProperties { get; init; } = [];
 
     /// <summary>
+    /// Gets or sets the singular name of the resource, which CLI summaries use, as in "Tenant 'Demo' created successfully.".
+    /// </summary>
+    public string ResourceName { get; set; }
+
+    /// <summary>
+    /// Gets or initializes the response properties that human-readable output shows after the operation changes
+    /// something. All of them are shown when this is empty.
+    /// </summary>
+    public IList<string> SummaryProperties { get; init; } = [];
+
+    /// <summary>
+    /// Gets or sets the response property holding the rows of a list, for table output without <see cref="TableColumns"/>.
+    /// </summary>
+    public string ItemsProperty { get; set; }
+
+    /// <summary>
+    /// Gets or sets the request body property holding the password of a new administrator. The CLI requires it, and
+    /// applies the setup password rules before sending the request.
+    /// </summary>
+    public string SetupPasswordProperty { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the JSON response contains one-time secrets and must be saved through private CLI output.
     /// </summary>
     public bool SecretResponse { get; set; }

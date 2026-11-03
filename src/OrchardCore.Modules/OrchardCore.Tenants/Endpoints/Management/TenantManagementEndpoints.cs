@@ -38,6 +38,9 @@ internal static partial class TenantManagementEndpoints
 {
     private const string RoutePrefix = "api/tenants";
 
+    private static readonly string[] _summaryProperties =
+        ["name", "tenantId", "state", "setupUrl", "primaryUrl", "url", "requestUrlHost", "requestUrlPrefix", "recipeName", "databaseProvider"];
+
     public static IEndpointRouteBuilder AddTenantManagementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routes = builder.MapManagementGroup(TenantManagementApiEndpointConventions.TagName);
@@ -49,6 +52,7 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "list")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ItemsProperty = "items",
                 TableColumns =
                 {
                     new CliTableColumnMetadata("items.name", "Name"),
@@ -83,6 +87,8 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "create")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
             })
             .Accepts<TenantCreateRequest>("application/json")
             .Produces<TenantResponse>(StatusCodes.Status201Created)
@@ -100,6 +106,9 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "install")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
+                SetupPasswordProperty = "password",
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 SecretProperties = { "password", "connectionString" },
                 ProvisioningProperty = "enableRemoteManagement",
@@ -121,6 +130,9 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "setup")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
+                SetupPasswordProperty = "password",
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 SecretProperties = { "password", "connectionString" },
             })
@@ -141,6 +153,8 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "update")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 InputMode = CliInputMode.Json,
             })
@@ -159,6 +173,8 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "delete")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 RequiresConfirmation = true,
             })
@@ -175,6 +191,8 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "start")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
             })
             .Produces<TenantResponse>(StatusCodes.Status200OK)
@@ -190,6 +208,8 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "stop")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 RequiresConfirmation = true,
             })
@@ -206,6 +226,8 @@ internal static partial class TenantManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["tenants"], "enable-remote-management")
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "Tenant",
+                SummaryProperties = _summaryProperties,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
                 ExcludedFromMcp = true,
                 ProvisioningProperty = "provisionClient",

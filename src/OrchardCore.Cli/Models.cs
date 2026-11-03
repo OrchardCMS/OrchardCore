@@ -248,6 +248,9 @@ internal sealed class CommandOutput
 
     public IReadOnlyList<CliTableColumnMetadata>? TableColumns { get; init; }
 
+    /// <summary>Gets the metadata of the API operation that produced this output, if any.</summary>
+    public CliOperationMetadata? Operation { get; init; }
+
     public IReadOnlyList<string> CommandPath { get; init; } = [];
 
     public string? HttpMethod { get; init; }

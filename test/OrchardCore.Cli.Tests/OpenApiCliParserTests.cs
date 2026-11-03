@@ -4,6 +4,21 @@ namespace OrchardCore.Cli.Tests;
 
 public class OpenApiCliParserTests
 {
+    [Fact]
+    public void Parse_PresentationMetadata_ReadsIt()
+    {
+        var operation = Assert.Single(OpenApiCliParser.Parse("""
+            {"paths":{"/api/sites":{"post":{"x-oc-cli":{
+              "commandGroup":["sites"],"verb":"create","resourceName":"Site","summaryProperties":["name","state"],
+              "itemsProperty":"results","setupPasswordProperty":"administratorPassword"}}}}}
+            """));
+
+        Assert.Equal("Site", operation.CliMetadata.ResourceName);
+        Assert.Equal(["name", "state"], operation.CliMetadata.SummaryProperties);
+        Assert.Equal("results", operation.CliMetadata.ItemsProperty);
+        Assert.Equal("administratorPassword", operation.CliMetadata.SetupPasswordProperty);
+    }
+
     [Theory]
     [InlineData("#/components/parameters/Loop", "circular")]
     [InlineData("#/components/parameters/Missing", "broken")]

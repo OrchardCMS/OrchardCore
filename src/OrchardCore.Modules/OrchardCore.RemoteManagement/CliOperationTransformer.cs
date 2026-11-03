@@ -98,6 +98,28 @@ internal sealed class CliOperationTransformer : IOpenApiOperationTransformer
             extension["provisioningProperty"] = metadata.ProvisioningProperty;
         }
 
+        if (!string.IsNullOrWhiteSpace(metadata.ResourceName))
+        {
+            extension["resourceName"] = metadata.ResourceName;
+        }
+
+        if (metadata.SummaryProperties.Count > 0)
+        {
+            extension["summaryProperties"] = new JsonArray(metadata.SummaryProperties
+                .Select(property => JsonValue.Create(property))
+                .ToArray());
+        }
+
+        if (!string.IsNullOrWhiteSpace(metadata.ItemsProperty))
+        {
+            extension["itemsProperty"] = metadata.ItemsProperty;
+        }
+
+        if (!string.IsNullOrWhiteSpace(metadata.SetupPasswordProperty))
+        {
+            extension["setupPasswordProperty"] = metadata.SetupPasswordProperty;
+        }
+
         return extension;
     }
 }

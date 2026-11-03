@@ -22,7 +22,7 @@ internal static class OutputFormatter
                     && string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("NO_COLOR"))
                     && !string.Equals(System.Environment.GetEnvironmentVariable("TERM"), "dumb", StringComparison.OrdinalIgnoreCase)),
             OutputFormat.Json => FormatJson(output.Json),
-            OutputFormat.Table => FormatTable(output.Json, output.TableColumns),
+            OutputFormat.Table => FormatTable(output.Json, output.TableColumns, output.Operation?.ItemsProperty),
             OutputFormat.Csv => FormatCsv(output.Json, output.TableColumns),
             OutputFormat.Tsv => FormatTsv(output.Json, output.TableColumns),
             OutputFormat.Yaml => FormatYaml(output.Json),
@@ -44,12 +44,13 @@ internal static class OutputFormatter
         return Encoding.UTF8.GetString(stream.ToArray());
     }
 
-    internal static string FormatTable(JsonElement element, IReadOnlyList<CliTableColumnMetadata>? tableColumns)
+    internal static string FormatTable(JsonElement element, IReadOnlyList<CliTableColumnMetadata>? tableColumns, string? itemsProperty = null)
     {
         var rows = ExtractRows(element, tableColumns, out var headers);
         if ((tableColumns is null || tableColumns.Count == 0) && element.ValueKind == JsonValueKind.Object)
         {
-            if (element.TryGetProperty("items", out var items) && items.ValueKind == JsonValueKind.Array)
+            // Servers and operations without the metadata use the conventional name.
+            if (element.TryGetProperty(itemsProperty ?? "items", out var items) && items.ValueKind == JsonValueKind.Array)
             {
                 rows = ExtractRows(items, null, out headers);
             }

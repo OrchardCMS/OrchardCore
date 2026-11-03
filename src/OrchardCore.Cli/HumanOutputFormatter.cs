@@ -18,7 +18,7 @@ internal static class HumanOutputFormatter
             : PastTense(verb) is not null;
         if (!mutation && (output.Json.ValueKind == JsonValueKind.Array || verb is "list" or "search"))
         {
-            return OutputFormatter.FormatTable(output.Json, output.TableColumns);
+            return OutputFormatter.FormatTable(output.Json, output.TableColumns, output.Operation?.ItemsProperty);
         }
 
         var builder = new StringBuilder();
@@ -31,9 +31,7 @@ internal static class HumanOutputFormatter
         var path = string.Join(' ', output.CommandPath);
         IReadOnlySet<string>? fields = ReportsFailure(output.Json) || output.StatusCode == 202 ? null : path == "install"
             ? new HashSet<string>(["directory", "url", "tenant"])
-            : mutation && output.CommandPath.Count == 2 && output.CommandPath[0] == "tenants"
-                ? new HashSet<string>(["name", "tenantId", "state", "setupUrl", "primaryUrl", "url", "requestUrlHost", "requestUrlPrefix", "recipeName", "databaseProvider"])
-                : null;
+            : mutation ? GetSummaryProperties(output) : null;
         AppendValue(builder, output.Json, 0, skipTransportFields: output.HttpMethod is not null, fields);
         if (path == "install" && Property(output.Json, "listenUrl") is { ValueKind: JsonValueKind.String } listenUrl)
         {
@@ -44,6 +42,19 @@ internal static class HumanOutputFormatter
             AppendHint(builder, nextStep, useColor);
         }
         return builder.Length == 0 ? "No results." : builder.ToString().TrimEnd();
+    }
+
+    private static HashSet<string>? GetSummaryProperties(CommandOutput output)
+    {
+        if (output.Operation?.SummaryProperties is { Count: > 0 } properties)
+        {
+            return [.. properties];
+        }
+
+        // Servers without the summaryProperties metadata.
+        return output.CommandPath.Count == 2 && output.CommandPath[0] == "tenants"
+            ? ["name", "tenantId", "state", "setupUrl", "primaryUrl", "url", "requestUrlHost", "requestUrlPrefix", "recipeName", "databaseProvider"]
+            : null;
     }
 
     private static void AppendHint(StringBuilder builder, string hint, bool useColor)
@@ -91,7 +102,7 @@ internal static class HumanOutputFormatter
             "api refresh" => "API metadata is up to date.",
             "docs refresh" => "Documentation index is up to date.",
             "install" => "Site created and initialized successfully.",
-            "tenants install" => "Tenant created and initialized successfully.",
+            "tenants install" when output.Operation?.ResourceName is null => "Tenant created and initialized successfully.",
             _ => null,
         };
         if (known is not null || !mutation)
@@ -101,7 +112,9 @@ internal static class HumanOutputFormatter
 
         var verb = output.CommandPath.Count > 0 ? output.CommandPath[^1] : string.Empty;
         var group = string.Join(' ', output.CommandPath.SkipLast(1));
-        var resource = group switch
+
+        // The names below are for servers without the resourceName metadata.
+        var resource = output.Operation?.ResourceName ?? group switch
         {
             "tenants" => "Tenant",
             "content items" => "Content item",

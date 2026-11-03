@@ -84,6 +84,68 @@ public class OutputFormatterTests
     }
 
     [Fact]
+    public async Task Human_OperationMetadata_NamesResourceAndSelectsSummaryProperties()
+    {
+        using var document = JsonDocument.Parse("""{"name":"Demo","region":"west","internalId":"hidden"}""");
+        using var writer = new StringWriter();
+        await OutputFormatter.WriteAsync(new CommandOutput
+        {
+            Json = document.RootElement, CommandPath = ["sites", "create"], HttpMethod = "POST", StatusCode = 201,
+            Operation = new CliOperationMetadata(["sites"], "create") { ResourceName = "Site", SummaryProperties = { "name", "region" } },
+        }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
+
+        Assert.StartsWith("Site 'Demo' created successfully.", writer.ToString());
+        Assert.Contains("west", writer.ToString());
+        Assert.DoesNotContain("hidden", writer.ToString());
+    }
+
+    [Fact]
+    public async Task Human_TenantInstallWithMetadata_UsesResourceSummary()
+    {
+        using var document = JsonDocument.Parse("""{"name":"Demo","state":"Running","internalId":"hidden"}""");
+        using var writer = new StringWriter();
+        await OutputFormatter.WriteAsync(new CommandOutput
+        {
+            Json = document.RootElement, CommandPath = ["tenants", "install"], HttpMethod = "POST", StatusCode = 201,
+            Operation = new CliOperationMetadata(["tenants"], "install") { ResourceName = "Tenant", SummaryProperties = { "name", "state" } },
+        }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
+
+        Assert.StartsWith("Tenant 'Demo' installed successfully.", writer.ToString());
+        Assert.DoesNotContain("hidden", writer.ToString());
+    }
+
+    [Fact]
+    public async Task Human_TenantInstallWithoutMetadata_KeepsSummaryOfOlderServers()
+    {
+        using var document = JsonDocument.Parse("""{"name":"Demo","state":"Running","internalId":"hidden"}""");
+        using var writer = new StringWriter();
+        await OutputFormatter.WriteAsync(new CommandOutput
+        {
+            Json = document.RootElement, CommandPath = ["tenants", "install"], HttpMethod = "POST", StatusCode = 201,
+        }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
+
+        Assert.StartsWith("Tenant created and initialized successfully.", writer.ToString());
+        Assert.DoesNotContain("hidden", writer.ToString());
+    }
+
+    [Theory]
+    [InlineData("table")]
+    [InlineData("human")]
+    public async Task List_ItemsPropertyMetadata_ReadsRowsFromThatProperty(string format)
+    {
+        using var document = JsonDocument.Parse("""{"total":1,"results":[{"id":"a1"}],"items":[{"id":"not-the-rows"}]}""");
+        using var writer = new StringWriter();
+        await OutputFormatter.WriteAsync(new CommandOutput
+        {
+            Json = document.RootElement, CommandPath = ["sites", "list"], HttpMethod = "GET", StatusCode = 200,
+            Operation = new CliOperationMetadata(["sites"], "list") { ItemsProperty = "results" },
+        }, CliUtilities.ParseOutputFormat(format), writer, TestContext.Current.CancellationToken);
+
+        Assert.Contains("a1", writer.ToString());
+        Assert.DoesNotContain("not-the-rows", writer.ToString());
+    }
+
+    [Fact]
     public async Task Human_NoContentMutation_ReportsCompletionWithoutTransportFields()
     {
         using var document = JsonDocument.Parse("""{"statusCode":204,"body":"","contentType":null}""");

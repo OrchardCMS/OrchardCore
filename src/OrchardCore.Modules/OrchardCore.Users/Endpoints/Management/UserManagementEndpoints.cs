@@ -37,6 +37,7 @@ internal static class UserManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["users"], "list")
             {
                 Capability = UserManagementApiEndpointConventions.CapabilityName,
+                ItemsProperty = "items",
                 TableColumns =
                 {
                     new CliTableColumnMetadata("items.userId", "Id"),
@@ -71,6 +72,7 @@ internal static class UserManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["users"], "create")
             {
                 Capability = UserManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "User",
                 InputMode = CliInputMode.Options,
                 SecretProperties = { "password" },
             })
@@ -90,6 +92,7 @@ internal static class UserManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["users"], "update")
             {
                 Capability = UserManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "User",
                 Arguments = { new CliArgumentMetadata("userId", 0) },
                 InputMode = CliInputMode.Options,
                 SecretProperties = { "password" },
@@ -109,6 +112,7 @@ internal static class UserManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["users"], "disable")
             {
                 Capability = UserManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "User",
                 Arguments = { new CliArgumentMetadata("userId", 0) },
                 RequiresConfirmation = true,
             })
@@ -172,6 +176,7 @@ internal static class UserManagementEndpoints
             .WithCliCommand(new CliOperationMetadata(["users"], "delete")
             {
                 Capability = UserManagementApiEndpointConventions.CapabilityName,
+                ResourceName = "User",
                 Arguments = { new CliArgumentMetadata("userId", 0) },
                 RequiresConfirmation = true,
             })

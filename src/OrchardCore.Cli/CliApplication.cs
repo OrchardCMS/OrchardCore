@@ -1152,7 +1152,7 @@ internal sealed partial class CliApplication
             var outputJson = secretOutput is not null ? await secretOutput.WriteAsync(response.Json, cancellationToken)
                 : provisioningSupported ? await CaptureProvisionedContextAsync(response.Json, cancellationToken) : response.Json;
             IReadOnlyList<CliTableColumnMetadata>? tableColumns = secretOutput is null && operation.CliMetadata.TableColumns.Count > 0 ? [.. operation.CliMetadata.TableColumns] : null;
-            return await WriteOutputAsync(parseResult, outputJson, cancellationToken, tableColumns, response.HttpMethod, response.StatusCode);
+            return await WriteOutputAsync(parseResult, outputJson, cancellationToken, tableColumns, response.HttpMethod, response.StatusCode, operation.CliMetadata);
         });
     }
 
@@ -1753,13 +1753,11 @@ internal sealed partial class CliApplication
     internal static void ValidateDynamicJsonBody(string content, OpenApiOperationDefinition operation)
     {
         using var document = JsonDocument.Parse(content);
-        if (operation.Method == "POST"
-            && operation.CliMetadata.CommandGroup.SequenceEqual(["tenants"])
-            && operation.CliMetadata.Verb is "install" or "setup")
+        if (GetSetupPasswordProperty(operation) is { } passwordProperty)
         {
             var root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object
-                || !root.TryGetProperty("password", out var password)
+                || !root.TryGetProperty(passwordProperty, out var password)
                 || password.ValueKind != JsonValueKind.String)
             {
                 throw new CliException("The setup administrator password is required and must be a string.");
@@ -1829,6 +1827,21 @@ internal sealed partial class CliApplication
                 }
             }
         }
+    }
+
+    private static string? GetSetupPasswordProperty(OpenApiOperationDefinition operation)
+    {
+        if (!string.IsNullOrEmpty(operation.CliMetadata.SetupPasswordProperty))
+        {
+            return operation.CliMetadata.SetupPasswordProperty;
+        }
+
+        // Servers without the setupPasswordProperty metadata.
+        return operation.Method == "POST"
+            && operation.CliMetadata.CommandGroup.SequenceEqual(["tenants"])
+            && operation.CliMetadata.Verb is "install" or "setup"
+                ? "password"
+                : null;
     }
 
     private static bool MatchesSchemaType(JsonElement value, string type) => type switch
@@ -2152,7 +2165,7 @@ internal sealed partial class CliApplication
     }
 
     private async Task<int> WriteOutputAsync(ParseResult parseResult, JsonElement element, CancellationToken cancellationToken,
-        IReadOnlyList<CliTableColumnMetadata>? tableColumns = null, string? httpMethod = null, int? statusCode = null)
+        IReadOnlyList<CliTableColumnMetadata>? tableColumns = null, string? httpMethod = null, int? statusCode = null, CliOperationMetadata? operation = null)
     {
         var format = CliUtilities.ParseOutputFormat(parseResult.GetValue(_outputOption));
         var commandPath = new Stack<string>();
@@ -2165,7 +2178,7 @@ internal sealed partial class CliApplication
 
         await OutputFormatter.WriteAsync(new CommandOutput
         {
-            Json = element, TableColumns = tableColumns, CommandPath = commandPath.ToArray(), HttpMethod = httpMethod, StatusCode = statusCode,
+            Json = element, TableColumns = tableColumns, Operation = operation, CommandPath = commandPath.ToArray(), HttpMethod = httpMethod, StatusCode = statusCode,
             ContextName = ContextStore.FindContext(_configuration, parseResult.GetValue(_contextOption))?.Name,
             CurrentContextName = _configuration.CurrentContext,
             KnownContexts = _configuration.Contexts,

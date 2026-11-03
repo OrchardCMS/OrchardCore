@@ -99,7 +99,15 @@ internal static class OpenApiCliParser
             InputMode = ParseInputMode(CliUtilities.ReadString(extensionElement, "inputMode")),
             DefaultJsonBody = CliUtilities.ReadString(extensionElement, "defaultJsonBody"),
             ProvisioningProperty = CliUtilities.ReadString(extensionElement, "provisioningProperty"),
+            ResourceName = CliUtilities.ReadString(extensionElement, "resourceName"),
+            ItemsProperty = CliUtilities.ReadString(extensionElement, "itemsProperty"),
+            SetupPasswordProperty = CliUtilities.ReadString(extensionElement, "setupPasswordProperty"),
         };
+
+        foreach (var property in CliUtilities.ReadStringArray(extensionElement, "summaryProperties"))
+        {
+            metadata.SummaryProperties.Add(property);
+        }
 
         foreach (var alias in CliUtilities.ReadStringArray(extensionElement, "aliases"))
         {

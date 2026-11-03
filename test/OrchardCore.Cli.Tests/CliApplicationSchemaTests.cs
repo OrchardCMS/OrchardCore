@@ -54,6 +54,36 @@ public class CliApplicationSchemaTests
             message);
     }
 
+    [Fact]
+    public void ValidateDynamicJsonBody_SetupPasswordMetadata_ValidatesThatProperty()
+    {
+        var operation = CreateOperation("provision", "string");
+        operation.CliMetadata.SetupPasswordProperty = "administratorPassword";
+
+        Assert.Contains("password", Assert.Throws<CliException>(() => CliApplication.ValidateDynamicJsonBody("""{"password":"Str0ng-Password!"}""", operation)).Message);
+        Assert.Throws<CliException>(() => CliApplication.ValidateDynamicJsonBody("""{"administratorPassword":"weak"}""", operation));
+        CliApplication.ValidateDynamicJsonBody("""{"administratorPassword":"Str0ng-Password!"}""", operation);
+    }
+
+    [Theory]
+    [InlineData("install")]
+    [InlineData("setup")]
+    public void ValidateDynamicJsonBody_ServerWithoutMetadata_ValidatesTenantSetupPassword(string verb)
+    {
+        var operation = new OpenApiOperationDefinition { Method = "POST", CliMetadata = new CliOperationMetadata(["tenants"], verb) };
+
+        Assert.Throws<CliException>(() => CliApplication.ValidateDynamicJsonBody("""{"password":"weak"}""", operation));
+        CliApplication.ValidateDynamicJsonBody("""{"password":"Str0ng-Password!"}""", operation);
+    }
+
+    [Fact]
+    public void ValidateDynamicJsonBody_OtherOperationWithoutMetadata_LeavesPasswordToTheServer()
+    {
+        var operation = new OpenApiOperationDefinition { Method = "POST", CliMetadata = new CliOperationMetadata(["users"], "create") };
+
+        CliApplication.ValidateDynamicJsonBody("""{"password":"weak"}""", operation);
+    }
+
     private static OpenApiOperationDefinition CreateOperation(string verb, string valueType) =>
         new()
         {

@@ -563,6 +563,16 @@ endpoints.MapGet("/api/example/widgets", ListWidgetsAsync)
 
 The Remote Management OpenAPI transformer emits this metadata as `x-oc-cli`. Use `Arguments` for positional ordering, `InputMode` for complex bodies, `DefaultJsonBody` when a command should send a default body if none is supplied, `RequiresConfirmation` for destructive operations, aliases for compatibility, and `TableColumns` for optional table output.
 
+Four more properties describe how Pomi presents an operation, so that it doesn't need to know the
+resource:
+
+| Property | `x-oc-cli` | Effect |
+| --- | --- | --- |
+| `ResourceName` | `resourceName` | The singular name in the summary of a change, as in `Tenant 'Demo' created successfully.` |
+| `SummaryProperties` | `summaryProperties` | The response properties that human-readable output shows after a change, instead of all of them. |
+| `ItemsProperty` | `itemsProperty` | The response property holding the rows of a list, for table output without `TableColumns`. Without it, Pomi looks for `items`. |
+| `SetupPasswordProperty` | `setupPasswordProperty` | The body property holding the password of a new administrator. Pomi requires it and applies the setup password rules before sending the request. |
+
 Set `FileResponse = true` for responses that Pomi must stream to disk. The transformer
 emits `fileResponse: true`; Pomi requires `--output-file` and reserves a new private
 file before sending the request. Existing files are never overwritten and failed
