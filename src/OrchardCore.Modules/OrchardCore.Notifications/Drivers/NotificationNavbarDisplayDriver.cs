@@ -72,7 +72,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 
         if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {
-            return result
+            result
                 .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context =>
                 {
                     context.AddContext("user")
@@ -93,7 +93,12 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                 });
         }
 
-        return result;
+        // A cached shape doesn't register its resources when its content comes from the cache, so they have their own shape.
+        return Combine(
+            result,
+            Dynamic("UserNotificationNavbarResources")
+                .Location(OrchardCoreConstants.DisplayType.Detail, "Content:9")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:9"));
     }
 
     // The hidden notifications are neither shown nor counted, so the unread notifications are evaluated
