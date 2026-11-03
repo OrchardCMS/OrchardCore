@@ -3,7 +3,7 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Tenant Cluster options.
 /// </summary>
-public class ClusterOptions
+public sealed class ClusterOptions
 {
     /// <summary>
     /// The cluster identifier.
