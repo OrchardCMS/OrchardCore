@@ -107,18 +107,17 @@ internal static class RecipeManagementEndpoints
         var recipes = await GetRecipesAsync(features, recipeHarvesters);
         var environment = await GetEnvironmentAsync(environmentProviders, logger);
 
-        var items = recipes
+        var filtered = recipes
             .Where(recipe => MatchesFilter(recipe, features, request))
             .OrderBy(recipe => recipe.DisplayName ?? recipe.Name, StringComparer.OrdinalIgnoreCase)
-            .Select(recipe => ToResponse(recipe, features, environment))
             .ToArray();
 
         return TypedResults.Ok(new RecipeListResponse
         {
             Skip = skip,
             Take = take,
-            TotalCount = items.Length,
-            Items = items.Skip(skip).Take(take).ToArray(),
+            TotalCount = filtered.Length,
+            Items = filtered.Skip(skip).Take(take).Select(recipe => ToResponse(recipe, features, environment)).ToArray(),
         });
     }
 

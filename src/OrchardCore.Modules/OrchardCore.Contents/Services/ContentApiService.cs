@@ -91,7 +91,7 @@ internal sealed class ContentApiService
 
         var typeDefinitions = string.IsNullOrWhiteSpace(contentType)
             ? await _contentDefinitionManager.ListTypeDefinitionsAsync()
-            : [await _contentDefinitionManager.LoadTypeDefinitionAsync(contentType)];
+            : [await _contentDefinitionManager.GetTypeDefinitionAsync(contentType)];
 
         typeDefinitions = typeDefinitions.Where(x => x is not null).ToArray();
 
@@ -612,7 +612,7 @@ internal sealed class ContentApiService
 
     public async Task<ContentItemSchemaResponse> GetSchemaAsync(string contentType)
     {
-        var definition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentType);
+        var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
         if (definition is null)
         {
             return null;
