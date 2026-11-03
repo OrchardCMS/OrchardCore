@@ -257,16 +257,7 @@ public sealed class TemplateSourceController : Controller
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
     public ActionResult IndexFilterPOST(string source, SourceTemplatesIndexViewModel model)
-        => RedirectToAction(nameof(Index), new RouteValueDictionary
-        {
-            { nameof(source), source },
-            { _optionsAdminTemplates, model.Options.AdminTemplates },
-            { _optionsScope, model.Options.Scope },
-            { _optionsSearch, model.Options.Search },
-            { _optionsFilter, model.Options.Filter },
-            { _optionsArea, model.Options.Area },
-            { _optionsLanguage, model.Options.Language },
-        });
+        => RedirectToAction(nameof(Index), GetIndexRouteValues(source, model.Options));
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
@@ -324,12 +315,7 @@ public sealed class TemplateSourceController : Controller
                 return BadRequest();
         }
 
-        return RedirectToAction(nameof(Index), new RouteValueDictionary
-        {
-            { nameof(source), source },
-            { _optionsAdminTemplates, options.AdminTemplates },
-            { _optionsScope, options.Scope },
-        });
+        return RedirectToAction(nameof(Index), GetIndexRouteValues(source, options));
     }
 
     public async Task<IActionResult> Display(string source, string name, bool adminTemplates = false, string scope = null, string returnUrl = null)
@@ -573,6 +559,18 @@ public sealed class TemplateSourceController : Controller
 
         return RedirectToReturnUrlOrIndex(source, adminTemplates, scope, returnUrl);
     }
+
+    private static RouteValueDictionary GetIndexRouteValues(string source, SourceTemplatesOptions options)
+        => new()
+        {
+            { nameof(source), source },
+            { _optionsAdminTemplates, options.AdminTemplates },
+            { _optionsScope, options.Scope },
+            { _optionsSearch, options.Search },
+            { _optionsFilter, options.Filter },
+            { _optionsArea, options.Area },
+            { _optionsLanguage, options.Language },
+        };
 
     private IActionResult RedirectToReturnUrlOrIndex(string source, bool adminTemplates, string scope, string returnUrl)
     {
