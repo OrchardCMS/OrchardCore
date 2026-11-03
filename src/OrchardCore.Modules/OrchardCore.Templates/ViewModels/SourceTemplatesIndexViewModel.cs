@@ -136,7 +136,7 @@ public enum SourceTemplatesBulkAction
     /// <summary>Clones the Liquid templates without a local override.</summary>
     Clone,
 
-    /// <summary>Replaces the local overrides of the Liquid templates with the current source.</summary>
+    /// <summary>Replaces the local templates cloned from the Liquid templates with the current source.</summary>
     Reset,
 
     /// <summary>Deletes the local overrides.</summary>

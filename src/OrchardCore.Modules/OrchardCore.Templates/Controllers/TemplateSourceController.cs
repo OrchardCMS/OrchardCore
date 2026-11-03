@@ -304,7 +304,8 @@ public sealed class TemplateSourceController : Controller
                 await _notifier.SuccessAsync(H["{0} template(s) cloned.", count]);
                 break;
             case SourceTemplatesBulkAction.Reset:
-                foreach (var entry in entries.Where(entry => entry.IsOverridden))
+                // A template written by hand, or cloned from another file, is not replaced without its own warning.
+                foreach (var entry in entries.Where(entry => entry.IsCloned))
                 {
                     count += await _sourceTemplatesService.CloneAsync(templateSource, entry.Template, options.AdminTemplates, overwrite: true) ? 1 : 0;
                 }

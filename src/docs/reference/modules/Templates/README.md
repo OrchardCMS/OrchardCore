@@ -19,7 +19,7 @@ From the list of the active theme, without changing the theme, you can:
 - **Reset** a local template to the template of the theme, which replaces its content.
 - **Delete** a local template, so that the template of the theme is used again.
 
-The same actions are available as bulk actions on the selected templates.
+The same actions are available as bulk actions on the selected templates. The bulk **Reset** only applies to the templates cloned from this list: a local template written by hand, or cloned from another theme, is reset with its own **Reset** button.
 
 Razor (`.cshtml`) templates can only be viewed, as local templates are written in Liquid: use them as a reference to write a Liquid template with the same name, with the **Create override** button.
 
