@@ -28,6 +28,38 @@ namespace OrchardCore.RemoteManagement.Tests;
 
 public class McpClientRegistrationTests
 {
+    [Theory]
+    [InlineData(false, 201, 1)]
+    [InlineData(true, 503, 0)]
+    public async Task Registration_AtCapacity_RemovesOnlyOldUnauthorizedClients(bool authorized, int status, int removed)
+    {
+        var fixture = new Fixture();
+        fixture.Options.Value.MaximumApplications = 1;
+        fixture.AddRegisteredClients(1, DateTimeOffset.UtcNow.AddDays(-2));
+        fixture.Authorizations.Setup(manager => manager.FindByApplicationIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(() => (authorized ? new[] { new object() } : []).ToAsyncEnumerable());
+        using var limiter = new McpClientRegistrationLimiter();
+
+        var result = await fixture.CreateController(limiter).Register(ValidRequest(), TestContext.Current.CancellationToken);
+
+        Assert.Equal(status, ((ObjectResult)result).StatusCode);
+        fixture.Applications.Verify(manager => manager.DeleteAsync(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Exactly(removed));
+    }
+
+    [Fact]
+    public async Task Registration_AtCapacity_KeepsRecentClients()
+    {
+        var fixture = new Fixture();
+        fixture.Options.Value.MaximumApplications = 1;
+        fixture.AddRegisteredClients(1, DateTimeOffset.UtcNow);
+        using var limiter = new McpClientRegistrationLimiter();
+
+        var result = await fixture.CreateController(limiter).Register(ValidRequest(), TestContext.Current.CancellationToken);
+
+        Assert.Equal(503, ((ObjectResult)result).StatusCode);
+        fixture.Applications.Verify(manager => manager.DeleteAsync(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     [Fact]
     public void Options_ShellConfiguration_DisablesRegistration()
     {
@@ -119,12 +151,12 @@ public class McpClientRegistrationTests
     [InlineData(0, 1000, false, 404)]
     [InlineData(1000, 1000, true, 503)]
     [InlineData(0, 1000, true, 201)]
-    public async Task Registration_RespectsDisabledModeAndCapacity(long count, int maximum, bool enabled, int status)
+    public async Task Registration_RespectsDisabledModeAndCapacity(int count, int maximum, bool enabled, int status)
     {
         var fixture = new Fixture();
         fixture.Options.Value.AllowDynamicClientRegistration = enabled;
         fixture.Options.Value.MaximumApplications = maximum;
-        fixture.Applications.Setup(manager => manager.CountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(count);
+        fixture.AddRegisteredClients(count, DateTimeOffset.UtcNow);
         using var limiter = new McpClientRegistrationLimiter();
         var controller = fixture.CreateController(limiter);
         var result = await controller.Register(ValidRequest(), TestContext.Current.CancellationToken);
@@ -266,10 +298,12 @@ public class McpClientRegistrationTests
     private sealed class Fixture
     {
         public Mock<IOpenIdApplicationManager> Applications { get; } = new();
+        public Mock<IOpenIdAuthorizationManager> Authorizations { get; } = new();
         public Mock<IOptionsFactory<OpenIddictServerOptions>> OptionsFactory { get; } = new();
         public Mock<ISession> Session { get; } = new();
         public IOptions<RemoteManagementMcpOptions> Options { get; } = Microsoft.Extensions.Options.Options.Create(new RemoteManagementMcpOptions());
         public McpClientRegistrationService Service { get; }
+        private readonly List<object> _registered = [];
 
         public Fixture()
         {
@@ -277,7 +311,9 @@ public class McpClientRegistrationTests
             var distributedLock = new Mock<IDistributedLock>();
             distributedLock.Setup(value => value.TryAcquireLockAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan?>()))
                 .ReturnsAsync((Mock.Of<ILocker>(), true));
-            Service = new McpClientRegistrationService(Applications.Object, distributedLock.Object, Session.Object, Options, new HttpContextAccessor
+            Applications.Setup(manager => manager.ListAsync(It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
+                .Returns(() => _registered.ToAsyncEnumerable());
+            Service = new McpClientRegistrationService(Applications.Object, Authorizations.Object, distributedLock.Object, Session.Object, Options, new HttpContextAccessor
             {
                 HttpContext = new DefaultHttpContext
                 {
@@ -291,6 +327,22 @@ public class McpClientRegistrationTests
             {
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
             };
+
+        public void AddRegisteredClients(int count, DateTimeOffset registeredAt)
+        {
+            var properties = ImmutableDictionary.CreateRange(new Dictionary<string, JsonElement>
+            {
+                ["orchardcore:remote-management:dynamic-mcp"] = JsonSerializer.SerializeToElement(true),
+                ["orchardcore:remote-management:registered-at"] = JsonSerializer.SerializeToElement(registeredAt.ToUnixTimeSeconds()),
+            });
+            for (var i = 0; i < count; i++)
+            {
+                var application = new object();
+                _registered.Add(application);
+                Applications.Setup(manager => manager.GetPropertiesAsync(application, It.IsAny<CancellationToken>())).ReturnsAsync(properties);
+                Applications.Setup(manager => manager.GetIdAsync(application, It.IsAny<CancellationToken>())).ReturnsAsync("id-" + i);
+            }
+        }
 
         public void AddDynamicClient()
         {

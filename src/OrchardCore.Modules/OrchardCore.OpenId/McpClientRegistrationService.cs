@@ -18,15 +18,19 @@ namespace OrchardCore.OpenId;
 public sealed class McpClientRegistrationService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private static readonly TimeSpan s_unusedClientLifetime = TimeSpan.FromDays(1);
+
     private readonly IOpenIdApplicationManager _applicationManager;
+    private readonly IOpenIdAuthorizationManager _authorizationManager;
     private readonly IDistributedLock _distributedLock;
     private readonly ISession _session;
     private readonly IOptions<RemoteManagementMcpOptions> _options;
 
     /// <summary>Initializes the McpClientRegistrationService service.</summary>
-    public McpClientRegistrationService(IOpenIdApplicationManager applicationManager, IDistributedLock distributedLock, ISession session, IOptions<RemoteManagementMcpOptions> options, IHttpContextAccessor httpContextAccessor)
+    public McpClientRegistrationService(IOpenIdApplicationManager applicationManager, IOpenIdAuthorizationManager authorizationManager, IDistributedLock distributedLock, ISession session, IOptions<RemoteManagementMcpOptions> options, IHttpContextAccessor httpContextAccessor)
     {
         _applicationManager = applicationManager;
+        _authorizationManager = authorizationManager;
         _distributedLock = distributedLock;
         _session = session;
         _options = options;
@@ -34,6 +38,7 @@ public sealed class McpClientRegistrationService
     }
 
     internal const string DynamicMarker = "orchardcore:remote-management:dynamic-mcp";
+    private const string RegisteredAtProperty = "orchardcore:remote-management:registered-at";
 
     /// <summary>Creates a separate public application with explicit consent and PKCE.</summary>
     public async Task<OpenIdApplicationDescriptor> RegisterAsync(McpClientRegistrationRequest request, CancellationToken cancellationToken)
@@ -101,6 +106,7 @@ public sealed class McpClientRegistrationService
         descriptor.Permissions.UnionWith(scopes.Where(scope => scope != "offline_access").Select(scope => OpenIddictConstants.Permissions.Prefixes.Scope + scope));
         descriptor.Properties["orchardcore:remote-management:client"] = JsonSerializer.SerializeToElement("mcp");
         descriptor.Properties[DynamicMarker] = JsonSerializer.SerializeToElement(true);
+        descriptor.Properties[RegisteredAtProperty] = JsonSerializer.SerializeToElement(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
         // Serialize the count and commit across tenant nodes using the configured distributed lock.
         var (locker, locked) = await _distributedLock.TryAcquireLockAsync("MCP_CLIENT_REGISTRATION", TimeSpan.FromSeconds(3), TimeSpan.FromMinutes(1));
@@ -111,7 +117,7 @@ public sealed class McpClientRegistrationService
 
         await using (locker)
         {
-            if (await _applicationManager.CountAsync(cancellationToken) >= _options.Value.MaximumApplications)
+            if (!await HasCapacityAsync(cancellationToken))
             {
                 throw new McpRegistrationCapacityException();
             }
@@ -121,6 +127,46 @@ public sealed class McpClientRegistrationService
         }
 
         return descriptor;
+    }
+
+    // Registration is anonymous, so a full registry must not lock out clients for good:
+    // make room by removing the registrations that were never authorized by a user.
+    private async Task<bool> HasCapacityAsync(CancellationToken cancellationToken)
+    {
+        var registered = 0;
+        var removable = new List<object>();
+        var oldest = DateTimeOffset.UtcNow.Subtract(s_unusedClientLifetime).ToUnixTimeSeconds();
+        await foreach (var application in _applicationManager.ListAsync(null, null, cancellationToken))
+        {
+            var properties = await _applicationManager.GetPropertiesAsync(application, cancellationToken);
+            if (!properties.TryGetValue(DynamicMarker, out var marker) || marker.ValueKind != JsonValueKind.True)
+            {
+                continue;
+            }
+
+            registered++;
+            if (!properties.TryGetValue(RegisteredAtProperty, out var registeredAt) || registeredAt.GetInt64() < oldest)
+            {
+                removable.Add(application);
+            }
+        }
+
+        if (registered < _options.Value.MaximumApplications)
+        {
+            return true;
+        }
+
+        foreach (var application in removable)
+        {
+            var id = await _applicationManager.GetIdAsync(application, cancellationToken);
+            if (!await _authorizationManager.FindByApplicationIdAsync(id, cancellationToken).AnyAsync())
+            {
+                await _applicationManager.DeleteAsync(application, cancellationToken);
+                registered--;
+            }
+        }
+
+        return registered < _options.Value.MaximumApplications;
     }
 }
 
