@@ -63,6 +63,7 @@ public class OwnedModuleEndpointMetadataTests
 
         AssertOperation(endpoints, "api/features", "GET", "ApiListFeatures", "Features", ["features"], "list", null, [200, 400, 401, 403]);
         AssertOperation(endpoints, "api/features/{featureId}", "GET", "ApiGetFeature", "Features", ["features"], "show", null, [200, 401, 403, 404]);
+        AssertOperation(endpoints, "api/features/{featureId}/preview", "GET", "ApiPreviewFeatureChange", "Features", ["features"], "preview", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/features/{featureId}:enable", "POST", "ApiEnableFeature", "Features", ["features"], "enable", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/features/{featureId}:disable", "POST", "ApiDisableFeature", "Features", ["features"], "disable", null, [200, 400, 401, 403, 404]);
 
@@ -136,6 +137,7 @@ public class OwnedModuleEndpointMetadataTests
         TenantManagementEndpoints.AddTenantManagementEndpoints(app);
         TenantManagementEndpoints.AddTenantSetupDiagnosticsEndpoints(app);
         FeatureManagementEndpoints.AddFeatureManagementEndpoints(app);
+        FeaturePreviewEndpoints.AddFeaturePreviewEndpoints(app);
         RecipeManagementEndpoints.AddRecipeManagementEndpoints(app);
         UserManagementEndpoints.AddUserManagementEndpoints(app);
         RoleManagementEndpoints.AddRoleManagementEndpoints(app);
