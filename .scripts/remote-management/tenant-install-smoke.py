@@ -38,6 +38,7 @@ help_result = subprocess.run([sys.executable, str(wrapper), str(state_path), 'te
                              text=True, capture_output=True, env=env, timeout=60)
 assert help_result.returncode == 0 and '--password-env' in help_result.stdout and '--connection-string-env' in help_result.stdout
 assert '--create-context' not in help_result.stdout
+assert '--request-timeout' in help_result.stdout
 before = pomi('context', 'list')
 prefix = 'Install' + secrets.token_hex(4)
 for mode in ('env', 'stdin'):
@@ -103,4 +104,9 @@ pomi('--context', enabled['context'], 'api', 'invoke', 'GET', 'api/features', st
 again = pomi('tenants', 'enable-remote-management', name, '--provision-client')
 assert again['context'] != enabled['context'] and again['clientId'] != enabled['clientId']
 pomi('--context', enabled['context'], 'api', 'invoke', 'GET', 'api/features', stored=True)
+reloaded = pomi('tenants', 'reload', name, output='human')
+assert f"Tenant '{name}' reloaded successfully." in reloaded and 'Action' not in reloaded and 'Next:' not in reloaded, reloaded
+disabled = pomi('tenants', 'disable-remote-management', name, '--force', output='human')
+assert f"Tenant '{name}' disabled for remote management successfully." in disabled, disabled
+assert 'tenants enable-remote-management ' + name in disabled, disabled
 print('Tenant install smoke passed: dynamic discovery, secret inputs, running tenant URLs, duplicate rejection, validation, partial failure/recovery, optional provisioning, application authentication, unchanged existing contexts.')

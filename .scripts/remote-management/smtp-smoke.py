@@ -149,6 +149,11 @@ with tempfile.TemporaryDirectory(prefix='smtp-cli-', dir=state_path.parent) as c
     config = {'isEnabled': True, 'defaultSender': 'admin@example.test',
         'deliveryMethod': 'SpecifiedPickupDirectory', 'pickupDirectoryLocation': name,
         'password': secrets.token_urlsafe(24)}
+    inline = subprocess.run([sys.executable, str(wrapper), str(state_path), 'settings', 'sections', 'update', 'smtp',
+                             '--body', json.dumps({'password': config['password']}), '--output', 'json'],
+                            capture_output=True, text=True, timeout=90,
+                            env={**os.environ, 'OC_FIXTURE_CONFIG_HOME': config_home, 'OC_FIXTURE_CLIENT_ID': 'cli-email'})
+    assert inline.returncode != 0 and '--body-file' in inline.stderr and config['password'] not in inline.stderr, inline
     updated = pomi('settings', 'sections', 'update', 'smtp', body=config, client='cli-email')
     assert updated['changed']
     assert 'password' not in updated['section']['values']
