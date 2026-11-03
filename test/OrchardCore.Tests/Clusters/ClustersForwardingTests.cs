@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using global::Microsoft.Extensions.Configuration;
 using global::Microsoft.Extensions.DependencyInjection;
 using global::Microsoft.Extensions.Hosting;
+using global::Microsoft.Extensions.Options;
 using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 using Yarp.ReverseProxy.Forwarder;
@@ -74,6 +75,31 @@ public class ClustersForwardingTests
         Assert.True(edge.TenantRan);
         Assert.Empty(edge.TenantProxyHeader);
         Assert.Empty(edge.Backend.Requests);
+    }
+
+    [Fact]
+    public async Task Forward_NoClustersConfiguration_RunsTheTenantWithoutTheHeader()
+    {
+        var headerAtTenant = "not-called";
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers[RequestHeaderNames.FromClustersProxy] = Secret;
+
+        var monitor = new Mock<IOptionsMonitor<ClustersOptions>>();
+        monitor.SetupGet(m => m.CurrentValue).Returns(new ClustersOptions());
+
+        var middleware = new ClustersRoutingMiddleware(
+            context =>
+            {
+                headerAtTenant = context.Request.Headers[RequestHeaderNames.FromClustersProxy].ToString();
+                return Task.CompletedTask;
+            },
+            Mock.Of<IShellHost>(),
+            Mock.Of<IRunningShellTable>(),
+            monitor.Object);
+
+        await middleware.Invoke(httpContext);
+
+        Assert.Empty(headerAtTenant);
     }
 
     [Fact]

@@ -30,10 +30,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-if (useTenantClusters)
-{
-    app.UseTenantClusterRouting();
-}
+// Also without this section, as this node may still receive forwarded requests, whose secret should not reach a tenant.
+app.UseTenantClusterRouting();
 
 app.UseOrchardCore();
 

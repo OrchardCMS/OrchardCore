@@ -44,7 +44,7 @@ app.MapReverseProxy(proxyPipeline =>
 
 Use the same `Program.cs` on all the nodes, including the backend nodes with `Enabled` set to `false`: the routing middleware removes the secret of the forwarded requests before running a tenant, and `AddTenantClusters()` also adds the service releasing the idle tenants.
 
-The `OrchardCore.Cms.Web` application is already wired this way, but only when the `OrchardCore:Clusters` section exists on start, so that a site without clustering has no reverse proxy. On this application, every node should define this section, with at least `"Enabled": false` on a backend node, and adding it to a running node requires a restart.
+The `OrchardCore.Cms.Web` application is already wired this way, but it only adds the reverse proxy when the `OrchardCore:Clusters` section exists on start, so that a site without clustering has no reverse proxy. The routing middleware doesn't need it, so this application always removes the secret. On this application, adding this section to a running node requires a restart, and `MaxIdleTime` needs this section on the backend nodes.
 
 ## Configuration
 
