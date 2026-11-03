@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,15 +30,10 @@ internal sealed class DeploymentOperationExecutor : IDeploymentOperationExecutor
         {
             var services = scope.ServiceProvider;
             var artifacts = services.GetRequiredService<DeploymentArtifactStore>();
+            var principal = await AuthorizeCallerAsync(services.GetRequiredService<IAuthorizationService>(), operation);
+            services.GetRequiredService<DeploymentExecutionContext>().User = principal;
             if (operation.Kind == DeploymentOperationKind.Export)
             {
-                var principal = operation.Identity?.Restore();
-                if (principal is null || DeploymentArtifactOwner.Get(principal) != operation.Owner
-                    || !await services.GetRequiredService<IAuthorizationService>().AuthorizeAsync(principal, DeploymentPermissions.Export))
-                {
-                    throw new UnauthorizedAccessException("The export has no authorized initiating identity.");
-                }
-                services.GetRequiredService<DeploymentExecutionContext>().User = principal;
                 var options = services.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>().Value.SerializerOptions;
                 var plan = JsonSerializer.Deserialize<DeploymentPlan>(operation.Payload, options);
                 if (plan is null || plan.DeploymentSteps.Any(step => step is UnknownDeploymentStep))
@@ -59,10 +56,35 @@ internal sealed class DeploymentOperationExecutor : IDeploymentOperationExecutor
                 using var package = await services.GetRequiredService<DeploymentPackageService>()
                     .StageAsync(lease.Stream, lease.Artifact.FileName, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
-                await services.GetRequiredService<IDeploymentManager>().ImportDeploymentPackageAsync(package.FileProvider);
+
+                // Recipe steps resolve the current user from the HTTP context, e.g. to set the owner of a content item.
+                var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                var previousUser = httpContext?.User;
+                if (httpContext is not null) { httpContext.User = principal; }
+                try
+                {
+                    await services.GetRequiredService<IDeploymentManager>().ImportDeploymentPackageAsync(package.FileProvider);
+                }
+                finally
+                {
+                    if (httpContext is not null) { httpContext.User = previousUser; }
+                }
             }
         });
         return artifactId;
+    }
+
+    // The permissions of the caller may have changed since the operation was accepted.
+    internal static async Task<ClaimsPrincipal> AuthorizeCallerAsync(IAuthorizationService authorization, DeploymentOperation operation)
+    {
+        var principal = operation.Identity?.Restore();
+        var permission = operation.Kind == DeploymentOperationKind.Export ? DeploymentPermissions.Export : DeploymentPermissions.Import;
+        if (principal is null || DeploymentArtifactOwner.Get(principal) != operation.Owner
+            || !await authorization.AuthorizeAsync(principal, permission))
+        {
+            throw new UnauthorizedAccessException("The operation has no authorized initiating identity.");
+        }
+        return principal;
     }
 }
 
