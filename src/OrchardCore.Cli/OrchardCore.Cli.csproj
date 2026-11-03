@@ -21,6 +21,8 @@
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PublishAot>true</PublishAot>
+    <!-- A native binary has no use for XML documentation, and SDK 11 fails the publish looking for it in the output folder. -->
+    <PublishDocumentationFiles>false</PublishDocumentationFiles>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
