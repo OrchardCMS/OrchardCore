@@ -31,6 +31,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
 public class RateLimiterMiddlewareTests
 {
+    private const string TestUserHeaderName = "X-Test-User";
+
     [Fact]
     public async Task Not_CountStaticAssetsAgainstGlobalRateLimit_Succeeds()
     {
@@ -62,6 +64,86 @@ public class RateLimiterMiddlewareTests
         Assert.Equal("tenant-response", await firstTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.Equal(HttpStatusCode.TooManyRequests, secondTenantResponse.StatusCode);
         Assert.Equal(HttpStatusCode.OK, assetAfterLimitResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Apply_GlobalPolicyPerSignedInUserOtherwisePerIpAddress_Succeeds()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: null,
+            enabledPolicies:
+            [
+                CreateGlobalFixedWindowPolicy("Global", 1, 60),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        // All the requests share the same IP address, like the users of an office behind a single gateway.
+        var firstUserResponse = await GetAsUserAsync(client, "/tenant/limited", "first-user");
+        var firstUserRejectedResponse = await GetAsUserAsync(client, "/tenant/limited", "first-user");
+        var secondUserResponse = await GetAsUserAsync(client, "/tenant/limited", "second-user");
+        var anonymousResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var anonymousRejectedResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstUserResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, firstUserRejectedResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, secondUserResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, anonymousResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, anonymousRejectedResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Not_CountExcludedPathsAgainstGlobalPolicies_Succeeds()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: options => options.ExcludePathFromGlobalPolicies("/tenant/other"),
+            enabledPolicies:
+            [
+                CreateGlobalFixedWindowPolicy("Global", 1, 60),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        for (var i = 0; i < 3; i++)
+        {
+            var excludedResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+
+            Assert.Equal(HttpStatusCode.OK, excludedResponse.StatusCode);
+        }
+
+        var firstLimitedResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var secondLimitedResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstLimitedResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, secondLimitedResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Apply_EndpointPoliciesToPathsExcludedFromGlobalPolicies_Succeeds()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: options => options.ExcludePathFromGlobalPolicies("/tenant/other"),
+            enabledPolicies:
+            [
+                CreateEndpointFixedWindowPolicy("OtherPolicy", "/tenant/other", 1, 60),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        var firstResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+        var secondResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, secondResponse.StatusCode);
     }
 
     [Fact]
@@ -97,6 +179,39 @@ public class RateLimiterMiddlewareTests
         Assert.Equal(HttpStatusCode.TooManyRequests, secondTenantResponse.StatusCode);
         Assert.Equal(HttpStatusCode.OK, otherTenantResponse.StatusCode);
         Assert.Equal("other-tenant-response", await otherTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task RouteRejectionHandler_AnyLimiterRejectsRoute_WritesResponse()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: options =>
+            {
+                options.AddRouteRejectionHandler("TenantLimitedRoute", static async (context, cancellationToken) =>
+                {
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.HttpContext.Response.WriteAsync("slow_down", cancellationToken);
+                });
+            },
+            enabledPolicies:
+            [
+                CreateGlobalFixedWindowPolicy("Global", 1, 60),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        var firstTenantResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var secondTenantResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var otherTenantResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstTenantResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, secondTenantResponse.StatusCode);
+        Assert.Equal("slow_down", await secondTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        Assert.Equal(HttpStatusCode.TooManyRequests, otherTenantResponse.StatusCode);
+        Assert.Empty(await otherTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -240,6 +355,18 @@ public class RateLimiterMiddlewareTests
                     });
 
                     app.UseRouting();
+
+                    // Signs in the user named by the test header, like the authentication middleware that runs before the rate limiter.
+                    app.Use((context, next) =>
+                    {
+                        if (context.Request.Headers.TryGetValue(TestUserHeaderName, out var userId))
+                        {
+                            context.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId.ToString())], "Test"));
+                        }
+
+                        return next(context);
+                    });
+
                     app.UseRateLimiter();
 
                     app.UseEndpoints(endpoints =>
@@ -350,6 +477,14 @@ public class RateLimiterMiddlewareTests
             });
 
         return await builder.StartAsync(cancellationToken);
+    }
+
+    private static Task<HttpResponseMessage> GetAsUserAsync(HttpClient client, string path, string userId)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, path);
+        request.Headers.Add(TestUserHeaderName, userId);
+
+        return client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> enabledPolicies)

@@ -14,17 +14,38 @@
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
     string localizedTypeDisplayName = D[typeDisplayName, DataLocalizationContext.ContentType];
     var canList = false;
+    var canListContentType = false;
+    var isListable = contentTypeDefinition?.IsListable() == true;
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+    var hasReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl);
 
     if (User is not null)
     {
         var listableTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(definition => definition.IsListable());
         canList = await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, listableTypes, ContentManager);
+
+        if (isListable && !hasReturnUrl)
+        {
+            canListContentType = await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(
+                User,
+                CommonPermissions.ListContent,
+                [contentTypeDefinition],
+                ContentManager);
+        }
     }
 }
 
 <zone Name="Title">
     <breadcrumb name="ContentsEdit" title="@T["Edit {0}", localizedTypeDisplayName]">
         <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="" link-enabled="@canList">@T["Manage Content"]</breadcrumb-item>
+        @if (isListable && hasReturnUrl)
+        {
+            <breadcrumb-item id="ContentType" url="@returnUrl">@localizedTypeDisplayName</breadcrumb-item>
+        }
+        else if (isListable)
+        {
+            <breadcrumb-item id="ContentType" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="@contentItem.ContentType" link-enabled="@canListContentType">@localizedTypeDisplayName</breadcrumb-item>
+        }
     </breadcrumb>
 </zone>
 

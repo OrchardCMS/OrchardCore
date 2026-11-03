@@ -43,7 +43,7 @@ namespace OrchardCore.Scripting.JavaScript;
 /// </remarks>
 public sealed class JavaScriptEngine : IScriptingEngine
 {
-    private static readonly MemoryCacheEntryOptions ScriptCacheEntryOptions = new MemoryCacheEntryOptions()
+    private static readonly MemoryCacheEntryOptions s_scriptCacheEntryOptions = new MemoryCacheEntryOptions()
         .SetSlidingExpiration(TimeSpan.FromMinutes(30))
         ;
 
@@ -215,7 +215,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
         => _memoryCache.GetOrCreate(
             new PreparedScriptCacheKey(script),
             static entry => Engine.PrepareScript(((PreparedScriptCacheKey)entry.Key).Script),
-            ScriptCacheEntryOptions);
+            s_scriptCacheEntryOptions);
 
     private static JavaScriptScope GetJavaScriptScope(IScriptingScope scope)
     {

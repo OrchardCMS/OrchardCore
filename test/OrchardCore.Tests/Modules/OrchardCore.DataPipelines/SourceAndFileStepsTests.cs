@@ -269,6 +269,57 @@ public sealed class SourceAndFileStepsTests
         Assert.Contains(description.Issues, issue => issue.Message.Contains("Age", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("Name", DataFilterOperator.GreaterThan)]
+    [InlineData("Id", DataFilterOperator.Contains)]
+    [InlineData("Joined", DataFilterOperator.StartsWith)]
+    [InlineData("Id", DataFilterOperator.InLastDays)]
+    public async Task DataSource_FilterOperatorThatDoesNotApplyToTheField_ReportsError(string field, DataFilterOperator filterOperator)
+    {
+        // Arrange
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Filters = [new DataSourceFilter { Field = field, Operator = filterOperator, Values = ["1"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+
+        // Act
+        var description = await host.DescribeAsync();
+
+        // Assert
+        var issue = Assert.Single(description.Issues);
+        Assert.Equal(DataPipelineIssueSeverity.Error, issue.Severity);
+        Assert.Contains(field, issue.Message, StringComparison.Ordinal);
+        Assert.Contains(filterOperator.ToString(), issue.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("Name", DataFilterOperator.StartsWith)]
+    [InlineData("Id", DataFilterOperator.Between)]
+    [InlineData("Joined", DataFilterOperator.InLastDays)]
+    [InlineData("Joined", DataFilterOperator.IsNotEmpty)]
+    public async Task DataSource_FilterOperatorThatAppliesToTheField_ReportsNoIssue(string field, DataFilterOperator filterOperator)
+    {
+        // Arrange
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Filters = [new DataSourceFilter { Field = field, Operator = filterOperator, Values = ["1"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+
+        // Act
+        var description = await host.DescribeAsync();
+
+        // Assert
+        Assert.Empty(description.Issues);
+    }
+
     [Fact]
     public async Task DataSource_MostRowsWithFilterTheSourceIgnores_ReadsUpToMostMatchingRows()
     {
@@ -312,6 +363,51 @@ public sealed class SourceAndFileStepsTests
         // Assert
         Assert.Equal([["Cy"]], host.Output().Rows);
         Assert.Equal("2026-03-01", Assert.Single(source.Queries).Parameters["Since"]);
+    }
+
+    [Theory]
+    [InlineData(DataFilterOperator.In, new[] { "Ada", "Cy" })]
+    [InlineData(DataFilterOperator.NotIn, new[] { "Bob" })]
+    public async Task DataSource_ListPlaceholder_GivesEachValueOfTheParameter(DataFilterOperator filterOperator, string[] expected)
+    {
+        // Arrange
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Fields = ["Name"],
+            Filters = [new DataSourceFilter { Field = "Name", Operator = filterOperator, Values = ["{Parameter:Names}"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+        host.Run.Parameters["Names"] = "Ada, Cy";
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(expected, host.Output().Rows.Select(row => (string)row[0]));
+    }
+
+    [Fact]
+    public async Task DataSource_ListValueWithAComma_IsOneValue()
+    {
+        // Arrange: a value saved from the editor's "Ada, \"Bob, Jr\"" keeps its comma.
+        var source = new InMemoryDataSource().Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Fields = ["Name"],
+            Filters = [new DataSourceFilter { Field = "Name", Operator = DataFilterOperator.In, Values = ["Ada", "Bob, Jr"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal([["Ada"]], host.Output().Rows);
     }
 
     [Fact]

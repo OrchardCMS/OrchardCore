@@ -194,6 +194,11 @@ public sealed class BackgroundTasksTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "BackgroundTasksTests";
 }
 
+public sealed class WorkflowsDesignerTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "WorkflowsDesignerTests";
+}
+
 public sealed class PartToggleEditorTestsFixture : CmsRecipeFixture
 {
     protected override string RecipeName => "PartToggleEditorTests";

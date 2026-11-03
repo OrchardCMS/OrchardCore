@@ -180,6 +180,8 @@ public sealed class QueriesDataSource : IDataSource
         {
             Group = query.Source,
             Description = query.ReturnContentItems ? S["A {0} query that returns content items.", query.Source] : S["A {0} query.", query.Source],
+            // The owner of a content item is a user.
+            References = query.ReturnContentItems ? [new("Users", "Users", "UserId")] : [],
         };
     }
 
@@ -190,7 +192,7 @@ public sealed class QueriesDataSource : IDataSource
             new("ContentItemVersionId", S["Version id"], DataFieldType.Text) { IsIdentifier = true },
             new("ContentType", S["Content type"], DataFieldType.Text),
             new("DisplayText", S["Display text"], DataFieldType.Text),
-            new("Owner", S["Owner"], DataFieldType.Text) { IsIdentifier = true },
+            new("Owner", S["Owner"], DataFieldType.Text) { IsIdentifier = true, References = [new("Users", "Users", "UserId")] },
             new("Author", S["Author"], DataFieldType.Text),
             new("Published", S["Published"], DataFieldType.Boolean),
             new("Latest", S["Latest"], DataFieldType.Boolean),

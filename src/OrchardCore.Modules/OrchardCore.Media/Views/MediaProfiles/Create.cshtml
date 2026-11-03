@@ -9,7 +9,7 @@
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="ocat-wrapper form-g" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <input asp-for="Name" class="form-control" autofocus />
@@ -110,20 +110,25 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper form-g">
-        <div class="ocat-end-offset">
-            <div class="btn-group">
-                <button type="submit" name="submit" class="btn btn-success save">@T["Save"]</button>
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="visually-hidden">@T["Toggle Dropdown"]</span>
-                </button>
-                <div class="dropdown-menu">
-                    <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
-                </div>
+    <div class="action-bar-bottom">
+        <div class="btn-group"
+             role="group"
+             aria-label="@T["Save actions"]"
+             data-action-group="oc-media-profile-save-action"
+             data-action-default="Save"
+             data-label-default="@T["Save"]"
+             data-action-alt="SaveAndContinue"
+             data-label-alt="@T["Save and continue"]">
+            <button type="submit" value="Save" name="submit" class="btn btn-success save">@T["Save"]</button>
+            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
             </div>
-
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         </div>
+
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
 

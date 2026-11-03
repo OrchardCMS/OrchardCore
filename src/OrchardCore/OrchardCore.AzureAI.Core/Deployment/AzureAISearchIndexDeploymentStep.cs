@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.AzureAI.Recipes;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
@@ -6,15 +7,13 @@ namespace OrchardCore.AzureAI.Deployment;
 
 public class AzureAISearchIndexDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AzureAISearchIndexDeploymentStep>("Search");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<AzureAISearchIndexDeploymentStep>("Azure AI Search Indexes");
+    public override string Name => AzureAISearchIndexSettingsStep.Name;
 
-    public AzureAISearchIndexDeploymentStep()
-    {
-        Name = AzureAISearchIndexSettingsStep.Name;
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Search;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => AzureAILocalizationSources.AzureAISearchIndexes;
 
     public bool IncludeAll { get; set; } = true;
 

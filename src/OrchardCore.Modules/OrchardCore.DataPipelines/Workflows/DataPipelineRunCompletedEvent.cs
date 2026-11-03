@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -9,20 +10,26 @@ namespace OrchardCore.DataPipelines.Workflows;
 /// Starts or resumes a workflow when a run of a data pipeline ends, such as to notify someone when a run fails. The run
 /// is the last result.
 /// </summary>
-public sealed class DataPipelineRunCompletedEvent : EventActivity
+public sealed class DataPipelineRunCompletedEvent : EventActivity, IActivityDescription
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
 
-    public DataPipelineRunCompletedEvent(IStringLocalizer<DataPipelineRunCompletedEvent> localizer)
+    public DataPipelineRunCompletedEvent(IStringLocalizerFactory localizerFactory, IStringLocalizer<DataPipelineRunCompletedEvent> localizer)
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
     public override string Name => nameof(DataPipelineRunCompletedEvent);
 
-    public override LocalizedString DisplayText => S["Data Pipeline Run Completed Event"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DataPipelineRunCompletedEvent>("Data Pipeline Run Completed Event");
 
-    public override LocalizedString Category => S["Data"];
+    public static LocalizationSource CategoryName => DataPipelinesLocalizationSources.Data;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// Gets or sets the pipeline whose runs trigger the event, or <see langword="null"/> for every pipeline.

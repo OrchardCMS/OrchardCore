@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Localization;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -10,7 +11,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tenants.Workflows.Activities;
 
-public class CreateTenantTask : TenantTask
+public class CreateTenantTask : TenantTask, IActivityProvidedValues, IActivityDescription
 {
     private readonly ITenantValidator _tenantValidator;
 
@@ -20,17 +21,18 @@ public class CreateTenantTask : TenantTask
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
         ITenantValidator tenantValidator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<CreateTenantTask> localizer)
-        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
+        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizerFactory, localizer)
     {
         _tenantValidator = tenantValidator;
     }
 
     public override string Name => nameof(CreateTenantTask);
 
-    public override LocalizedString Category => S["Tenant"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CreateTenantTask>("Create Tenant Task");
 
-    public override LocalizedString DisplayText => S["Create Tenant Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public WorkflowExpression<string> Description
     {
@@ -88,6 +90,11 @@ public class CreateTenantTask : TenantTask
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
+
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("any", LocalizationSource.Create<CreateTenantTask>("The settings of the tenant it created, or the validation errors when it failed."))];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

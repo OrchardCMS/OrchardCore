@@ -18,8 +18,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
     // Capture the original values once at process start, then clear the env vars so
     // ShellSettingsManager can't re-apply them with highest priority — each host gets
     // its per-fixture connection string via tenants.json and builder.Configuration instead.
-    private static readonly string _originalConnectionString = CaptureAndClear("OrchardCore__ConnectionString");
-    private static readonly string _originalDatabaseProvider = CaptureAndClear("OrchardCore__DatabaseProvider");
+    private static readonly string s_originalConnectionString = CaptureAndClear("OrchardCore__ConnectionString");
+    private static readonly string s_originalDatabaseProvider = CaptureAndClear("OrchardCore__DatabaseProvider");
 
     private static string CaptureAndClear(string variable)
     {
@@ -41,16 +41,21 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
     public static string CurrentConnectionString => s_currentConnectionString;
 
+    internal static bool IsPostgresConfigured =>
+        s_originalDatabaseProvider == "Postgres" && !string.IsNullOrEmpty(s_originalConnectionString);
+
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
+    private readonly string _postgresConnectionString;
 
     public string ServerAddress { get; }
 
-    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector)
+    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector, string postgresConnectionString = null)
     {
         _app = app;
         ServerAddress = serverAddress;
         _logCollector = logCollector;
+        _postgresConnectionString = postgresConnectionString;
     }
 
     /// <summary>
@@ -84,7 +89,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
         builder.Services.AddSingleton<IModuleNamesProvider, TestThemeModuleNamesProvider>();
 
-        ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        var postgresConnectionString = ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
         configure?.Invoke(builder);
 
         var app = builder.Build();
@@ -93,7 +98,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
+        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector, postgresConnectionString);
     }
 
     public static async Task<OrchardTestServer> StartMvcAsync(string contentRoot, string appDataPath)
@@ -130,7 +135,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
     private sealed class TestThemeModuleNamesProvider : IModuleNamesProvider
     {
-        public IEnumerable<string> GetModuleNames() => ["AdminThemeSample"];
+        public IEnumerable<string> GetModuleNames() => ["AdminThemeSample", "WorkflowsSample"];
     }
 
     public void AssertNoLoggedIssues()
@@ -169,18 +174,40 @@ public sealed class OrchardTestServer : IAsyncDisposable
             && record.Message.Contains("The OpenID client settings are invalid"))
         // The background tasks tests run a task that fails on purpose to check how its error is shown.
         || (record.Category == "OrchardCore.Modules.ModularBackgroundService"
-            && record.Message.Contains(Tests.Cms.FailingTestBackgroundTask.TaskName));
+            && record.Message.Contains(Tests.Cms.FailingTestBackgroundTask.TaskName))
+        // The Transient failure activity of the WorkflowsSample test module faults its instance on purpose.
+        || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
+            && record.Exception is WorkflowsSample.TransientFailureException)
+        // The script of the Script errors workflow fails on purpose.
+        || (record.Category == "OrchardCore.Workflows.Evaluators.JavaScriptWorkflowScriptEvaluator"
+            && record.Message.Contains("input('Order').Total"))
+        || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
+            && record.Exception is OrchardCore.Workflows.Models.WorkflowScriptException
+            && record.Exception.Message.Contains("reading 'Total'"));
 
     public async ValueTask DisposeAsync()
     {
         if (_app is not null)
         {
-            await _app.StopAsync();
-            await _app.DisposeAsync();
+            try
+            {
+                await _app.StopAsync();
+                await _app.DisposeAsync();
+            }
+            finally
+            {
+                if (_postgresConnectionString is not null)
+                {
+                    // Npgsql pools outlive hosts. Release this fixture's idle connections
+                    // without clearing pools belonging to other, still-running fixtures.
+                    using var connection = new Npgsql.NpgsqlConnection(_postgresConnectionString);
+                    Npgsql.NpgsqlConnection.ClearPool(connection);
+                }
+            }
         }
     }
 
-    private static void ConfigureServices(
+    private static string ConfigureServices(
         WebApplicationBuilder builder,
         string appDataPath,
         string instanceId,
@@ -203,19 +230,23 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // Ensure the per-fixture App_Data path exists before shell initialization persists settings.
         Directory.CreateDirectory(resolvedAppDataPath);
 
+        // Configure a per-fixture temporary directory, as the default unique one logs a warning.
+        builder.Configuration["OrchardCore:TempDirectory:Path"] = Path.Combine(resolvedAppDataPath, "Temp");
+
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
-        if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
+        string connectionString = null;
+        if (!string.IsNullOrEmpty(s_originalConnectionString) && !string.IsNullOrEmpty(s_originalDatabaseProvider))
         {
-            var connectionString = _originalConnectionString;
+            connectionString = s_originalConnectionString;
 
             if (!string.IsNullOrEmpty(instanceId))
             {
-                var dbName = ExtractDatabaseName(_originalConnectionString);
+                var dbName = ExtractDatabaseName(s_originalConnectionString);
                 if (dbName is not null)
                 {
-                    connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
-                    EnsureCleanDatabase(connectionString, _originalDatabaseProvider);
+                    connectionString = ReplaceDatabaseName(s_originalConnectionString, $"{dbName}_{instanceId}");
+                    EnsureCleanDatabase(connectionString, s_originalDatabaseProvider);
                 }
             }
 
@@ -229,7 +260,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
                 {
                     ["Default"] = new Dictionary<string, string>
                     {
-                        ["DatabaseProvider"] = _originalDatabaseProvider,
+                        ["DatabaseProvider"] = s_originalDatabaseProvider,
                         ["ConnectionString"] = connectionString,
                     },
                 }));
@@ -237,7 +268,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             // Override the env-var-sourced configuration keys so ShellSettingsManager
             // doesn't re-apply the original values with highest priority.
             builder.Configuration["OrchardCore:ConnectionString"] = connectionString;
-            builder.Configuration["OrchardCore:DatabaseProvider"] = _originalDatabaseProvider;
+            builder.Configuration["OrchardCore:DatabaseProvider"] = s_originalDatabaseProvider;
         }
 
         // Disable YesSql concurrency checks during setup. Each recipe step runs in a new
@@ -247,6 +278,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Logging.AddFilter<FakeLoggerProvider>(level => level >= LogLevel.Warning);
         builder.Logging.AddProvider(loggerProvider);
+
+        return IsPostgresConfigured && !string.IsNullOrEmpty(instanceId) ? connectionString : null;
     }
 
     /// <summary>

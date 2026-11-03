@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents;
+using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Liquid.Fields;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Security.Permissions;
@@ -14,6 +15,116 @@ namespace OrchardCore.Tests.Apis.ContentManagement;
 
 public class LiquidContentAuthorizationTests
 {
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task ContentApi_FacebookPluginContent_RequiresPermissionForCreationAndUpdates(
+        bool embedded,
+        bool recursivelyEmbedded)
+    {
+        var permissionsContext = new PermissionsContext
+        {
+            UsePermissionsContext = true,
+            AuthorizedPermissions =
+            [
+                CommonPermissions.AccessContentApi,
+                CommonPermissions.EditContent,
+                CommonPermissions.PublishContent,
+            ],
+        };
+        using var context = new SiteContext().WithPermissionsContext(permissionsContext);
+        await context.InitializeAsync();
+        await SetContentDefinitionsAsync(context);
+
+        var plugin = new ContentItem
+        {
+            ContentType = "FacebookPluginWidget",
+            DisplayText = "Facebook plugin",
+        };
+        plugin.Weld(new FacebookPluginPart { Liquid = "{{ ContentItem.DisplayText }}" });
+        var contentItem = embedded ? CreateContainer(plugin, recursivelyEmbedded) : plugin;
+
+        var unauthorizedCreateResponse = await context.Client.PostAsJsonAsync("api/content", contentItem);
+        Assert.Equal(HttpStatusCode.Unauthorized, unauthorizedCreateResponse.StatusCode);
+
+        if (embedded)
+        {
+            var safeCreateResponse = await context.Client.PostAsJsonAsync("api/content", CreateContainer());
+            safeCreateResponse.EnsureSuccessStatusCode();
+            var safeContainer = await safeCreateResponse.Content.ReadAsAsync<ContentItem>();
+            ((JsonObject)safeContainer.Content)["Embedded"] =
+                ((JsonObject)contentItem.Content)["Embedded"]?.DeepClone();
+
+            var forgedUpdateResponse = await context.Client.PostAsJsonAsync("api/content", safeContainer);
+            Assert.Equal(HttpStatusCode.Unauthorized, forgedUpdateResponse.StatusCode);
+
+            await context.UsingTenantScopeAsync(async scope =>
+            {
+                var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                var storedContainer = await contentManager.GetAsync(
+                    safeContainer.ContentItemId,
+                    VersionOptions.Latest);
+
+                Assert.NotNull(storedContainer);
+                Assert.False(((JsonObject)storedContainer.Content).ContainsKey("Embedded"));
+            });
+        }
+
+        permissionsContext.AuthorizedPermissions =
+        [
+            CommonPermissions.AccessContentApi,
+            CommonPermissions.EditContent,
+            CommonPermissions.PublishContent,
+            LiquidPermissions.ManageLiquidTemplates,
+        ];
+
+        var authorizedCreateResponse = await context.Client.PostAsJsonAsync("api/content", contentItem);
+        authorizedCreateResponse.EnsureSuccessStatusCode();
+        var createdItem = await authorizedCreateResponse.Content.ReadAsAsync<ContentItem>();
+        createdItem.DisplayText = "Authorized update";
+
+        var authorizedUpdateResponse = await context.Client.PostAsJsonAsync("api/content", createdItem);
+        authorizedUpdateResponse.EnsureSuccessStatusCode();
+        var updatedItem = await authorizedUpdateResponse.Content.ReadAsAsync<ContentItem>();
+        var originalContent = ((JsonObject)updatedItem.Content).ToJsonString();
+
+        permissionsContext.AuthorizedPermissions =
+        [
+            CommonPermissions.AccessContentApi,
+            CommonPermissions.EditContent,
+            CommonPermissions.PublishContent,
+        ];
+        updatedItem.DisplayText = "Unauthorized update";
+        if (embedded)
+        {
+            Assert.True(plugin.TryGet<FacebookPluginPart>(out var pluginPart));
+            pluginPart.Liquid = "{{ forged }}";
+            pluginPart.Apply();
+            ((JsonObject)updatedItem.Content)["Embedded"] =
+                ((JsonObject)CreateContainer(plugin, recursivelyEmbedded).Content)["Embedded"]?.DeepClone();
+        }
+        else
+        {
+            Assert.True(updatedItem.TryGet<FacebookPluginPart>(out var part));
+            part.Liquid = "{{ forged }}";
+            part.Apply();
+        }
+
+        var unauthorizedUpdateResponse = await context.Client.PostAsJsonAsync("api/content", updatedItem);
+        Assert.Equal(HttpStatusCode.Unauthorized, unauthorizedUpdateResponse.StatusCode);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+            var storedItem = await contentManager.GetAsync(updatedItem.ContentItemId, VersionOptions.Latest);
+
+            Assert.NotNull(storedItem);
+            Assert.Equal("Authorized update", storedItem.DisplayText);
+            Assert.Equal(originalContent, ((JsonObject)storedItem.Content).ToJsonString());
+        });
+    }
+
     [Fact]
     public async Task ContentApi_LiquidContent_RequiresPermissionBeforeAndAfterMerge()
     {
@@ -279,6 +390,12 @@ public class LiquidContentAuthorizationTests
                 .Creatable()
                 .Draftable()
                 .Versionable());
+
+            await contentDefinitionManager.AlterTypeDefinitionAsync("FacebookPluginWidget", type => type
+                .Creatable()
+                .Draftable()
+                .Versionable()
+                .WithPart(nameof(FacebookPluginPart)));
         });
     }
 }

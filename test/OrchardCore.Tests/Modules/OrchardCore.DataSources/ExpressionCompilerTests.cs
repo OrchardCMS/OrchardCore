@@ -1,5 +1,6 @@
 using OrchardCore.DataSources;
 using OrchardCore.DataSources.Expressions;
+using OrchardCore.DataSources.Operations;
 using ExpressionCompiler = OrchardCore.DataSources.Expressions.ExpressionCompiler;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.DataSources;
@@ -232,6 +233,82 @@ public sealed class ExpressionCompilerTests
         Assert.Equal(8m / 3, value);
     }
 
+    // An aggregate formula computed as the rows of its groups arrive, with DataAggregator, gives the value it gives over
+    // the rows of each group, without keeping them.
+    [Theory]
+    [InlineData("SUM([Price] * [Quantity]) / COUNT()")]
+    [InlineData("IF(COUNT([Price]) > 1, MAX([Price]) - MIN([Price]), AVG([Quantity]))")]
+    [InlineData("COUNTD([Name]) + MEDIAN([Quantity])")]
+    [InlineData("[Total] / SUM([Quantity])")]
+    public async Task Compile_AggregateFormula_ComputedAsRowsArrive_MatchesTheGroup(string formula)
+    {
+        // Arrange
+        object[][] rows =
+        [
+            ["A", 2m, 1L],
+            ["B", 3m, 2L],
+            ["A", null, 4L],
+            ["C", 6m, 7L],
+        ];
+        var compiled = Compile(formula);
+        var context = new ExpressionContext();
+
+        // Each row carries its group, then the argument of each aggregate of the formula.
+        var arguments = rows
+            .Select(row =>
+            {
+                context.Row = row;
+
+                return new object[] { GroupOf(row) }.Concat(compiled.Aggregates.Select(aggregate => aggregate.Argument(context))).ToArray();
+            })
+            .ToList();
+        var measures = compiled.Aggregates.Select((aggregate, index) => new DataMeasure(aggregate.Function, index + 1)).ToArray();
+        var directory = Path.Combine(Path.GetTempPath(), "oc-expression-aggregates", Guid.NewGuid().ToString("n"));
+
+        // Act
+        var groups = await DataAggregator.AggregateAsync(arguments.ToAsync(), [0], measures, new(directory, 1), TestContext.Current.CancellationToken).ToListAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(compiled.CanAggregateAsRowsArrive);
+        Assert.Equal(2, groups.Count);
+
+        foreach (var group in groups)
+        {
+            var streamed = compiled.Evaluate(new ExpressionContext { AggregateValues = group[1..] });
+            var expected = compiled.Evaluate(new ExpressionContext { Group = rows.Where(row => GroupOf(row) == (string)group[0]).ToArray() });
+
+            Assert.Equal(expected, streamed);
+        }
+    }
+
+    [Fact]
+    public void Compile_AggregateFunctionThatNeedsAllValues_CannotAggregateAsRowsArrive()
+    {
+        // Arrange
+        var product = ExpressionFunction.CreateAggregate("PRODUCT", "PRODUCT(number)", "Multiplies the values of the group.", true, _ => DataFieldType.Decimal, values => values.OfType<decimal>().Aggregate(1m, (total, value) => total * value));
+        var catalog = new ExpressionFunctionCatalog([new BuiltInExpressionFunctionProvider(), new TestFunctionProvider(product)]);
+
+        // Act
+        var compiled = ExpressionCompiler.Compile("PRODUCT([Price]) + SUM([Price])", new TestScope(), catalog, _localizer);
+
+        // Assert
+        Assert.True(compiled.IsAggregate);
+        Assert.False(compiled.CanAggregateAsRowsArrive);
+        Assert.Equal([DataAggregate.None, DataAggregate.Sum], compiled.Aggregates.Select(aggregate => aggregate.Function));
+        Assert.Equal(11m, compiled.Evaluate(new ExpressionContext { Group = [["A", 2m, 1L], ["B", 3m, 1L]] }));
+    }
+
+    [Fact]
+    public void Compile_RowFormula_HasNoAggregates()
+    {
+        // Act
+        var compiled = Compile("[Price] * [Quantity]");
+
+        // Assert
+        Assert.Empty(compiled.Aggregates);
+        Assert.False(compiled.CanAggregateAsRowsArrive);
+    }
+
     [Fact]
     public void Compile_AggregateFunctions_IgnoreMissingValues()
     {
@@ -283,6 +360,8 @@ public sealed class ExpressionCompilerTests
         Assert.Equal(9223372036854775808m, value);
     }
 
+    private static string GroupOf(object[] row) => row[0] is "C" ? "C" : "AB";
+
     private static object Evaluate(string formula)
     {
         return Compile(formula).Evaluate(new ExpressionContext
@@ -306,8 +385,31 @@ public sealed class ExpressionCompilerTests
             ["Quantity"] = (DataFieldType.Integer, 2),
         };
 
+        // A calculated field that aggregates, which a formula reads like a field.
+        private static readonly CompiledExpression _total = ExpressionCompiler.Compile("SUM([Price] * [Quantity])", new TestScope(withTotal: false), _localizer);
+
+        private readonly bool _withTotal;
+
+        public TestScope(bool withTotal = true)
+        {
+            _withTotal = withTotal;
+        }
+
         public bool TryResolve(string key, out ExpressionFieldBinding binding)
         {
+            if (_withTotal && key == "Total")
+            {
+                binding = new ExpressionFieldBinding
+                {
+                    Key = key,
+                    DataType = _total.DataType,
+                    Aggregate = _total,
+                    References = _total.References,
+                };
+
+                return true;
+            }
+
             if (!_fields.TryGetValue(key, out var field))
             {
                 binding = null;
@@ -324,5 +426,17 @@ public sealed class ExpressionCompilerTests
 
             return true;
         }
+    }
+
+    private sealed class TestFunctionProvider : IExpressionFunctionProvider
+    {
+        private readonly ExpressionFunction _function;
+
+        public TestFunctionProvider(ExpressionFunction function)
+        {
+            _function = function;
+        }
+
+        public IEnumerable<ExpressionFunction> GetFunctions() => [_function];
     }
 }

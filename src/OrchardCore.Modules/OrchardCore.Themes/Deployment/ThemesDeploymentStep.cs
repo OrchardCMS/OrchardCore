@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,8 @@ namespace OrchardCore.Themes.Deployment;
 /// </summary>
 public class ThemesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<ThemesDeploymentStep>("Theming");
+    public override string Name => "Themes";
 
-    public ThemesDeploymentStep()
-    {
-        Name = "Themes";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => ThemesLocalizationSources.Theming;
 }

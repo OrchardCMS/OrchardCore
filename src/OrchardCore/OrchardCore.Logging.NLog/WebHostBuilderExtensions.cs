@@ -41,7 +41,7 @@ internal static class AspNetExtensions
         var fileName = Path.Combine(env.ContentRootPath, configFileRelativePath);
 
         LogManager.Setup()
-            .SetupLogFactory(factory => factory.AddCallSiteHiddenAssembly(typeof(AspNetExtensions).GetType().Assembly))
+            .SetupLogFactory(factory => factory.AddCallSiteHiddenAssembly(typeof(AspNetExtensions).Assembly))
             .SetupExtensions(ext =>
             {
                 ext.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);

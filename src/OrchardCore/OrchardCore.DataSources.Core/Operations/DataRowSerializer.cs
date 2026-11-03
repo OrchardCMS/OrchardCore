@@ -20,6 +20,7 @@ internal static class DataRowSerializer
     private const byte Single = 11;
     private const byte Int16 = 12;
     private const byte Byte = 13;
+    private const byte PartialAggregate = 14;
 
     public static void Write(BinaryWriter writer, object[] row)
     {
@@ -131,6 +132,14 @@ internal static class DataRowSerializer
                 writer.Write(number);
                 break;
 
+            case DataPartialAggregate part:
+                writer.Write(PartialAggregate);
+                writer.Write(part.Count);
+                WriteValue(writer, part.Sum);
+                WriteValue(writer, part.Min);
+                WriteValue(writer, part.Max);
+                break;
+
             default:
                 writer.Write(Text);
                 writer.Write(DataValues.ToText(value) ?? string.Empty);
@@ -158,6 +167,13 @@ internal static class DataRowSerializer
             Single => reader.ReadSingle(),
             Int16 => reader.ReadInt16(),
             Byte => reader.ReadByte(),
+            PartialAggregate => new DataPartialAggregate
+            {
+                Count = reader.ReadInt64(),
+                Sum = ReadValue(reader),
+                Min = ReadValue(reader),
+                Max = ReadValue(reader),
+            },
             _ => throw new InvalidDataException($"The temporary file of rows holds an unknown value type {tag}."),
         };
     }

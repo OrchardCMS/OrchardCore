@@ -11,6 +11,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // The base feature registers no services; each scanner is registered by its own feature startup.
     }
 }
 

@@ -1,13 +1,14 @@
 @model (IReadOnlyList<DataField> Fields, string Selected, bool AllowEmpty)
 
-@* The options of a field picker. A selected field the input doesn't have anymore stays selected, marked as missing. *@
+@* The options of a field picker. A selected field the input doesn't have anymore stays selected, marked as missing.
+   Each option carries the type of its field, which some editors adapt to, such as the filters of a data source. *@
 @if (Model.AllowEmpty)
 {
     <option value="">@T["Choose a field"]</option>
 }
 @foreach (var field in Model.Fields)
 {
-    <option value="@field.Name" selected="@(field.Name == Model.Selected)">@field.Name (@field.Type)</option>
+    <option value="@field.Name" selected="@(field.Name == Model.Selected)" data-dp-type="@field.Type">@field.Name (@field.Type)</option>
 }
 @if (!string.IsNullOrEmpty(Model.Selected) && Model.Fields.All(field => field.Name != Model.Selected))
 {

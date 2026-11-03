@@ -17,14 +17,12 @@
             }
         </div>
 
-        <div class="ocat-wrapper edit-item-secondary group">
-            @if (Model.Actions != null)
-            {
-                <div class="ocat-end-offset edit-item-actions">
-                    @await DisplayAsync(Model.Actions)
-                </div>
-            }
-        </div>
+        @if (Model.Actions != null)
+        {
+            <div class="edit-item-actions action-bar-bottom">
+                @await DisplayAsync(Model.Actions)
+            </div>
+        }
     </div>
     @if (Model.Sidebar != null)
     {

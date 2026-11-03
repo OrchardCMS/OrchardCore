@@ -14,7 +14,7 @@ public class RolesCacheContextProvider : ICacheContextProvider
 
     public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
     {
-        if (contexts.Any(ctx => string.Equals(ctx, "user.roles", StringComparison.OrdinalIgnoreCase)))
+        if (contexts.ContainsContext("user.roles"))
         {
             var user = _httpContextAccessor.HttpContext.User;
             if (user.Identity.IsAuthenticated)

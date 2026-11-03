@@ -11,6 +11,8 @@ public class WorkflowMethodsProvider : IGlobalMethodProvider
     private readonly GlobalMethod _outputMethod;
     private readonly GlobalMethod _propertyMethod;
     private readonly GlobalMethod _setPropertyMethod;
+    private readonly GlobalMethod _variableMethod;
+    private readonly GlobalMethod _setVariableMethod;
     private readonly GlobalMethod _resultMethod;
     private readonly GlobalMethod _correlationIdMethod;
     private readonly GlobalMethod _setCorrelationIdMethod;
@@ -53,6 +55,18 @@ public class WorkflowMethodsProvider : IGlobalMethodProvider
             Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Properties[name] = value),
         };
 
+        _variableMethod = new GlobalMethod
+        {
+            Name = "variable",
+            Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Variables.Get(name)),
+        };
+
+        _setVariableMethod = new GlobalMethod
+        {
+            Name = "setVariable",
+            Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Variables.Set(name, value)),
+        };
+
         _resultMethod = new GlobalMethod
         {
             Name = "lastResult",
@@ -75,6 +89,6 @@ public class WorkflowMethodsProvider : IGlobalMethodProvider
 
     public IEnumerable<GlobalMethod> GetMethods()
     {
-        return [_workflowMethod, _workflowIdMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod, _correlationIdMethod, _setPropertyMethod, _setCorrelationIdMethod];
+        return [_workflowMethod, _workflowIdMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod, _correlationIdMethod, _setPropertyMethod, _setCorrelationIdMethod, _variableMethod, _setVariableMethod];
     }
 }

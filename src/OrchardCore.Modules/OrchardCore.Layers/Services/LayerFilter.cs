@@ -93,26 +93,26 @@ public sealed class LayerFilter : IAsyncResultFilter
 
             var widgets = cacheEntry.Widgets;
 
-            var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
+            var layers = (await _layerService.GetLayersAsync()).Layers;
 
             var layout = await _layoutAccessor.GetLayoutAsync();
             var updater = _modelUpdaterAccessor.ModelUpdater;
 
-            var layersCache = new Dictionary<string, bool>();
-            var widgetDefinitions = (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
-                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+            // The display state of a layer is only evaluated once, even if it holds multiple widgets.
+            Dictionary<string, bool> layersCache = null;
 
             foreach (var widget in widgets)
             {
-                var layer = widget.Layer != null && layers.TryGetValue(widget.Layer, out var widgetLayer) ? widgetLayer : null;
+                var layer = widget.Layer != null ? FindLayer(layers, widget.Layer) : null;
 
                 if (layer == null)
                 {
                     continue;
                 }
 
-                bool display;
-                if (!layersCache.TryGetValue(layer.Name, out display))
+                layersCache ??= [];
+
+                if (!layersCache.TryGetValue(layer.Name, out var display))
                 {
                     display = await _ruleService.EvaluateAsync(layer.LayerRule);
 
@@ -124,7 +124,11 @@ public sealed class LayerFilter : IAsyncResultFilter
                     continue;
                 }
 
-                if (widgetDefinitions.TryGetValue(widget.ContentItem.ContentType, out var definition) &&
+                // Only the definition of the widget content type is needed, not the list of all the widget types.
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(widget.ContentItem.ContentType);
+
+                if (definition != null &&
+                    definition.StereotypeEquals("Widget") &&
                     (!definition.IsSecurable() || await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.ViewContent, widget.ContentItem)))
                 {
                     // Note: We clone the cached content item to avoid sharing the same instance across threads when rendering widgets.
@@ -139,6 +143,8 @@ public sealed class LayerFilter : IAsyncResultFilter
                     {
                         Widget = contentItem,
                         Content = widgetContent,
+                        // The cached metadata is shared with the view so that it is not deserialized again from the clone.
+                        LayerMetadata = widget,
                     };
 
                     // Get cached alternates and add them efficiently
@@ -156,6 +162,22 @@ public sealed class LayerFilter : IAsyncResultFilter
         }
 
         await next.Invoke();
+    }
+
+    private static Layer FindLayer(List<Layer> layers, string name)
+    {
+        // Sites only have a handful of layers, a linear scan is cheaper than building a dictionary on each request.
+        for (var i = 0; i < layers.Count; i++)
+        {
+            var layer = layers[i];
+
+            if (string.Equals(layer.Name, name, StringComparison.Ordinal))
+            {
+                return layer;
+            }
+        }
+
+        return null;
     }
 
     internal sealed class CacheEntry : Document
