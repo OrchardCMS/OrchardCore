@@ -9,6 +9,7 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Telemetry;
 using OrchardCore.Tests.Apis.Context;
+using YesSql;
 
 namespace OrchardCore.Tests.Telemetry;
 
@@ -67,6 +68,46 @@ public class OrchardCoreTelemetryTests
 
         Assert.Contains((OrchardCoreTelemetryConstants.Instruments.TenantContainerDuration, context.TenantName), measurements);
         Assert.Contains((OrchardCoreTelemetryConstants.Instruments.TenantActivationDuration, context.TenantName), measurements);
+    }
+
+    [Fact]
+    public async Task InitializeTenant_YesSqlListeners_TagsTheTelemetryWithTheTenant()
+    {
+        var activities = new ConcurrentQueue<Activity>();
+        using var activityListener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == YesSqlTelemetry.Name,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activities.Enqueue,
+        };
+        ActivitySource.AddActivityListener(activityListener);
+
+        var tenantNames = new ConcurrentQueue<string>();
+        using var meterListener = new MeterListener
+        {
+            InstrumentPublished = (instrument, listener) =>
+            {
+                if (instrument.Meter.Name == YesSqlTelemetry.Name && instrument.Name == "db.client.operation.duration")
+                {
+                    listener.EnableMeasurementEvents(instrument);
+                }
+            },
+        };
+        meterListener.SetMeasurementEventCallback<double>((_, _, tags, _) =>
+            tenantNames.Enqueue(GetTag(tags, OrchardCoreTelemetryConstants.Attributes.TenantName)));
+        meterListener.Start();
+
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        // Other tests may create tenants concurrently, only consider the telemetry of this tenant.
+        var tenantActivities = activities
+            .Where(activity => activity.GetTagItem(OrchardCoreTelemetryConstants.Attributes.TenantName) as string == context.TenantName)
+            .ToArray();
+
+        Assert.NotEmpty(tenantActivities);
+        Assert.All(tenantActivities, activity => Assert.Null(activity.GetTagItem("db.query.text")));
+        Assert.Contains(context.TenantName, tenantNames);
     }
 
     [Fact]
