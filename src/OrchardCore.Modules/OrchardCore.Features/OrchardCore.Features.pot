@@ -97,6 +97,27 @@ msgctxt "OrchardCore.Features.Permissions"
 msgid "You can only disable features that are not always enabled."
 msgstr ""
 
+#. Format arguments: {0}: id
+#: Recipes/Executors/FeatureStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Features.Recipes.Executors.FeatureStepValidator"
+msgid "The feature '{0}' doesn't exist or isn't available on this tenant. The step would ignore it."
+msgstr ""
+
+#. Format arguments: {0}: id
+#: Recipes/Executors/FeatureStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Features.Recipes.Executors.FeatureStepValidator"
+msgid "The feature '{0}' is a script, which only the execution evaluates."
+msgstr ""
+
+#. Format arguments: {0}: id
+#: Recipes/Executors/FeatureStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Features.Recipes.Executors.FeatureStepValidator"
+msgid "The feature or theme '{0}' doesn't exist or isn't available on this tenant. The step would ignore it and still succeed."
+msgstr ""
+
 #. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))
 #: Services/ModuleService.cs
 #, csharp-format

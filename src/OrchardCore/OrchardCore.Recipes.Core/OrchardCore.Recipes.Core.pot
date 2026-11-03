@@ -18,6 +18,97 @@ msgctxt "OrchardCore.Recipes.Services.RecipeExecutor"
 msgid "Unexpected error occurred while executing the '{0}' step."
 msgstr ""
 
+#: Services/RecipeValidator.cs
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "A recipe requires a 'steps' array."
+msgstr ""
+
+#: Services/RecipeValidator.cs
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "A step must be a JSON object."
+msgstr ""
+
+#: Services/RecipeValidator.cs
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "A step requires a 'name' string. Without it no handler processes the step, and the execution still succeeds."
+msgstr ""
+
+#: Services/RecipeValidator.cs
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "A valid result doesn't guarantee that execution succeeds: nothing was applied, scripts weren't evaluated, and a step can still fail on its data."
+msgstr ""
+
+#. Format arguments: {0}: context.StepName
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "No enabled feature declares a handler for the step '{0}', but a registered handler doesn't declare its steps and may process it. If none does, the execution skips this step and still succeeds."
+msgstr ""
+
+#. Format arguments: {0}: context.StepName
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "No enabled feature handles the step '{0}'. An earlier step changes the enabled features, which may provide its handler, but that can't be checked before they are enabled. If none does, the execution skips this step and still succeeds."
+msgstr ""
+
+#. Format arguments: {0}: context.StepName
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "No enabled feature handles the step '{0}'. The execution would skip this step and still succeed."
+msgstr ""
+
+#: Services/RecipeValidator.cs
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "The 'variables' property of a recipe must be an object."
+msgstr ""
+
+#. Format arguments: {0}: path
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "The file '{0}' doesn't exist in the recipe's files."
+msgstr ""
+
+#. Format arguments: {0}: script
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "The file script '{0}' isn't supported. Use text('path') or base64('path')."
+msgstr ""
+
+#. Format arguments: {0}: context.StepName
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "The properties of the step '{0}' don't have the expected types."
+msgstr ""
+
+#: Services/RecipeValidator.cs
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "The recipe file can't be read."
+msgstr ""
+
+#. Format arguments: {0}: exception.LineNumber + 1; {1}: exception.BytePositionInLine + 1
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "The recipe isn't valid JSON, at line {0}, position {1}."
+msgstr ""
+
+#: Services/RecipeValidator.cs
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "The recipe must be a JSON object."
+msgstr ""
+
+#. Format arguments: {0}: scripts
+#: Services/RecipeValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Services.RecipeValidator"
+msgid "This step has {0} script expressions, which only the execution evaluates."
+msgstr ""
+
 #. Format arguments: {0}: name; {1}: GlobalMethodName
 #: VariablesMethodProvider.cs
 #, csharp-format

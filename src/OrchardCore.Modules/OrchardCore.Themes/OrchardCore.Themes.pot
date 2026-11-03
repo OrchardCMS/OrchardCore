@@ -78,6 +78,27 @@ msgctxt "OrchardCore.Themes.Permissions"
 msgid "Theme not found: '{0}'."
 msgstr ""
 
+#. Format arguments: {0}: id
+#: Recipes/ThemesStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Recipes.ThemesStepValidator"
+msgid "The theme '{0}' doesn't exist or isn't available on this tenant. The step would select it anyway."
+msgstr ""
+
+#. Format arguments: {0}: id
+#: Recipes/ThemesStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Recipes.ThemesStepValidator"
+msgid "The theme '{0}' is a script, which only the execution evaluates."
+msgstr ""
+
+#. Format arguments: {0}: id
+#: Recipes/ThemesStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.Recipes.ThemesStepValidator"
+msgid "The theme '{0}' isn't enabled, and no earlier step enables it."
+msgstr ""
+
 #. Format arguments: {0}: count; {1}: string.Join(", ", features.Select(f => f.Name ?? f.Id))
 #: Services/ThemeService.cs
 #, csharp-format

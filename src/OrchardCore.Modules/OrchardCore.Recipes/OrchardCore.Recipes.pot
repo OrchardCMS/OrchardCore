@@ -132,11 +132,33 @@ msgctxt "OrchardCore.Recipes.Endpoints.Management.RecipeManagementEndpoints"
 msgid "This request has no outcome yet. Get the status of the execution, and use another request ID to execute the recipe again."
 msgstr ""
 
+#: RecipeSteps/CommandStepValidator.cs
+msgctxt "OrchardCore.Recipes.RecipeSteps.CommandStepValidator"
+msgid "The commands of this step aren't validated."
+msgstr ""
+
 #. Format arguments: {0}: recipe.Name
 #: RecipeSteps/RecipesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.Recipes.RecipeSteps.RecipesStep"
 msgid "No recipe named '{0}' was found."
+msgstr ""
+
+#: RecipeSteps/RecipesStepValidator.cs
+msgctxt "OrchardCore.Recipes.RecipeSteps.RecipesStepValidator"
+msgid "A recipes step requires a 'Values' array."
+msgstr ""
+
+#. Format arguments: {0}: recipe.Name
+#: RecipeSteps/RecipesStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.RecipeSteps.RecipesStepValidator"
+msgid "No recipe named '{0}' was found."
+msgstr ""
+
+#: RecipeSteps/RecipesStepValidator.cs
+msgctxt "OrchardCore.Recipes.RecipeSteps.RecipesStepValidator"
+msgid "The steps of the inner recipes aren't validated."
 msgstr ""
 
 #: Views/Admin/Index.cshtml

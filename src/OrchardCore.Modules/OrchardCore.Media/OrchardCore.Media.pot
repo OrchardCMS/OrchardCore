@@ -475,6 +475,46 @@ msgctxt "OrchardCore.Media.Recipes.MediaStep"
 msgid "Media target path must be a relative file path without traversal segments: '{0}'"
 msgstr ""
 
+#: Recipes/MediaStepValidator.cs
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "A media step requires a 'Files' array."
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "File extension not allowed: '{0}'"
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "Media target path must be a relative file path without traversal segments: '{0}'"
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "The URL of '{0}' isn't fetched. The step silently skips the file if the request fails."
+msgstr ""
+
+#. Format arguments: {0}: file.SourcePath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "The file '{0}' doesn't exist in the recipe's files."
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "The file '{0}' has no 'Base64', 'SourcePath' or 'SourceUrl'. The step would skip it."
+msgstr ""
+
 #. Format arguments: {0}
 #: SecureMediaPermissions.cs
 #, csharp-format
