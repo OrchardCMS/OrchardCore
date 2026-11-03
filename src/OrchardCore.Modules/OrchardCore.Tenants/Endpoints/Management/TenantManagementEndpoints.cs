@@ -200,6 +200,7 @@ internal static partial class TenantManagementEndpoints
             {
                 Capability = TenantManagementApiEndpointConventions.CapabilityName,
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
+                ExcludedFromMcp = true,
             })
             .Produces<TenantOperationResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)

@@ -38,6 +38,13 @@ internal sealed class McpToolCatalog
                 continue;
             }
 
+            // Tool arguments and results reach the model's context and transcript, so credentials
+            // stay on the HTTP API and Pomi, which keep them out of commands and output.
+            if (metadata.ExcludedFromMcp || metadata.SecretResponse || metadata.SecretProperties.Count > 0)
+            {
+                continue;
+            }
+
             var operationId = endpoint.Metadata.GetMetadata<IEndpointNameMetadata>()?.EndpointName;
             var methods = endpoint.Metadata.GetMetadata<IHttpMethodMetadata>()?.HttpMethods;
             if (operationId is null || methods?.Count != 1 || endpoint.RequestDelegate is null)
@@ -154,7 +161,7 @@ internal sealed class McpToolCatalog
                         Annotations = new ToolAnnotations
                         {
                             ReadOnlyHint = readOnly,
-                            DestructiveHint = !readOnly,
+                            DestructiveHint = !readOnly && (metadata.RequiresConfirmation || !metadata.Verb.StartsWith("create", StringComparison.Ordinal)),
                             IdempotentHint = readOnly || HttpMethods.IsPut(method) || HttpMethods.IsDelete(method),
                             OpenWorldHint = false,
                         },

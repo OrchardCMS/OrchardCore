@@ -66,6 +66,12 @@ public sealed class CliOperationMetadata
     /// </summary>
     public bool SecretResponse { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether the operation is left out of MCP tools. Operations with secret properties or a
+    /// secret response always are; set this for one that can return credentials depending on its input.
+    /// </summary>
+    public bool ExcludedFromMcp { get; set; }
+
     /// <summary>Gets or sets whether the response must be streamed to an explicit new file.</summary>
     public bool FileResponse { get; set; }
 

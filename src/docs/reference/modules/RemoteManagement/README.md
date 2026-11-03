@@ -547,8 +547,9 @@ The transformer emits `secretResponse: true`, and Pomi requires
 `--secret-output-file <new-path>`. It reserves an owner-only file before sending
 the operation, refuses existing paths, saves the complete JSON response privately,
 and returns only `secretOutputFile` in normal output. This applies to all output
-formats, including `--output none`. HTTP and MCP clients still receive the one-time
-response and must store it privately. This flag does not replace endpoint authorization.
+formats, including `--output none`. HTTP clients still receive the one-time response
+and must store it privately. The operation is not exposed as an MCP tool. This flag
+does not replace endpoint authorization.
 
 Register an `IRemoteManagementCapabilityProvider` when the feature also needs to report a versioned capability in the authenticated manifest. CLI metadata describes discoverability only; endpoint authorization remains mandatory.
 
@@ -761,8 +762,14 @@ time; discovery does not promise that a caller can invoke every listed tool.
 
 Only named endpoints carrying `CliOperationMetadata` are exposed. Hidden CLI
 operations, stream inputs, binary responses, multipart bodies, and header/cookie parameters are excluded.
-Duplicate tool names are excluded to prevent ambiguous dispatch. Write operations
-are marked as potentially destructive using MCP tool annotations; clients should
-obtain user confirmation before invoking them. Annotations are advisory and do not
-add an interactive confirmation step on the server. Use Pomi or the HTTP APIs for
-file transfers.
+Duplicate tool names are excluded to prevent ambiguous dispatch.
+
+Tool arguments and results reach the model's context and the client's transcript, so
+operations that take or return credentials are excluded too: those with `SecretProperties`
+or `SecretResponse`, such as creating users or rotating client secrets, and those setting
+`ExcludedFromMcp`, such as enabling remote management, which can return a new client secret.
+Use Pomi or the HTTP APIs for these operations and for file transfers.
+
+Write operations other than plain creations are marked as potentially destructive using
+MCP tool annotations; clients should obtain user confirmation before invoking them.
+Annotations are advisory and do not add an interactive confirmation step on the server.

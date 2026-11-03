@@ -158,6 +158,38 @@ public class McpToolTests
     private static Task<CallToolResult> InvokeAsync(McpToolDefinition tool, HttpContext parent, string arguments) =>
         McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(arguments), parent, NullLogger.Instance, CancellationToken.None);
 
+    [Theory]
+    [InlineData(nameof(CliOperationMetadata.SecretResponse))]
+    [InlineData(nameof(CliOperationMetadata.SecretProperties))]
+    [InlineData(nameof(CliOperationMetadata.ExcludedFromMcp))]
+    public void CreateTools_CredentialOperation_IsExcluded(string flag)
+    {
+        var metadata = new CliOperationMetadata(["widgets"], "update")
+        {
+            SecretResponse = flag == nameof(CliOperationMetadata.SecretResponse),
+            ExcludedFromMcp = flag == nameof(CliOperationMetadata.ExcludedFromMcp),
+        };
+        if (flag == nameof(CliOperationMetadata.SecretProperties))
+        {
+            metadata.SecretProperties.Add("password");
+        }
+
+        Assert.Empty(McpToolCatalog.CreateTools([CreateEndpoint(metadata)], Document()));
+    }
+
+    [Theory]
+    [InlineData("create", false, false)]
+    [InlineData("create", true, true)]
+    [InlineData("update", false, true)]
+    public void CreateTools_DestructiveHint_ExcludesPlainCreation(string verb, bool requiresConfirmation, bool expected)
+    {
+        var metadata = new CliOperationMetadata(["widgets"], verb) { RequiresConfirmation = requiresConfirmation };
+
+        var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint(metadata)], Document()));
+
+        Assert.Equal(expected, tool.Tool.Annotations.DestructiveHint);
+    }
+
     private static ServiceProvider CreateServices(IAuthenticationService authentication = null)
     {
         var services = new ServiceCollection();
