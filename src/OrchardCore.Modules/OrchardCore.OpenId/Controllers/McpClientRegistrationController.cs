@@ -42,7 +42,7 @@ public sealed class McpClientRegistrationController : Controller
         if (!permit.IsAcquired)
         {
             Response.Headers.RetryAfter = "60";
-            return StatusCode(StatusCodes.Status429TooManyRequests, new { error = "temporarily_unavailable", error_description = "Try _registration again later." });
+            return StatusCode(StatusCodes.Status429TooManyRequests, new { error = "temporarily_unavailable", error_description = "Try registration again later." });
         }
 
         if (!(await _configuration.GetStatusAsync()).IsReady)
@@ -81,7 +81,7 @@ public sealed class McpClientRegistrationController : Controller
         catch (McpRegistrationCapacityException)
         {
             Response.Headers.RetryAfter = "60";
-            return StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = "temporarily_unavailable", error_description = "Client _registration capacity is unavailable. Contact the tenant administrator." });
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = "temporarily_unavailable", error_description = "Client registration capacity is unavailable. Contact the tenant administrator." });
         }
     }
 }
