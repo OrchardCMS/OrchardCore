@@ -46,6 +46,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
+        services.AddTenantSetupDiagnostics();
         services.AddSingleton<IRemoteManagementCapabilityProvider, TenantRemoteManagementCapabilityProvider>();
 
         // Builds the rows of the tenants admin list. It belongs to this feature, not to the feature
@@ -60,6 +61,7 @@ public sealed class Startup : StartupBase
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.AddTenantManagementEndpoints();
+        routes.AddTenantSetupDiagnosticsEndpoints();
     }
 }
 

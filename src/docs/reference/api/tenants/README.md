@@ -54,6 +54,8 @@ responses use `application/json`; Problem Details responses use
 | Create tenant | `POST` | `/api/tenants` | `201 Created`, equivalent retry `200 OK`, conflict `409 Conflict` |
 | Install tenant | `POST` | `/api/tenants/{tenantName}:install` | `201 Created` |
 | Set up tenant | `POST` | `/api/tenants/{tenantName}:setup` | `200 OK` |
+| Get setup options | `GET` | `/api/tenants/setup-options` | `200 OK` |
+| Get setup status | `GET` | `/api/tenants/{tenantName}/setup-status` | `200 OK` |
 | Update tenant | `PUT` | `/api/tenants/{tenantName}` | `200 OK` |
 | Delete tenant | `DELETE` | `/api/tenants/{tenantName}` | `200 OK`, already absent `204 No Content` |
 | Start tenant | `POST` | `/api/tenants/{tenantName}:start` | `200 OK` |
@@ -613,7 +615,8 @@ Creation and setup are **not a single database transaction**. They share the
 per-tenant distributed lock with the separate management `create` and `setup`
 operations, but setup recipes can make partial progress. If setup fails after
 creation, the error includes `tenantName` and `stage: "setup"`, and the tenant
-is preserved. Inspect it with `pomi tenants show Blog`; if it is `Uninitialized`,
+is preserved. Inspect it with `pomi tenants show Blog`, and read why setup failed with
+[`pomi tenants setup-status Blog`](#get-the-setup-status-of-a-tenant); if it is `Uninitialized`,
 inspect whether the recipe or database has made partial progress before
 retrying `pomi tenants setup Blog` with corrected inputs. An `Uninitialized`
 shell state alone does not guarantee that rerunning setup is safe. Do not automatically delete a partially initialized tenant.
@@ -703,6 +706,84 @@ Unknown tenants return `404`; tenants in another transitional state return
 `409`; invalid input or setup-component errors return Validation Problem
 Details. Authentication and Default-tenant authorization requirements are the
 same as other tenant management operations.
+
+## Get the setup options
+
+```http
+GET /api/tenants/setup-options
+```
+
+Use `pomi tenants setup-options show` from the command line. It requires the same
+permissions as the other tenant operations, from the Default tenant.
+
+Returns the values accepted by `recipeName` and `databaseProvider` when installing or
+setting up a tenant. Recipes tagged `hidden` are omitted, although they can still be used by
+name. The database providers are the ones available to the Default tenant. A provider with
+`hasConnectionString` needs a `connectionString`.
+
+```json
+{
+  "recipes": [
+    {
+      "name": "Blog",
+      "displayName": "Blog",
+      "description": "Sets up a blog.",
+      "categories": [ "default" ],
+      "tags": [ "blog" ]
+    }
+  ],
+  "databaseProviders": [
+    {
+      "value": "Sqlite",
+      "name": "Sqlite",
+      "hasConnectionString": false,
+      "hasTablePrefix": false,
+      "isDefault": true,
+      "sampleConnectionString": null
+    }
+  ]
+}
+```
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` | The setup options. |
+| `401 Unauthorized` | The bearer token is absent or rejected. |
+| `403 Forbidden` | The caller is not in the Default tenant, or a required permission is missing. |
+
+## Get the setup status of a tenant
+
+```http
+GET /api/tenants/{tenantName}/setup-status
+```
+
+Use `pomi tenants setup-status <tenantName>` from the command line. It requires the same
+permissions as the other tenant operations, from the Default tenant.
+
+Returns the state of the tenant and, while it's `Uninitialized`, why its last setup failed.
+`lastFailure` is `null` otherwise. Failures are recorded in the database of the Default
+tenant, so not while it isn't set up itself, for the setups started from it, whether from this
+API, the tenants screen or a workflow, and removed when a setup succeeds. They hold the errors reported by setup, such as
+the errors of a recipe step. An unexpected exception is only recorded as such, and its
+details are in the application logs.
+
+```json
+{
+  "tenantName": "Blog",
+  "state": "Uninitialized",
+  "lastFailure": {
+    "message": "The provided connection string is invalid or server is unreachable.",
+    "occurredUtc": "2026-11-02T08:15:04Z"
+  }
+}
+```
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` | The setup status. |
+| `401 Unauthorized` | The bearer token is absent or rejected. |
+| `403 Forbidden` | The caller is not in the Default tenant, or a required permission is missing. |
+| `404 Not Found` | The tenant doesn't exist. |
 
 ## Update a tenant
 
@@ -1245,8 +1326,9 @@ handlers and permissions, and `tenants_feature-profiles_delete` when the tenant
 ## Endpoint coverage and sources
 
 The tenant lifecycle reference covers all the routes mapped by
-`TenantManagementEndpoints.AddTenantManagementEndpoints`. It was derived from
-`TenantManagementEndpoints.cs`, `TenantInstallEndpoints.cs`, `TenantModelBase.cs`, `TenantValidator.cs`,
+`TenantManagementEndpoints.AddTenantManagementEndpoints` and
+`TenantManagementEndpoints.AddTenantSetupDiagnosticsEndpoints`. It was derived from
+`TenantManagementEndpoints.cs`, `TenantInstallEndpoints.cs`, `TenantSetupDiagnosticsEndpoints.cs`, `TenantModelBase.cs`, `TenantValidator.cs`,
 `TenantDatabasePatternResolver.cs`, `TenantConnectionStringRedactor.cs`,
 `TenantRemoteManagementCapabilityProvider.cs`, tenant and shell settings/state
 extensions, `TenantRemoteManagementConfigurationService.cs`, endpoint metadata

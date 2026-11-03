@@ -42,6 +42,8 @@ public class OwnedModuleEndpointMetadataTests
         AssertOperation(endpoints, "api/tenants/{tenantName}", "DELETE", "ApiDeleteTenant", "Tenants", ["tenants"], "delete", null, [200, 204, 400, 401, 403]);
         AssertOperation(endpoints, "api/tenants/{tenantName}:start", "POST", "ApiStartTenant", "Tenants", ["tenants"], "start", null, [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/tenants/{tenantName}:stop", "POST", "ApiStopTenant", "Tenants", ["tenants"], "stop", null, [200, 400, 401, 403, 404]);
+        AssertOperation(endpoints, "api/tenants/setup-options", "GET", "ApiGetTenantSetupOptions", "Tenants", ["tenants", "setup-options"], "show", null, [200, 401, 403]);
+        AssertOperation(endpoints, "api/tenants/{tenantName}/setup-status", "GET", "ApiGetTenantSetupStatus", "Tenants", ["tenants"], "setup-status", null, [200, 401, 403, 404]);
         Assert.Equal(
             CliInputMode.Options,
             endpoints.Single(endpoint =>
@@ -129,6 +131,7 @@ public class OwnedModuleEndpointMetadataTests
         var app = builder.Build();
 
         TenantManagementEndpoints.AddTenantManagementEndpoints(app);
+        TenantManagementEndpoints.AddTenantSetupDiagnosticsEndpoints(app);
         FeatureManagementEndpoints.AddFeatureManagementEndpoints(app);
         RecipeManagementEndpoints.AddRecipeManagementEndpoints(app);
         UserManagementEndpoints.AddUserManagementEndpoints(app);
