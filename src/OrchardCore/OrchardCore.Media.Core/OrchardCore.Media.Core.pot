@@ -1,0 +1,126 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Media.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: adjustedSize
+#: Helpers/FileSizeHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
+msgid "{0} B"
+msgstr ""
+
+#. Format arguments: {0}: adjustedSize
+#: Helpers/FileSizeHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
+msgid "{0} EB"
+msgstr ""
+
+#. Format arguments: {0}: adjustedSize
+#: Helpers/FileSizeHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
+msgid "{0} GB"
+msgstr ""
+
+#. Format arguments: {0}: 0, adjustedSize
+#: Helpers/FileSizeHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
+msgid "{0} KB"
+msgstr ""
+
+#. Format arguments: {0}: adjustedSize
+#: Helpers/FileSizeHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
+msgid "{0} MB"
+msgstr ""
+
+#. Format arguments: {0}: adjustedSize
+#: Helpers/FileSizeHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
+msgid "{0} PB"
+msgstr ""
+
+#. Format arguments: {0}: adjustedSize
+#: Helpers/FileSizeHelper.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Core.Helpers.FileSizeHelper"
+msgid "{0} TB"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage All Media Folders"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage Asset Cache Folder"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage Attached Media Fields Folder"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage Media"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage Media API authentication settings"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage Media For Others"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage Media Profiles"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Manage Own Media"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "Upload media file extensions requiring additional permission"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "View Media Options"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "View media content in all folders"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "View media content in the root folder"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "View others media content"
+msgstr ""
+
+#: MediaPermissions.cs
+msgctxt "OrchardCore.Media.MediaPermissions"
+msgid "View own media content"
+msgstr ""

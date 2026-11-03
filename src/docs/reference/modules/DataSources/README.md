@@ -144,16 +144,18 @@ The parameters of a query are passed with `DataSourceQuery.Parameters`. In a dat
 
 A consumer can offer conditions to a data source, with the operators of `DataFilterOperator`. Applying a condition is optional for a data source: consumers apply every condition again to the rows they read, so a data source may ignore the conditions it can't translate into a query of its store.
 
-| Operator | Matches a value that |
-|----------|----------------------|
-| `Equals`, `NotEquals` | Equals, or differs from, the first value. |
-| `Contains`, `NotContains` | Contains, or doesn't contain, the first value, ignoring case. |
-| `StartsWith`, `EndsWith` | Starts or ends with the first value, ignoring case. |
-| `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` | Compares with the first value. |
-| `Between` | Lies between the first and the second values, inclusive. An empty bound is open. |
-| `In`, `NotIn` | Equals any, or none, of the values. |
-| `IsEmpty`, `IsNotEmpty` | Is missing or an empty text, or isn't. |
-| `InLastDays`, `InNextDays` | Is a date within the last, or next, N days, counting today, where N is the first value. |
+| Operator | Matches a value that | Applies to |
+|----------|----------------------|------------|
+| `Equals`, `NotEquals` | Equals, or differs from, the first value. | Every type |
+| `Contains`, `NotContains` | Contains, or doesn't contain, the first value, ignoring case. | Text |
+| `StartsWith`, `EndsWith` | Starts or ends with the first value, ignoring case. | Text |
+| `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` | Compares with the first value. | Numbers and dates |
+| `Between` | Lies between the first and the second values, inclusive. An empty bound is open. | Numbers and dates |
+| `In`, `NotIn` | Equals any, or none, of the values. | Every type |
+| `IsEmpty`, `IsNotEmpty` | Is missing or an empty text, or isn't. | Every type |
+| `InLastDays`, `InNextDays` | Is a date within the last, or next, N days, counting today, where N is the first value. | Dates |
+
+`DataFilterOperatorExtensions.AppliesTo(type)` tells whether an operator applies to a `DataFieldType`, so that an editor offers only the operators that apply to a field. Consumers still evaluate any operator: the **Read a data source** step of [data pipelines](../DataPipelines/README.md#filtering-the-rows-of-a-data-source) reports a filter whose operator doesn't apply to its field as an error.
 
 ## File formats
 

@@ -60,11 +60,11 @@ public class ShapeTemplateBindingStrategy : ShapeTableProvider, IShapeTableHarve
         var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
         var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToHashSet();
 
-        // Excludes the extensions whose templates are already associated to an excluded feature that is still enabled.
+        // Discover templates while any enabled feature of the extension still needs its bindings.
         var activeExtensions = enabledFeatures
             .GroupBy(f => f.Extension.Id)
             .Select(g => g.First().Extension)
-            .Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeatureIds.Contains(f.Id)));
+            .Where(e => e.Features.Any(f => enabledFeatureIds.Contains(f.Id) && !builder.ExcludedFeatureIds.Contains(f.Id)));
 
         var hits = activeExtensions.Select(extensionDescriptor =>
         {
@@ -112,8 +112,9 @@ public class ShapeTemplateBindingStrategy : ShapeTableProvider, IShapeTableHarve
 
         foreach (var hit in hits)
         {
-            // The template files of an active module need to be associated to all of its enabled features.
-            foreach (var feature in hit.extensionDescriptor.Features.Where(f => enabledFeatureIds.Contains(f.Id)))
+            // Associate templates only to enabled features whose bindings have not been cached.
+            foreach (var feature in hit.extensionDescriptor.Features
+                .Where(f => enabledFeatureIds.Contains(f.Id) && !builder.ExcludedFeatureIds.Contains(f.Id)))
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {

@@ -13,6 +13,10 @@ public class ShapeTableBuilder
         ExcludedFeatureIds = excludedFeatureIds ?? new HashSet<string>();
     }
 
+    /// <summary>
+    /// Gets the feature IDs whose descriptors are already cached for the current shape table provider type.
+    /// Descriptors contributed by other provider types do not exclude a feature.
+    /// </summary>
     public IReadOnlyCollection<string> ExcludedFeatureIds { get; }
 
     internal IFeatureInfo Feature => _feature;

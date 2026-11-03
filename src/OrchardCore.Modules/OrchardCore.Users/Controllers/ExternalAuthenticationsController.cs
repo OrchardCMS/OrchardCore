@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -10,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.RateLimits;
@@ -29,10 +27,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly ILogger _logger;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
-    private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly IUserService _userService;
     private readonly INotifier _notifier;
@@ -46,12 +42,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         SignInManager<IUser> signInManager,
         UserManager<IUser> userManager,
         ILogger<ExternalAuthenticationsController> logger,
-        IDataProtectionProvider dataProtectionProvider,
         ISiteService siteService,
         IHtmlLocalizer<ExternalAuthenticationsController> htmlLocalizer,
         IStringLocalizer<ExternalAuthenticationsController> stringLocalizer,
         IEnumerable<ILoginFormEvent> loginFormEvents,
-        IShellFeaturesManager shellFeaturesManager,
         IEmailAddressValidator emailAddressValidator,
         IUserService userService,
         INotifier notifier,
@@ -61,10 +55,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _signInManager = signInManager;
         _userManager = userManager;
         _logger = logger;
-        _dataProtectionProvider = dataProtectionProvider;
         _siteService = siteService;
         _loginFormEvents = loginFormEvents;
-        _shellFeaturesManager = shellFeaturesManager;
         _emailAddressValidator = emailAddressValidator;
         _userService = userService;
         _notifier = notifier;
@@ -387,7 +379,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _loginFormEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
-            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
 
             if (!signInResult.Succeeded)
             {

@@ -54,7 +54,7 @@ public sealed class RobotsMiddleware
 
             ClearResponse(httpContext.Response);
             httpContext.Response.ContentType = MediaTypeNames.Text.Plain;
-            await httpContext.Response.WriteAsync(content.ToString());
+            await httpContext.Response.WriteAsync(content.ToString(), httpContext.RequestAborted);
 
             return;
         }

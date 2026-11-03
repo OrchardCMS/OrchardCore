@@ -21,4 +21,16 @@ public class Transition
     /// The destination <see cref="ActivityRecord.ActivityId"/>.
     /// </summary>
     public string DestinationActivityId { get; set; }
+
+    /// <summary>
+    /// Returns a copy of this transition.
+    /// </summary>
+    public Transition Clone()
+        => new()
+        {
+            Id = Id,
+            SourceActivityId = SourceActivityId,
+            SourceOutcomeName = SourceOutcomeName,
+            DestinationActivityId = DestinationActivityId,
+        };
 }

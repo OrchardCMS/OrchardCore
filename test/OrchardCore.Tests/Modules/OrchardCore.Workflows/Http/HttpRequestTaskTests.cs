@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Expressions;
@@ -123,7 +124,7 @@ public class HttpRequestTaskTests
             evaluator,
             UrlEncoder.Default,
             httpClientFactory.Object,
-            Mock.Of<IStringLocalizer<HttpRequestTask>>());
+            new NullStringLocalizerFactory(), Mock.Of<IStringLocalizer<HttpRequestTask>>());
     }
 
     private static WorkflowExecutionContext CreateWorkflowContext(string value)

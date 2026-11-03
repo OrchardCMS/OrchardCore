@@ -90,7 +90,7 @@ export class ApiService {
                         return this.instance.request(config);
                     }
                 }
-                return Promise.reject(error);
+                throw error;
             },
         );
     }

@@ -25,7 +25,7 @@ public sealed class AdminListDefaultsTests : CmsTestBase<AdminListDefaultsTestsF
         await Assertions.Expect(layoutSetting).ToHaveValueAsync(string.Empty);
         Assert.Equal(["", "List", "Grid"], await layoutSetting.Locator("option").EvaluateAllAsync<string[]>(
             "options => options.map(option => option.value)"));
-        var actionsSetting = page.GetByLabel("List actions layout", new() { Exact = true });
+        var actionsSetting = page.GetByLabel("Actions layout", new() { Exact = true });
         await Assertions.Expect(actionsSetting).ToHaveValueAsync(string.Empty);
         Assert.Equal(["", "Buttons", "Menu"], await actionsSetting.Locator("option").EvaluateAllAsync<string[]>(
             "options => options.map(option => option.value)"));

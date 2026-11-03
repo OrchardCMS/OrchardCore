@@ -11,7 +11,7 @@ public sealed class FeatureShapeDescriptor : ShapeDescriptor
     {
     }
 
-    public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType, IList<string> requiredFeatureIds = null)
+    public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType, IList<string> requiredFeatureIds)
     {
         Feature = feature;
         ShapeType = shapeType;

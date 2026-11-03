@@ -37,7 +37,7 @@ import router from "../../router";
 
 useEventBusService();
 const { on, emit } = useEventBus();
-const { setAssetsStore, setSelectedFiles, setSortBy, selectedFiles, sortBy, sortAsc } = useGlobals();
+const { setAssetsStore, setSelectedFiles, setSortBy, selectedFiles, sortBy, sortAsc, rootDirectory } = useGlobals();
 
 setAssetsStore(assetsStoreData);
 
@@ -104,8 +104,14 @@ describe("EventBusService", () => {
       size: 0,
       url: "/media/Images",
     };
-    // Should not throw — selectRootDirectory is called for root-level folders.
+    const spy = vi.fn();
+    on("DirSelected", spy);
+
+    // A root-level folder has no parent, so the root directory is selected.
     emit("DirDelete", directory);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(rootDirectory.value);
   });
 
   it('should handle "DirDelete" with subdirectory and navigate to parent', () => {

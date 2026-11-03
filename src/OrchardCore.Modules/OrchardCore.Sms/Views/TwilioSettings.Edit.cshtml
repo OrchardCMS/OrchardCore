@@ -21,7 +21,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="PhoneNumber">
-        <label asp-for="PhoneNumber" class="ocat-label">@T["Phone Number"]</label>
+        <label asp-for="PhoneNumber" class="ocat-label ocat-label-required">@T["Phone Number"]</label>
         <div class="ocat-end">
             <input asp-for="PhoneNumber" class="form-control" />
             <span asp-validation-for="PhoneNumber"></span>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="AccountSID">
-        <label asp-for="AccountSID" class="ocat-label">@T["Account SID"]</label>
+        <label asp-for="AccountSID" class="ocat-label ocat-label-required">@T["Account SID"]</label>
         <div class="ocat-end">
             <input asp-for="AccountSID" class="form-control" />
             <span asp-validation-for="AccountSID"></span>
@@ -38,14 +38,10 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="AuthToken">
-        <label asp-for="AuthToken" class="ocat-label">@T["Auth Token"]</label>
+        <label asp-for="AuthToken" class="ocat-label ocat-label-required">@T["Auth Token"]</label>
         <div class="ocat-end">
-            <input asp-for="AuthToken" class="form-control" />
+            <secret-input asp-for="AuthToken" secret-name="@TwilioConstants.SecretNames.AuthToken" />
             <span asp-validation-for="AuthToken"></span>
-            @if (Model.HasAuthToken)
-            {
-                <span class="hint">@T["Auth token was securely saved. Enter a new value if you wish to replace the existing secret."]</span>
-            }
         </div>
     </div>
 </div>

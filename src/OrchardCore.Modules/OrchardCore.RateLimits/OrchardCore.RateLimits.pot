@@ -1,0 +1,953 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.RateLimits\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.RateLimits.AdminMenu"
+msgid "Rate Limits"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.RateLimits.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "A policy with the same name already exists."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "A rate-limit group is required for group policies."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "A request path is required for endpoint policies."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Any"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Disable"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Enable"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Endpoint"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Global"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Group"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "No policies were deleted."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "No policies were disabled."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "No policies were enabled."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Policy cloned successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Policy created successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Policy deleted successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Policy disabled successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Policy enabled successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Policy saved successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "Select a group"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "The policy name is required."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "The request path must start with '/'."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "The selected policy type is invalid."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy."
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: totalDeleted
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "{1} policy was deleted successfully."
+msgid_plural "{1} policies were deleted successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count; {1}: totalChanged
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "{1} policy was disabled successfully."
+msgid_plural "{1} policies were disabled successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count; {1}: totalChanged
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
+msgid "{1} policy was enabled successfully."
+msgid_plural "{1} policies were enabled successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Controllers/LimiterController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.LimiterController"
+msgid "Limiter added successfully."
+msgstr ""
+
+#: Controllers/LimiterController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.LimiterController"
+msgid "Limiter removed successfully."
+msgstr ""
+
+#: Controllers/LimiterController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.LimiterController"
+msgid "Limiter updated successfully."
+msgstr ""
+
+#: Controllers/LimiterController.cs
+msgctxt "OrchardCore.RateLimits.Controllers.LimiterController"
+msgid "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy."
+msgstr ""
+
+#: Drivers/ConcurrencyRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.ConcurrencyRateLimiterDisplayDriver"
+msgid "Newest first (latest request first)"
+msgstr ""
+
+#: Drivers/ConcurrencyRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.ConcurrencyRateLimiterDisplayDriver"
+msgid "Oldest first (first come, first served)"
+msgstr ""
+
+#: Drivers/ConcurrencyRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.ConcurrencyRateLimiterDisplayDriver"
+msgid "Permit limit must be greater than zero."
+msgstr ""
+
+#: Drivers/FixedWindowRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.FixedWindowRateLimiterDisplayDriver"
+msgid "Permit limit must be greater than zero."
+msgstr ""
+
+#: Drivers/FixedWindowRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.FixedWindowRateLimiterDisplayDriver"
+msgid "Window must be greater than zero."
+msgstr ""
+
+#: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
+msgid "Permit limit must be greater than zero."
+msgstr ""
+
+#: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
+msgid "Segments per window must be greater than zero."
+msgstr ""
+
+#: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
+msgid "Window must be greater than zero."
+msgstr ""
+
+#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
+msgid "Newest first (latest request first)"
+msgstr ""
+
+#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
+msgid "Oldest first (first come, first served)"
+msgstr ""
+
+#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
+msgid "Replenishment period must be greater than zero."
+msgstr ""
+
+#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
+msgid "Token limit must be greater than zero."
+msgstr ""
+
+#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
+msgid "Tokens per period must be greater than zero."
+msgstr ""
+
+#: Services/ConcurrencyRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.ConcurrencyRateLimiterSource"
+msgid "Concurrency"
+msgstr ""
+
+#: Services/ConcurrencyRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.ConcurrencyRateLimiterSource"
+msgid "Limits how many matching requests can run at the same time, which is useful for expensive operations."
+msgstr ""
+
+#. Format arguments: {0}: model.PermitLimit; {1}: model.QueueLimit; {2}: model.QueueProcessingOrder
+#: Services/ConcurrencyRateLimiterSource.cs
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Services.ConcurrencyRateLimiterSource"
+msgid "{0} concurrent requests, queue limit {1}, queue order {2}"
+msgstr ""
+
+#: Services/FixedWindowRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.FixedWindowRateLimiterSource"
+msgid "Allows a set number of requests during each time period, then resets the count all at once."
+msgstr ""
+
+#: Services/FixedWindowRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.FixedWindowRateLimiterSource"
+msgid "Fixed window"
+msgstr ""
+
+#. Format arguments: {0}: model.PermitLimit; {1}: model.WindowSeconds; {2}: model.QueueLimit
+#: Services/FixedWindowRateLimiterSource.cs
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Services.FixedWindowRateLimiterSource"
+msgid "{0} requests every {1} seconds, queue limit {2}"
+msgstr ""
+
+#: Services/SlidingWindowRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.SlidingWindowRateLimiterSource"
+msgid "Sliding window"
+msgstr ""
+
+#: Services/SlidingWindowRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.SlidingWindowRateLimiterSource"
+msgid "Spreads a request limit across a rolling time period so traffic is smoothed instead of resetting all at once."
+msgstr ""
+
+#. Format arguments: {0}: model.PermitLimit; {1}: model.WindowSeconds; {2}: model.SegmentsPerWindow; {3}: model.QueueLimit
+#: Services/SlidingWindowRateLimiterSource.cs
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Services.SlidingWindowRateLimiterSource"
+msgid "{0} requests every {1} seconds across {2} segments, queue limit {3}"
+msgstr ""
+
+#: Services/TokenBucketRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.TokenBucketRateLimiterSource"
+msgid "Allows short bursts of traffic while steadily refilling capacity over time."
+msgstr ""
+
+#: Services/TokenBucketRateLimiterSource.cs
+msgctxt "OrchardCore.RateLimits.Services.TokenBucketRateLimiterSource"
+msgid "Token bucket"
+msgstr ""
+
+#. Format arguments: {0}: model.TokenLimit; {1}: model.TokensPerPeriod; {2}: model.ReplenishmentPeriodSeconds; {3}: model.QueueLimit; {4}: model.QueueProcessingOrder
+#: Services/TokenBucketRateLimiterSource.cs
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Services.TokenBucketRateLimiterSource"
+msgid "{0} tokens, {1} replenished every {2} seconds, queue limit {3}, queue order {4}"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Create"
+msgid "New Rate Limit Policy"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Create"
+msgid "New policies are created as disabled drafts. Add limiters, save your changes, then enable the policy from the policies list when it is ready to publish."
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Create"
+msgid "Rate Limit Policies"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Create"
+msgid "Save and Continue"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Add Limiter"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Add one or more limiters before enabling this policy."
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Available Limiter Types"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Edit Rate Limit Policy"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Limiters"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Rate Limit Policies"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
+msgid "This policy is disabled. You can save changes without restarting the website. Enable it from the policies list when it is ready to publish."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> No policies match the current search."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no rate limit policies yet."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Add Policy"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Clear"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Enabled"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Group limits"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "No read-only policies are currently registered by enabled features."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Rate Limit Policies"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Read-only Policies"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Route limits"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Search policies"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "These policies are set by features and are read-only."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "selected"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/Admin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
+msgid "{0} limiter"
+msgid_plural "{0} limiters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Choose a group declared on one or more endpoints with the RateLimitGroup attribute or WithRateLimitGroups()."
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Description"
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Global applies everywhere, Endpoint matches a request path prefix, and Group matches endpoints assigned to a named rate-limit group."
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Matches requests that start with this path, for example '/api/' or '/users/login'."
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Optionally describe what this policy is intended to protect."
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Policy name"
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Policy type"
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Rate-limit group"
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Request path"
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "The group target is read-only while this policy is enabled. Disable it first to choose a different group."
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "The policy type is read-only while this policy is enabled. Disable it first to retarget the policy."
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "The request path is read-only while this policy is enabled. Disable it first to change endpoint targeting."
+msgstr ""
+
+#: Views/Admin/RateLimitPolicy.Fields.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
+msgid "Use a unique name to identify this tenant policy."
+msgstr ""
+
+#: Views/ConcurrencyRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.ConcurrencyRateLimiter.Edit"
+msgid "Choose whether waiting requests are handled in arrival order or whether the newest waiting request gets the next free slot first."
+msgstr ""
+
+#: Views/ConcurrencyRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.ConcurrencyRateLimiter.Edit"
+msgid "How many extra requests can wait for a free slot while all running slots are busy. Use 0 to reject extras immediately."
+msgstr ""
+
+#: Views/ConcurrencyRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.ConcurrencyRateLimiter.Edit"
+msgid "How many matching requests can run at the same time. For example, 3 means a fourth request must wait or be rejected."
+msgstr ""
+
+#: Views/ConcurrencyRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.ConcurrencyRateLimiter.Edit"
+msgid "Permit limit"
+msgstr ""
+
+#: Views/ConcurrencyRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.ConcurrencyRateLimiter.Edit"
+msgid "Queue limit"
+msgstr ""
+
+#: Views/ConcurrencyRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.ConcurrencyRateLimiter.Edit"
+msgid "Queue processing order"
+msgstr ""
+
+#: Views/FixedWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.FixedWindowRateLimiter.Edit"
+msgid "How long one window lasts. For example, 60 means the count resets every minute."
+msgstr ""
+
+#: Views/FixedWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.FixedWindowRateLimiter.Edit"
+msgid "How many extra requests can wait after the limit is reached. Use 0 to reject extras immediately instead of making them wait."
+msgstr ""
+
+#: Views/FixedWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.FixedWindowRateLimiter.Edit"
+msgid "How many requests can succeed during one full window before extra requests are delayed or rejected."
+msgstr ""
+
+#: Views/FixedWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.FixedWindowRateLimiter.Edit"
+msgid "Permit limit"
+msgstr ""
+
+#: Views/FixedWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.FixedWindowRateLimiter.Edit"
+msgid "Queue limit"
+msgstr ""
+
+#: Views/FixedWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.FixedWindowRateLimiter.Edit"
+msgid "Window seconds"
+msgstr ""
+
+#: Views/Items/AllRateLimitPoliciesDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.AllRateLimitPoliciesDeploymentStep.Edit"
+msgid "Adds every tenant rate limit policy to the deployment plan."
+msgstr ""
+
+#: Views/Items/AllRateLimitPoliciesDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.AllRateLimitPoliciesDeploymentStep.Edit"
+msgid "All Rate Limit Policies"
+msgstr ""
+
+#: Views/Items/AllRateLimitPoliciesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.AllRateLimitPoliciesDeploymentStep.Summary"
+msgid "All Rate Limit Policies"
+msgstr ""
+
+#: Views/Items/AllRateLimitPoliciesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.AllRateLimitPoliciesDeploymentStep.Summary"
+msgid "Exports every tenant rate limit policy."
+msgstr ""
+
+#: Views/Items/AllRateLimitPoliciesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.AllRateLimitPoliciesDeploymentStep.Thumbnail"
+msgid "All Rate Limit Policies"
+msgstr ""
+
+#: Views/Items/AllRateLimitPoliciesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.AllRateLimitPoliciesDeploymentStep.Thumbnail"
+msgid "Exports every tenant rate limit policy."
+msgstr ""
+
+#: Views/Items/RateLimitLimiter.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.RateLimitLimiter.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/Items/RateLimitLimiter.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.RateLimitLimiter.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/Items/RateLimitPolicy.DefaultMeta.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Items.RateLimitPolicy.DefaultMeta.SummaryAdmin"
+msgid "Author"
+msgstr ""
+
+#. Format arguments: {0}: Model.DisplayName
+#: Views/Limiter/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
+msgid "Add '{0}' Limiter"
+msgstr ""
+
+#: Views/Limiter/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
+msgid "Add Limiter"
+msgstr ""
+
+#: Views/Limiter/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Limiter/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
+msgid "Learn more"
+msgstr ""
+
+#: Views/Limiter/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
+msgid "Rate Limit Policies"
+msgstr ""
+
+#: Views/Limiter/Create.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
+msgid "Rate Limit Policy"
+msgstr ""
+
+#: Views/Limiter/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
+msgid "Back"
+msgstr ""
+
+#. Format arguments: {0}: Model.DisplayName
+#: Views/Limiter/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
+msgid "Edit '{0}' Limiter"
+msgstr ""
+
+#: Views/Limiter/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
+msgid "Learn more"
+msgstr ""
+
+#: Views/Limiter/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
+msgid "Rate Limit Policies"
+msgstr ""
+
+#: Views/Limiter/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
+msgid "Rate Limit Policy"
+msgstr ""
+
+#: Views/Limiter/Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/RateLimitLimiter.Link.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitLimiter.Link"
+msgid "Add"
+msgstr ""
+
+#: Views/RateLimitLimiter.Link.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitLimiter.Link"
+msgid "Learn more"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to delete this disabled policy?"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to delete this enabled policy? This website will restart after deleting it."
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to disable this policy? This website will restart after disabling it."
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to enable this policy? This website will restart after enabling it."
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Clone"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Delete Policy"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Disable"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Disable Policy"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Enable"
+msgstr ""
+
+#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
+msgid "Enable Policy"
+msgstr ""
+
+#: Views/RateLimitPolicy.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/RateLimitPolicy.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.DefaultTags.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/RateLimitPolicy.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.DefaultTags.SummaryAdmin"
+msgid "Enabled"
+msgstr ""
+
+#: Views/RateLimitPolicy.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.DefaultTags.SummaryAdmin"
+msgid "Status"
+msgstr ""
+
+#: Views/RateLimitPolicy.Description.SummaryAdmin.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Description.SummaryAdmin"
+msgid "Applies to every tenant request."
+msgstr ""
+
+#. Format arguments: {0}: policy.GroupName
+#: Views/RateLimitPolicy.Description.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Description.SummaryAdmin"
+msgid "Matches endpoints in the '{0}' group."
+msgstr ""
+
+#. Format arguments: {0}: policy.Path
+#: Views/RateLimitPolicy.Description.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Description.SummaryAdmin"
+msgid "Matches requests starting with '{0}'."
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Actions"
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Are you sure you want to delete the selected policies? If any selected policy is enabled, this website will restart after deletion."
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Are you sure you want to disable the selected policies? This website will restart after the policy status changes."
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Are you sure you want to enable the selected policies? This website will restart after the policy status changes."
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Delete Policies"
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Disable Policies"
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Enable Policies"
+msgstr ""
+
+#: Views/RateLimitsToolbar.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "Select All"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/RateLimitsToolbar.cshtml
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
+msgid "{0} policy"
+msgid_plural "{0} policies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "How far back Orchard looks when counting requests. For example, 60 means the last minute of traffic is considered."
+msgstr ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "How many extra requests can wait after the limit is reached. Use 0 to reject extras immediately instead of making them wait."
+msgstr ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "How many requests are allowed across the full rolling window before extra requests are delayed or rejected."
+msgstr ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "How many smaller slices Orchard tracks inside the window. More slices make the limit recover more gradually instead of all at once."
+msgstr ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "Permit limit"
+msgstr ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "Queue limit"
+msgstr ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "Segments per window"
+msgstr ""
+
+#: Views/SlidingWindowRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.SlidingWindowRateLimiter.Edit"
+msgid "Window seconds"
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "Choose whether waiting requests are handled in arrival order or whether the newest waiting request gets the next token first."
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "How many extra requests can wait when the bucket is empty. Use 0 to reject extras immediately instead of making them wait."
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "How many requests' worth of capacity are added back each refill period."
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "How often Orchard adds tokens back. For example, 10 with 5 tokens per period adds 5 more tokens every 10 seconds."
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "Queue limit"
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "Queue processing order"
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "Replenishment seconds"
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "The bucket size. This is the largest burst of requests a client can use at once before it must wait for tokens to refill."
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "Token limit"
+msgstr ""
+
+#: Views/TokenBucketRateLimiter.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.TokenBucketRateLimiter.Edit"
+msgid "Tokens per period"
+msgstr ""

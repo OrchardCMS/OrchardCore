@@ -4,11 +4,14 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Notifications;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sms.Activities;
 using OrchardCore.Sms.Drivers;
 using OrchardCore.Sms.Services;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 
 namespace OrchardCore.Sms;
 
@@ -39,6 +42,15 @@ public sealed class Startup : StartupBase
     }
 }
 
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, TwilioSecretMigrationDisplayDriver>();
+    }
+}
+
 [Feature("OrchardCore.Notifications.Sms")]
 public sealed class NotificationsStartup : StartupBase
 {
@@ -53,6 +65,8 @@ public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[ActivityCategoryLocalizationSources.Messaging.Value] = "fa-solid fa-envelope");
+
         services.AddActivity<SmsTask, SmsTaskDisplayDriver>();
     }
 }

@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Infrastructure.Abstractions\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Email/EmailAddressAttribute.cs
+msgctxt "OrchardCore.Email.EmailAddressAttribute"
+msgid "Invalid email address."
+msgstr ""
+
+#. Format arguments: {0}: commandSwitch.Key; {1}: nameof(OrchardSwitchAttribute)
+#: Commands/DefaultCommandHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "A property \"{0}\" exists but is not decorated with \"{1}\""
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", arguments)
+#: Commands/DefaultCommandHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Command arguments \"{0}\" don't match command definition"
+msgstr ""
+
+#. Format arguments: {0}: commandSwitch.Value; {1}: propertyInfo.PropertyType.FullName; {2}: commandSwitch.Key
+#: Commands/DefaultCommandHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Error converting value \"{0}\" to \"{1}\" for switch \"{2}\""
+msgstr ""
+
+#. Format arguments: {0}: methodInfo.Name; {1}: commandSwitch
+#: Commands/DefaultCommandHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Method \"{0}\" does not support switch \"{1}\"."
+msgstr ""
+
+#. Format arguments: {0}: commandSwitch.Key
+#: Commands/DefaultCommandHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Environment.Commands.DefaultCommandHandler"
+msgid "Switch \"{0}\" was not found"
+msgstr ""

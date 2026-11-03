@@ -1,0 +1,233 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Autoroute\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Drivers/AutoroutePartDisplayDriver.cs
+msgctxt "OrchardCore.Autoroute.Drivers.AutoroutePartDisplayDriver"
+msgid "Your permalink is already in use."
+msgstr ""
+
+#: GraphQL/AutorouteInputObjectType.cs
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteInputObjectType"
+msgid "the custom URL part of the content item"
+msgstr ""
+
+#: GraphQL/AutorouteInputObjectType.cs
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteInputObjectType"
+msgid "the path of the content item to filter"
+msgstr ""
+
+#: GraphQL/AutorouteQueryObjectType.cs
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteQueryObjectType"
+msgid "Custom URLs (permalinks) for your content item."
+msgstr ""
+
+#: GraphQL/AutorouteQueryObjectType.cs
+msgctxt "OrchardCore.Autoroute.GraphQL.AutorouteQueryObjectType"
+msgid "The permalinks for your content item."
+msgstr ""
+
+#: Handlers/AutoroutePartHandler.cs
+msgctxt "OrchardCore.Autoroute.Handlers.AutoroutePartHandler"
+msgid "Your permalink is already in use."
+msgstr ""
+
+#. Format arguments: {0}: invalidCharactersForMessage
+#: Models/AutoroutePartExtensions.cs
+#, csharp-format
+msgctxt "OrchardCore.Autoroute.Models.AutoroutePartExtensions"
+msgid "Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead)."
+msgstr ""
+
+#: Models/AutoroutePartExtensions.cs
+msgctxt "OrchardCore.Autoroute.Models.AutoroutePartExtensions"
+msgid "Your permalink can't be set to the homepage, please use the homepage option instead."
+msgstr ""
+
+#. Format arguments: {0}: AutoroutePart.MaxPathLength
+#: Models/AutoroutePartExtensions.cs
+#, csharp-format
+msgctxt "OrchardCore.Autoroute.Models.AutoroutePartExtensions"
+msgid "Your permalink is too long. The permalink can only be up to {0} characters."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", errors)
+#: Settings/AutoroutePartSettingsDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Absolute"
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Check to disable autoroute for this content item."
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Check to enabling the routing of child content items."
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Check to refresh the path. Warning: the previous URL won't be accessible anymore."
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Check to set this content item as the homepage once published."
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Check to specify that a child content item will be routed to an absolute path."
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Disabled"
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Permalink"
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Refresh the path"
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Route contained items"
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "Set as homepage"
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "The url of the content item. It will be automatically generated."
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "The url of the content item. Leave empty to auto-generate it."
+msgstr ""
+
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "This content item is the current homepage"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Allow absolute path"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Allow contained item routing"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Allow custom path"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Allow disabled"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Allow path updates"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow the content items of this content type to be set as the homepage. It will only be visible to users with the appropriate permission."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow the content items of this content type to disable autoroute."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow this part to apply routes to child content items. This setting must be applied to the child content item."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow users to enable absolute paths for child content items. When disabled the path is relative to the parents path."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow users to enable routing of child content items. This setting must be applied to the parent content item."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow users to refresh the path once a content item is already published."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Check to allow users to set a custom path, otherwise it will be automatically generated."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Container Settings"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Manage contained item routes"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Pattern"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Settings for parent or child content items."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "Show homepage options"
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "The pattern used to render the custom url of this content type. With Liquid support."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "When absolute : https://mysite.com/my-child-item."
+msgstr ""
+
+#: Views/AutoroutePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+msgid "When relative : https://mysite.com/my-parent/my-child-item."
+msgstr ""

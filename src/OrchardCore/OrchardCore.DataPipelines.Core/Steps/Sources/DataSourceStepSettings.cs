@@ -28,7 +28,7 @@ public sealed class DataSourceStepSettings
     public List<DataSourceFilter> Filters { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets the most rows to read, or <c>0</c> to read every row.
+    /// Gets or sets the maximum number of rows to read, or <c>0</c> to read every row.
     /// </summary>
     public int MaxRows { get; set; }
 

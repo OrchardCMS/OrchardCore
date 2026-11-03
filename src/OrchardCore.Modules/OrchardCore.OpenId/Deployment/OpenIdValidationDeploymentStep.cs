@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,11 +9,8 @@ namespace OrchardCore.OpenId.Deployment;
 /// </summary>
 public class OpenIdValidationDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<OpenIdValidationDeploymentStep>("OpenID Connect");
+    public override string Name => "OpenID Validation";
 
-    public OpenIdValidationDeploymentStep()
-    {
-        Name = "OpenID Validation";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => OpenIdLocalizationSources.OpenIdConnect;
 }

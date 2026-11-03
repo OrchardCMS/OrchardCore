@@ -75,4 +75,78 @@ public class CultureDictionaryTests
 
         Assert.Equal(2, dictionary.Count());
     }
+
+    [Theory]
+    [InlineData(1, "jeden")]
+    [InlineData(2, "dva")]
+    [InlineData(5, "dva")]
+    public void Indexer_RecordWithPluralRule_UsesRecordPluralRule(int count, string expected)
+    {
+        var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
+        dictionary.MergeTranslations([new CultureDictionaryRecord("ball", null, ["jeden", "dva"], PluralizationRule.English)]);
+
+        var translation = dictionary[new CultureDictionaryRecordKey { MessageId = "ball" }, count];
+
+        Assert.Equal(expected, translation);
+    }
+
+    [Fact]
+    public void Indexer_RecordWithoutPluralRule_UsesCulturePluralRule()
+    {
+        var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
+        dictionary.MergeTranslations(
+        [
+            new CultureDictionaryRecord("ball", null, ["jeden", "dva"], PluralizationRule.English),
+            new CultureDictionaryRecord("car", "auto", "auta", "aut"),
+        ]);
+
+        var key = new CultureDictionaryRecordKey { MessageId = "car" };
+
+        Assert.Equal("aut", dictionary[key, 5]);
+        Assert.Same(PluralizationRule.Czech, dictionary.GetPluralRule(key));
+        Assert.Same(PluralizationRule.English, dictionary.GetPluralRule(new CultureDictionaryRecordKey { MessageId = "ball" }));
+    }
+
+    [Fact]
+    public void MergeTranslations_RecordWithoutPluralRuleOverwritesKey_ClearsRecordPluralRule()
+    {
+        var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
+        var key = new CultureDictionaryRecordKey { MessageId = "ball" };
+
+        dictionary.MergeTranslations([new CultureDictionaryRecord("ball", null, ["jeden", "dva"], PluralizationRule.English)]);
+        dictionary.MergeTranslations([new CultureDictionaryRecord("ball", "míč", "míče", "míčů")]);
+
+        Assert.Same(PluralizationRule.Czech, dictionary.GetPluralRule(key));
+        Assert.Equal("míčů", dictionary[key, 5]);
+    }
+
+    [Fact]
+    public void MergeTranslations_RecordWithPluralRuleOverwritesKey_ReplacesRecordPluralRule()
+    {
+        PluralizationRuleDelegate singleForm = n => 0;
+        var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
+        var key = new CultureDictionaryRecordKey { MessageId = "ball" };
+
+        dictionary.MergeTranslations([new CultureDictionaryRecord("ball", null, ["jeden", "dva"], PluralizationRule.English)]);
+        dictionary.MergeTranslations([new CultureDictionaryRecord("ball", null, ["míč"], singleForm)]);
+
+        Assert.Same(singleForm, dictionary.GetPluralRule(key));
+        Assert.Equal("míč", dictionary[key, 5]);
+    }
+
+    [Fact]
+    public void GetEnumerator_RecordWithPluralRule_ReturnsRecordPluralRule()
+    {
+        var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
+        dictionary.MergeTranslations(
+        [
+            new CultureDictionaryRecord("ball", null, ["jeden", "dva"], PluralizationRule.English),
+            new CultureDictionaryRecord("car", "auto"),
+        ]);
+
+        var records = dictionary.ToDictionary(record => record.Key.MessageId);
+
+        Assert.Same(PluralizationRule.English, records["ball"].PluralRule);
+        Assert.Null(records["car"].PluralRule);
+    }
 }

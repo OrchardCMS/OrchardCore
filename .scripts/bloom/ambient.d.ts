@@ -77,19 +77,6 @@ declare function togglePasswordVisibility(passwordCtl: HTMLElement, togglePasswo
 declare function copyToClipboard(str: string): Promise<void>;
 declare function generateStrongPassword(options?: { generateBase64?: boolean }): string;
 
-// Defined by OrchardCore.Users (Assets/js/password-generator.js), consumed here.
-declare const passwordManager: {
-    generatePassword(
-        requiredPasswordLength: number,
-        requireUppercase: boolean,
-        requireLowercase: boolean,
-        requireDigit: boolean,
-        requireNonAlphanumeric: boolean,
-        requiredUniqueChars: boolean,
-    ): string;
-    copyPassword(password: string): void;
-};
-
 // Defined by OrchardCore.AdminMenu (Assets/js/admin-menu-icon-picker.js), consumed here.
 declare const iconPickerVue: {
     show(relatedNodeId: string, sampleIconId: string): void;

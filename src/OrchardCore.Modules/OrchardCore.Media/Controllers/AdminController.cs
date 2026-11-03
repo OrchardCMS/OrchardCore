@@ -52,7 +52,7 @@ public sealed class AdminController : Controller
         var signalrEnabled = HttpContext.RequestServices.IsMediaSignalREnabled();
         var shellSettings = HttpContext.RequestServices.GetRequiredService<ShellSettings>();
         var hostEnvironment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
-        var mediaApiSettings = HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>();
+        var mediaApiSettings = await HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettingsAsync<MediaApiSettings>();
 
         var canUploadRestrictedMedia = await _authorizationService.AuthorizeAsync(
             User,

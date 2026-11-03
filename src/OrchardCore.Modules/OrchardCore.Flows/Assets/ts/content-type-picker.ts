@@ -121,7 +121,7 @@ window.initializeContentTypePickerApplication = function initializeContentTypePi
                         categorySet[contentType.category] = true;
                     }
                 });
-                this.categories = ["All"].concat(Object.keys(categorySet).sort());
+                this.categories = ["All"].concat(Object.keys(categorySet).sort((a, b) => a.localeCompare(b)));
 
                 // Reset filters and error state.
                 this.searchFilter = "";

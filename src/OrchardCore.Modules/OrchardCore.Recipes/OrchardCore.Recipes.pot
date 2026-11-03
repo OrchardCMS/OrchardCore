@@ -1,0 +1,172 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Recipes\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Recipes.AdminMenu"
+msgid "Recipes"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Recipes.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#. Format arguments: {0}: recipe.Author
+#: Commands/RecipesCommands.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "  Author:      {0}"
+msgstr ""
+
+#. Format arguments: {0}: recipe.Description
+#: Commands/RecipesCommands.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "  Description: {0}"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(",", recipe.Tags)
+#: Commands/RecipesCommands.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "  Tags:        {0}"
+msgstr ""
+
+#. Format arguments: {0}: recipe.Version
+#: Commands/RecipesCommands.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "  Version:     {0}"
+msgstr ""
+
+#. Format arguments: {0}: recipe.WebSite
+#: Commands/RecipesCommands.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "  Website:     {0}"
+msgstr ""
+
+#: Commands/RecipesCommands.cs
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "List of available recipes"
+msgstr ""
+
+#: Commands/RecipesCommands.cs
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "No recipes found."
+msgstr ""
+
+#. Format arguments: {0}: recipe.Name
+#: Commands/RecipesCommands.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Commands.RecipesCommands"
+msgid "Recipe: {0}"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Recipes.Controllers.AdminController"
+msgid "Recipe was not found."
+msgstr ""
+
+#. Format arguments: {0}: recipe.DisplayName; {1}: string.Join(' ', e.StepResult.Errors)
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Controllers.AdminController"
+msgid "The recipe '{0}' failed to run due to the following errors: {1}"
+msgstr ""
+
+#. Format arguments: {0}: recipe.DisplayName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Controllers.AdminController"
+msgid "The recipe '{0}' has been run successfully."
+msgstr ""
+
+#. Format arguments: {0}: recipe.DisplayName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Controllers.AdminController"
+msgid "Unexpected error occurred while running the '{0}' recipe."
+msgstr ""
+
+#. Format arguments: {0}: recipe.Name
+#: RecipeSteps/RecipesStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.RecipeSteps.RecipesStep"
+msgid "No recipe named '{0}' was found."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Recipes.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Recipes.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Recipes.Views.Admin.Index"
+msgid "Recipes"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Recipes.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Recipes.Views.Admin.Index"
+msgid "Tags"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Recipes.Views.Admin.Index"
+msgid "Your search returned no results."
+msgstr ""
+
+#: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
+msgid "Are you sure you want to run the recipe?"
+msgstr ""
+
+#: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
+msgid "No"
+msgstr ""
+
+#: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
+msgid "Recipes"
+msgstr ""
+
+#: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
+msgid "Run"
+msgstr ""
+
+#: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
+msgid "Yes"
+msgstr ""
+
+#: Views/RecipeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.DefaultTags.SummaryAdmin"
+msgid "Kind"
+msgstr ""
+
+#: Views/RecipeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.DefaultTags.SummaryAdmin"
+msgid "Setup Recipe"
+msgstr ""
+
+#: Views/RecipeEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Recipes.Views.RecipeEntry.DefaultTags.SummaryAdmin"
+msgid "Tag"
+msgstr ""

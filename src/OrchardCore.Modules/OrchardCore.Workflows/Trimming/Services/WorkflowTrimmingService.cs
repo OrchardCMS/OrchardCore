@@ -2,6 +2,7 @@ using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.Trimming.Models;
 using YesSql;
 using YesSql.Services;
@@ -13,15 +14,18 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IClock _clock;
+    private readonly IWorkflowExecutionJournal _journal;
 
     public WorkflowTrimmingService(
         ISiteService siteService,
         ISession session,
-        IClock clock)
+        IClock clock,
+        IWorkflowExecutionJournal journal)
     {
         _siteService = siteService;
         _session = session;
         _clock = clock;
+        _journal = journal;
     }
 
     public async Task<int> TrimWorkflowInstancesAsync(TimeSpan retentionPeriod, int batchSize)
@@ -58,6 +62,8 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
             _session.Delete(item);
             total++;
         }
+
+        await _journal.DeleteAsync(workflowInstances.Select(workflow => workflow.WorkflowId));
 
         return total;
     }
