@@ -81,6 +81,11 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
+        if (!await _passkeyService.CanAddPasskeyAsync(user))
+        {
+            return BadRequest();
+        }
+
         return Content(await _passkeyService.MakeCreationOptionsAsync(user), JsonContentType);
     }
 
@@ -94,7 +99,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid || !await _passkeyService.CanAddPasskeyAsync(user))
         {
             await Notifier.ErrorAsync(H["The passkey couldn't be added."]);
 

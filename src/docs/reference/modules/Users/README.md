@@ -82,6 +82,10 @@ Enable the **Passkeys** feature to let users:
 - Log in with a passkey from the login page, with the **Log in with a passkey** button or by picking one in the autofill of the username field. The user doesn't type their username: the browser offers the passkeys it holds for the site.
 - Use a passkey as their second factor, when the **Two-Factor Authentication Services** are enabled by one of the two-factor methods.
 
+A user can have up to 100 passkeys.
+
+Passkeys can't be used to log in when **Disable local login** is selected in the User Login settings. Users then can't add a passkey, unless passkeys are also a two-factor method, and can still remove the ones they have.
+
 ### Passkeys and two-factor authentication
 
 By default, the browser must verify the user with a biometric or a PIN before using the passkey (`UserVerificationRequirement` is `required`). Logging in with a passkey then proves both something the user has, their device, and something they are or know, so it counts as multi-factor authentication:

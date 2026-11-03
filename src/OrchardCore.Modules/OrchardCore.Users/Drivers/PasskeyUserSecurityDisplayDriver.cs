@@ -2,17 +2,26 @@ using System.Buffers.Text;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
 public sealed class PasskeyUserSecurityDisplayDriver : DisplayDriver<UserSecurity>
 {
+    private readonly PasskeyService _passkeyService;
+    private readonly ISiteService _siteService;
     private readonly TwoFactorOptions _twoFactorOptions;
 
-    public PasskeyUserSecurityDisplayDriver(IOptions<TwoFactorOptions> twoFactorOptions)
+    public PasskeyUserSecurityDisplayDriver(
+        PasskeyService passkeyService,
+        ISiteService siteService,
+        IOptions<TwoFactorOptions> twoFactorOptions)
     {
+        _passkeyService = passkeyService;
+        _siteService = siteService;
         _twoFactorOptions = twoFactorOptions.Value;
     }
 
@@ -23,8 +32,12 @@ public sealed class PasskeyUserSecurityDisplayDriver : DisplayDriver<UserSecurit
             return null;
         }
 
-        return Initialize<PasskeysViewModel>("UserSecurityPasskeys", viewModel =>
+        return Initialize<PasskeysViewModel>("UserSecurityPasskeys", async viewModel =>
         {
+            var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
+            viewModel.IsLoginMethod = !loginSettings.DisableLocalLogin;
+            viewModel.CanAddPasskey = await _passkeyService.CanAddPasskeyAsync(user);
             viewModel.IsTwoFactorMethod = _twoFactorOptions.Providers.Contains(UserConstants.PasskeyTwoFactorProvider);
             viewModel.Passkeys = user.Passkeys
                 .OrderBy(passkey => passkey.CreatedUtc)

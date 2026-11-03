@@ -2,7 +2,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using ISession = YesSql.ISession;
 
@@ -18,6 +20,11 @@ namespace OrchardCore.Users.Services;
 /// </remarks>
 public sealed class PasskeyService
 {
+    /// <summary>
+    /// The maximum number of passkeys of a user, as they are stored in the document of the user.
+    /// </summary>
+    public const int MaxPasskeyCount = 100;
+
     private const string OperationKey = "PasskeyOperation";
     private const string StateKey = "PasskeyState";
     private const string AttestationOperation = "Attestation";
@@ -27,23 +34,48 @@ public sealed class PasskeyService
     private readonly UserManager<IUser> _userManager;
     private readonly IUserPasskeyStore<IUser> _passkeyStore;
     private readonly ISession _session;
+    private readonly ISiteService _siteService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IClock _clock;
+    private readonly TwoFactorOptions _twoFactorOptions;
 
     public PasskeyService(
         IPasskeyHandler<IUser> passkeyHandler,
         UserManager<IUser> userManager,
         IUserPasskeyStore<IUser> passkeyStore,
         ISession session,
+        ISiteService siteService,
         IHttpContextAccessor httpContextAccessor,
-        IClock clock)
+        IClock clock,
+        IOptions<TwoFactorOptions> twoFactorOptions)
     {
         _passkeyHandler = passkeyHandler;
         _userManager = userManager;
         _passkeyStore = passkeyStore;
         _session = session;
+        _siteService = siteService;
         _httpContextAccessor = httpContextAccessor;
         _clock = clock;
+        _twoFactorOptions = twoFactorOptions.Value;
+    }
+
+    /// <summary>
+    /// Gets whether a user can register another passkey. It must not exceed the limit, and passkeys must be usable:
+    /// to log in, which requires the local login, or as a two-factor authentication method.
+    /// </summary>
+    /// <param name="user">The user registering the passkey.</param>
+    public async Task<bool> CanAddPasskeyAsync(IUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if ((await _userManager.GetPasskeysAsync(user)).Count >= MaxPasskeyCount)
+        {
+            return false;
+        }
+
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
+        return !loginSettings.DisableLocalLogin || _twoFactorOptions.Providers.Contains(UserConstants.PasskeyTwoFactorProvider);
     }
 
     /// <summary>
