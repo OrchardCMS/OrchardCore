@@ -93,7 +93,7 @@ internal static class RecipeManagementEndpoints
         var skip = request.Skip ?? 0;
         var take = request.Take ?? 50;
 
-        if (ValidatePaging(skip, take) is { } pagingError)
+        if (httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }
@@ -178,7 +178,14 @@ internal static class RecipeManagementEndpoints
         }
 
         var environment = await GetEnvironmentAsync(environmentProviders, logger);
-        foreach (var parameter in request.Parameters)
+        // The site provides the identity recipes run with, which callers must not replace.
+        var reserved = (request.Parameters ?? []).Keys.FirstOrDefault(environment.ContainsKey);
+        if (reserved is not null)
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["The parameter '{0}' is provided by the site and can't be set.", reserved]);
+        }
+
+        foreach (var parameter in request.Parameters ?? [])
         {
             environment[parameter.Key] = parameter.Value.ValueKind == JsonValueKind.Null
                 ? null
@@ -332,21 +339,6 @@ internal static class RecipeManagementEndpoints
         }
 
         return true;
-    }
-
-    private static Microsoft.AspNetCore.Http.HttpResults.ProblemHttpResult ValidatePaging(int skip, int take)
-    {
-        if (skip < 0 || take < 1)
-        {
-            return TypedResults.Problem(title: "Bad request", detail: "Skip must be zero or greater and take must be greater than zero.", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (take > 200)
-        {
-            return TypedResults.Problem(title: "Bad request", detail: "Take cannot exceed 200.", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        return null;
     }
 
     internal sealed class RecipeListRequest

@@ -227,7 +227,7 @@ Accept: application/json
 POST /api/recipes/{recipeId}:execute
 ```
 
-The operation obtains the current recipe environment, overlays the supplied `parameters`, executes the recipe, and releases the tenant shell context after successful completion.
+The operation obtains the current recipe environment, adds the supplied `parameters`, executes the recipe, and releases the tenant shell context after successful completion.
 
 ### Path and header parameters
 
@@ -242,7 +242,7 @@ The JSON request body is required. Its only defined property is:
 
 | Property | Type | Required | Default | Constraints |
 | --- | --- | --- | --- | --- |
-| `parameters` | object whose values are any JSON value | No | `{}` | Each property overlays the environment key of the same name. JSON `null` becomes a null environment value; objects, arrays, strings, numbers, and booleans retain their JSON data shape when deserialized. |
+| `parameters` | object whose values are any JSON value | No | `{}` | Each property adds an environment key of the same name; keys the site provides, such as `AdminUsername`, return `400 Bad Request`. JSON `null` becomes a null environment value; objects, arrays, strings, numbers, and booleans retain their JSON data shape when deserialized. |
 
 Parameter names and accepted values are recipe-specific. Consult the recipe's `parameters` array and the recipe implementation. Values are not validated by this endpoint before execution.
 
