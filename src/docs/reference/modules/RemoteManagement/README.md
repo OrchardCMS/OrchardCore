@@ -674,12 +674,12 @@ lock. Deploy a distributed lock provider for coordination across nodes, and
 apply any additional global rate limits at your ingress.
 
 Configure the following tenant settings in `appsettings.json` (or through the
-host's Orchard configuration providers):
+host's Orchard configuration providers, or for one tenant in its own configuration):
 
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_OpenId": {
+    "OpenId": {
       "Mcp": {
         "AllowDynamicClientRegistration": true,
         "MaximumApplications": 1000

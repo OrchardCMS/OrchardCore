@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
@@ -370,7 +372,7 @@ public sealed class RemoteManagementMcpStartup : StartupBase
         services.AddScoped<RemoteManagementMcpConfigurationService>();
         services.AddScoped<McpClientRegistrationService>();
         services.AddSingleton<McpClientRegistrationLimiter>();
-        services.AddOptions<RemoteManagementMcpOptions>().BindConfiguration("OrchardCore_OpenId:Mcp");
+        services.AddOptions<RemoteManagementMcpOptions>().Configure<IShellConfiguration>((options, configuration) => configuration.GetSection("OpenId:Mcp").Bind(options));
         services.AddOpenIddict().AddServer(options =>
         {
             options.AddEventHandler<OpenIddictServerEvents.HandleConfigurationRequestContext>(builder =>

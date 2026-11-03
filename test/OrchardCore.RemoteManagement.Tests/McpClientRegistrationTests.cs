@@ -4,10 +4,13 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.OpenId;
@@ -25,6 +28,21 @@ namespace OrchardCore.RemoteManagement.Tests;
 
 public class McpClientRegistrationTests
 {
+    [Fact]
+    public void Options_ShellConfiguration_DisablesRegistration()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { ["OpenId:Mcp:AllowDynamicClientRegistration"] = "false" })
+            .Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IShellConfiguration>(new ShellConfiguration(configuration));
+        new RemoteManagementMcpStartup().ConfigureServices(services);
+
+        using var provider = services.BuildServiceProvider();
+
+        Assert.False(provider.GetRequiredService<IOptions<RemoteManagementMcpOptions>>().Value.AllowDynamicClientRegistration);
+    }
+
     [Fact]
     public async Task Registration_CreatesDistinctPublicClientsWithoutRolesOrSecrets()
     {
