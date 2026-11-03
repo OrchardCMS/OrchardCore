@@ -13,6 +13,24 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
+    public void GetShapeType_FileWithDisplayType_KeepsTheCaseOfTheFileName()
+    {
+        var shapeType = BasicShapeTemplateHarvester.GetShapeType("Views/Parts", "Content-MyType.Summary", out var displayType);
+
+        Assert.Equal("Parts_Content_Summary__MyType", shapeType);
+        Assert.Equal("Summary", displayType);
+    }
+
+    [Fact]
+    public void HarvestShape_FileWithDisplayType_ReturnsLowerCaseShapeType()
+    {
+        var hit = Assert.Single(new BasicShapeTemplateHarvester().HarvestShape(new HarvestShapeInfo { SubPath = "Views", FileName = "Content-MyType.Summary" }));
+
+        Assert.Equal("content_summary__mytype", hit.ShapeType);
+        Assert.Equal("Summary", hit.DisplayType);
+    }
+
+    [Fact]
     public void BasicFileNamesComeBackAsShapes_Default_Succeeds()
     {
         VerifyShapeType("Views", "Hello", "Hello");
