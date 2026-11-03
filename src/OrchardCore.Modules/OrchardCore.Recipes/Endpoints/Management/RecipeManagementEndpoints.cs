@@ -61,6 +61,21 @@ internal static class RecipeManagementEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        routes.MapPost(RoutePrefix + "/{recipeId}:validate", ValidateAsync)
+            .WithName("ApiValidateRecipe")
+            .WithSummary("Validates a recipe without executing it.")
+            .WithDescription("Checks that the recipe parses, that each step has a handler, and that the features, themes, files and inner recipes it names exist. It changes nothing and evaluates no script. A valid result doesn't guarantee that execution succeeds, since a step can still fail on its data.")
+            .WithCliCommand(new CliOperationMetadata(["recipes"], "validate")
+            {
+                Capability = RecipeManagementApiEndpointConventions.CapabilityName,
+                Arguments = { new CliArgumentMetadata("recipeId", 0) },
+                ReadOnly = true,
+            })
+            .Produces<RecipeValidationResult>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         routes.MapPost(RoutePrefix + "/{recipeId}:execute", ExecuteAsync)
             .WithName("ApiExecuteRecipe")
             .WithSummary("Executes a recipe.")
@@ -165,6 +180,32 @@ internal static class RecipeManagementEndpoints
 
         var environment = await GetEnvironmentAsync(environmentProviders, logger);
         return TypedResults.Ok(ToResponse(recipe, features, environment));
+    }
+
+    internal static async Task<IResult> ValidateAsync(
+        HttpContext httpContext,
+        string recipeId,
+        IAuthorizationService authorizationService,
+        IShellFeaturesManager shellFeaturesManager,
+        IEnumerable<IRecipeHarvester> recipeHarvesters,
+        [FromServices] RecipeDescriptorCache recipeDescriptorCache,
+        [FromServices] IRecipeValidator recipeValidator,
+        IStringLocalizer<AdminController> localizer)
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, RecipePermissions.ManageRecipes))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        var features = await shellFeaturesManager.GetAvailableFeaturesAsync();
+        var recipes = await GetRecipesAsync(features, recipeHarvesters, recipeDescriptorCache);
+        var recipe = recipes.FirstOrDefault(candidate => string.Equals(GetRecipeId(candidate), recipeId, StringComparison.Ordinal));
+        if (recipe is null)
+        {
+            return httpContext.ApiNotFoundProblem(detail: localizer["Recipe not found."]);
+        }
+
+        return TypedResults.Ok(await recipeValidator.ValidateAsync(recipe, httpContext.RequestAborted));
     }
 
     internal static async Task<IResult> ExecuteAsync(

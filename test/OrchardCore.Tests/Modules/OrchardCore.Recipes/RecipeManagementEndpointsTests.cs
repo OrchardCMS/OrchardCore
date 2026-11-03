@@ -86,6 +86,47 @@ public class RecipeManagementEndpointsTests
     }
 
     [Fact]
+    public async Task Validate_RecipeFound_ReturnsTheResultWithoutExecuting()
+    {
+        var scenario = new Scenario();
+        var expected = new RecipeValidationResult { Valid = true };
+        var validator = new Mock<IRecipeValidator>();
+        validator.Setup(value => value.ValidateAsync(scenario.Recipe, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
+
+        var result = await RecipeManagementEndpoints.ValidateAsync(scenario.Context, scenario.RecipeId, scenario.Authorization, scenario.Features.Object,
+            [scenario.Harvester.Object], scenario.Cache, validator.Object, scenario.Localizer);
+
+        Assert.Same(expected, Assert.IsType<Ok<RecipeValidationResult>>(result).Value);
+        scenario.Executor.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Validate_WithoutManageRecipes_IsForbiddenBeforeLookingAtTheRecipe()
+    {
+        var scenario = new Scenario(authorized: false);
+        var validator = new Mock<IRecipeValidator>(MockBehavior.Strict);
+
+        var result = await RecipeManagementEndpoints.ValidateAsync(scenario.Context, "any", scenario.Authorization, scenario.Features.Object,
+            [scenario.Harvester.Object], scenario.Cache, validator.Object, scenario.Localizer);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        scenario.Harvester.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Validate_RecipeThatCantBeExecuted_IsNotFound()
+    {
+        var scenario = new Scenario();
+        scenario.Recipe.IsSetupRecipe = true;
+        var validator = new Mock<IRecipeValidator>(MockBehavior.Strict);
+
+        var result = await RecipeManagementEndpoints.ValidateAsync(scenario.Context, scenario.RecipeId, scenario.Authorization, scenario.Features.Object,
+            [scenario.Harvester.Object], scenario.Cache, validator.Object, scenario.Localizer);
+
+        Assert.Equal(StatusCodes.Status404NotFound, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+    }
+
+    [Fact]
     public async Task Execute_WithRequestId_UsesItAsTheExecutionIdAndRecordsTheOutcome()
     {
         var scenario = new Scenario();

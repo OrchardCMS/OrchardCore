@@ -69,6 +69,7 @@ public class OwnedModuleEndpointMetadataTests
 
         AssertOperation(endpoints, "api/recipes", "GET", "ApiListRecipes", "Recipes", ["recipes"], "list", null, [200, 400, 401, 403]);
         AssertOperation(endpoints, "api/recipes/{recipeId}", "GET", "ApiGetRecipe", "Recipes", ["recipes"], "show", null, [200, 401, 403, 404]);
+        AssertOperation(endpoints, "api/recipes/{recipeId}:validate", "POST", "ApiValidateRecipe", "Recipes", ["recipes"], "validate", null, [200, 401, 403, 404]);
         AssertOperation(endpoints, "api/recipes/{recipeId}:execute", "POST", "ApiExecuteRecipe", "Recipes", ["recipes"], "execute", "application/json", [200, 400, 401, 403, 404, 409]);
         AssertOperation(endpoints, "api/recipes/executions/{executionId}", "GET", "ApiGetRecipeExecution", "Recipes", ["recipes", "executions"], "show", null, [200, 401, 403, 404]);
 
@@ -175,6 +176,18 @@ public class OwnedModuleEndpointMetadataTests
         {
             Assert.Equal(nextStepState, Assert.Single(metadata.NextSteps).WhenValue);
         }
+    }
+
+    [Fact]
+    public void Endpoints_RecipeValidation_IsReadOnlyWithoutConfirmation()
+    {
+        var metadata = CreateEndpoints()
+            .Single(endpoint => string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), "api/recipes/{recipeId}:validate", StringComparison.Ordinal))
+            .Metadata.GetRequiredMetadata<CliOperationMetadata>();
+
+        Assert.True(metadata.ReadOnly);
+        Assert.False(metadata.RequiresConfirmation);
+        Assert.False(metadata.ExcludedFromMcp);
     }
 
     [Fact]
