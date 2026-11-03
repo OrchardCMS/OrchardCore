@@ -234,4 +234,4 @@ catch (Exception ex)
 
 A module can also use its own `ActivitySource` or `Meter`, and add its name to the `Tracing:Sources` or `Metrics:Meters` settings.
 
-As these sources only depend on `System.Diagnostics`, the Orchard Core telemetry can also be watched without OpenTelemetry, e.g. with `dotnet-counters monitor --counters OrchardCore,System.Runtime`.
+As these sources only depend on `System.Diagnostics`, the Orchard Core telemetry can also be watched without OpenTelemetry, e.g. with `dotnet-counters monitor --counters OrchardCore,System.Runtime`. The `orchardcore.tenants` and `orchardcore.tenants.loaded` gauges are the exception, as they are only observed once `AddOrchardCoreInstrumentation()` or `AddOpenTelemetry()` has configured the metrics.
