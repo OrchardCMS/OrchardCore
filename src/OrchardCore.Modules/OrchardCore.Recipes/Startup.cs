@@ -24,6 +24,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IRemoteManagementCapabilityProvider, RecipeRemoteManagementCapabilityProvider>();
+        services.AddSingleton<RecipeDescriptorCache>();
+        services.AddScoped<IRecipeExecutionStore, RecipeExecutionStore>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<RecipesPermissionProvider>();
 

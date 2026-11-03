@@ -63,7 +63,7 @@ internal static class RecipeManagementEndpoints
         routes.MapPost(RoutePrefix + "/{recipeId}:execute", ExecuteAsync)
             .WithName("ApiExecuteRecipe")
             .WithSummary("Executes a recipe.")
-            .WithDescription("Executes a non-setup recipe by reusing the existing recipe executor and environment providers.")
+            .WithDescription("Executes a non-setup recipe by reusing the existing recipe executor and environment providers. The response waits for the end of the execution. Send a requestId to get the outcome with a status request if the connection is lost, or by repeating the request, which doesn't execute the recipe again.")
             .WithCliCommand(new CliOperationMetadata(["recipes"], "execute")
             {
                 Capability = RecipeManagementApiEndpointConventions.CapabilityName,
@@ -76,6 +76,21 @@ internal static class RecipeManagementEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        routes.MapGet(RoutePrefix + "/executions/{executionId}", GetExecutionAsync)
+            .WithName("ApiGetRecipeExecution")
+            .WithSummary("Gets the status of a recipe execution.")
+            .WithDescription("Returns the state of an execution, identified by the requestId sent to execute a recipe or by the executionId it returned. The most recent 100 executions are kept.")
+            .WithCliCommand(new CliOperationMetadata(["recipes", "executions"], "show")
+            {
+                Capability = RecipeManagementApiEndpointConventions.CapabilityName,
+                Arguments = { new CliArgumentMetadata("executionId", 0) },
+            })
+            .Produces<RecipeExecutionStatusResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return builder;
@@ -86,6 +101,7 @@ internal static class RecipeManagementEndpoints
         IAuthorizationService authorizationService,
         IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IRecipeHarvester> recipeHarvesters,
+        [FromServices] RecipeDescriptorCache recipeDescriptorCache,
         IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
         ILogger<AdminController> logger,
         [AsParameters] RecipeListRequest request)
@@ -104,7 +120,7 @@ internal static class RecipeManagementEndpoints
         }
 
         var features = await shellFeaturesManager.GetAvailableFeaturesAsync();
-        var recipes = await GetRecipesAsync(features, recipeHarvesters);
+        var recipes = await GetRecipesAsync(features, recipeHarvesters, recipeDescriptorCache);
         var environment = await GetEnvironmentAsync(environmentProviders, logger);
 
         var filtered = recipes
@@ -127,6 +143,7 @@ internal static class RecipeManagementEndpoints
         IAuthorizationService authorizationService,
         IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IRecipeHarvester> recipeHarvesters,
+        [FromServices] RecipeDescriptorCache recipeDescriptorCache,
         IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
         ILogger<AdminController> logger,
         IStringLocalizer<AdminController> localizer)
@@ -137,7 +154,7 @@ internal static class RecipeManagementEndpoints
         }
 
         var features = await shellFeaturesManager.GetAvailableFeaturesAsync();
-        var recipes = await GetRecipesAsync(features, recipeHarvesters);
+        var recipes = await GetRecipesAsync(features, recipeHarvesters, recipeDescriptorCache);
         var recipe = recipes.FirstOrDefault(candidate => string.Equals(GetRecipeId(candidate), recipeId, StringComparison.Ordinal));
         if (recipe is null)
         {
@@ -157,6 +174,8 @@ internal static class RecipeManagementEndpoints
         ShellSettings shellSettings,
         IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IRecipeHarvester> recipeHarvesters,
+        [FromServices] RecipeDescriptorCache recipeDescriptorCache,
+        [FromServices] IRecipeExecutionStore recipeExecutions,
         IRecipeExecutor recipeExecutor,
         IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
         ILogger<AdminController> logger,
@@ -169,8 +188,13 @@ internal static class RecipeManagementEndpoints
             return httpContext.ApiForbidProblem();
         }
 
+        if (request.RequestId is not null && !IsValidRequestId(request.RequestId))
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["The request ID must have 1 to 128 letters, digits, hyphens or underscores."]);
+        }
+
         var features = await shellFeaturesManager.GetAvailableFeaturesAsync();
-        var recipes = await GetRecipesAsync(features, recipeHarvesters);
+        var recipes = await GetRecipesAsync(features, recipeHarvesters, recipeDescriptorCache);
         var recipe = recipes.FirstOrDefault(candidate => string.Equals(GetRecipeId(candidate), recipeId, StringComparison.Ordinal));
         if (recipe is null)
         {
@@ -192,10 +216,19 @@ internal static class RecipeManagementEndpoints
                 : JsonSerializer.Deserialize<object>(parameter.Value.GetRawText());
         }
 
+        var executionId = request.RequestId ?? Guid.NewGuid().ToString("n");
+        var (started, execution) = await recipeExecutions.TryStartAsync(executionId, recipeId, recipe.Name);
+        if (!started)
+        {
+            return DescribeExistingExecution(httpContext, execution, recipeId, recipe, localizer);
+        }
+
         try
         {
-            var executionId = Guid.NewGuid().ToString("n");
+            // A disconnected client doesn't cancel the execution: its steps commit independently, so stopping
+            // would leave the recipe partially applied, while the client can still get the outcome from its status.
             await recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
+            await recipeExecutions.CompleteAsync(executionId, RecipeExecutionState.Succeeded);
             await shellHost.ReleaseShellContextAsync(shellSettings);
 
             return TypedResults.Ok(new RecipeExecutionResponse
@@ -209,20 +242,82 @@ internal static class RecipeManagementEndpoints
         catch (RecipeExecutionException exception)
         {
             logger.LogError(exception, "Unable to execute recipe '{RecipeName}'.", recipe.Name);
-            return TypedResults.Problem(
-                title: localizer["Recipe execution failed."],
-                detail: string.Join(' ', exception.StepResult.Errors),
-                statusCode: StatusCodes.Status400BadRequest);
+            await recipeExecutions.CompleteAsync(executionId, RecipeExecutionState.Failed, exception.StepResult.Errors);
+            return ExecutionFailed(executionId, string.Join(' ', exception.StepResult.Errors), localizer);
         }
         catch (Exception exception) when (!exception.IsFatal())
         {
             logger.LogError(exception, "Unable to execute recipe '{RecipeName}'.", recipe.Name);
-            return TypedResults.Problem(
-                title: localizer["Recipe execution failed."],
-                detail: localizer["Unexpected error occurred while running the '{0}' recipe.", recipe.DisplayName],
-                statusCode: StatusCodes.Status400BadRequest);
+            string detail = localizer["Unexpected error occurred while running the '{0}' recipe.", recipe.DisplayName];
+            await recipeExecutions.CompleteAsync(executionId, RecipeExecutionState.Failed, [detail]);
+            return ExecutionFailed(executionId, detail, localizer);
         }
     }
+
+    internal static async Task<IResult> GetExecutionAsync(
+        HttpContext httpContext,
+        string executionId,
+        IAuthorizationService authorizationService,
+        [FromServices] IRecipeExecutionStore recipeExecutions,
+        IStringLocalizer<AdminController> localizer)
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, RecipePermissions.ManageRecipes))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        var execution = await recipeExecutions.FindAsync(executionId);
+        if (execution is null)
+        {
+            return httpContext.ApiNotFoundProblem(detail: localizer["Recipe execution not found."]);
+        }
+
+        return TypedResults.Ok(new RecipeExecutionStatusResponse
+        {
+            ExecutionId = execution.ExecutionId,
+            RecipeId = execution.RecipeId,
+            RecipeName = execution.RecipeName,
+            State = execution.State.ToString().ToLowerInvariant(),
+            Errors = execution.Errors,
+            StartedUtc = execution.StartedUtc,
+            CompletedUtc = execution.CompletedUtc,
+        });
+    }
+
+    // Repeating a request reports the outcome of the first one, it never executes the recipe again.
+    private static IResult DescribeExistingExecution(HttpContext httpContext, RecipeExecution execution, string recipeId, RecipeDescriptor recipe, IStringLocalizer localizer)
+    {
+        if (execution.RecipeId != recipeId)
+        {
+            return TypedResults.Problem(detail: localizer["The request ID already belongs to the execution of another recipe."], statusCode: StatusCodes.Status409Conflict);
+        }
+
+        return execution.State switch
+        {
+            RecipeExecutionState.Succeeded => TypedResults.Ok(new RecipeExecutionResponse
+            {
+                ExecutionId = execution.ExecutionId,
+                RecipeId = recipeId,
+                RecipeName = recipe.Name,
+                DisplayName = recipe.DisplayName,
+            }),
+            RecipeExecutionState.Failed => ExecutionFailed(execution.ExecutionId, string.Join(' ', execution.Errors), localizer),
+            _ => TypedResults.Problem(
+                detail: localizer["This request has no outcome yet. Get the status of the execution, and use another request ID to execute the recipe again."],
+                statusCode: StatusCodes.Status409Conflict,
+                extensions: new Dictionary<string, object> { ["executionId"] = execution.ExecutionId }),
+        };
+    }
+
+    private static IResult ExecutionFailed(string executionId, string detail, IStringLocalizer localizer)
+        => TypedResults.Problem(
+            title: localizer["Recipe execution failed."],
+            detail: detail,
+            statusCode: StatusCodes.Status400BadRequest,
+            extensions: new Dictionary<string, object> { ["executionId"] = executionId });
+
+    private static bool IsValidRequestId(string requestId)
+        => requestId.Length is > 0 and <= 128 && requestId.All(character => char.IsAsciiLetterOrDigit(character) || character is '-' or '_');
 
     internal static string GetRecipeId(RecipeDescriptor recipe)
         => WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes($"{recipe.BasePath}|{recipe.RecipeFileInfo.Name}"));
@@ -304,10 +399,10 @@ internal static class RecipeManagementEndpoints
         return parameters.Values.OrderBy(parameter => parameter.Name, StringComparer.OrdinalIgnoreCase).ToArray();
     }
 
-    private static async Task<RecipeDescriptor[]> GetRecipesAsync(IEnumerable<IFeatureInfo> features, IEnumerable<IRecipeHarvester> recipeHarvesters)
+    private static async Task<RecipeDescriptor[]> GetRecipesAsync(IEnumerable<IFeatureInfo> features, IEnumerable<IRecipeHarvester> recipeHarvesters, RecipeDescriptorCache cache)
     {
-        var collections = await Task.WhenAll(recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
-        return collections.SelectMany(collection => collection)
+        var recipes = await cache.GetAsync(recipeHarvesters);
+        return recipes
             .Where(recipe => !recipe.IsSetupRecipe
                 && (recipe.Tags == null || !recipe.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase))
                 && features.Any(feature => recipe.BasePath != null && feature.Extension?.SubPath != null && recipe.BasePath.Contains(feature.Extension.SubPath, StringComparison.OrdinalIgnoreCase)))
@@ -352,6 +447,9 @@ internal static class RecipeManagementEndpoints
 
     internal sealed class RecipeExecuteRequest
     {
+        /// <summary>Gets an optional caller-generated identifier of the execution, which makes retries safe.</summary>
+        public string RequestId { get; init; }
+
         public Dictionary<string, JsonElement> Parameters { get; init; } = [];
     }
 
@@ -388,6 +486,19 @@ internal static class RecipeManagementEndpoints
         public string Source { get; init; } = string.Empty;
         public string DefaultValue { get; init; }
         public string CurrentValue { get; init; }
+    }
+
+    internal sealed class RecipeExecutionStatusResponse
+    {
+        public string ExecutionId { get; init; } = string.Empty;
+        public string RecipeId { get; init; } = string.Empty;
+        public string RecipeName { get; init; }
+
+        /// <summary>Gets the state: running, succeeded, failed, or uncertain when no outcome was reported in time.</summary>
+        public string State { get; init; } = string.Empty;
+        public string[] Errors { get; init; } = [];
+        public DateTime StartedUtc { get; init; }
+        public DateTime? CompletedUtc { get; init; }
     }
 
     internal sealed class RecipeExecutionResponse
