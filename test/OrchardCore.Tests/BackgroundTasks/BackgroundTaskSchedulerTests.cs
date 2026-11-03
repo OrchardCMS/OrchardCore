@@ -37,6 +37,26 @@ public class BackgroundTaskSchedulerTests
     }
 
     [Fact]
+    public void CanRun_InvalidSchedule_ReturnsFalse()
+    {
+        var clock = new FakeClock(_referenceTime.AddMinutes(10));
+        var scheduler = CreateScheduler(clock, "not a cron expression");
+
+        Assert.False(scheduler.CanRun());
+    }
+
+    [Fact]
+    public void CanRun_QueuedTaskWithInvalidSchedule_ReturnsTrue()
+    {
+        var clock = new FakeClock(_referenceTime);
+        var scheduler = CreateScheduler(clock, "not a cron expression");
+
+        scheduler.RequestRun();
+
+        Assert.True(scheduler.CanRun());
+    }
+
+    [Fact]
     public void CanRun_QueuedDisabledTaskNotDue_ReturnsTrue()
     {
         var clock = new FakeClock(_referenceTime.AddSeconds(1));

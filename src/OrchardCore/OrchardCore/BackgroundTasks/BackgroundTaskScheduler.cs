@@ -58,7 +58,14 @@ public sealed class BackgroundTaskScheduler
             referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
         }
 
-        var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
+        // An invalid schedule only prevents this task from being scheduled, not the other tasks of the background service.
+        var schedule = CrontabSchedule.TryParse(Settings.Schedule);
+        if (schedule is null)
+        {
+            return false;
+        }
+
+        var nextStartTime = schedule.GetNextOccurrence(referenceTime);
         if (now >= nextStartTime)
         {
             if (Settings.Enable && !Released && Updated)
