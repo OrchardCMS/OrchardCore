@@ -319,10 +319,9 @@ internal sealed class ModularBackgroundService : BackgroundService
                 foreach (var task in tasks)
                 {
                     var taskName = task.GetTaskName();
-                    var tenantTaskName = BackgroundTaskMonitor.GetKey(tenant, taskName);
-                    if (!_monitor.Schedulers.TryGetValue(tenantTaskName, out var scheduler))
+                    if (!_monitor.Schedulers.TryGetValue((tenant, taskName), out var scheduler))
                     {
-                        _monitor.Schedulers[tenantTaskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock, _options.MaxRecentRuns);
+                        _monitor.Schedulers[(tenant, taskName)] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock, _options.MaxRecentRuns);
                     }
 
                     scheduler.TimeZone = timeZone;
@@ -365,21 +364,16 @@ internal sealed class ModularBackgroundService : BackgroundService
     {
         try
         {
+            // A run requested on demand doesn't wait for the end of the polling time nor of the minimum idle time.
             var minimumIdleTime = Task.Delay(_options.MinimumIdleTime, stoppingToken);
-            if (await Task.WhenAny(minimumIdleTime, _monitor.RunRequested) == minimumIdleTime)
+            await Task.WhenAny(Task.WhenAll(minimumIdleTime, pollingDelay), _monitor.RunRequested);
+            stoppingToken.ThrowIfCancellationRequested();
+
+            // It only waits for a shorter idle time, so that it starts promptly.
+            if (!minimumIdleTime.IsCompleted)
             {
-                await minimumIdleTime;
-
-                // A run requested on demand doesn't wait for the end of the polling time.
-                await Task.WhenAny(pollingDelay, _monitor.RunRequested);
-                stoppingToken.ThrowIfCancellationRequested();
-
-                return;
+                await Task.Delay(_requestedRunIdleTime, stoppingToken);
             }
-
-            // A run requested before the end of the minimum idle time only waits for a shorter idle time,
-            // so that it starts promptly.
-            await Task.Delay(_requestedRunIdleTime < _options.MinimumIdleTime ? _requestedRunIdleTime : _options.MinimumIdleTime, stoppingToken);
         }
         catch (OperationCanceledException)
         {
@@ -460,7 +454,7 @@ internal sealed class ModularBackgroundService : BackgroundService
 
     private void CleanSchedulers(string tenant, IEnumerable<IBackgroundTask> tasks)
     {
-        var validKeys = tasks.Select(task => BackgroundTaskMonitor.GetKey(tenant, task.GetTaskName())).ToArray();
+        var validKeys = tasks.Select(task => (tenant, task.GetTaskName())).ToArray();
 
         var keys = _monitor.Schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
         foreach (var key in keys)

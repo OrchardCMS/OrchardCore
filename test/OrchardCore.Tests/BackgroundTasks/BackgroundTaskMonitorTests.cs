@@ -147,7 +147,7 @@ public class BackgroundTaskMonitorTests
             Updated = true,
         };
 
-        monitor.Schedulers[BackgroundTaskMonitor.GetKey(tenant, name)] = scheduler;
+        monitor.Schedulers[(tenant, name)] = scheduler;
 
         return scheduler;
     }

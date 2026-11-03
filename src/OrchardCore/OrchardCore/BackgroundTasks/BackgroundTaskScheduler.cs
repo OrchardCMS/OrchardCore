@@ -13,7 +13,6 @@ public sealed class BackgroundTaskScheduler
     private readonly IClock _clock;
     private readonly int _maxRecentRuns;
     private readonly Lock _lock = new();
-    private readonly List<BackgroundTaskRun> _recentRuns = [];
     private BackgroundTaskTrigger _trigger;
 
     public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
@@ -125,19 +124,10 @@ public sealed class BackgroundTaskScheduler
 
             if (_maxRecentRuns > 0)
             {
-                _recentRuns.Insert(0, run);
-                if (_recentRuns.Count > _maxRecentRuns)
-                {
-                    _recentRuns.RemoveRange(_maxRecentRuns, _recentRuns.Count - _maxRecentRuns);
-                }
-
-                State.RecentRuns = _recentRuns.ToArray();
+                State.RecentRuns = [run, .. State.RecentRuns.Take(_maxRecentRuns - 1)];
             }
 
-            if (State.Status == BackgroundTaskStatus.Running)
-            {
-                State.Status = BackgroundTaskStatus.Idle;
-            }
+            State.Status = BackgroundTaskStatus.Idle;
         }
     }
 

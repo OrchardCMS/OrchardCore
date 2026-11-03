@@ -10,9 +10,9 @@ internal sealed class BackgroundTaskMonitor : IBackgroundTaskMonitor
     private TaskCompletionSource _runRequested = CreateRunRequestedSource();
 
     /// <summary>
-    /// The schedulers of all tenants, keyed by <see cref="GetKey(string, string)"/>.
+    /// The schedulers of all tenants.
     /// </summary>
-    public ConcurrentDictionary<string, BackgroundTaskScheduler> Schedulers { get; } = new();
+    public ConcurrentDictionary<(string Tenant, string Name), BackgroundTaskScheduler> Schedulers { get; } = new();
 
     /// <summary>
     /// A task that completes when a run is requested, until <see cref="ResetRunRequested"/> is called.
@@ -21,9 +21,9 @@ internal sealed class BackgroundTaskMonitor : IBackgroundTaskMonitor
 
     public Task<IReadOnlyList<BackgroundTaskState>> GetStatesAsync(string tenant)
     {
-        IReadOnlyList<BackgroundTaskState> states = Schedulers.Values
-            .Where(scheduler => scheduler.Tenant == tenant)
-            .Select(scheduler => scheduler.GetState())
+        IReadOnlyList<BackgroundTaskState> states = Schedulers
+            .Where(scheduler => scheduler.Key.Tenant == tenant)
+            .Select(scheduler => scheduler.Value.GetState())
             .ToArray();
 
         return Task.FromResult(states);
@@ -67,24 +67,8 @@ internal sealed class BackgroundTaskMonitor : IBackgroundTaskMonitor
         }
     }
 
-    public static string GetKey(string tenant, string name) => tenant + name;
-
     private BackgroundTaskScheduler GetScheduler(string tenant, string name)
-    {
-        if (tenant is null || name is null)
-        {
-            return null;
-        }
-
-        if (Schedulers.TryGetValue(GetKey(tenant, name), out var scheduler) &&
-            scheduler.Tenant == tenant &&
-            scheduler.Name == name)
-        {
-            return scheduler;
-        }
-
-        return null;
-    }
+        => Schedulers.GetValueOrDefault((tenant, name));
 
     private static TaskCompletionSource CreateRunRequestedSource()
         => new(TaskCreationOptions.RunContinuationsAsynchronously);
