@@ -594,6 +594,7 @@ Supply an OAuth access token in `Authorization: Bearer <access-token>` on every
 request. Tokens use the same tenant OpenID validation and API authentication scheme
 as Pomi. The authenticated user or application role needs **Access remote management
 APIs**, and each tool call additionally enforces the original operation's permissions.
+Access tokens must carry the `orchardcore.management` scope, on management APIs too.
 An administrator browser cookie does not authorize MCP requests.
 
 The tenant publishes OAuth protected resource metadata at

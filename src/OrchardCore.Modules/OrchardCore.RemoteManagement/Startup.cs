@@ -15,6 +15,7 @@ public sealed class Startup : StartupBase
     {
         services.AddOpenApi();
         services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IAuthorizationHandler, ManagementScopeAuthorizationHandler>();
         services.AddScoped<RemoteManagementManifestService>();
         services.AddSingleton<RemoteManagementApiRevision>();
         services.AddSingleton<IRemoteManagementCapabilityProvider, DefaultCapabilityProvider>();
