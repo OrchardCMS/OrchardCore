@@ -42,6 +42,10 @@ public sealed class AssistedTemplatesTests : CmsTestBase, IClassFixture<CmsSetup
         response = await page.GotoAsync($"{prefix}/Admin/TemplateInspector");
         Assert.Equal(404, response?.Status);
 
+        // The filter of what the templates render stays, with its value, when a search matches nothing.
+        await page.GotoAndAssertOkAsync($"{prefix}/Admin/TemplateSources/Feature?Options.Area=All&Options.Search=NoTemplateMatchesThis");
+        await Assertions.Expect(page.Locator("select[name='Options.Area']")).ToHaveValueAsync("All");
+
         // Shape Tracing inspects the content items and suggests the alternates of the templates.
         await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Templates.ShapeTracing");
 

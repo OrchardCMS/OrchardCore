@@ -100,15 +100,15 @@ public sealed class TemplateSourceController : Controller
 
         IEnumerable<SourceTemplateEntry> entries = await _sourceTemplatesService.GetEntriesAsync(templateSource, options.AdminTemplates, options.Scope);
 
+        // Only some sources tell which templates render the admin, the others don't show this filter.
+        var hasAreas = entries.Any(entry => entry.Template.IsAdmin != null);
+
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
             entries = entries.Where(entry =>
                 entry.Template.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase) ||
                 entry.Template.RelativePath.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
         }
-
-        // Only some sources tell which templates render the admin, the others don't show this filter.
-        var hasAreas = entries.Any(entry => entry.Template.IsAdmin != null);
 
         if (hasAreas)
         {
