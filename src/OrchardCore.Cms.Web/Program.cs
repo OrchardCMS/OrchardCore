@@ -9,10 +9,17 @@ builder.Services
     .AddOrchardCms()
     .AddSetupFeatures("OrchardCore.AutoSetup");
 
-builder.Services
-    .AddReverseProxy()
-    .AddTenantClusters()
-    .LoadFromConfig(builder.Configuration.GetSection(ClustersOptions.ConfigurationSection));
+// Tenant clustering is only wired when its configuration section exists on start.
+var clustersSection = builder.Configuration.GetSection(ClustersOptions.ConfigurationSection);
+var useTenantClusters = clustersSection.Exists();
+
+if (useTenantClusters)
+{
+    builder.Services
+        .AddReverseProxy()
+        .AddTenantClusters()
+        .LoadFromConfig(clustersSection);
+}
 
 var app = builder.Build();
 
@@ -23,17 +30,23 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-app.UseTenantClusterRouting();
+if (useTenantClusters)
+{
+    app.UseTenantClusterRouting();
+}
 
 app.UseOrchardCore();
 
-app.MapReverseProxy(proxyPipeline =>
+if (useTenantClusters)
 {
-    proxyPipeline
-        .UseTenantClusters()
-        .UseSessionAffinity()
-        .UseLoadBalancing()
-        .UsePassiveHealthChecks();
-});
+    app.MapReverseProxy(proxyPipeline =>
+    {
+        proxyPipeline
+            .UseTenantClusters()
+            .UseSessionAffinity()
+            .UseLoadBalancing()
+            .UsePassiveHealthChecks();
+    });
+}
 
 await app.RunAsync();
