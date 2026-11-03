@@ -175,8 +175,14 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
 
         passkey.Name = model.Name.Trim();
 
-        await UserManager.AddOrUpdatePasskeyAsync(user, passkey);
-        await Notifier.SuccessAsync(H["The passkey was renamed."]);
+        if ((await UserManager.AddOrUpdatePasskeyAsync(user, passkey)).Succeeded)
+        {
+            await Notifier.SuccessAsync(H["The passkey was renamed."]);
+        }
+        else
+        {
+            await Notifier.ErrorAsync(H["The passkey couldn't be renamed."]);
+        }
 
         return RedirectToPasskeys();
     }
@@ -202,8 +208,14 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
 
         async Task RemovePasskeyAsync()
         {
-            await UserManager.RemovePasskeyAsync(user, passkey.CredentialId);
-            await Notifier.SuccessAsync(H["The passkey was removed."]);
+            if ((await UserManager.RemovePasskeyAsync(user, passkey.CredentialId)).Succeeded)
+            {
+                await Notifier.SuccessAsync(H["The passkey was removed."]);
+            }
+            else
+            {
+                await Notifier.ErrorAsync(H["The passkey couldn't be removed."]);
+            }
         }
 
         // Removing the last passkey removes the passkey two-factor method.
