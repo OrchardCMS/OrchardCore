@@ -41,7 +41,6 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
         if ((context.HttpContext?.User.Identity?.IsAuthenticated ?? false) == false ||
             context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase) ||
             context.HttpContext.Request.Path.Equals("/" + _userOptions.TwoFactorAuthenticationPath, StringComparison.OrdinalIgnoreCase) ||
-            context.HttpContext.Request.Path.Equals("/" + _userOptions.SecurityPath, StringComparison.OrdinalIgnoreCase) ||
             context.HttpContext.Request.Path.Equals("/TwoFactor-Authenticator/", StringComparison.OrdinalIgnoreCase))
         {
             return;

@@ -1,5 +1,4 @@
 using System.Buffers.Text;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,14 +9,10 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class PasskeyUserSecurityDisplayDriver : DisplayDriver<UserSecurity>
 {
-    private readonly UserManager<IUser> _userManager;
     private readonly TwoFactorOptions _twoFactorOptions;
 
-    public PasskeyUserSecurityDisplayDriver(
-        UserManager<IUser> userManager,
-        IOptions<TwoFactorOptions> twoFactorOptions)
+    public PasskeyUserSecurityDisplayDriver(IOptions<TwoFactorOptions> twoFactorOptions)
     {
-        _userManager = userManager;
         _twoFactorOptions = twoFactorOptions.Value;
     }
 
@@ -28,10 +23,9 @@ public sealed class PasskeyUserSecurityDisplayDriver : DisplayDriver<UserSecurit
             return null;
         }
 
-        return Initialize<PasskeysViewModel>("UserSecurityPasskeys", async viewModel =>
+        return Initialize<PasskeysViewModel>("UserSecurityPasskeys", viewModel =>
         {
             viewModel.IsTwoFactorMethod = _twoFactorOptions.Providers.Contains(UserConstants.PasskeyTwoFactorProvider);
-            viewModel.IsTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
             viewModel.Passkeys = user.Passkeys
                 .OrderBy(passkey => passkey.CreatedUtc)
                 .Select(passkey => new PasskeyEntryViewModel

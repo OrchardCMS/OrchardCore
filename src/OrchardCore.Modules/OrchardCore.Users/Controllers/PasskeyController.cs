@@ -219,8 +219,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         }
 
         // Removing the last passkey removes the passkey two-factor method.
-        if (IsTwoFactorMethod &&
-            await UserManager.GetTwoFactorEnabledAsync(user) &&
+        if (await UserManager.GetTwoFactorEnabledAsync(user) &&
             (await UserManager.GetPasskeysAsync(user)).Count == 1 &&
             (await GetTwoFactorProvidersAsync(user)).Contains(UserConstants.PasskeyTwoFactorProvider))
         {

@@ -224,22 +224,18 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
         var providers = await GetTwoFactorProvidersAsync(user);
 
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && user is User u && providers.Contains(model.PreferredProvider))
         {
-            if (user is User u && providers.Contains(model.PreferredProvider))
+            u.Put(new TwoFactorPreference()
             {
-                u.Put(new TwoFactorPreference()
-                {
-                    DefaultProvider = model.PreferredProvider,
-                });
+                DefaultProvider = model.PreferredProvider,
+            });
 
-                await UserManager.UpdateAsync(u);
+            await UserManager.UpdateAsync(u);
 
-                await Notifier.SuccessAsync(H["Preferences were updated successfully."]);
+            await Notifier.SuccessAsync(H["Preferences were updated successfully."]);
 
-                return RedirectToTwoFactorIndex();
-            }
-
+            return RedirectToTwoFactorIndex();
         }
 
         await Notifier.ErrorAsync(H["Unable to update preferences."]);

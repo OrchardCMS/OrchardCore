@@ -31,11 +31,6 @@ public sealed class PasskeyTwoFactorTokenProvider : IUserTwoFactorTokenProvider<
 
     public async Task<bool> ValidateAsync(string purpose, string token, UserManager<IUser> manager, IUser user)
     {
-        if (string.IsNullOrEmpty(token))
-        {
-            return false;
-        }
-
         // Resolved lazily, as the 'UserManager' that creates this provider is itself a dependency of the 'PasskeyService'.
         var passkeyService = _serviceProvider.GetRequiredService<PasskeyService>();
 

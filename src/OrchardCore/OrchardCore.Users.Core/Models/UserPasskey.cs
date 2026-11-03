@@ -41,7 +41,7 @@ public class UserPasskey
     public string[] Transports { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the user was verified, with a biometric or a PIN, when the passkey was last used.
+    /// Gets or sets whether the user was verified, with a biometric or a PIN, when the passkey was registered.
     /// </summary>
     public bool IsUserVerified { get; set; }
 
