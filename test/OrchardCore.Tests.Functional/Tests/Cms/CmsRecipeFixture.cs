@@ -187,6 +187,7 @@ public sealed class BackgroundTasksTestsFixture : CmsRecipeFixture
                 services.AddSingleton<IBackgroundTask, SucceedingTestBackgroundTask>();
                 services.AddSingleton<IBackgroundTask, FailingTestBackgroundTask>();
                 services.AddSingleton<IBackgroundTask, SlowTestBackgroundTask>();
+                services.AddSingleton<IBackgroundTask, NeverOccurringTestBackgroundTask>();
             });
         })
     {

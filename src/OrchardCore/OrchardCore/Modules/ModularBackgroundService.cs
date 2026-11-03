@@ -344,7 +344,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                     }
 
                     settings ??= task.GetDefaultSettings();
-                    if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule, StringComparison.Ordinal))
+                    if (scheduler.Released || !string.Equals(scheduler.Settings.Schedule, settings.Schedule, StringComparison.Ordinal))
                     {
                         scheduler.ReferenceTime = referenceTime;
                     }

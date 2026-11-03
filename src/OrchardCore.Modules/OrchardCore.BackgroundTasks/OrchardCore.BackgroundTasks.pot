@@ -246,6 +246,11 @@ msgstr ""
 
 #: Views/BackgroundTask/Details.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Never, the schedule is not a valid cron expression or never occurs."
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
 msgid "Next run"
 msgstr ""
 
@@ -311,11 +316,6 @@ msgstr ""
 
 #: Views/BackgroundTask/Details.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "The schedule is not a valid cron expression."
-msgstr ""
-
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
 msgid "The task has not completed any run yet."
 msgstr ""
 
@@ -344,6 +344,11 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
 msgid "Yes, lock timeout {0} ms, lock expiration {1} ms"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "due, waiting for the background service"
 msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
@@ -612,7 +617,12 @@ msgstr ""
 
 #: Views/BackgroundTaskEntry.NextRun.SummaryAdmin.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.NextRun.SummaryAdmin"
-msgid "invalid schedule"
+msgid "due"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.NextRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.NextRun.SummaryAdmin"
+msgid "never"
 msgstr ""
 
 #: Views/BackgroundTaskEntry.NextRun.SummaryAdmin.cshtml

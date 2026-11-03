@@ -46,6 +46,30 @@ public class BackgroundTaskSchedulerTests
         Assert.False(scheduler.CanRun());
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void CanRun_MissingSchedule_ReturnsFalse(string schedule)
+    {
+        var clock = new FakeClock(_referenceTime.AddMinutes(10));
+        var scheduler = CreateScheduler(clock, schedule);
+
+        Assert.False(scheduler.CanRun());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("America/New_York")]
+    [InlineData("Asia/Tokyo")]
+    public void CanRun_ScheduleThatNeverOccurs_ReturnsFalse(string timeZoneId)
+    {
+        var clock = new FakeClock(_referenceTime.AddYears(5));
+        var scheduler = CreateScheduler(clock, "0 0 31 2 *");
+        scheduler.TimeZone = timeZoneId is null ? null : clock.GetTimeZone(timeZoneId);
+
+        Assert.False(scheduler.CanRun());
+    }
+
     [Fact]
     public void CanRun_QueuedTaskWithInvalidSchedule_ReturnsTrue()
     {
@@ -348,6 +372,31 @@ public class BackgroundTaskSchedulerTests
         var scheduler = CreateScheduler(clock, "not a cron expression");
 
         Assert.Null(scheduler.GetNextStartTime());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void GetNextStartTime_MissingSchedule_ReturnsNull(string schedule)
+    {
+        var clock = new FakeClock(_referenceTime);
+        var scheduler = CreateScheduler(clock, schedule);
+
+        Assert.Null(scheduler.GetNextStartTime());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("America/New_York")]
+    [InlineData("Asia/Tokyo")]
+    public void GetNextStartTime_ScheduleThatNeverOccurs_ReturnsNull(string timeZoneId)
+    {
+        var clock = new FakeClock(_referenceTime);
+        var scheduler = CreateScheduler(clock, "0 0 31 2 *");
+        scheduler.TimeZone = timeZoneId is null ? null : clock.GetTimeZone(timeZoneId);
+
+        Assert.Null(scheduler.GetNextStartTime());
+        Assert.Null(scheduler.GetState().NextStartTime);
     }
 
     private static BackgroundTaskScheduler CreateScheduler(

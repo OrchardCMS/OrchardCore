@@ -36,7 +36,7 @@ public class BackgroundTaskState
 
     /// <summary>
     /// The UTC date and time of the next occurrence of the schedule, or <see langword="null"/> if the schedule is not
-    /// a valid cron expression. It is also set for a disabled task, as the background service only knows that a task
+    /// a valid cron expression or never occurs. It is also set for a disabled task, as the background service only knows that a task
     /// was disabled or enabled on its next polling. It can be in the past when the occurrence is due and waits for
     /// the background service to pick it up.
     /// </summary>

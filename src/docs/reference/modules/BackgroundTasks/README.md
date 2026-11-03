@@ -14,6 +14,8 @@ After enabling the feature, you'll be able to manage background tasks under Tool
 
 Each task of the list shows badges next to its title telling whether it is running or queued, when its last run started with its outcome and duration, when its next scheduled run is expected, and how many of its runs failed. The error message of a failed run is shown under the description of the task. With the **Grid** layout of the admin lists, the last run and the next run are shown in columns of their own. The **Status** filter lists the tasks that are running or queued, or whose last run failed.
 
+The next run of a task is shown as **due** when its scheduled time passed and the background service didn't start it yet, and as **never** when its schedule never occurs, like `0 0 31 2 *` on February 31, or is not a valid cron expression. Such a schedule only prevents this task from running on schedule, it can still be run on demand and the other tasks are not affected.
+
 The title of a task is the `Title` of its `[BackgroundTask]` attribute. A task that doesn't define one is shown with a title built from the name of its type, for instance **Chunk File Upload** for `ChunkFileUploadBackgroundTask`.
 
 Clicking the title of a task, or the **Details** item of its **Actions** menu, opens a page with:
@@ -36,6 +38,7 @@ The **Run now** item of the **Actions** menu of a task, available in the list an
 - A task that is already running or queued is not queued again.
 - A disabled task can also be run on demand, which is convenient to check a task before enabling it. Its schedule is not affected.
 - The task runs only on the server that handled the request, usually within a second or two, as the background service doesn't wait for the end of its polling time nor of its minimum idle time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run. In a web farm, the other servers are not affected, see [Running in a Web Farm](#running-in-a-web-farm).
+- The background service waits for all the tasks it started to complete before starting others, on any tenant. While a long task runs, a requested task stays queued, and a scheduled task is shown as due, until that task completes.
 - If the task was already due on that server, the requested run takes the place of the scheduled one. The next scheduled run is not affected.
 - Right after a tenant starts, its tasks are only known to the background service after its next polling, so a task may first be reported as not loaded yet. The request triggers that polling, so trying again a moment later succeeds.
 

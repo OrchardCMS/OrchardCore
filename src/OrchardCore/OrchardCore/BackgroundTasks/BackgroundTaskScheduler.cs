@@ -174,7 +174,7 @@ public sealed class BackgroundTaskScheduler
 
     /// <summary>
     /// Gets the UTC date and time of the next occurrence of the schedule, whether the task is enabled or not, or
-    /// <see langword="null"/> if the schedule is not a valid cron expression.
+    /// <see langword="null"/> if the schedule is not a valid cron expression or never occurs, like on February 31.
     /// </summary>
     public DateTime? GetNextStartTime()
     {
@@ -184,15 +184,21 @@ public sealed class BackgroundTaskScheduler
             return null;
         }
 
+        // The schedule applies to the local time of the tenant, as when checking if the task can run.
         var timeZone = TimeZone;
-        if (timeZone is null)
+        var localReferenceTime = timeZone is null ? ReferenceTime : _clock.ConvertToTimeZone(ReferenceTime, timeZone).DateTime;
+        var localNextStartTime = schedule.GetNextOccurrence(localReferenceTime);
+
+        // No occurrence was found before the maximum date, which can't be converted to another time zone.
+        if (localNextStartTime == DateTime.MaxValue)
         {
-            return DateTime.SpecifyKind(schedule.GetNextOccurrence(ReferenceTime), DateTimeKind.Utc);
+            return null;
         }
 
-        // The schedule applies to the local time of the tenant, as when checking if the task can run.
-        var localReferenceTime = _clock.ConvertToTimeZone(ReferenceTime, timeZone).DateTime;
-        var localNextStartTime = schedule.GetNextOccurrence(localReferenceTime);
+        if (timeZone is null)
+        {
+            return DateTime.SpecifyKind(localNextStartTime, DateTimeKind.Utc);
+        }
 
         // The offset depends on the instant, so it is first approximated with the offset at the local time read as UTC.
         var offset = _clock.ConvertToTimeZone(DateTime.SpecifyKind(localNextStartTime, DateTimeKind.Utc), timeZone).Offset;

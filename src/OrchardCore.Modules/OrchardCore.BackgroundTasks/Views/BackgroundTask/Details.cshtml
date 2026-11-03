@@ -1,3 +1,7 @@
+@using OrchardCore.Modules
+
+@inject IClock Clock
+
 @model BackgroundTaskDetailsViewModel
 
 @{
@@ -92,6 +96,11 @@
                                     {
                                         @T["Not scheduled, the task is disabled."]
                                     }
+                                    else if (state.NextStartTime <= Clock.UtcNow)
+                                    {
+                                        <span>@await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G"))</span>
+                                        <span class="text-muted">(@T["due, waiting for the background service"])</span>
+                                    }
                                     else if (state.NextStartTime is not null)
                                     {
                                         <span>@await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G"))</span>
@@ -99,7 +108,7 @@
                                     }
                                     else
                                     {
-                                        @T["The schedule is not a valid cron expression."]
+                                        @T["Never, the schedule is not a valid cron expression or never occurs."]
                                     }
                                 </dd>
 

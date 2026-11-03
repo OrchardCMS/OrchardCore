@@ -1,6 +1,9 @@
 @using OrchardCore
 @using OrchardCore.BackgroundTasks.ViewModels
 @using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Modules
+
+@inject IClock Clock
 
 @model ShapeViewModel<BackgroundTaskEntry>
 
@@ -22,13 +25,18 @@
         {
             <span class="fw-bold">@T["Next run"]</span>
         }
-        @if (nextStartTime is not null)
+        @if (nextStartTime <= Clock.UtcNow)
+        {
+            @* The background service picks it up on its next polling, or once the tasks being run complete. *@
+            @T["due"]
+        }
+        else if (nextStartTime is not null)
         {
             @await DisplayAsync(await New.TimeSpan(Utc: nextStartTime.Value))
         }
         else if (Model.Value.Enable)
         {
-            @T["invalid schedule"]
+            @T["never"]
         }
         else
         {

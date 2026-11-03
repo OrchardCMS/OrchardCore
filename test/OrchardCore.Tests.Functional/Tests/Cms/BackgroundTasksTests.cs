@@ -198,12 +198,27 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
         // The page is rendered before the background service knows about the new settings of the task.
         await row.Locator("a", new LocatorLocatorOptions { HasText = "Enable" }).ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        await Assertions.Expect(row.Locator("[data-next-run]")).Not.ToContainTextAsync("invalid schedule");
+        await Assertions.Expect(row.Locator("[data-next-run]")).Not.ToContainTextAsync("never");
         await Assertions.Expect(row.Locator("[data-next-run]")).Not.ToContainTextAsync("not scheduled");
 
         await row.Locator("a", new LocatorLocatorOptions { HasText = "Disable" }).ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await Assertions.Expect(row.Locator("[data-next-run]")).ToContainTextAsync("not scheduled");
+
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task List_ScheduleThatNeverOccurs_ShowsThatItNeverRuns()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        var row = await GotoLoadedTaskRowAsync(page, NeverOccurringTestBackgroundTask.TaskName);
+        await Assertions.Expect(row.Locator("[data-next-run]")).ToContainTextAsync("never");
+
+        await page.GotoAndAssertOkAsync($"/Admin/BackgroundTasks/Details/{NeverOccurringTestBackgroundTask.TaskName}");
+        await Assertions.Expect(page.Locator("[data-next-run]")).ToContainTextAsync("never occurs");
 
         await page.CloseAsync();
     }
@@ -273,6 +288,18 @@ public sealed class SlowTestBackgroundTask : IBackgroundTask
 
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         => Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
+}
+
+[BackgroundTask(
+    Title = "Functional Test Never Occurring Task",
+    Schedule = "0 0 31 2 *",
+    Description = "A task whose schedule is a valid cron expression that never occurs, in the functional tests.")]
+public sealed class NeverOccurringTestBackgroundTask : IBackgroundTask
+{
+    public static readonly string TaskName = typeof(NeverOccurringTestBackgroundTask).FullName;
+
+    public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        => Task.CompletedTask;
 }
 
 [BackgroundTask(
