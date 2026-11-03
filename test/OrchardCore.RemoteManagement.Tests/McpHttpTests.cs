@@ -213,6 +213,38 @@ public class McpHttpTests
     }
 
     [Theory]
+    [InlineData("dynamic-resource", HttpStatusCode.Forbidden)]
+    [InlineData("dynamic-no-resource", HttpStatusCode.Forbidden)]
+    [InlineData("client-credentials", HttpStatusCode.OK)]
+    [InlineData("no-client", HttpStatusCode.OK)]
+    public async Task Api_DynamicClientToken_IsRefused(string token, HttpStatusCode expected)
+    {
+        await using var app = await CreateApplicationAsync();
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        using var response = await client.GetAsync("/tenant-a/api/managed/1", TestContext.Current.CancellationToken);
+
+        Assert.Equal(expected, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Mcp_DynamicClientToken_CanInvokeTheToolOfARefusedOperation()
+    {
+        await using var app = await CreateApplicationAsync();
+        using var client = app.GetTestClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "dynamic-resource");
+
+        using var response = await SendAsync(client, "tools/call", """{"name":"managed_show","arguments":{"path":{"id":"42"}}}""");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        Assert.Contains("statusCode", body);
+        Assert.Contains("200", body);
+        Assert.DoesNotContain("403", body);
+    }
+
+    [Theory]
     [InlineData(null, false)]
     [InlineData("true", true)]
     public async Task Mcp_ConfirmationRequiredOperation_IsAToolOnlyWhenConfigured(string allowed, bool listed)
@@ -258,6 +290,7 @@ public class McpHttpTests
             .ReturnsAsync(ImmutableDictionary<string, JsonElement>.Empty.Add("orchardcore:remote-management:dynamic-mcp", JsonSerializer.SerializeToElement(true)));
         builder.Services.AddSingleton(applications.Object);
         builder.Services.AddScoped<IAuthorizationHandler, McpResourceAudienceAuthorizationHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, McpClientApiAccessAuthorizationHandler>();
         builder.Services.AddScoped(_ => new RemoteManagementManifestService([], Options.Create(new OpenIddictServerOptions()), new ShellSettings { Name = "TenantA" }));
         var startup = new McpStartup();
         startup.ConfigureServices(builder.Services);
@@ -292,6 +325,11 @@ public class McpHttpTests
             .WithName("ApiGetAmbientWidget")
             .WithCliCommand(new CliOperationMetadata(["widgets"], "ambient"))
             .RequireAuthorization(policy => policy.AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api).RequireClaim("widgets"));
+        app.MapGet("api/managed/{id}", (string id) => Results.Json(new { id }))
+            .WithName("ApiGetManaged")
+            .WithCliCommand(new CliOperationMetadata(["managed"], "show"))
+            .RequireAuthorization(policy => policy.AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api)
+                .AddRequirements(new PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)));
         app.MapDelete("api/widgets/{id}", (string id) => Results.Json(new { id }))
             .WithName("ApiDeleteWidget")
             .WithCliCommand(new CliOperationMetadata(["widgets"], "delete") { RequiresConfirmation = true })

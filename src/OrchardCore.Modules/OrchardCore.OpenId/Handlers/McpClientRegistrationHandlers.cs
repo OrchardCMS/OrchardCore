@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
@@ -132,6 +133,9 @@ internal static class McpClientRequestValidation
 
     internal static bool HasExpectedResource(OpenIddictRequest request, Uri baseUri) =>
         request.GetResources() is [var resource] && string.Equals(resource, GetTenantEndpoint(baseUri, "mcp"), StringComparison.Ordinal);
+
+    internal static string GetClientId(ClaimsPrincipal principal) =>
+        principal.GetPresenters().FirstOrDefault() ?? principal.GetClaim(OpenIddictConstants.Claims.ClientId);
 
     internal static async ValueTask<bool> IsDynamicClientAsync(IOpenIdApplicationManager applications, string clientId, CancellationToken cancellationToken)
     {

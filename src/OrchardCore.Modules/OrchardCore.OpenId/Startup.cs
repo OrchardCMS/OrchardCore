@@ -462,6 +462,7 @@ public sealed class RemoteManagementMcpStartup : StartupBase
         services.AddSingleton<McpClientRegistrationLimiter>();
         services.AddSingleton<McpServerOptionsCache>();
         services.AddScoped<IAuthorizationHandler, McpResourceAudienceAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, McpClientApiAccessAuthorizationHandler>();
         services.AddOptions<RemoteManagementMcpOptions>().Configure<IShellConfiguration>((options, configuration) => configuration.GetSection("OpenId:Mcp").Bind(options));
         services.AddOpenIddict().AddServer(options =>
         {

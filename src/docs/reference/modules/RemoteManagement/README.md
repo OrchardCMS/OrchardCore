@@ -718,6 +718,11 @@ MCP URL in their audiences alongside the existing management resources, and `/mc
 for another host of the tenant. Tokens of other applications, such as client credentials
 applications, preconfigured MCP clients and Pomi, have no MCP audience and aren't subject to this check.
 
+As anyone can register such a client, its tokens only work on `/mcp`: the management APIs and the other
+token-authenticated endpoints of the tenant answer `403` to them, whatever the permissions of the user who
+consented. The tools of `/mcp` keep working, as they run inside the `/mcp` request. Clients that need the APIs
+use a [manually registered](#manual-registration-and-unattended-clients) application.
+
 ### Registration endpoint and limits
 
 `POST /connect/mcp/register` is relative to the tenant URL prefix and accepts
@@ -915,7 +920,7 @@ The feature only opens a door: `AccessRemoteManagement` and the `orchardcore.man
 - **Turn it off when you don't need it.** Set `AllowDynamicClientRegistration` to `false`, lower `MaximumApplications`, and use [manual registration](#manual-registration-and-unattended-clients) for a known list of clients. Turning it off doesn't delete the existing applications or revoke their tokens.
 - **Destructive operations are left out by default.** A model can invoke a tool without asking anyone, so the operations for which Pomi asks a confirmation aren't tools unless `AllowConfirmationRequiredTools` is set, see [Tools](#tools). Setting it lets a model delete data or execute recipes with the permissions of the user who consented, and the annotations marking these tools are only advisory. Set it only for clients that ask before each call.
 - **Secrets stay out of tools.** Tool arguments and results reach the model's context and the client's transcript, so the [operations taking or returning credentials](#tools) aren't tools, and `settings_sections_update` refuses the sections that accept secrets. Use Pomi or the HTTP APIs for them.
-- **Audience.** `/mcp` requires the token of an automatically registered client to target that exact URL, see [Automatic client registration](#automatic-client-registration). This check is specific to `/mcp`: the same token is also accepted by the management APIs of the tenant, with the same permissions.
+- **Audience.** `/mcp` requires the token of an automatically registered client to target that exact URL, see [Automatic client registration](#automatic-client-registration). The same token is refused by the management APIs of the tenant, so that an application anyone can register can only use `/mcp`.
 
 Grant the people who connect MCP clients only the permissions they want a model to use, as a tool runs with theirs.
 

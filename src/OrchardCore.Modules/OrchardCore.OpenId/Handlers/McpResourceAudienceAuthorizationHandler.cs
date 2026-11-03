@@ -24,8 +24,7 @@ public sealed class McpResourceAudienceAuthorizationHandler : AuthorizationHandl
     /// <inheritdoc />
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, McpResourceAudienceRequirement requirement, HttpContext resource)
     {
-        var clientId = context.User.GetPresenters().FirstOrDefault() ?? context.User.GetClaim(OpenIddictConstants.Claims.ClientId);
-        if (!await McpClientRequestValidation.IsDynamicClientAsync(_applications, clientId, resource.RequestAborted))
+        if (!await McpClientRequestValidation.IsDynamicClientAsync(_applications, McpClientRequestValidation.GetClientId(context.User), resource.RequestAborted))
         {
             context.Succeed(requirement);
 
