@@ -400,6 +400,29 @@ public class PasskeyControllerTests
         // Assert
         Assert.Contains("id=\"two-factor\"", page);
         Assert.Contains("id=\"passkeys\"", page);
+
+        // Without a passkey, the method tells the user how to set it up.
+        Assert.Contains("Add a passkey below to use passkeys as a two-factor method.", page);
+        Assert.DoesNotContain("Ready", page);
+    }
+
+    [Fact]
+    public async Task Security_WithPasskey_ShowsPasskeyMethodAsReady()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
+        var client = CreateClient(context, out _);
+        using var authenticator = new TestPasskeyAuthenticator();
+
+        await LoginWithPasswordAsync(client);
+        await RegisterPasskeyAsync(client, authenticator, "My laptop");
+
+        // Act
+        var page = await client.GetStringAsync("Security", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Contains("Ready", page);
+        Assert.DoesNotContain("Add a passkey below to use passkeys as a two-factor method.", page);
     }
 
     [Theory]

@@ -2,12 +2,17 @@
 
 @model TwoFactorMethod
 
-@* The passkeys are managed from their own section of the Security page. *@
+@* A passkey is a two-factor method as soon as the user has one, so this only reports it. The passkeys are added in their own section of the Security page. *@
 @if (Model.IsEnabled)
 {
-    <a href="#passkeys" class="btn btn-sm btn-primary">@T["Manage"]</a>
+    <span class="badge text-bg-success fs-6 fw-normal" title="@T["The passkeys below can confirm it's you after you log in with your password."]">
+        <i class="fa-solid fa-check" aria-hidden="true"></i> @T["Ready"]
+    </span>
+
+    return;
 }
-else
-{
-    <a href="#passkeys" class="btn btn-sm btn-success">@T["Add"]</a>
-}
+
+<div class="text-end text-body-secondary small py-2" style="max-width: 20rem;">
+    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+    @T["Add a passkey below to use passkeys as a two-factor method."]
+</div>
