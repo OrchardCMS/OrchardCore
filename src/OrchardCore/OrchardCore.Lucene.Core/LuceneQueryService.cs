@@ -52,7 +52,7 @@ public class LuceneQueryService : ILuceneQueryService
 
                 if (sortType != null)
                 {
-                    sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                    sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpperInvariant());
                 }
 
                 sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
@@ -68,7 +68,7 @@ public class LuceneQueryService : ILuceneQueryService
 
                     if (sortType != null)
                     {
-                        sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                        sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpperInvariant());
                     }
 
                     sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
