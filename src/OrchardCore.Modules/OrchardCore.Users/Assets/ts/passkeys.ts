@@ -58,14 +58,7 @@ const parseRequestOptions = (json: RequestOptionsJson): PublicKeyCredentialReque
     allowCredentials: toDescriptors(json.allowCredentials),
 });
 
-// Browsers that support 'PublicKeyCredential.toJSON()' produce the same shape.
 const serializeCredential = (credential: PublicKeyCredential): string => {
-    const toJSON = (credential as { toJSON?: () => unknown }).toJSON;
-
-    if (typeof toJSON === "function") {
-        return JSON.stringify(toJSON.call(credential));
-    }
-
     const response = credential.response;
     const json: Record<string, unknown> = {
         id: credential.id,
@@ -95,10 +88,16 @@ const serializeCredential = (credential: PublicKeyCredential): string => {
     return JSON.stringify(json);
 };
 
-// Fetches the options from the URL of the element, which also holds the antiforgery token.
+const antiforgeryFieldName = "__RequestVerificationToken";
+
+// The elements are in a form, which holds the antiforgery token.
+const getAntiforgeryToken = (element: HTMLElement): string =>
+    element.closest("form")?.querySelector<HTMLInputElement>(`input[name="${antiforgeryFieldName}"]`)?.value ?? "";
+
+// Fetches the options from the URL of the element.
 const fetchOptions = async <T>(element: HTMLElement): Promise<T> => {
     const body = new FormData();
-    body.append(element.dataset.antiforgeryName ?? "__RequestVerificationToken", element.dataset.antiforgeryToken ?? "");
+    body.append(antiforgeryFieldName, getAntiforgeryToken(element));
 
     const response = await fetch(element.dataset.optionsUrl ?? "", {
         method: "POST",
@@ -113,11 +112,11 @@ const fetchOptions = async <T>(element: HTMLElement): Promise<T> => {
     return (await response.json()) as T;
 };
 
-const showError = (element: HTMLElement, message?: string): void => {
+const showError = (element: HTMLElement): void => {
     const error = element.querySelector<HTMLElement>("[data-passkey-error]");
 
     if (error) {
-        error.textContent = message ?? element.dataset.errorMessage ?? "";
+        error.textContent = element.dataset.errorMessage ?? "";
         error.classList.remove("d-none");
     }
 };
@@ -167,7 +166,7 @@ const initLogin = (container: HTMLElement): void => {
         form.action = container.dataset.loginUrl ?? "";
         form.hidden = true;
 
-        addField(form, container.dataset.antiforgeryName ?? "__RequestVerificationToken", container.dataset.antiforgeryToken ?? "");
+        addField(form, antiforgeryFieldName, getAntiforgeryToken(container));
         addField(form, "Credential", serializeCredential(credential));
         addField(form, "RememberMe", rememberMe?.checked ? "true" : "false");
 
@@ -189,9 +188,8 @@ const initLogin = (container: HTMLElement): void => {
     // Lets the browser offer the passkeys in the autofill of the username field.
     const startConditionalRequest = async (): Promise<void> => {
         const userName = loginForm?.querySelector<HTMLInputElement>('input[name$="UserName"]');
-        const publicKeyCredential = window.PublicKeyCredential as unknown as { isConditionalMediationAvailable?: () => Promise<boolean> };
 
-        if (!userName || typeof publicKeyCredential.isConditionalMediationAvailable !== "function" || !(await publicKeyCredential.isConditionalMediationAvailable())) {
+        if (!userName || typeof PublicKeyCredential.isConditionalMediationAvailable !== "function" || !(await PublicKeyCredential.isConditionalMediationAvailable())) {
             return;
         }
 
@@ -240,6 +238,32 @@ const initLogin = (container: HTMLElement): void => {
     void startConditionalRequest();
 };
 
+// Runs a ceremony when the form is submitted, then posts the form with the credential in the input.
+const submitWithCredential = <T>(form: HTMLFormElement, button: HTMLButtonElement, input: HTMLInputElement, getCredential: (options: T) => Promise<Credential | null>): void => {
+    button.disabled = false;
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        hideError(form);
+        button.disabled = true;
+
+        try {
+            const credential = (await getCredential(await fetchOptions<T>(form))) as PublicKeyCredential | null;
+
+            if (credential) {
+                input.value = serializeCredential(credential);
+                form.submit();
+
+                return;
+            }
+        } catch (error) {
+            handleError(form, error);
+        }
+
+        button.disabled = false;
+    });
+};
+
 const initRegistration = (form: HTMLFormElement): void => {
     const button = form.querySelector<HTMLButtonElement>("[data-passkey-button]");
     const credentialInput = form.querySelector<HTMLInputElement>('input[name="Credential"]');
@@ -254,29 +278,7 @@ const initRegistration = (form: HTMLFormElement): void => {
         return;
     }
 
-    button.disabled = false;
-
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        hideError(form);
-        button.disabled = true;
-
-        try {
-            const options = parseCreationOptions(await fetchOptions<CreationOptionsJson>(form));
-            const credential = (await navigator.credentials.create({ publicKey: options })) as PublicKeyCredential | null;
-
-            if (credential) {
-                credentialInput.value = serializeCredential(credential);
-                form.submit();
-
-                return;
-            }
-        } catch (error) {
-            handleError(form, error);
-        }
-
-        button.disabled = false;
-    });
+    submitWithCredential<CreationOptionsJson>(form, button, credentialInput, (options) => navigator.credentials.create({ publicKey: parseCreationOptions(options) }));
 };
 
 const initTwoFactor = (form: HTMLFormElement): void => {
@@ -293,29 +295,7 @@ const initTwoFactor = (form: HTMLFormElement): void => {
         return;
     }
 
-    button.disabled = false;
-
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        hideError(form);
-        button.disabled = true;
-
-        try {
-            const options = parseRequestOptions(await fetchOptions<RequestOptionsJson>(form));
-            const credential = (await navigator.credentials.get({ publicKey: options })) as PublicKeyCredential | null;
-
-            if (credential) {
-                codeInput.value = serializeCredential(credential);
-                form.submit();
-
-                return;
-            }
-        } catch (error) {
-            handleError(form, error);
-        }
-
-        button.disabled = false;
-    });
+    submitWithCredential<RequestOptionsJson>(form, button, codeInput, (options) => navigator.credentials.get({ publicKey: parseRequestOptions(options) }));
 };
 
 document.querySelectorAll<HTMLElement>("[data-passkey-login]").forEach(initLogin);
