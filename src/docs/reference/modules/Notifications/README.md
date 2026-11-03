@@ -205,7 +205,7 @@ public sealed class CommentNotificationsHandler
 }
 ```
 
-`NotificationFilter` combines the criteria that are set: `UserId`, `Type`, `ReferenceId` and `IsRead`. At least one of `UserId`, `Type` and `ReferenceId` must be set. `INotificationManager` also has `FindByIdAsync()`, `DeleteAsync()`, `MarkAsReadAsync()` and `MarkAsUnreadAsync()` for a single notification, and `IsRead()`.
+`NotificationFilter` combines the criteria that are set: `UserId`, `Type`, `ReferenceId` and `IsRead`. At least one of `UserId`, `Type` and `ReferenceId` must be set. `Skip` and `Take` page the results of `ListAsync()`, which returns every matching notification otherwise. `DeleteAsync()` and `MarkAsReadAsync()` process the matching notifications in batches, within the transaction of the request. `INotificationManager` also has `FindByIdAsync()`, `DeleteAsync()`, `MarkAsReadAsync()` and `MarkAsUnreadAsync()` for a single notification, and `IsRead()`.
 
 ### Customizing how a notification is shown
 
@@ -284,17 +284,25 @@ public sealed class MentionVisibilityHandler : INotificationVisibilityHandler
         _membershipService = membershipService;
     }
 
-    public async Task EvaluateAsync(NotificationVisibilityContext context, CancellationToken cancellationToken = default)
+    public async Task EvaluateAsync(IReadOnlyList<NotificationVisibilityContext> contexts, CancellationToken cancellationToken = default)
     {
-        // Every handler is called for every shown notification: return early for the other types.
-        if (context.Notification.Type != "Mention" || !context.Notification.TryGet<MentionInfo>(out var mention))
+        // Every handler is called for every shown notification: skip the other types, and load what the others need at once.
+        var mentions = contexts.Where(context => context.Notification.Type == "Mention").ToList();
+
+        if (mentions.Count == 0)
         {
             return;
         }
 
-        if (!await _membershipService.IsMemberAsync(mention.ProjectId, context.User))
+        var projectIds = mentions.Select(context => context.Notification.GetOrCreate<MentionInfo>().ProjectId).ToHashSet();
+        var memberOf = await _membershipService.GetProjectsOfUserAsync(projectIds, contexts[0].User);
+
+        foreach (var context in mentions)
         {
-            context.Hide();
+            if (!memberOf.Contains(context.Notification.GetOrCreate<MentionInfo>().ProjectId))
+            {
+                context.Hide();
+            }
         }
     }
 }
@@ -304,7 +312,7 @@ public sealed class MentionVisibilityHandler : INotificationVisibilityHandler
 services.AddScoped<INotificationVisibilityHandler, MentionVisibilityHandler>();
 ```
 
-A handler decides one of these, and the most restrictive decision of all handlers wins:
+A handler receives the notifications shown together, all for the same user, so one query can check them all. It decides one of these for each notification, and the most restrictive decision of all handlers wins:
 
 | Decision | Effect |
 |---|---|
@@ -312,13 +320,13 @@ A handler decides one of these, and the most restrictive decision of all handler
 | `context.Restrict()` | The notification is listed and counted, but its subject, summary, body and URL are replaced by a message saying the user no longer has access to it. The user can still mark it as read or delete it. |
 | `context.Hide()` | The notification is neither listed nor counted, and cannot be opened. |
 
-A restricted notification always uses the default templates, not the [alternates of its type](#customizing-how-a-notification-is-shown). The display drivers of a module are still called for it, so those showing data of the notification must not do it when `INotificationVisibilityEvaluator.EvaluateAsync()` returns `Restricted`.
+A restricted notification always uses the default templates, not the [alternates of its type](#customizing-how-a-notification-is-shown). The display drivers of a module are still called for it, so those showing data of the notification must return nothing when `INotificationVisibilityEvaluator.EvaluateAsync()` returns `Restricted`, as the driver of [the walkthrough](#3-show-the-data-of-the-type) does.
 
 The decisions are kept for the rest of the request. When no handler is registered, the notifications are counted and paged by the database as before.
 
-A notification is hidden when a handler throws an exception, as its access could not be checked. The exception is logged.
+The notifications passed to a handler are all hidden when it throws an exception, as their access could not be checked. The exception is logged.
 
-When a handler is registered, the unread count of the navbar is computed by evaluating the most recent unread notifications, up to `MaxEvaluatedUnreadNotifications` (100 by default). When the user has more, the count of those that are not hidden is followed by a plus sign, for example `100+`. In the notification center, the hidden notifications are removed from the shown page, and its total count only excludes the hidden notifications of that page.
+When a handler is registered, the unread count of the navbar is computed by evaluating the most recent unread notifications, up to `MaxEvaluatedUnreadNotifications` (100 by default). When the user has more, the count of those that are not hidden is followed by a plus sign, for example `100+`. Older notifications are not evaluated, so the navbar shows no unread notification when the most recent ones are all hidden. In the notification center, the hidden notifications are removed from the shown page, and its total count only excludes the hidden notifications of that page.
 
 !!! tip
     A handler is a safety net that runs on every display. When the change is known, for example when a user leaves a team, also delete or update their notifications with `INotificationManager`, so they are not loaded only to be hidden. The navbar is cached per user: `INotificationManager` refreshes it, while a visibility change alone is only reflected when the cache entry expires.
@@ -419,12 +427,25 @@ Add a display driver that only handles notifications of the type, and place its 
 ```csharp
 public sealed class TaskAssignedNotificationDisplayDriver : DisplayDriver<Notification>
 {
+    private readonly INotificationVisibilityEvaluator _visibilityEvaluator;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public TaskAssignedNotificationDisplayDriver(
+        INotificationVisibilityEvaluator visibilityEvaluator,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        _visibilityEvaluator = visibilityEvaluator;
+        _httpContextAccessor = httpContextAccessor;
+    }
+
     public override bool CanHandleModel(Notification notification)
         => notification.Type == TaskNotificationConstants.TaskAssigned;
 
-    public override IDisplayResult Display(Notification notification, BuildDisplayContext context)
+    public override async Task<IDisplayResult> DisplayAsync(Notification notification, BuildDisplayContext context)
     {
-        if (!notification.TryGet<TaskAssignedInfo>(out var info))
+        // A restricted notification must not show the data of its record.
+        if (!notification.TryGet<TaskAssignedInfo>(out var info) ||
+            await _visibilityEvaluator.EvaluateAsync(notification, _httpContextAccessor.HttpContext?.User) == NotificationVisibility.Restricted)
         {
             return null;
         }
