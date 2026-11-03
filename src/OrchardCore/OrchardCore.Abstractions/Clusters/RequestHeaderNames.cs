@@ -6,7 +6,7 @@ namespace OrchardCore.Clusters;
 public static class RequestHeaderNames
 {
     /// <summary>
-    /// Sent by any clusters proxy request, prevents network loops.
+    /// Sent by any clusters proxy request with the <see cref="ClustersOptions.ProxySecret"/>, prevents network loops.
     /// </summary>
     public const string FromClustersProxy = "From-Clusters-Proxy";
 }

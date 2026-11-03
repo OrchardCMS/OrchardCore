@@ -62,6 +62,9 @@ public class ModularTenantContainerMiddleware
                 return;
             }
 
+            // The proxy secret should not be readable by the code running in a tenant.
+            httpContext.Request.Headers.Remove(RequestHeaderNames.FromClustersProxy);
+
             if (shellSettings.IsInitializing())
             {
                 httpContext.Response.Headers.Append(HeaderNames.RetryAfter, "10");

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 
 namespace OrchardCore.Clusters;
 
@@ -12,6 +10,11 @@ internal sealed class ClustersConfiguration
     /// Whether this instance forwards the requests to the tenant clusters.
     /// </summary>
     public bool Enabled { get; init; }
+
+    /// <summary>
+    /// The secret sent with the forwarded requests, and required from another instance for a request not to be forwarded again.
+    /// </summary>
+    public string ProxySecret { get; init; }
 
     /// <summary>
     /// The maximum idle time before a tenant is released.

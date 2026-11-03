@@ -46,6 +46,7 @@ public class ClustersOptionsSetupTests
         Assert.Empty(initialOptions.Clusters);
 
         configuration["OrchardCore:Clusters:Enabled"] = "true";
+        configuration["OrchardCore:Clusters:ProxySecret"] = "secret";
         configuration["OrchardCore:Clusters:Routes:RouteTemplate:ClusterId"] = "cluster1";
         configuration["OrchardCore:Clusters:MaxIdleTime"] = "00:00:30";
         configuration["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "8191";
@@ -156,6 +157,33 @@ public class ClustersOptionsSetupTests
         Assert.Equal("Tenant clustering is enabled but the 'RouteTemplate' route is not configured.", exception.Message);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void Configure_EnabledWithoutProxySecret_Throws(string proxySecret)
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore:Clusters:Enabled"] = "true",
+            ["OrchardCore:Clusters:ProxySecret"] = proxySecret,
+            ["OrchardCore:Clusters:Routes:RouteTemplate:ClusterId"] = "cluster1",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+            ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:1"] = "16383",
+        }));
+
+        Assert.Equal("Tenant clustering is enabled but the ProxySecret is not configured.", exception.Message);
+    }
+
+    [Fact]
+    public void Configure_DisabledWithoutProxySecret_DoesNotThrow()
+    {
+        Assert.Null(Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore:Clusters:Enabled"] = "false",
+        }).ProxySecret);
+    }
+
     [Fact]
     public void Configure_DisabledWithInvalidClusters_DoesNotThrow()
     {
@@ -177,6 +205,7 @@ public class ClustersOptionsSetupTests
             .AddInMemoryCollection(new Dictionary<string, string>
             {
                 ["OrchardCore:Clusters:Enabled"] = "true",
+                ["OrchardCore:Clusters:ProxySecret"] = "secret",
                 ["OrchardCore:Clusters:MaxIdleTime"] = "01:00:00",
                 ["OrchardCore:Clusters:Routes:RouteTemplate:ClusterId"] = "cluster1",
                 ["OrchardCore:Clusters:Clusters:cluster1:SlotRange:0"] = "0",

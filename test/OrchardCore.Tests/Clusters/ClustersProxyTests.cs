@@ -13,13 +13,12 @@ namespace OrchardCore.Tests.Clusters;
 public class ClustersProxyTests
 {
     [Fact]
-    public async Task ConfigureRoute_RouteTemplate_ForwardsLoopHeaderAndOriginalHost()
+    public async Task ConfigureRoute_RouteTemplate_KeepsOriginalHost()
     {
         var route = new RouteConfig { RouteId = ClustersOptions.RouteTemplate };
 
         var configured = await new ClustersProxyConfigFilter().ConfigureRouteAsync(route, null, TestContext.Current.CancellationToken);
 
-        Assert.Contains(configured.Transforms, transform => transform.TryGetValue("RequestHeader", out var name) && name == RequestHeaderNames.FromClustersProxy);
         Assert.Contains(configured.Transforms, transform => transform.TryGetValue("RequestHeaderOriginalHost", out var value) && value == "True");
     }
 
@@ -47,6 +46,23 @@ public class ClustersProxyTests
         await policy.ApplyAsync(httpContext, candidates);
 
         Assert.Equal(expected, candidates.IsValidCandidate(0));
+    }
+
+    [Theory]
+    [InlineData("true")]
+    [InlineData("")]
+    [InlineData("secret2")]
+    [InlineData("secret,secret")]
+    public async Task MatcherPolicy_WrongSecret_IsSelectedForForwarding(string headerValue)
+    {
+        var (policy, _) = CreatePolicy(enabled: true);
+        var candidates = CreateCandidates(CreateProxyEndpoint(ClustersOptions.RouteTemplate));
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers[RequestHeaderNames.FromClustersProxy] = headerValue;
+
+        await policy.ApplyAsync(httpContext, candidates);
+
+        Assert.True(candidates.IsValidCandidate(0));
     }
 
     [Fact]
@@ -131,7 +147,7 @@ public class ClustersProxyTests
 
     private static (ClustersProxyMatcherPolicy Policy, ClustersOptions Options) CreatePolicy(bool enabled)
     {
-        var options = new ClustersOptions { Enabled = enabled };
+        var options = new ClustersOptions { Enabled = enabled, ProxySecret = "secret" };
         var monitor = new Mock<IOptionsMonitor<ClustersOptions>>();
         monitor.SetupGet(m => m.CurrentValue).Returns(options);
 
@@ -144,7 +160,7 @@ public class ClustersProxyTests
 
         if (fromProxy)
         {
-            httpContext.Request.Headers[RequestHeaderNames.FromClustersProxy] = "true";
+            httpContext.Request.Headers[RequestHeaderNames.FromClustersProxy] = "secret";
         }
 
         return httpContext;

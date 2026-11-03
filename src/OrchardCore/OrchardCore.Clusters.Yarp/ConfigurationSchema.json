@@ -12,6 +12,10 @@
               "type": "boolean",
               "description": "Whether this instance forwards the requests to the tenant clusters. Requires the 'RouteTemplate' route and at least one cluster. Defaults to false."
             },
+            "ProxySecret": {
+              "type": "string",
+              "description": "The secret sent with the forwarded requests, and required from another instance for a request not to be forwarded again. Required when 'Enabled' is true, and shared by the instances having 'Enabled' set to true."
+            },
             "MaxIdleTime": {
               "type": "string",
               "description": "The maximum idle time before a tenant running on this instance is released, e.g. '01:00:00'. When not defined, tenants are not released."

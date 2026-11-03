@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Transforms;
 
@@ -22,10 +20,7 @@ public sealed class ClustersProxyConfigFilter : IProxyConfigFilter
             return new ValueTask<RouteConfig>(route);
         }
 
-        return new ValueTask<RouteConfig>(route
-            // Prevents proxy loops, as an instance receiving this header doesn't forward the request.
-            .WithTransformRequestHeader(RequestHeaderNames.FromClustersProxy, "true")
-            // Backends resolve the tenant from the request, so they need the host requested by the client.
-            .WithTransformUseOriginalHostHeader());
+        // Backends resolve the tenant from the request, so they need the host requested by the client.
+        return new ValueTask<RouteConfig>(route.WithTransformUseOriginalHostHeader());
     }
 }

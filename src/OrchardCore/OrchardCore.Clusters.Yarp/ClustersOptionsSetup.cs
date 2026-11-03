@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,6 +38,7 @@ public sealed class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
         _lastValidOptions = configuredOptions;
 
         options.Enabled = configuredOptions.Enabled;
+        options.ProxySecret = configuredOptions.ProxySecret;
         options.MaxIdleTime = configuredOptions.MaxIdleTime;
         options.Clusters = configuredOptions.Clusters;
     }
@@ -55,6 +55,7 @@ public sealed class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
 
         // Configure global clusters options.
         options.Enabled = configuration.Enabled;
+        options.ProxySecret = configuration.ProxySecret;
         options.MaxIdleTime = configuration.MaxIdleTime;
 
         // The clusters are only used by an instance forwarding the requests.
@@ -96,6 +97,12 @@ public sealed class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
         if (!_configurationSection.GetSection($"Routes:{ClustersOptions.RouteTemplate}").Exists())
         {
             throw new InvalidOperationException($"Tenant clustering is enabled but the '{ClustersOptions.RouteTemplate}' route is not configured.");
+        }
+
+        // Without this secret a client could prevent a request from being forwarded, and run any tenant on this instance.
+        if (string.IsNullOrWhiteSpace(configuration.ProxySecret))
+        {
+            throw new InvalidOperationException("Tenant clustering is enabled but the ProxySecret is not configured.");
         }
 
         return options;

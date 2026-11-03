@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Clusters;
@@ -12,5 +14,15 @@ public static class HttpContextExtensions
     /// which is not the case if the request already comes from a clusters proxy.
     /// </summary>
     public static bool AsClustersProxy(this HttpContext context, ClustersOptions options) =>
-        options.Enabled && !context.Request.Headers.ContainsKey(RequestHeaderNames.FromClustersProxy);
+        options.Enabled && !IsFromClustersProxy(context, options);
+
+    private static bool IsFromClustersProxy(HttpContext context, ClustersOptions options)
+    {
+        if (options.ProxySecret is null || !context.Request.Headers.TryGetValue(RequestHeaderNames.FromClustersProxy, out var value))
+        {
+            return false;
+        }
+
+        return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(value.ToString()), Encoding.UTF8.GetBytes(options.ProxySecret));
+    }
 }

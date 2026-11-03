@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Yarp.ReverseProxy.Transforms;
 
 namespace OrchardCore.Clusters;
 
@@ -27,6 +28,27 @@ public static class ClustersProxyBuilderExtensions
                 Options.DefaultName,
                 serviceProvider.GetRequiredService<IConfiguration>().GetSection(ClustersOptions.ConfigurationSection)));
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ClustersProxyMatcherPolicy>());
+
+        // Replaces a value sent by the client, and is read on each request to follow the configuration reloads.
+        builder.AddTransforms(context =>
+        {
+            if (context.Route.RouteId != ClustersOptions.RouteTemplate)
+            {
+                return;
+            }
+
+            var optionsMonitor = context.Services.GetRequiredService<IOptionsMonitor<ClustersOptions>>();
+
+            context.AddRequestTransform(transformContext =>
+            {
+                var headers = transformContext.ProxyRequest.Headers;
+
+                headers.Remove(RequestHeaderNames.FromClustersProxy);
+                headers.TryAddWithoutValidation(RequestHeaderNames.FromClustersProxy, optionsMonitor.CurrentValue.ProxySecret);
+
+                return ValueTask.CompletedTask;
+            });
+        });
 
         return builder.AddConfigFilter<ClustersProxyConfigFilter>();
     }
