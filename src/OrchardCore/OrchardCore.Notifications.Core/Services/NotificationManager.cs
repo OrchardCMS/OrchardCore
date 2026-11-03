@@ -9,6 +9,9 @@ namespace OrchardCore.Notifications.Services;
 
 public sealed class NotificationManager : INotificationManager
 {
+    // The notifications of a filter can be those of many users, so the bulk operations don't keep them all in memory.
+    private const int BatchSize = 200;
+
     private readonly ISession _session;
     private readonly ITagCache _tagCache;
     private readonly IClock _clock;
@@ -36,9 +39,21 @@ public sealed class NotificationManager : INotificationManager
 
     public async Task<IReadOnlyList<Notification>> ListAsync(NotificationFilter filter, CancellationToken cancellationToken = default)
     {
-        var notifications = await Query(filter)
+        IQuery<Notification> query = Query(filter)
             .OrderByDescending(x => x.CreatedAtUtc)
-            .ListAsync(cancellationToken);
+            .ThenByDescending(x => x.Id);
+
+        if (filter.Skip > 0)
+        {
+            query = query.Skip(filter.Skip);
+        }
+
+        if (filter.Take.HasValue)
+        {
+            query = query.Take(filter.Take.Value);
+        }
+
+        var notifications = await query.ListAsync(cancellationToken);
 
         return notifications.ToList();
     }
@@ -68,15 +83,26 @@ public sealed class NotificationManager : INotificationManager
 
     public async Task<int> DeleteAsync(NotificationFilter filter, CancellationToken cancellationToken = default)
     {
-        var notifications = await Query(filter).ListAsync(cancellationToken);
         var userIds = new HashSet<string>();
         var count = 0;
 
-        foreach (var notification in notifications)
+        while (true)
         {
-            _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
-            userIds.Add(notification.UserId);
-            count++;
+            var notifications = (await Query(filter).Take(BatchSize).ListAsync(cancellationToken)).ToList();
+
+            if (notifications.Count == 0)
+            {
+                break;
+            }
+
+            foreach (var notification in notifications)
+            {
+                _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
+                userIds.Add(notification.UserId);
+                count++;
+            }
+
+            await ReleaseAsync(notifications, cancellationToken);
         }
 
         await RefreshAsync(userIds);
@@ -92,21 +118,41 @@ public sealed class NotificationManager : INotificationManager
 
     public async Task<int> MarkAsReadAsync(NotificationFilter filter, CancellationToken cancellationToken = default)
     {
-        var notifications = await Query(filter)
-            .Where(x => !x.IsRead)
-            .ListAsync(cancellationToken);
-
         var userIds = new HashSet<string>();
         var count = 0;
 
-        foreach (var notification in notifications)
+        // The saved notifications leave the query, so only those that didn't change are skipped.
+        var skipped = 0;
+
+        while (true)
         {
-            if (SetRead(notification, true))
+            var notifications = (await Query(filter)
+                .Where(x => !x.IsRead)
+                .OrderBy(x => x.Id)
+                .Skip(skipped)
+                .Take(BatchSize)
+                .ListAsync(cancellationToken)).ToList();
+
+            if (notifications.Count == 0)
             {
-                await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection, cancellationToken: cancellationToken);
-                userIds.Add(notification.UserId);
-                count++;
+                break;
             }
+
+            foreach (var notification in notifications)
+            {
+                if (SetRead(notification, true))
+                {
+                    await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection, cancellationToken: cancellationToken);
+                    userIds.Add(notification.UserId);
+                    count++;
+                }
+                else
+                {
+                    skipped++;
+                }
+            }
+
+            await ReleaseAsync(notifications, cancellationToken);
         }
 
         await RefreshAsync(userIds);
@@ -188,6 +234,12 @@ public sealed class NotificationManager : INotificationManager
         notification.Put(readInfo);
 
         return true;
+    }
+
+    private async Task ReleaseAsync(IEnumerable<Notification> notifications, CancellationToken cancellationToken)
+    {
+        await _session.FlushAsync(cancellationToken);
+        _session.Detach(notifications, NotificationConstants.NotificationCollection);
     }
 
     private async Task RefreshAsync(IEnumerable<string> userIds)

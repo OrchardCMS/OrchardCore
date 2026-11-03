@@ -29,6 +29,17 @@ public sealed class NotificationFilter
     public bool? IsRead { get; set; }
 
     /// <summary>
+    /// Gets or sets how many notifications <see cref="INotificationManager.ListAsync"/> skips.
+    /// </summary>
+    public int Skip { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of notifications <see cref="INotificationManager.ListAsync"/> returns.
+    /// All of them are returned when it is <see langword="null"/>.
+    /// </summary>
+    public int? Take { get; set; }
+
+    /// <summary>
     /// Gets whether the filter sets at least one of <see cref="UserId"/>, <see cref="Type"/> and <see cref="ReferenceId"/>.
     /// </summary>
     public bool HasCriteria

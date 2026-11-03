@@ -192,6 +192,73 @@ public class NotificationManagerTests
         });
     }
 
+    [Fact]
+    public async Task BulkOperations_MoreThanABatch_ProcessEveryNotification()
+    {
+        const int Total = 205;
+
+        using var context = await CreateContextAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+            for (var i = 0; i < Total; i++)
+            {
+                await notificationService.SendAsync(CreateUser("user1"), new NotificationMessage { Subject = $"Mention {i}", Type = "Mention" }, TestContext.Current.CancellationToken);
+            }
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<INotificationManager>();
+
+            Assert.Equal(Total, await manager.MarkAsReadAsync(new NotificationFilter { Type = "Mention" }, TestContext.Current.CancellationToken));
+            Assert.Equal(0, await manager.MarkAsReadAsync(new NotificationFilter { Type = "Mention" }, TestContext.Current.CancellationToken));
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<INotificationManager>();
+
+            Assert.Empty(await manager.ListAsync(new NotificationFilter { Type = "Mention", IsRead = false }, TestContext.Current.CancellationToken));
+            Assert.Equal(Total, await manager.DeleteAsync(new NotificationFilter { Type = "Mention" }, TestContext.Current.CancellationToken));
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<INotificationManager>();
+
+            Assert.Empty(await manager.ListAsync(new NotificationFilter { Type = "Mention" }, TestContext.Current.CancellationToken));
+        });
+    }
+
+    [Fact]
+    public async Task ListAsync_SkipAndTake_ReturnsThePage()
+    {
+        using var context = await CreateContextAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+            for (var i = 0; i < 5; i++)
+            {
+                await notificationService.SendAsync(CreateUser("user1"), new NotificationMessage { Subject = $"Mention {i}", Type = "Mention" }, TestContext.Current.CancellationToken);
+            }
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<INotificationManager>();
+
+            var all = await manager.ListAsync(new NotificationFilter { Type = "Mention" }, TestContext.Current.CancellationToken);
+            var page = await manager.ListAsync(new NotificationFilter { Type = "Mention", Skip = 1, Take = 2 }, TestContext.Current.CancellationToken);
+
+            Assert.Equal(all.Skip(1).Take(2).Select(n => n.NotificationId), page.Select(n => n.NotificationId));
+        });
+    }
+
     private static User CreateUser(string userId)
         => new()
         {
