@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;

@@ -69,10 +69,16 @@ internal static class OtlpExporterOptionsFactory
             endpoint = $"{endpoint.TrimEnd('/')}/v1/{signal}";
         }
 
+        // An endpoint without a scheme, e.g. 'localhost:4317', would be accepted but nothing would ever be exported.
+        if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var endpointUri) || (endpointUri.Scheme != Uri.UriSchemeHttp && endpointUri.Scheme != Uri.UriSchemeHttps))
+        {
+            throw new InvalidOperationException($"The OTLP endpoint of the {signal} is not an absolute HTTP or HTTPS URI, e.g. 'http://localhost:4317'.");
+        }
+
         // Reads the standard environment variables, which the configuration values below take precedence over.
         var exporterOptions = new OtlpExporterOptions
         {
-            Endpoint = new Uri(endpoint),
+            Endpoint = endpointUri,
             Protocol = protocol,
         };
 

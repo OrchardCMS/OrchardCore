@@ -96,7 +96,7 @@ The options are read from the `OrchardCore:OpenTelemetry` section of the applica
 | `Metrics:IncludeTenantName` | Whether the HTTP server metrics are tagged with the name of the tenant that served the request. Defaults to `true`. With many tenants, disable it to limit the number of metric series. |
 | `Metrics:Meters` | The names of additional `Meter` to collect metrics from. |
 | `Logging:Enabled` | Whether logs are collected. Defaults to `true`. The log levels of the `Logging` section apply. |
-| `Otlp:Endpoint` | The endpoint of the OTLP receiver for all signals, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. |
+| `Otlp:Endpoint` | The endpoint of the OTLP receiver for all signals, e.g. `http://localhost:4317` for gRPC or `http://localhost:4318` for HTTP. An endpoint that isn't an absolute HTTP or HTTPS URI stops the application from starting. |
 | `Otlp:Protocol` | `Grpc` or `HttpProtobuf`. Defaults to the `OTEL_EXPORTER_OTLP_PROTOCOL` value, and otherwise to `Grpc`. |
 
 The standard [OTLP exporter values](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) are also supported, from the configuration of the application, e.g. environment variables. The `Otlp` section takes precedence over them.

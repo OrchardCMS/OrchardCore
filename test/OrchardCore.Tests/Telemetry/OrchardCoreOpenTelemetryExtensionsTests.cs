@@ -282,6 +282,20 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     }
 
     [Theory]
+    [InlineData("not a uri")]
+    [InlineData("localhost:4317")]
+    [InlineData("ftp://collector:4317")]
+    public void OtlpExporterOptionsFactory_InvalidEndpoint_ThrowsClearException(string endpoint)
+    {
+        var options = new OrchardCoreOpenTelemetryOptions();
+        options.Otlp.Endpoint = endpoint;
+
+        var exception = Assert.Throws<InvalidOperationException>(() => OtlpExporterOptionsFactory.Create(options, new ConfigurationBuilder().Build(), OtlpExporterOptionsFactory.Traces));
+
+        Assert.Contains("OTLP endpoint", exception.Message);
+    }
+
+    [Theory]
     [InlineData("OrchardCore:OpenTelemetry:Otlp:Endpoint", "http://collector:4317", true)]
     [InlineData("OTEL_EXPORTER_OTLP_ENDPOINT", "http://collector:4317", true)]
     [InlineData("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", "http://collector:4317", true)]
