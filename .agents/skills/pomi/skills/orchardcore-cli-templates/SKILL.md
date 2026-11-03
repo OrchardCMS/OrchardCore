@@ -264,6 +264,13 @@ zone placement and ordering, and ensure any unrelated draft text remains absent
 from public output. Layer deletion also protects references from published
 widgets whose newer draft points to a different layer.
 
+## Export one resource
+
+With Deployment enabled, `pomi templates export <name>`, `pomi shortcodes templates export <name>`,
+`pomi placements export <shape-type>` and `pomi layers export <name>` print a recipe with that
+resource alone. They require Export and the permission that manages the resource. See the
+automation skill to import a recipe on another tenant.
+
 ## Naming
 
 Common alternates include:

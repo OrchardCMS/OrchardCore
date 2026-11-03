@@ -17,6 +17,12 @@ exposes eligible tools such as `layers_list`, `layers_create` and `layers_update
 same endpoint handlers and permission checks in process. Disabling Layers removes its API,
 capability, commands and tools from discovery. Refresh metadata after changing enabled features.
 
+## Export to a recipe
+
+`GET /api/layers/by-name:export?name={name}` (`ApiExportLayer`, `pomi layers export <name>`) returns a recipe holding this resource alone, in one step. It is built by the deployment source of the all-items step, so it contains what that step exports, nothing more. Execute it on another tenant with a [deployment import](../deployment/README.md#queue-an-import), or keep it in source control.
+
+The route exists when the **Deployment** feature (`OrchardCore.Deployment`) is enabled. It requires `AccessRemoteManagement`, `Export` and `ManageLayers`. A missing resource returns `404`. The recipe holds the definition and the conditions of the layer. It leaves out the widgets of the layer, which are content items, and the layer settings of the site, which the all-items step exports next to all the layers.
+
 ## Operations
 
 Paths are relative to the tenant URL, including any tenant prefix.
@@ -25,6 +31,7 @@ Paths are relative to the tenant URL, including any tenant prefix.
 | --- | --- | --- |
 | `GET /api/layers` | `layers list` | Paged definitions with `skip`, `take`, `totalCount`, `items`. |
 | `GET /api/layers/by-name?name={name}` | `layers show <name>` | Complete stored definition; 404 when absent. |
+| `GET /api/layers/by-name:export?name={name}` | `layers export <name>` | A recipe with this layer alone, when Deployment is enabled; 404 when absent. |
 | `GET /api/layer-conditions` | `layers conditions` | Registered condition descriptors and property schemas. |
 | `POST /api/layers:validate` | `layers validate` | `isValid` and path-keyed `errors`; never saves or evaluates conditions. |
 | `POST /api/layers` | `layers create` | 201 with the saved definition and tenant-relative Location; 409 on a different existing definition. |

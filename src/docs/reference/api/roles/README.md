@@ -41,6 +41,13 @@ All paths are relative to the tenant URL:
 | `POST` | `/api/roles` | `ApiCreateRole` | Create a role and assign permissions. | `ManageRoles` |
 | `PUT` | `/api/roles/{roleId}` | `ApiUpdateRole` | Update description and permissions. | `ManageRoles` |
 | `DELETE` | `/api/roles/{roleId}` | `ApiDeleteRole` | Delete a non-system role. | `ManageRoles` |
+| `GET` | `/api/roles/{roleId}:export` | `ApiExportRole` | Export the role to a recipe, when Deployment is enabled. | `Export`, `ManageRoles` |
+
+## Export to a recipe
+
+`GET /api/roles/{roleId}:export` (`ApiExportRole`, `pomi roles export <role-id>`) returns a recipe holding this resource alone, in one step. It is built by the deployment source of the all-items step, so it contains what that step exports, nothing more. Execute it on another tenant with a [deployment import](../deployment/README.md#queue-an-import), or keep it in source control.
+
+The route exists when the **Deployment** feature (`OrchardCore.Deployment`) is enabled. It requires `AccessRemoteManagement`, `Export` and `ManageRoles`. A missing resource returns `404`. The recipe holds the name, the description and the assigned permissions of the role. Executing it requires the permissions of a deployment import, not the ones the role grants.
 
 ## Role representation
 

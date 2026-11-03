@@ -78,6 +78,8 @@ See [Authentication](authentication/README.md) for the OpenID Connect endpoints 
 
 - A management action that isn't the creation, replacement or deletion of the resource uses `POST` with a colon before the name of the action, for example `POST /api/content/{contentItemId}:publish` or `POST /api/content:validate`. A path segment names a resource, including a sub-resource replaced by `PUT` such as `/api/content/{contentItemId}/draft`. Routes that predate the management APIs keep their form.
 - JSON property names use the casing shown in request and response examples. They are generated from the shipped endpoint contracts.
+- The OpenAPI document carries a request and a response `example` on the main create operations: tenants, content items, users, roles, queries and OpenID applications. A password or client secret in an example is a placeholder that starts with `replace` in any casing. Replace it, as the example would otherwise create a resource with a publicly known credential.
+- Queries, roles, templates, layers, placements and shortcode templates can be exported one by one to a recipe when the Deployment feature is enabled, see their pages.
 - Send JSON request bodies with `Content-Type: application/json`.
 - Binary upload operations document their required content type on their API page.
 - Collection operations that support paging use zero-based `skip` and a bounded `take`; their pages define the exact defaults and envelope.

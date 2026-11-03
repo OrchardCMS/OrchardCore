@@ -95,6 +95,7 @@ pomi queries create --body-file query.json
 pomi queries show RecentNews
 pomi queries update RecentNews --body-file query.json
 pomi queries execute RecentNews --body-file parameters.json
+pomi queries export RecentNews > recent-news.recipe.json
 pomi queries delete RecentNews --force
 ```
 
@@ -482,6 +483,26 @@ can change the target immediately and is not idempotent. On timeout/error, inspe
 the target before any retry. Use HTTPS destinations, and preserve private credential
 handoff files when provisioning a persistent site. Existing setup contexts need no
 interactive `pomi login`.
+
+## Single resource exports
+
+With Deployment enabled, these commands print a recipe holding one resource, in one
+step, which is what the deployment step of all these resources would export for it:
+
+```bash
+pomi queries export RecentNews
+pomi roles export ContentReviewer
+pomi templates export Content__Article
+pomi layers export Sidebar
+pomi placements export HtmlBodyPart
+pomi shortcodes templates export note
+```
+
+Each one requires Export and the permission that manages the resource, and answers
+404 for a missing name. Upload the output with `deployment artifacts upload` and run it
+with `deployment operations import` to copy one resource to another tenant, without
+creating a deployment plan. A layer recipe leaves out the layer's widgets and the layer
+settings of the site, so use a plan when they need to follow.
 
 ## Explicit content exports
 

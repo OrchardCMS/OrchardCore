@@ -106,6 +106,8 @@ The complete replacement batch is validated before any plan is changed. Plan nam
 
 `Type` is the registered deployment step type. The properties under `Step` are specific to that type. All features that provide the referenced step types must be enabled when the recipe runs; otherwise, no plans from that recipe step are changed.
 
+`AllQueriesDeploymentStep`, `AllRolesDeploymentStep`, `AllTemplatesDeploymentStep`, `AllLayersDeploymentStep`, `PlacementsDeploymentStep` and `AllShortcodeTemplatesDeploymentStep` accept an optional `Names` array under `Step`, with the exact names of the entries to export. Without it, or when it is empty, they export everything. With it, `AllLayersDeploymentStep` leaves out the layer settings of the site. The admin editors and the remote step contracts don't show or change this property. The `export` commands of these resources use the same filter to [export one resource to a recipe](../../api/README.md#request-and-response-conventions).
+
 ## Permissions
 
 The module defines the following permissions:

@@ -26,8 +26,15 @@ All operations require an access token authenticated with the `Api` bearer schem
 | `POST` | `/api/templates` | Creates a complete custom template definition. | `ManageTemplates` |
 | `PUT` | `/api/templates/{name}` | Replaces a complete custom template definition. | `ManageTemplates` |
 | `DELETE` | `/api/templates/{name}` | Deletes a custom template. | `ManageTemplates` |
+| `GET` | `/api/templates/{name}:export` | Exports a custom template to a recipe, when Deployment is enabled. | `Export`, `ManageTemplates` |
 
 Every endpoint also requires `AccessRemoteManagement`.
+
+## Export to a recipe
+
+`GET /api/templates/{name}:export` (`ApiExportTemplate`, `pomi templates export <name>`) returns a recipe holding this resource alone, in one step. It is built by the deployment source of the all-items step, so it contains what that step exports, nothing more. Execute it on another tenant with a [deployment import](../deployment/README.md#queue-an-import), or keep it in source control.
+
+The route exists when the **Deployment** feature (`OrchardCore.Deployment`) is enabled. It requires `AccessRemoteManagement`, `Export` and `ManageTemplates`. A missing resource returns `404`. The name is case-insensitive, and the content of the template is inline in the recipe.
 
 ## List templates
 

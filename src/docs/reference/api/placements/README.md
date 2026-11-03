@@ -26,8 +26,15 @@ parameter, with a case-insensitive lookup. This avoids interpreting a shape key 
 | POST | `api/placements` | Create a nonempty override | ManagePlacements |
 | PUT | `api/placements/by-shape?shapeType={shapeType}` | Replace rules or remove an override with an empty array | ManagePlacements |
 | DELETE | `api/placements/by-shape?shapeType={shapeType}` | Remove an override if present | ManagePlacements |
+| GET | `api/placements/by-shape:export?shapeType={shapeType}` | Export an override to a recipe, when Deployment is enabled | Export, ManagePlacements |
 
 Every route also requires `AccessRemoteManagement`.
+
+## Export to a recipe
+
+`GET /api/placements/by-shape:export?shapeType={shapeType}` (`ApiExportPlacement`, `pomi placements export <shape-type>`) returns a recipe holding this resource alone, in one step. It is built by the deployment source of the all-items step, so it contains what that step exports, nothing more. Execute it on another tenant with a [deployment import](../deployment/README.md#queue-an-import), or keep it in source control.
+
+The route exists when the **Deployment** feature (`OrchardCore.Deployment`) is enabled. It requires `AccessRemoteManagement`, `Export` and `ManagePlacements`. A missing resource returns `404`.
 
 ## Definition and rule semantics
 

@@ -41,6 +41,13 @@ https://host/{tenant-prefix}/api/queries
 | `PUT` | `/api/queries/named/{name}` | Update a definition | `ManageQueries` |
 | `DELETE` | `/api/queries/named/{name}` | Delete a definition | `ManageQueries` |
 | `POST` | `/api/queries/named/{name}:execute` | Execute a named query | `ExecuteApi_{query-name}` |
+| `GET` | `/api/queries/named/{name}:export` | Export a definition to a recipe, when Deployment is enabled | `Export`, `ManageQueries` |
+
+## Export to a recipe
+
+`GET /api/queries/named/{name}:export` (`ApiExportQuery`, `pomi queries export <name>`) returns a recipe holding this resource alone, in one step. It is built by the deployment source of the all-items step, so it contains what that step exports, nothing more. Execute it on another tenant with a [deployment import](../deployment/README.md#queue-an-import), or keep it in source control.
+
+The route exists when the **Deployment** feature (`OrchardCore.Deployment`) is enabled. It requires `AccessRemoteManagement`, `Export` and `ManageQueries`. A missing resource returns `404`. The name is matched as by the other named operations.
 
 ## Common representations
 

@@ -29,8 +29,15 @@ looked up case-insensitively. No operation renames a template through this API.
 | POST | `api/shortcode-templates` | Create, with equivalent retries | ManageShortcodeTemplates |
 | PUT | `api/shortcode-templates/by-name?name={name}` | Replace a complete definition | ManageShortcodeTemplates |
 | DELETE | `api/shortcode-templates/by-name?name={name}` | Delete if present | ManageShortcodeTemplates |
+| GET | `api/shortcode-templates/by-name:export?name={name}` | Export to a recipe, when Deployment is enabled | Export, ManageShortcodeTemplates |
 
 All operations also require `AccessRemoteManagement`.
+
+## Export to a recipe
+
+`GET /api/shortcode-templates/by-name:export?name={name}` (`ApiExportShortcodeTemplate`, `pomi shortcodes templates export <name>`) returns a recipe holding this resource alone, in one step. It is built by the deployment source of the all-items step, so it contains what that step exports, nothing more. Execute it on another tenant with a [deployment import](../deployment/README.md#queue-an-import), or keep it in source control.
+
+The route exists when the **Deployment** feature (`OrchardCore.Deployment`) is enabled. It requires `AccessRemoteManagement`, `Export` and `ManageShortcodeTemplates`. A missing resource returns `404`.
 
 ## Definition
 
