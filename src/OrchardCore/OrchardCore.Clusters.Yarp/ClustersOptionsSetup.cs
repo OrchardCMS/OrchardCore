@@ -53,6 +53,11 @@ public sealed class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
             return options;
         }
 
+        if (configuration.MaxIdleTime <= TimeSpan.Zero)
+        {
+            throw new InvalidOperationException("The tenant clusters MaxIdleTime must be greater than zero.");
+        }
+
         // Configure global clusters options.
         options.Enabled = configuration.Enabled;
         options.ProxySecret = configuration.ProxySecret;

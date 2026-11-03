@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
@@ -38,7 +35,7 @@ public sealed class ClusteredTenantInactivityCheck : IBackgroundTask
         if (options.MaxIdleTime.HasValue &&
             _shellHost.TryGetShellContext(_shellSettings.Name, out var shellContext) &&
             shellContext.HasPipeline() &&
-            shellContext.LastRequestTimeUtc.Add(options.MaxIdleTime.Value) < DateTime.UtcNow)
+            DateTime.UtcNow - shellContext.LastRequestTimeUtc > options.MaxIdleTime.Value)
         {
             await _shellHost.ReleaseShellContextAsync(_shellSettings, eventSource: false);
         }

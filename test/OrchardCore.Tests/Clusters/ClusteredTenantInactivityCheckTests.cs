@@ -40,6 +40,14 @@ public class ClusteredTenantInactivityCheckTests
     }
 
     [Fact]
+    public async Task DoWork_MaxIdleTimeTooLargeToAdd_DoesNotRelease()
+    {
+        var shellHost = await RunAsync(TimeSpan.MaxValue, hasPipeline: true, idle: TimeSpan.FromDays(1));
+
+        shellHost.Verify(host => host.ReleaseShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()), Times.Never);
+    }
+
+    [Fact]
     public async Task DoWork_MaxIdleTimeExpired_ReleasesWithoutEvent()
     {
         var shellHost = await RunAsync(TimeSpan.FromMinutes(1), hasPipeline: true, idle: TimeSpan.FromHours(1));

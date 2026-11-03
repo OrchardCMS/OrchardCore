@@ -18,7 +18,7 @@
             },
             "MaxIdleTime": {
               "type": "string",
-              "description": "The maximum idle time before a tenant running on this instance is released, e.g. '01:00:00'. When not defined, tenants are not released."
+              "description": "The maximum idle time before a tenant running on this instance is released, e.g. '01:00:00'. Must be greater than zero. When not defined, tenants are not released."
             },
             "Routes": {
               "type": "object",

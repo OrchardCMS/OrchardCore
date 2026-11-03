@@ -184,6 +184,23 @@ public class ClustersOptionsSetupTests
         }).ProxySecret);
     }
 
+    [Theory]
+    [InlineData("true")]
+    [InlineData("false")]
+    public void Configure_MaxIdleTimeNotPositive_Throws(string enabled)
+    {
+        foreach (var maxIdleTime in new[] { "00:00:00", "-00:01:00" })
+        {
+            var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+            {
+                ["OrchardCore:Clusters:Enabled"] = enabled,
+                ["OrchardCore:Clusters:MaxIdleTime"] = maxIdleTime,
+            }));
+
+            Assert.Equal("The tenant clusters MaxIdleTime must be greater than zero.", exception.Message);
+        }
+    }
+
     [Fact]
     public void Configure_DisabledWithInvalidClusters_DoesNotThrow()
     {
