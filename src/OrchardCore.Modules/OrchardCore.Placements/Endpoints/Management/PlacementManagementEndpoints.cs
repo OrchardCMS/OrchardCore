@@ -18,15 +18,15 @@ internal static class PlacementManagementEndpoints
         Configure(routes.MapGet(RoutePrefix, ListAsync), "ApiListPlacements", "Lists stored shape placement rules.", "list")
             .Produces<PlacementListResponse>();
         Configure(routes.MapGet(RoutePrefix + "/by-shape", GetAsync), "ApiGetPlacement", "Shows stored rules for a shape type.", "show", argument: true)
-            .Produces<PlacementDefinition>().ProducesProblem(404);
+            .Produces<PlacementDefinition>().ProducesProblem(404).ProducesETag();
         Configure(routes.MapGet("api/placement-filters", FiltersAsync), "ApiListPlacementFilters", "Lists placement filter keys registered by enabled features.", "filters")
             .Produces<IReadOnlyList<string>>();
         Configure(routes.MapPost(RoutePrefix + "/validate", ValidateAsync), "ApiValidatePlacement", "Validates placement rules without rendering or saving.", "validate", input: true)
             .Accepts<PlacementDefinition>("application/json").Produces<PlacementValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreatePlacement", "Creates placement rules; equivalent stable-shape retries return the stored rules.", "create", input: true)
-            .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>(201).ProducesProblem(409);
+            .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>(201).ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut(RoutePrefix + "/by-shape", UpdateAsync), "ApiUpdatePlacement", "Replaces complete placement rules; an empty array removes the override.", "update", argument: true, input: true)
-            .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>().Produces(204).ProducesProblem(404);
+            .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>().Produces(204).ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete(RoutePrefix + "/by-shape", DeleteAsync), "ApiDeletePlacement", "Removes stored placement rules; absent rules are a successful no-op.", "delete", argument: true, confirmation: true)
             .Produces(204);
     }
@@ -85,9 +85,8 @@ internal static class PlacementManagementEndpoints
         {
             return context.ApiForbidProblem();
         }
-        var placements = await manager.ListShapePlacementsAsync();
-        var entry = placements.FirstOrDefault(entry => string.Equals(entry.Key, shapeType, StringComparison.OrdinalIgnoreCase));
-        return entry.Key is null ? context.ApiNotFoundProblem() : TypedResults.Ok(new PlacementDefinition { ShapeType = entry.Key, Nodes = entry.Value });
+        var definition = await FindAsync(manager, shapeType);
+        return definition is null ? context.ApiNotFoundProblem() : TypedResults.Ok(context.WithApiETag(definition));
     }
 
     internal static async Task<IResult> FiltersAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -126,7 +125,7 @@ internal static class PlacementManagementEndpoints
             return TypedResults.Problem("This shape type already has a different placement definition.", statusCode: 409);
         }
         return TypedResults.Created($"{context.Request.PathBase}/{RoutePrefix}/by-shape?shapeType={Uri.EscapeDataString(result.ShapeType)}",
-            new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes });
+            context.WithApiETag(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes }));
     }
 
     internal static async Task<IResult> UpdateAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -140,6 +139,10 @@ internal static class PlacementManagementEndpoints
         {
             return TypedResults.Problem("The body shapeType must match the shapeType query parameter. Renames are not supported.", statusCode: 400);
         }
+        if (await FindAsync(manager, shapeType) is { } current && context.ApiIfMatchProblem(current) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
         var result = await manager.SaveAsync(shapeType, definition.Nodes, requireExisting: true);
         if (result.Status == PlacementMutationStatus.Invalid)
         {
@@ -150,7 +153,7 @@ internal static class PlacementManagementEndpoints
             return TypedResults.NoContent();
         }
         return result.Status == PlacementMutationStatus.NotFound ? context.ApiNotFoundProblem()
-            : TypedResults.Ok(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes });
+            : TypedResults.Ok(context.WithApiETag(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes }));
     }
 
     internal static async Task<IResult> DeleteAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -166,4 +169,11 @@ internal static class PlacementManagementEndpoints
 
     private static Task<bool> AuthorizedAsync(HttpContext context, IAuthorizationService authorization) =>
         authorization.AuthorizeAsync(context.User, Permissions.ManagePlacements);
+
+    private static async Task<PlacementDefinition> FindAsync(PlacementsManager manager, string shapeType)
+    {
+        var placements = await manager.ListShapePlacementsAsync();
+        var entry = placements.FirstOrDefault(entry => string.Equals(entry.Key, shapeType, StringComparison.OrdinalIgnoreCase));
+        return entry.Key is null ? null : new PlacementDefinition { ShapeType = entry.Key, Nodes = entry.Value };
+    }
 }

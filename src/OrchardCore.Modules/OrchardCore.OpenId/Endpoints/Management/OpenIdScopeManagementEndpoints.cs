@@ -19,10 +19,10 @@ internal static class OpenIdScopeManagementEndpoints
     {
         Configure(routes.MapPost("api/openid/scopes", CreateAsync), "ApiCreateOpenIdScope", "create",
             "Creates a scope; an equivalent name-based retry returns the existing scope.", input: true)
-            .Produces<OpenIdScopeResponse>(201).Produces<OpenIdScopeResponse>().ProducesProblem(409);
+            .Produces<OpenIdScopeResponse>(201).Produces<OpenIdScopeResponse>().ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut("api/openid/scopes/by-name", UpdateAsync), "ApiUpdateOpenIdScope", "update",
             "Replaces a scope's editable fields while preserving extension properties.", input: true, argument: true)
-            .Produces<OpenIdScopeResponse>().ProducesProblem(404);
+            .Produces<OpenIdScopeResponse>().ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete("api/openid/scopes/by-name", DeleteAsync), "ApiDeleteOpenIdScope", "delete",
             "Deletes a scope; an absent scope is a successful no-op. Existing tokens are not revoked.", argument: true)
             .Produces(204);
@@ -77,14 +77,14 @@ internal static class OpenIdScopeManagementEndpoints
         if (existing is not null)
         {
             return await OpenIdScopeEditor.MatchesAsync(manager, existing, request.Name, request.DisplayName, request.Description, request.Resources, ct)
-                ? TypedResults.Ok(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, existing, ct))
+                ? TypedResults.Ok(context.WithApiETag(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, existing, ct)))
                 : TypedResults.Problem("A scope with this name already exists with different editable fields.", statusCode: 409);
         }
         try
         {
             var result = await OpenIdScopeEditor.SaveAsync(manager, null, request.Name, request.DisplayName, request.Description, request.Resources, ct);
             return TypedResults.Created($"{context.Request.PathBase}/api/openid/scopes/by-name?name={Uri.EscapeDataString(request.Name)}",
-                await OpenIdDiscoveryEndpoints.DescribeAsync(manager, result.Scope, ct));
+                context.WithApiETag(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, result.Scope, ct)));
         }
         catch (OpenIddictExceptions.ValidationException exception)
         {
@@ -105,10 +105,11 @@ internal static class OpenIdScopeManagementEndpoints
         var ct = context.RequestAborted;
         var scope = await manager.FindByNameAsync(name, ct);
         if (scope is null) { return context.ApiNotFoundProblem(); }
+        if (context.ApiIfMatchProblem(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, scope, ct)) is { } preconditionFailed) { return preconditionFailed; }
         try
         {
             await OpenIdScopeEditor.SaveAsync(manager, scope, request.Name, request.DisplayName, request.Description, request.Resources, ct);
-            return TypedResults.Ok(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, scope, ct));
+            return TypedResults.Ok(context.WithApiETag(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, scope, ct)));
         }
         catch (OpenIddictExceptions.ValidationException exception)
         {

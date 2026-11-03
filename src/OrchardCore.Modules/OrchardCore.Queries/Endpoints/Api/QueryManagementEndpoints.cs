@@ -97,6 +97,7 @@ public static class QueryManagementEndpoints
                 },
             })
             .Produces<QueryDefinitionDto>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -116,6 +117,7 @@ public static class QueryManagementEndpoints
             })
             .Accepts<QueryDefinitionDto>("application/json")
             .Produces<QueryDefinitionDto>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -270,7 +272,7 @@ public static class QueryManagementEndpoints
             return httpContext.ApiNotFoundProblem();
         }
 
-        return TypedResults.Ok(ToDefinitionDto(query));
+        return TypedResults.Ok(httpContext.WithApiETag(ToDefinitionDto(query)));
     }
 
     internal static async Task<IResult> CreateAsync(
@@ -300,7 +302,7 @@ public static class QueryManagementEndpoints
         {
             var existingDefinition = ToDefinitionDto(existing);
             return AreEquivalent(definition, existingDefinition)
-                ? TypedResults.Created($"/api/queries/named/{Uri.EscapeDataString(existing.Name)}", existingDefinition)
+                ? TypedResults.Created($"/api/queries/named/{Uri.EscapeDataString(existing.Name)}", httpContext.WithApiETag(existingDefinition))
                 : TypedResults.Problem(
                     detail: $"A query named '{definition.Name}' already exists with a different definition.",
                     statusCode: StatusCodes.Status409Conflict);
@@ -309,7 +311,7 @@ public static class QueryManagementEndpoints
         var query = await queryManager.NewAsync(definition.Source, ToQueryData(definition));
         await queryManager.SaveAsync(query);
 
-        return TypedResults.Created($"/api/queries/named/{Uri.EscapeDataString(query.Name)}", ToDefinitionDto(query));
+        return TypedResults.Created($"/api/queries/named/{Uri.EscapeDataString(query.Name)}", httpContext.WithApiETag(ToDefinitionDto(query)));
     }
 
     internal static async Task<IResult> UpdateAsync(
@@ -343,6 +345,11 @@ public static class QueryManagementEndpoints
             return httpContext.ApiNotFoundProblem();
         }
 
+        if (httpContext.ApiIfMatchProblem(ToDefinitionDto(query)) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
+
         definition.Source ??= query.Source;
         definition.Schema ??= ParseJsonNode(query.Schema);
         definition.ParameterSchema ??= ParseJsonNode(query.ParameterSchema);
@@ -356,7 +363,7 @@ public static class QueryManagementEndpoints
 
         await queryManager.UpdateAsync(query, ToQueryData(definition));
 
-        return TypedResults.Ok(ToDefinitionDto(query));
+        return TypedResults.Ok(httpContext.WithApiETag(ToDefinitionDto(query)));
     }
 
     internal static async Task<IResult> DeleteAsync(

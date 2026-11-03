@@ -84,6 +84,7 @@ internal static partial class TenantManagementEndpoints
                 Arguments = { new CliArgumentMetadata("tenantName", 0) },
             })
             .Produces<TenantResponse>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -125,6 +126,7 @@ internal static partial class TenantManagementEndpoints
             .Accepts<TenantCreateRequest>("application/json")
             .Produces<TenantResponse>(StatusCodes.Status201Created)
             .Produces<TenantResponse>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
@@ -196,6 +198,7 @@ internal static partial class TenantManagementEndpoints
             })
             .Accepts<TenantUpdateRequest>("application/json")
             .Produces<TenantResponse>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -569,6 +572,8 @@ internal static partial class TenantManagementEndpoints
             return httpContext.ApiNotFoundProblem(detail: localizer["Tenant not found: '{0}'.", tenantName]);
         }
 
+        httpContext.SetApiETag(VersionState(shellSettings));
+
         return TypedResults.Ok(CreateTenantResponse(httpContext, shellSettings, dataProtectionProvider, clock));
     }
 
@@ -621,12 +626,17 @@ internal static partial class TenantManagementEndpoints
 
         if (shellHost.TryGetSettings(request.Name, out var existingSettings))
         {
-            return MatchesCreateRequest(existingSettings, apiModel)
-                ? TypedResults.Ok(CreateTenantResponse(httpContext, existingSettings, dataProtectionProvider, clock))
-                : TypedResults.Problem(
+            if (!MatchesCreateRequest(existingSettings, apiModel))
+            {
+                return TypedResults.Problem(
                     title: localizer["Conflict"],
                     detail: localizer["Tenant '{0}' already exists with different settings.", request.Name],
                     statusCode: StatusCodes.Status409Conflict);
+            }
+
+            httpContext.SetApiETag(VersionState(existingSettings));
+
+            return TypedResults.Ok(CreateTenantResponse(httpContext, existingSettings, dataProtectionProvider, clock));
         }
 
         var validationState = new ModelStateDictionary();
@@ -666,18 +676,24 @@ internal static partial class TenantManagementEndpoints
 
             var reloadedSettings = shellHost.GetSettings(shellSettings.Name);
             var response = CreateTenantResponse(httpContext, reloadedSettings, dataProtectionProvider, clock);
+            httpContext.SetApiETag(VersionState(reloadedSettings));
             return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(reloadedSettings.Name)}", response);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {
             if (shellHost.TryGetSettings(request.Name, out var concurrentSettings))
             {
-                return MatchesCreateRequest(concurrentSettings, apiModel)
-                    ? TypedResults.Ok(CreateTenantResponse(httpContext, concurrentSettings, dataProtectionProvider, clock))
-                    : TypedResults.Problem(
+                if (!MatchesCreateRequest(concurrentSettings, apiModel))
+                {
+                    return TypedResults.Problem(
                         title: localizer["Conflict"],
                         detail: localizer["Tenant '{0}' already exists with different settings.", request.Name],
                         statusCode: StatusCodes.Status409Conflict);
+                }
+
+                httpContext.SetApiETag(VersionState(concurrentSettings));
+
+                return TypedResults.Ok(CreateTenantResponse(httpContext, concurrentSettings, dataProtectionProvider, clock));
             }
 
             logger.LogError(ex, "An error occurred while saving tenant '{TenantName}'.", request.Name);
@@ -714,6 +730,11 @@ internal static partial class TenantManagementEndpoints
         if (!shellHost.TryGetSettings(tenantName, out var shellSettings))
         {
             return httpContext.ApiNotFoundProblem(detail: localizer["Tenant not found: '{0}'.", tenantName]);
+        }
+
+        if (httpContext.ApiIfMatchProblem(VersionState(shellSettings)) is { } preconditionFailed)
+        {
+            return preconditionFailed;
         }
 
         var apiModel = request.ToApiModel(shellSettings.Name);
@@ -761,6 +782,7 @@ internal static partial class TenantManagementEndpoints
             }
 
             await shellHost.UpdateShellSettingsAsync(shellSettings);
+            httpContext.SetApiETag(VersionState(shellSettings));
             return TypedResults.Ok(CreateTenantResponse(httpContext, shellSettings, dataProtectionProvider, clock));
         }
         catch (Exception ex) when (!ex.IsFatal())
@@ -1134,6 +1156,24 @@ internal static partial class TenantManagementEndpoints
 
     private static bool Equal(string left, string right, StringComparison comparison)
         => string.Equals(left ?? string.Empty, right ?? string.Empty, comparison);
+
+    // The URLs are left out, as they depend on the request, and the setup URL on the current time.
+    private static object VersionState(ShellSettings shellSettings) => new
+    {
+        shellSettings.Name,
+        shellSettings.TenantId,
+        State = shellSettings.State.ToString(),
+        Category = shellSettings["Category"],
+        Description = shellSettings["Description"],
+        shellSettings.RequestUrlHost,
+        shellSettings.RequestUrlPrefix,
+        DatabaseProvider = shellSettings["DatabaseProvider"],
+        ConnectionString = TenantConnectionStringRedactor.RedactPassword(shellSettings["ConnectionString"]),
+        TablePrefix = shellSettings["TablePrefix"],
+        Schema = shellSettings["Schema"],
+        RecipeName = shellSettings["RecipeName"],
+        FeatureProfiles = ReadFeatureProfiles(shellSettings),
+    };
 
     internal static TenantResponse CreateTenantResponse(HttpContext httpContext, ShellSettings shellSettings, IDataProtectionProvider dataProtectionProvider, IClock clock)
     {

@@ -22,10 +22,10 @@ internal static class OpenIdApplicationManagementEndpoints
     {
         Configure(routes.MapPost("api/openid/applications", CreateAsync), "ApiCreateOpenIdApplication", "create",
             "Creates an application. Equivalent client-identifier retries return its redacted description.", input: true)
-            .Produces<OpenIdApplicationResponse>(201).Produces<OpenIdApplicationResponse>().ProducesProblem(409);
+            .Produces<OpenIdApplicationResponse>(201).Produces<OpenIdApplicationResponse>().ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut("api/openid/applications/by-client-id", UpdateAsync), "ApiUpdateOpenIdApplication", "update",
             "Replaces application settings. An omitted secret preserves the current confidential credential.", input: true, argument: true)
-            .Produces<OpenIdApplicationResponse>().ProducesProblem(404);
+            .Produces<OpenIdApplicationResponse>().ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete("api/openid/applications/by-client-id", DeleteAsync), "ApiDeleteOpenIdApplication", "delete",
             "Deletes an application; issued token lifetimes still apply.", argument: true)
             .Produces(204).ProducesProblem(404);
@@ -171,13 +171,13 @@ internal static class OpenIdApplicationManagementEndpoints
             if (existing is not null)
             {
                 return await MatchesAsync(manager, existing, settings, ct)
-                    ? TypedResults.Ok(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, existing, ct))
+                    ? TypedResults.Ok(context.WithApiETag(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, existing, ct)))
                     : TypedResults.Problem("This client identifier already has different application settings or credentials.", statusCode: 409);
             }
             await manager.UpdateDescriptorFromSettings(settings, cancellationToken: ct);
             var application = await manager.FindByClientIdAsync(request.ClientId, ct);
             return TypedResults.Created($"{context.Request.PathBase}/api/openid/applications/by-client-id?clientId={Uri.EscapeDataString(request.ClientId)}",
-                await OpenIdDiscoveryEndpoints.DescribeAsync(manager, application, ct));
+                context.WithApiETag(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, application, ct)));
         }
         catch (Exception exception) when (exception is OpenIddictExceptions.ValidationException or UriFormatException)
         {
@@ -198,6 +198,7 @@ internal static class OpenIdApplicationManagementEndpoints
         var ct = context.RequestAborted;
         var application = await manager.FindByClientIdForUpdateAsync(clientId, ct);
         if (application is null) { return context.ApiNotFoundProblem(); }
+        if (context.ApiIfMatchProblem(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, application, ct)) is { } preconditionFailed) { return preconditionFailed; }
         if (await ValidateReferencesAsync(context, scopes, request) is { } references) { return references; }
         if (await ValidateClientAsync(context, manager, request, application, isNew: false, ct) is { } client) { return client; }
         if (await AuthorizeNewRolesAsync(context, authorization, manager, request, application, ct) is { } forbidden) { return forbidden; }
@@ -208,7 +209,7 @@ internal static class OpenIdApplicationManagementEndpoints
             {
                 await manager.UpdateDescriptorFromSettings(settings, application, ct);
             }
-            return TypedResults.Ok(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, application, ct));
+            return TypedResults.Ok(context.WithApiETag(await OpenIdDiscoveryEndpoints.DescribeAsync(manager, application, ct)));
         }
         catch (Exception exception) when (exception is OpenIddictExceptions.ValidationException or UriFormatException)
         {

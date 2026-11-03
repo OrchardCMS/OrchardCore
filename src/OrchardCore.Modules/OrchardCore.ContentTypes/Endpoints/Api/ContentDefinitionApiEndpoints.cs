@@ -50,6 +50,7 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Returns a content type definition, including its attached parts and settings.")
             .WithCliCommand(Cli(["content", "types"], "show", arguments: [new CliArgumentMetadata("name", 0)]))
             .Produces<ContentTypeDefinitionDto>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -61,6 +62,7 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Creates a content type definition and optionally configures its attached parts.")
             .WithCliCommand(Cli(["content", "types"], "create", inputMode: CliInputMode.Json))
             .Produces<ContentTypeDefinitionDto>(StatusCodes.Status201Created)
+            .ProducesETag()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
@@ -72,6 +74,7 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Replaces a content type definition, including its attached parts and settings.")
             .WithCliCommand(Cli(["content", "types"], "update", arguments: [new CliArgumentMetadata("name", 0)], inputMode: CliInputMode.Json))
             .Produces<ContentTypeDefinitionDto>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -159,6 +162,7 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Returns a content part definition, including its fields and settings.")
             .WithCliCommand(Cli(["content", "parts"], "show", arguments: [new CliArgumentMetadata("name", 0)]))
             .Produces<ContentPartDefinitionDto>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -170,6 +174,7 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Creates a content part definition and optionally configures its fields.")
             .WithCliCommand(Cli(["content", "parts"], "create", inputMode: CliInputMode.Json))
             .Produces<ContentPartDefinitionDto>(StatusCodes.Status201Created)
+            .ProducesETag()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
@@ -181,6 +186,7 @@ internal static class ContentDefinitionApiEndpoints
             .WithDescription("Replaces a content part definition, including its fields and settings.")
             .WithCliCommand(Cli(["content", "parts"], "update", arguments: [new CliArgumentMetadata("name", 0)], inputMode: CliInputMode.Json))
             .Produces<ContentPartDefinitionDto>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -278,7 +284,7 @@ internal static class ContentDefinitionApiEndpoints
         }
 
         var definition = await service.GetTypeAsync(name);
-        return definition is null ? httpContext.ApiNotFoundProblem() : TypedResults.Ok(definition);
+        return definition is null ? httpContext.ApiNotFoundProblem() : TypedResults.Ok(httpContext.WithApiETag(definition));
     }
 
     private static async Task<IResult> CreateTypeAsync(ContentTypeDefinitionDto model, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -297,7 +303,7 @@ internal static class ContentDefinitionApiEndpoints
         var definition = await service.CreateTypeAsync(model, modelState);
         return !modelState.IsValid
             ? ValidationProblem(modelState)
-            : TypedResults.Created($"/api/content-definition/types/{definition!.Name}", definition);
+            : TypedResults.Created($"/api/content-definition/types/{definition!.Name}", httpContext.WithApiETag(definition));
     }
 
     private static async Task<IResult> UpdateTypeAsync(string name, ContentTypeDefinitionDto model, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -312,6 +318,11 @@ internal static class ContentDefinitionApiEndpoints
             return httpContext.ApiMissingBodyProblem();
         }
 
+        if (await service.GetTypeAsync(name) is { } current && httpContext.ApiIfMatchProblem(current) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
+
         var modelState = new ModelStateDictionary();
         var definition = await service.UpdateTypeAsync(name, model, modelState);
         if (definition is null)
@@ -319,7 +330,7 @@ internal static class ContentDefinitionApiEndpoints
             return httpContext.ApiNotFoundProblem();
         }
 
-        return !modelState.IsValid ? ValidationProblem(modelState) : TypedResults.Ok(definition);
+        return !modelState.IsValid ? ValidationProblem(modelState) : TypedResults.Ok(httpContext.WithApiETag(definition));
     }
 
     private static async Task<IResult> DeleteTypeAsync(string name, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -393,7 +404,7 @@ internal static class ContentDefinitionApiEndpoints
         }
 
         var definition = await service.GetPartAsync(name);
-        return definition is null ? httpContext.ApiNotFoundProblem() : TypedResults.Ok(definition);
+        return definition is null ? httpContext.ApiNotFoundProblem() : TypedResults.Ok(httpContext.WithApiETag(definition));
     }
 
     private static async Task<IResult> CreatePartAsync(ContentPartDefinitionDto model, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -412,7 +423,7 @@ internal static class ContentDefinitionApiEndpoints
         var definition = await service.CreatePartAsync(model, modelState);
         return !modelState.IsValid
             ? ValidationProblem(modelState)
-            : TypedResults.Created($"/api/content-definition/parts/{definition!.Name}", definition);
+            : TypedResults.Created($"/api/content-definition/parts/{definition!.Name}", httpContext.WithApiETag(definition));
     }
 
     private static async Task<IResult> UpdatePartAsync(string name, ContentPartDefinitionDto model, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -427,6 +438,11 @@ internal static class ContentDefinitionApiEndpoints
             return httpContext.ApiMissingBodyProblem();
         }
 
+        if (await service.GetPartAsync(name) is { } current && httpContext.ApiIfMatchProblem(current) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
+
         var modelState = new ModelStateDictionary();
         var definition = await service.UpdatePartAsync(name, model, modelState);
         if (definition is null)
@@ -434,7 +450,7 @@ internal static class ContentDefinitionApiEndpoints
             return httpContext.ApiNotFoundProblem();
         }
 
-        return !modelState.IsValid ? ValidationProblem(modelState) : TypedResults.Ok(definition);
+        return !modelState.IsValid ? ValidationProblem(modelState) : TypedResults.Ok(httpContext.WithApiETag(definition));
     }
 
     private static async Task<IResult> DeletePartAsync(string name, ContentDefinitionApiService service, IAuthorizationService authorizationService, HttpContext httpContext)

@@ -14,9 +14,9 @@ internal static class SitemapEndpoints
     public static void AddSitemapEndpoints(this IEndpointRouteBuilder routes)
     {
         Configure(routes.MapGet("api/sitemaps", ListAsync), "ApiListSitemaps", "list", "Lists tenant sitemaps and indexes.").Produces<SitemapResponse[]>();
-        Configure(routes.MapGet("api/sitemaps/{id}", GetAsync), "ApiGetSitemap", "show", "Shows a sitemap definition.", "id").Produces<SitemapResponse>();
-        Configure(routes.MapPost("api/sitemaps", CreateAsync), "ApiCreateSitemap", "create", "Creates a sitemap or index. Read back the server-generated ID before retrying.", input: true).Produces<SitemapResponse>();
-        Configure(routes.MapPut("api/sitemaps/{id}", UpdateAsync), "ApiUpdateSitemap", "update", "Replaces a definition while retaining its sources.", "id", true).Produces<SitemapResponse>();
+        Configure(routes.MapGet("api/sitemaps/{id}", GetAsync), "ApiGetSitemap", "show", "Shows a sitemap definition.", "id").Produces<SitemapResponse>().ProducesETag();
+        Configure(routes.MapPost("api/sitemaps", CreateAsync), "ApiCreateSitemap", "create", "Creates a sitemap or index. Read back the server-generated ID before retrying.", input: true).Produces<SitemapResponse>().ProducesETag();
+        Configure(routes.MapPut("api/sitemaps/{id}", UpdateAsync), "ApiUpdateSitemap", "update", "Replaces a definition while retaining its sources.", "id", true).Produces<SitemapResponse>().AcceptsIfMatch();
         Configure(routes.MapDelete("api/sitemaps/{id}", DeleteAsync), "ApiDeleteSitemap", "delete", "Deletes a sitemap; an absent ID is unchanged.", "id").Produces(204);
         Configure(routes.MapPost("api/sitemaps/{id}:enable", EnableAsync), "ApiEnableSitemap", "enable", "Enables public sitemap routing.", "id").Produces(204);
         Configure(routes.MapPost("api/sitemaps/{id}:disable", DisableAsync), "ApiDisableSitemap", "disable", "Disables public sitemap routing.", "id").Produces(204);
@@ -48,18 +48,24 @@ internal static class SitemapEndpoints
     internal static async Task<IResult> GetAsync(HttpContext context, [FromServices] ISitemapManager manager, string id)
     {
         var sitemap = await manager.GetSitemapAsync(id);
-        return sitemap is null ? context.ApiNotFoundProblem() : TypedResults.Ok(Describe(sitemap));
+        return sitemap is null ? context.ApiNotFoundProblem() : TypedResults.Ok(context.WithApiETag(Describe(sitemap)));
     }
     internal static Task<IResult> CreateAsync(HttpContext context, [FromServices] SitemapManagementService service, [FromBody] SitemapDefinition input)
         => SaveAsync(context, service, input, null);
-    internal static Task<IResult> UpdateAsync(HttpContext context, [FromServices] SitemapManagementService service, string id, [FromBody] SitemapDefinition input)
-        => SaveAsync(context, service, input, id);
+    internal static async Task<IResult> UpdateAsync(HttpContext context, [FromServices] ISitemapManager manager, [FromServices] SitemapManagementService service, string id, [FromBody] SitemapDefinition input)
+    {
+        if (await manager.GetSitemapAsync(id) is { } current && context.ApiIfMatchProblem(Describe(current)) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
+        return await SaveAsync(context, service, input, id);
+    }
     private static async Task<IResult> SaveAsync(HttpContext context, SitemapManagementService service, SitemapDefinition input, string id)
     {
         var result = await service.SaveAsync(input, id);
         if (result.NotFound) { return context.ApiNotFoundProblem(); }
         if (result.Errors.Count > 0) { return TypedResults.ValidationProblem(result.Errors); }
-        return TypedResults.Ok(Describe(result.Sitemap));
+        return TypedResults.Ok(context.WithApiETag(Describe(result.Sitemap)));
     }
     internal static async Task<IResult> DeleteAsync([FromServices] ISitemapManager manager, string id)
     {

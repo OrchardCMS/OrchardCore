@@ -61,6 +61,7 @@ internal static class UserManagementEndpoints
                 Arguments = { new CliArgumentMetadata("userId", 0) },
             })
             .Produces<UserResponse>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -78,6 +79,7 @@ internal static class UserManagementEndpoints
             })
             .Accepts<UserCreateRequest>("application/json")
             .Produces<UserResponse>(StatusCodes.Status201Created)
+            .ProducesETag()
             .Produces<UserResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -99,6 +101,7 @@ internal static class UserManagementEndpoints
             })
             .Accepts<UserUpdateRequest>("application/json")
             .Produces<UserResponse>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -237,6 +240,8 @@ internal static class UserManagementEndpoints
             return httpContext.ApiForbidProblem();
         }
 
+        httpContext.SetApiETag(VersionState(user));
+
         return TypedResults.Ok(ToResponse(user));
     }
 
@@ -264,9 +269,14 @@ internal static class UserManagementEndpoints
 
         if (!string.IsNullOrEmpty(request.UserName) && await userManager.FindByNameAsync(request.UserName) is User existingUser)
         {
-            return await CanRetryCreateAsync(httpContext, existingUser, request, authorizationService)
-                ? TypedResults.Ok(ToResponse(existingUser))
-                : UserNameNotAvailableProblem();
+            if (!await CanRetryCreateAsync(httpContext, existingUser, request, authorizationService))
+            {
+                return UserNameNotAvailableProblem();
+            }
+
+            httpContext.SetApiETag(VersionState(existingUser));
+
+            return TypedResults.Ok(ToResponse(existingUser));
         }
 
         var modelState = new ModelStateDictionary();
@@ -282,13 +292,20 @@ internal static class UserManagementEndpoints
         {
             if (!string.IsNullOrEmpty(request.UserName) && await userManager.FindByNameAsync(request.UserName) is User concurrentUser)
             {
-                return await CanRetryCreateAsync(httpContext, concurrentUser, request, authorizationService)
-                    ? TypedResults.Ok(ToResponse(concurrentUser))
-                    : UserNameNotAvailableProblem();
+                if (!await CanRetryCreateAsync(httpContext, concurrentUser, request, authorizationService))
+                {
+                    return UserNameNotAvailableProblem();
+                }
+
+                httpContext.SetApiETag(VersionState(concurrentUser));
+
+                return TypedResults.Ok(ToResponse(concurrentUser));
             }
 
             return httpContext.ApiValidationProblem(modelState: modelState);
         }
+
+        httpContext.SetApiETag(VersionState(user));
 
         return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(user.UserId)}", ToResponse(user));
     }
@@ -335,6 +352,11 @@ internal static class UserManagementEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, user))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        if (httpContext.ApiIfMatchProblem(VersionState(user)) is { } preconditionFailed)
+        {
+            return preconditionFailed;
         }
 
         // Report what would fail in the later steps before saving anything.
@@ -419,6 +441,8 @@ internal static class UserManagementEndpoints
         {
             return httpContext.ApiValidationProblem(modelState: modelState);
         }
+
+        httpContext.SetApiETag(VersionState(user));
 
         return TypedResults.Ok(ToResponse(user));
     }
@@ -585,6 +609,18 @@ internal static class UserManagementEndpoints
 
         return TypedResults.NoContent();
     }
+
+    // The lockout state is left out, as a failed login changes it and an update doesn't replace it.
+    private static object VersionState(User user) => new
+    {
+        user.UserId,
+        user.UserName,
+        user.Email,
+        user.PhoneNumber,
+        user.EmailConfirmed,
+        user.IsEnabled,
+        RoleNames = user.RoleNames?.Order(StringComparer.OrdinalIgnoreCase).ToArray() ?? [],
+    };
 
     internal static UserResponse ToResponse(User user)
         => new()

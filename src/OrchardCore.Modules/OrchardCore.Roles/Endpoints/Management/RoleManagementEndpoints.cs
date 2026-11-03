@@ -54,6 +54,7 @@ internal static class RoleManagementEndpoints
                 Arguments = { new CliArgumentMetadata("roleId", 0) },
             })
             .Produces<RoleResponse>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -70,6 +71,7 @@ internal static class RoleManagementEndpoints
             })
             .Accepts<RoleCreateRequest>("application/json")
             .Produces<RoleResponse>(StatusCodes.Status201Created)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
@@ -89,6 +91,7 @@ internal static class RoleManagementEndpoints
             })
             .Accepts<RoleUpdateRequest>("application/json")
             .Produces<RoleResponse>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -166,6 +169,8 @@ internal static class RoleManagementEndpoints
             return httpContext.ApiNotFoundProblem(detail: localizer["Role not found."]);
         }
 
+        httpContext.SetApiETag(VersionState(role));
+
         return TypedResults.Ok(await ToResponseAsync(role, authorizationService, roleService, permissionCatalog));
     }
 
@@ -212,6 +217,8 @@ internal static class RoleManagementEndpoints
             if (string.Equals(existing.RoleDescription, request.RoleDescription, StringComparison.Ordinal)
                 && assignedPermissions.SetEquals(permissionNames))
             {
+                httpContext.SetApiETag(VersionState(existing));
+
                 return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(existing.RoleName)}", await ToResponseAsync(existing, authorizationService, roleService, permissionCatalog));
             }
 
@@ -238,6 +245,8 @@ internal static class RoleManagementEndpoints
             return httpContext.ApiValidationProblem(modelState: modelState);
         }
 
+        httpContext.SetApiETag(VersionState(role));
+
         return TypedResults.Created($"/{RoutePrefix}/{Uri.EscapeDataString(role.RoleName)}", await ToResponseAsync(role, authorizationService, roleService, permissionCatalog));
     }
 
@@ -256,6 +265,11 @@ internal static class RoleManagementEndpoints
         if (await roleManager.FindByIdAsync(roleId) is not Role role)
         {
             return TypedResults.Problem(title: "Not found", detail: "Role not found.", statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (httpContext.ApiIfMatchProblem(VersionState(role)) is { } preconditionFailed)
+        {
+            return preconditionFailed;
         }
 
         var modelState = new ModelStateDictionary();
@@ -295,6 +309,8 @@ internal static class RoleManagementEndpoints
             return httpContext.ApiValidationProblem(modelState: modelState);
         }
 
+        httpContext.SetApiETag(VersionState(role));
+
         return TypedResults.Ok(await ToResponseAsync(role, authorizationService, roleService, permissionCatalog));
     }
 
@@ -327,6 +343,14 @@ internal static class RoleManagementEndpoints
 
         return TypedResults.NoContent();
     }
+
+    // The effective permissions are left out, as they change with the features enabled on the tenant.
+    private static object VersionState(Role role) => new
+    {
+        role.RoleName,
+        role.RoleDescription,
+        Claims = role.RoleClaims.Select(claim => $"{claim.ClaimType}:{claim.ClaimValue}").Order(StringComparer.Ordinal).ToArray(),
+    };
 
     internal static async Task<RoleResponse> ToResponseAsync(Role role, IAuthorizationService authorizationService, IRoleService roleService, PermissionCatalog permissionCatalog)
     {

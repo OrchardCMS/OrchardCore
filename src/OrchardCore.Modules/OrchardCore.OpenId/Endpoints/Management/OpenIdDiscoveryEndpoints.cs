@@ -21,13 +21,13 @@ internal static class OpenIdDiscoveryEndpoints
             .Produces<OpenIdListResponse<OpenIdApplicationResponse>>();
         Configure(routes.MapGet("api/openid/applications/by-client-id", GetApplicationAsync), "ApiGetOpenIdApplication",
             "Shows an application by its client identifier without credentials or private settings.", "applications", "show", OpenIdPermissions.ManageApplications, "clientId")
-            .Produces<OpenIdApplicationResponse>().ProducesProblem(404);
+            .Produces<OpenIdApplicationResponse>().ProducesProblem(404).ProducesETag();
         Configure(routes.MapGet("api/openid/scopes", ListScopesAsync), "ApiListOpenIdScopes",
             "Lists registered scopes and resources.", "scopes", "list", OpenIdPermissions.ManageScopes)
             .Produces<OpenIdListResponse<OpenIdScopeResponse>>();
         Configure(routes.MapGet("api/openid/scopes/by-name", GetScopeAsync), "ApiGetOpenIdScope",
             "Shows a registered scope by name.", "scopes", "show", OpenIdPermissions.ManageScopes, "name")
-            .Produces<OpenIdScopeResponse>().ProducesProblem(404);
+            .Produces<OpenIdScopeResponse>().ProducesProblem(404).ProducesETag();
     }
 
     private static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string id, string summary,
@@ -90,7 +90,7 @@ internal static class OpenIdDiscoveryEndpoints
             return TypedResults.Problem("The identifier must not be empty.", statusCode: 400);
         }
         var item = await manager.FindByClientIdAsync(clientId, context.RequestAborted);
-        return item is null ? context.ApiNotFoundProblem() : TypedResults.Ok(await DescribeAsync(manager, item, context.RequestAborted));
+        return item is null ? context.ApiNotFoundProblem() : TypedResults.Ok(context.WithApiETag(await DescribeAsync(manager, item, context.RequestAborted)));
     }
 
     internal static async Task<IResult> ListScopesAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -131,7 +131,7 @@ internal static class OpenIdDiscoveryEndpoints
             return TypedResults.Problem("The identifier must not be empty.", statusCode: 400);
         }
         var item = await manager.FindByNameAsync(name, context.RequestAborted);
-        return item is null ? context.ApiNotFoundProblem() : TypedResults.Ok(await DescribeAsync(manager, item, context.RequestAborted));
+        return item is null ? context.ApiNotFoundProblem() : TypedResults.Ok(context.WithApiETag(await DescribeAsync(manager, item, context.RequestAborted)));
     }
 
     internal static async Task<OpenIdApplicationResponse> DescribeAsync(IOpenIdApplicationManager manager, object item, CancellationToken cancellationToken) =>

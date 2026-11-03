@@ -36,6 +36,7 @@ python3 .scripts/remote-management/layers-smoke.py <fixture.json>
 python3 .scripts/remote-management/widgets-smoke.py <fixture.json>
 python3 .scripts/remote-management/shortcodes-smoke.py <fixture.json>
 python3 .scripts/remote-management/placements-smoke.py <fixture.json>
+python3 .scripts/remote-management/optimistic-concurrency-smoke.py <fixture.json>
 ```
 
 `verify-fixture.py` checks discovery, command/operation ID uniqueness, every
@@ -103,6 +104,12 @@ features restored, and MCP enabled without the CLI feature. It restores the
 explicit feature states it toggles; newly enabled dependencies can remain on
 the disposable fixture. Its `catalog-smoke.json` records names and IDs without
 credentials. It checks discovery, not every tool's execution or resource permissions.
+
+`optimistic-concurrency-smoke.py` checks the `ETag` and `If-Match` headers of every
+resource supporting them: stable versions across reads, updates without `If-Match`,
+`412` with the `precondition_failed` code on a stale version, and that a refused update
+changes nothing. It also checks their OpenAPI declaration, the `--if-match` and
+`--show-etag` options of Pomi, and that the operations remain MCP tools.
 
 `layers-smoke.py` checks layer definitions, normalized retries, invalid rules,
 all HTTP permission gates, and MCP read/update equivalence using a restricted

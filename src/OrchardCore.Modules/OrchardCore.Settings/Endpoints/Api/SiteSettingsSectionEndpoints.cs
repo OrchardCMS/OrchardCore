@@ -17,11 +17,11 @@ internal static class SiteSettingsSectionEndpoints
         Configure(routes.MapGet("api/settings/sections", ListAsync), "ApiListSiteSettingsSections", "Lists authorized settings sections from enabled features.", "list")
             .Produces<SiteSettingsSectionDescriptor[]>();
         Configure(routes.MapGet("api/settings/sections/{name}", GetAsync), "ApiGetSiteSettingsSection", "Reads safe values and ownership for an explicit settings section.", "show", argument: true)
-            .Produces<SiteSettingsSectionResponse>().ProducesProblem(404);
+            .Produces<SiteSettingsSectionResponse>().ProducesProblem(404).ProducesETag();
         Configure(routes.MapGet("api/settings/sections/{name}/schema", SchemaAsync), "ApiGetSiteSettingsSectionSchema", "Gets the explicit update schema for a settings section.", "schema", argument: true)
             .Produces<JsonObject>().ProducesProblem(404);
         Configure(routes.MapPut("api/settings/sections/{name}", UpdateAsync), "ApiUpdateSiteSettingsSection", "Updates supplied settings fields; omitted properties retain their values.", "update", argument: true, input: true)
-            .Accepts<JsonObject>("application/json").Produces<SiteSettingsSectionUpdateResult>().ProducesProblem(404).ProducesProblem(409);
+            .Accepts<JsonObject>("application/json").Produces<SiteSettingsSectionUpdateResult>().ProducesProblem(404).ProducesProblem(409).AcceptsIfMatch();
     }
 
     private static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string id, string summary, string verb, bool argument = false, bool input = false)
@@ -85,7 +85,7 @@ internal static class SiteSettingsSectionEndpoints
         {
             return context.ApiForbidProblem();
         }
-        return schema ? TypedResults.Ok(provider.GetSchema()) : TypedResults.Ok(await provider.GetAsync());
+        return schema ? TypedResults.Ok(provider.GetSchema()) : TypedResults.Ok(context.WithApiETag(await provider.GetAsync()));
     }
 
     internal static async Task<IResult> UpdateAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -120,12 +120,21 @@ internal static class SiteSettingsSectionEndpoints
             return TypedResults.Problem("A settings object is required.", statusCode: 400);
         }
         var current = await provider.GetAsync();
+        if (context.ApiIfMatchProblem(current) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
         if (current.IsReadOnly || values.Any(entry => current.ReadOnlyProperties.Contains(entry.Key, StringComparer.Ordinal)))
         {
             return TypedResults.Problem("The section or a supplied property is controlled by configuration and cannot be changed here.", statusCode: 409);
         }
         var result = await provider.UpdateAsync(values);
-        return result.Errors.Count > 0 ? TypedResults.ValidationProblem(result.Errors) : TypedResults.Ok(result);
+        if (result.Errors.Count > 0)
+        {
+            return TypedResults.ValidationProblem(result.Errors);
+        }
+        context.SetApiETag(result.Section ?? await provider.GetAsync());
+        return TypedResults.Ok(result);
     }
 
     private static Task<bool> HasAccessAsync(HttpContext context, IAuthorizationService authorization) =>

@@ -49,6 +49,7 @@ internal static class WorkflowManagementApiEndpoints
             .WithDescription("Returns a workflow type, including its activities and transitions.")
             .WithCliCommand(Cli(["workflow", "types"], "show", arguments: [new CliArgumentMetadata("workflowTypeId", 0)]))
             .Produces<WorkflowTypeDto>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -60,6 +61,7 @@ internal static class WorkflowManagementApiEndpoints
             .WithDescription("Creates a workflow type with its activities and transitions.")
             .WithCliCommand(Cli(["workflow", "types"], "create", inputMode: CliInputMode.Json))
             .Produces<WorkflowTypeDto>(StatusCodes.Status201Created)
+            .ProducesETag()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
@@ -71,6 +73,7 @@ internal static class WorkflowManagementApiEndpoints
             .WithDescription("Replaces a workflow type, including its graph and settings.")
             .WithCliCommand(Cli(["workflow", "types"], "update", arguments: [new CliArgumentMetadata("workflowTypeId", 0)], inputMode: CliInputMode.Json))
             .Produces<WorkflowTypeDto>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -210,7 +213,7 @@ internal static class WorkflowManagementApiEndpoints
         }
 
         var workflowType = await service.GetWorkflowTypeAsync(workflowTypeId);
-        return workflowType is null ? httpContext.ApiNotFoundProblem() : TypedResults.Ok(workflowType);
+        return workflowType is null ? httpContext.ApiNotFoundProblem() : TypedResults.Ok(httpContext.WithApiETag(workflowType));
     }
 
     private static async Task<IResult> CreateWorkflowTypeAsync(WorkflowTypeDto model, WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -229,7 +232,7 @@ internal static class WorkflowManagementApiEndpoints
         var workflowType = await service.CreateWorkflowTypeAsync(model, modelState);
         return !modelState.IsValid
             ? ValidationProblem(modelState)
-            : TypedResults.Created($"/api/workflows/types/{workflowType!.WorkflowTypeId}", workflowType);
+            : TypedResults.Created($"/api/workflows/types/{workflowType!.WorkflowTypeId}", httpContext.WithApiETag(workflowType));
     }
 
     private static async Task<IResult> UpdateWorkflowTypeAsync(string workflowTypeId, WorkflowTypeDto model, WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -244,6 +247,11 @@ internal static class WorkflowManagementApiEndpoints
             return httpContext.ApiMissingBodyProblem();
         }
 
+        if (await service.GetWorkflowTypeAsync(workflowTypeId) is { } current && httpContext.ApiIfMatchProblem(current) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
+
         var modelState = new ModelStateDictionary();
         var workflowType = await service.UpdateWorkflowTypeAsync(workflowTypeId, model, modelState);
         if (workflowType is null)
@@ -251,7 +259,7 @@ internal static class WorkflowManagementApiEndpoints
             return httpContext.ApiNotFoundProblem();
         }
 
-        return !modelState.IsValid ? ValidationProblem(modelState) : TypedResults.Ok(workflowType);
+        return !modelState.IsValid ? ValidationProblem(modelState) : TypedResults.Ok(httpContext.WithApiETag(workflowType));
     }
 
     private static async Task<IResult> DeleteWorkflowTypeAsync(string workflowTypeId, WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext)

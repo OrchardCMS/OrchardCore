@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using OrchardCore.Roles.Controllers;
@@ -201,6 +203,58 @@ public class RoleManagementEndpointsTests
     }
 
     [Fact]
+    public async Task UpdateAsync_StaleIfMatch_ReturnsPreconditionFailedAndKeepsRole()
+    {
+        var role = new Role { RoleName = "Editors", RoleDescription = "Before" };
+        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        roleManager.Setup(manager => manager.FindByIdAsync("Editors")).ReturnsAsync(role);
+        var httpContext = CreateContextWithLocalizer();
+        httpContext.Request.Headers.IfMatch = "\"stale\"";
+
+        var result = await RoleManagementEndpoints.UpdateAsync(
+            httpContext,
+            "Editors",
+            new RoleManagementEndpoints.RoleUpdateRequest { RoleDescription = "After" },
+            CreateAuthorizationService("ManageRoles"),
+            roleManager.Object,
+            CreateRoleService().Object,
+            CreatePermissionCatalog(),
+            CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status412PreconditionFailed, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal("Before", role.RoleDescription);
+        Assert.False(string.IsNullOrEmpty(httpContext.Response.Headers.ETag));
+        roleManager.Verify(manager => manager.UpdateAsync(It.IsAny<IRole>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ETagOfTheRead_AppliesAndReturnsNewETag()
+    {
+        var role = new Role { RoleName = "Editors", RoleDescription = "Before" };
+        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        roleManager.Setup(manager => manager.FindByIdAsync("Editors")).ReturnsAsync(role);
+        roleManager.Setup(manager => manager.UpdateAsync(role)).ReturnsAsync(IdentityResult.Success);
+        var read = new DefaultHttpContext();
+        await RoleManagementEndpoints.GetAsync(read, "Editors", CreateAuthorizationService("ViewRoles"), roleManager.Object, CreateRoleService().Object, CreatePermissionCatalog(), CreateLocalizer());
+        var write = new DefaultHttpContext();
+        write.Request.Headers.IfMatch = read.Response.Headers.ETag;
+
+        var result = await RoleManagementEndpoints.UpdateAsync(
+            write,
+            "Editors",
+            new RoleManagementEndpoints.RoleUpdateRequest { RoleDescription = "After" },
+            CreateAuthorizationService("ManageRoles"),
+            roleManager.Object,
+            CreateRoleService().Object,
+            CreatePermissionCatalog(),
+            CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal("After", role.RoleDescription);
+        Assert.NotEqual(read.Response.Headers.ETag, write.Response.Headers.ETag);
+    }
+
+    [Fact]
     public async Task UpdateAsync_ExistingPermissionCallerDoesNotHold_CanRemoveIt()
     {
         var role = new Role { RoleName = "Editors", RoleClaims = [RoleClaim.Create("ManageContent"), RoleClaim.Create("ManageTenants")] };
@@ -240,6 +294,13 @@ public class RoleManagementEndpointsTests
 
         Assert.Equal(StatusCodes.Status201Created, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
     }
+
+    private static DefaultHttpContext CreateContextWithLocalizer() => new()
+    {
+        RequestServices = new ServiceCollection()
+            .AddSingleton(Mock.Of<IStringLocalizer<ProblemDetailsApiLocalization>>())
+            .BuildServiceProvider(),
+    };
 
     private static IAuthorizationService CreateAuthorizationService(params string[] heldPermissions)
     {

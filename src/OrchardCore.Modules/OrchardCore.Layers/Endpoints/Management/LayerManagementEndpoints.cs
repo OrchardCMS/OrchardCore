@@ -21,15 +21,15 @@ internal static class LayerManagementEndpoints
         Configure(routes.MapGet(RoutePrefix, ListAsync), "ApiListLayers", "Lists layer definitions.", "list")
             .Produces<LayerListResponse>();
         Configure(routes.MapGet(RoutePrefix + "/by-name", GetAsync), "ApiGetLayer", "Shows a layer definition and its conditions.", "show", argument: true)
-            .Produces<LayerDefinitionDto>().ProducesProblem(404);
+            .Produces<LayerDefinitionDto>().ProducesProblem(404).ProducesETag();
         Configure(routes.MapGet("api/layer-conditions", ConditionsAsync), "ApiListLayerConditions", "Lists registered conditions and their writable property schemas.", "conditions")
             .Produces<IReadOnlyList<RuleConditionDescriptor>>();
         Configure(routes.MapPost(RoutePrefix + "/validate", ValidateAsync), "ApiValidateLayer", "Validates a complete layer definition without evaluating conditions or saving it.", "validate", input: true)
             .Accepts<LayerDefinitionDto>("application/json").Produces<RuleValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreateLayer", "Creates a complete layer definition; identical name retries return the stored definition.", "create", input: true)
-            .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>(201).ProducesProblem(409);
+            .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>(201).ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut(RoutePrefix + "/by-name", UpdateAsync), "ApiUpdateLayer", "Replaces a layer definition and all its conditions. The name cannot change.", "update", argument: true, input: true)
-            .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>().ProducesProblem(404);
+            .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>().ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete(RoutePrefix + "/by-name", DeleteAsync), "ApiDeleteLayer", "Deletes an unreferenced layer; missing layers are a successful no-op.", "delete", argument: true, confirmation: true)
             .Produces(204).ProducesProblem(409);
         return routes;
@@ -91,7 +91,7 @@ internal static class LayerManagementEndpoints
             return context.ApiForbidProblem();
         }
         var layer = await layers.GetLayerAsync(name);
-        return layer is null ? context.ApiNotFoundProblem() : TypedResults.Ok(Describe(layer, rules));
+        return layer is null ? context.ApiNotFoundProblem() : TypedResults.Ok(context.WithApiETag(Describe(layer, rules)));
     }
 
     internal static async Task<IResult> ConditionsAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -126,10 +126,10 @@ internal static class LayerManagementEndpoints
         {
             var existing = mutation.Layer;
             return Equivalent(Describe(existing, rules), definition, rules.Describe(result.Rule))
-                ? TypedResults.Created(Location(context, existing.Name), Describe(existing, rules))
+                ? TypedResults.Created(Location(context, existing.Name), context.WithApiETag(Describe(existing, rules)))
                 : TypedResults.Problem("A layer with this name already exists with a different definition.", statusCode: 409);
         }
-        return TypedResults.Created(Location(context, mutation.Layer.Name), Describe(mutation.Layer, rules));
+        return TypedResults.Created(Location(context, mutation.Layer.Name), context.WithApiETag(Describe(mutation.Layer, rules)));
     }
 
     internal static async Task<IResult> UpdateAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -148,6 +148,10 @@ internal static class LayerManagementEndpoints
         {
             return context.ApiNotFoundProblem();
         }
+        if (context.ApiIfMatchProblem(Describe(existing, rules)) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
         var result = Validate(definition, layers, rules, existing.LayerRule?.ConditionId);
         if (!result.IsValid)
         {
@@ -163,7 +167,7 @@ internal static class LayerManagementEndpoints
             }
             existing = mutation.Layer;
         }
-        return TypedResults.Ok(Describe(existing, rules));
+        return TypedResults.Ok(context.WithApiETag(Describe(existing, rules)));
     }
 
     internal static async Task<IResult> DeleteAsync(HttpContext context, [FromServices] IAuthorizationService authorization,

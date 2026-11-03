@@ -16,11 +16,11 @@ internal static class RewriteManagementEndpoints
     internal static void MapManagementEndpoints(this IEndpointRouteBuilder routes)
     {
         Configure(routes.MapGet(Prefix, ListAsync), "ApiListUrlRewriteRules", "list", "Lists rules in runtime order.").Produces<RewritePage>();
-        Configure(routes.MapGet(Prefix + "/{id}", GetAsync), "ApiGetUrlRewriteRule", "show", "Shows a stored rule.", argument: true).Produces<RewriteResponse>().ProducesProblem(404);
+        Configure(routes.MapGet(Prefix + "/{id}", GetAsync), "ApiGetUrlRewriteRule", "show", "Shows a stored rule.", argument: true).Produces<RewriteResponse>().ProducesProblem(404).ProducesETag();
         Configure(routes.MapGet("api/url-rewriting/sources", SourcesAsync), "ApiListUrlRewriteSources", "sources", "Lists registered sources and remote editing support.").Produces<RewriteSourceResponse[]>();
         Configure(routes.MapPost(Prefix + "/validate", ValidateAsync), "ApiValidateUrlRewriteRule", "validate", "Validates a complete definition without saving or matching a request.", input: true).Produces<RewriteValidationResponse>();
-        Configure(routes.MapPost(Prefix, CreateAsync), "ApiCreateUrlRewriteRule", "create", "Creates a rule; an identical retry with the same explicit id returns the stored rule.", input: true).Produces<RewriteResponse>(201).Produces<RewriteResponse>().ProducesProblem(409);
-        Configure(routes.MapPut(Prefix + "/{id}", UpdateAsync), "ApiUpdateUrlRewriteRule", "update", "Replaces the complete built-in rule definition without changing its source or order.", argument: true, input: true).Produces<RewriteResponse>().ProducesProblem(404);
+        Configure(routes.MapPost(Prefix, CreateAsync), "ApiCreateUrlRewriteRule", "create", "Creates a rule; an identical retry with the same explicit id returns the stored rule.", input: true).Produces<RewriteResponse>(201).Produces<RewriteResponse>().ProducesProblem(409).ProducesETag();
+        Configure(routes.MapPut(Prefix + "/{id}", UpdateAsync), "ApiUpdateUrlRewriteRule", "update", "Replaces the complete built-in rule definition without changing its source or order.", argument: true, input: true).Produces<RewriteResponse>().ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete(Prefix + "/{id}", DeleteAsync), "ApiDeleteUrlRewriteRule", "delete", "Deletes a rule; a missing rule is a no-op.", argument: true, confirmation: true).Produces(204);
         Configure(routes.MapPut(Prefix + "/{id}/position", MoveAsync), "ApiMoveUrlRewriteRule", "move", "Moves a rule to a zero-based position in the complete ordered list.", argument: true, input: true).Produces<RewriteResponse>().ProducesProblem(404);
     }
@@ -71,7 +71,12 @@ internal static class RewriteManagementEndpoints
             return context.ApiForbidProblem();
         }
         var rule = await manager.FindByIdAsync(id);
-        return rule is null ? context.ApiNotFoundProblem() : TypedResults.Ok(RewriteDefinitionMapper.Describe(rule));
+        if (rule is null)
+        {
+            return context.ApiNotFoundProblem();
+        }
+        context.SetApiETag(VersionState(rule));
+        return TypedResults.Ok(RewriteDefinitionMapper.Describe(rule));
     }
 
     internal static async Task<IResult> SourcesAsync(HttpContext context, IAuthorizationService authorization,
@@ -108,10 +113,15 @@ internal static class RewriteManagementEndpoints
         var existing = await manager.FindByIdAsync(rule.Id);
         if (existing is not null)
         {
-            return Equivalent(existing, rule) ? TypedResults.Ok(RewriteDefinitionMapper.Describe(existing))
-                : TypedResults.Problem("The identifier already belongs to a different rule definition.", statusCode: 409);
+            if (!Equivalent(existing, rule))
+            {
+                return TypedResults.Problem("The identifier already belongs to a different rule definition.", statusCode: 409);
+            }
+            context.SetApiETag(VersionState(existing));
+            return TypedResults.Ok(RewriteDefinitionMapper.Describe(existing));
         }
         await manager.SaveAsync(rule);
+        context.SetApiETag(VersionState(rule));
         return TypedResults.Created($"{context.Request.PathBase}/{Prefix}/{Uri.EscapeDataString(rule.Id)}",
             RewriteDefinitionMapper.Describe(rule));
     }
@@ -128,12 +138,17 @@ internal static class RewriteManagementEndpoints
         {
             return context.ApiNotFoundProblem();
         }
+        if (context.ApiIfMatchProblem(VersionState(existing)) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
         var (rule, errors) = await PrepareAsync(manager, definition, existing);
         if (errors.Count > 0)
         {
             return TypedResults.ValidationProblem(errors);
         }
         await manager.SaveAsync(rule);
+        context.SetApiETag(VersionState(rule));
         return TypedResults.Ok(RewriteDefinitionMapper.Describe(rule));
     }
 
@@ -212,6 +227,9 @@ internal static class RewriteManagementEndpoints
         }
         return (rule, errors);
     }
+
+    // The order is left out: moving a rule shifts others, and an update doesn't replace it.
+    private static object VersionState(RewriteRule rule) => new { rule.Id, rule.Name, rule.Source, rule.Properties };
 
     private static bool Equivalent(RewriteRule first, RewriteRule second) => first.Name == second.Name
         && first.Source == second.Source && JsonNode.DeepEquals(first.Properties, second.Properties);

@@ -45,6 +45,7 @@ internal static class TemplateManagementEndpoints
                 Arguments = { new CliArgumentMetadata("name", 0) },
             })
             .Produces<TemplateDefinitionDto>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -60,6 +61,7 @@ internal static class TemplateManagementEndpoints
             })
             .Accepts<TemplateDefinitionDto>("application/json")
             .Produces<TemplateDefinitionDto>(StatusCodes.Status201Created)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -77,6 +79,7 @@ internal static class TemplateManagementEndpoints
             })
             .Accepts<TemplateDefinitionDto>("application/json")
             .Produces<TemplateDefinitionDto>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -151,7 +154,7 @@ internal static class TemplateManagementEndpoints
 
         var document = await templatesManager.GetTemplatesDocumentAsync();
         return TryGetDefinition(document, name, out var definition)
-            ? TypedResults.Ok(definition)
+            ? TypedResults.Ok(httpContext.WithApiETag(definition))
             : httpContext.ApiNotFoundProblem();
     }
 
@@ -182,7 +185,7 @@ internal static class TemplateManagementEndpoints
         }
 
         var created = ToDefinition(result.Name, result.Template);
-        return TypedResults.Created(GetLocation(httpContext, result.Name), created);
+        return TypedResults.Created(GetLocation(httpContext, result.Name), httpContext.WithApiETag(created));
     }
 
     internal static async Task<IResult> UpdateAsync(
@@ -210,13 +213,19 @@ internal static class TemplateManagementEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
+        if (TryGetDefinition(await templatesManager.GetTemplatesDocumentAsync(), name, out var current) &&
+            httpContext.ApiIfMatchProblem(current) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
+
         var result = await templatesManager.ReplaceTemplateAsync(name, ToTemplate(definition));
         if (result is null)
         {
             return httpContext.ApiNotFoundProblem();
         }
 
-        return TypedResults.Ok(ToDefinition(result.Name, result.Template));
+        return TypedResults.Ok(httpContext.WithApiETag(ToDefinition(result.Name, result.Template)));
     }
 
     internal static async Task<IResult> DeleteAsync(

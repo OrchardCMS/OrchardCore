@@ -27,6 +27,7 @@ internal static class SiteSettingsManagementEndpoints
             .WithDescription("Returns the safe core site settings that can be managed remotely.")
             .WithCliCommand(Cli("show"))
             .Produces<SiteSettingsResponse>(StatusCodes.Status200OK)
+            .ProducesETag()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
@@ -37,6 +38,7 @@ internal static class SiteSettingsManagementEndpoints
             .WithCliCommand(Cli("update", CliInputMode.Json))
             .Accepts<SiteSettingsUpdateRequest>("application/json")
             .Produces<SiteSettingsResponse>(StatusCodes.Status200OK)
+            .AcceptsIfMatch()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
@@ -56,11 +58,17 @@ internal static class SiteSettingsManagementEndpoints
     internal static async Task<IResult> GetAsync(HttpContext httpContext, [FromServices] SiteSettingsManagementService service)
     {
         var result = await service.GetAsync(httpContext.User);
-        return result.IsForbidden ? httpContext.ApiForbidProblem() : TypedResults.Ok(result.Value);
+        return result.IsForbidden ? httpContext.ApiForbidProblem() : TypedResults.Ok(httpContext.WithApiETag(result.Value));
     }
 
     internal static async Task<IResult> UpdateAsync(HttpContext httpContext, [FromServices] SiteSettingsManagementService service, SiteSettingsUpdateRequest request)
     {
+        var current = await service.GetAsync(httpContext.User);
+        if (!current.IsForbidden && httpContext.ApiIfMatchProblem(current.Value) is { } preconditionFailed)
+        {
+            return preconditionFailed;
+        }
+
         var result = await service.UpdateAsync(httpContext.User, request);
         if (result.IsForbidden)
         {
@@ -74,7 +82,7 @@ internal static class SiteSettingsManagementEndpoints
                 detail: string.Join(", ", result.Errors.SelectMany(entry => entry.Value)));
         }
 
-        return TypedResults.Ok(result.Value);
+        return TypedResults.Ok(httpContext.WithApiETag(result.Value));
     }
 
     internal static async Task<IResult> SchemaAsync(HttpContext httpContext, [FromServices] SiteSettingsManagementService service)
