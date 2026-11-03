@@ -144,7 +144,7 @@ public sealed class SourceTemplatesTests : IDisposable
 
         Assert.False(entry.Template.IsInUse);
         Assert.False(entry.Template.CanClone);
-        Assert.False(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: false));
+        Assert.False(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
         Assert.Empty(_templates.Templates);
     }
 
@@ -169,21 +169,21 @@ public sealed class SourceTemplatesTests : IDisposable
         var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
         Assert.False(entry.IsOverridden);
 
-        Assert.True(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: false));
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
         Assert.Equal("original", _templates.Templates["Layout"].Content);
         entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
         Assert.True(entry.IsOverridden && entry.IsCloned);
         Assert.False(entry.IsModified || entry.IsSourceChanged);
 
         // A second clone would lose the local template.
-        Assert.False(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: false));
+        Assert.False(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
 
         _templates.Templates["Layout"].Content = "edited";
         AddFile("SiteTheme", "Views/Layout.liquid", "updated");
         entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
         Assert.True(entry.IsModified && entry.IsSourceChanged);
 
-        Assert.True(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: true));
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: true));
         Assert.Equal("updated", _templates.Templates["Layout"].Content);
         entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
         Assert.False(entry.IsModified || entry.IsSourceChanged);
@@ -230,7 +230,7 @@ public sealed class SourceTemplatesTests : IDisposable
         var service = CreateService();
         var source = service.GetSource(ThemeTemplateSource.SourceName);
         var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
-        Assert.True(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: false));
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
 
         // The clone is deleted from the Templates list, whether the Assisted Templates feature is enabled or not, then written by hand.
         _templates.Templates.Remove("Layout");
@@ -254,7 +254,7 @@ public sealed class SourceTemplatesTests : IDisposable
         var service = CreateService();
         var source = service.GetSource(ThemeTemplateSource.SourceName);
         var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
-        Assert.True(await service.CloneAsync(source, entry.Template, adminTemplates: false, overwrite: false));
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
 
         _siteThemeId = "NewTheme";
         entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
@@ -286,7 +286,7 @@ public sealed class SourceTemplatesTests : IDisposable
 
         var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: true, scope: null));
 
-        Assert.False(await service.CloneAsync(source, entry.Template, adminTemplates: true, overwrite: false));
+        Assert.False(await service.CloneAsync(entry.Template, adminTemplates: true, overwrite: false));
         Assert.Empty(_adminTemplates.Templates);
     }
 
@@ -505,16 +505,12 @@ public sealed class SourceTemplatesTests : IDisposable
 
     private SourceTemplatesService CreateService()
     {
-        var clock = new Mock<IClock>();
-        clock.SetupGet(clock => clock.UtcNow).Returns(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-
         return new SourceTemplatesService(
             [CreateSource()],
             CreateShapeTemplateFiles(),
             new TemplatesManager(CreateDocumentManager(_templates)),
             new AdminTemplatesManager(CreateDocumentManager(_adminTemplates)),
-            CreateOverridesManager(),
-            clock.Object);
+            CreateOverridesManager());
     }
 
     private TemplateOverridesManager CreateOverridesManager()

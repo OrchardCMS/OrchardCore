@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-using OrchardCore.Modules;
 using OrchardCore.Templates.Models;
 
 namespace OrchardCore.Templates.Services;
@@ -16,22 +15,19 @@ public sealed class SourceTemplatesService
     private readonly TemplatesManager _templatesManager;
     private readonly AdminTemplatesManager _adminTemplatesManager;
     private readonly TemplateOverridesManager _overridesManager;
-    private readonly IClock _clock;
 
     public SourceTemplatesService(
         IEnumerable<ITemplateSource> sources,
         ShapeTemplateFiles shapeTemplateFiles,
         TemplatesManager templatesManager,
         AdminTemplatesManager adminTemplatesManager,
-        TemplateOverridesManager overridesManager,
-        IClock clock)
+        TemplateOverridesManager overridesManager)
     {
         _sources = sources;
         _shapeTemplateFiles = shapeTemplateFiles;
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
         _overridesManager = overridesManager;
-        _clock = clock;
     }
 
     /// <summary>
@@ -155,12 +151,11 @@ public sealed class SourceTemplatesService
     /// <summary>
     /// Clones a Liquid template in use as a local template, and records where it comes from to monitor it.
     /// </summary>
-    /// <param name="source">The source of the template.</param>
     /// <param name="template">The template to clone.</param>
     /// <param name="adminTemplates">Whether to clone it as an admin template.</param>
     /// <param name="overwrite">Whether to replace a local template with the same name, which resets it to the source.</param>
     /// <returns>Whether the template was cloned.</returns>
-    public async Task<bool> CloneAsync(ITemplateSource source, SourceTemplate template, bool adminTemplates, bool overwrite)
+    public async Task<bool> CloneAsync(SourceTemplate template, bool adminTemplates, bool overwrite)
     {
         if (!template.CanClone)
         {
@@ -197,11 +192,9 @@ public sealed class SourceTemplatesService
 
         overrides.Overrides[template.Name] = new TemplateOverride
         {
-            Source = source.Name,
             ExtensionId = template.ExtensionId,
             RelativePath = template.RelativePath,
             Hash = ComputeHash(content),
-            ClonedUtc = _clock.UtcNow,
         };
 
         await _overridesManager.UpdateOverridesDocumentAsync(overrides, adminTemplates);

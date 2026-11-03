@@ -298,7 +298,7 @@ public sealed class TemplateSourceController : Controller
             case SourceTemplatesBulkAction.Clone:
                 foreach (var entry in entries.Where(entry => !entry.IsOverridden))
                 {
-                    count += await _sourceTemplatesService.CloneAsync(templateSource, entry.Template, options.AdminTemplates, overwrite: false) ? 1 : 0;
+                    count += await _sourceTemplatesService.CloneAsync(entry.Template, options.AdminTemplates, overwrite: false) ? 1 : 0;
                 }
 
                 await _notifier.SuccessAsync(H["{0} template(s) cloned.", count]);
@@ -307,7 +307,7 @@ public sealed class TemplateSourceController : Controller
                 // A template written by hand, or cloned from another file, is not replaced without its own warning.
                 foreach (var entry in entries.Where(entry => entry.IsCloned))
                 {
-                    count += await _sourceTemplatesService.CloneAsync(templateSource, entry.Template, options.AdminTemplates, overwrite: true) ? 1 : 0;
+                    count += await _sourceTemplatesService.CloneAsync(entry.Template, options.AdminTemplates, overwrite: true) ? 1 : 0;
                 }
 
                 await _notifier.SuccessAsync(H["{0} template(s) reset to their source.", count]);
@@ -516,7 +516,7 @@ public sealed class TemplateSourceController : Controller
             return NotFound();
         }
 
-        if (await _sourceTemplatesService.CloneAsync(templateSource, template, adminTemplates, overwrite: false))
+        if (await _sourceTemplatesService.CloneAsync(template, adminTemplates, overwrite: false))
         {
             await _notifier.SuccessAsync(H["The \"{0}\" template has been cloned.", template.Name]);
         }
@@ -544,7 +544,7 @@ public sealed class TemplateSourceController : Controller
             return NotFound();
         }
 
-        if (await _sourceTemplatesService.CloneAsync(templateSource, template, adminTemplates, overwrite: true))
+        if (await _sourceTemplatesService.CloneAsync(template, adminTemplates, overwrite: true))
         {
             await _notifier.SuccessAsync(H["The \"{0}\" template has been reset to its source.", template.Name]);
         }
