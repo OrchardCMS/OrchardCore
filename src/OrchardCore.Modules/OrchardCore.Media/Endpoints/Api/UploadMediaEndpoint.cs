@@ -215,6 +215,18 @@ public static class UploadMediaEndpoint
                             Error = ex.Message,
                         });
                     }
+                    catch (FileStoreException ex)
+                    {
+                        logger.LogWarning(ex, "An error occurred while uploading a media");
+
+                        result.Add(new UploadFileResultDto
+                        {
+                            Name = fileName,
+                            Size = file.Length,
+                            Folder = path,
+                            Error = ex.Message,
+                        });
+                    }
                     catch (Exception ex)
                     {
                         logger.LogError(ex, "An error occurred while uploading a media");
@@ -224,7 +236,7 @@ public static class UploadMediaEndpoint
                             Name = fileName,
                             Size = file.Length,
                             Folder = path,
-                            Error = ex.Message,
+                            Error = localizer["An error occurred while uploading the file."].ToString(),
                         });
                     }
                     finally
@@ -310,6 +322,7 @@ public static class UploadMediaEndpoint
             return httpContext.ApiValidationProblem(detail: localizer["A file with this name already exists in the current folder."]);
         }
 
+        FileStream bufferedBody = null;
         try
         {
             using var limitedBody = new SizeLimitedReadStream(
@@ -317,36 +330,32 @@ public static class UploadMediaEndpoint
                 mediaOptions.MaxFileSize,
                 httpContext.Request.ContentLength);
             Stream uploadStream = limitedBody;
-            MemoryStream bufferedBody = null;
+
+            // The store needs the length up front, which a chunked request only gives by reading it.
             if (!httpContext.Request.ContentLength.HasValue)
             {
-                bufferedBody = new MemoryStream();
-                await limitedBody.CopyToAsync(bufferedBody, httpContext.RequestAborted);
-                bufferedBody.Position = 0;
+                bufferedBody = await BufferToTemporaryFileAsync(limitedBody, httpContext.RequestAborted);
                 uploadStream = bufferedBody;
             }
 
-            using (bufferedBody)
-            {
-                var createdPath = await mediaFileStore.CreateFileFromStreamAsync(
-                    fileCreationService,
-                    mediaFilePath,
-                    uploadStream,
-                    length: uploadStream.Length,
-                    contentType: httpContext.Request.ContentType,
-                    cancellationToken: httpContext.RequestAborted);
+            var createdPath = await mediaFileStore.CreateFileFromStreamAsync(
+                fileCreationService,
+                mediaFilePath,
+                uploadStream,
+                length: uploadStream.Length,
+                contentType: httpContext.Request.ContentType,
+                cancellationToken: httpContext.RequestAborted);
 
-                var mediaFile = await mediaFileStore.GetFileInfoAsync(createdPath);
+            var mediaFile = await mediaFileStore.GetFileInfoAsync(createdPath);
 
-                await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
-                    mediaFile,
-                    mediaFileStore,
-                    serviceProvider.GetService(typeof(IMediaFileStoreCache)) as IMediaFileStoreCache,
-                    httpContext,
-                    logger);
+            await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
+                mediaFile,
+                mediaFileStore,
+                serviceProvider.GetService(typeof(IMediaFileStoreCache)) as IMediaFileStoreCache,
+                httpContext,
+                logger);
 
-                return TypedResults.Ok(MediaEndpointHelpers.CreateFileResult(mediaFile, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
-            }
+            return TypedResults.Ok(MediaEndpointHelpers.CreateFileResult(mediaFile, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
         }
         catch (PayloadTooLargeException)
         {
@@ -371,7 +380,43 @@ public static class UploadMediaEndpoint
         {
             logger.LogError(ex, "An error occurred while streaming a media upload");
 
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            return TypedResults.Problem(detail: localizer["An error occurred while uploading the file."], statusCode: StatusCodes.Status500InternalServerError);
+        }
+        finally
+        {
+            if (bufferedBody is not null)
+            {
+                await bufferedBody.DisposeAsync();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Copies a stream to a temporary file that only the application can read, which is deleted when
+    /// the returned stream is disposed. The returned stream is positioned at its start.
+    /// </summary>
+    internal static async Task<FileStream> BufferToTemporaryFileAsync(Stream source, CancellationToken cancellationToken)
+    {
+        var buffer = new FileStream(
+            Path.GetTempFileName(),
+            FileMode.Open,
+            FileAccess.ReadWrite,
+            FileShare.None,
+            bufferSize: 81920,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+
+        try
+        {
+            await source.CopyToAsync(buffer, cancellationToken);
+            buffer.Position = 0;
+
+            return buffer;
+        }
+        catch
+        {
+            await buffer.DisposeAsync();
+
+            throw;
         }
     }
 
