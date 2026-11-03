@@ -255,6 +255,8 @@ public sealed class ServerSecretsStartup : StartupBase
 public sealed class ServerRateLimitsStartup : StartupBase
 {
     private const string TokenRouteName = "Access.Token";
+    private const string VerificationRouteName = "Access.Verify";
+    private const int VerificationPermitLimit = 30;
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -276,7 +278,14 @@ public sealed class ServerRateLimitsStartup : StartupBase
             });
 
             options.AddRouteRejectionHandler(TokenRouteName, OnTokenRequestRejectedAsync);
+
+            // Limits guessing user codes, on the page that validates them as well as when submitting them.
+            options.AddRouteRateLimit(VerificationRouteName, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy("OpenIdEndUserVerification", VerificationPermitLimit));
         });
+
+        services.AddOpenIddict().AddServer(options =>
+            options.AddEventHandler<OpenIddictServerEvents.ValidateDeviceAuthorizationRequestContext>(builder =>
+                builder.UseSingletonHandler<DeviceAuthorizationRateLimitHandler>().SetOrder(int.MinValue + 100_000)));
     }
 
     private static async ValueTask OnTokenRequestRejectedAsync(OnRejectedContext context, CancellationToken cancellationToken)

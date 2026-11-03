@@ -319,6 +319,81 @@ public class OpenIdAuthenticationTests
     }
 
     [Fact]
+    public async Task OpenIdDeviceFlow_RateLimitsExceeded_RejectsDeviceAndVerificationRequests()
+    {
+        var context = new SiteContext();
+
+        await context.InitializeAsync();
+
+        const string clientId = "device-flow-client";
+
+        var recipe = new JsonObject
+        {
+            ["steps"] = new JsonArray
+            {
+                new JsonObject
+                {
+                    { "name", "Feature" },
+                    { "enable", new JsonArray(
+                        "OrchardCore.Users",
+                        "OrchardCore.RateLimits",
+                        "OrchardCore.OpenId.Server",
+                        "OrchardCore.OpenId.Validation",
+                        "OrchardCore.OpenId") },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdServerSettings" },
+                    { "EnableTokenEndpoint", true },
+                    { "EnableDeviceAuthorizationEndpoint", true },
+                    { "EnableEndUserVerificationEndpoint", true },
+                    { "AllowDeviceAuthorizationFlow", true },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdApplication" },
+                    { "ClientId", clientId },
+                    { "DisplayName", "Device Flow Test Application" },
+                    { "Type", "public" },
+                    { "AllowDeviceAuthorizationFlow", true },
+                },
+            },
+        };
+
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
+
+        // 30 requests per minute per IP address are allowed.
+        for (var i = 0; i < 30; i++)
+        {
+            using var accepted = await context.Client.SendAsync(
+                HttpRequestHelper.CreatePostMessage("connect/device", new Dictionary<string, string> { { "client_id", clientId } }),
+                CancellationToken.None);
+
+            Assert.True(accepted.IsSuccessStatusCode, await accepted.Content.ReadAsStringAsync(CancellationToken.None));
+        }
+
+        using var rejected = await context.Client.SendAsync(
+            HttpRequestHelper.CreatePostMessage("connect/device", new Dictionary<string, string> { { "client_id", clientId } }),
+            CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.BadRequest, rejected.StatusCode);
+        Assert.NotNull(rejected.Headers.RetryAfter);
+        var payload = await rejected.Content.ReadFromJsonAsync<JsonObject>(CancellationToken.None);
+        Assert.Equal(OpenIddictConstants.Errors.SlowDown, payload["error"]?.GetValue<string>());
+
+        for (var i = 0; i < 30; i++)
+        {
+            using var verification = await context.Client.GetAsync("connect/verify", CancellationToken.None);
+
+            Assert.NotEqual(HttpStatusCode.TooManyRequests, verification.StatusCode);
+        }
+
+        using var rejectedVerification = await context.Client.GetAsync("connect/verify", CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejectedVerification.StatusCode);
+    }
+
+    [Fact]
     public async Task OpenIdPasswordGrant_RateLimitExceeded_ReturnsSlowDownError()
     {
         var context = new SiteContext();

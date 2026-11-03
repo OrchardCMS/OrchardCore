@@ -41,6 +41,14 @@ Supported flows include:
 - [Client Credentials Grant](https://tools.ietf.org/html/rfc6749)
 - [Resource Owner Password Grant](https://tools.ietf.org/html/rfc6749)
 
+### Rate limiting
+
+With the **Rate Limits** feature enabled, the endpoints that don't require an authenticated client are limited per
+remote address: the password grant of the token endpoint shares the budget of the login page, the end user verification
+endpoint allows 30 requests per minute, and the device authorization endpoint allows 30 requests per minute and answers
+with the `slow_down` error and a `Retry-After` header beyond that. The OpenID server answers device authorization requests
+before routing, so this last limit is enforced by the server and isn't listed with the built-in route limits.
+
 ### Customizing authorization pages
 
 The authorization server's consent, device verification, sign-out, and error
