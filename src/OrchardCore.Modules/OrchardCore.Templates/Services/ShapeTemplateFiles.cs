@@ -19,6 +19,9 @@ public sealed class ShapeTemplateFiles
     private readonly IShapeTemplateFileProviderAccessor _fileProviderAccessor;
     private readonly IEnumerable<IShapeTemplateViewEngine> _viewEngines;
 
+    private readonly Dictionary<string, string[]> _viewFilePaths = [];
+
+    private string[] _templateFileExtensions;
     private (IExtensionInfo Extension, string Prefix)[] _extensionsByPath;
 
     public ShapeTemplateFiles(
@@ -102,7 +105,6 @@ public sealed class ShapeTemplateFiles
     /// <param name="extensionIds">The extensions, the one whose templates win first.</param>
     public IReadOnlyList<SourceTemplate> GetExtensionTemplates(IEnumerable<string> extensionIds)
     {
-        var fileExtensions = _viewEngines.SelectMany(engine => engine.TemplateFileExtensions).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         var templates = new Dictionary<string, SourceTemplate>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var extensionId in extensionIds)
@@ -118,13 +120,7 @@ public sealed class ShapeTemplateFiles
 
             foreach (var subPath in s_harvester.SubPaths())
             {
-                var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(
-                    $"{extensionPath}/{subPath}",
-                    fileExtensions,
-                    inViewsFolder: true,
-                    inDepth: false);
-
-                foreach (var filePath in filePaths)
+                foreach (var filePath in GetViewFilePaths($"{extensionPath}/{subPath}"))
                 {
                     var relativePath = filePath[(extensionPath.Length + 1)..];
 
@@ -145,6 +141,23 @@ public sealed class ShapeTemplateFiles
         }
 
         return templates.Values.ToList();
+    }
+
+    // Only the paths are kept for the request, not the templates, which the callers change.
+    private string[] GetViewFilePaths(string folder)
+    {
+        if (!_viewFilePaths.TryGetValue(folder, out var filePaths))
+        {
+            _templateFileExtensions ??= _viewEngines.SelectMany(engine => engine.TemplateFileExtensions).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+
+            filePaths = _fileProviderAccessor.FileProvider
+                .GetViewFilePaths(folder, _templateFileExtensions, inViewsFolder: true, inDepth: false)
+                .ToArray();
+
+            _viewFilePaths[folder] = filePaths;
+        }
+
+        return filePaths;
     }
 
     // The longest paths first, so that an extension nested in another one's folder is not taken for it.

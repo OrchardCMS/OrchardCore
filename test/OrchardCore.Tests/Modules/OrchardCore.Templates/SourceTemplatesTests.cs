@@ -193,6 +193,21 @@ public sealed class SourceTemplatesTests : IDisposable
     }
 
     [Fact]
+    public void GetExtensionTemplates_CalledTwice_ListsTheFilesOnceAndReturnsNewTemplates()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        var shapeTemplateFiles = CreateShapeTemplateFiles();
+
+        var first = Assert.Single(shapeTemplateFiles.GetExtensionTemplates(["SiteTheme"]));
+        AddFile("SiteTheme", "Views/Menu.liquid", "original");
+        var second = Assert.Single(shapeTemplateFiles.GetExtensionTemplates(["SiteTheme"]));
+
+        // The callers change the templates they get, e.g. what overrides them.
+        Assert.NotSame(first, second);
+    }
+
+    [Fact]
     public async Task FindSourceTemplatesAsync_Names_ReturnsThoseOfTheSources()
     {
         AddExtension("SiteTheme");
