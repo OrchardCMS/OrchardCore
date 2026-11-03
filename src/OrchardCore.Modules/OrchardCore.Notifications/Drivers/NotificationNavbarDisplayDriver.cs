@@ -102,15 +102,16 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
     {
         var maxEvaluated = Math.Max(_notificationOptions.MaxEvaluatedUnreadNotifications, _notificationOptions.TotalUnreadNotifications);
 
+        // One more is loaded to know whether the user has more unread notifications than the evaluated ones.
         var unread = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
             .OrderByDescending(x => x.CreatedAtUtc)
-            .Take(maxEvaluated)
+            .Take(maxEvaluated + 1)
             .ListAsync()).ToList();
 
-        var visible = await _visibilityEvaluator.FilterAsync(unread, user);
+        var visible = await _visibilityEvaluator.FilterAsync(unread.Take(maxEvaluated), user);
 
         model.Notifications = visible.Take(_notificationOptions.TotalUnreadNotifications).ToList();
         model.TotalUnread = visible.Count;
-        model.IsTotalUnreadCapped = unread.Count == maxEvaluated;
+        model.IsTotalUnreadCapped = unread.Count > maxEvaluated;
     }
 }

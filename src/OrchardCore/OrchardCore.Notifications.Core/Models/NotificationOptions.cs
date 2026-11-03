@@ -9,8 +9,9 @@ public class NotificationOptions
 
     /// <summary>
     /// The maximum number of unread notifications evaluated by the <see cref="INotificationVisibilityHandler"/>
-    /// implementations to count the unread notifications of the navbar. When a user has more, the count is
-    /// shown as this number followed by a plus sign. Only used when a visibility handler is registered.
+    /// implementations to count the unread notifications of the navbar, the most recent first. When a user has
+    /// more, the count of those that are not hidden is followed by a plus sign. Only used when a visibility
+    /// handler is registered.
     /// </summary>
     public int MaxEvaluatedUnreadNotifications { get; set; } = 100;
 

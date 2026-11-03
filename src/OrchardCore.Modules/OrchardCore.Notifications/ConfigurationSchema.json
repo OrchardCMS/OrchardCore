@@ -16,7 +16,7 @@
             },
             "MaxEvaluatedUnreadNotifications": {
               "type": "integer",
-              "description": "The maximum number of unread notifications checked by the notification visibility handlers to count the unread notifications of the navigation bar. A larger count is shown as this number followed by a plus sign. Only used when a module registers a visibility handler.",
+              "description": "The maximum number of unread notifications checked by the notification visibility handlers to count the unread notifications of the navigation bar, the most recent first. When a user has more, the count of those that are not hidden is followed by a plus sign. Only used when a module registers a visibility handler.",
               "default": 100,
               "minimum": 0
             },
