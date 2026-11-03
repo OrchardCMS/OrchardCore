@@ -197,6 +197,51 @@ public class BackgroundTaskControllerTests
     }
 
     [Fact]
+    public async Task IndexBulkActionPOST_RunWithDifferentOutcomes_NotifiesOncePerOutcome()
+    {
+        var monitor = new Mock<IBackgroundTaskMonitor>();
+        monitor
+            .Setup(x => x.RequestRunAsync(Tenant, _firstTaskName))
+            .ReturnsAsync(BackgroundTaskRunRequestResult.Queued);
+        monitor
+            .Setup(x => x.RequestRunAsync(Tenant, _secondTaskName))
+            .ReturnsAsync(BackgroundTaskRunRequestResult.AlreadyRunning);
+
+        var notifier = new TestNotifier();
+        var controller = CreateController(monitor.Object, notifier);
+
+        await controller.IndexBulkActionPOST(
+            new AdminIndexOptions { BulkAction = BackgroundTaskBulkAction.Run },
+            [_firstTaskName, _secondTaskName]);
+
+        Assert.Equal(2, notifier.Entries.Count);
+        Assert.Contains(notifier.Entries, entry => entry.Type == NotifyType.Success && entry.Message.Value.Contains("First test task"));
+        Assert.Contains(notifier.Entries, entry => entry.Type == NotifyType.Warning && entry.Message.Value.Contains("Second test task"));
+    }
+
+    [Fact]
+    public async Task Index_RefreshRequest_ReturnsPartialView()
+    {
+        var controller = CreateController(CreateMonitor().Object, new TestNotifier());
+        controller.Request.Headers["X-Background-Tasks-Refresh"] = "true";
+
+        var result = await controller.Index(new AdminIndexOptions(), new PagerParameters());
+
+        Assert.IsType<BackgroundTaskIndexViewModel>(Assert.IsType<PartialViewResult>(result).Model);
+    }
+
+    [Fact]
+    public async Task Details_RefreshRequest_ReturnsPartialView()
+    {
+        var controller = CreateController(CreateMonitor().Object, new TestNotifier());
+        controller.Request.Headers["X-Background-Tasks-Refresh"] = "true";
+
+        var result = await controller.Details(_firstTaskName);
+
+        Assert.IsType<BackgroundTaskDetailsViewModel>(Assert.IsType<PartialViewResult>(result).Model);
+    }
+
+    [Fact]
     public async Task Index_WithoutMonitor_HidesRunActions()
     {
         var controller = CreateController(monitor: null, new TestNotifier());

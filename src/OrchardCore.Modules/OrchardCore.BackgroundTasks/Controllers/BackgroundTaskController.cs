@@ -25,6 +25,9 @@ public sealed class BackgroundTaskController : Controller
     private const string _optionsSearch = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Search)}";
     private const string _optionsStatus = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Status)}";
 
+    // Sent by the admin pages to refresh the displayed tasks.
+    private const string _refreshHeader = "X-Background-Tasks-Refresh";
+
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
     private readonly BackgroundTaskManager _backgroundTaskManager;
@@ -183,7 +186,7 @@ public sealed class BackgroundTaskController : Controller
             Pager = model.Pager,
         };
 
-        return View(model);
+        return ViewOrRefresh(model);
     }
 
     [HttpPost, ActionName(nameof(Index))]
@@ -294,7 +297,7 @@ public sealed class BackgroundTaskController : Controller
                 : null,
         };
 
-        return View(model);
+        return ViewOrRefresh(model);
     }
 
     /// <summary>
@@ -480,6 +483,10 @@ public sealed class BackgroundTaskController : Controller
 
         return RedirectToReturnUrlOrIndex(returnUrl);
     }
+
+    // A partial view renders the tasks without the layout, and doesn't consume the pending notifications.
+    private IActionResult ViewOrRefresh(object model)
+        => Request.Headers.ContainsKey(_refreshHeader) ? PartialView(model) : View(model);
 
     private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
     {

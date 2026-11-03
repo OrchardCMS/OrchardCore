@@ -41,8 +41,10 @@ const hasPendingTask = (root: HTMLElement) =>
 // Replaces the given tasks with their fresh rendering. Returns false when the page needs to be reloaded instead.
 const refreshTasksAsync = async (root: HTMLElement, names: string[], addedNames: string[]) => {
     const response = await fetch(window.location.href, {
-        headers: { Accept: "text/html" },
+        headers: { Accept: "text/html", "X-Background-Tasks-Refresh": "true" },
         credentials: "same-origin",
+        // The response only holds a part of the page, it must not be used for a navigation.
+        cache: "no-store",
     });
 
     // Ignore a redirection to another page, for instance to the login page when the session expired.
