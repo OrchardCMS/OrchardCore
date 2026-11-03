@@ -19,7 +19,17 @@ public sealed class ElasticsearchContentIndexProfileHandler : IndexProfileHandle
     private const string _locationPostFixPattern = "*.Location";
 
     public override Task InitializingAsync(InitializingContext<IndexProfile> context)
-       => PopulateAsync(context.Model);
+    {
+        // The handlers have no guaranteed order, so the incoming value may not be in the metadata yet.
+        var storeSourceData = context.Data?[nameof(ElasticsearchIndexMetadata.StoreSourceData)]?.GetValue<bool>();
+
+        if (storeSourceData.HasValue && CanHandle(context.Model))
+        {
+            context.Model.Alter<ElasticsearchIndexMetadata>(metadata => metadata.StoreSourceData = storeSourceData.Value);
+        }
+
+        return PopulateAsync(context.Model);
+    }
 
     public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)
         => PopulateAsync(context.Model);

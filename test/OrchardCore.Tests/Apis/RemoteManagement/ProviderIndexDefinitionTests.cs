@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ using OrchardCore.AzureAI.Endpoints.Management;
 using OrchardCore.AzureAI.Handlers;
 using OrchardCore.AzureAI.Models;
 using OrchardCore.Elasticsearch;
+using OrchardCore.Elasticsearch.Core.Handlers;
 using OrchardCore.Elasticsearch.Core.Models;
 using OrchardCore.Elasticsearch.Endpoints.Management;
 using OrchardCore.Elasticsearch.Models;
@@ -231,6 +234,55 @@ public class ProviderIndexDefinitionTests
         await AzureAISearchIndexDefinitionEndpoints.GetAsync(http, Authorize(), Profiles(profile).Object, profile.Id);
 
         Assert.Equal(ApiResourceVersionExtensions.ComputeApiETag(AzureAISearchIndexDefinitionEndpoints.Describe(profile)), http.Response.Headers.ETag);
+    }
+
+    [Theory]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    public async Task Initialize_ContentIndexInAnyHandlerOrder_MapsTheIncomingStoreSourceData(bool contentHandlerFirst, bool storeSourceData)
+    {
+        var profile = ElasticsearchProfile();
+        var data = new JsonObject { ["StoreSourceData"] = storeSourceData };
+        var context = new InitializingContext<IndexProfile>(profile, data);
+        var content = new ElasticsearchContentIndexProfileHandler();
+        var provider = new ElasticsearchIndexProfileHandler(new ElasticsearchClient(), Mock.Of<IStringLocalizer<ElasticsearchIndexProfileHandler>>());
+
+        if (contentHandlerFirst)
+        {
+            await content.InitializingAsync(context);
+            await provider.InitializingAsync(context);
+        }
+        else
+        {
+            await provider.InitializingAsync(context);
+            await content.InitializingAsync(context);
+        }
+
+        var metadata = profile.GetOrCreate<ElasticsearchIndexMetadata>();
+        Assert.Equal(storeSourceData, metadata.StoreSourceData);
+        Assert.Equal(storeSourceData, metadata.IndexMappings.Mapping.Source.Enabled);
+    }
+
+    [Theory]
+    [InlineData(true, "Content", false)]
+    [InlineData(false, "Content", true)]
+    [InlineData(false, "Other", false)]
+    public async Task Validate_ElasticsearchProfileWithoutMappedProperties_OnlyAcceptsContentWithoutSource(bool storeSourceData, string type, bool valid)
+    {
+        var profile = ElasticsearchProfile();
+        profile.Type = type;
+        profile.Put(new ElasticsearchIndexMetadata
+        {
+            StoreSourceData = storeSourceData,
+            IndexMappings = new ElasticsearchIndexMap { KeyFieldName = "key", Mapping = new TypeMapping { Properties = [] } },
+        });
+        var localizer = new Mock<IStringLocalizer<ElasticsearchIndexProfileHandler>>();
+        localizer.Setup(value => value[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
+        var context = new ValidatingContext<IndexProfile>(profile);
+
+        await new ElasticsearchIndexProfileHandler(new ElasticsearchClient(), localizer.Object).ValidatingAsync(context);
+
+        Assert.Equal(valid, context.Result.Succeeded);
     }
 
     private static IndexProfile ElasticsearchProfile()

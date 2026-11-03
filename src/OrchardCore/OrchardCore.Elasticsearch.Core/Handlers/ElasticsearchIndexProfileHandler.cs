@@ -6,6 +6,7 @@ using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Handlers;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
@@ -51,7 +52,10 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
         // When the provider is 'Elasticsearch', "regardless of the type" we need to validate the index mappings.
         var metadata = context.Model.GetOrCreate<ElasticsearchIndexMetadata>();
 
-        if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
+        // A content index that doesn't store its source only has dynamic templates, see ElasticsearchContentIndexProfileHandler.
+        var hasDynamicMappingOnly = !metadata.StoreSourceData && string.Equals(IndexingConstants.ContentsIndexSource, context.Model.Type, StringComparison.OrdinalIgnoreCase);
+
+        if (!hasDynamicMappingOnly && (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any()))
         {
             context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
         }
