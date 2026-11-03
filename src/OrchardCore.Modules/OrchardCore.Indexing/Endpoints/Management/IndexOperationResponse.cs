@@ -26,4 +26,7 @@ public sealed class IndexOperationResponse
     public IndexProcessingStatus? Outcome { get; init; }
     /// <summary>Gets the last confirmed provider cursor.</summary>
     public long? LastTaskId { get; init; }
+
+    /// <summary>Gets how many tasks were skipped because their document kept failing to build; see the logs for the records.</summary>
+    public int SkippedTasks { get; init; }
 }

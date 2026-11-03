@@ -66,6 +66,7 @@ public sealed class IndexOperationStore
         operation.UpdatedUtc = _clock.UtcNow;
         operation.Outcome = result?.Status;
         operation.LastTaskId = result?.LastTaskId;
+        operation.SkippedTasks = result?.SkippedTasks ?? 0;
         try
         {
             await session.SaveAsync(operation, checkConcurrency: true);

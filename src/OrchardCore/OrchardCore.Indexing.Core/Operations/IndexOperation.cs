@@ -19,6 +19,8 @@ public sealed class IndexOperation
     public IndexProcessingStatus? Outcome { get; set; }
     /// <summary>Gets or sets the last confirmed provider cursor.</summary>
     public long? LastTaskId { get; set; }
+    /// <summary>Gets or sets how many tasks were skipped because their document kept failing to build.</summary>
+    public int SkippedTasks { get; set; }
 }
 
 /// <summary>The persisted state of a lifecycle operation.</summary>

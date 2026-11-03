@@ -7,6 +7,33 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Indexing;
 public class IndexOperationStoreTests
 {
     [Fact]
+    public async Task IndexingFailures_FreshScopes_CountPerIndexAndTaskUntilCleared()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var failures = scope.ServiceProvider.GetRequiredService<IIndexingFailureStore>();
+            Assert.Equal(1, await failures.RecordFailureAsync("index", 5));
+            Assert.Equal(1, await failures.RecordFailureAsync("other", 5));
+        });
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var failures = scope.ServiceProvider.GetRequiredService<IIndexingFailureStore>();
+            Assert.Equal(2, await failures.RecordFailureAsync("index", 5));
+            Assert.Equal(1, await failures.RecordFailureAsync("index", 6));
+            await failures.ClearAsync("index");
+            await failures.ClearAsync("missing");
+        });
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var failures = scope.ServiceProvider.GetRequiredService<IIndexingFailureStore>();
+            Assert.Equal(1, await failures.RecordFailureAsync("index", 5));
+            Assert.Equal(2, await failures.RecordFailureAsync("other", 5));
+        });
+    }
+
+    [Fact]
     public async Task Operations_FreshScopes_PreserveStateAndRejectInvalidTransitions()
     {
         using var context = new SiteContext();

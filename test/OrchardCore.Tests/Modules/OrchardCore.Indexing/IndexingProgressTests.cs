@@ -186,6 +186,135 @@ public class IndexingProgressTests
             stage == "provider" ? Times.Once() : Times.Never());
     }
 
+    [Fact]
+    public async Task ProcessRecords_DocumentKeepsFailing_SkipsItAfterMaxAttemptsAndAdvances()
+    {
+        var failures = new FakeFailureStore();
+        var (indexing, documents, profile) = CreatePoisonScenario(failures, new InvalidOperationException("Document build failed"), "record1");
+
+        for (var attempt = 1; attempt < PoisonIndexingService.Attempts; attempt++)
+        {
+            var failed = Assert.Single(await indexing.ProcessRecordsWithResultsAsync([profile.Id]));
+            Assert.Equal(IndexProcessingStatus.Failed, failed.Status);
+            Assert.Equal(0, failed.SkippedTasks);
+        }
+        documents.Verify(manager => manager.SetLastTaskIdAsync(profile, It.IsAny<long>()), Times.Never);
+
+        var result = Assert.Single(await indexing.ProcessRecordsWithResultsAsync([profile.Id]));
+
+        Assert.Equal(IndexProcessingStatus.Completed, result.Status);
+        Assert.Equal(1, result.SkippedTasks);
+        Assert.Equal(3, result.LastTaskId);
+        documents.Verify(manager => manager.AddOrUpdateDocumentsAsync(profile, It.Is<IEnumerable<DocumentIndex>>(batch =>
+            batch.Select(document => document.Id).SequenceEqual(new[] { "record0", "record2" }))), Times.Once);
+        documents.Verify(manager => manager.SetLastTaskIdAsync(profile, 3), Times.Once);
+        Assert.Equal(1, failures.Cleared);
+        Assert.Empty(failures.Attempts);
+    }
+
+    [Fact]
+    public async Task ProcessRecords_TwoDocumentsKeepFailingInOneBatch_SkipsBothAndAdvances()
+    {
+        var failures = new FakeFailureStore();
+        var (indexing, documents, profile) = CreatePoisonScenario(failures, new InvalidOperationException("Document build failed"), "record0", "record2");
+
+        IndexProcessingResult result = null;
+        for (var run = 0; run < PoisonIndexingService.Attempts * 2 && result?.Status != IndexProcessingStatus.Completed; run++)
+        {
+            result = Assert.Single(await indexing.ProcessRecordsWithResultsAsync([profile.Id]));
+        }
+
+        Assert.Equal(IndexProcessingStatus.Completed, result.Status);
+        Assert.Equal(2, result.SkippedTasks);
+        documents.Verify(manager => manager.SetLastTaskIdAsync(profile, 3), Times.Once);
+    }
+
+    public static TheoryData<Exception> OutageExceptions =>
+    [
+        new HttpRequestException("The service is down."),
+        new TimeoutException("The service timed out."),
+        new TaskCanceledException("The request was canceled."),
+        new InvalidOperationException("Wrapped", new HttpRequestException("The service is down.")),
+    ];
+
+    [Theory]
+    [MemberData(nameof(OutageExceptions))]
+    public async Task ProcessRecords_HandlerFailsFromOutage_NeverSkipsTheDocument(Exception outage)
+    {
+        var failures = new FakeFailureStore();
+        var (indexing, documents, profile) = CreatePoisonScenario(failures, outage, "record1");
+
+        for (var run = 0; run < PoisonIndexingService.Attempts * 2; run++)
+        {
+            Assert.Equal(IndexProcessingStatus.Failed, Assert.Single(await indexing.ProcessRecordsWithResultsAsync([profile.Id])).Status);
+        }
+
+        documents.Verify(manager => manager.SetLastTaskIdAsync(profile, It.IsAny<long>()), Times.Never);
+        Assert.Empty(failures.Attempts);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ProcessRecords_ProviderKeepsFailing_NeverSkipsAnyDocument(bool throws)
+    {
+        var failures = new FakeFailureStore();
+        var (indexing, documents, profile) = CreatePoisonScenario(failures, new InvalidOperationException("Unused"));
+        documents.Setup(manager => manager.AddOrUpdateDocumentsAsync(profile, It.IsAny<IEnumerable<DocumentIndex>>()))
+            .Returns(() => throws ? Task.FromException<bool>(new InvalidOperationException("Provider failed")) : Task.FromResult(false));
+
+        for (var run = 0; run < PoisonIndexingService.Attempts * 2; run++)
+        {
+            Assert.Equal(IndexProcessingStatus.Failed, Assert.Single(await indexing.ProcessRecordsWithResultsAsync([profile.Id])).Status);
+        }
+
+        documents.Verify(manager => manager.SetLastTaskIdAsync(profile, It.IsAny<long>()), Times.Never);
+        Assert.Empty(failures.Attempts);
+    }
+
+    [Fact]
+    public async Task ProcessRecords_FailureStoreUnavailable_KeepsRetryingTheDocument()
+    {
+        var failures = new FakeFailureStore { Unavailable = true };
+        var (indexing, documents, profile) = CreatePoisonScenario(failures, new InvalidOperationException("Document build failed"), "record1");
+
+        for (var run = 0; run < PoisonIndexingService.Attempts * 2; run++)
+        {
+            Assert.Equal(IndexProcessingStatus.Failed, Assert.Single(await indexing.ProcessRecordsWithResultsAsync([profile.Id])).Status);
+        }
+
+        documents.Verify(manager => manager.SetLastTaskIdAsync(profile, It.IsAny<long>()), Times.Never);
+    }
+
+    private static (PoisonIndexingService Indexing, Mock<IDocumentIndexManager> Documents, IndexProfile Profile) CreatePoisonScenario(
+        FakeFailureStore failures, Exception exception, params string[] failingRecords)
+    {
+        var profile = new IndexProfile { Id = "index", Name = "Index", ProviderName = "Test", Type = "Test", IndexFullName = "index" };
+        var profiles = new Mock<IIndexProfileStore>();
+        profiles.Setup(store => store.GetByTypeAsync("Test")).ReturnsAsync([profile]);
+        var tasks = new Mock<IIndexingTaskManager>();
+        tasks.Setup(manager => manager.GetIndexingTasksAsync(It.IsAny<long>(), It.IsAny<int>(), "Test"))
+            .ReturnsAsync((long after, int count, string category) => after == 0
+                ? Enumerable.Range(0, 3).Select(i => new RecordIndexingTask { Id = i + 1, RecordId = "record" + i, Category = category }).ToArray()
+                : []);
+        var documents = new Mock<IDocumentIndexManager>();
+        documents.Setup(manager => manager.AddOrUpdateDocumentsAsync(profile, It.IsAny<IEnumerable<DocumentIndex>>())).ReturnsAsync(true);
+        var handler = new Mock<IDocumentIndexHandler>();
+        handler.Setup(value => value.BuildIndexAsync(It.IsAny<BuildDocumentIndexContext>()))
+            .Returns((BuildDocumentIndexContext context) => failingRecords.Contains(context.DocumentIndex.Id)
+                ? Task.FromException(exception)
+                : Task.CompletedTask);
+        var services = new ServiceCollection().AddSingleton<IIndexingFailureStore>(failures);
+        var indexes = new Mock<IIndexManager>();
+        indexes.Setup(manager => manager.ExistsAsync("index")).ReturnsAsync(true);
+        var locking = new Mock<IDistributedLock>();
+        locking.Setup(value => value.TryAcquireLockAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+            .ReturnsAsync(() => (Mock.Of<ILocker>(), true));
+        services.AddSingleton(locking.Object).AddKeyedSingleton<IDocumentIndexManager>("Test", documents.Object)
+            .AddKeyedSingleton<IIndexManager>("Test", indexes.Object);
+        return (new PoisonIndexingService(profiles.Object, tasks.Object, [handler.Object], services.BuildServiceProvider()), documents, profile);
+    }
+
     private static ServiceProvider CreateServices(IDocumentIndexManager documents, Mock<IDistributedLock> locking = null, bool providerExists = true, TimeProvider time = null)
     {
         var indexes = new Mock<IIndexManager>();
@@ -199,6 +328,46 @@ public class IndexingProgressTests
         return new ServiceCollection().AddSingleton(time ?? TimeProvider.System).AddSingleton(locking.Object)
             .AddKeyedSingleton<IDocumentIndexManager>("Test", documents)
             .AddKeyedSingleton<IIndexManager>("Test", indexes.Object).BuildServiceProvider();
+    }
+
+    private sealed class FakeFailureStore : IIndexingFailureStore
+    {
+        public Dictionary<long, int> Attempts { get; } = [];
+        public int Cleared { get; private set; }
+        public bool Unavailable { get; init; }
+
+        public Task<int> RecordFailureAsync(string indexId, long taskId)
+        {
+            if (Unavailable)
+            {
+                return Task.FromResult(0);
+            }
+            Attempts[taskId] = Attempts.GetValueOrDefault(taskId) + 1;
+            return Task.FromResult(Attempts[taskId]);
+        }
+
+        public Task ClearAsync(string indexId)
+        {
+            Cleared++;
+            Attempts.Clear();
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class PoisonIndexingService : NamedIndexingService
+    {
+        public const int Attempts = 3;
+
+        protected override int MaxDocumentAttempts => Attempts;
+
+        public PoisonIndexingService(IIndexProfileStore profiles, IIndexingTaskManager tasks,
+            IEnumerable<IDocumentIndexHandler> handlers, IServiceProvider services)
+            : base("Test", profiles, tasks, handlers, services, NullLogger.Instance)
+        {
+        }
+
+        protected override Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task)
+            => Task.FromResult(new BuildDocumentIndexContext(new DocumentIndex(task.RecordId), new object(), [], null));
     }
 
     private sealed class TestIndexingService : NamedIndexingService

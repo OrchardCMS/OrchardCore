@@ -71,7 +71,7 @@ internal static class IndexLifecycleEndpoints
     private static IndexOperationResponse Describe(IndexOperation operation) => new()
     {
         Id = operation.OperationId, IndexId = operation.IndexId, Action = operation.Action, State = operation.State,
-        CreatedUtc = operation.CreatedUtc, UpdatedUtc = operation.UpdatedUtc, Outcome = operation.Outcome, LastTaskId = operation.LastTaskId,
+        CreatedUtc = operation.CreatedUtc, UpdatedUtc = operation.UpdatedUtc, Outcome = operation.Outcome, LastTaskId = operation.LastTaskId, SkippedTasks = operation.SkippedTasks,
     };
 
     private static async Task<bool> AuthorizedAsync(HttpContext context, IAuthorizationService authorization) =>

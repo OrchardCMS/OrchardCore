@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Indexing.Models;
@@ -20,6 +21,12 @@ public abstract class NamedIndexingService
     /// Gets the batch size for indexing operations. Can be overridden by derived classes to tune batch sizing.
     /// </summary>
     protected virtual int BatchSize => 100;
+
+    /// <summary>
+    /// Gets how many times a document may fail to build before its task is skipped. A skipped document
+    /// stays out of the index until it changes again or the index is rebuilt.
+    /// </summary>
+    protected virtual int MaxDocumentAttempts => 5;
 
     protected NamedIndexingService(
         string name,
@@ -245,6 +252,12 @@ public abstract class NamedIndexingService
                             }
                             catch (Exception ex)
                             {
+                                if (await ShouldSkipFailedTaskAsync(entry, task, ex))
+                                {
+                                    results[entry.IndexProfile.Id].SkippedTasks++;
+                                    continue;
+                                }
+
                                 // Keep this index at its previous cursor so the failed batch can be retried.
                                 Logger.LogError(ex, "Error processing indexing task {TaskId} for index {IndexName}. Stopping this index until the next run.", task.Id, entry.IndexProfile.Name);
                                 failedIndexes.Add(entry.IndexProfile.Id);
@@ -278,6 +291,7 @@ public abstract class NamedIndexingService
                                     await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId);
                                     leases[indexEntry.Key].EnsureActive();
                                     results[trackerEntry.IndexProfile.Id].LastTaskId = lastTaskId;
+                                    await ClearFailuresAsync(trackerEntry.IndexProfile.Id);
                                 }
                             }
                             else
@@ -323,6 +337,52 @@ public abstract class NamedIndexingService
                 if (lease.Expired) { results[id].Status = IndexProcessingStatus.LockExpired; }
             }
         }
+    }
+
+    private async Task<bool> ShouldSkipFailedTaskAsync(IndexProfileEntryContext entry, RecordIndexingTask task, Exception exception)
+    {
+        // Only a failure to build a document can be skipped: it's caused by the document, while the
+        // failures of the provider and of the batch stop the index, as they apply to any document.
+        // Exceptions from a dependency being down say nothing about the document either.
+        if (exception is IndexingLeaseExpiredException || IsOutage(exception))
+        {
+            return false;
+        }
+
+        var failures = _serviceProvider.GetService<IIndexingFailureStore>();
+
+        if (failures is null)
+        {
+            return false;
+        }
+
+        var attempts = await failures.RecordFailureAsync(entry.IndexProfile.Id, task.Id);
+
+        if (attempts < MaxDocumentAttempts)
+        {
+            return false;
+        }
+
+        Logger.LogError(exception, "Indexing task {TaskId} for the record {RecordId} failed {Attempts} times for index {IndexName}. Skipping this record, which stays out of the index until it changes again or the index is rebuilt.",
+            task.Id, task.RecordId, attempts, entry.IndexProfile.Name);
+
+        return true;
+    }
+
+    private Task ClearFailuresAsync(string indexId)
+        => _serviceProvider.GetService<IIndexingFailureStore>()?.ClearAsync(indexId) ?? Task.CompletedTask;
+
+    private static bool IsOutage(Exception exception)
+    {
+        for (var current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is DbException or HttpRequestException or TimeoutException or OperationCanceledException)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected abstract Task<BuildDocumentIndexContext> GetBuildDocumentIndexAsync(IndexProfileEntryContext entry, RecordIndexingTask task);

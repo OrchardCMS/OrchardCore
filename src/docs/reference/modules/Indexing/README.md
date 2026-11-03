@@ -253,6 +253,21 @@ the current run; other indexes may continue. A subsequent run retries from its l
 saved cursor, so provider mutations in an incomplete batch may be repeated. A batch
 read/preparation failure stops the run rather than skipping ahead.
 
+A document that always fails to build would hold an index back forever, so a task
+whose document handlers failed five times is skipped: the failure is logged as an error
+with the record identifier, the cursor moves on, and the document stays out of the index
+until it changes again or the index is rebuilt. The attempts are stored in the tenant
+database, so they survive a restart, and they are forgotten once the cursor moves, or
+when the index is reset or deleted. A tracked operation reports these tasks as
+`skippedTasks`. Derived services can change the limit with `MaxDocumentAttempts`.
+
+Only document handler failures count. A failure of the provider, whether it's an
+exception or a rejected batch, never skips anything: a batch doesn't say which document
+caused it and an outage isn't the fault of any document, so the index retries until the
+provider accepts it. A provider that keeps rejecting a batch therefore still stops its
+index, and the log shows it on each run. Likewise, a handler failure caused by a
+database, HTTP or timeout error isn't counted.
+
 Records successfully excluded by an index's selection still advance its cursor.
 They do not require a provider write. These progress rules do not make a scheduled
 synchronization request proof that indexing has completed.

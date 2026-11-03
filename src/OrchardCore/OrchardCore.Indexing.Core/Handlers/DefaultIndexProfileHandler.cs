@@ -124,6 +124,15 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
         return Task.CompletedTask;
     }
 
+    public override Task ResetAsync(IndexProfileResetContext context)
+        => ClearFailuresAsync(context.IndexProfile);
+
+    public override Task DeletedAsync(DeletedContext<IndexProfile> context)
+        => ClearFailuresAsync(context.Model);
+
+    private Task ClearFailuresAsync(IndexProfile index)
+        => _serviceProvider.GetService<IIndexingFailureStore>()?.ClearAsync(index.Id) ?? Task.CompletedTask;
+
     private Task PopulateAsync(IndexProfile index, JsonNode data)
     {
         var name = data[nameof(index.Name)]?.GetValue<string>()?.Trim();

@@ -26,6 +26,9 @@ public sealed class IndexProcessingResult
 
     /// <summary>Gets the last confirmed provider cursor, or null when processing never read it.</summary>
     public long? LastTaskId { get; internal set; }
+
+    /// <summary>Gets how many tasks were skipped in this run because their document kept failing to build.</summary>
+    public int SkippedTasks { get; internal set; }
 }
 
 /// <summary>Distinguishes completed indexing from work that was skipped or failed.</summary>

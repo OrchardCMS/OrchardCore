@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<Operations.IndexOperationRunner>();
         services.TryAddScoped<Operations.IIndexOperationExecutor, Operations.IndexOperationExecutor>();
         services.TryAddScoped<IIndexProfileStore, DefaultIndexProfileStore>();
+        services.TryAddScoped<IIndexingFailureStore, IndexingFailureStore>();
         services.TryAddScoped<IndexProfileIdentityValidator>();
         services.AddIndexProfileHandler<DefaultIndexProfileHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IAuthorizationHandler, IndexingAuthorizationHandler>());
