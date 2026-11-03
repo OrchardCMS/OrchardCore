@@ -20,6 +20,7 @@ internal sealed partial class CliApplication
     private const string EnvironmentClientIdVariable = "OC_CLIENT_ID";
     private const string EnvironmentClientSecretVariable = "OC_CLIENT_SECRET";
     private const string EnvironmentContextVariable = "OC_CONTEXT";
+    private const string EnvironmentRequestTimeoutVariable = "OC_REQUEST_TIMEOUT";
     private readonly RootCommand _rootCommand;
     private readonly CliPaths _paths;
     private readonly HttpClient _httpClient;
@@ -32,6 +33,7 @@ internal sealed partial class CliApplication
     private readonly Option<string?> _contextOption;
     private readonly Func<string, string?> _environment;
     private readonly TimeSpan _requestTimeout;
+    private readonly TimeSpan _longRunningRequestTimeout;
     private string? _namedContext;
     private bool _environmentCredentialsWarningWritten;
 
@@ -49,7 +51,8 @@ internal sealed partial class CliApplication
         Option<string?> outputOption,
         Option<string?> contextOption,
         Func<string, string?> environment,
-        TimeSpan requestTimeout)
+        TimeSpan requestTimeout,
+        TimeSpan longRunningRequestTimeout)
     {
         _rootCommand = rootCommand;
         _paths = paths;
@@ -63,6 +66,7 @@ internal sealed partial class CliApplication
         _contextOption = contextOption;
         _environment = environment;
         _requestTimeout = requestTimeout;
+        _longRunningRequestTimeout = longRunningRequestTimeout;
     }
 
     public static async Task<CliApplication> CreateAsync(string[] args, CliPaths paths, HttpClient httpClient, CancellationToken cancellationToken, ICredentialStore? credentialStore = null, Func<string, string?>? environment = null, TimeSpan? requestTimeout = null)
@@ -75,7 +79,9 @@ internal sealed partial class CliApplication
         var cacheService = new CacheService(paths);
         credentialStore ??= CredentialStoreFactory.CreateDefault(paths);
         var configuration = await contextStore.LoadAsync(cancellationToken);
-        var effectiveRequestTimeout = requestTimeout ?? CliHttp.DefaultRequestTimeout;
+        environment ??= global::System.Environment.GetEnvironmentVariable;
+        var configuredRequestTimeout = ReadRequestTimeoutVariable(environment);
+        var effectiveRequestTimeout = configuredRequestTimeout ?? requestTimeout ?? CliHttp.DefaultRequestTimeout;
         var oauthClient = new OAuthClient(httpClient, Console.Error, cache: cacheService, requestTimeout: effectiveRequestTimeout);
 
         var outputOption = new Option<string?>("--output")
@@ -95,7 +101,7 @@ internal sealed partial class CliApplication
         root.Options.Add(outputOption);
         root.Options.Add(contextOption);
 
-        var app = new CliApplication(root, paths, httpClient, contextStore, cacheService, credentialStore, oauthClient, configuration, outputOption, contextOption, environment ?? global::System.Environment.GetEnvironmentVariable, effectiveRequestTimeout)
+        var app = new CliApplication(root, paths, httpClient, contextStore, cacheService, credentialStore, oauthClient, configuration, outputOption, contextOption, environment, effectiveRequestTimeout, configuredRequestTimeout ?? CliHttp.LongRunningRequestTimeout)
         {
             _namedContext = ReadRequestedContext(args),
         };
@@ -177,7 +183,7 @@ internal sealed partial class CliApplication
         {
             await WriteErrorAsync(
                 "timeout",
-                "The request timed out. Check that the tenant is reachable and try again. A change the server already started may still complete.",
+                $"The request timed out. Check that the tenant is reachable and try again. To wait longer, pass --request-timeout to the API command or set {EnvironmentRequestTimeoutVariable}, in seconds. A change the server already started may still complete.",
                 format,
                 writer);
             return 2;
@@ -733,6 +739,7 @@ internal sealed partial class CliApplication
         var clientIdOption = new Option<string?>("--client-id") { Description = "Client identifier for client credentials" };
         var clientSecretEnvOption = new Option<string?>("--client-secret-env") { Description = "Environment variable containing a client secret" };
         var clientSecretStdinOption = new Option<bool>("--client-secret-stdin") { Description = "Read the client secret from standard input" };
+        var requestTimeoutOption = CreateRequestTimeoutOption();
         command.Arguments.Add(methodArgument);
         command.Arguments.Add(pathArgument);
         command.Options.Add(queryOption);
@@ -744,10 +751,12 @@ internal sealed partial class CliApplication
         command.Options.Add(clientIdOption);
         command.Options.Add(clientSecretEnvOption);
         command.Options.Add(clientSecretStdinOption);
+        command.Options.Add(requestTimeoutOption);
 
         command.SetAction(async (parseResult, cancellationToken) =>
         {
             var context = RequireContext(parseResult.GetValue(_contextOption));
+            var requestTimeout = ResolveRequestTimeout(parseResult.GetValue(requestTimeoutOption), _requestTimeout);
             var body = await ResolveJsonBodyAsync(parseResult.GetValue(bodyOption), parseResult.GetValue(bodyFileOption), parseResult.GetValue(stdinOption), parseResult.GetValue(contentTypeOption) ?? "application/json", cancellationToken);
             var accessToken = await ResolveAccessTokenAsync(context, parseResult.GetValue(clientIdOption), parseResult.GetValue(clientSecretEnvOption), parseResult.GetValue(clientSecretStdinOption), cancellationToken);
             var response = await SendApiRequestAsync(
@@ -758,7 +767,8 @@ internal sealed partial class CliApplication
                 ParseKeyValuePairs(parseResult.GetValue(headerOption)),
                 body,
                 accessToken,
-                cancellationToken);
+                cancellationToken,
+                requestTimeout: requestTimeout);
             return await WriteOutputAsync(parseResult, response.Json, cancellationToken, response.TableColumns, response.HttpMethod, response.StatusCode);
         });
 
@@ -999,6 +1009,14 @@ internal sealed partial class CliApplication
             ? new Option<FileInfo?>("--output-file") { Description = "Save response bytes to a new private file; existing files are never overwritten", Required = true }
             : null;
         if (downloadOption is not null) { command.Options.Add(downloadOption); }
+
+        // A binary upload takes as long as its stream needs, so there is no limit to change.
+        var requestTimeoutOption = operation.HasBinaryRequestBody ? null : CreateRequestTimeoutOption();
+        if (requestTimeoutOption is not null)
+        {
+            command.Options.Add(requestTimeoutOption);
+        }
+
         var secretOutputOption = operation.CliMetadata.SecretResponse
             ? new Option<FileInfo?>("--secret-output-file") { Description = "Save the one-time JSON response to a new private file", Required = true }
             : null;
@@ -1076,6 +1094,9 @@ internal sealed partial class CliApplication
         command.SetAction(async (parseResult, cancellationToken) =>
         {
             var context = RequireContext(parseResult.GetValue(_contextOption));
+            var requestTimeout = ResolveRequestTimeout(
+                requestTimeoutOption is null ? null : parseResult.GetValue(requestTimeoutOption),
+                operation.CliMetadata.LongRunning ? _longRunningRequestTimeout : _requestTimeout);
             if (operation.CliMetadata.RequiresConfirmation && !parseResult.GetValue(forceOption))
             {
                 if (Console.IsInputRedirected || Console.IsOutputRedirected)
@@ -1152,13 +1173,41 @@ internal sealed partial class CliApplication
             await using var secretOutput = secretOutputOption is null ? null : SecretOutputFile.Create(
                 parseResult.GetValue(secretOutputOption) ?? throw new CliException("A secret output file is required."));
             var accessToken = await ResolveAccessTokenAsync(context, null, null, false, cancellationToken);
-            var response = await SendApiRequestAsync(context, operation.Method, routePath, query, headers, body, accessToken, cancellationToken, download);
+            var response = await SendApiRequestAsync(context, operation.Method, routePath, query, headers, body, accessToken, cancellationToken, download, requestTimeout);
             var outputJson = secretOutput is not null ? await secretOutput.WriteAsync(response.Json, cancellationToken)
                 : RemoveWriteOnlyProperties(provisioningSupported ? await CaptureProvisionedContextAsync(response.Json, cancellationToken) : response.Json, operation);
             IReadOnlyList<CliTableColumnMetadata>? tableColumns = secretOutput is null && operation.CliMetadata.TableColumns.Count > 0 ? [.. operation.CliMetadata.TableColumns] : null;
             return await WriteOutputAsync(parseResult, outputJson, cancellationToken, tableColumns, response.HttpMethod, response.StatusCode, operation.CliMetadata);
         });
     }
+
+    private static Option<int?> CreateRequestTimeoutOption() => new("--request-timeout")
+    {
+        Description = $"Seconds to wait for the response, instead of the limit of this command or {EnvironmentRequestTimeoutVariable}",
+    };
+
+    private static TimeSpan ResolveRequestTimeout(int? seconds, TimeSpan defaultTimeout) =>
+        seconds is null ? defaultTimeout : ValidateRequestTimeout(seconds.Value, "--request-timeout");
+
+    private static TimeSpan? ReadRequestTimeoutVariable(Func<string, string?> environment)
+    {
+        var value = environment(EnvironmentRequestTimeoutVariable);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return int.TryParse(value, out var seconds)
+            ? ValidateRequestTimeout(seconds, EnvironmentRequestTimeoutVariable)
+            : throw new CliException(CreateInvalidRequestTimeoutMessage(EnvironmentRequestTimeoutVariable));
+    }
+
+    private static TimeSpan ValidateRequestTimeout(int seconds, string source) => seconds is > 0 and <= CliHttp.MaximumRequestTimeoutSeconds
+        ? TimeSpan.FromSeconds(seconds)
+        : throw new CliException(CreateInvalidRequestTimeoutMessage(source));
+
+    private static string CreateInvalidRequestTimeoutMessage(string source) =>
+        $"{source} must be a number of seconds between 1 and {CliHttp.MaximumRequestTimeoutSeconds}.";
 
     // The server is not meant to return such a value, but if it does the CLI must not print it.
     internal static JsonElement RemoveWriteOnlyProperties(JsonElement json, OpenApiOperationDefinition operation)
@@ -1387,8 +1436,10 @@ internal sealed partial class CliApplication
         HttpContent? body,
         string? accessToken,
         CancellationToken cancellationToken,
-        SecretOutputFile? download = null)
+        SecretOutputFile? download = null,
+        TimeSpan? requestTimeout = null)
     {
+        var limit = requestTimeout ?? _requestTimeout;
         using var request = new HttpRequestMessage(new HttpMethod(method.ToUpperInvariant()), BuildRequestUri(new Uri(context.TenantUrl, UriKind.Absolute), path, query))
         {
             Content = body,
@@ -1407,12 +1458,12 @@ internal sealed partial class CliApplication
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         if (body is not StreamContent)
         {
-            timeout.CancelAfter(_requestTimeout);
+            timeout.CancelAfter(limit);
         }
 
         try
         {
-            return await SendApiRequestAsync(context, request, timeout, download, cancellationToken);
+            return await SendApiRequestAsync(context, request, timeout, limit, download, cancellationToken);
         }
         catch (OperationCanceledException exception) when (!cancellationToken.IsCancellationRequested)
         {
@@ -1424,6 +1475,7 @@ internal sealed partial class CliApplication
         TenantContextRecord context,
         HttpRequestMessage request,
         CancellationTokenSource timeout,
+        TimeSpan limit,
         SecretOutputFile? download,
         CancellationToken cancellationToken)
     {
@@ -1437,7 +1489,7 @@ internal sealed partial class CliApplication
             var saved = await download.WriteStreamAsync(stream, cancellationToken);
             return new CommandOutput { Json = saved, HttpMethod = request.Method.Method, StatusCode = (int)response.StatusCode };
         }
-        timeout.CancelAfter(_requestTimeout);
+        timeout.CancelAfter(limit);
         var payload = response.Content is null ? string.Empty : await response.Content.ReadAsStringAsync(timeout.Token);
 
         if (!response.IsSuccessStatusCode)

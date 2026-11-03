@@ -47,7 +47,7 @@ internal static class RemoteDeploymentEndpoints
     {
         var metadata = new CliOperationMetadata(["deployment", resource], verb)
         {
-            Capability = "deployment-remote", RequiresConfirmation = verb is "delete" or "send",
+            Capability = "deployment-remote", RequiresConfirmation = verb is "delete" or "send", LongRunning = verb == "send",
         };
         if (verb is "create" or "update") { metadata.SecretProperties.Add("apiKey"); }
         if (id) { metadata.Arguments.Add(new CliArgumentMetadata("id", 0)); }

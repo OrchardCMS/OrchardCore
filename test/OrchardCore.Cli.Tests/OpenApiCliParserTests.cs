@@ -78,7 +78,7 @@ public class OpenApiCliParserTests
         var operation = Assert.Single(OpenApiCliParser.Parse("""
             {"paths":{"/api/sites":{"post":{"x-oc-cli":{
               "commandGroup":["sites"],"verb":"create","resourceName":"Site","summaryProperties":["name","state"],
-              "itemsProperty":"results","setupPasswordProperty":"administratorPassword","completedAction":"launched",
+              "itemsProperty":"results","setupPasswordProperty":"administratorPassword","completedAction":"launched","longRunning":true,
               "nextSteps":[{"description":"check it.","whenProperty":"state","whenValue":"Running","arguments":["sites","show","{name}"],
                 "optionalArguments":[{"whenMissing":"owner","arguments":["--owner","<owner>"]}],"note":"Read this."},{"savesContext":true}]}}}}}
             """));
@@ -88,6 +88,7 @@ public class OpenApiCliParserTests
         Assert.Equal("results", operation.CliMetadata.ItemsProperty);
         Assert.Equal("administratorPassword", operation.CliMetadata.SetupPasswordProperty);
         Assert.Equal("launched", operation.CliMetadata.CompletedAction);
+        Assert.True(operation.CliMetadata.LongRunning);
         Assert.Equal(2, operation.CliMetadata.NextSteps.Count);
         var step = operation.CliMetadata.NextSteps[0];
         Assert.Equal("check it.", step.Description);

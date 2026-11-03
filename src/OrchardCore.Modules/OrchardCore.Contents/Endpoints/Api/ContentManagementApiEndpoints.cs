@@ -228,7 +228,7 @@ internal static partial class ContentManagementApiEndpoints
             .WithTags("Content Items")
             .WithSummary("Publishes, unpublishes, or deletes several content items.")
             .WithDescription("Applies the action to each content item with its own authorization, and returns a status for each one.")
-            .WithCliCommand(Cli(["content", "items"], "bulk", inputMode: CliInputMode.Json, requiresConfirmation: true,
+            .WithCliCommand(Cli(["content", "items"], "bulk", inputMode: CliInputMode.Json, requiresConfirmation: true, longRunning: true,
                 tableColumns: [new("results[].contentItemId", "Id"), new("results[].status", "Status")]))
             .Accepts<ContentItemsBulkRequest>("application/json")
             .Produces<ContentItemsBulkResponse>(StatusCodes.Status200OK)
@@ -571,7 +571,8 @@ internal static partial class ContentManagementApiEndpoints
         string[] aliases = null,
         CliTableColumnMetadata[] tableColumns = null,
         CliInputMode inputMode = CliInputMode.Options,
-        bool requiresConfirmation = false)
+        bool requiresConfirmation = false,
+        bool longRunning = false)
     {
         var metadata = new CliOperationMetadata(commandGroup, verb)
         {
@@ -579,6 +580,7 @@ internal static partial class ContentManagementApiEndpoints
             ResourceName = "Content item",
             InputMode = inputMode,
             RequiresConfirmation = requiresConfirmation,
+            LongRunning = longRunning,
         };
 
         if (arguments is not null)

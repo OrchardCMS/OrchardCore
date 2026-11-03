@@ -520,6 +520,12 @@ environment variables continue to work. After updating, change script invocation
 to `pomi` and regenerate shell completion. The server authentication client ID
 `orchardcore-cli` and OpenAPI extension `x-oc-cli` remain stable for compatibility.
 
+Each request has 30 seconds to complete. Operations that do their work before they respond, such as `tenants install`,
+`tenants setup` and `recipes execute`, have 10 minutes. A binary upload and the body of a response saved with
+`--output-file` have no limit. To change the limit, in seconds and up to one day, pass `--request-timeout` to a command
+calling the API, or set `OC_REQUEST_TIMEOUT` for every request of the process, which the option takes precedence over.
+A request that runs out of time exits with code `2`, and a change the server already started may still complete.
+
 Set `OC_CONFIG_HOME` to an absolute directory to isolate contexts, caches, and Unix file credentials for testing. The default installation keeps the shared token-file location described above. `pomi login --no-browser` prints the PKCE login URL instead of launching a browser; open it on the same computer as the CLI.
 
 Generate shell completion with `pomi completion --shell bash|zsh|fish|pwsh`. The generated script uses the CLI's cached command tree; no separate suggestion service is required.
@@ -577,6 +583,7 @@ resource:
 | `ItemsProperty` | `itemsProperty` | The response property holding the rows of a list, for table output without `TableColumns`. Without it, Pomi looks for `items`. |
 | `SetupPasswordProperty` | `setupPasswordProperty` | The body property holding the password of a new administrator. Pomi requires it and applies the setup password rules before sending the request. |
 | `NextSteps` | `nextSteps` | The commands suggested after the operation succeeds, see below. |
+| `LongRunning` | `longRunning` | The operation does its work before it responds, which can take minutes. Pomi waits up to 10 minutes for its response instead of 30 seconds. Don't set it on an operation that queues its work and returns `202`. |
 
 Human-readable output shows the first of the `NextSteps` whose condition matches the response:
 

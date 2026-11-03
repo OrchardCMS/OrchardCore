@@ -109,6 +109,131 @@ public class RequestTimeoutTests
     }
 
     [Fact]
+    public async Task LongRunningOperation_SlowerThanRequestTimeout_Completes()
+    {
+        var handler = new DelayingHandler(_longerThanTimeout);
+        using var client = new HttpClient(handler);
+        string[] args = ["files", "install", "--body", "{}", "--output", "none"];
+        var app = await CreateAppAsync(args, nameof(LongRunningOperation_SlowerThanRequestTimeout_Completes), client);
+
+        Assert.Equal(0, await app.RunAsync(args, null, TestContext.Current.CancellationToken));
+        Assert.Equal(1, handler.Requests);
+    }
+
+    [Fact]
+    public async Task LongRunningOperation_ResponseBodySlowerThanRequestTimeout_Completes()
+    {
+        using var client = new HttpClient(new DelayingHandler(TimeSpan.Zero, new SlowStream(_longerThanTimeout)));
+        string[] args = ["files", "install", "--body", "{}", "--output", "none"];
+        var app = await CreateAppAsync(args, nameof(LongRunningOperation_ResponseBodySlowerThanRequestTimeout_Completes), client);
+
+        Assert.Equal(0, await app.RunAsync(args, null, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task RequestTimeoutOption_LongerThanDelay_Completes()
+    {
+        var handler = new DelayingHandler(_longerThanTimeout);
+        using var client = new HttpClient(handler);
+        string[] args = ["files", "update", "--body", "{}", "--request-timeout", "60", "--output", "none"];
+        var app = await CreateAppAsync(args, nameof(RequestTimeoutOption_LongerThanDelay_Completes), client);
+
+        Assert.Equal(0, await app.RunAsync(args, null, TestContext.Current.CancellationToken));
+        Assert.Equal(1, handler.Requests);
+    }
+
+    [Theory]
+    [InlineData("files", "install", "--body", "{}")]
+    [InlineData("api", "invoke", "POST", "api/test")]
+    public async Task RequestTimeoutOption_ShorterThanDelay_TimesOut(params string[] command)
+    {
+        using var client = new HttpClient(new DelayingHandler(Timeout.InfiniteTimeSpan));
+        string[] args = [.. command, "--request-timeout", "1", "--output", "json"];
+        using var errors = new StringWriter();
+        var app = await CreateAppAsync(args, nameof(RequestTimeoutOption_ShorterThanDelay_TimesOut), client);
+
+        Assert.Equal(2, await app.RunAsync(args, errors, TestContext.Current.CancellationToken));
+        Assert.Equal("timeout", (string?)JsonNode.Parse(errors.ToString())!["error"]!["code"]);
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("-5")]
+    [InlineData("86401")]
+    public async Task RequestTimeoutOption_OutOfRange_IsRejectedBeforeAnyRequest(string seconds)
+    {
+        var handler = new DelayingHandler(TimeSpan.Zero);
+        using var client = new HttpClient(handler);
+        string[] args = ["files", "update", "--body", "{}", "--request-timeout=" + seconds, "--output", "json"];
+        using var errors = new StringWriter();
+        var app = await CreateAppAsync(args, nameof(RequestTimeoutOption_OutOfRange_IsRejectedBeforeAnyRequest), client);
+
+        Assert.NotEqual(0, await app.RunAsync(args, errors, TestContext.Current.CancellationToken));
+        Assert.Contains("--request-timeout", errors.ToString());
+        Assert.Equal(0, handler.Requests);
+    }
+
+    [Fact]
+    public async Task RequestTimeoutOption_BinaryUpload_IsNotOffered()
+    {
+        using var client = new HttpClient(new DelayingHandler(TimeSpan.Zero));
+        string[] args = ["files", "upload", "--help"];
+        var app = await CreateAppAsync(args, nameof(RequestTimeoutOption_BinaryUpload_IsNotOffered), client);
+
+        var files = Assert.Single(app.RootCommand.Subcommands, command => command.Name == "files");
+        Assert.DoesNotContain(Assert.Single(files.Subcommands, command => command.Name == "upload").Options, option => option.Name == "--request-timeout");
+        Assert.Contains(Assert.Single(files.Subcommands, command => command.Name == "update").Options, option => option.Name == "--request-timeout");
+    }
+
+    [Fact]
+    public async Task EnvironmentVariable_LongerThanDelay_CompletesOrdinaryRequest()
+    {
+        var handler = new DelayingHandler(_longerThanTimeout);
+        using var client = new HttpClient(handler);
+        string[] args = ["files", "update", "--body", "{}", "--output", "none"];
+        var app = await CreateAppAsync(args, nameof(EnvironmentVariable_LongerThanDelay_CompletesOrdinaryRequest), client, variable: "60");
+
+        Assert.Equal(0, await app.RunAsync(args, null, TestContext.Current.CancellationToken));
+        Assert.Equal(1, handler.Requests);
+    }
+
+    [Fact]
+    public async Task EnvironmentVariable_ShorterThanDelay_LimitsLongRunningOperation()
+    {
+        using var client = new HttpClient(new DelayingHandler(Timeout.InfiniteTimeSpan));
+        string[] args = ["files", "install", "--body", "{}", "--output", "json"];
+        using var errors = new StringWriter();
+        var app = await CreateAppAsync(args, nameof(EnvironmentVariable_ShorterThanDelay_LimitsLongRunningOperation), client, variable: "1");
+
+        Assert.Equal(2, await app.RunAsync(args, errors, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task RequestTimeoutOption_WithEnvironmentVariable_Wins()
+    {
+        var handler = new DelayingHandler(_longerThanTimeout);
+        using var client = new HttpClient(handler);
+        string[] args = ["files", "update", "--body", "{}", "--request-timeout", "60", "--output", "none"];
+        var app = await CreateAppAsync(args, nameof(RequestTimeoutOption_WithEnvironmentVariable_Wins), client, variable: "86400");
+
+        Assert.Equal(0, await app.RunAsync(args, null, TestContext.Current.CancellationToken));
+        Assert.Equal(1, handler.Requests);
+    }
+
+    [Theory]
+    [InlineData("soon")]
+    [InlineData("0")]
+    [InlineData("86401")]
+    public async Task EnvironmentVariable_Invalid_ReportsIt(string value)
+    {
+        using var client = new HttpClient(new DelayingHandler(TimeSpan.Zero));
+
+        var exception = await Assert.ThrowsAsync<CliException>(() => CreateAppAsync(["context", "list"], nameof(EnvironmentVariable_Invalid_ReportsIt), client, variable: value));
+
+        Assert.Contains("OC_REQUEST_TIMEOUT", exception.Message);
+    }
+
+    [Fact]
     public async Task Download_BodySlowerThanRequestTimeout_Completes()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -133,7 +258,7 @@ public class RequestTimeoutTests
         Assert.Equal(2, await app.RunAsync(args, errors, TestContext.Current.CancellationToken));
     }
 
-    private static async Task<CliApplication> CreateAppAsync(string[] args, string name, HttpClient client, TimeSpan? requestTimeout = null)
+    private static async Task<CliApplication> CreateAppAsync(string[] args, string name, HttpClient client, TimeSpan? requestTimeout = null, string? variable = null)
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var paths = new CliPaths(TestPaths.CreateScratchDirectory(name));
@@ -150,13 +275,15 @@ public class RequestTimeoutTests
                 "requestBody":{"content":{"application/octet-stream":{"schema":{"type":"string","format":"binary"}}}}}},
               "/api/update":{"post":{"operationId":"Update","x-oc-cli":{"commandGroup":["files"],"verb":"update","inputMode":"json"},
                 "requestBody":{"content":{"application/json":{"schema":{"type":"object"}}}}}},
+              "/api/install":{"post":{"operationId":"Install","x-oc-cli":{"commandGroup":["files"],"verb":"install","inputMode":"json","longRunning":true},
+                "requestBody":{"content":{"application/json":{"schema":{"type":"object"}}}}}},
               "/api/download":{"get":{"operationId":"Download","x-oc-cli":{"commandGroup":["files"],"verb":"download","fileResponse":true}}}
             }}
             """,
             ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(5),
         }, cancellationToken);
 
-        return await CliApplication.CreateAsync(args, paths, client, cancellationToken, new UnsupportedCredentialStore(), _ => null, requestTimeout ?? _shortTimeout);
+        return await CliApplication.CreateAsync(args, paths, client, cancellationToken, new UnsupportedCredentialStore(), key => key == "OC_REQUEST_TIMEOUT" ? variable : null, requestTimeout ?? _shortTimeout);
     }
 
     private sealed class DelayingHandler : HttpMessageHandler

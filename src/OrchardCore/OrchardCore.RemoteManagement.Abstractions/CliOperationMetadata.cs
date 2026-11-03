@@ -125,6 +125,12 @@ public sealed class CliOperationMetadata
     public string DefaultJsonBody { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the operation does its work before it responds, which can take minutes. The CLI waits
+    /// longer for the response of such an operation.
+    /// </summary>
+    public bool LongRunning { get; set; }
+
+    /// <summary>
     /// Gets or sets whether interactive callers must confirm the operation. Such an operation is
     /// left out of MCP tools, unless the tenant allows them with the MCP tool options.
     /// </summary>

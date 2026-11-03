@@ -83,6 +83,11 @@ internal sealed class CliOperationTransformer : IOpenApiOperationTransformer
                 .ToArray());
         }
 
+        if (metadata.LongRunning)
+        {
+            extension["longRunning"] = true;
+        }
+
         if (metadata.FileResponse)
         {
             extension["fileResponse"] = true;

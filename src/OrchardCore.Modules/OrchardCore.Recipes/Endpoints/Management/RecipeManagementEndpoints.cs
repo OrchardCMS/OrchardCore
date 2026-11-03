@@ -71,6 +71,7 @@ internal static class RecipeManagementEndpoints
                 Arguments = { new CliArgumentMetadata("recipeId", 0) },
                 InputMode = CliInputMode.Json,
                 RequiresConfirmation = true,
+                LongRunning = true,
             })
             .Accepts<RecipeExecuteRequest>("application/json")
             .Produces<RecipeExecutionResponse>(StatusCodes.Status200OK)

@@ -7,6 +7,12 @@ internal static class CliHttp
     /// <summary>The time a request has to complete, unless it uploads or downloads a stream.</summary>
     public static readonly TimeSpan DefaultRequestTimeout = TimeSpan.FromSeconds(30);
 
+    /// <summary>The time an operation that does its work before responding has to complete, such as a tenant setup.</summary>
+    public static readonly TimeSpan LongRunningRequestTimeout = TimeSpan.FromMinutes(10);
+
+    /// <summary>Gets the longest time limit that can be requested, in seconds: one day.</summary>
+    public const int MaximumRequestTimeoutSeconds = 86_400;
+
     public static HttpClient CreateClient()
     {
         var handler = new SocketsHttpHandler
