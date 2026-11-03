@@ -182,6 +182,26 @@ public class McpToolTests
         Assert.False(ManagementSecurityOperationTransformer.AllowsOptionalBearerToken([new AllowAnonymousAttribute()]));
     }
 
+    [Fact]
+    public void CreateTools_OptionalIfMatchHeader_KeepsTheToolWithoutTheHeader()
+    {
+        var document = Document();
+        document["paths"]["/api/widgets/{id}"]["put"]["parameters"].AsArray().Add(JsonNode.Parse("""{"name":"If-Match","in":"header","schema":{"type":"string"}}"""));
+
+        var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint()], document));
+
+        Assert.DoesNotContain("If-Match", tool.Tool.InputSchema.GetRawText());
+    }
+
+    [Fact]
+    public void CreateTools_OtherHeaderParameter_ExcludesTheTool()
+    {
+        var document = Document();
+        document["paths"]["/api/widgets/{id}"]["put"]["parameters"].AsArray().Add(JsonNode.Parse("""{"name":"X-Custom","in":"header","schema":{"type":"string"}}"""));
+
+        Assert.Empty(McpToolCatalog.CreateTools([CreateEndpoint()], document));
+    }
+
     private static Task<CallToolResult> InvokeAsync(McpToolDefinition tool, HttpContext parent, string arguments) =>
         McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(arguments), parent, NullLogger.Instance, CancellationToken.None);
 

@@ -50,4 +50,30 @@ public static class EndpointConventionBuilderExtensions
 
         return builder;
     }
+
+    /// <summary>
+    /// Declares in the OpenAPI document that the responses of the endpoint return the version of the resource in the <c>ETag</c> header.
+    /// </summary>
+    /// <param name="builder">The route handler builder.</param>
+    /// <returns>The route handler builder.</returns>
+    public static RouteHandlerBuilder ProducesETag(this RouteHandlerBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return builder.WithMetadata(new ResourceVersionMetadata());
+    }
+
+    /// <summary>
+    /// Declares in the OpenAPI document that the endpoint returns the version of the resource in the <c>ETag</c> header,
+    /// accepts the optional <c>If-Match</c> header, and answers 412 when it doesn't match.
+    /// </summary>
+    /// <param name="builder">The route handler builder.</param>
+    /// <returns>The route handler builder.</returns>
+    public static RouteHandlerBuilder AcceptsIfMatch(this RouteHandlerBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return builder.WithMetadata(new ResourceVersionMetadata { AcceptsIfMatch = true })
+            .ProducesProblem(StatusCodes.Status412PreconditionFailed);
+    }
 }

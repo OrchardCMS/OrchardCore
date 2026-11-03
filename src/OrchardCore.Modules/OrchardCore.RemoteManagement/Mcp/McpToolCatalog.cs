@@ -95,6 +95,8 @@ internal sealed class McpToolCatalog
 
                 var parameters = (path.Value["parameters"]?.AsArray() ?? [])
                     .Concat(operation["parameters"]?.AsArray() ?? []).ToArray();
+                // A tool can't send a header. The If-Match one is optional, so the operation doesn't depend on it.
+                parameters = parameters.Where(parameter => !IsIfMatchHeader(parameter)).ToArray();
                 if (parameters.Any(parameter => parameter["in"]?.GetValue<string>() is not ("path" or "query")))
                 {
                     continue;
@@ -197,6 +199,10 @@ internal sealed class McpToolCatalog
             .Where(group => group.Count() == 1).Select(group => group.Single())
             .OrderBy(tool => tool.Tool.Name, StringComparer.Ordinal).ToArray();
     }
+
+    private static bool IsIfMatchHeader(JsonNode parameter) =>
+        parameter["in"]?.GetValue<string>() == "header" &&
+        string.Equals(parameter["name"]?.GetValue<string>(), "If-Match", StringComparison.OrdinalIgnoreCase);
 
     private static void CopyReferences(JsonNode node, JsonNode source, JsonObject definitions)
     {

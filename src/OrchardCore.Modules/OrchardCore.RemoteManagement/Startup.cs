@@ -17,6 +17,7 @@ public sealed class Startup : StartupBase
         {
             options.AddDocumentTransformer<ManagementSecurityDocumentTransformer>();
             options.AddOperationTransformer<ManagementSecurityOperationTransformer>();
+            options.AddOperationTransformer<ResourceVersionOperationTransformer>();
         });
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, ManagementScopeAuthorizationHandler>();
