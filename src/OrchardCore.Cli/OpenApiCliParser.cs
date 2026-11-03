@@ -52,12 +52,19 @@ internal static class OpenApiCliParser
                 ParseParameters(operation, pathProperty.Value, root);
                 ParseParameters(operation, methodProperty.Value, root);
                 ParseRequestBody(operation, methodProperty.Value, root);
+                operation.ReturnsETag = DeclaresETagHeader(methodProperty.Value);
                 operations.Add(operation);
             }
         }
 
         return operations;
     }
+
+    private static bool DeclaresETagHeader(JsonElement operationElement) =>
+        operationElement.TryGetProperty("responses", out var responses) && responses.ValueKind == JsonValueKind.Object &&
+        responses.EnumerateObject().Any(response => response.Value.ValueKind == JsonValueKind.Object &&
+            response.Value.TryGetProperty("headers", out var headers) && headers.ValueKind == JsonValueKind.Object &&
+            headers.EnumerateObject().Any(header => string.Equals(header.Name, "ETag", StringComparison.OrdinalIgnoreCase)));
 
     private static List<string> ReadSchemaTypes(JsonElement schema)
     {

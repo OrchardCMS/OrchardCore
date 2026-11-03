@@ -1030,6 +1030,14 @@ internal sealed partial class CliApplication
             command.Options.Add(forceOption);
         }
 
+        var showETagOption = operation.ReturnsETag
+            ? new Option<bool>("--show-etag") { Description = "Write the ETag of the resource to standard error, to pass to --if-match" }
+            : null;
+        if (showETagOption is not null)
+        {
+            command.Options.Add(showETagOption);
+        }
+
         if (operation.HasJsonRequestBody)
         {
             if (bodyOption is not null)
@@ -1181,6 +1189,11 @@ internal sealed partial class CliApplication
             }
 
             var response = await SendApiRequestAsync(context, operation.Method, routePath, query, headers, body, accessToken, cancellationToken, download, requestTimeout);
+            if (showETagOption is not null && parseResult.GetValue(showETagOption) && response.ETag is not null)
+            {
+                await Console.Error.WriteLineAsync($"ETag: {response.ETag}");
+            }
+
             var outputJson = secretOutput is not null ? await secretOutput.WriteAsync(response.Json, cancellationToken)
                 : RemoveWriteOnlyProperties(provisioningSupported ? await CaptureProvisionedContextAsync(response.Json, cancellationToken) : response.Json, operation);
             IReadOnlyList<CliTableColumnMetadata>? tableColumns = secretOutput is null && operation.CliMetadata.TableColumns.Count > 0 ? [.. operation.CliMetadata.TableColumns] : null;
@@ -1549,7 +1562,7 @@ internal sealed partial class CliApplication
             || payload.StartsWith('['))
         {
             using var document = JsonDocument.Parse(payload);
-            return new CommandOutput { Json = document.RootElement.Clone(), HttpMethod = request.Method.Method, StatusCode = (int)response.StatusCode };
+            return new CommandOutput { Json = document.RootElement.Clone(), HttpMethod = request.Method.Method, StatusCode = (int)response.StatusCode, ETag = response.Headers.ETag?.ToString() };
         }
 
         var node = new JsonObject

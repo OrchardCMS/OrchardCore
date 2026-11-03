@@ -219,6 +219,9 @@ internal sealed class OpenApiOperationDefinition
 
     public bool HasBinaryRequestBody { get; set; }
 
+    /// <summary>Gets or sets whether a response declares the version of the resource in the <c>ETag</c> header.</summary>
+    public bool ReturnsETag { get; set; }
+
     public bool RequestBodyRequired { get; set; }
 
     public string? RequestContentType { get; set; }
@@ -262,6 +265,9 @@ internal sealed class CommandOutput
     public string? HttpMethod { get; init; }
 
     public int? StatusCode { get; init; }
+
+    /// <summary>Gets the <c>ETag</c> header of the response, if any.</summary>
+    public string? ETag { get; init; }
 
     public string? ContextName { get; init; }
 
