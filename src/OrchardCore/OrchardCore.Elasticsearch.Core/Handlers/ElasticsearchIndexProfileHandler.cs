@@ -54,8 +54,9 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
 
         // A content index that doesn't store its source only has dynamic templates, see ElasticsearchContentIndexProfileHandler.
         var hasDynamicMappingOnly = !metadata.StoreSourceData && string.Equals(IndexingConstants.ContentsIndexSource, context.Model.Type, StringComparison.OrdinalIgnoreCase);
+        IDictionary<PropertyName, IProperty> properties = metadata.IndexMappings?.Mapping?.Properties;
 
-        if (!hasDynamicMappingOnly && (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any()))
+        if (!hasDynamicMappingOnly && (properties is null || properties.Count == 0))
         {
             context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
         }

@@ -909,7 +909,7 @@ public class DefaultContentManager : IContentManager
                 x.ContentItemId == contentItem.ContentItemId &&
                 (x.Published || x.Latest)).ListAsync();
 
-        if (!activeVersions.Any())
+        if (activeVersions.Count == 0)
         {
             return true;
         }
