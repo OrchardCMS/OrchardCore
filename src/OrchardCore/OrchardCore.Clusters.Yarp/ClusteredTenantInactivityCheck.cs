@@ -14,7 +14,7 @@ namespace OrchardCore.Clusters;
     Title = "Auto release clustered tenants on inactivity.",
     Schedule = "* * * * *",
     Description = "Auto release tenants after the max idle time of their cluster.")]
-public class ClusteredTenantInactivityCheck : IBackgroundTask
+public sealed class ClusteredTenantInactivityCheck : IBackgroundTask
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
@@ -34,16 +34,13 @@ public class ClusteredTenantInactivityCheck : IBackgroundTask
     {
         var options = _optionsMonitor.CurrentValue;
 
-        // Check if the clusters max idle time is configured and if the tenant pipeline has been built.
+        // Check if the clusters max idle time is configured and has expired for this tenant, and if its pipeline has been built.
         if (options.MaxIdleTime.HasValue &&
             _shellHost.TryGetShellContext(_shellSettings.Name, out var shellContext) &&
-            shellContext.HasPipeline())
+            shellContext.HasPipeline() &&
+            shellContext.LastRequestTimeUtc.Add(options.MaxIdleTime.Value) < DateTime.UtcNow)
         {
-            // Check if the clusters max idle time has expired for this tenant.
-            if (shellContext.LastRequestTimeUtc.Add(options.MaxIdleTime.Value) < DateTime.UtcNow)
-            {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings, eventSource: false);
-            }
+            await _shellHost.ReleaseShellContextAsync(_shellSettings, eventSource: false);
         }
     }
 }

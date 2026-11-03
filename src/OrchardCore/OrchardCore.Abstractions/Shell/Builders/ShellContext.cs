@@ -13,13 +13,13 @@ public class ShellContext : IDisposable, IAsyncDisposable
     private bool _disposed;
     private volatile int _refCount;
     private int _terminated;
-    internal long _requestTicks;
+    private long _requestTicks;
     private bool _released;
 
     /// <summary>
     /// Initializes a new <see cref="ShellContext"/>.
     /// </summary>
-    public ShellContext() => UtcTicks = DateTime.UtcNow.Ticks;
+    public ShellContext() => _requestTicks = UtcTicks = DateTime.UtcNow.Ticks;
 
     /// <summary>
     /// The creation date and time of this shell context in ticks.
@@ -47,13 +47,13 @@ public class ShellContext : IDisposable, IAsyncDisposable
     public bool IsActivated { get; set; }
 
     /// <summary>
-    /// The UTC date and time of the last request.
+    /// The UTC date and time of the last request, or of the creation of this shell context if it didn't get any request.
     /// Read and write operations are both atomic.
     /// </summary>
     public DateTime LastRequestTimeUtc
     {
-        get => new(Interlocked.Read(ref _requestTicks));
-        internal set => Interlocked.Exchange(ref _requestTicks, value.Ticks);
+        get => new(Volatile.Read(ref _requestTicks));
+        internal set => Volatile.Write(ref _requestTicks, value.Ticks);
     }
 
     /// <summary>
