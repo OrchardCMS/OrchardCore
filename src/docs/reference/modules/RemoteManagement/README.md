@@ -846,7 +846,9 @@ from CLI metadata also apply when the client omits `body`.
 Calls execute the existing endpoint with the caller's tenant services, bearer token,
 authorization policies, endpoint filters, and API validation. A tool result contains
 text with a JSON object containing the HTTP `statusCode` and the response `body`, as
-JSON when the response is JSON and as a string otherwise.
+JSON when the response is JSON and as a string otherwise, and the `etag` of the response when it has one.
+A tool whose operation accepts the `If-Match` header has an optional `ifMatch` argument, see
+[Optimistic concurrency](../../api/README.md#optimistic-concurrency).
 HTTP errors set MCP `isError` to `true`. Operation permissions are evaluated at call
 time; discovery does not promise that a caller can invoke every listed tool.
 A response larger than `MaximumResponseBytes` (4 MiB by default) is turned into a tool
