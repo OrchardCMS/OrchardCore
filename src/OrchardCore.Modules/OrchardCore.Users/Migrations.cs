@@ -89,6 +89,11 @@ public sealed class Migrations : DataMigration
                 "CredentialIdHash")
         );
 
+        await SchemaBuilder.AlterIndexTableAsync<UserByPasskeyIndex>(table => table
+            .CreateIndex("IDX_UserByPasskeyIndex_CredentialIdHash",
+                "CredentialIdHash")
+        );
+
         // Shortcut other migration steps on new content definition schemas.
         return 15;
     }
@@ -299,6 +304,11 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.AlterIndexTableAsync<UserByPasskeyIndex>(table => table
             .CreateIndex("IDX_UserByPasskeyIndex_DocumentId",
                 "DocumentId",
+                "CredentialIdHash")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<UserByPasskeyIndex>(table => table
+            .CreateIndex("IDX_UserByPasskeyIndex_CredentialIdHash",
                 "CredentialIdHash")
         );
 
