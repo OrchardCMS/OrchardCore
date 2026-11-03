@@ -105,129 +105,57 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
             EncryptionMethod = current.EncryptionMethod,
         };
         var clearPassword = false;
+        void Read<T>(KeyValuePair<string, JsonNode> entry, Action<T> set)
+        {
+            if (entry.Value is JsonValue node && node.TryGetValue<T>(out var value))
+            {
+                set(value);
+            }
+            else
+            {
+                errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
+            }
+        }
+
         foreach (var entry in values)
         {
             switch (entry.Key)
             {
                 case "isEnabled":
-                    if (entry.Value is JsonValue nodeIsEnabled && nodeIsEnabled.TryGetValue<bool>(out var isEnabledValue))
-                    {
-                        model.IsEnabled = isEnabledValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<bool>(entry, value => model.IsEnabled = value);
                     break;
                 case "defaultSender":
-                    if (entry.Value is JsonValue nodeDefaultSender && nodeDefaultSender.TryGetValue<string>(out var defaultSenderValue))
-                    {
-                        model.DefaultSender = defaultSenderValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<string>(entry, value => model.DefaultSender = value);
                     break;
                 case "host":
-                    if (entry.Value is JsonValue nodeHost && nodeHost.TryGetValue<string>(out var hostValue))
-                    {
-                        model.Host = hostValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<string>(entry, value => model.Host = value);
                     break;
                 case "port":
-                    if (entry.Value is JsonValue nodePort && nodePort.TryGetValue<int>(out var portValue))
-                    {
-                        model.Port = portValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<int>(entry, value => model.Port = value);
                     break;
                 case "autoSelectEncryption":
-                    if (entry.Value is JsonValue nodeAutoSelectEncryption && nodeAutoSelectEncryption.TryGetValue<bool>(out var autoSelectEncryptionValue))
-                    {
-                        model.AutoSelectEncryption = autoSelectEncryptionValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<bool>(entry, value => model.AutoSelectEncryption = value);
                     break;
                 case "requireCredentials":
-                    if (entry.Value is JsonValue nodeRequireCredentials && nodeRequireCredentials.TryGetValue<bool>(out var requireCredentialsValue))
-                    {
-                        model.RequireCredentials = requireCredentialsValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<bool>(entry, value => model.RequireCredentials = value);
                     break;
                 case "useDefaultCredentials":
-                    if (entry.Value is JsonValue nodeUseDefaultCredentials && nodeUseDefaultCredentials.TryGetValue<bool>(out var useDefaultCredentialsValue))
-                    {
-                        model.UseDefaultCredentials = useDefaultCredentialsValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<bool>(entry, value => model.UseDefaultCredentials = value);
                     break;
                 case "userName":
-                    if (entry.Value is JsonValue nodeUserName && nodeUserName.TryGetValue<string>(out var userNameValue))
-                    {
-                        model.UserName = userNameValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<string>(entry, value => model.UserName = value);
                     break;
                 case "proxyHost":
-                    if (entry.Value is JsonValue nodeProxyHost && nodeProxyHost.TryGetValue<string>(out var proxyHostValue))
-                    {
-                        model.ProxyHost = proxyHostValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<string>(entry, value => model.ProxyHost = value);
                     break;
                 case "proxyPort":
-                    if (entry.Value is JsonValue nodeProxyPort && nodeProxyPort.TryGetValue<int>(out var proxyPortValue))
-                    {
-                        model.ProxyPort = proxyPortValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<int>(entry, value => model.ProxyPort = value);
                     break;
                 case "ignoreInvalidSslCertificate":
-                    if (entry.Value is JsonValue nodeIgnoreInvalidSslCertificate && nodeIgnoreInvalidSslCertificate.TryGetValue<bool>(out var ignoreInvalidSslCertificateValue))
-                    {
-                        model.IgnoreInvalidSslCertificate = ignoreInvalidSslCertificateValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<bool>(entry, value => model.IgnoreInvalidSslCertificate = value);
                     break;
                 case "pickupDirectoryLocation":
-                    if (entry.Value is JsonValue nodePickupDirectoryLocation && nodePickupDirectoryLocation.TryGetValue<string>(out var pickupDirectoryLocationValue))
-                    {
-                        model.PickupDirectoryLocation = pickupDirectoryLocationValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<string>(entry, value => model.PickupDirectoryLocation = value);
                     break;
                 case "deliveryMethod":
                     if (entry.Value is JsonValue nodeDeliveryMethod && nodeDeliveryMethod.TryGetValue<string>(out var deliveryMethodValueName) && Enum.GetNames<SmtpDeliveryMethod>().Contains(deliveryMethodValueName, StringComparer.OrdinalIgnoreCase) && Enum.TryParse<SmtpDeliveryMethod>(deliveryMethodValueName, true, out var deliveryMethodValue))
@@ -260,14 +188,7 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
                     }
                     break;
                 case "clearPassword":
-                    if (entry.Value is JsonValue nodeClearPassword && nodeClearPassword.TryGetValue<bool>(out var clearPasswordValue))
-                    {
-                        clearPassword = clearPasswordValue;
-                    }
-                    else
-                    {
-                        errors[entry.Key] = [S["Provide a valid value of the documented type; null is not supported."]];
-                    }
+                    Read<bool>(entry, value => clearPassword = value);
                     break;
                 default:
                     errors[entry.Key] = [S["This property is not managed by the SMTP section."]];
