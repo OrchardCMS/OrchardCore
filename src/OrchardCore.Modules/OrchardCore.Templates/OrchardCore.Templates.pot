@@ -92,7 +92,7 @@ msgstr ""
 
 #: Controllers/TemplateSourceController.cs
 msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
-msgid "Delete override"
+msgid "Delete"
 msgstr ""
 
 #: Controllers/TemplateSourceController.cs
@@ -137,7 +137,7 @@ msgstr ""
 
 #: Controllers/TemplateSourceController.cs
 msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
-msgid "Reset to source"
+msgid "Reset"
 msgstr ""
 
 #: Controllers/TemplateSourceController.cs
@@ -523,6 +523,11 @@ msgstr ""
 #: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
 msgid "The template can be viewed, but not cloned, as local templates are written in Liquid."
+msgstr ""
+
+#: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Status.SummaryAdmin"
+msgid "The template can't be cloned, as it doesn't render its shape."
 msgstr ""
 
 #: Views/SourceTemplateEntry.Status.SummaryAdmin.cshtml
