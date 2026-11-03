@@ -8,9 +8,11 @@ using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
@@ -529,6 +531,43 @@ public class PasskeyControllerTests
         // Assert
         Assert.Contains("/Login", response.Headers.Location.ToString());
         Assert.Null(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+    }
+
+    [Fact]
+    public async Task Login_WithPasskeyOfDeletedUser_DoesNotSignIn()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync();
+        using var authenticator = new TestPasskeyAuthenticator();
+
+        await CreateUserAsync(context, "deleted-user");
+
+        var registrationClient = CreateClient(context, out _);
+        await LoginWithPasswordAsync(registrationClient, "deleted-user");
+        await RegisterPasskeyAsync(registrationClient, authenticator, "My laptop");
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+            await userManager.DeleteAsync(await userManager.FindByNameAsync("deleted-user"));
+        });
+
+        var client = CreateClient(context, out var cookies);
+
+        // Act
+        var response = await LoginWithPasskeyAsync(client, authenticator);
+
+        // Assert
+        Assert.Contains("/Login", response.Headers.Location.ToString());
+        Assert.Null(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+
+            Assert.Equal(0, await session.QueryIndex<UserByPasskeyIndex>().CountAsync());
+        });
     }
 
     [Fact]
