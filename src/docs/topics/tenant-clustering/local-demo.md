@@ -386,6 +386,7 @@ Before starting or probing the full 4-node layout, edit only `edge-root/appsetti
 "OrchardCore": {
   "Clusters": {
     "Enabled": true,
+    "ProxySecret": "demo-secret",
     "MaxIdleTime": "00:00:20",
     "Routes": {
       "RouteTemplate": {
@@ -473,6 +474,7 @@ Now edit only `edge-root/appsettings.json` and change the cluster section to:
 "OrchardCore": {
   "Clusters": {
     "Enabled": true,
+    "ProxySecret": "demo-secret",
     "MaxIdleTime": "00:00:20",
     "Routes": {
       "RouteTemplate": {
@@ -552,6 +554,7 @@ Edit only `edge-root/appsettings.json` again:
 "OrchardCore": {
   "Clusters": {
     "Enabled": true,
+    "ProxySecret": "demo-secret",
     "MaxIdleTime": "00:00:20",
     "Routes": {
       "RouteTemplate": {
@@ -623,6 +626,7 @@ You can verify the behavior in three ways:
 1. Watch the backend terminals. Each request appears in the node that actually handled it.
 2. Confirm that editing only `edge-root/appsettings.json` changes placement after the next request.
 3. Compare the requests you see with the placement diagrams shown for each reconfiguration step.
+4. Send a request to the edge node with a `From-Clusters-Proxy: guess` header. It is still forwarded, and only a request with the `ProxySecret` of the edge node is run on it.
 
 ## 12. Optional: demonstrate failover inside one cluster
 
@@ -634,6 +638,7 @@ Edit only `edge-root/appsettings.json` and change the cluster section to:
 "OrchardCore": {
   "Clusters": {
     "Enabled": true,
+    "ProxySecret": "demo-secret",
     "MaxIdleTime": "00:00:20",
     "Routes": {
       "RouteTemplate": {

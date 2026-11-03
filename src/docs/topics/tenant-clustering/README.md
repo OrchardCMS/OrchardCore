@@ -23,7 +23,8 @@ The cluster is the placement boundary. A tenant maps to one cluster at a time, n
 | `HttpContextExtensions.AsClustersProxy()` | Detects whether the current request should be forwarded by the clustering proxy. |
 | `ClusterFeature` | Carries the selected cluster ID through the request pipeline. |
 | `ClustersOptionsSetup` | Binds and validates the `OrchardCore:Clusters` configuration into `ClustersOptions`. |
-| `ClustersProxyConfigFilter` | Updates the YARP route template to add the loop-prevention request header and to keep the original `Host` header. |
+| `ClustersProxyConfigFilter` | Updates the YARP route template to keep the original `Host` header and to let the tenants decide their request size limits. |
+| `AddTenantClusters()` | Also adds a YARP request transform setting the loop-prevention request header to the current `ProxySecret`. |
 | `ClustersProxyMatcherPolicy` | Only selects the YARP route template for the requests that the current node should forward. |
 | `ClustersProxyMiddleware` | Reassigns a YARP proxy request to the selected cluster. |
 | `ModularTenantContainerMiddleware` | Resolves the tenant, sets `ClusterFeature`, and bypasses normal tenant scope creation for proxy forwarding. |
@@ -42,7 +43,7 @@ On a node acting as the clustering proxy, `ModularTenantContainerMiddleware` res
 
 ### 3. Loop prevention
 
-`ClustersProxyConfigFilter` adds the `From-Clusters-Proxy` header to forwarded requests. Backend nodes use this header to skip redistribution and continue with normal tenant execution. The same condition is evaluated on each request by `ClustersProxyMatcherPolicy` and `ModularTenantContainerMiddleware`, so the host level route is never selected for a request running the tenant pipeline, including after a configuration reload.
+A YARP request transform sets the `From-Clusters-Proxy` header of the forwarded requests to the `ProxySecret`, replacing any value sent by the client. A node with `Enabled` set to `true` only skips redistribution when this header has its own `ProxySecret`, then removes it before executing the tenant. The same condition is evaluated on each request by `ClustersProxyMatcherPolicy` and `ModularTenantContainerMiddleware`, so the host level route is never selected for a request running the tenant pipeline, including after a configuration reload.
 
 ### 4. Backend tenant execution
 
@@ -96,7 +97,7 @@ When `OrchardCore:Clusters` is backed by a configuration provider that supports 
 - choose non-overlapping `SlotRange` values
 - use a shared clustering configuration across proxy and backend nodes, including `MaxIdleTime` that is read by the backend nodes
 - share the tenant list across all the nodes, as the proxy places a tenant from its own list, see [Creating or changing a tenant](../../reference/modules/ReverseProxy/TenantClusters.md#creating-or-changing-a-tenant)
-- keep `Enabled` set only on nodes that should actively redistribute tenant requests
+- keep `Enabled` set only on nodes that should actively redistribute tenant requests, and use the same `ProxySecret` on all of them
 - make sure every backend destination that may receive a tenant request can serve that tenant data
 - use a configuration provider for `OrchardCore:Clusters` that supports reload notifications if you want placement changes to apply dynamically
 

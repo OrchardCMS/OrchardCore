@@ -12,7 +12,7 @@ Use tenant clustering when:
 
 ## Service registration
 
-Register Orchard Core, the inactivity check, and the YARP integration in `Program.cs`:
+Add a reference to the `OrchardCore.Clusters.Yarp` package, then register Orchard Core, the inactivity check, and the YARP integration in `Program.cs`:
 
 ```csharp
 builder.Services
@@ -48,6 +48,7 @@ Add an `OrchardCore:Clusters` section to `appsettings.json`:
   "OrchardCore": {
     "Clusters": {
       "Enabled": false,
+      "ProxySecret": "A long random value",
       "MaxIdleTime": "01:00:00",
       "Routes": {
         "RouteTemplate": {
@@ -93,12 +94,13 @@ Add an `OrchardCore:Clusters` section to `appsettings.json`:
 | Setting | Description |
 | --- | --- |
 | `Enabled` | When `true`, the current node behaves as a clustering proxy and forwards tenant requests to backend clusters. This can be changed while the node is running. |
-| `MaxIdleTime` | Inactivity timeout used by the clustered tenant background task before releasing an idle tenant pipeline. This is read from the configuration of the node running the tenant, so it should be set on the backend nodes. |
+| `ProxySecret` | The secret sent with the forwarded requests, see [Loop prevention](#loop-prevention). Required when `Enabled` is `true`. This can be changed while the node is running. |
+| `MaxIdleTime` | Inactivity timeout used by the clustered tenant background task before releasing an idle tenant pipeline, which must be greater than zero. This is read from the configuration of the node running the tenant, so it should be set on the backend nodes. |
 | `Routes.RouteTemplate` | The YARP route definition used as the catch-all route for clustered tenant forwarding. Required when `Enabled` is `true`. |
 | `Clusters.{clusterId}.SlotRange` | Inclusive tenant slot range handled by the cluster. Tenants whose slot isn't in any range get a `503` response. |
 | `Clusters.{clusterId}.Destinations` | Standard YARP destination list for that cluster. |
 
-When `Enabled` is `true`, a node with an invalid configuration (a missing route, no cluster, an invalid or overlapping `SlotRange`) fails to start. If the configuration becomes invalid while the node is running, the error is logged and the last valid tenant placement is still used.
+When `Enabled` is `true`, a node with an invalid configuration (a missing route or `ProxySecret`, no cluster, an invalid or overlapping `SlotRange`) fails to start. An invalid `MaxIdleTime` also prevents a node from starting when `Enabled` is `false`. If the configuration becomes invalid while the node is running, the error is logged and the last valid tenant placement is still used.
 
 ## How tenant selection works
 
@@ -108,7 +110,15 @@ When `Enabled` is `true`, a node with an invalid configuration (a missing route,
 4. The request is marked with a `ClusterFeature`.
 5. `ClustersProxyMiddleware` reassigns the request to the matching YARP cluster, or returns a `503` response if YARP doesn't know this cluster.
 
-The request is forwarded with its original `Host` header, so that the backend node resolves the same tenant, including the tenants mapped with a `RequestUrlHost`. Because of this, a backend reached over HTTPS must present a certificate valid for the host of the tenant. If the scheme differs between the entry point and the backend, enable the [Reverse Proxy](README.md) feature on the tenants to apply the `X-Forwarded-Proto` header that is added by the proxy.
+The request is forwarded with its original `Host` header, so that the backend node resolves the same tenant, including the tenants mapped with a `RequestUrlHost`. Because of this, a backend reached over HTTPS must present a certificate valid for the host of the tenant, which is also the name sent to it during the TLS handshake.
+
+If the scheme differs between the entry point and the backend, enable the [Reverse Proxy](README.md) feature on the tenants and select the `X-Forwarded-Proto` header, which is added by the proxy. Otherwise a tenant generates its redirections for the scheme of the backend, and a backend reached over HTTPS marks the cookies as secure, so a client reaching the entry point over HTTP can't sign in.
+
+## Request limits and timeouts
+
+The proxy doesn't limit the size of the requests by default, as a tenant decides its own limits, for instance the media upload size of an action. The limits of the backend node still apply. To limit the requests on the proxy, set the `MaxRequestBodySize` of `Routes.RouteTemplate` in bytes. Changing only this value requires restarting the node.
+
+YARP cancels a forwarded request when the backend doesn't respond for 100 seconds, which then gets a `504` response. This also includes the time to build a tenant on its first request. Set the `HttpRequest.ActivityTimeout` of the cluster to allow more time, see the [YARP HTTP client configuration](https://learn.microsoft.com/aspnet/core/fundamentals/servers/yarp/http-client-config) documentation.
 
 ## What this feature does
 
@@ -139,6 +149,7 @@ This means the current design supports high availability for a tenant inside its
   "OrchardCore": {
     "Clusters": {
       "Enabled": true,
+      "ProxySecret": "A long random value",
       "MaxIdleTime": "01:00:00",
       "Routes": {
         "RouteTemplate": {
@@ -180,16 +191,22 @@ If clustering is disabled, Orchard Core behaves as usual and any node that has t
 
 ## Loop prevention
 
-The proxy route adds the `From-Clusters-Proxy` request header. Incoming requests that already contain this header bypass cluster redistribution, which prevents proxy loops on backend nodes.
+The proxy route sets the `From-Clusters-Proxy` request header to the value of `ProxySecret`, replacing any value sent by the client. A node with `Enabled` set to `true` only runs the tenant of a request having this header with its own `ProxySecret`, and forwards any other request. This prevents proxy loops when a destination also has `Enabled` set to `true`, without letting a client run a tenant on a clustering proxy.
+
+Use a long random value of visible ASCII characters, and set the same one on all the nodes having `Enabled` set to `true`. Prefer an environment variable or another secret store to the `appsettings.json` file. The header is removed before running a tenant, so the code of a tenant can't read it. A node with `Enabled` set to `false` doesn't use this secret.
 
 !!! warning
-    This header isn't authenticated. A client sending it directly to a clustering proxy makes this node run the tenant itself, instead of forwarding the request. Remove this header from the incoming requests in the load balancer or gateway in front of the clustering proxy, and don't expose the backend nodes publicly.
+    A node with `Enabled` set to `false` runs the tenants of any request that it receives, so don't expose the backend nodes publicly.
 
 ## Idle tenant release
 
 `AddClusteredTenantInactivityCheck()` registers a background task that checks the last request time recorded for each tenant pipeline. When the configured `MaxIdleTime` expires, Orchard Core releases that shell context so it can be rebuilt on the next request.
 
-The background tasks of a released tenant don't run until its next request, as is the case for any tenant that didn't receive a request since the application started. Don't set `MaxIdleTime` on tenants relying on scheduled work, such as scheduled publishing or timer workflow events, nor when `BackgroundServiceOptions.ShellWarmup` is enabled, as the tenants would be released and built again each time `MaxIdleTime` expires.
+This background task runs each minute, so a tenant is released up to two minutes after `MaxIdleTime` expires. A tenant that didn't receive a request since it has been built isn't released.
+
+The background tasks of a released tenant don't run until its next request, as is the case for any tenant that didn't receive a request since the application started. Don't set `MaxIdleTime` on tenants relying on scheduled work, such as scheduled publishing or timer workflow events.
+
+When `BackgroundServiceOptions.ShellWarmup` is enabled, the background service builds all the tenants of the node and runs their background tasks, including a tenant which has just been released, so only its request pipeline is released. Don't enable it on a clustering proxy, as this node would then run all the tenants.
 
 ## Operational behavior
 
@@ -223,7 +240,7 @@ The clustering proxy places a tenant from its own list of tenants, which is not 
 - The requests of a new tenant are forwarded to the cluster of the `Default` tenant, as the proxy falls back on it when it doesn't know the requested URL. Once the proxy knows this tenant, they are forwarded to the cluster matching its slot, which may be another one.
 - The requests of a disabled or removed tenant are still forwarded to its cluster.
 
-To keep all the nodes in sync, store the tenant list in a shared location with one of the [Shells Configuration](../Shells/README.md) providers, and enable the `OrchardCore.Tenants.Distributed` feature on all the nodes, including the clustering proxy.
+To keep all the nodes in sync, store the tenant list in a shared location with one of the [Shells Configuration](../Shells/README.md) providers, and enable the `OrchardCore.Tenants.Distributed` feature with a distributed cache such as `OrchardCore.Redis.Cache` on the `Default` tenant. A clustering proxy also needs this shared location, the database of the `Default` tenant and the Redis configuration, but it doesn't build any tenant pipeline. The proxy then gets the changes within a few seconds.
 
 ### Backend data requirements
 
