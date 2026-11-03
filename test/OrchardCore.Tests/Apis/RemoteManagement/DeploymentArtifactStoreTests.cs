@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Deployment.Artifacts;
 using OrchardCore.Deployment.Operations;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Tests.Apis.RemoteManagement;
@@ -158,6 +159,28 @@ public class DeploymentArtifactStoreTests
         {
             if (Directory.Exists(root)) { Directory.Delete(root, recursive: true); }
         }
+    }
+
+    [Fact]
+    public void ConfigureServices_ArtifactsSection_BindsTheOptions()
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Deployment:Artifacts:MaxBytes"] = "1024",
+            ["Deployment:Artifacts:Lifetime"] = "00:30:00",
+        }).Build();
+        var shell = new Mock<IShellConfiguration>();
+        shell.Setup(value => value.GetSection(It.IsAny<string>())).Returns((string key) => configuration.GetSection(key));
+        var services = new ServiceCollection();
+
+        // Other modules also have a 'Startup' class.
+        var startup = typeof(DeploymentArtifactOptions).Assembly.GetType("OrchardCore.Deployment.Startup");
+        ((global::OrchardCore.Modules.StartupBase)Activator.CreateInstance(startup, shell.Object)).ConfigureServices(services);
+
+        using var provider = services.BuildServiceProvider();
+        var options = provider.GetRequiredService<IOptions<DeploymentArtifactOptions>>().Value;
+        Assert.Equal(1024, options.MaxBytes);
+        Assert.Equal(TimeSpan.FromMinutes(30), options.Lifetime);
     }
 
     private static DeploymentArtifactStore Store(string root, string tenant, Func<DateTime> now, DeploymentArtifactOptions options = null)

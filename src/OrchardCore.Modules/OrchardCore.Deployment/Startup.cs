@@ -54,7 +54,7 @@ public sealed class Startup : StartupBase
         services.AddDeploymentServices();
         services.Configure<DeploymentPackageOptions>(_shellConfiguration.GetSection("Deployment:Package"));
         services.Configure<DeploymentOperationOptions>(_shellConfiguration.GetSection("Deployment:Operations"));
-        services.AddOptions<DeploymentArtifactOptions>();
+        services.Configure<DeploymentArtifactOptions>(_shellConfiguration.GetSection("Deployment:Artifacts"));
         services.AddScoped<DeploymentArtifactStore>();
         services.AddScoped<DeploymentOperationStore>();
         services.AddScoped<IDeploymentOperationExecutor, DeploymentOperationExecutor>();

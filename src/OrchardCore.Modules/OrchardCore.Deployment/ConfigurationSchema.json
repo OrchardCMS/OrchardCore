@@ -29,6 +29,22 @@
                 }
               }
             },
+            "Artifacts": {
+              "type": "object",
+              "description": "The limits applied to the private deployment artifacts of the management API. See https://docs.orchardcore.net/en/latest/reference/modules/Deployment/#private-artifact-storage.",
+              "properties": {
+                "MaxBytes": {
+                  "type": "integer",
+                  "description": "The maximum size of an artifact, in bytes.",
+                  "default": 524288000
+                },
+                "Lifetime": {
+                  "type": "string",
+                  "description": "How long an artifact is kept, in the 'd.hh:mm:ss' format.",
+                  "default": "1.00:00:00"
+                }
+              }
+            },
             "Operations": {
               "type": "object",
               "description": "The queued deployment operations of the management API. See https://docs.orchardcore.net/en/latest/reference/modules/Deployment/#queued-deployment-operations.",
