@@ -217,7 +217,128 @@ internal static partial class TenantManagementEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
+        routes.MapPost(RoutePrefix + "/{tenantName}:disable-remote-management", DisableRemoteManagementAsync)
+            .WithName("ApiDisableTenantRemoteManagement")
+            .WithSummary("Disables remote management for a tenant.")
+            .WithDescription("Disables the Remote Management features and their OpenID configuration features in a running tenant, so its management APIs, MCP endpoint and automatic client registration stop answering. OpenID applications and settings are kept.")
+            .WithCliCommand(new CliOperationMetadata(["tenants"], "disable-remote-management")
+            {
+                Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                Arguments = { new CliArgumentMetadata("tenantName", 0) },
+                RequiresConfirmation = true,
+            })
+            .Produces<TenantOperationResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        routes.MapPost(RoutePrefix + "/{tenantName}:reload", ReloadAsync)
+            .WithName("ApiReloadTenant")
+            .WithSummary("Reloads a tenant.")
+            .WithDescription("Rebuilds the shell of a running tenant from its current settings and enabled features. Requests in progress complete normally.")
+            .WithCliCommand(new CliOperationMetadata(["tenants"], "reload")
+            {
+                Capability = TenantManagementApiEndpointConventions.CapabilityName,
+                Arguments = { new CliArgumentMetadata("tenantName", 0) },
+            })
+            .Produces<TenantOperationResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
         return builder;
+    }
+
+    internal static async Task<IResult> DisableRemoteManagementAsync(
+        HttpContext httpContext,
+        string tenantName,
+        [FromServices] IShellHost shellHost,
+        [FromServices] ShellSettings currentShellSettings,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IStringLocalizer<TenantApiController> localizer,
+        [FromServices] ILogger<TenantApiController> logger)
+    {
+        if (await AuthorizeManageTenantsAsync(httpContext, authorizationService, currentShellSettings, localizer) is { } authError)
+        {
+            return authError;
+        }
+
+        // The same permission as enabling, as this changes who can manage the tenant remotely.
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, RemoteManagementPermissions.ManageRemoteManagementConfiguration))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        if (!shellHost.TryGetSettings(tenantName, out var settings))
+        {
+            return httpContext.ApiNotFoundProblem(detail: localizer["Tenant not found: '{0}'.", tenantName]);
+        }
+
+        if (settings.IsDefaultShell())
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["You cannot disable remote management for the Default tenant: it hosts this API."]);
+        }
+
+        if (!settings.IsRunning())
+        {
+            return TypedResults.Problem(
+                title: localizer["Conflict"],
+                detail: localizer["Tenant '{0}' must be running before remote management can be disabled.", tenantName],
+                statusCode: StatusCodes.Status409Conflict);
+        }
+
+        await RemoteManagementProvisioning.DisableAsync(shellHost, settings);
+
+        logger.LogWarning("'{UserName}' disabled remote management for the tenant '{TenantName}'.", httpContext.User.Identity?.Name, settings.Name);
+        await RecordRemoteManagementEventAsync(httpContext, TenantRemoteManagementAuditTrailEventConfiguration.Disabled, settings.Name);
+
+        return TypedResults.Ok(new TenantOperationResponse
+        {
+            Name = settings.Name,
+            Action = "disable-remote-management",
+            State = settings.State.ToString(),
+            Url = GetTenantUrls(httpContext, settings).FirstOrDefault(),
+        });
+    }
+
+    internal static async Task<IResult> ReloadAsync(
+        HttpContext httpContext,
+        string tenantName,
+        [FromServices] IShellHost shellHost,
+        [FromServices] ShellSettings currentShellSettings,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IStringLocalizer<TenantApiController> localizer)
+    {
+        if (await AuthorizeManageTenantsAsync(httpContext, authorizationService, currentShellSettings, localizer) is { } authError)
+        {
+            return authError;
+        }
+
+        if (!shellHost.TryGetSettings(tenantName, out var settings))
+        {
+            return httpContext.ApiNotFoundProblem(detail: localizer["Tenant not found: '{0}'.", tenantName]);
+        }
+
+        if (!settings.IsRunning())
+        {
+            return TypedResults.Problem(
+                title: localizer["Conflict"],
+                detail: localizer["Tenant '{0}' must be running to be reloaded.", tenantName],
+                statusCode: StatusCodes.Status409Conflict);
+        }
+
+        await shellHost.ReloadShellContextAsync(settings);
+
+        return TypedResults.Ok(new TenantOperationResponse
+        {
+            Name = settings.Name,
+            Action = "reload",
+            State = settings.State.ToString(),
+            Url = GetTenantUrls(httpContext, settings).FirstOrDefault(),
+        });
     }
 
     internal static async Task<IResult> EnableRemoteManagementAsync(

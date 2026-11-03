@@ -58,7 +58,9 @@ responses use `application/json`; Problem Details responses use
 | Delete tenant | `DELETE` | `/api/tenants/{tenantName}` | `200 OK`, already absent `204 No Content` |
 | Start tenant | `POST` | `/api/tenants/{tenantName}:start` | `200 OK` |
 | Stop tenant | `POST` | `/api/tenants/{tenantName}:stop` | `200 OK` |
+| Reload tenant | `POST` | `/api/tenants/{tenantName}:reload` | `200 OK` |
 | Enable Remote Management | `POST` | `/api/tenants/{tenantName}:enable-remote-management` | `200 OK` |
+| Disable Remote Management | `POST` | `/api/tenants/{tenantName}:disable-remote-management` | `200 OK` |
 
 ## Resource representations
 
@@ -129,12 +131,12 @@ Representative tenant JSON:
 
 ### Tenant operation
 
-Delete and Remote Management configuration return:
+Delete, reload and Remote Management configuration return:
 
 | JSON property | Type | Nullable | Meaning |
 | --- | --- | --- | --- |
 | `name` | string | No | Tenant name. |
-| `action` | string | No | `delete` or `enable-remote-management`. |
+| `action` | string | No | `delete`, `reload`, `enable-remote-management` or `disable-remote-management`. |
 | `state` | string | No | State after the operation. |
 | `url` | string | Yes | Primary tenant URL when the operation supplies one. |
 
@@ -1080,6 +1082,35 @@ curl --request POST \
 }
 ```
 
+## Disable Remote Management for a tenant
+
+```http
+POST /api/tenants/{tenantName}:disable-remote-management
+```
+
+Pomi exposes this as `pomi tenants disable-remote-management <tenantName>`, and asks a confirmation. It requires the same permissions as enabling, and records an event in the same audit trail category.
+
+The target tenant must be `Running`. The operation disables the `OrchardCore.RemoteManagement` and `OrchardCore.OpenId.RemoteManagement` features with the features depending on them, such as the CLI and MCP ones, and reloads the tenant shell: the management APIs, `/mcp` and automatic client registration stop answering. OpenID applications, including provisioned ones, scopes and settings are kept, as other clients of the server can use them; remove them separately if needed. Repeating a successful request returns `200`.
+
+- `200 OK` returns a tenant-operation response with the `disable-remote-management` action.
+- `400 Bad Request` is returned for the `Default` tenant, which hosts this API.
+- `401 Unauthorized` and `403 Forbidden` have the meanings described above.
+- `404 Not Found` is returned when `tenantName` is unknown.
+- `409 Conflict` is returned unless the target tenant is `Running`.
+
+## Reload a tenant
+
+```http
+POST /api/tenants/{tenantName}:reload
+```
+
+Pomi exposes this as `pomi tenants reload <tenantName>`, and MCP as the `tenants_reload` tool. Rebuilds the shell of a `Running` tenant from its current settings and enabled features, as the **Reload** action of the tenants admin page does. Requests in progress complete normally.
+
+- `200 OK` returns a tenant-operation response with the `reload` action.
+- `401 Unauthorized` and `403 Forbidden` have the meanings described above.
+- `404 Not Found` is returned when `tenantName` is unknown.
+- `409 Conflict` is returned unless the target tenant is `Running`.
+
 ## Legacy tenant API compatibility
 
 The controller also retains the older `POST /api/tenants/create`,
@@ -1207,12 +1238,13 @@ selection; it is not a way to disable a tenant or its installed features.
 
 With MCP enabled, these operations project to `tenants_feature-profiles_list`,
 `tenants_feature-profiles_show`, `tenants_feature-profiles_schema`,
-`tenants_feature-profiles_create`, `tenants_feature-profiles_update` and
-`tenants_feature-profiles_delete`, using the same handlers and permissions.
+`tenants_feature-profiles_create` and `tenants_feature-profiles_update`, using the same
+handlers and permissions, and `tenants_feature-profiles_delete` when the tenant
+[allows operations requiring a confirmation](../../modules/RemoteManagement/README.md#tools).
 
 ## Endpoint coverage and sources
 
-The tenant lifecycle reference covers all **8** routes mapped by
+The tenant lifecycle reference covers all the routes mapped by
 `TenantManagementEndpoints.AddTenantManagementEndpoints`. It was derived from
 `TenantManagementEndpoints.cs`, `TenantInstallEndpoints.cs`, `TenantModelBase.cs`, `TenantValidator.cs`,
 `TenantDatabasePatternResolver.cs`, `TenantConnectionStringRedactor.cs`,

@@ -1,6 +1,14 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using OrchardCore.AuditTrail.Services;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.BackgroundTasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.AutoSetup.Options;
@@ -9,8 +17,12 @@ using OrchardCore.Setup.Services;
 using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.RemoteManagement;
+using OrchardCore.Tenants.AuditTrail;
+using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Endpoints.Management;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
 
@@ -120,5 +132,79 @@ public class ClientProvisioningApiTests
         Assert.Equal("bearer", scheme.GetProperty("scheme").GetString());
         var manifestOperation = document.RootElement.GetProperty("paths").GetProperty("/api/management/manifest").GetProperty("get");
         Assert.True(manifestOperation.GetProperty("security")[0].TryGetProperty("Bearer", out _));
+
+        using var me = await site.Client.GetAsync("api/management/me", TestContext.Current.CancellationToken);
+        var mePayload = await me.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        Assert.True(me.IsSuccessStatusCode, mePayload);
+        using var identity = JsonDocument.Parse(mePayload);
+        Assert.Equal(site.TenantName, identity.RootElement.GetProperty("tenant").GetString());
+        Assert.Equal("client", identity.RootElement.GetProperty("type").GetString());
+        Assert.Equal(credentials.ClientId, identity.RootElement.GetProperty("clientId").GetString());
+        Assert.Equal(credentials.ClientId, identity.RootElement.GetProperty("subject").GetString());
+        Assert.Contains(identity.RootElement.GetProperty("scopes").EnumerateArray(), scope => scope.GetString() == RemoteManagementConstants.ManagementScope);
+        Assert.Contains(identity.RootElement.GetProperty("permissions").EnumerateArray(), permission => permission.GetString() == RemoteManagementPermissions.AccessRemoteManagement.Name);
+    }
+
+    [Fact]
+    public async Task EnableAndDisableRemoteManagement_RunningTenant_AppliesFeaturesAndRecordsAuditEvents()
+    {
+        using var site = new SiteContext { RecipeName = "Blank" };
+        await site.InitializeAsync();
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var authorization = new Mock<IAuthorizationService>();
+        authorization
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(AuthorizationResult.Success());
+        var auditTrail = new Mock<IAuditTrailManager>();
+        await using var services = new ServiceCollection().AddSingleton(auditTrail.Object).BuildServiceProvider();
+        var localizer = Mock.Of<IStringLocalizer<TenantApiController>>();
+        var logger = Mock.Of<ILogger<TenantApiController>>();
+
+        var enabled = await TenantManagementEndpoints.EnableRemoteManagementAsync(new DefaultHttpContext { RequestServices = services }, site.TenantName,
+            SiteContext.ShellHost, defaultSettings, authorization.Object, localizer, logger, provisionClient: true);
+
+        var credentials = Assert.IsType<Ok<TenantManagementEndpoints.TenantOperationResponse>>(enabled).Value.ClientCredentials;
+        Assert.NotNull(credentials);
+        auditTrail.Verify(manager => manager.RecordEventAsync(It.Is<AuditTrailContext<TenantRemoteManagementAuditEvent>>(context =>
+            context.Name == TenantRemoteManagementAuditTrailEventConfiguration.Enabled &&
+            context.AuditTrailEventItem.TenantName == site.TenantName &&
+            context.AuditTrailEventItem.ClientId == credentials.ClientId)), Times.Once);
+
+        using var tokenResponse = await site.Client.PostAsync("connect/token", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = credentials.ClientId,
+            ["client_secret"] = credentials.ClientSecret,
+            ["scope"] = RemoteManagementConstants.ManagementScope,
+        }), TestContext.Current.CancellationToken);
+        var tokenPayload = await tokenResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        Assert.True(tokenResponse.IsSuccessStatusCode, tokenPayload);
+        using var token = JsonDocument.Parse(tokenPayload);
+        site.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.RootElement.GetProperty("access_token").GetString());
+        using var before = await site.Client.GetAsync("api/management/manifest", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, before.StatusCode);
+
+        var disabled = await TenantManagementEndpoints.DisableRemoteManagementAsync(new DefaultHttpContext { RequestServices = services }, site.TenantName,
+            SiteContext.ShellHost, defaultSettings, authorization.Object, localizer, logger);
+
+        Assert.Equal("disable-remote-management", Assert.IsType<Ok<TenantManagementEndpoints.TenantOperationResponse>>(disabled).Value.Action);
+        auditTrail.Verify(manager => manager.RecordEventAsync(It.Is<AuditTrailContext<TenantRemoteManagementAuditEvent>>(context =>
+            context.Name == TenantRemoteManagementAuditTrailEventConfiguration.Disabled &&
+            context.AuditTrailEventItem.TenantName == site.TenantName)), Times.Once);
+        await site.UsingTenantScopeAsync(async scope =>
+        {
+            var features = await scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>().GetEnabledFeaturesAsync();
+            Assert.DoesNotContain(features, feature => feature.Id.Contains("RemoteManagement", StringComparison.Ordinal));
+            Assert.Contains(features, feature => feature.Id == "OrchardCore.OpenId.Server");
+
+            // Disabling keeps the applications, as other clients of the server can use them.
+            Assert.NotNull(await scope.ServiceProvider.GetRequiredService<IOpenIdApplicationManager>().FindByClientIdAsync(credentials.ClientId));
+        });
+        using var after = await site.Client.GetAsync("api/management/manifest", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.NotFound, after.StatusCode);
+
+        // Repeating the operation is harmless.
+        Assert.IsType<Ok<TenantManagementEndpoints.TenantOperationResponse>>(await TenantManagementEndpoints.DisableRemoteManagementAsync(
+            new DefaultHttpContext { RequestServices = services }, site.TenantName, SiteContext.ShellHost, defaultSettings, authorization.Object, localizer, logger));
     }
 }

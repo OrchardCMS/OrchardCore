@@ -57,4 +57,30 @@ public static class RemoteManagementProvisioning
 
         return configured;
     }
+
+    /// <summary>
+    /// Disables the remote management features of a running tenant, including their dependent features and the OpenID
+    /// features that only exist for them. OpenID applications and settings are kept, as other clients can use them.
+    /// The caller must authorize tenant administration before invoking this method.
+    /// </summary>
+    public static async Task DisableAsync(IShellHost shellHost, ShellSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(shellHost);
+        ArgumentNullException.ThrowIfNull(settings);
+
+        var scope = await shellHost.GetScopeAsync(settings);
+        await scope.UsingAsync(async childScope =>
+        {
+            var manager = childScope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var features = (await manager.GetEnabledFeaturesAsync())
+                .Where(feature => feature.Id is "OrchardCore.RemoteManagement" or "OrchardCore.OpenId.RemoteManagement")
+                .ToArray();
+            if (features.Length > 0)
+            {
+                await manager.DisableFeaturesAsync(features, force: true);
+            }
+        });
+
+        await shellHost.ReloadShellContextAsync(settings);
+    }
 }

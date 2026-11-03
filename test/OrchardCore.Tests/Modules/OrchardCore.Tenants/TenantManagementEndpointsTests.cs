@@ -3,6 +3,7 @@ using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -167,6 +168,104 @@ public class TenantManagementEndpointsTests
 
         Assert.Equal(StatusCodes.Status403Forbidden, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         shellHost.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task DisableRemoteManagementAsync_WithoutConfigurationPermission_IsForbidden()
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var authorizationService = new Mock<IAuthorizationService>();
+        authorizationService
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync((ClaimsPrincipal _, object _, IEnumerable<IAuthorizationRequirement> requirements) =>
+                requirements.OfType<PermissionRequirement>().Any(requirement => requirement.Permission.Name == RemoteManagementPermissions.ManageRemoteManagementConfiguration.Name)
+                    ? AuthorizationResult.Failed()
+                    : AuthorizationResult.Success());
+        var shellHost = new Mock<IShellHost>(MockBehavior.Strict);
+
+        var result = await TenantManagementEndpoints.DisableRemoteManagementAsync(
+            CreateHttpContext(), "TenantA", shellHost.Object, defaultSettings, authorizationService.Object,
+            CreateLocalizer(), Mock.Of<ILogger<TenantApiController>>());
+
+        Assert.Equal(StatusCodes.Status403Forbidden, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        shellHost.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task DisableRemoteManagementAsync_DefaultTenant_IsRejected()
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var shellHost = new Mock<IShellHost>();
+        shellHost.Setup(host => host.TryGetSettings(ShellSettings.DefaultShellName, out defaultSettings)).Returns(true);
+
+        var result = await TenantManagementEndpoints.DisableRemoteManagementAsync(
+            CreateHttpContext(), ShellSettings.DefaultShellName, shellHost.Object, defaultSettings, CreateAuthorizationService(),
+            CreateLocalizer(), Mock.Of<ILogger<TenantApiController>>());
+
+        Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        shellHost.Verify(host => host.GetScopeAsync(It.IsAny<ShellSettings>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(TenantState.Disabled)]
+    [InlineData(TenantState.Uninitialized)]
+    public async Task DisableRemoteManagementAsync_TenantNotRunning_ReturnsConflict(TenantState state)
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var tenant = new ShellSettings { Name = "TenantA", State = state };
+        var shellHost = new Mock<IShellHost>();
+        shellHost.Setup(host => host.TryGetSettings("TenantA", out tenant)).Returns(true);
+
+        var result = await TenantManagementEndpoints.DisableRemoteManagementAsync(
+            CreateHttpContext(), "TenantA", shellHost.Object, defaultSettings, CreateAuthorizationService(),
+            CreateLocalizer(), Mock.Of<ILogger<TenantApiController>>());
+
+        Assert.Equal(StatusCodes.Status409Conflict, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+    }
+
+    [Fact]
+    public async Task ReloadAsync_RunningTenant_ReloadsItsShell()
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var tenant = new ShellSettings { Name = "TenantA", State = TenantState.Running };
+        var shellHost = new Mock<IShellHost>();
+        shellHost.Setup(host => host.TryGetSettings("TenantA", out tenant)).Returns(true);
+
+        var result = await TenantManagementEndpoints.ReloadAsync(
+            CreateHttpContext(), "TenantA", shellHost.Object, defaultSettings, CreateAuthorizationService(), CreateLocalizer());
+
+        var response = Assert.IsType<Ok<TenantManagementEndpoints.TenantOperationResponse>>(result).Value;
+        Assert.Equal("reload", response.Action);
+        Assert.Equal("TenantA", response.Name);
+        shellHost.Verify(host => host.ReloadShellContextAsync(tenant, true), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(TenantState.Disabled, StatusCodes.Status409Conflict)]
+    [InlineData(TenantState.Uninitialized, StatusCodes.Status409Conflict)]
+    public async Task ReloadAsync_TenantNotRunning_ReturnsConflict(TenantState state, int expected)
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var tenant = new ShellSettings { Name = "TenantA", State = state };
+        var shellHost = new Mock<IShellHost>();
+        shellHost.Setup(host => host.TryGetSettings("TenantA", out tenant)).Returns(true);
+
+        var result = await TenantManagementEndpoints.ReloadAsync(
+            CreateHttpContext(), "TenantA", shellHost.Object, defaultSettings, CreateAuthorizationService(), CreateLocalizer());
+
+        Assert.Equal(expected, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        shellHost.Verify(host => host.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ReloadAsync_UnknownTenant_ReturnsNotFound()
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+
+        var result = await TenantManagementEndpoints.ReloadAsync(
+            CreateHttpContext(), "Missing", Mock.Of<IShellHost>(), defaultSettings, CreateAuthorizationService(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status404NotFound, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
     }
 
     [Theory]
