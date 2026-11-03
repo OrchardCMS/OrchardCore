@@ -67,6 +67,12 @@ public sealed class CliOperationMetadata
     public bool SecretResponse { get; set; }
 
     /// <summary>
+    /// Gets or sets the boolean parameter or body property that makes the operation create an administrative
+    /// application. Pomi offers it as an option, and saves the returned credentials in a new context.
+    /// </summary>
+    public string ProvisioningProperty { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the operation is left out of MCP tools. Operations with secret properties or a
     /// secret response always are; set this for one that can return credentials depending on its input.
     /// </summary>

@@ -93,6 +93,11 @@ internal sealed class CliOperationTransformer : IOpenApiOperationTransformer
             extension["secretResponse"] = true;
         }
 
+        if (!string.IsNullOrWhiteSpace(metadata.ProvisioningProperty))
+        {
+            extension["provisioningProperty"] = metadata.ProvisioningProperty;
+        }
+
         return extension;
     }
 }

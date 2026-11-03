@@ -917,12 +917,7 @@ internal sealed partial class CliApplication
             command.Aliases.Add(alias);
         }
 
-        var provisioningProperty = operation.OperationId switch
-        {
-            "ApiInstallTenantManagement" => "enableRemoteManagement",
-            "ApiEnableTenantRemoteManagement" => "provisionClient",
-            _ => null,
-        };
+        var provisioningProperty = operation.CliMetadata.ProvisioningProperty;
         var provisioningSupported = provisioningProperty is not null &&
             (operation.Parameters.Any(parameter => parameter.Name == provisioningProperty) ||
              operation.RequestBodyProperties.Any(property => property.Name == provisioningProperty));

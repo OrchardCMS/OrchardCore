@@ -28,12 +28,12 @@ public class ClientProvisioningTests
               "operationId":"ApiEnableTenantRemoteManagement",
               "parameters":[{"name":"tenantName","in":"path","required":true,"schema":{"type":"string"}},
                             {"name":"provisionClient","in":"query","schema":{"type":"boolean"}}],
-              "x-oc-cli":{"commandGroup":["tenants"],"verb":"enable-remote-management","arguments":[{"parameterName":"tenantName","position":0}]}
+              "x-oc-cli":{"commandGroup":["tenants"],"verb":"enable-remote-management","provisioningProperty":"provisionClient","arguments":[{"parameterName":"tenantName","position":0}]}
             }},"/api/tenants/{tenantName}:install":{"post":{
               "operationId":"ApiInstallTenantManagement",
               "parameters":[{"name":"tenantName","in":"path","required":true,"schema":{"type":"string"}}],
               "requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"enableRemoteManagement":{"type":"boolean"}}}}}},
-              "x-oc-cli":{"commandGroup":["tenants"],"verb":"install","inputMode":"options","arguments":[{"parameterName":"tenantName","position":0}]}
+              "x-oc-cli":{"commandGroup":["tenants"],"verb":"install","provisioningProperty":"enableRemoteManagement","inputMode":"options","arguments":[{"parameterName":"tenantName","position":0}]}
             }}}}
             """,
             ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(5),
