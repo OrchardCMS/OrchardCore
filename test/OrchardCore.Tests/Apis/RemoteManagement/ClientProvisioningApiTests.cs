@@ -111,5 +111,14 @@ public class ClientProvisioningApiTests
         Assert.Equal(HttpStatusCode.OK, manifest.StatusCode);
         using var features = await site.Client.GetAsync("api/features", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, features.StatusCode);
+
+        using var openApi = await site.Client.GetAsync("openapi/v1.json", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, openApi.StatusCode);
+        using var document = JsonDocument.Parse(await openApi.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var scheme = document.RootElement.GetProperty("components").GetProperty("securitySchemes").GetProperty("Bearer");
+        Assert.Equal("http", scheme.GetProperty("type").GetString());
+        Assert.Equal("bearer", scheme.GetProperty("scheme").GetString());
+        var manifestOperation = document.RootElement.GetProperty("paths").GetProperty("/api/management/manifest").GetProperty("get");
+        Assert.True(manifestOperation.GetProperty("security")[0].TryGetProperty("Bearer", out _));
     }
 }

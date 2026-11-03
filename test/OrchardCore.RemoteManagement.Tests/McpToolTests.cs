@@ -158,6 +158,19 @@ public class McpToolTests
         Assert.DoesNotContain("secret", Assert.IsType<TextContentBlock>(Assert.Single(result.Content)).Text);
     }
 
+    [Fact]
+    public void RequiresBearerToken_MatchesOnlyTheApiSchemeWithoutAnonymousAccess()
+    {
+        var api = new AuthorizeAttribute { AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api };
+        var policy = new AuthorizationPolicyBuilder(OrchardCoreConstants.AuthenticationSchemes.Api).RequireAuthenticatedUser().Build();
+
+        Assert.True(ManagementSecurityOperationTransformer.RequiresBearerToken([api]));
+        Assert.True(ManagementSecurityOperationTransformer.RequiresBearerToken([policy]));
+        Assert.False(ManagementSecurityOperationTransformer.RequiresBearerToken([policy, new AllowAnonymousAttribute()]));
+        Assert.False(ManagementSecurityOperationTransformer.RequiresBearerToken([new AuthorizeAttribute()]));
+        Assert.False(ManagementSecurityOperationTransformer.RequiresBearerToken([new CliOperationMetadata(["widgets"], "show")]));
+    }
+
     private static Task<CallToolResult> InvokeAsync(McpToolDefinition tool, HttpContext parent, string arguments) =>
         McpToolInvoker.InvokeEndpointAsync(tool, JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(arguments), parent, NullLogger.Instance, CancellationToken.None);
 
@@ -299,6 +312,20 @@ public class McpToolTests
         }
 
         Assert.Empty(McpToolCatalog.CreateTools([CreateEndpoint(metadata)], Document()));
+    }
+
+    [Fact]
+    public void CreateTools_DocumentDeclaringSecurity_IsUnaffected()
+    {
+        var document = Document();
+        document["components"]["securitySchemes"] = JsonNode.Parse("""{"Bearer":{"type":"http","scheme":"bearer"}}""");
+        document["paths"]["/api/widgets/{id}"]["put"]["security"] = JsonNode.Parse("""[{"Bearer":[]}]""");
+
+        var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint()], document));
+
+        Assert.Equal(
+            Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint()], Document())).Tool.InputSchema.GetRawText(),
+            tool.Tool.InputSchema.GetRawText());
     }
 
     [Theory]

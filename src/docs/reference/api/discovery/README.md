@@ -36,6 +36,10 @@ The service builds absolute URLs from the effective request scheme, host, and `P
 | `GET` | `/api/management/manifest` | `Api` bearer + `AccessRemoteManagement` | Full tenant manifest and capabilities |
 | `HEAD` | `/api/management/manifest` | `Api` bearer + `AccessRemoteManagement` | Check the active API revision without downloading metadata |
 
+## OpenAPI security
+
+The OpenAPI document at `/openapi/v1.json` declares an HTTP `Bearer` security scheme in `components.securitySchemes`, and every operation authenticating with the `Api` scheme references it in `security`. The authority and grants depend on the tenant and the request, so read them from the bootstrap document or the manifest rather than from the OpenAPI document.
+
 ## API revision and cache freshness
 
 When Remote Management is enabled, responses under the tenant-relative `/api`
@@ -165,7 +169,7 @@ There are no path, query, header, or body parameters.
 curl 'https://cms.example.com/tenant-a/.well-known/orchardcore-management'
 ```
 
-`200 OK`:
+`200 OK`, with `Cache-Control: no-store` as the document reflects the host of the request:
 
 ```json
 {

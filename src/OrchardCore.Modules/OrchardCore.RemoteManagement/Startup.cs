@@ -13,7 +13,11 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddOpenApi();
+        services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer<ManagementSecurityDocumentTransformer>();
+            options.AddOperationTransformer<ManagementSecurityOperationTransformer>();
+        });
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, ManagementScopeAuthorizationHandler>();
         services.AddScoped<RemoteManagementManifestService>();
