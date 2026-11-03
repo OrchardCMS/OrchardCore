@@ -29,6 +29,27 @@ public class ContentItemManagementApiTests
     }
 
     [Fact]
+    public async Task HeadlessRoutes_ContentApiPermissionOnly_DoNotRequireRemoteManagement()
+    {
+        var permissions = new PermissionsContext();
+        using var context = new BlogPostApiControllerContext().WithPermissionsContext(permissions);
+        await context.InitializeAsync();
+        var id = context.BlogPost.ContentItemId;
+        permissions.UsePermissionsContext = true;
+
+        // The test client has no token, like a public headless client of the Anonymous role.
+        permissions.AuthorizedPermissions = [CommonPermissions.AccessContentApi, CommonPermissions.ViewContent];
+        Assert.Equal(HttpStatusCode.OK, (await context.Client.GetAsync($"api/content/{id}", TestContext.Current.CancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await context.Client.GetAsync("api/content", TestContext.Current.CancellationToken)).StatusCode);
+
+        permissions.AuthorizedPermissions = [CommonPermissions.ViewContent];
+        Assert.Equal(HttpStatusCode.Unauthorized, (await context.Client.GetAsync($"api/content/{id}", TestContext.Current.CancellationToken)).StatusCode);
+
+        permissions.AuthorizedPermissions = [CommonPermissions.AccessContentApi, CommonPermissions.DeleteContent];
+        Assert.Equal(HttpStatusCode.OK, (await context.Client.DeleteAsync($"api/content/{id}", TestContext.Current.CancellationToken)).StatusCode);
+    }
+
+    [Fact]
     public async Task Update_RouteBodyIdMismatch_ReturnsValidationProblem()
     {
         using var context = new BlogPostApiControllerContext();

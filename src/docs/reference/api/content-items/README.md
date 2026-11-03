@@ -13,7 +13,11 @@ Every endpoint uses Orchard Core's `Api` authentication scheme, requires both
 [Remote Management authentication](../../modules/RemoteManagement/README.md) for API
 credential configuration.
 
-Resource permissions are evaluated in addition to those two permissions:
+`GET /api/content/{contentItemId}`, `POST /api/content`, and `DELETE /api/content/{contentItemId}`
+are the exception: they only require `AccessContentApi`, so they stay available without the Remote
+Management feature and to callers without a token when the `Anonymous` role holds that permission.
+
+Resource permissions are evaluated in addition to those permissions:
 
 | Operation | Additional permission |
 | --- | --- |

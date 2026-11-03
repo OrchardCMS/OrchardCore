@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Services;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
@@ -28,6 +29,12 @@ internal static partial class ContentManagementApiEndpoints
             .RequireAuthorization(policy => policy.AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)))
             .DisableAntiforgery();
 
+        // These routes predate remote management and keep their contract: they only require the
+        // Content API permission, which the Anonymous role can hold for public headless reads.
+        var contentApi = builder.MapGroup("api/content")
+            .AllowAnonymous()
+            .DisableAntiforgery();
+
         group.MapGet(string.Empty, ListAsync)
             .WithName("ApiListContentItems")
             .WithTags("Content Items")
@@ -38,7 +45,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        group.MapGet("/{contentItemId}", GetAsync)
+        contentApi.MapGet("/{contentItemId}", GetAsync)
             .WithName("ApiGetContentItem")
             .WithTags("Content Items")
             .WithSummary("Gets a content item.")
@@ -49,8 +56,8 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost(string.Empty, SaveAsync)
-            .WithName("ApiSaveContentItem")
+        contentApi.MapPost(string.Empty, SaveAsync)
+            .WithName("ApiCreateContentItem")
             .WithTags("Content Items")
             .WithSummary("Creates or updates a content item.")
             .WithDescription("Creates a content item when the request has no contentItemId, or updates the current draft for backward compatibility when one is supplied.")
@@ -129,7 +136,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapDelete("/{contentItemId}", DeleteAsync)
+        contentApi.MapDelete("/{contentItemId}", DeleteAsync)
             .WithName("ApiDeleteContentItem")
             .WithTags("Content Items")
             .WithSummary("Deletes a content item.")
@@ -195,11 +202,12 @@ internal static partial class ContentManagementApiEndpoints
             ? httpContext.ApiForbidProblem()
             : Results.Json(await service.ListAsync(httpContext.User, contentType, status, skip, take), service.SerializerOptions);
 
+    [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> GetAsync(string contentItemId, ContentApiService service, HttpContext httpContext, string version = "published")
     {
         if (!await HasAccessAsync(httpContext))
         {
-            return httpContext.ApiForbidProblem();
+            return Deny(httpContext);
         }
 
         var contentItem = await service.GetAsync(contentItemId, version);
@@ -210,10 +218,11 @@ internal static partial class ContentManagementApiEndpoints
 
         var permission = contentItem.Published ? CommonPermissions.ViewContent : CommonPermissions.PreviewContent;
         return !await httpContext.RequestServices.GetRequiredService<IAuthorizationService>().AuthorizeAsync(httpContext.User, permission, contentItem)
-            ? httpContext.ApiForbidProblem()
+            ? Deny(httpContext)
             : Results.Json(contentItem, service.SerializerOptions);
     }
 
+    [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static Task<IResult> SaveAsync(JsonObject model, ContentApiService service, HttpContext httpContext, bool draft = false)
         => SaveCoreAsync(model, service, httpContext, publish: !draft, allowCreate: true, allowUpdate: true);
 
@@ -274,17 +283,18 @@ internal static partial class ContentManagementApiEndpoints
         return contentItem is null ? httpContext.ApiNotFoundProblem() : Results.Json(contentItem, service.SerializerOptions);
     }
 
+    [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> DeleteAsync(string contentItemId, ContentApiService service, HttpContext httpContext)
     {
         if (!await HasAccessAsync(httpContext))
         {
-            return httpContext.ApiForbidProblem();
+            return Deny(httpContext);
         }
 
         var contentItem = await service.DeleteAsync(httpContext.User, contentItemId);
         if (ContentApiService.IsForbidden(contentItem))
         {
-            return httpContext.ApiForbidProblem();
+            return Deny(httpContext);
         }
 
         return contentItem is null ? TypedResults.NoContent() : Results.Json(contentItem, service.SerializerOptions);
@@ -337,7 +347,7 @@ internal static partial class ContentManagementApiEndpoints
     {
         if (!await HasAccessAsync(httpContext))
         {
-            return httpContext.ApiForbidProblem();
+            return Deny(httpContext);
         }
 
         if (model is null)
@@ -359,7 +369,7 @@ internal static partial class ContentManagementApiEndpoints
         var contentItem = await service.SaveAsync(httpContext.User, payload, publish, allowCreate, allowUpdate, contentItemId, model);
         if (ContentApiService.IsForbidden(contentItem))
         {
-            return httpContext.ApiForbidProblem();
+            return Deny(httpContext);
         }
 
         if (contentItem is null)
@@ -408,6 +418,11 @@ internal static partial class ContentManagementApiEndpoints
 
         return response.IsValid ? TypedResults.Ok(response) : TypedResults.ValidationProblem(response.Errors);
     }
+
+    private static IResult Deny(HttpContext httpContext)
+        => httpContext.User.Identity?.IsAuthenticated == true
+            ? httpContext.ApiForbidProblem()
+            : httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
 
     private static async Task<bool> HasAccessAsync(HttpContext httpContext)
         => await httpContext.RequestServices.GetRequiredService<IAuthorizationService>().AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi);
