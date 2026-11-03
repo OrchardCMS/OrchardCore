@@ -188,7 +188,8 @@
             </div>
         }
 
-        @if (state is not null)
+        @* The recent runs can be empty for a task that ran, when none are kept. *@
+        @if (state is not null && (state.RunCount == 0 || state.RecentRuns.Count > 0))
         {
             <div class="card mb-3">
                 <div class="card-header">@T["Recent runs"]</div>
