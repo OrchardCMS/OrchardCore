@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.Drivers;
 
@@ -32,12 +33,6 @@ public sealed class TemplateInspectorContentDisplayDriver : ContentDisplayDriver
         return View("TemplateInspectorAction_SummaryAdmin", contentItem)
             .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:20")
             .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:20")
-            .RenderWhen(async () =>
-            {
-                var user = _httpContextAccessor.HttpContext.User;
-
-                return await _authorizationService.AuthorizeAsync(user, OrchardCore.Liquid.Permissions.ManageLiquidTemplates)
-                    && await _authorizationService.AuthorizeAsync(user, Permissions.ManageTemplates);
-            });
+            .RenderWhen(() => _authorizationService.AuthorizeTemplatesAsync(_httpContextAccessor.HttpContext.User, adminTemplates: false));
     }
 }

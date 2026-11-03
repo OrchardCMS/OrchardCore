@@ -390,19 +390,8 @@ public sealed class TemplateController : Controller
         }
     }
 
-    private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
-        {
-            return false;
-        }
-
-        var permission = adminTemplates
-            ? AdminTemplatesPermissions.ManageAdminTemplates
-            : Permissions.ManageTemplates;
-
-        return await _authorizationService.AuthorizeAsync(User, permission);
-    }
+    private Task<bool> IsAuthorizedAsync(bool adminTemplates)
+        => _authorizationService.AuthorizeTemplatesAsync(User, adminTemplates);
 
     private async Task ValidateModelAsync(TemplateViewModel model, TemplatesDocument templatesDocument = null, string sourceName = null)
     {

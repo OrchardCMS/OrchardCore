@@ -163,17 +163,6 @@ public sealed class TemplateInspectorController : Controller
         => await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem)
             && (contentItem.Published || await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem));
 
-    private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
-        {
-            return false;
-        }
-
-        var permission = adminTemplates
-            ? AdminTemplatesPermissions.ManageAdminTemplates
-            : Permissions.ManageTemplates;
-
-        return await _authorizationService.AuthorizeAsync(User, permission);
-    }
+    private Task<bool> IsAuthorizedAsync(bool adminTemplates)
+        => _authorizationService.AuthorizeTemplatesAsync(User, adminTemplates);
 }

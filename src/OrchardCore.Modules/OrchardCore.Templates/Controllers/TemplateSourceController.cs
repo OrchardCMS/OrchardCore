@@ -594,17 +594,6 @@ public sealed class TemplateSourceController : Controller
     private static bool IsScope(TemplateSourceScope scope, string name)
         => string.Equals(scope.Name ?? string.Empty, name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
 
-    private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
-        {
-            return false;
-        }
-
-        var permission = adminTemplates
-            ? AdminTemplatesPermissions.ManageAdminTemplates
-            : Permissions.ManageTemplates;
-
-        return await _authorizationService.AuthorizeAsync(User, permission);
-    }
+    private Task<bool> IsAuthorizedAsync(bool adminTemplates)
+        => _authorizationService.AuthorizeTemplatesAsync(User, adminTemplates);
 }
