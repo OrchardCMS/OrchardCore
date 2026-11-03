@@ -244,6 +244,9 @@ nav:
                   - Lucene: reference/modules/Lucene/README.md
                   - SQL Indexing: reference/modules/SQLIndexing/README.md
                   - Queries: reference/modules/Queries/README.md
+              - Data Sources and Pipelines:
+                  - Data Sources: reference/modules/DataSources/README.md
+                  - Data Pipelines: reference/modules/DataPipelines/README.md
               - Shortcodes: reference/modules/Shortcodes/README.md
               - Sitemaps: reference/modules/Sitemaps/README.md
               - SMS: reference/modules/Sms/README.md
@@ -315,6 +318,7 @@ nav:
               - Roles: reference/modules/Roles/README.md
               - Sanitizer: reference/modules/Sanitizer/README.md
               - Scripting: reference/modules/Scripting/README.md
+              - Secrets: reference/modules/Secrets/README.md
               - Security: reference/modules/Security/README.md
               - Setup: reference/modules/Setup/README.md
               - Shells: reference/modules/Shells/README.md

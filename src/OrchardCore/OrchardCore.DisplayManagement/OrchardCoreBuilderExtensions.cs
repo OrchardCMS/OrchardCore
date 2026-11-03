@@ -38,10 +38,12 @@ public static class OrchardCoreBuilderExtensions
         builder.AddThemingHost()
             .ConfigureServices(services =>
             {
+                // The filter is resolved from the container instead of being activated by reflection on each request.
+                services.AddTransient<NotifyFilter>();
                 services.Configure<MvcOptions>((options) =>
                 {
                     options.Filters.Add<ModelBinderAccessorFilter>();
-                    options.Filters.Add<NotifyFilter>();
+                    options.Filters.AddService<NotifyFilter>();
                     options.Filters.Add<RazorViewActionFilter>();
                 });
 
@@ -89,6 +91,7 @@ public static class OrchardCoreBuilderExtensions
 
                 services.AddScoped<IShapeFactory, DefaultShapeFactory>();
                 services.AddScoped<IDisplayHelper, DisplayHelper>();
+                services.AddScoped<IShapeHtmlRenderer, ShapeHtmlRenderer>();
 
                 services.AddScoped<INotifier, Notifier>();
 

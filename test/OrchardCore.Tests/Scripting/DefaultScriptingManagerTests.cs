@@ -128,6 +128,67 @@ public class DefaultScriptingManagerTests
         Assert.Equal("unknown:1 + 1", await manager.EvaluateAsync("unknown:1 + 1", null, null, null, TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public void Evaluate_WhenTheScriptSucceeds_DisposesTheScope()
+    {
+        // The manager opens a scope per evaluated directive and never hands it to the caller, so an engine
+        // that wants to know when the evaluation is over - the JavaScript engine reuses its engines between
+        // evaluations - can only learn it from here.
+        var engine = new RecordingScriptingEngine();
+        var manager = CreateManager([engine]);
+
+        Assert.Equal("evaluated", manager.Evaluate("test:anything", null, null, null));
+        Assert.Equal(1, engine.Scope.DisposeCount);
+    }
+
+    [Fact]
+    public void Evaluate_WhenTheScriptThrows_StillDisposesTheScope()
+    {
+        var engine = new RecordingScriptingEngine { Throw = true };
+        var manager = CreateManager([engine]);
+
+        Assert.Throws<InvalidOperationException>(() => manager.Evaluate("test:anything", null, null, null));
+        Assert.Equal(1, engine.Scope.DisposeCount);
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_WhenTheScriptSucceeds_DisposesTheScopeAfterTheEvaluationCompletes()
+    {
+        var engine = new RecordingScriptingEngine();
+        var manager = CreateManager([engine]);
+
+        var result = await manager.EvaluateAsync("test:anything", null, null, null, TestContext.Current.CancellationToken);
+
+        Assert.Equal("evaluated", result);
+
+        // Not merely disposed, but disposed after the awaited evaluation had finished: an engine cannot be
+        // reset while an asynchronous evaluation it started is still outstanding.
+        Assert.Equal(1, engine.Scope.DisposeCount);
+        Assert.True(engine.Scope.DisposedAfterEvaluation);
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_WhenTheScriptThrows_StillDisposesTheScope()
+    {
+        var engine = new RecordingScriptingEngine { Throw = true };
+        var manager = CreateManager([engine]);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => manager.EvaluateAsync("test:anything", null, null, null, TestContext.Current.CancellationToken));
+
+        Assert.Equal(1, engine.Scope.DisposeCount);
+    }
+
+    [Fact]
+    public void Evaluate_WhenTheScopeIsNotDisposable_Succeeds()
+    {
+        // IScriptingScope is a marker interface, so an engine implemented outside this repository is under
+        // no obligation to return something disposable. FakeScriptingEngine's scope is not.
+        var manager = CreateManager([new FakeScriptingEngine("js")]);
+
+        Assert.Equal("1 + 1", manager.Evaluate("js:1 + 1", null, null, null));
+    }
+
     private static DefaultScriptingManager CreateManager(
         IEnumerable<IScriptingEngine> engines,
         IEnumerable<IGlobalMethodProvider> globalMethodProviders = null)
@@ -155,6 +216,52 @@ public class DefaultScriptingManagerTests
 
         private sealed class FakeScriptingScope : IScriptingScope
         {
+        }
+    }
+
+    private sealed class RecordingScriptingEngine : IScriptingEngine
+    {
+        public RecordingScope Scope { get; } = new();
+
+        public bool Throw { get; set; }
+
+        public string Prefix => "test";
+
+        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
+            => Scope;
+
+        public object Evaluate(IScriptingScope scope, string script)
+        {
+            if (Throw)
+            {
+                throw new InvalidOperationException("boom");
+            }
+
+            Scope.Evaluated = true;
+
+            return "evaluated";
+        }
+
+        public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
+        {
+            await Task.Yield();
+
+            return Evaluate(scope, script);
+        }
+    }
+
+    private sealed class RecordingScope : IScriptingScope, IDisposable
+    {
+        public int DisposeCount { get; private set; }
+
+        public bool Evaluated { get; set; }
+
+        public bool DisposedAfterEvaluation { get; private set; }
+
+        public void Dispose()
+        {
+            DisposeCount++;
+            DisposedAfterEvaluation = Evaluated;
         }
     }
 

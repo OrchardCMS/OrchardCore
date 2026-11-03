@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Sitemaps.ViewModels
+
+@model ShapeViewModel<SitemapListEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a class="@(Model.Value.Enabled ? string.Empty : "text-muted")" asp-action="Display" asp-controller="Admin" asp-route-sitemapId="@Model.Value.SitemapId">@Model.Value.Name</a>

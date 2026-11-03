@@ -39,7 +39,8 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
         }
 
         return View("ElasticsearchIndexProfile_ActionsMenuItems_SummaryAdmin", index)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:4");
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:4")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:4");
     }
 
     public override IDisplayResult Edit(IndexProfile indexProfile, BuildEditorContext context)

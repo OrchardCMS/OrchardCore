@@ -162,11 +162,6 @@ public static class OrchardCoreTelemetryConstants
         public const string RequestDbDuration = "orchardcore.request.db.duration";
 
         /// <summary>
-        /// The duration, in seconds, of rendering a shape, including the shapes it renders.
-        /// </summary>
-        public const string ShapeRenderDuration = "orchardcore.shape.render.duration";
-
-        /// <summary>
         /// The number of lookups of the content of a cached shape, by result.
         /// </summary>
         public const string ShapeCacheLookups = "orchardcore.shape.cache.lookups";

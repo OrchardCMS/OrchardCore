@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TheAgencyTheme\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Views/HttpError-NotFound.liquid
+msgctxt "TheAgencyTheme.Views.HttpError-NotFound"
+msgid "Page Not Found"
+msgstr ""
+
+#: Views/HttpError-NotFound.liquid
+msgctxt "TheAgencyTheme.Views.HttpError-NotFound"
+msgid "The page you requested could not be found."
+msgstr ""
+
+#: Views/Layout.liquid
+msgctxt "TheAgencyTheme.Views.Layout"
+msgid "Menu"
+msgstr ""
+
+#: Views/Search-List.liquid
+msgctxt "TheAgencyTheme.Views.Search-List"
+msgid "Search"
+msgstr ""
+
+#: Views/SearchForm.liquid
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Enter your search term(s)"
+msgstr ""
+
+#: Views/SearchForm.liquid
+msgctxt "TheAgencyTheme.Views.SearchForm"
+msgid "Search"
+msgstr ""
+
+#: Views/SearchResults.liquid
+msgctxt "TheAgencyTheme.Views.SearchResults"
+msgid "There are no such results."
+msgstr ""

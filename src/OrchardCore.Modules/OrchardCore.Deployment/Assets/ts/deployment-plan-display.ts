@@ -3,7 +3,7 @@ import removeDiacritics from "@orchardcore/bloom/helpers/removeDiacritics";
 function getDeploymentStepCategory() {
     const activeCategory = document.querySelector<HTMLElement>("#deployment-step-categories .nav-link.active");
 
-    return activeCategory ? activeCategory.dataset.category || "all" : "all";
+    return activeCategory?.dataset.listFilterValue || "all";
 }
 
 function filterDeploymentSteps() {
@@ -37,7 +37,7 @@ if (modalSteps) {
         document.querySelectorAll("#deployment-step-categories .nav-link").forEach((link) => {
             link.classList.remove("active");
         });
-        const allCategory = document.querySelector('#deployment-step-categories .nav-link[data-category="all"]');
+        const allCategory = document.querySelector('#deployment-step-categories .nav-link[data-list-filter-value="all"]');
         allCategory?.classList.add("active");
         filterDeploymentSteps();
     });

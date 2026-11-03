@@ -57,23 +57,20 @@ public class MenuPermissionsTests
     [InlineData(nameof(CommonPermissions.EditContentOwner))]
     public void EditMenuPermission_UnrelatedOperation_RemainsDenied(string permissionName)
     {
-        var editMenu = CreateMenuPermission(CommonPermissions.EditContent);
+        var editMenu = ContentTypePermissionsHelper.CreateDynamicPermissionOf(
+            CommonPermissions.EditContent.Name,
+            "Menu");
+
         var claims = new[]
         {
             new Claim(Permission.ClaimType, editMenu.Name),
         };
 
         var permissionGrantingService = new DefaultPermissionGrantingService();
-        var requiredPermission = CreateMenuPermission(
-            ContentTypePermissionsHelper.PermissionTemplates[permissionName]);
+        var requiredPermission = ContentTypePermissionsHelper.CreateDynamicPermissionOf(permissionName, "Menu");
 
         Assert.False(permissionGrantingService.IsGranted(
             new PermissionRequirement(requiredPermission),
             claims));
     }
-
-    private static Permission CreateMenuPermission(Permission permission)
-        => ContentTypePermissionsHelper.CreateDynamicPermission(
-            ContentTypePermissionsHelper.ConvertToDynamicPermission(permission) ?? permission,
-            "Menu");
 }

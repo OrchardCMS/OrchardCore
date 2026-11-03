@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell.Scope;
@@ -8,57 +7,20 @@ using OrchardCore.Telemetry;
 namespace OrchardCore.DisplayManagement.Implementation;
 
 /// <summary>
-/// Measures the rendering of shapes, and traces the slow ones.
+/// Traces the slow renderings of shapes.
 /// </summary>
 internal static class ShapeTelemetry
 {
-    private static readonly InstrumentAdvice<double> s_durationAdvice = new()
-    {
-        HistogramBucketBoundaries = [0.0005, 0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1],
-    };
-
-    public static Histogram<double> RenderDuration { get; } = OrchardCoreTelemetry.Meter.CreateHistogram(
-        OrchardCoreTelemetryConstants.Instruments.ShapeRenderDuration,
-        unit: "s",
-        description: "Duration of rendering a shape, including the shapes it renders.",
-        tags: null,
-        advice: s_durationAdvice);
+    /// <summary>
+    /// Gets whether anything listens to the traces, so that it's worth measuring.
+    /// </summary>
+    public static bool IsEnabled => OrchardCoreTelemetry.ActivitySource.HasListeners();
 
     /// <summary>
-    /// Gets whether anything listens to the rendering of shapes, so that it's worth measuring.
+    /// Traces the rendering of a shape with a span when it was slow.
     /// </summary>
-    public static bool IsEnabled
+    public static void RecordSlow(ShapeMetadata metadata, ShapeBinding binding, TimeSpan elapsed, TimeSpan slowShapeThreshold)
     {
-        get
-        {
-            return RenderDuration.Enabled || OrchardCoreTelemetry.ActivitySource.HasListeners();
-        }
-    }
-
-    /// <summary>
-    /// Records the duration of the rendering of a shape, and traces it with a span when it was slow.
-    /// </summary>
-    public static void Record(ShapeMetadata metadata, ShapeBinding binding, long startTimestamp, TimeSpan slowShapeThreshold)
-    {
-        var elapsed = Stopwatch.GetElapsedTime(startTimestamp);
-        var tenantName = ShellScope.Context?.Settings.Name;
-
-        if (RenderDuration.Enabled)
-        {
-            // The shape type only, as its alternates would multiply the number of metric series.
-            var tags = new TagList
-            {
-                { OrchardCoreTelemetryConstants.Attributes.ShapeType, metadata.Type },
-            };
-
-            if (tenantName is not null)
-            {
-                tags.Add(OrchardCoreTelemetryConstants.Attributes.TenantName, tenantName);
-            }
-
-            RenderDuration.Record(elapsed.TotalSeconds, tags);
-        }
-
         if (elapsed < slowShapeThreshold || !OrchardCoreTelemetry.ActivitySource.HasListeners())
         {
             return;
@@ -75,7 +37,7 @@ internal static class ShapeTelemetry
         if (activity is { IsAllDataRequested: true })
         {
             activity.SetTag(OrchardCoreTelemetryConstants.Attributes.ShapeType, metadata.Type);
-            activity.SetTag(OrchardCoreTelemetryConstants.Attributes.TenantName, tenantName);
+            activity.SetTag(OrchardCoreTelemetryConstants.Attributes.TenantName, ShellScope.Context?.Settings.Name);
             activity.SetTag(OrchardCoreTelemetryConstants.Attributes.ShapeBinding, binding?.BindingName);
             activity.SetTag(OrchardCoreTelemetryConstants.Attributes.ShapeBindingSource, binding?.BindingSource);
         }

@@ -7,9 +7,10 @@
     "tags": ["admin", "js"]
   },
   {
-    "action": "min",
-    "name": "spatial-leaflet-js",
-    "source": "Assets/js/coordinate-leaflet-field.js",
+    "action": "parcel",
+    "name": "spatial-leaflet-field",
+    "source": "Assets/ts/coordinate-leaflet-field.ts",
+    "dest": "wwwroot/Scripts/coordinate-leaflet-field/",
     "tags": ["admin", "js"]
   },
   {

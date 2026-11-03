@@ -1,0 +1,13 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Workflows.ViewModels
+
+@model ShapeViewModel<WorkflowEntry>
+
+@* On the page of every workflow's instances, the workflow of the instance comes first. *@
+@if (Model.Value.ShowWorkflowType && Model.Value.WorkflowType is not null)
+{
+    <a asp-controller="WorkflowType" asp-action="Edit" asp-route-id="@Model.Value.WorkflowType.Id" class="fw-semibold me-2" data-cy="instance-workflow">@Model.Value.WorkflowType.Name</a>
+}
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Details" asp-controller="Workflow" asp-route-id="@Model.Value.Workflow.Id">@Model.Value.Workflow.WorkflowId</a>

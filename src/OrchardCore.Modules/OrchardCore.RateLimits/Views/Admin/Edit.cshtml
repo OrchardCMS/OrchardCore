@@ -53,17 +53,18 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper mt-4">
-        <div class="ocat-end-offset">
-            @if (!Model.IsEnabled)
-            {
+    @if (!Model.IsEnabled)
+    {
+        <div class="ocat-wrapper mt-4">
+            <div class="ocat-end-offset">
                 <p class="mb-3">@T["This policy is disabled. You can save changes without restarting the website. Enable it from the policies list when it is ready to publish."]</p>
-            }
-            <div class="d-flex gap-1 flex-wrap">
-                <button class="btn btn-primary" type="submit">@T["Save"]</button>
-                <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
             </div>
         </div>
+    }
+
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
     </div>
 </form>
 

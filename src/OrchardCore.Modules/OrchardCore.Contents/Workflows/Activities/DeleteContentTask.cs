@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -7,20 +8,21 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class DeleteContentTask : ContentTask
+public class DeleteContentTask : ContentTask, IActivityDescription
 {
     public DeleteContentTask(IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<DeleteContentTask> localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
     public override string Name => nameof(DeleteContentTask);
 
-    public override LocalizedString DisplayText => S["Delete Content Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DeleteContentTask>("Delete Content Task");
 
-    public override LocalizedString Category => S["Content"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Deleted"], S["Noop"]);

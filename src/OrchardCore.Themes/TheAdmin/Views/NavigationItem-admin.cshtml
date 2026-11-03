@@ -1,33 +1,45 @@
+@using OrchardCore.DisplayManagement
 @using OrchardCore.Localization
 @using OrchardCore.Navigation
 @{
-    TagBuilder li = Tag(Model, "li");
+    // The shape is used through its static type, as it is rendered for each menu item, falling back to
+    // dynamic accesses for shapes that are not navigation items.
+    var shape = (IShape)Model;
+    var navigationItem = shape as NavigationItemViewModel;
 
-    var level = (int)Model.Level;
-    var hasItems = (bool)Model.HasItems;
-    var isSelected = (bool)Model.Selected;
+    TagBuilder li = Tag(shape, "li");
+
+    var level = navigationItem?.Level ?? (int)Model.Level;
+    var hasItems = navigationItem?.HasItems ?? (bool)Model.HasItems;
+    var isSelected = navigationItem?.Selected ?? (bool)Model.Selected;
 
     // A group is a first level item holding children. Nothing is expanded when the menu is
     // rendered, the script restores what the user last left open.
     var isGroup = level == 1 && hasItems;
 
     // Morphing the shape to keep Model untouched.
-    Model.Metadata.Alternates.Clear();
-    Model.Metadata.Type = "NavigationItemLink";
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "NavigationItemLink";
 
-    if (Model.Id != null)
+    if (shape.Id != null)
     {
-        Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
+        shape.Metadata.Alternates.Add("NavigationItemLink_Id__" + shape.Id);
     }
 
     // Extract classes that are not icons from 'Model.Classes'.
-    var notIconClasses = ((IEnumerable<string>)Model.Classes)
-        .Where(c => !c.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
-        .ToArray();
+    string notIconClasses = null;
 
-    if (notIconClasses.Length > 0)
+    foreach (var className in shape.Classes)
     {
-        li.Attributes["class"] = string.Join(' ', notIconClasses);
+        if (!className.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            notIconClasses = notIconClasses is null ? className : notIconClasses + " " + className;
+        }
+    }
+
+    if (notIconClasses is not null)
+    {
+        li.Attributes["class"] = notIconClasses;
     }
     else
     {
@@ -66,18 +78,18 @@
     {
         li.AddCssClass("has-items");
 
-        if (li.Attributes.Where(a => a.Key == "id").Any())
+        if (li.Attributes.ContainsKey("id"))
         {
             figure.Attributes["aria-labelledby"] = li.Attributes["id"];
             figCaption.Attributes["id"] = li.Attributes["id"];
             li.Attributes["id"] = null;
         }
 
-        var targetId = "m" + (string)Model.Hash;
+        var targetId = "m" + (navigationItem is not null ? navigationItem.Hash : (string)Model.Hash);
 
         var ul = new TagBuilder("ul");
         ul.Attributes["id"] = targetId;
-        ul.Attributes["data-title"] = Model.Text.ToString();
+        ul.Attributes["data-title"] = navigationItem is not null ? navigationItem.Text.ToString() : Model.Text.ToString();
         ul.AddCssClass("collapse");
 
         if (isGroup)
@@ -85,16 +97,16 @@
             ul.AddCssClass("nav-group-items");
         }
 
-        foreach (var item in Model)
+        foreach (var item in shape.Items)
         {
             ul.InnerHtml.AppendHtml(await DisplayAsync(item));
         }
 
-        figCaption.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        figCaption.InnerHtml.AppendHtml(await DisplayAsync(shape));
 
         // When the item links to a real page, the label navigates and a dedicated button
         // toggles its children, so both actions stay available.
-        var href = Model.Href?.ToString();
+        var href = navigationItem is not null ? navigationItem.Href : Model.Href?.ToString();
 
         if (!string.IsNullOrEmpty(href) && href != "#")
         {
@@ -104,7 +116,7 @@
             toggle.Attributes["data-bs-target"] = "#" + targetId;
             toggle.Attributes["aria-controls"] = targetId;
             toggle.Attributes["aria-expanded"] = "false";
-            toggle.Attributes["aria-label"] = T.GetString("Toggle {0}", Model.Text.ToString());
+            toggle.Attributes["aria-label"] = T.GetString("Toggle {0}", navigationItem is not null ? navigationItem.Text.ToString() : Model.Text.ToString());
             toggle.AddCssClass("nav-toggle");
             toggle.InnerHtml.AppendHtml(Html.Raw("<i class=\"fa-solid fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " chevron\" aria-hidden=\"true\"></i>"));
 
@@ -116,7 +128,7 @@
     }
     else
     {
-        figCaption.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        figCaption.InnerHtml.AppendHtml(await DisplayAsync(shape));
         figure.InnerHtml.AppendHtml(figCaption);
     }
 

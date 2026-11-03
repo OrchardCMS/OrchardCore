@@ -1,0 +1,55 @@
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Features.Models
+
+@model ShapeViewModel<FeatureEntry>
+
+@{
+    var entry = Model.Value;
+    var feature = entry.Feature;
+    var featureId = feature.Descriptor.Id;
+    var featureName = feature.Descriptor.Name;
+}
+
+@if (feature.Descriptor.EnabledByDependencyOnly)
+{
+    @* The feature follows its dependents, so the button is only there to show which state it is in. *@
+    if (feature.IsEnabled)
+    {
+        <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically enabled based on dependency and cannot be manually disabled."]">
+            <button type="button" class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
+        </span>
+    }
+    else
+    {
+        <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically disabled based on dependency and cannot be manually enabled."]">
+            <button type="button" class="btn btn-primary btn-sm" disabled>@T["Enable"]</button>
+        </span>
+    }
+}
+else if (feature.IsEnabled && entry.IsAlwaysEnabled)
+{
+    <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
+        <button type="button" class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
+    </span>
+}
+else
+{
+    if (entry.CanEnable && !feature.IsEnabled)
+    {
+        <a id="btn-enable-@Html.GenerateIdFromName(featureId)" asp-action="Enable" asp-controller="Admin" asp-route-id="@featureId" asp-route-tenant="@entry.Tenant" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
+    }
+
+    if (entry.CanDisable && feature.IsEnabled)
+    {
+        var confirmationMessage = T["Are you sure you want to disable the {0} feature? Continue?", featureName];
+
+        if (feature.EnabledDependentFeatures.Any())
+        {
+            var enabledDependentFeatures = new HtmlString($"<ul>{string.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
+            confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", featureName, enabledDependentFeatures];
+        }
+
+        <a id="btn-disable-@Html.GenerateIdFromName(featureId)" asp-action="Disable" asp-controller="Admin" asp-route-id="@featureId" asp-route-tenant="@entry.Tenant" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+    }
+}

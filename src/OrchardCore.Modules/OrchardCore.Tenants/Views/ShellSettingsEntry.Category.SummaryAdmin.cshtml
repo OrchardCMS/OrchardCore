@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@if (!string.IsNullOrEmpty(Model.Value.Category))
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Category"]">
+        <i class="fa-solid fa-tag text-info" aria-hidden="true"></i> @Model.Value.Category
+    </span>
+}

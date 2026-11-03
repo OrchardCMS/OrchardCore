@@ -4,7 +4,7 @@
 @model GetUsersByRoleTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="OutputKeyName">
-    <label asp-for="OutputKeyName" class="ocat-label">@T["Output Key Name"]</label>
+    <label asp-for="OutputKeyName" class="ocat-label ocat-label-required">@T["Output Key Name"]</label>
     <div class="ocat-end">
     <input type="text" asp-for="OutputKeyName" class="form-control code" />
     <span asp-validation-for="OutputKeyName"></span>
@@ -13,7 +13,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="Roles">
-    <label asp-for="Roles" class="ocat-label">@T["Roles"]</label>
+    <label asp-for="Roles" class="ocat-label ocat-label-required">@T["Roles"]</label>
     <div class="ocat-end">
     @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { OrchardCoreConstants.Roles.Anonymous, OrchardCoreConstants.Roles.Authenticated } })
     <span asp-validation-for="Roles"></span>

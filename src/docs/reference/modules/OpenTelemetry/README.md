@@ -70,11 +70,11 @@ OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-{region}.grafana.net/otlp
 OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic%20{Base64 credentials}
 ```
 
-Prometheus and Mimir store the metrics with their names and attributes converted: dots become underscores, and the unit is added as a suffix, so `orchardcore.shape.render.duration` becomes `orchardcore_shape_render_duration_seconds`, with an `orchardcore_shape_type` label, and the `service.name` and `service.instance.id` resource attributes become the `job` and `instance` labels. For instance:
+Prometheus and Mimir store the metrics with their names and attributes converted: dots become underscores, and the unit is added as a suffix, so `orchardcore.display.shape.duration` becomes `orchardcore_display_shape_duration_seconds`, with an `orchardcore_shape_type` label, and the `service.name` and `service.instance.id` resource attributes become the `job` and `instance` labels. For instance:
 
 | Question | Query |
 | --- | --- |
-| Which shapes are the slowest? | `topk(10, histogram_quantile(0.95, sum by (le, orchardcore_shape_type) (rate(orchardcore_shape_render_duration_seconds_bucket[5m]))))` |
+| Which shapes are the slowest? | `topk(10, histogram_quantile(0.95, sum by (le, orchardcore_shape_type) (rate(orchardcore_display_shape_duration_seconds_bucket[5m]))))` |
 | Which routes run the most database operations? | `topk(10, histogram_quantile(0.95, sum by (le, http_route) (rate(orchardcore_request_db_operations_bucket[5m]))))` |
 | How fast does each tenant respond? | `histogram_quantile(0.95, sum by (le, orchardcore_tenant_name) (rate(http_server_request_duration_seconds_bucket[5m])))` |
 | How much memory does each instance use? | `sum by (instance) (dotnet_process_memory_working_set_bytes)` |
@@ -179,7 +179,8 @@ The metrics of Orchard Core come from the `OrchardCore` meter:
 | `orchardcore.tenant.activation.duration` | Histogram | `s` | `orchardcore.tenant.name`, `error.type` | Duration of activating a tenant. |
 | `orchardcore.tenant.releases` | Counter | `{release}` | `orchardcore.tenant.name`, `orchardcore.tenant.release.reason` | Number of times a tenant was released: `reload`, `release` or `remove`. |
 | `orchardcore.background_task.duration` | Histogram | `s` | `orchardcore.tenant.name`, `orchardcore.background_task.name`, `error.type` | Duration of running a background task. |
-| `orchardcore.shape.render.duration` | Histogram | `s` | `orchardcore.tenant.name`, `orchardcore.shape.type` | Duration of rendering a shape, including the shapes it renders. |
+| `orchardcore.display.shape.duration` | Histogram | `s` | `orchardcore.shape.type` | Duration of rendering a shape, including the shapes it renders. Only collected when the `OrchardCore.DisplayManagement` meter is added, see below. |
+| `orchardcore.display.shapes_rendered` | Counter | `{shape}` | | Number of shapes rendered. Only collected when the `OrchardCore.DisplayManagement` meter is added, see below. |
 | `orchardcore.shape.cache.lookups` | Counter | `{lookup}` | `orchardcore.tenant.name`, `orchardcore.shape.type`, `orchardcore.shape.cache.result` | Number of lookups of the content of a cached shape: `hit` or `miss`. Only recorded when the Dynamic Cache feature is enabled. |
 | `db.client.operation.duration` | Histogram | `s` | `db.system.name`, `db.operation.name`, `orchardcore.tenant.name`, `error.type` | Duration of a database command, as defined by the OpenTelemetry semantic conventions. |
 | `orchardcore.request.db.operations` | Histogram | `{operation}` | `orchardcore.tenant.name`, `http.route` | Number of database operations run by an HTTP request. A route running many of them reveals an N+1 query pattern. |

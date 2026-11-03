@@ -15,7 +15,7 @@
     <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control html-monaco-editor-container" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Html" hidden class="html-monaco-editor-value">@Html.Raw(Model.Html)</textarea>
+        <textarea asp-for="Html" hidden class="html-monaco-editor-value"></textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))

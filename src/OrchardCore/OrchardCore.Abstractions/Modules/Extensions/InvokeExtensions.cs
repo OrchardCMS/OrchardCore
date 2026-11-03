@@ -30,6 +30,26 @@ public static class InvokeExtensions
     /// </summary>
     public static void Invoke<TEvents, T1>(this IEnumerable<TEvents> events, Action<TEvents, T1> dispatch, T1 arg1, ILogger logger)
     {
+        // Services resolved as an 'IEnumerable<T>' are arrays, iterating lists by index doesn't allocate an enumerator.
+        if (events is IList<TEvents> list)
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                var sink = list[i];
+
+                try
+                {
+                    dispatch(sink, arg1);
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                }
+            }
+
+            return;
+        }
+
         foreach (var sink in events)
         {
             try
@@ -168,6 +188,12 @@ public static class InvokeExtensions
 
     private static Task InvokeAsyncCore<TEvents, TState>(IEnumerable<TEvents> events, TState state, Func<TEvents, TState, Task> dispatch, ILogger logger)
     {
+        // Services resolved as an 'IEnumerable<T>' are arrays, iterating lists by index doesn't allocate an enumerator.
+        if (events is IList<TEvents> list)
+        {
+            return InvokeListAsyncCore(list, state, dispatch, logger);
+        }
+
         var enumerator = events.GetEnumerator();
         var disposeEnumerator = true;
 
@@ -233,6 +259,62 @@ public static class InvokeExtensions
                     {
                         ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
                     }
+                }
+            }
+        }
+    }
+
+    private static Task InvokeListAsyncCore<TEvents, TState>(IList<TEvents> events, TState state, Func<TEvents, TState, Task> dispatch, ILogger logger)
+    {
+        for (var i = 0; i < events.Count; i++)
+        {
+            var sink = events[i];
+
+            try
+            {
+                var task = dispatch(sink, state);
+
+                if (!task.IsCompletedSuccessfully)
+                {
+                    return InvokeListAsyncAwaited(events, i, task, state, dispatch, logger);
+                }
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+            }
+        }
+
+        return Task.CompletedTask;
+
+        static async Task InvokeListAsyncAwaited(IList<TEvents> events, int index, Task task, TState state, Func<TEvents, TState, Task> dispatch, ILogger logger)
+        {
+            while (true)
+            {
+                try
+                {
+                    await task;
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    ex.LogException(logger, typeof(TEvents), events[index].GetType().FullName);
+                }
+
+                if (++index >= events.Count)
+                {
+                    return;
+                }
+
+                var sink = events[index];
+
+                try
+                {
+                    task = dispatch(sink, state);
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    task = Task.CompletedTask;
+                    ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
                 }
             }
         }

@@ -1,0 +1,64 @@
+@model SendByEmailStepViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="To">
+    <label asp-for="To" class="ocat-label ocat-label-required">@T["To"]</label>
+    <div class="ocat-end">
+        <input asp-for="To" class="form-control" placeholder="ada@example.com; bob@example.com" />
+        <span asp-validation-for="To"></span>
+        <span class="hint">@T["Email addresses, separated by commas or semicolons."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Cc">
+    <label asp-for="Cc" class="ocat-label">@T["Cc"]</label>
+    <div class="ocat-end">
+        <input asp-for="Cc" class="form-control" />
+        <span asp-validation-for="Cc"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Bcc">
+    <label asp-for="Bcc" class="ocat-label">@T["Bcc"]</label>
+    <div class="ocat-end">
+        <input asp-for="Bcc" class="form-control" />
+        <span asp-validation-for="Bcc"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Subject" class="ocat-label">@T["Subject"]</label>
+    <div class="ocat-end">
+        <input asp-for="Subject" class="form-control" placeholder="{PipelineName} - {Date:yyyy-MM-dd}" />
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Body" class="ocat-label">@T["Body"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Body" class="form-control" rows="5"></textarea>
+        <span class="hint">@T["Placeholders of the subject and the body: {0}, {1}, {2}, and {3}, the names of the attached files.", "{PipelineName}", "{RunId}", "{Date:format}", SendByEmailStep.FileNamesPlaceholder]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IsHtmlBody" />
+            <label class="form-check-label" asp-for="IsHtmlBody">@T["The body is HTML"]</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="SendWhenEmpty" />
+            <label class="form-check-label" asp-for="SendWhenEmpty">@T["Send the email when there are no files to attach"]</label>
+            <span class="hint dashed">@T["By default, no email is sent when the step receives no files."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="MaxAttachmentSizeMegabytes">
+    <label asp-for="MaxAttachmentSizeMegabytes" class="ocat-label">@T["Maximum size (MB)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="MaxAttachmentSizeMegabytes" type="number" min="1" class="form-control" />
+        <span asp-validation-for="MaxAttachmentSizeMegabytes"></span>
+        <span class="hint">@T["The step fails when the attachments weigh more. Most mail servers refuse emails larger than 10 to 25 MB."]</span>
+    </div>
+</div>

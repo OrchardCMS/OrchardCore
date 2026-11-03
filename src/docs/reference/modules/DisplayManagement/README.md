@@ -118,6 +118,29 @@ When enabled, rendered shapes are wrapped with comments similar to the following
 
 The start comment contains the shape type and the binding that was used. Razor bindings report the `.cshtml` path, while Liquid bindings report a virtual `.liquid` source.
 
+### Shape rendering telemetry
+
+The rendering of shapes emits traces and metrics, to find which shapes take time on a page. They are emitted with the standard .NET APIs, so they can be collected by OpenTelemetry, `dotnet-counters`, `dotnet-trace`, or any other listener. When nothing listens, rendering a shape only checks whether something listens.
+
+| Source | Name | Description |
+| --- | --- | --- |
+| `ActivitySource` | `OrchardCore.DisplayManagement` | An activity named `Render shape` for each rendered shape, displayed as `Render shape {type}`, with the `orchardcore.shape.type` and `orchardcore.shape.binding` (the template or the code that rendered it) tags. Activities of nested shapes are children of the activity of their parent shape. |
+| `Meter` | `OrchardCore.DisplayManagement` | The `orchardcore.display.shapes_rendered` counter of the rendered shapes, and the `orchardcore.display.shape.duration` histogram of the rendering durations in seconds, including their child shapes, tagged with `orchardcore.shape.type`. |
+
+As a page can render hundreds of shapes, these sources are not collected unless they are added explicitly. For instance, with OpenTelemetry:
+
+```csharp
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing.AddSource(DisplayManagementDiagnostics.ActivitySourceName))
+    .WithMetrics(metrics => metrics.AddMeter(DisplayManagementDiagnostics.MeterName));
+```
+
+Or to watch the number of rendered shapes and the slowest shape types of a running application:
+
+```bash
+dotnet-counters monitor --name OrchardCore.Cms.Web --counters OrchardCore.DisplayManagement
+```
+
 ### Date Time shapes
 
 #### `DateTime`

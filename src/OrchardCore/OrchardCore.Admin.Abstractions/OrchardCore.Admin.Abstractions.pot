@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Admin.Abstractions\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminPermissions.cs
+msgctxt "OrchardCore.Admin.AdminPermissions"
+msgid "Access admin panel"
+msgstr ""
+
+#: AdminPermissions.cs
+msgctxt "OrchardCore.Admin.AdminPermissions"
+msgid "Manage Admin Settings"
+msgstr ""

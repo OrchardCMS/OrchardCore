@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -12,10 +13,16 @@ public abstract class UserActivity : Activity
 {
     protected readonly IStringLocalizer S;
 
-    protected UserActivity(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
+    /// <summary>
+    /// Gets the factory that translates the <see cref="LocalizationSource"/> descriptions of the activity.
+    /// </summary>
+    protected IStringLocalizerFactory LocalizerFactory { get; }
+
+    protected UserActivity(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer localizer)
     {
         UserService = userService;
         ScriptEvaluator = scriptEvaluator;
+        LocalizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -23,7 +30,9 @@ public abstract class UserActivity : Activity
 
     protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
-    public override LocalizedString Category => S["User"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.User;
+
+    public override LocalizedString Category => LocalizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// An expression that evaluates to an <see cref="User"/> item.

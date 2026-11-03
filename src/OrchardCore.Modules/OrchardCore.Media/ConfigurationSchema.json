@@ -51,6 +51,7 @@
                 ".odt",
                 ".xls",
                 ".xlsx",
+                ".csv",
                 ".psd",
                 ".mp3",
                 ".m4a",
@@ -151,6 +152,11 @@
               "type": "string",
               "description": "The lifetime of the temporary files created during uploads, as a TimeSpan in the 'hh:mm:ss' or 'd.hh:mm:ss' format.",
               "default": "01:00:00"
+            },
+            "DisableThumbnails": {
+              "type": "boolean",
+              "description": "Disables the thumbnails (grid) view in the media gallery and the media pickers, e.g. for security or performance reasons. When enabled, they always use the list view and hide the grid/list toggle.",
+              "default": false
             },
             "Slugify": {
               "type": "object",

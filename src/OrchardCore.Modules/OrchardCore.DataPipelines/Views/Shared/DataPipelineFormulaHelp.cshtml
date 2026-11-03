@@ -1,0 +1,53 @@
+@using OrchardCore.DataSources.Expressions
+@inject IExpressionFunctionCatalog FunctionCatalog
+@model string
+
+@*
+    The functions a formula can call, from the catalog the built-in functions and the modules fill. Clicking one inserts
+    it into the formula whose id is the model, or into the formula of the editor that last had the focus.
+*@
+@{
+    // The formulas of steps read one row at a time, so they can't aggregate.
+    var categories = FunctionCatalog.Functions
+        .Where(function => !function.IsAggregate)
+        .GroupBy(function => function.Category)
+        .ToList();
+    var count = categories.Sum(category => category.Count());
+}
+
+<details class="dp-functions mt-2" data-dp-functions>
+    <summary class="small">@T["Functions and operators ({0})", count]</summary>
+    <div class="border rounded p-2 mt-1">
+        <ul class="small mb-2 ps-3">
+            <li>@T["Refer to a field with its name in square brackets: {0}.", "[Price]"]</li>
+            <li>@T["Text goes in quotes: {0}. Join text with {1}.", "'CA'", "&"]</li>
+            <li>@T["Operators: {0}.", "+ - * / % = <> < <= > >= AND OR NOT"]</li>
+        </ul>
+        <input type="search" class="form-control form-control-sm mb-2" placeholder="@T["Search the functions"]" aria-label="@T["Search the functions"]" data-dp-function-search />
+        <div class="overflow-auto" style="max-height: 16rem">
+            @foreach (var category in categories)
+            {
+                <div data-dp-function-category>
+                    <div class="small fw-semibold text-body-secondary mt-1">@T[category.Key]</div>
+                    <div class="list-group list-group-flush">
+                        @foreach (var function in category)
+                        {
+                            <button type="button"
+                                    class="list-group-item list-group-item-action py-1 px-2"
+                                    data-dp-insert-function="@function.Name"
+                                    data-dp-target="@Model"
+                                    data-dp-search-text="@($"{function.Name} {function.Signature} {T[function.Description ?? string.Empty].Value}".ToLowerInvariant())">
+                                <code>@function.Signature</code>
+                                @if (!string.IsNullOrEmpty(function.Description))
+                                {
+                                    <span class="d-block text-body-secondary small">@T[function.Description]</span>
+                                }
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+            <div class="small text-body-secondary" data-dp-function-empty hidden>@T["No function matches the search."]</div>
+        </div>
+    </div>
+</details>

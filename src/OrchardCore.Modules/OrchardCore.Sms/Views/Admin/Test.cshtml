@@ -14,7 +14,7 @@
 <form method="post">
 
     <div class="ocat-wrapper">
-        <label asp-for="Provider" class="ocat-label">@T["Provider"]</label>
+        <label asp-for="Provider" class="ocat-label ocat-label-required">@T["Provider"]</label>
         <div class="ocat-end">
             <select class="form-select" asp-for="Provider" asp-items="Model.Providers">
                 <option value="">@T["Select a provider"]</option>
@@ -23,17 +23,15 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="PhoneNumber">
-        <label asp-for="PhoneNumber" class="ocat-label">@T["Phone Number"]</label>
+        <label asp-for="PhoneNumber" class="ocat-label ocat-label-required">@T["Phone Number"]</label>
         <div class="ocat-end">
             <input asp-for="PhoneNumber" class="form-control" type="tel" />
             <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
         </div>
     </div>
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button type="submit" class="btn btn-primary">@T["Send"]</button>
-        </div>
+    <div class="action-bar-bottom">
+        <button type="submit" class="btn btn-primary">@T["Send"]</button>
     </div>
 
 </form>

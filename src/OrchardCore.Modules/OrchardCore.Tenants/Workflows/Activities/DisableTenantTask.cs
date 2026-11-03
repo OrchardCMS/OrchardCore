@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -8,17 +9,17 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tenants.Workflows.Activities;
 
-public class DisableTenantTask : TenantTask
+public class DisableTenantTask : TenantTask, IActivityDescription
 {
-    public DisableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DisableTenantTask> localizer)
-        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
+    public DisableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<DisableTenantTask> localizer)
+        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizerFactory, localizer)
     {
     }
     public override string Name => nameof(DisableTenantTask);
 
-    public override LocalizedString Category => S["Tenant"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DisableTenantTask>("Disable Tenant Task");
 
-    public override LocalizedString DisplayText => S["Disable Tenant Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Disabled"], S["Failed"]);

@@ -17,6 +17,7 @@ public static class StringLocalizerFactoryExtensions
     /// The translated string, or the source value when no source type is provided.
     /// Returns <see langword="null"/> when <paramref name="source"/> is <see langword="null"/>.
     /// </returns>
+    [SkipLocalizationExtraction]
     public static LocalizedString Localize(this IStringLocalizerFactory factory, LocalizationSource source, params object[] arguments)
     {
         ArgumentNullException.ThrowIfNull(factory);

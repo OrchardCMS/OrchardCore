@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Telemetry;
 public class ShapeTelemetryTests
 {
     [Fact]
-    public void Record_SlowerThanThreshold_TracesShapeFromItsStart()
+    public void RecordSlow_SlowerThanThreshold_TracesShapeFromItsStart()
     {
         var shapeType = $"SlowShape{Guid.NewGuid():n}";
         var activities = new ConcurrentQueue<Activity>();
@@ -24,9 +24,7 @@ public class ShapeTelemetryTests
 
         var metadata = new ShapeMetadata { Type = shapeType };
         var binding = new ShapeBinding { BindingName = shapeType + "__Alternate", BindingSource = "Views/SlowShape.cshtml" };
-        var startTimestamp = Stopwatch.GetTimestamp() - (long)(Stopwatch.Frequency * 0.2);
-
-        ShapeTelemetry.Record(metadata, binding, startTimestamp, TimeSpan.FromMilliseconds(100));
+        ShapeTelemetry.RecordSlow(metadata, binding, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(100));
 
         var activity = Assert.Single(activities, activity => activity.GetTagItem(OrchardCoreTelemetryConstants.Attributes.ShapeType) as string == shapeType);
         Assert.Equal($"Render shape {shapeType}", activity.DisplayName);
@@ -36,47 +34,15 @@ public class ShapeTelemetryTests
     }
 
     [Fact]
-    public void Record_FasterThanThreshold_DoesNotTraceShape()
+    public void RecordSlow_FasterThanThreshold_DoesNotTraceShape()
     {
         var shapeType = $"FastShape{Guid.NewGuid():n}";
         var activities = new ConcurrentQueue<Activity>();
         using var listener = ListenToOrchardCore(activities);
 
-        ShapeTelemetry.Record(new ShapeMetadata { Type = shapeType }, binding: null, Stopwatch.GetTimestamp(), TimeSpan.FromSeconds(1));
+        ShapeTelemetry.RecordSlow(new ShapeMetadata { Type = shapeType }, binding: null, TimeSpan.FromMilliseconds(1), TimeSpan.FromSeconds(1));
 
         Assert.DoesNotContain(activities, activity => activity.GetTagItem(OrchardCoreTelemetryConstants.Attributes.ShapeType) as string == shapeType);
-    }
-
-    [Fact]
-    public async Task RenderPage_WithMeterListener_MeasuresShapesOfTenant()
-    {
-        var measurements = new ConcurrentQueue<(string ShapeType, string Tenant)>();
-        using var meterListener = new MeterListener
-        {
-            InstrumentPublished = (instrument, listener) =>
-            {
-                if (instrument.Meter.Name == OrchardCoreTelemetryConstants.MeterName &&
-                    instrument.Name == OrchardCoreTelemetryConstants.Instruments.ShapeRenderDuration)
-                {
-                    listener.EnableMeasurementEvents(instrument);
-                }
-            },
-        };
-        meterListener.SetMeasurementEventCallback<double>((_, _, tags, _) =>
-        {
-            var values = ToDictionary(tags);
-            measurements.Enqueue((values.GetValueOrDefault(OrchardCoreTelemetryConstants.Attributes.ShapeType) as string,
-                values.GetValueOrDefault(OrchardCoreTelemetryConstants.Attributes.TenantName) as string));
-        });
-        meterListener.Start();
-
-        using var context = new SiteContext();
-        await context.InitializeAsync();
-
-        var response = await context.Client.GetAsync(string.Empty, TestContext.Current.CancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        Assert.Contains(("Layout", context.TenantName), measurements);
     }
 
     [Theory]

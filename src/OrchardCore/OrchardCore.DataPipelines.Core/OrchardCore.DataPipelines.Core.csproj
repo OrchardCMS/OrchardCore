@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.DataPipelines</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Data Pipelines Core</Title>
+    <Description>$(OCCMSDescription)
+
+      The engine that checks and runs data pipelines: it streams batches of rows between steps, runs the steps in
+      parallel, and previews a pipeline step by step.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS DataPipelines ETL</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.DataPipelines.Abstractions\OrchardCore.DataPipelines.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.DataSources.Core\OrchardCore.DataSources.Core.csproj" />
+  </ItemGroup>
+
+</Project>

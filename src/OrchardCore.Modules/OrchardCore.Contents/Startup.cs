@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -11,6 +12,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Routing;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
@@ -72,6 +74,7 @@ public sealed class Startup : StartupBase
         services.Configure<TemplateOptions>(o =>
         {
             o.MemberAccessStrategy.Register<ContentItem>();
+            o.MemberAccessStrategy.Register<ContentEventContext>();
             o.MemberAccessStrategy.Register<ContentElement>();
             o.MemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
             o.MemberAccessStrategy.Register<ContentTypePartDefinition>();
@@ -149,6 +152,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
+        services.AddScoped<IAdminListItemDisplayManager<ContentItem>, ContentItemAdminListDisplayManager>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();
 
@@ -211,6 +215,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

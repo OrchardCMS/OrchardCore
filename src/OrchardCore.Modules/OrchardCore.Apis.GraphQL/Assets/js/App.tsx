@@ -54,7 +54,7 @@ function App() {
             query: getIntrospectionQuery()
         }).then(result => {
             setSchema(buildClientSchema(result.data as IntrospectionQuery));
-        });
+        }).catch(error => console.error('Failed to load the GraphQL schema.', error));
     }, []);
 
     function handleEditQuery(query: string) {

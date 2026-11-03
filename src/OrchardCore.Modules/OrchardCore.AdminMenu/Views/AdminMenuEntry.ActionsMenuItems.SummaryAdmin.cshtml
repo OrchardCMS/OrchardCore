@@ -1,0 +1,7 @@
+@using OrchardCore.AdminMenu.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<AdminMenuEntry>
+
+@* A bare item, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
+<a asp-controller="Menu" asp-action="Toggle" asp-route-id="@Model.Value.AdminMenu.Id" class="dropdown-item" data-url-af="UnsafeUrl">@(Model.Value.AdminMenu.Enabled ? T["Disable"] : T["Enable"])</a>

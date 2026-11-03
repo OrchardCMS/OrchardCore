@@ -1,0 +1,26 @@
+@model OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEventViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="PipelineId" class="ocat-label">@T["Data pipeline"]</label>
+    <div class="ocat-end">
+        <select asp-for="PipelineId" class="form-select">
+            <option value="">@T["Any data pipeline"]</option>
+            @foreach (var (pipelineId, name) in Model.Pipelines)
+            {
+                <option value="@pipelineId" selected="@(pipelineId == Model.PipelineId)">@name</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Status" class="ocat-label">@T["Runs"]</label>
+    <div class="ocat-end">
+        <select asp-for="Status" class="form-select">
+            <option value="">@T["Every run"]</option>
+            <option value="Succeeded">@T["Runs that succeeded"]</option>
+            <option value="Failed">@T["Runs that failed or were cancelled"]</option>
+        </select>
+        <span class="hint">@T["The run is the last result: its RunId, PipelineName, Status, Error, Deliveries and Steps."]</span>
+    </div>
+</div>

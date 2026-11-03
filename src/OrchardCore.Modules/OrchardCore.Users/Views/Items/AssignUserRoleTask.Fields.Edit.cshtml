@@ -2,7 +2,7 @@
 @model AssignUserRoleTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="UserName">
-    <label asp-for="UserName" class="ocat-label">@T["UserName"]</label>
+    <label asp-for="UserName" class="ocat-label ocat-label-required">@T["UserName"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="UserName" class="form-control code" />
         <span asp-validation-for="UserName"></span>
@@ -11,7 +11,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="RoleName">
-    <label asp-for="RoleName" class="ocat-label">@T["RoleName"]</label>
+    <label asp-for="RoleName" class="ocat-label ocat-label-required">@T["RoleName"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="RoleName" class="form-control code" />
         <span asp-validation-for="RoleName"></span>

@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Templates.ViewModels
+
+@model ShapeViewModel<TemplateEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Edit"
+   asp-controller="Template"
+   asp-route-name="@Model.Value.Name"
+   asp-route-admintemplates="@Model.Value.AdminTemplates"
+   asp-route-returnUrl="@FullRequestPath">@Model.Value.Name</a>
