@@ -15,7 +15,8 @@ internal sealed partial class CliApplication
     private static readonly TimeSpan ManifestTtl = TimeSpan.FromMinutes(5);
     private static readonly TimeSpan OpenApiTtl = TimeSpan.FromMinutes(30);
     private static readonly TimeSpan DocumentationTtl = TimeSpan.FromHours(12);
-    private static readonly Uri DocumentationIndexUri = new("https://docs.orchardcore.net/en/latest/search/search_index.json");
+    private const string DocumentationIndexSuffix = "search/search_index.json";
+    private static readonly Uri _defaultDocumentationIndexUri = new("https://docs.orchardcore.net/en/latest/" + DocumentationIndexSuffix);
     private const string EnvironmentClientIdVariable = "OC_CLIENT_ID";
     private const string EnvironmentClientSecretVariable = "OC_CLIENT_SECRET";
     private const string EnvironmentContextVariable = "OC_CONTEXT";
@@ -781,10 +782,11 @@ internal sealed partial class CliApplication
 
         command.SetAction(async (parseResult, cancellationToken) =>
         {
-            var result = await RefreshDocumentationAsync(parseResult.GetValue(forceOption), allowStale: true, cancellationToken);
+            var indexUri = GetDocumentationIndexUri(parseResult);
+            var result = await RefreshDocumentationAsync(indexUri, parseResult.GetValue(forceOption), allowStale: true, cancellationToken);
             var output = new JsonObject
             {
-                ["url"] = DocumentationIndexUri.AbsoluteUri,
+                ["url"] = indexUri.AbsoluteUri,
                 ["fromCache"] = result.FromCache,
                 ["stale"] = result.IsStale,
             };
@@ -802,8 +804,9 @@ internal sealed partial class CliApplication
 
         command.SetAction(async (parseResult, cancellationToken) =>
         {
-            var documentation = await RefreshDocumentationAsync(force: false, allowStale: true, cancellationToken);
-            var output = DocumentationService.Search(CliUtilities.ParseDocumentationIndex(documentation.CacheRecord.Content), GetDocumentationBaseUri(), parseResult.GetValue(queryArgument) ?? throw new CliException("A query is required."));
+            var indexUri = GetDocumentationIndexUri(parseResult);
+            var documentation = await RefreshDocumentationAsync(indexUri, force: false, allowStale: true, cancellationToken);
+            var output = DocumentationService.Search(CliUtilities.ParseDocumentationIndex(documentation.CacheRecord.Content), GetDocumentationBaseUri(indexUri), parseResult.GetValue(queryArgument) ?? throw new CliException("A query is required."));
             return await WriteOutputAsync(
                 parseResult,
                 CliUtilities.ToJsonElement(output, CliJsonContext.Default.DocumentationSearchOutput),
@@ -826,8 +829,9 @@ internal sealed partial class CliApplication
 
         command.SetAction(async (parseResult, cancellationToken) =>
         {
-            var documentation = await RefreshDocumentationAsync(force: false, allowStale: true, cancellationToken);
-            var output = DocumentationService.Show(CliUtilities.ParseDocumentationIndex(documentation.CacheRecord.Content), GetDocumentationBaseUri(), parseResult.GetValue(selectorArgument) ?? throw new CliException("A selector is required."));
+            var indexUri = GetDocumentationIndexUri(parseResult);
+            var documentation = await RefreshDocumentationAsync(indexUri, force: false, allowStale: true, cancellationToken);
+            var output = DocumentationService.Show(CliUtilities.ParseDocumentationIndex(documentation.CacheRecord.Content), GetDocumentationBaseUri(indexUri), parseResult.GetValue(selectorArgument) ?? throw new CliException("A selector is required."));
             return await WriteOutputAsync(parseResult, CliUtilities.ToJsonElement(output, CliJsonContext.Default.DocumentationShowOutput), cancellationToken);
         });
 
@@ -903,7 +907,7 @@ internal sealed partial class CliApplication
                 CurrentContext = currentContext?.Name,
                 HasManifestCache = currentContext is not null && await _cacheService.ReadAsync(currentContext.TenantUrl, CacheKind.Manifest, cancellationToken) is not null,
                 HasOpenApiCache = currentContext is not null && await _cacheService.ReadAsync(currentContext.TenantUrl, CacheKind.OpenApi, cancellationToken) is not null,
-                HasDocumentationCache = await _cacheService.ReadAsync(DocumentationIndexUri.AbsoluteUri, CacheKind.Documentation, cancellationToken) is not null,
+                HasDocumentationCache = await _cacheService.ReadAsync(GetDocumentationIndexUri(parseResult).AbsoluteUri, CacheKind.Documentation, cancellationToken) is not null,
                 LocalInstallSdk = sdk,
                 LocalInstallWarning = sdk is null
                     ? $"The .NET {DotnetEnvironment.RequiredMajor} SDK is required for 'pomi install'. Remote management commands do not require .NET."
@@ -1310,17 +1314,17 @@ internal sealed partial class CliApplication
         return result;
     }
 
-    private async Task<CachedContentResult> RefreshDocumentationAsync(bool force, bool allowStale, CancellationToken cancellationToken)
+    private async Task<CachedContentResult> RefreshDocumentationAsync(Uri indexUri, bool force, bool allowStale, CancellationToken cancellationToken)
     {
         var result = await _cacheService.GetOrRefreshAsync(
-            DocumentationIndexUri.AbsoluteUri,
+            indexUri.AbsoluteUri,
             CacheKind.Documentation,
-            DocumentationIndexUri,
+            indexUri,
             DocumentationTtl,
             force,
             async (eTag, token) =>
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, DocumentationIndexUri);
+                var request = new HttpRequestMessage(HttpMethod.Get, indexUri);
                 CacheService.AddIfNoneMatchHeader(request, eTag);
                 return await _httpClient.SendWithTimeoutAsync(request, _requestTimeout, token);
             },
@@ -2114,8 +2118,33 @@ internal sealed partial class CliApplication
             ? new Uri(context.ManagementManifestUrl, UriKind.Absolute)
             : new Uri(new Uri(context.TenantUrl, UriKind.Absolute), "api/management/manifest");
 
-    private static Uri GetDocumentationBaseUri() =>
-        new(DocumentationIndexUri.AbsoluteUri.Replace("search/search_index.json", string.Empty, StringComparison.Ordinal), UriKind.Absolute);
+    private Uri GetDocumentationIndexUri(ParseResult parseResult) =>
+        ResolveDocumentationIndexUri(ContextStore.FindContext(_configuration, parseResult.GetValue(_contextOption))?.DocumentationIndexUrl);
+
+    // The manifest of the tenant can name the documentation matching its version. Reading it sends no
+    // credentials, and an address that isn't a secure endpoint falls back to the public documentation.
+    internal static Uri ResolveDocumentationIndexUri(string? configuredUrl)
+    {
+        if (string.IsNullOrWhiteSpace(configuredUrl))
+        {
+            return _defaultDocumentationIndexUri;
+        }
+
+        try
+        {
+            return CliUriPolicy.RequireSecureEndpoint(configuredUrl);
+        }
+        catch (CliException)
+        {
+            return _defaultDocumentationIndexUri;
+        }
+    }
+
+    // MkDocs publishes the index under the root of the documentation. Elsewhere, assume it's next to the pages.
+    internal static Uri GetDocumentationBaseUri(Uri indexUri) =>
+        indexUri.AbsoluteUri.EndsWith(DocumentationIndexSuffix, StringComparison.Ordinal)
+            ? new Uri(indexUri.AbsoluteUri[..^DocumentationIndexSuffix.Length], UriKind.Absolute)
+            : new Uri(indexUri, ".");
 
     private async Task<RemoteManagementManifest> FetchBootstrapAsync(string tenantUrl, CancellationToken cancellationToken)
     {

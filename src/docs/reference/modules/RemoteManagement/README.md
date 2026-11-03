@@ -531,7 +531,9 @@ Generate shell completion with `pomi completion --shell bash|zsh|fish|pwsh`. The
 pomi api invoke GET /api/example
 ```
 
-The CLI maintains a local cache of the search index published by `docs.orchardcore.net`:
+The CLI maintains a local cache of the documentation search index that the manifest of the
+selected context names in `documentationIndexUrl`. Without a context, or when the manifest doesn't
+name a secure address, it uses the index published by `docs.orchardcore.net`:
 
 ```bash
 pomi docs update
