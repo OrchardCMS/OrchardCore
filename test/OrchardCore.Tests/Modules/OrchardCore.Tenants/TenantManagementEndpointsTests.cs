@@ -3,7 +3,9 @@ using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -113,6 +115,103 @@ public class TenantManagementEndpointsTests
 
         model.Description = "Different";
         Assert.False(TenantManagementEndpoints.MatchesCreateRequest(settings, model));
+    }
+
+    [Fact]
+    public async Task StopAsync_DefaultTenant_IsRejected()
+    {
+        var defaultSettings = new ShellSettings { Name = ShellSettings.DefaultShellName, State = TenantState.Running };
+        var shellHost = new Mock<IShellHost>();
+        shellHost.Setup(host => host.TryGetSettings(ShellSettings.DefaultShellName, out defaultSettings)).Returns(true);
+
+        var result = await TenantManagementEndpoints.StopAsync(
+            CreateHttpContext(),
+            ShellSettings.DefaultShellName,
+            shellHost.Object,
+            defaultSettings,
+            CreateAuthorizationService(),
+            Mock.Of<IDataProtectionProvider>(),
+            Mock.Of<IClock>(),
+            CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal(TenantState.Running, defaultSettings.State);
+        shellHost.Verify(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(null, "ProfileA,ProfileB")]
+    [InlineData(new string[0], "")]
+    [InlineData(new[] { "ProfileC" }, "ProfileC")]
+    public async Task UpdateAsync_FeatureProfiles_AreOnlyChangedWhenSupplied(string[] requested, string expected)
+    {
+        var tenantSettings = new ShellSettings { Name = "TenantA", State = TenantState.Running };
+        tenantSettings["FeatureProfile"] = "ProfileA,ProfileB";
+        var shellHost = new Mock<IShellHost>();
+        shellHost.Setup(host => host.TryGetSettings("TenantA", out tenantSettings)).Returns(true);
+        var shellSettingsManager = new Mock<IShellSettingsManager>();
+        shellSettingsManager.Setup(manager => manager.CreateDefaultSettings()).Returns(new ShellSettings());
+        var tenantValidator = new Mock<ITenantValidator>();
+        tenantValidator.Setup(validator => validator.ValidateAsync(It.IsAny<TenantModelBase>())).ReturnsAsync([]);
+
+        var result = await TenantManagementEndpoints.UpdateAsync(
+            CreateHttpContext(),
+            "TenantA",
+            new TenantManagementEndpoints.TenantUpdateRequest { FeatureProfiles = requested },
+            shellHost.Object,
+            new ShellSettings { Name = ShellSettings.DefaultShellName },
+            shellSettingsManager.Object,
+            CreateAuthorizationService(),
+            Mock.Of<IDataProtectionProvider>(),
+            Mock.Of<IClock>(),
+            [],
+            tenantValidator.Object,
+            new TenantDatabasePatternResolver(
+                new FluidParser(),
+                Options.Create(new global::OrchardCore.Tenants.TenantsOptions()),
+                Mock.Of<IStringLocalizer<TenantDatabasePatternResolver>>()),
+            CreateLocalizer(),
+            Mock.Of<ILogger<TenantApiController>>());
+
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal(expected, tenantSettings["FeatureProfile"]);
+    }
+
+    private static DefaultHttpContext CreateHttpContext()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddLocalization();
+        var httpContext = new DefaultHttpContext { RequestServices = services.BuildServiceProvider() };
+        httpContext.Request.Scheme = "https";
+        httpContext.Request.Host = new HostString("example.test");
+        return httpContext;
+    }
+
+    private static IAuthorizationService CreateAuthorizationService()
+    {
+        var authorizationService = new Mock<IAuthorizationService>();
+        authorizationService
+            .Setup(service => service.AuthorizeAsync(
+                It.IsAny<ClaimsPrincipal>(),
+                It.IsAny<object>(),
+                It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(AuthorizationResult.Success());
+
+        return authorizationService.Object;
+    }
+
+    private static IStringLocalizer<TenantApiController> CreateLocalizer()
+    {
+        var localizer = new Mock<IStringLocalizer<TenantApiController>>();
+        localizer
+            .Setup(value => value[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns<string, object[]>((name, _) => new LocalizedString(name, name));
+        localizer
+            .Setup(value => value[It.IsAny<string>()])
+            .Returns<string>(name => new LocalizedString(name, name));
+
+        return localizer.Object;
     }
 
     [Fact]

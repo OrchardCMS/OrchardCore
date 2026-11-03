@@ -467,6 +467,9 @@ internal static partial class TenantManagementEndpoints
         var apiModel = request.ToApiModel(shellSettings.Name);
         apiModel.ConnectionString = TenantConnectionStringRedactor.RestoreIfRedacted(shellSettings["ConnectionString"], apiModel.ConnectionString);
 
+        // Omitting the profiles must not silently lift the restrictions on the tenant.
+        apiModel.FeatureProfiles ??= ReadFeatureProfiles(shellSettings);
+
         ApplyConfiguredDatabasePatterns(apiModel, tenantDatabasePatternResolver);
         ApplyPresetDatabaseConfiguration(apiModel, shellSettingsManager, databaseProviders);
 
@@ -791,6 +794,11 @@ internal static partial class TenantManagementEndpoints
             return httpContext.ApiNotFoundProblem(detail: localizer["Tenant not found: '{0}'.", tenantName]);
         }
 
+        if (shellSettings.IsDefaultShell())
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["You cannot stop the Default tenant."]);
+        }
+
         if (!shellSettings.IsRunning())
         {
             if (shellSettings.IsDisabled())
@@ -1087,7 +1095,7 @@ internal static partial class TenantManagementEndpoints
         public string TablePrefix { get; init; }
         public string Schema { get; init; }
         public string RecipeName { get; init; }
-        public string[] FeatureProfiles { get; init; } = [];
+        public string[] FeatureProfiles { get; init; }
 
         public TenantApiModel ToApiModel(string name) => new()
         {

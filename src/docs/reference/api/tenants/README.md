@@ -561,7 +561,7 @@ as [tenant creation](#create-a-tenant). It is the first CLI argument, not a
 | `requestUrlPrefix` | string or null | No | Single URL path segment. Together with the host it must identify an available tenant route. |
 | `category` | string or null | No | Administrative category. |
 | `description` | string or null | No | Administrative description. |
-| `featureProfiles` | array of string | No | Assigned feature profiles; defaults to an empty array. |
+| `featureProfiles` | array of string | No | Assigned feature profiles; keeps the current ones when omitted. |
 | `databaseProvider` | string or null | No | Defaults to `Sqlite` when omitted. An explicit registered provider can be selected; host presets take precedence. |
 | `connectionString` | string or null | Provider-dependent | Database connection string; host presets take precedence. |
 | `tablePrefix` | string or null | Host-dependent | Table prefix; host requirements and patterns apply. |
@@ -710,8 +710,9 @@ Content-Type: application/json
 ```
 
 The path selects the tenant; its name cannot be changed. This is replacement
-semantics for the mutable settings: omitted strings become `null`, and omitted
-`featureProfiles` becomes an empty array.
+semantics for the mutable settings: omitted strings become `null`. Omitted
+`featureProfiles` keep their current value, so an update can't lift the
+restrictions on a tenant by accident; send an empty array to remove them.
 
 `description`, `category`, `requestUrlPrefix`, `requestUrlHost`, and
 `featureProfiles` are updated in every state. Database settings
@@ -866,6 +867,8 @@ curl --request POST 'https://cms.example.com/api/tenants/TenantA:start' \
 ```
 
 ## Stop a tenant
+
+The `Default` tenant cannot be stopped: it hosts this API and the admin UI for every other tenant, so the request returns `400 Bad Request`.
 
 ```http
 POST /api/tenants/{tenantName}:stop
