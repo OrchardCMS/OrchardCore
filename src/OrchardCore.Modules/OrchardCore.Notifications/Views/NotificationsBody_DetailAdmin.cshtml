@@ -11,7 +11,7 @@
 
 @if (!string.IsNullOrWhiteSpace(notification.Summary))
 {
-    <p class="lead">@Html.Raw(notification.Summary)</p>
+    <p class="lead">@Html.Raw(HtmlSanitizerService.Sanitize(notification.Summary))</p>
 }
 
 @if (!string.IsNullOrWhiteSpace(body?.HtmlBody))

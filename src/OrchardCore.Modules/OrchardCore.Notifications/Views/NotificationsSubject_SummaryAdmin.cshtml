@@ -1,6 +1,9 @@
 @using OrchardCore.Entities
+@using OrchardCore.Infrastructure.Html
 @using OrchardCore.Notifications.Endpoints.Management
 @model NotificationViewModel
+
+@inject IHtmlSanitizerService HtmlSanitizerService
 
 @{
     var notification = Model.Notification;
@@ -28,6 +31,6 @@
         }
     </p>
     <p class="m-0 text-normal pr-2 pr-md-0">
-        <small>@Html.Raw(notification.Summary)</small>
+        <small>@Html.Raw(HtmlSanitizerService.Sanitize(notification.Summary ?? string.Empty))</small>
     </p>
 </div>

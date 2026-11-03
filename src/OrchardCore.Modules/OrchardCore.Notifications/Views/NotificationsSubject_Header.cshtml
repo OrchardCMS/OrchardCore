@@ -1,5 +1,8 @@
+@using OrchardCore.Infrastructure.Html
 @using OrchardCore.Notifications.Endpoints.Management
 @model NotificationViewModel
+
+@inject IHtmlSanitizerService HtmlSanitizerService
 
 @if (!string.IsNullOrEmpty(Model.Notification.Url))
 {
@@ -13,6 +16,6 @@ else
 @if (!string.IsNullOrWhiteSpace(Model.Notification.Summary))
 {
     <div class="notification-summary">
-        @Html.Raw(Model.Notification.Summary)
+        @Html.Raw(HtmlSanitizerService.Sanitize(Model.Notification.Summary))
     </div>
 }
