@@ -155,7 +155,7 @@ with tempfile.TemporaryDirectory(prefix='culture-picker-cli-', dir=state_path.pa
         target_id = translated['item']['contentItemId']
         target_path = name.lower() + '-fr'
         pomi('content', 'items', 'update-draft', target_id, client='cli-fixture', body={'AutoroutePart': {'Path': target_path}})
-        request('api/content/' + target_id + '/publish', 'POST', status=200, raw=True)
+        request('api/content/' + target_id + ':publish', 'POST', status=200, raw=True)
         selection = 'RedirectToLocalizedContent?' + urllib.parse.urlencode({'targetCulture': 'fr', 'contentItemUrl': '/missing-' + name, 'queryStringValue': '?page=2'})
         patch = {'setCookie': False, 'redirectToHomepage': True, 'setCookieOnContentRequest': False}
         first = pomi('settings', 'sections', 'update', section, body=patch)

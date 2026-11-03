@@ -206,7 +206,7 @@ with tempfile.TemporaryDirectory(prefix='media-admin-cli-', dir=state_path.paren
         assert independent['maxFileSize'] is None and independent['allowedFileExtensions'] is None
         secondary('api/media/profiles', 'POST', {**profile, 'width': 20})
         assert pomi('media', 'profiles', 'show', profile['name'])['width'] == 80
-        secondary('api/media/cache/purge?cache=resized', 'POST', status=204)
+        secondary('api/media/cache:purge?cache=resized', 'POST', status=204)
         assert rendered_image() == image_before
         print('PASS: rendered images/cache regeneration, real upload policy enforcement, two-tenant isolation; media profile CRUD/retries/validation, MCP update, cache availability/purge, permissions, settings limits/retries/authentication.', flush=True)
     finally:

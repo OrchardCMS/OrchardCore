@@ -16,13 +16,13 @@ internal static class BackgroundTaskEndpoints
             .Produces<IReadOnlyList<BackgroundTaskResponse>>();
         Configure(routes.MapGet("api/background-tasks/by-name", GetAsync), "ApiGetBackgroundTask", "show", "Shows effective settings for a registered task.", true)
             .Produces<BackgroundTaskResponse>();
-        Configure(routes.MapPost("api/background-tasks/validate", ValidateAsync), "ApiValidateBackgroundTask", "validate", "Validates cron and lock settings without saving or executing a task.", input: true)
+        Configure(routes.MapPost("api/background-tasks:validate", ValidateAsync), "ApiValidateBackgroundTask", "validate", "Validates cron and lock settings without saving or executing a task.", input: true)
             .Produces<BackgroundTaskValidationResponse>();
         Configure(routes.MapPut("api/background-tasks/by-name", UpdateAsync), "ApiUpdateBackgroundTask", "update", "Replaces task configuration while preserving its enabled status.", true, true)
             .Produces<BackgroundTaskResponse>();
-        Configure(routes.MapPost("api/background-tasks/enable", EnableAsync), "ApiEnableBackgroundTask", "enable", "Enables a registered task after validating its settings.", true)
+        Configure(routes.MapPost("api/background-tasks/by-name:enable", EnableAsync), "ApiEnableBackgroundTask", "enable", "Enables a registered task after validating its settings.", true)
             .Produces(204);
-        Configure(routes.MapPost("api/background-tasks/disable", DisableAsync), "ApiDisableBackgroundTask", "disable", "Disables future scheduling of a registered task; does not cancel running work.", true)
+        Configure(routes.MapPost("api/background-tasks/by-name:disable", DisableAsync), "ApiDisableBackgroundTask", "disable", "Disables future scheduling of a registered task; does not cancel running work.", true)
             .Produces(204);
     }
 

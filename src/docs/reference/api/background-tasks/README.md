@@ -18,10 +18,10 @@ Every operation requires an `Api` scheme bearer token, **Access remote managemen
 | --- | --- | --- | --- |
 | `GET` | `/api/background-tasks` | `ApiListBackgroundTasks` | `background-tasks list` |
 | `GET` | `/api/background-tasks/by-name?name={name}` | `ApiGetBackgroundTask` | `background-tasks show <name>` |
-| `POST` | `/api/background-tasks/validate` | `ApiValidateBackgroundTask` | `background-tasks validate` |
+| `POST` | `/api/background-tasks:validate` | `ApiValidateBackgroundTask` | `background-tasks validate` |
 | `PUT` | `/api/background-tasks/by-name?name={name}` | `ApiUpdateBackgroundTask` | `background-tasks update <name>` |
-| `POST` | `/api/background-tasks/enable?name={name}` | `ApiEnableBackgroundTask` | `background-tasks enable <name>` |
-| `POST` | `/api/background-tasks/disable?name={name}` | `ApiDisableBackgroundTask` | `background-tasks disable <name>` |
+| `POST` | `/api/background-tasks/by-name:enable?name={name}` | `ApiEnableBackgroundTask` | `background-tasks enable <name>` |
+| `POST` | `/api/background-tasks/by-name:disable?name={name}` | `ApiDisableBackgroundTask` | `background-tasks disable <name>` |
 
 All these operations are MCP tools. See [MCP server](../../modules/RemoteManagement/README.md#mcp-server).
 
@@ -65,7 +65,7 @@ All these operations are MCP tools. See [MCP server](../../modules/RemoteManagem
 
 ## Validate settings
 
-`POST /api/background-tasks/validate`
+`POST /api/background-tasks:validate`
 
 Checks a configuration without saving it or running a task. The body is the configuration below, and repeating the request has no effect.
 
@@ -103,7 +103,7 @@ The update replaces the complete configuration, and keeps the status and the ide
 
 ## Enable or disable a task
 
-`POST /api/background-tasks/enable?name={name}` and `POST /api/background-tasks/disable?name={name}`
+`POST /api/background-tasks/by-name:enable?name={name}` and `POST /api/background-tasks/by-name:disable?name={name}`
 
 Return `204`, also when the task is already in that state, without writing anything. Disabling only affects future scheduling and doesn't cancel running work. Enabling a task with invalid stored settings returns a `400` validation problem: repair them with an update. An unknown name returns `404`.
 

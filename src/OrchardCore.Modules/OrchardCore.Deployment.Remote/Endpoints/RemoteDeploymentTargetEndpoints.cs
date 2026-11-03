@@ -20,7 +20,7 @@ internal static class RemoteDeploymentTargetEndpoints
     {
         RemoteDeploymentEndpoints.Configure(routes.MapGet("api/deployment/targets", ListAsync), "ApiListRemoteDeploymentTargets", "targets", "list", DeploymentPermissions.ExportRemoteInstances)
             .Produces<RemoteDeploymentTargetResponse[]>();
-        RemoteDeploymentEndpoints.Configure(routes.MapPost("api/deployment/targets/{id}/send", SendAsync), "ApiSendToRemoteDeploymentTarget", "targets", "send", DeploymentPermissions.ExportRemoteInstances, true)
+        RemoteDeploymentEndpoints.Configure(routes.MapPost("api/deployment/targets/{id}:send", SendAsync), "ApiSendToRemoteDeploymentTarget", "targets", "send", DeploymentPermissions.ExportRemoteInstances, true)
             .Produces<RemoteDeploymentSendResponse>().ProducesProblem(502);
     }
 

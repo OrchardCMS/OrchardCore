@@ -104,7 +104,7 @@ def wait_for_query(query_name, expected_count, phase):
     deadline = time.monotonic() + 150
     next_progress = time.monotonic() + 30
     while True:
-        result = request('api/queries/named/' + query_name + '/execute', 'POST', {})
+        result = request('api/queries/named/' + query_name + ':execute', 'POST', {})
         if result['count'] == expected_count:
             return result
         assert time.monotonic() < deadline, (phase, 'indexing did not reach expected query result', result['count'], expected_count)
@@ -144,7 +144,7 @@ with tempfile.TemporaryDirectory(prefix='lucene-runtime-cli-', dir=state_path.pa
         result = wait_for_query(query_names[0], 1, 'initial content')
         assert result['items'][0]['ContentItemId'] == item_id
         assert result['items'][0]['TitlePart']['Title'] == first
-        assert request('api/queries/named/' + query_names[1] + '/execute', 'POST', {})['count'] == 0
+        assert request('api/queries/named/' + query_names[1] + ':execute', 'POST', {})['count'] == 0
         print('PASS: newly created index serves pre-existing published content through a named query', flush=True)
         draft = pomi('content', 'items', 'draft', item_id, client='cli-fixture')
         draft['TitlePart']['Title'] = second

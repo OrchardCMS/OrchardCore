@@ -22,7 +22,7 @@ parameter, with a case-insensitive lookup. This avoids interpreting a shape key 
 | GET | `api/placements` | List stored overrides | ManagePlacements |
 | GET | `api/placements/by-shape?shapeType={shapeType}` | Show a complete override | ManagePlacements |
 | GET | `api/placement-filters` | List registered filter keys | ManagePlacements |
-| POST | `api/placements/validate` | Validate without rendering or persistence | ManagePlacements |
+| POST | `api/placements:validate` | Validate without rendering or persistence | ManagePlacements |
 | POST | `api/placements` | Create a nonempty override | ManagePlacements |
 | PUT | `api/placements/by-shape?shapeType={shapeType}` | Replace rules or remove an override with an empty array | ManagePlacements |
 | DELETE | `api/placements/by-shape?shapeType={shapeType}` | Remove an override if present | ManagePlacements |
@@ -97,7 +97,7 @@ It identifies available providers; it does not execute them or infer schemas for
 
 ## Validate
 
-`POST api/placements/validate` accepts the complete definition. `200` returns
+`POST api/placements:validate` accepts the complete definition. `200` returns
 `{"isValid":true,"errors":{}}` or errors such as:
 
 ```json

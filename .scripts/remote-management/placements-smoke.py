@@ -129,7 +129,7 @@ with tempfile.TemporaryDirectory(prefix='placements-cli-', dir=state_path.parent
         assert updated == pomi('placements', 'show', name)
         route = 'api/placements'
         for path, method, body in [(route, 'GET', None), (route + '/by-shape?shapeType=' + name, 'GET', None),
-                ('api/placement-filters', 'GET', None), (route + '/validate', 'POST', definition), (route, 'POST', definition),
+                ('api/placement-filters', 'GET', None), (route + ':validate', 'POST', definition), (route, 'POST', definition),
                 (route + '/by-shape?shapeType=' + name, 'PUT', definition), (route + '/by-shape?shapeType=' + name, 'DELETE', None)]:
             request(path, method, body, client=None, status=401)
             request(path, method, body, client='cli-discovery', status=403)

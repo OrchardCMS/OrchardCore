@@ -22,7 +22,7 @@ internal static partial class LocalizationManagementEndpoints
             .WithDescription("Reads loaded PO catalog entries for the selected culture without merging parent catalogs. Uses the request UI culture when omitted; explicit cultures can select a supported parent according to tenant settings. Filter by exact context/key or ordinal key prefix. Returns all stored plural forms. Requires ManageCultures.")
             .WithCliCommand(new CliOperationMetadata(["localization", "messages"], "list") { Capability = Capability })
             .Produces<MessageListResponse>().ProducesProblem(400).ProducesProblem(401).ProducesProblem(403);
-        group.MapPost("/messages/resolve", ResolveMessageAsync)
+        group.MapPost("/messages:resolve", ResolveMessageAsync)
             .WithName("ApiResolveLocalizationMessage").WithSummary("Resolves a standard localized message.")
             .WithDescription("Read-only lookup through the tenant string localizer, including configured fallback and plural rules. Count occupies {0}; additional arguments begin at {1}. Without count, arguments begin at {0}. Requires ManageCultures.")
             .WithCliCommand(new CliOperationMetadata(["localization", "messages"], "resolve") { Capability = Capability, InputMode = CliInputMode.Json })

@@ -25,7 +25,7 @@ Send a bearer token as described in [Authentication](../authentication/README.md
 | GET | `/api/localization/strings` | List advertised UI string groups | `ManageCultures` |
 | GET | `/api/localization/strings/{groupName}` | Read a UI string group | `ManageCultures` |
 | GET | `/api/localization/messages` | List standard PO catalog entries by context/key/prefix | `ManageCultures` |
-| POST | `/api/localization/messages/resolve` | Resolve a standard localized message, optionally pluralized and formatted | `ManageCultures` |
+| POST | `/api/localization/messages:resolve` | Resolve a standard localized message, optionally pluralized and formatted | `ManageCultures` |
 | GET | `/api/localization/translations` | List dynamic translation descriptors and stored values | `ViewDynamicTranslations` |
 | PUT | `/api/localization/translations` | Set one dynamic translation | `ManageTranslations` or `ManageTranslations_{culture}` |
 | DELETE | `/api/localization/translations` | Remove one dynamic translation | `ManageTranslations` or `ManageTranslations_{culture}` |
@@ -263,7 +263,7 @@ retained in Orchard's runtime dictionary.
 
 ### Resolve and format a message
 
-`POST /api/localization/messages/resolve` is read-only. Send JSON:
+`POST /api/localization/messages:resolve` is read-only. Send JSON:
 
 ```json
 {

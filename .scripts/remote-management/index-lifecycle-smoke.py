@@ -146,7 +146,7 @@ with tempfile.TemporaryDirectory(prefix='lucene-lifecycle-cli-', dir=state_path.
                 'query': {'term': {'TitlePart': title}}, 'size': 10})}}}, status=201)
         query_created = True
         def count():
-            return request('api/queries/named/' + query_name + '/execute', 'POST', {})['count']
+            return request('api/queries/named/' + query_name + ':execute', 'POST', {})['count']
         operation = request('api/indexes/by-id:synchronize?id=' + index_id, 'POST', client='cli-indexes', status=202)
         completed(operation)
         assert count() == 1

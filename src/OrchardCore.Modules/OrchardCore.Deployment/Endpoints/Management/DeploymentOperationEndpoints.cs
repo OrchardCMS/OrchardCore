@@ -20,9 +20,9 @@ internal static class DeploymentOperationEndpoints
 {
     public static void AddDeploymentOperationEndpoints(this IEndpointRouteBuilder routes)
     {
-        Configure(routes.MapPost("api/deployment/operations/export", ExportAsync), "ApiQueueDeploymentExport", "export",
+        Configure(routes.MapPost("api/deployment/operations:export", ExportAsync), "ApiQueueDeploymentExport", "export",
             "Queues a deployment plan snapshot for export.").Produces<DeploymentOperationResponse>(202);
-        Configure(routes.MapPost("api/deployment/operations/import", ImportAsync), "ApiQueueDeploymentImport", "import",
+        Configure(routes.MapPost("api/deployment/operations:import", ImportAsync), "ApiQueueDeploymentImport", "import",
             "Queues an owned uploaded artifact for import; recipe execution may partially commit.").Produces<DeploymentOperationResponse>(202);
         Configure(routes.MapGet("api/deployment/operations/{id}", GetAsync), "ApiGetDeploymentOperation", "show",
             "Shows the caller's deployment operation state.").Produces<DeploymentOperationResponse>();

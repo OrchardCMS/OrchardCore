@@ -132,7 +132,7 @@ with tempfile.TemporaryDirectory(prefix='shortcodes-cli-', dir=state_path.parent
         assert updated == pomi('shortcodes', 'templates', 'show', saved_name)
         route = 'api/shortcode-templates'
         for path, method, body in [(route, 'GET', None), (route + '/by-name?name=' + saved_name, 'GET', None),
-                (route + '/validate', 'POST', definition), (route, 'POST', definition),
+                (route + ':validate', 'POST', definition), (route, 'POST', definition),
                 (route + '/by-name?name=' + saved_name, 'PUT', saved), (route + '/by-name?name=' + saved_name, 'DELETE', None)]:
             request(path, method, body, client=None, status=401)
             request(path, method, body, client='cli-discovery', status=403)

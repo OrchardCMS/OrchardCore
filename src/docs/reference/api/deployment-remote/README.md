@@ -36,7 +36,7 @@ Every mutation, as well as sending, requires HTTPS: a request over HTTP returns 
 | `PUT` | `/api/deployment/remote-instances/{id}` | `ApiUpdateRemoteDeploymentInstance` | `deployment remote-instances update <id>` | `ManageRemoteInstances` |
 | `DELETE` | `/api/deployment/remote-instances/{id}` | `ApiDeleteRemoteDeploymentInstance` | `deployment remote-instances delete <id> --force` | `ManageRemoteInstances` |
 | `GET` | `/api/deployment/targets` | `ApiListRemoteDeploymentTargets` | `deployment targets list` | `ExportRemoteInstances` |
-| `POST` | `/api/deployment/targets/{id}/send` | `ApiSendToRemoteDeploymentTarget` | `deployment targets send <id> --plan-id <plan> --force` | `ExportRemoteInstances`, `Export` |
+| `POST` | `/api/deployment/targets/{id}:send` | `ApiSendToRemoteDeploymentTarget` | `deployment targets send <id> --plan-id <plan> --force` | `ExportRemoteInstances`, `Export` |
 
 ### Credentials in Pomi and MCP
 
@@ -154,7 +154,7 @@ Returns the remote instances ordered by name, with only what sending needs. This
 
 ### Send a plan
 
-`POST /api/deployment/targets/{id}/send`
+`POST /api/deployment/targets/{id}:send`
 
 ```json
 { "planId": 123 }

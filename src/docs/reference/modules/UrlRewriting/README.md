@@ -127,7 +127,7 @@ The module advertises the `url-rewriting` capability.
 | `GET /api/url-rewriting/rules` | `url-rewriting rules list` | Runtime-ordered page; `skip`, `take` (1–200) and optional name `search`. |
 | `GET /api/url-rewriting/rules/{id}` | `url-rewriting rules show <id>` | Stored identity, order and allowlisted definition. |
 | `GET /api/url-rewriting/sources` | `url-rewriting rules sources` | Registered sources and editing support. |
-| `POST /api/url-rewriting/rules/validate` | `url-rewriting rules validate` | Validation and source parsing without saving or matching a request. |
+| `POST /api/url-rewriting/rules:validate` | `url-rewriting rules validate` | Validation and source parsing without saving or matching a request. |
 | `POST /api/url-rewriting/rules` | `url-rewriting rules create` | Create a complete definition. |
 | `PUT /api/url-rewriting/rules/{id}` | `url-rewriting rules update <id>` | Replace a complete definition, preserving source, identity and order. |
 | `DELETE /api/url-rewriting/rules/{id}` | `url-rewriting rules delete <id> --force` | Delete; a missing rule succeeds without mutation. |

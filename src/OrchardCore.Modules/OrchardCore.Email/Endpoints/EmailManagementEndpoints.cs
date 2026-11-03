@@ -13,7 +13,7 @@ internal static class EmailManagementEndpoints
 {
     public static void AddEmailManagementEndpoints(this IEndpointRouteBuilder routes)
     {
-        routes.MapPost("api/email/test", TestAsync)
+        routes.MapPost("api/email:test", TestAsync)
             .WithName("ApiTestEmailDelivery")
             .WithTags("Email")
             .WithSummary("Sends one bounded plain-text test message using an enabled email provider. Retrying sends another message.")

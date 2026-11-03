@@ -20,7 +20,7 @@ internal static class ShortcodeTemplateManagementEndpoints
             .Produces<ShortcodeTemplateListResponse>();
         Configure(routes.MapGet(RoutePrefix + "/by-name", GetAsync), "ApiGetShortcodeTemplate", "Shows a stored shortcode template.", "show", argument: true)
             .Produces<ShortcodeTemplateDefinition>().ProducesProblem(404);
-        Configure(routes.MapPost(RoutePrefix + "/validate", ValidateAsync), "ApiValidateShortcodeTemplate", "Validates a shortcode name and Liquid template without rendering or saving.", "validate", input: true)
+        Configure(routes.MapPost(RoutePrefix + ":validate", ValidateAsync), "ApiValidateShortcodeTemplate", "Validates a shortcode name and Liquid template without rendering or saving.", "validate", input: true)
             .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreateShortcodeTemplate", "Creates a shortcode template; equivalent stable-name retries return the stored template.", "create", input: true)
             .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateDefinition>(201).ProducesProblem(409);

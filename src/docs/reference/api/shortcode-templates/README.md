@@ -25,7 +25,7 @@ looked up case-insensitively. No operation renames a template through this API.
 | --- | --- | --- | --- |
 | GET | `api/shortcode-templates` | List stored templates | ManageShortcodeTemplates |
 | GET | `api/shortcode-templates/by-name?name={name}` | Show a stored template | ManageShortcodeTemplates |
-| POST | `api/shortcode-templates/validate` | Validate without saving or rendering | ManageShortcodeTemplates |
+| POST | `api/shortcode-templates:validate` | Validate without saving or rendering | ManageShortcodeTemplates |
 | POST | `api/shortcode-templates` | Create, with equivalent retries | ManageShortcodeTemplates |
 | PUT | `api/shortcode-templates/by-name?name={name}` | Replace a complete definition | ManageShortcodeTemplates |
 | DELETE | `api/shortcode-templates/by-name?name={name}` | Delete if present | ManageShortcodeTemplates |
@@ -85,7 +85,7 @@ sanitized usage HTML. An absent name returns `404`. A missing required query par
 
 ## Validate
 
-`POST api/shortcode-templates/validate` accepts the complete definition above as JSON. It checks
+`POST api/shortcode-templates:validate` accepts the complete definition above as JSON. It checks
 name and Liquid syntax without changing a document, rendering a template or checking name
 availability. Valid input returns `200` with `{"isValid":true,"errors":{}}`.
 

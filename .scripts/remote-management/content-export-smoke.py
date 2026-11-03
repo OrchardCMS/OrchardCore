@@ -131,9 +131,9 @@ with tempfile.TemporaryDirectory(prefix='content-export-cli-', dir=state_path.pa
     assert pomi('deployment', 'plans', 'steps', 'add', str(plan['id']), body=body)['changed']
     assert not pomi('deployment', 'plans', 'steps', 'add', str(plan['id']), body=body)['changed']
     pomi('deployment', 'plans', 'steps', 'update', str(plan['id']), 'selected', body={'values': {'contentItemIds': [item_id, 'missing']}}, status=400)
-    denied = request('api/deployment/operations/export', 'POST', {'planId': plan['id'], 'requestId': name + 'Denied'}, client='cli-content-export-no-edit', status=202)
+    denied = request('api/deployment/operations:export', 'POST', {'planId': plan['id'], 'requestId': name + 'Denied'}, client='cli-content-export-no-edit', status=202)
     completed(denied, client='cli-content-export-no-edit', expected='failed')
-    operation = request('api/deployment/operations/export', 'POST', {'planId': plan['id'], 'requestId': name}, status=202)
+    operation = request('api/deployment/operations:export', 'POST', {'planId': plan['id'], 'requestId': name}, status=202)
     result = completed(operation)
     path = Path(config_home) / 'selected.zip'
     pomi('deployment', 'artifacts', 'download', result['artifactId'], '--output-file', str(path))

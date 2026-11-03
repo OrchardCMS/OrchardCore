@@ -101,7 +101,7 @@ pomi('localization', 'settings', 'update', '--stdin', body={**updated, 'defaultC
 
 # Standard catalogs use their own discovery/commands, not dynamic translation providers.
 assert schema['paths']['/api/localization/messages']['get']['x-oc-cli']['commandGroup'] == ['localization', 'messages']
-assert schema['paths']['/api/localization/messages/resolve']['post']['x-oc-cli']['verb'] == 'resolve'
+assert schema['paths']['/api/localization/messages:resolve']['post']['x-oc-cli']['verb'] == 'resolve'
 assert 'key' in pomi('localization', 'messages', 'schema', '--operation', 'resolve')['properties']
 catalog = pomi('localization', 'messages', 'list', '--culture', 'fr', '--take', '1')
 assert catalog['culture'] == 'fr' and len(catalog['items']) <= 1
@@ -115,14 +115,14 @@ message = {'culture': 'fr', 'context': 'PomiLocalizationSmoke', 'key': '{0} book
            'plural': '{0} books for {1}', 'count': 2, 'arguments': ['Alice']}
 resolved = pomi('localization', 'messages', 'resolve', '--stdin', body=message)
 assert resolved['value'] == '2 books for Alice' and resolved['template'] == message['plural']
-assert api('POST', 'api/localization/messages/resolve', body=message) == resolved
+assert api('POST', 'api/localization/messages:resolve', body=message) == resolved
 assert api('GET', 'api/localization/messages', headers={'Accept-Language': 'fr-FR'})['culture'] == 'fr'
 automatic = {key: value for key, value in message.items() if key != 'culture'}
-assert api('POST', 'api/localization/messages/resolve', body=automatic, headers={'Accept-Language': 'fr-FR'})['culture'] == 'fr'
-assert api('POST', 'api/localization/messages/resolve', body={**message, 'culture': 'en'}, headers={'Accept-Language': 'fr'})['culture'] == 'en'
+assert api('POST', 'api/localization/messages:resolve', body=automatic, headers={'Accept-Language': 'fr-FR'})['culture'] == 'fr'
+assert api('POST', 'api/localization/messages:resolve', body={**message, 'culture': 'en'}, headers={'Accept-Language': 'fr'})['culture'] == 'en'
 assert pomi('localization', 'messages', 'resolve', '--stdin', body={**message, 'culture': 'fr-FR'})['culture'] == 'fr'
 api('GET', 'api/localization/messages', client='cli-discovery', status=403)
-api('POST', 'api/localization/messages/resolve', body=message, client='cli-discovery', status=403)
+api('POST', 'api/localization/messages:resolve', body=message, client='cli-discovery', status=403)
 pomi('localization', 'messages', 'resolve', '--stdin', body={**message, 'arguments': [{}]}, status=400)
 api('GET', 'api/localization/messages', query={'take': 201}, status=400)
 

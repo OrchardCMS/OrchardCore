@@ -24,7 +24,7 @@ internal static class LayerManagementEndpoints
             .Produces<LayerDefinitionDto>().ProducesProblem(404).ProducesETag();
         Configure(routes.MapGet("api/layer-conditions", ConditionsAsync), "ApiListLayerConditions", "Lists registered conditions and their writable property schemas.", "conditions")
             .Produces<IReadOnlyList<RuleConditionDescriptor>>();
-        Configure(routes.MapPost(RoutePrefix + "/validate", ValidateAsync), "ApiValidateLayer", "Validates a complete layer definition without evaluating conditions or saving it.", "validate", input: true)
+        Configure(routes.MapPost(RoutePrefix + ":validate", ValidateAsync), "ApiValidateLayer", "Validates a complete layer definition without evaluating conditions or saving it.", "validate", input: true)
             .Accepts<LayerDefinitionDto>("application/json").Produces<RuleValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreateLayer", "Creates a complete layer definition; identical name retries return the stored definition.", "create", input: true)
             .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>(201).ProducesProblem(409).ProducesETag();

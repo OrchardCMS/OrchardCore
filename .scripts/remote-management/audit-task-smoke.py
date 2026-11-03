@@ -176,7 +176,7 @@ with tempfile.TemporaryDirectory(prefix='audit-task-cli-', dir=state_path.parent
         assert secondary('api/audit-trail/events?q=' + urllib.parse.quote(query))['totalCount'] == 0
         secondary_task = secondary('api/background-tasks/by-name?name=' + task_name)
         assert secondary_task['configuration']['description'] != name + ' MCP'
-        secondary('api/background-tasks/disable?name=' + task_name, 'POST', status=204)
+        secondary('api/background-tasks/by-name:disable?name=' + task_name, 'POST', status=204)
         assert pomi('background-tasks', 'show', task_name)['enabled']
         print('PASS: real audit events/search/pagination, Pomi/MCP, cron validation, status/configuration retries, permission separation and two-tenant isolation', flush=True)
     finally:

@@ -13,7 +13,7 @@ internal static class MediaCacheEndpoints
     {
         MediaProfileEndpoints.Configure(routes.MapGet("api/media/cache", GetAsync), "ApiGetMediaCache", "show", "Shows configured tenant media caches.",
             group: ["media", "cache"], permission: MediaPermissions.ManageAssetCache).Produces<MediaCacheResponse>();
-        MediaProfileEndpoints.Configure(routes.MapPost("api/media/cache/purge", PurgeAsync), "ApiPurgeMediaCache", "purge", "Purges either resized images or the configured remote asset cache in this tenant.",
+        MediaProfileEndpoints.Configure(routes.MapPost("api/media/cache:purge", PurgeAsync), "ApiPurgeMediaCache", "purge", "Purges either resized images or the configured remote asset cache in this tenant.",
             "cache", group: ["media", "cache"], permission: MediaPermissions.ManageAssetCache).Produces(204).ProducesProblem(503).ProducesProblem(500);
     }
 

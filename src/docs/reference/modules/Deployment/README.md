@@ -332,8 +332,8 @@ MCP tools.
 
 ## Queued deployment operations
 
-`POST api/deployment/operations/export` accepts `requestId` and `planId`;
-`POST api/deployment/operations/import` accepts `requestId` and `artifactId`.
+`POST api/deployment/operations:export` accepts `requestId` and `planId`;
+`POST api/deployment/operations:import` accepts `requestId` and `artifactId`.
 Both return HTTP 202 with an operation ID and status location. Use
 `pomi deployment operations export --request-id <id> --plan-id <plan>` or
 `pomi deployment operations import --request-id <id> --artifact-id <artifact> --force`.

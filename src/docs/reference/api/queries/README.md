@@ -36,11 +36,11 @@ https://host/{tenant-prefix}/api/queries
 | `GET` | `/api/queries` | List named queries | `ManageQueries` |
 | `POST` | `/api/queries` | Create a named query | `ManageQueries` |
 | `GET` | `/api/queries/sources` | List enabled query sources | `ManageQueries` |
-| `POST` | `/api/queries/validate` | Validate without saving | `ManageQueries` |
+| `POST` | `/api/queries:validate` | Validate without saving | `ManageQueries` |
 | `GET` | `/api/queries/named/{name}` | Get one definition | `ManageQueries` |
 | `PUT` | `/api/queries/named/{name}` | Update a definition | `ManageQueries` |
 | `DELETE` | `/api/queries/named/{name}` | Delete a definition | `ManageQueries` |
-| `POST` | `/api/queries/named/{name}/execute` | Execute a named query | `ExecuteApi_{query-name}` |
+| `POST` | `/api/queries/named/{name}:execute` | Execute a named query | `ExecuteApi_{query-name}` |
 
 ## Common representations
 
@@ -301,7 +301,7 @@ Other responses: `401`, `403`, or `409` when the name belongs to a different def
 ### Validate a definition
 
 ```http
-POST /api/queries/validate
+POST /api/queries:validate
 Content-Type: application/json
 ```
 
@@ -318,7 +318,7 @@ curl -X POST -H 'Authorization: Bearer ACCESS_TOKEN' \
       }
     }
   }' \
-  'https://cms.example.com/tenant-a/api/queries/validate'
+  'https://cms.example.com/tenant-a/api/queries:validate'
 ```
 
 `200 OK` is returned for valid and invalid definitions; inspect `isValid` and `errors`:
@@ -469,7 +469,7 @@ Other responses are `401` or `403`.
 ### Execute a named query
 
 ```http
-POST /api/queries/named/{name}/execute
+POST /api/queries/named/{name}:execute
 Content-Type: application/json
 ```
 
@@ -482,7 +482,7 @@ Content-Type: application/json
 curl -X POST -H 'Authorization: Bearer ACCESS_TOKEN' \
   -H 'Content-Type: application/json' \
   -d '{"limit":10}' \
-  'https://cms.example.com/tenant-a/api/queries/named/PublishedArticles/execute'
+  'https://cms.example.com/tenant-a/api/queries/named/PublishedArticles:execute'
 ```
 
 `200 OK` normalizes the source result into:
@@ -524,7 +524,7 @@ Content-Type: application/json
 
 It is explicitly hidden from API Explorer/OpenAPI and is not a remote-management operation. It checks the same `ExecuteApi_{query-name}` permission, but deliberately returns `404` for both missing queries and unauthorized execution. For `POST`, a raw JSON body is read only when the `parameters` query value is empty. Its response is the source-specific raw `IQueryResults` object, not the stable `{ "count", "items" }` management envelope.
 
-New remote clients should use `POST /api/queries/named/{name}/execute`. The legacy route remains relevant to existing integrations and templates.
+New remote clients should use `POST /api/queries/named/{name}:execute`. The legacy route remains relevant to existing integrations and templates.
 
 ## Endpoint coverage and sources
 

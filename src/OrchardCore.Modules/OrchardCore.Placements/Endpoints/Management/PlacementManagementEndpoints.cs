@@ -21,7 +21,7 @@ internal static class PlacementManagementEndpoints
             .Produces<PlacementDefinition>().ProducesProblem(404).ProducesETag();
         Configure(routes.MapGet("api/placement-filters", FiltersAsync), "ApiListPlacementFilters", "Lists placement filter keys registered by enabled features.", "filters")
             .Produces<IReadOnlyList<string>>();
-        Configure(routes.MapPost(RoutePrefix + "/validate", ValidateAsync), "ApiValidatePlacement", "Validates placement rules without rendering or saving.", "validate", input: true)
+        Configure(routes.MapPost(RoutePrefix + ":validate", ValidateAsync), "ApiValidatePlacement", "Validates placement rules without rendering or saving.", "validate", input: true)
             .Accepts<PlacementDefinition>("application/json").Produces<PlacementValidationResponse>();
         Configure(routes.MapPost(RoutePrefix, CreateAsync), "ApiCreatePlacement", "Creates placement rules; equivalent stable-shape retries return the stored rules.", "create", input: true)
             .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>(201).ProducesProblem(409).ProducesETag();

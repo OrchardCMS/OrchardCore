@@ -70,7 +70,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        routes.MapPost("api/queries/validate", ValidateAsync)
+        routes.MapPost("api/queries:validate", ValidateAsync)
             .WithName("ApiValidateQuery")
             .WithSummary("Validates a named query definition.")
             .WithDescription("Validates a named query definition without persisting it, including any source-specific checks contributed by the active query source.")
@@ -141,7 +141,7 @@ public static class QueryManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        routes.MapPost("api/queries/named/{name}/execute", ExecuteAsync)
+        routes.MapPost("api/queries/named/{name}:execute", ExecuteAsync)
             .WithName("ApiExecuteQuery")
             .WithSummary("Executes a named query.")
             .WithDescription("Executes a stored named query using the supplied JSON parameters object and returns the raw query results.")

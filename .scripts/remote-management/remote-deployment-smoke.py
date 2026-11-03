@@ -148,7 +148,7 @@ with tempfile.TemporaryDirectory(prefix='remote-deployment-cli-', dir=state_path
     request('api/deployment/remote-instances', client='cli-remote-instances')
     request('api/deployment/remote-instances', client='cli-remote-export', status=403)
     request('api/deployment/targets', client='cli-remote-export')
-    request('api/deployment/targets/' + instance_id + '/send', 'POST', {'planId': plan['id']}, client='cli-remote-export-no-data', status=403)
+    request('api/deployment/targets/' + instance_id + ':send', 'POST', {'planId': plan['id']}, client='cli-remote-export-no-data', status=403)
     result = pomi('deployment', 'targets', 'send', instance_id, '--force', body={'planId': plan['id']})
     assert result['succeeded']
     select(target_path)

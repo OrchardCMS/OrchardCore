@@ -128,7 +128,7 @@ with tempfile.TemporaryDirectory(prefix='content-remote-cli-', dir=state_path.pa
     plan = pomi('deployment', 'plans', 'create', body={'name': name})['plan']
     pomi('deployment', 'plans', 'steps', 'add', str(plan['id']), body={'id': 'content', 'type': 'ExportContentToDeploymentTargetDeploymentStep',
         'values': {'contentItemIds': [item_id], 'latest': True}})
-    request('api/deployment/targets/' + destination['id'] + '/send', 'POST', {'planId': plan['id']}, client='cli-remote-export', status=403)
+    request('api/deployment/targets/' + destination['id'] + ':send', 'POST', {'planId': plan['id']}, client='cli-remote-export', status=403)
     select(target_path)
     request('api/content/' + item_id + '/export?latest=true', status=404)
     select(source_path)

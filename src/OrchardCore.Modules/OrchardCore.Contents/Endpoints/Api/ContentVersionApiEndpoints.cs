@@ -44,7 +44,7 @@ internal static partial class ContentManagementApiEndpoints
             .WithDescription("Renders the exact stored content with the requested display type and the tenant's current theme and templates.")
             .WithCliCommand(Cli(["content", "versions"], "render", arguments: [new("contentItemVersionId", 0)]))
             .Produces<ContentItemRenderResponse>().ProducesProblem(401).ProducesProblem(403).ProducesProblem(404);
-        group.MapPost("/versions/{contentItemVersionId}/restore", RestoreVersionAsync)
+        group.MapPost("/versions/{contentItemVersionId}:restore", RestoreVersionAsync)
             .WithName("ApiRestoreContentItemVersion").WithTags("Content Versions")
             .WithSummary("Restores a version into a new unpublished draft.")
             .WithDescription("Creates a new version ID on every successful request. Existing drafts require replaceDraft=true. The source and published version remain unchanged.")

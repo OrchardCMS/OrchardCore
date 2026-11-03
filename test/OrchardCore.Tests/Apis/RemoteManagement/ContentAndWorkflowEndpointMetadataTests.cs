@@ -31,7 +31,7 @@ public class ContentAndWorkflowEndpointMetadataTests
             AssertOperation(endpoints, "/api/content-definition/settings", "GET", "ApiListContentDefinitionSettingsSchemas", ["content", "settings"], "list");
             AssertOperation(endpoints, "/api/content-definition/settings/{name}", "GET", "ApiGetContentDefinitionSettingsSchema", ["content", "settings"], "show");
             AssertOperation(endpoints, "/api/content", "GET", "ApiListContentItems", ["content", "items"], "list");
-            AssertOperation(endpoints, "/api/content/{contentItemId}/publish", "POST", "ApiPublishContentItem", ["content", "items"], "publish");
+            AssertOperation(endpoints, "/api/content/{contentItemId}:publish", "POST", "ApiPublishContentItem", ["content", "items"], "publish");
             AssertOperation(endpoints, "/api/content/{contentItemId}:clone", "POST", "ApiCloneContentItem", ["content", "items"], "clone");
             AssertOperation(endpoints, "/api/content/{contentItemId}:discard-draft", "POST", "ApiDiscardContentItemDraft", ["content", "items"], "discard-draft");
             AssertOperation(endpoints, "api/content:bulk", "POST", "ApiBulkContentItems", ["content", "items"], "bulk", CliInputMode.Json);
@@ -39,7 +39,7 @@ public class ContentAndWorkflowEndpointMetadataTests
             AssertOperation(endpoints, "/api/content/{contentItemId}/versions", "GET", "ApiListContentItemVersions", ["content", "versions"], "list");
             AssertOperation(endpoints, "/api/content/versions/{contentItemVersionId}", "GET", "ApiGetContentItemVersion", ["content", "versions"], "show");
             AssertOperation(endpoints, "/api/content/versions/{contentItemVersionId}/render", "GET", "ApiRenderContentItemVersion", ["content", "versions"], "render");
-            AssertOperation(endpoints, "/api/content/versions/{contentItemVersionId}/restore", "POST", "ApiRestoreContentItemVersion", ["content", "versions"], "restore");
+            AssertOperation(endpoints, "/api/content/versions/{contentItemVersionId}:restore", "POST", "ApiRestoreContentItemVersion", ["content", "versions"], "restore");
             AssertOperation(endpoints, "/api/content/versions/{contentItemVersionId}", "DELETE", "ApiDeleteContentItemVersion", ["content", "versions"], "delete");
             AssertOperation(endpoints, "/api/workflows/types", "POST", "ApiCreateWorkflowType", ["workflow", "types"], "create", CliInputMode.Json);
             AssertOperation(endpoints, "/api/workflows/activity-types", "GET", "ApiListWorkflowActivityTypes", ["workflow", "activity-types"], "list");

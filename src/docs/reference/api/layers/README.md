@@ -26,7 +26,7 @@ Paths are relative to the tenant URL, including any tenant prefix.
 | `GET /api/layers` | `layers list` | Paged definitions with `skip`, `take`, `totalCount`, `items`. |
 | `GET /api/layers/by-name?name={name}` | `layers show <name>` | Complete stored definition; 404 when absent. |
 | `GET /api/layer-conditions` | `layers conditions` | Registered condition descriptors and property schemas. |
-| `POST /api/layers/validate` | `layers validate` | `isValid` and path-keyed `errors`; never saves or evaluates conditions. |
+| `POST /api/layers:validate` | `layers validate` | `isValid` and path-keyed `errors`; never saves or evaluates conditions. |
 | `POST /api/layers` | `layers create` | 201 with the saved definition and tenant-relative Location; 409 on a different existing definition. |
 | `PUT /api/layers/by-name?name={name}` | `layers update <name>` | 200 with the replacement; 404 when absent. |
 | `DELETE /api/layers/by-name?name={name}` | `layers delete <name> --force` | 204, including an absent layer; 409 while any latest or published widget references it. |

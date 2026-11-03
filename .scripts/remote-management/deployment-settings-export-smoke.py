@@ -59,10 +59,10 @@ recipe = {'name': name, 'steps': [{'name': 'deployment', 'Plans': [{'Name': name
 if '--include-users' in sys.argv:
     recipe['steps'][0]['Plans'][0]['Steps'].append({'Type': 'AllUsersDeploymentStep', 'Step': {'Id': 'users'}})
 artifact = request('api/deployment/artifacts?fileName=plan.json', 'POST', json.dumps(recipe).encode(), status=(200, 201))
-completed(request('api/deployment/operations/import', 'POST', {'requestId': name + 'import', 'artifactId': artifact['id']}, status=(202,)))
+completed(request('api/deployment/operations:import', 'POST', {'requestId': name + 'import', 'artifactId': artifact['id']}, status=(202,)))
 plans = request('api/deployment/plans?search=' + name)
 plan = next(plan for plan in plans['items'] if plan['name'] == name)
-result = completed(request('api/deployment/operations/export', 'POST', {'requestId': name + 'export', 'planId': plan['id']}, status=(202,)))
+result = completed(request('api/deployment/operations:export', 'POST', {'requestId': name + 'export', 'planId': plan['id']}, status=(202,)))
 archive = request('api/deployment/artifacts/' + result['artifactId'] + '/content', raw=True)
 with zipfile.ZipFile(io.BytesIO(archive)) as package:
     exported = json.loads(package.read('Recipe.json'))

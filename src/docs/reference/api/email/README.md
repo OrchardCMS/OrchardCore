@@ -16,11 +16,11 @@ Every operation requires an `Api` scheme bearer token, **Access remote managemen
 
 | Method | Endpoint | Operation ID | Pomi command | Permission |
 | --- | --- | --- | --- | --- |
-| `POST` | `/api/email/test` | `ApiTestEmailDelivery` | `email test` | `ManageEmailSettings` |
+| `POST` | `/api/email:test` | `ApiTestEmailDelivery` | `email test` | `ManageEmailSettings` |
 
 ## Test the delivery
 
-`POST /api/email/test`
+`POST /api/email:test`
 
 Sends one plain-text message through the same email service as the admin test form.
 

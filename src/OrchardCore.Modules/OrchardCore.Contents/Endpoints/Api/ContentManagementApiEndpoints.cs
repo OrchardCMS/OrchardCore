@@ -31,6 +31,12 @@ internal static partial class ContentManagementApiEndpoints
             .RequireAuthorization(policy => policy.AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)))
             .DisableAntiforgery();
 
+        // The actions on the collection, whose routes can't be below the group of the items.
+        var collection = builder.MapGroup(string.Empty)
+            .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api })
+            .RequireAuthorization(policy => policy.AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)))
+            .DisableAntiforgery();
+
         // These routes predate remote management and keep their contract: they only require the
         // Content API permission, which the Anonymous role can hold for public headless reads.
         var contentApi = builder.MapGroup("api/content")
@@ -71,7 +77,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/draft", CreateDraftAsync)
+        collection.MapPost("api/content:create-draft", CreateDraftAsync)
             .WithName("ApiCreateDraftContentItem")
             .WithTags("Content Items")
             .WithSummary("Creates a draft content item.")
@@ -106,7 +112,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/{contentItemId}/draft", CreateDraftVersionAsync)
+        group.MapPost("/{contentItemId}:draft", CreateDraftVersionAsync)
             .WithName("ApiSaveDraftContentItem")
             .WithTags("Content Items")
             .WithSummary("Creates or refreshes a draft version.")
@@ -117,7 +123,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/{contentItemId}/publish", PublishAsync)
+        group.MapPost("/{contentItemId}:publish", PublishAsync)
             .WithName("ApiPublishContentItem")
             .WithTags("Content Items")
             .WithSummary("Publishes a content item.")
@@ -128,7 +134,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/{contentItemId}/unpublish", UnpublishAsync)
+        group.MapPost("/{contentItemId}:unpublish", UnpublishAsync)
             .WithName("ApiUnpublishContentItem")
             .WithTags("Content Items")
             .WithSummary("Unpublishes a content item.")
@@ -173,7 +179,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/validate", ValidateCreateAsync)
+        collection.MapPost("api/content:validate", ValidateCreateAsync)
             .WithName("ApiValidateContentItem")
             .WithTags("Content Items")
             .WithSummary("Validates a content item payload.")
@@ -185,7 +191,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/{contentItemId}/validate", ValidateUpdateAsync)
+        group.MapPost("/{contentItemId}:validate", ValidateUpdateAsync)
             .WithName("ApiValidateContentItemUpdate")
             .WithTags("Content Items")
             .WithSummary("Validates an updated content item payload.")
@@ -219,11 +225,7 @@ internal static partial class ContentManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        // The action is on the collection, whose route can't be below the group of the items.
-        builder.MapPost("api/content:bulk", BulkAsync)
-            .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api })
-            .RequireAuthorization(policy => policy.AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)))
-            .DisableAntiforgery()
+        collection.MapPost("api/content:bulk", BulkAsync)
             .WithName("ApiBulkContentItems")
             .WithTags("Content Items")
             .WithSummary("Publishes, unpublishes, or deletes several content items.")

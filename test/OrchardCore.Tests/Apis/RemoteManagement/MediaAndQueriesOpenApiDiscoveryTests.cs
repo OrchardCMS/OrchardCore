@@ -78,11 +78,11 @@ public class MediaAndQueriesOpenApiDiscoveryTests
         AssertOperation(endpoints, "api/queries", "GET", "ApiListQueries", ["queries"], "list");
         AssertOperation(endpoints, "api/queries", "POST", "ApiCreateQuery", ["queries"], "create", expectedInputMode: CliInputMode.Json, expectedRequestContentType: "application/json");
         AssertOperation(endpoints, "api/queries/sources", "GET", "ApiListQuerySources", ["queries", "sources"], "list");
-        AssertOperation(endpoints, "api/queries/validate", "POST", "ApiValidateQuery", ["queries"], "validate", expectedInputMode: CliInputMode.Json, expectedRequestContentType: "application/json");
+        AssertOperation(endpoints, "api/queries:validate", "POST", "ApiValidateQuery", ["queries"], "validate", expectedInputMode: CliInputMode.Json, expectedRequestContentType: "application/json");
         AssertOperation(endpoints, "api/queries/named/{name}", "GET", "ApiGetQuery", ["queries"], "show");
         AssertOperation(endpoints, "api/queries/named/{name}", "PUT", "ApiUpdateQuery", ["queries"], "update", expectedInputMode: CliInputMode.Json, expectedRequestContentType: "application/json");
         AssertOperation(endpoints, "api/queries/named/{name}", "DELETE", "ApiDeleteQuery", ["queries"], "delete");
-        AssertOperation(endpoints, "api/queries/named/{name}/execute", "POST", "ApiExecuteQuery", ["queries"], "execute", expectedInputMode: CliInputMode.Json, expectedRequestContentType: "application/json", expectedRequestBodyOptional: true, expectedDefaultJsonBody: "{}");
+        AssertOperation(endpoints, "api/queries/named/{name}:execute", "POST", "ApiExecuteQuery", ["queries"], "execute", expectedInputMode: CliInputMode.Json, expectedRequestContentType: "application/json", expectedRequestBodyOptional: true, expectedDefaultJsonBody: "{}");
     }
 
     private static void AssertOperation(

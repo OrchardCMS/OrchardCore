@@ -16,7 +16,7 @@ public class ContentVersionApiTests
         var original = context.BlogPost;
         var id = original.ContentItemId;
         var firstVersion = original.ContentItemVersionId;
-        var draftResponse = await context.Client.PostAsync($"api/content/{id}/draft", null, TestContext.Current.CancellationToken);
+        var draftResponse = await context.Client.PostAsync($"api/content/{id}:draft", null, TestContext.Current.CancellationToken);
         draftResponse.EnsureSuccessStatusCode();
         var draft = await draftResponse.Content.ReadAsAsync<ContentItem>();
         Assert.NotEqual(firstVersion, draft.ContentItemVersionId);
@@ -24,7 +24,7 @@ public class ContentVersionApiTests
         Assert.Equal(HttpStatusCode.Conflict, conflict.StatusCode);
         using var update = new StringContent("{\"Owner\":\"current-owner\"}", System.Text.Encoding.UTF8, "application/json");
         (await context.Client.PutAsync($"api/content/{id}/draft", update, TestContext.Current.CancellationToken)).EnsureSuccessStatusCode();
-        (await context.Client.PostAsync($"api/content/{id}/publish", null, TestContext.Current.CancellationToken)).EnsureSuccessStatusCode();
+        (await context.Client.PostAsync($"api/content/{id}:publish", null, TestContext.Current.CancellationToken)).EnsureSuccessStatusCode();
 
         var list = await (await context.Client.GetAsync($"api/content/{id}/versions?skip=0&take=1", TestContext.Current.CancellationToken)).Content.ReadAsAsync<ContentItemsResponse>();
         Assert.Equal(2, list.TotalCount);
@@ -41,7 +41,7 @@ public class ContentVersionApiTests
         Assert.Equal(firstVersion, rendered.ContentItemVersionId);
         Assert.False(string.IsNullOrWhiteSpace(rendered.Html));
 
-        var restoredResponse = await context.Client.PostAsync($"api/content/versions/{firstVersion}/restore", null, TestContext.Current.CancellationToken);
+        var restoredResponse = await context.Client.PostAsync($"api/content/versions/{firstVersion}:restore", null, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Created, restoredResponse.StatusCode);
         var restored = await restoredResponse.Content.ReadAsAsync<ContentItem>();
         Assert.NotEqual(firstVersion, restored.ContentItemVersionId);
@@ -51,9 +51,9 @@ public class ContentVersionApiTests
         Assert.Equal(original.ContentItemId, restored.ContentItemId);
         Assert.Equal(original.DisplayText, restored.DisplayText);
         Assert.Equal("current-owner", restored.Owner);
-        var repeated = await context.Client.PostAsync($"api/content/versions/{firstVersion}/restore", null, TestContext.Current.CancellationToken);
+        var repeated = await context.Client.PostAsync($"api/content/versions/{firstVersion}:restore", null, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Conflict, repeated.StatusCode);
-        var replaceResponse = await context.Client.PostAsync($"api/content/versions/{firstVersion}/restore?replaceDraft=true", null, TestContext.Current.CancellationToken);
+        var replaceResponse = await context.Client.PostAsync($"api/content/versions/{firstVersion}:restore?replaceDraft=true", null, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Created, replaceResponse.StatusCode);
         var replaced = await replaceResponse.Content.ReadAsAsync<ContentItem>();
         Assert.NotEqual(restored.ContentItemVersionId, replaced.ContentItemVersionId);
@@ -70,7 +70,7 @@ public class ContentVersionApiTests
         Assert.Equal(HttpStatusCode.NoContent, (await context.Client.DeleteAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await context.Client.GetAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await context.Client.DeleteAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, (await context.Client.PostAsync($"api/content/versions/{firstVersion}/restore", null, TestContext.Current.CancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await context.Client.PostAsync($"api/content/versions/{firstVersion}:restore", null, TestContext.Current.CancellationToken)).StatusCode);
         var final = await (await context.Client.GetAsync($"api/content/{id}?version=latest", TestContext.Current.CancellationToken)).Content.ReadAsAsync<ContentItem>();
         Assert.Equal(replaced.ContentItemVersionId, final.ContentItemVersionId);
     }
@@ -83,8 +83,8 @@ public class ContentVersionApiTests
         await context.InitializeAsync();
         var id = context.BlogPost.ContentItemId;
         var archivedId = context.BlogPost.ContentItemVersionId;
-        (await context.Client.PostAsync($"api/content/{id}/draft", null, TestContext.Current.CancellationToken)).EnsureSuccessStatusCode();
-        var publish = await context.Client.PostAsync($"api/content/{id}/publish", null, TestContext.Current.CancellationToken);
+        (await context.Client.PostAsync($"api/content/{id}:draft", null, TestContext.Current.CancellationToken)).EnsureSuccessStatusCode();
+        var publish = await context.Client.PostAsync($"api/content/{id}:publish", null, TestContext.Current.CancellationToken);
         publish.EnsureSuccessStatusCode();
         var published = await publish.Content.ReadAsAsync<ContentItem>();
 
@@ -97,12 +97,12 @@ public class ContentVersionApiTests
         Assert.Equal(1, list.TotalCount);
         Assert.Equal(published.ContentItemVersionId, Assert.Single(list.Items).ContentItemVersionId);
         Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.DeleteAsync($"api/content/versions/{archivedId}", TestContext.Current.CancellationToken)).StatusCode);
-        Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.PostAsync($"api/content/versions/{archivedId}/restore", null, TestContext.Current.CancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.PostAsync($"api/content/versions/{archivedId}:restore", null, TestContext.Current.CancellationToken)).StatusCode);
         // Read access alone must not grant purge or restore permission.
         permissions.AuthorizedPermissions = [RemoteManagementPermissions.AccessRemoteManagement, CommonPermissions.AccessContentApi, CommonPermissions.PreviewContent];
         Assert.Equal(HttpStatusCode.OK, (await context.Client.GetAsync($"api/content/versions/{archivedId}", TestContext.Current.CancellationToken)).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.DeleteAsync($"api/content/versions/{archivedId}", TestContext.Current.CancellationToken)).StatusCode);
-        Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.PostAsync($"api/content/versions/{archivedId}/restore", null, TestContext.Current.CancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.PostAsync($"api/content/versions/{archivedId}:restore", null, TestContext.Current.CancellationToken)).StatusCode);
         permissions.AuthorizedPermissions = [RemoteManagementPermissions.AccessRemoteManagement];
         Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.GetAsync($"api/content/versions/{published.ContentItemVersionId}", TestContext.Current.CancellationToken)).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await context.Client.DeleteAsync("api/content/versions/nonexistent", TestContext.Current.CancellationToken)).StatusCode);

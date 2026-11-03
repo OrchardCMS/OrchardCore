@@ -152,7 +152,7 @@ with tempfile.TemporaryDirectory(prefix='content-localizations-cli-', dir=state_
     assert not edited['Published']
     assert not pomi('content', 'localizations', 'create', source_id, body={'culture': 'fr'})['created']
     assert request('api/content/' + target_id + '?version=latest')['HtmlBodyPart'] == edited['HtmlBodyPart']
-    request('api/content/' + target_id + '/publish', 'POST', status=200, raw=True)
+    request('api/content/' + target_id + ':publish', 'POST', status=200, raw=True)
     variants = pomi('content', 'localizations', 'list', source_id, '--version', 'published', client='cli-content-reader')
     assert len(variants) == 2 and all(item['published'] for item in variants)
     assert translated_marker in request(translated_path, client=None, raw=True)

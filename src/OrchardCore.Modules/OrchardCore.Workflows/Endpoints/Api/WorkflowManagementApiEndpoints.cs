@@ -89,7 +89,7 @@ internal static class WorkflowManagementApiEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
-        group.MapPost("/types/validate", ValidateWorkflowTypeAsync)
+        group.MapPost("/types:validate", ValidateWorkflowTypeAsync)
             .WithName("ApiValidateWorkflowType")
             .WithTags("Workflows")
             .WithSummary("Validates a workflow graph.")

@@ -143,7 +143,7 @@ with tempfile.TemporaryDirectory(prefix='smtp-cli-', dir=state_path.parent) as c
         request(path, client=None, status=401)
         request(path, client='cli-discovery', status=403)
         request(path, client='cli-email')
-    request('api/email/test', 'POST', {}, client='cli-discovery', status=403)
+    request('api/email:test', 'POST', {}, client='cli-discovery', status=403)
     schema = pomi('settings', 'sections', 'schema', 'smtp')
     assert schema['properties']['password']['writeOnly']
     config = {'isEnabled': True, 'defaultSender': 'admin@example.test',
@@ -212,7 +212,7 @@ with tempfile.TemporaryDirectory(prefix='smtp-cli-', dir=state_path.parent) as c
         assert not independent['isEnabled']
         secondary('api/settings/sections/smtp', 'PUT', {'isEnabled': True, 'defaultSender': 'secondary@example.test',
             'deliveryMethod': 'SpecifiedPickupDirectory', 'pickupDirectoryLocation': name})
-        secondary('api/email/test', 'POST', {'provider': 'SMTP', 'to': 'recipient@example.test', 'subject': name + ' child', 'body': 'Child pickup proof'}, status=204)
+        secondary('api/email:test', 'POST', {'provider': 'SMTP', 'to': 'recipient@example.test', 'subject': name + ' child', 'body': 'Child pickup proof'}, status=204)
         child_messages = list((Path(state['root']) / 'App_Data' / 'Sites' / secondary_name).rglob('*.eml'))
         assert len(child_messages) == 1
         assert 'Child pickup proof' in child_messages[0].read_text()

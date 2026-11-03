@@ -451,7 +451,7 @@ also returns `204`. Other responses are `401` or `403`.
 
 ### Validate a workflow graph
 
-`POST /api/workflows/types/validate`
+`POST /api/workflows/types:validate`
 
 The required body uses the workflow type contract. Validation normalizes/generates activity
 IDs in memory and does not save the type.
@@ -477,7 +477,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
       }
     ]
   }' \
-  https://localhost:5001/api/workflows/types/validate
+  https://localhost:5001/api/workflows/types:validate
 ```
 
 `200 OK` returns validation results; graph errors do not change the HTTP status:

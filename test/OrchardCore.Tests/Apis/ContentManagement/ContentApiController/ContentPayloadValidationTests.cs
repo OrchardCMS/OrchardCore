@@ -21,7 +21,7 @@ public class ContentPayloadValidationTests
 
         // Validation must accept the same merged payload without changing the stored item.
         using var validationBody = new StringContent(payload, Encoding.UTF8, "application/json");
-        using var validation = await context.Client.PostAsync($"api/content/{id}/validate", validationBody, TestContext.Current.CancellationToken);
+        using var validation = await context.Client.PostAsync($"api/content/{id}:validate", validationBody, TestContext.Current.CancellationToken);
         validation.EnsureSuccessStatusCode();
         var validated = JsonNode.Parse(await validation.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.True(validated["isValid"].GetValue<bool>());
@@ -60,7 +60,7 @@ public class ContentPayloadValidationTests
         var originalVersion = context.BlogPost.ContentItemVersionId;
         foreach (var (method, route) in new[]
         {
-            (HttpMethod.Post, $"api/content/{id}/validate"),
+            (HttpMethod.Post, $"api/content/{id}:validate"),
             (HttpMethod.Put, $"api/content/{id}/draft"),
             (HttpMethod.Put, $"api/content/{id}"),
         })
@@ -70,7 +70,7 @@ public class ContentPayloadValidationTests
 
         var create = JsonNode.Parse(json).AsObject();
         create["ContentType"] = "BlogPost";
-        foreach (var route in new[] { "api/content/validate", "api/content/draft", "api/content" })
+        foreach (var route in new[] { "api/content:validate", "api/content:create-draft", "api/content" })
         {
             await AssertInvalidAsync(context.Client, HttpMethod.Post, route, create.ToJsonString(), errorPath);
         }
@@ -93,9 +93,9 @@ public class ContentPayloadValidationTests
     {
         using var context = new BlogPostApiControllerContext();
         await context.InitializeAsync();
-        await AssertInvalidAsync(context.Client, HttpMethod.Post, "api/content/validate", "{\"TitlePart\":{\"Title\":\"Hello\"}}", "ContentType");
-        await AssertInvalidAsync(context.Client, HttpMethod.Post, "api/content/draft", "{}", "ContentType");
-        await AssertInvalidAsync(context.Client, HttpMethod.Post, $"api/content/{context.BlogPost.ContentItemId}/validate", "{\"ContentItemId\":\"wrong-id\"}", "ContentItemId");
+        await AssertInvalidAsync(context.Client, HttpMethod.Post, "api/content:validate", "{\"TitlePart\":{\"Title\":\"Hello\"}}", "ContentType");
+        await AssertInvalidAsync(context.Client, HttpMethod.Post, "api/content:create-draft", "{}", "ContentType");
+        await AssertInvalidAsync(context.Client, HttpMethod.Post, $"api/content/{context.BlogPost.ContentItemId}:validate", "{\"ContentItemId\":\"wrong-id\"}", "ContentItemId");
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class ContentPayloadValidationTests
         using var context = new BlogPostApiControllerContext();
         await context.InitializeAsync();
         using var body = new StringContent("{\"TitlePart\":{\"Title\":\"Revised title\"},\"MarkdownBodyPart\":{\"Markdown\":\"**Valid** text\"}}", Encoding.UTF8, "application/json");
-        var response = await context.Client.PostAsync($"api/content/{context.BlogPost.ContentItemId}/validate", body, TestContext.Current.CancellationToken);
+        var response = await context.Client.PostAsync($"api/content/{context.BlogPost.ContentItemId}:validate", body, TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
         var json = JsonNode.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.True(json["isValid"].GetValue<bool>());
@@ -130,9 +130,9 @@ public class ContentPayloadValidationTests
             await scope.ServiceProvider.GetRequiredService<YesSql.ISession>().SaveAsync(item);
         });
 
-        await AssertInvalidAsync(context.Client, HttpMethod.Post, $"api/content/{id}/validate", "{}", "TitlePart.Title");
+        await AssertInvalidAsync(context.Client, HttpMethod.Post, $"api/content/{id}:validate", "{}", "TitlePart.Title");
         await AssertInvalidAsync(context.Client, HttpMethod.Put, $"api/content/{id}/draft", "{}", "TitlePart.Title");
-        await AssertInvalidAsync(context.Client, HttpMethod.Post, $"api/content/versions/{context.BlogPost.ContentItemVersionId}/restore", "{}", "TitlePart.Title");
+        await AssertInvalidAsync(context.Client, HttpMethod.Post, $"api/content/versions/{context.BlogPost.ContentItemVersionId}:restore", "{}", "TitlePart.Title");
 
     }
 

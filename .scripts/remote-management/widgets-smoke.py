@@ -135,7 +135,7 @@ with tempfile.TemporaryDirectory(prefix='widgets-cli-', dir=state_path.parent) a
         pomi('layers', 'widgets', 'show', first, status=404)
         assert markers[0] not in request(name.lower(), client=None, raw=True)
         draft_marker = 'unpublished-' + secrets.token_hex(6)
-        request('api/content/' + first + '/draft', 'POST')
+        request('api/content/' + first + ':draft', 'POST')
         request('api/content/' + first + '/draft', 'PUT', {'HtmlBodyPart': {'Html': '<p>' + draft_marker + '</p>'}})
         placement = {'layer': name, 'zone': 'Content', 'position': 2, 'renderTitle': False}
         pomi('layers', 'widgets', 'update', first, body=placement, client='cli-layers', status=403)

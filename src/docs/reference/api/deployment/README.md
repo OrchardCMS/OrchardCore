@@ -45,8 +45,8 @@ Artifacts and operations belong to the identity that created them: the tenant, i
 | `GET` | `/api/deployment/artifacts/{id}` | `ApiGetDeploymentArtifact` | `deployment artifacts show <id>` | `Export` or `Import` |
 | `DELETE` | `/api/deployment/artifacts/{id}` | `ApiDeleteDeploymentArtifact` | `deployment artifacts delete <id> --force` | `Export` or `Import` |
 | `GET` | `/api/deployment/artifacts/{id}/content` | `ApiDownloadDeploymentArtifact` | `deployment artifacts download <id> --output-file <path>` | `Export` or `Import` |
-| `POST` | `/api/deployment/operations/export` | `ApiQueueDeploymentExport` | `deployment operations export` | `Export` |
-| `POST` | `/api/deployment/operations/import` | `ApiQueueDeploymentImport` | `deployment operations import --force` | `Import` |
+| `POST` | `/api/deployment/operations:export` | `ApiQueueDeploymentExport` | `deployment operations export` | `Export` |
+| `POST` | `/api/deployment/operations:import` | `ApiQueueDeploymentImport` | `deployment operations import --force` | `Import` |
 | `GET` | `/api/deployment/operations/{id}` | `ApiGetDeploymentOperation` | `deployment operations show <id>` | `Export` or `Import` |
 
 ### MCP
@@ -324,7 +324,7 @@ An interrupted execution becomes `uncertain` and is never replayed. An import ca
 
 ### Queue an export
 
-`POST /api/deployment/operations/export`
+`POST /api/deployment/operations:export`
 
 ```json
 { "requestId": "nightly-2026-01-15", "planId": 123 }
@@ -334,7 +334,7 @@ The operation captures a snapshot of the plan's configuration when it is accepte
 
 ### Queue an import
 
-`POST /api/deployment/operations/import`
+`POST /api/deployment/operations:import`
 
 ```json
 { "requestId": "import-2026-01-15", "artifactId": "2f1c0a9e5b7d4e8c" }

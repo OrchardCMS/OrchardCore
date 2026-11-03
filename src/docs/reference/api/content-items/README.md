@@ -72,24 +72,24 @@ All request and response bodies use `application/json`.
 | `GET` | `/api/content` | List content items |
 | `GET` | `/api/content/{contentItemId}` | Get one version |
 | `POST` | `/api/content` | Create or update and optionally publish |
-| `POST` | `/api/content/draft` | Create a new draft |
+| `POST` | `/api/content:create-draft` | Create a new draft |
 | `PUT` | `/api/content/{contentItemId}` | Update and publish |
 | `PUT` | `/api/content/{contentItemId}/draft` | Update and keep as draft |
-| `POST` | `/api/content/{contentItemId}/draft` | Create or refresh a draft version |
-| `POST` | `/api/content/{contentItemId}/publish` | Publish the draft |
-| `POST` | `/api/content/{contentItemId}/unpublish` | Unpublish the published version |
+| `POST` | `/api/content/{contentItemId}:draft` | Create or refresh a draft version |
+| `POST` | `/api/content/{contentItemId}:publish` | Publish the draft |
+| `POST` | `/api/content/{contentItemId}:unpublish` | Unpublish the published version |
 | `POST` | `/api/content/{contentItemId}:clone` | Clone into a new draft item |
 | `POST` | `/api/content/{contentItemId}:discard-draft` | Discard the draft version |
 | `DELETE` | `/api/content/{contentItemId}` | Delete the latest version |
 | `POST` | `/api/content:bulk` | Publish, unpublish, or delete several items |
-| `POST` | `/api/content/validate` | Validate a create/existing draft payload |
-| `POST` | `/api/content/{contentItemId}/validate` | Validate an update |
+| `POST` | `/api/content:validate` | Validate a create/existing draft payload |
+| `POST` | `/api/content/{contentItemId}:validate` | Validate an update |
 | `GET` | `/api/content/{contentItemId}/render` | Render a version |
 | `GET` | `/api/content/schema/{contentType}` | Get the type's JSON Schema |
 | `GET` | `/api/content/{contentItemId}/versions` | List readable versions, newest first |
 | `GET` | `/api/content/versions/{contentItemVersionId}` | Get an exact stored version |
 | `GET` | `/api/content/versions/{contentItemVersionId}/render` | Render an exact stored version |
-| `POST` | `/api/content/versions/{contentItemVersionId}/restore` | Restore into a new unpublished draft |
+| `POST` | `/api/content/versions/{contentItemVersionId}:restore` | Restore into a new unpublished draft |
 | `DELETE` | `/api/content/versions/{contentItemVersionId}` | Permanently delete an archived version |
 
 ## Shared contracts
@@ -405,7 +405,7 @@ Also returns `400`, `401`, `403`, or `404`.
 
 ### Create a draft content item
 
-`POST /api/content/draft`
+`POST /api/content:create-draft`
 
 The required body is a content item whose `ContentType` exists. Omit `ContentItemId` to create a
 draft with a generated ID; that form is not retry-safe. Supplying an ID creates that exact logical
@@ -426,7 +426,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
       "Title": "Draft article"
     }
   }' \
-  https://localhost:5001/api/content/draft
+  https://localhost:5001/api/content:create-draft
 ```
 
 `201 Created` returns the draft and sets `Location` to `/api/content/{ContentItemId}`:
@@ -546,7 +546,7 @@ Also returns `400`, `401`, `403`, or `404`.
 
 ### Create or refresh a draft version
 
-`POST /api/content/{contentItemId}/draft`
+`POST /api/content/{contentItemId}:draft`
 
 `contentItemId` is a required string path parameter. No body or query parameters are accepted.
 The latest version is passed to the content manager's draft-saving operation, then the required
@@ -555,7 +555,7 @@ without creating another version. Requires `EditContent`.
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN" \
-  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc/draft
+  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc:draft
 ```
 
 `200 OK` returns the schema-dependent draft:
@@ -583,7 +583,7 @@ Also returns `401`, `403`, or `404`.
 
 ### Publish a content item
 
-`POST /api/content/{contentItemId}/publish`
+`POST /api/content/{contentItemId}:publish`
 
 `contentItemId` is required. No body or query parameters. A draft version is published; if the
 item is already published, the current published item is returned without another transition.
@@ -591,7 +591,7 @@ Requires `PublishContent`.
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN" \
-  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc/publish
+  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc:publish
 ```
 
 `200 OK` returns the published document:
@@ -619,7 +619,7 @@ Also returns `401`, `403`, or `404`.
 
 ### Unpublish a content item
 
-`POST /api/content/{contentItemId}/unpublish`
+`POST /api/content/{contentItemId}:unpublish`
 
 `contentItemId` is required. No body or query parameters. A published version is unpublished; if
 the item is already unpublished, its latest version is returned without another transition.
@@ -627,7 +627,7 @@ Requires `PublishContent`.
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN" \
-  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc/unpublish
+  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc:unpublish
 ```
 
 `200 OK` returns the latest version after unpublishing:
@@ -753,7 +753,7 @@ Also returns `400` Validation Problem Details for an invalid request, `401`, or 
 
 ### Validate a content item payload
 
-`POST /api/content/validate`
+`POST /api/content:validate`
 
 The content item body is required. If it includes `ContentItemId`, the API validates an update
 to a detached copy of the latest item; otherwise `ContentType` must identify an existing type
@@ -769,7 +769,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
       "Title": ""
     }
   }' \
-  https://localhost:5001/api/content/validate
+  https://localhost:5001/api/content:validate
 ```
 
 `200 OK` returns `{"isValid":true,"errors":{}}` for valid content. Invalid
@@ -781,7 +781,7 @@ Error keys/messages are content-type dependent. Also returns `401`, `403`, or `4
 
 ### Validate a content item update
 
-`POST /api/content/{contentItemId}/validate`
+`POST /api/content/{contentItemId}:validate`
 
 `contentItemId` and the content item body are required. The API merges the body into a
 detached copy of the latest item, validates it without saving or creating a draft, and
@@ -797,7 +797,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
       "Title": "Valid title"
     }
   }' \
-  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc/validate
+  https://localhost:5001/api/content/4xyz6d8qk2s9r1n7m5p3t0vabc:validate
 ```
 
 `200 OK` returns:
@@ -962,7 +962,7 @@ the current resource for authorization.
 
 ### Version restore
 
-`POST /api/content/versions/{contentItemVersionId}/restore` takes no body and
+`POST /api/content/versions/{contentItemVersionId}:restore` takes no body and
 accepts optional boolean `replaceDraft` (default `false`). In addition to read
 permission, it requires `EditContent` and `PublishContent` on the source and
 current item. It clones the source, preserves the current owner, and runs

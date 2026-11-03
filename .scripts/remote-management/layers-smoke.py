@@ -138,7 +138,7 @@ with tempfile.TemporaryDirectory(prefix='layers-cli-', dir=state_path.parent) as
         assert updated == pomi('layers', 'show', name)
 
         for path, method, body in [('api/layers', 'GET', None), ('api/layers/by-name?name=' + urllib.parse.quote(name, safe=''), 'GET', None),
-                ('api/layer-conditions', 'GET', None), ('api/layers/validate', 'POST', definition),
+                ('api/layer-conditions', 'GET', None), ('api/layers:validate', 'POST', definition),
                 ('api/layers', 'POST', definition), ('api/layers/by-name?name=' + urllib.parse.quote(name, safe=''), 'PUT', definition),
                 ('api/layers/by-name?name=' + urllib.parse.quote(name, safe=''), 'DELETE', None)]:
             request(path, method, body, client=None, status=401)

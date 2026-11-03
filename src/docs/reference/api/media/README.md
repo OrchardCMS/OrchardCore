@@ -853,7 +853,7 @@ Named image profiles belong to the **Media** feature. The cache operations need 
 | `PUT` | `/api/media/profiles/by-name?name={name}` | `ApiUpdateMediaProfile` | `media profiles update <name>` | `ManageMediaProfiles` |
 | `DELETE` | `/api/media/profiles/by-name?name={name}` | `ApiDeleteMediaProfile` | `media profiles delete <name> --force` | `ManageMediaProfiles` |
 | `GET` | `/api/media/cache` | `ApiGetMediaCache` | `media cache show` | `ManageAssetCache` |
-| `POST` | `/api/media/cache/purge?cache={cache}` | `ApiPurgeMediaCache` | `media cache purge <cache> --force` | `ManageAssetCache` |
+| `POST` | `/api/media/cache:purge?cache={cache}` | `ApiPurgeMediaCache` | `media cache purge <cache> --force` | `ManageAssetCache` |
 
 Deleting a profile and purging a cache are only MCP tools with `AllowConfirmationRequiredTools`, see [MCP server](../../modules/RemoteManagement/README.md#mcp-server).
 
@@ -916,7 +916,7 @@ An unknown `mode` or `format` returns a `400` Problem Details, and other invalid
 
 #### Purge a cache
 
-`POST /api/media/cache/purge?cache=resized` purges one cache of the tenant, and has no body. `cache` is `resized`, for the resized images, or `remote`, for the remote asset cache.
+`POST /api/media/cache:purge?cache=resized` purges one cache of the tenant, and has no body. `cache` is `resized`, for the resized images, or `remote`, for the remote asset cache.
 
 | Status | Meaning |
 | --- | --- |

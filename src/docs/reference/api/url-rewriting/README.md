@@ -19,7 +19,7 @@ Every operation requires an `Api` scheme bearer token, **Access remote managemen
 | `GET` | `/api/url-rewriting/rules` | `ApiListUrlRewriteRules` | `url-rewriting rules list` |
 | `GET` | `/api/url-rewriting/rules/{id}` | `ApiGetUrlRewriteRule` | `url-rewriting rules show <id>` |
 | `GET` | `/api/url-rewriting/sources` | `ApiListUrlRewriteSources` | `url-rewriting rules sources` |
-| `POST` | `/api/url-rewriting/rules/validate` | `ApiValidateUrlRewriteRule` | `url-rewriting rules validate` |
+| `POST` | `/api/url-rewriting/rules:validate` | `ApiValidateUrlRewriteRule` | `url-rewriting rules validate` |
 | `POST` | `/api/url-rewriting/rules` | `ApiCreateUrlRewriteRule` | `url-rewriting rules create` |
 | `PUT` | `/api/url-rewriting/rules/{id}` | `ApiUpdateUrlRewriteRule` | `url-rewriting rules update <id>` |
 | `DELETE` | `/api/url-rewriting/rules/{id}` | `ApiDeleteUrlRewriteRule` | `url-rewriting rules delete <id> --force` |
@@ -120,7 +120,7 @@ Rules are in the order they run. `200` returns `skip`, `take`, `totalCount` and 
 
 ## Validate a definition
 
-`POST /api/url-rewriting/rules/validate`
+`POST /api/url-rewriting/rules:validate`
 
 Checks a complete definition, including that its source can parse it, without saving it or matching a request. Valid and invalid definitions both return `200`, and repeating the request has no effect:
 
