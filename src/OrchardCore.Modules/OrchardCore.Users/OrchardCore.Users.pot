@@ -361,6 +361,11 @@ msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Confirm email"
 msgstr ""
 
+#: Endpoints/Management/UserManagementEndpoints.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Could not confirm the email."
+msgstr ""
+
 #: Controllers/AdminController.cs
 #: Endpoints/Management/UserManagementEndpoints.cs
 msgctxt "OrchardCore.Users.Controllers.AdminController"
@@ -387,7 +392,13 @@ msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Could not enable the user."
 msgstr ""
 
+#: Endpoints/Management/UserManagementEndpoints.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Could not send the password reset email."
+msgstr ""
+
 #: Controllers/AdminController.cs
+#: Endpoints/Management/UserManagementEndpoints.cs
 msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Could not unlock the user."
 msgstr ""
@@ -417,6 +428,11 @@ msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Enable"
 msgstr ""
 
+#: Endpoints/Management/UserManagementEndpoints.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Enable the password reset feature and setting and the email feature to send a password reset email."
+msgstr ""
+
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Enabled Users"
@@ -425,6 +441,11 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Name"
+msgstr ""
+
+#: Endpoints/Management/UserManagementEndpoints.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Password reset is not available."
 msgstr ""
 
 #. Format arguments: {0}: user.UserName
@@ -444,6 +465,11 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "The password has been changed successfully."
+msgstr ""
+
+#: Endpoints/Management/UserManagementEndpoints.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "The user has no email address."
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -500,6 +526,16 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "User {0} successfully enabled."
+msgstr ""
+
+#: Endpoints/Management/UserManagementEndpoints.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "You cannot delete your own account."
+msgstr ""
+
+#: Endpoints/Management/UserManagementEndpoints.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "You cannot disable your own account."
 msgstr ""
 
 #: Controllers/AuthenticatorAppController.cs

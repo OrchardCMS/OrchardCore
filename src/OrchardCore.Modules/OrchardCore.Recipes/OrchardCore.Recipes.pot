@@ -70,7 +70,7 @@ msgstr ""
 
 #: Endpoints/Management/RecipeManagementEndpoints.cs
 msgctxt "OrchardCore.Recipes.Controllers.AdminController"
-msgid "Recipe execution failed."
+msgid "Recipe execution not found."
 msgstr ""
 
 #: Endpoints/Management/RecipeManagementEndpoints.cs
@@ -104,12 +104,32 @@ msgctxt "OrchardCore.Recipes.Controllers.AdminController"
 msgid "The recipe '{0}' has been run successfully."
 msgstr ""
 
+#: Endpoints/Management/RecipeManagementEndpoints.cs
+msgctxt "OrchardCore.Recipes.Controllers.AdminController"
+msgid "The request ID must have 1 to 128 letters, digits, hyphens or underscores."
+msgstr ""
+
 #. Format arguments: {0}: recipe.DisplayName
 #: Controllers/AdminController.cs
 #: Endpoints/Management/RecipeManagementEndpoints.cs
 #, csharp-format
 msgctxt "OrchardCore.Recipes.Controllers.AdminController"
 msgid "Unexpected error occurred while running the '{0}' recipe."
+msgstr ""
+
+#: Endpoints/Management/RecipeManagementEndpoints.cs
+msgctxt "OrchardCore.Recipes.Endpoints.Management.RecipeManagementEndpoints"
+msgid "Recipe execution failed."
+msgstr ""
+
+#: Endpoints/Management/RecipeManagementEndpoints.cs
+msgctxt "OrchardCore.Recipes.Endpoints.Management.RecipeManagementEndpoints"
+msgid "The request ID already belongs to the execution of another recipe."
+msgstr ""
+
+#: Endpoints/Management/RecipeManagementEndpoints.cs
+msgctxt "OrchardCore.Recipes.Endpoints.Management.RecipeManagementEndpoints"
+msgid "This request has no outcome yet. Get the status of the execution, and use another request ID to execute the recipe again."
 msgstr ""
 
 #. Format arguments: {0}: recipe.Name

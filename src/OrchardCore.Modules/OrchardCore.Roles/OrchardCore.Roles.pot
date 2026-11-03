@@ -38,6 +38,11 @@ msgid_plural "Could not delete this role. Errors: {1}"
 msgstr[0] ""
 msgstr[1] ""
 
+#: Endpoints/Management/RoleManagementEndpoints.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Forbidden"
+msgstr ""
+
 #: Controllers/AdminController.cs
 #: Endpoints/Management/RoleManagementEndpoints.cs
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
@@ -84,6 +89,13 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "The role was cloned successfully."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", permissionNames)
+#: Endpoints/Management/RoleManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "You can only grant permissions that you hold. Missing permissions: {0}."
 msgstr ""
 
 #. Format arguments: {0}: feature.Id

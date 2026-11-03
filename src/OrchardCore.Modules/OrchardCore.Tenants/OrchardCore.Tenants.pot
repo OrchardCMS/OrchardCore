@@ -16,6 +16,31 @@ msgctxt "OrchardCore.Tenants.AdminMenu"
 msgid "Tenants"
 msgstr ""
 
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Disabled"
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Enabled"
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Remote management was disabled for a tenant."
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Remote management was enabled for a tenant."
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Tenant remote management"
+msgstr ""
+
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Tenants.Controllers.AdminController"
 msgid "All"
@@ -272,7 +297,21 @@ msgstr ""
 #: Endpoints/Management/TenantManagementEndpoints.cs
 #, csharp-format
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' must be running before remote management can be disabled."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "Tenant '{0}' must be running before remote management can be enabled."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' must be running to be reloaded."
 msgstr ""
 
 #. Format arguments: {0}: tenantName
@@ -404,7 +443,17 @@ msgstr ""
 
 #: Endpoints/Management/TenantManagementEndpoints.cs
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You cannot disable remote management for the Default tenant: it hosts this API."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "You cannot stop the Default tenant."
+msgstr ""
+
+#: Endpoints/Management/TenantSetupDiagnosticsEndpoints.cs
+msgctxt "OrchardCore.Tenants.Endpoints.Management.FailureRecordingSetupService"
+msgid "An error occurred while running the setup. Consult the application logs for details."
 msgstr ""
 
 #: FeatureProfilesAdminMenu.cs
