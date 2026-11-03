@@ -11,6 +11,7 @@ using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Endpoints.Management;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
@@ -41,6 +42,39 @@ public class UserManagementEndpointsTests
         Assert.DoesNotContain("password", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("securityStamp", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("resetToken", json, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_InvalidPassword_SavesNothing()
+    {
+        var user = new User { UserId = "alice", UserName = "alice", Email = "old@example.test", IsEnabled = true };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+        var validator = new Mock<IPasswordValidator<IUser>>();
+        validator.Setup(value => value.ValidateAsync(userManager.Object, user, "weak"))
+            .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Too weak." }));
+        userManager.Object.PasswordValidators.Add(validator.Object);
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddLocalization();
+        var provider = services.BuildServiceProvider();
+        var authorization = new Mock<IAuthorizationService>();
+        authorization
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(AuthorizationResult.Success());
+
+        var result = await UserManagementEndpoints.UpdateAsync(
+            new DefaultHttpContext { RequestServices = provider },
+            "alice",
+            new UserManagementEndpoints.UserUpdateRequest { Email = "new@example.test", Password = "weak" },
+            userManager.Object,
+            Mock.Of<IUserService>(),
+            authorization.Object,
+            provider);
+
+        Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.Equal("old@example.test", user.Email);
+        userManager.Verify(manager => manager.UpdateAsync(It.IsAny<IUser>()), Times.Never);
     }
 
     [Theory]

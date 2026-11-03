@@ -145,7 +145,7 @@ internal static class UserManagementEndpoints
         var skip = request.Skip ?? 0;
         var take = request.Take ?? 50;
 
-        if (ValidatePaging(skip, take) is { } pagingError)
+        if (httpContext.ApiPagingProblem(skip, take) is { } pagingError)
         {
             return pagingError;
         }
@@ -284,6 +284,29 @@ internal static class UserManagementEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, user))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        // Report what would fail in the later steps before saving anything.
+        var preflight = new ModelStateDictionary();
+        if (!string.IsNullOrWhiteSpace(request.Password))
+        {
+            foreach (var validator in userManager.PasswordValidators)
+            {
+                foreach (var error in (await validator.ValidateAsync(userManager, user, request.Password)).Errors)
+                {
+                    preflight.AddModelError(nameof(UserUpdateRequest.Password), error.Description);
+                }
+            }
+        }
+
+        if (request.IsEnabled == false && user.IsEnabled && await IsSoleEnabledAdministratorAsync(serviceProvider, userManager, user))
+        {
+            preflight.AddModelError(nameof(UserUpdateRequest.IsEnabled), "Could not disable the user.");
+        }
+
+        if (!preflight.IsValid)
+        {
+            return httpContext.ApiValidationProblem(modelState: preflight);
         }
 
         user.UserName = request.UserName ?? user.UserName;
@@ -590,21 +613,6 @@ internal static class UserManagementEndpoints
         return value.Contains(' ') || value.Contains('"')
             ? '"' + value.Replace("\"", "\\\"", StringComparison.Ordinal) + '"'
             : value;
-    }
-
-    private static Microsoft.AspNetCore.Http.HttpResults.ProblemHttpResult ValidatePaging(int skip, int take)
-    {
-        if (skip < 0 || take < 1)
-        {
-            return TypedResults.Problem(title: "Bad request", detail: "Skip must be zero or greater and take must be greater than zero.", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (take > 200)
-        {
-            return TypedResults.Problem(title: "Bad request", detail: "Take cannot exceed 200.", statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        return null;
     }
 
     internal sealed class UserListRequest
