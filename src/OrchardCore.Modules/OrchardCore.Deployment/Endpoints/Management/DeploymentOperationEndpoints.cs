@@ -47,7 +47,7 @@ internal static class DeploymentOperationEndpoints
     {
         var owner = await OwnerAsync(context, authorization, DeploymentPermissions.Export);
         if (owner is null) { return context.ApiForbidProblem(); }
-        if (!ValidRequestId(request.RequestId) || request.PlanId <= 0) { return InvalidRequest(); }
+        if (!ValidRequestId(request?.RequestId) || request.PlanId <= 0) { return InvalidRequest(); }
         var plan = await plans.GetAsync(request.PlanId);
         if (plan is null) { return context.ApiNotFoundProblem(); }
         if (plan.DeploymentSteps.Any(step => step is UnknownDeploymentStep))
@@ -64,7 +64,7 @@ internal static class DeploymentOperationEndpoints
     {
         var owner = await OwnerAsync(context, authorization, DeploymentPermissions.Import);
         if (owner is null) { return context.ApiForbidProblem(); }
-        if (!ValidRequestId(request.RequestId) || string.IsNullOrWhiteSpace(request.ArtifactId)) { return InvalidRequest(); }
+        if (!ValidRequestId(request?.RequestId) || string.IsNullOrWhiteSpace(request.ArtifactId)) { return InvalidRequest(); }
         // An accepted request survives artifact expiry/deletion. Return its durable
         // outcome on a retry without admitting another execution.
         if (await operations.FindRequestAsync(owner, request.RequestId, context.RequestAborted) is not null)

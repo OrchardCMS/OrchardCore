@@ -177,6 +177,28 @@ public class TenantManagementEndpointsTests
         Assert.Equal(expected, tenantSettings["FeatureProfile"]);
     }
 
+    [Fact]
+    public async Task CreateAsync_MissingBody_ReturnsBadRequest()
+    {
+        var result = await TenantManagementEndpoints.CreateAsync(
+            CreateHttpContext(),
+            null,
+            Mock.Of<IShellHost>(),
+            new ShellSettings { Name = ShellSettings.DefaultShellName },
+            Mock.Of<IShellSettingsManager>(),
+            CreateAuthorizationService(),
+            Mock.Of<IDataProtectionProvider>(),
+            Mock.Of<IClock>(),
+            [],
+            Mock.Of<ITenantValidator>(),
+            null,
+            CreateLocalizer(),
+            Mock.Of<ILogger<TenantApiController>>(),
+            Mock.Of<IDistributedLock>());
+
+        Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+    }
+
     private static DefaultHttpContext CreateHttpContext()
     {
         var services = new ServiceCollection();

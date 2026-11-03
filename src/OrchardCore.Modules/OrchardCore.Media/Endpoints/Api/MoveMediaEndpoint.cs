@@ -76,7 +76,7 @@ public static class MoveMediaEndpoint
         [FromServices] ILogger<MediaApiEndpoints> logger,
         [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
         [FromBody] MoveMediaRequest request)
-        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, contentTypeProvider, fileVersionProvider, options, serviceProvider, logger, localizer, request.OldPath, request.NewPath);
+        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, contentTypeProvider, fileVersionProvider, options, serviceProvider, logger, localizer, request?.OldPath, request?.NewPath);
 
     private static async Task<IResult> HandleLegacyResultAsync(
         HttpContext httpContext,

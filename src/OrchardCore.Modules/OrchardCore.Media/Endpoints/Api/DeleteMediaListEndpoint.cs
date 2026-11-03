@@ -48,7 +48,7 @@ public static class DeleteMediaListEndpoint
         [FromServices] IAuthorizationService authorizationService,
         [FromServices] IMediaFileStore mediaFileStore,
         [FromBody] DeleteMediaListRequest request)
-        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, request.Paths);
+        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, request?.Paths);
 
     private static async Task<IResult> HandleLegacyResultAsync(
         HttpContext httpContext,

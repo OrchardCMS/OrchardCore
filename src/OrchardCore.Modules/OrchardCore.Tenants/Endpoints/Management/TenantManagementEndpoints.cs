@@ -342,7 +342,10 @@ internal static partial class TenantManagementEndpoints
         [FromServices] ILogger<TenantApiController> logger,
         [FromServices] IDistributedLock distributedLock)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
 
         if (await AuthorizeManageTenantsAsync(httpContext, authorizationService, currentShellSettings, localizer) is { } authError)
         {
@@ -452,7 +455,10 @@ internal static partial class TenantManagementEndpoints
         [FromServices] IStringLocalizer<TenantApiController> localizer,
         [FromServices] ILogger<TenantApiController> logger)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
 
         if (await AuthorizeManageTenantsAsync(httpContext, authorizationService, currentShellSettings, localizer) is { } authError)
         {
@@ -537,7 +543,10 @@ internal static partial class TenantManagementEndpoints
         [FromServices] IStringLocalizer<TenantApiController> localizer,
         [FromServices] ILogger<TenantApiController> logger)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
 
         if (await AuthorizeManageTenantsAsync(httpContext, authorizationService, currentShellSettings, localizer) is { } authError)
         {

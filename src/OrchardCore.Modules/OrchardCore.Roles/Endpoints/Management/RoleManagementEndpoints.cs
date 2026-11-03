@@ -164,7 +164,10 @@ internal static class RoleManagementEndpoints
 
     internal static async Task<IResult> CreateAsync(HttpContext httpContext, RoleCreateRequest request, IAuthorizationService authorizationService, RoleManager<IRole> roleManager, IRoleService roleService, PermissionCatalog permissionCatalog, IStringLocalizer<AdminController> localizer)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
 
         if (!await authorizationService.AuthorizeAsync(httpContext.User, RolesPermissions.ManageRoles))
         {
@@ -228,7 +231,10 @@ internal static class RoleManagementEndpoints
 
     internal static async Task<IResult> UpdateAsync(HttpContext httpContext, string roleId, RoleUpdateRequest request, IAuthorizationService authorizationService, RoleManager<IRole> roleManager, IRoleService roleService, PermissionCatalog permissionCatalog)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
 
         if (!await authorizationService.AuthorizeAsync(httpContext.User, RolesPermissions.ManageRoles))
         {

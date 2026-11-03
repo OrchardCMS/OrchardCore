@@ -68,7 +68,7 @@ public static class CreateFolderEndpoint
         [FromServices] MediaDirectoryTreeCache directoryTreeCache,
         [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
         [FromBody] CreateFolderRequest request)
-        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, mediaNameNormalizerService, options, attachedMediaFieldFileService, directoryTreeCache, localizer, request.Path, request.Name);
+        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, mediaNameNormalizerService, options, attachedMediaFieldFileService, directoryTreeCache, localizer, request?.Path, request?.Name);
 
     private static async Task<IResult> HandleLegacyResultAsync(
         HttpContext httpContext,

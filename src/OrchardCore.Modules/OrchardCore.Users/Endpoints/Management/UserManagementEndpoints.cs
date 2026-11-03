@@ -186,7 +186,10 @@ internal static class UserManagementEndpoints
 
     internal static async Task<IResult> CreateAsync(HttpContext httpContext, UserCreateRequest request, UserManager<IUser> userManager, IUserService userService, IAuthorizationService authorizationService, IServiceProvider serviceProvider)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
 
         if (await userManager.FindByNameAsync(request.UserName) is User existingUser)
         {
@@ -266,7 +269,10 @@ internal static class UserManagementEndpoints
 
     internal static async Task<IResult> UpdateAsync(HttpContext httpContext, string userId, UserUpdateRequest request, UserManager<IUser> userManager, IUserService userService, IAuthorizationService authorizationService, IServiceProvider serviceProvider)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
 
         if (await userManager.FindByIdAsync(userId) is not User user)
         {

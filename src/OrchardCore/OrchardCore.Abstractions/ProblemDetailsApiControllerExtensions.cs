@@ -159,6 +159,18 @@ public static class ProblemDetailsApiControllerExtensions
     }
 
     /// <summary>
+    /// Returns a Problem with a 400 Bad Request status code, for a minimal API endpoint called without its request body.
+    /// </summary>
+    public static IResult ApiMissingBodyProblem(this HttpContext httpContext)
+    {
+        var S = httpContext.RequestServices.GetRequiredService<
+            IStringLocalizer<ProblemDetailsApiLocalization>
+        >();
+
+        return httpContext.ApiBadRequestProblem(detail: S["A JSON request body is required."]);
+    }
+
+    /// <summary>
     /// Returns a Problem with a 404 Not Found status code, for a minimal API endpoint.
     /// </summary>
     public static IResult ApiNotFoundProblem(

@@ -45,7 +45,10 @@ internal static partial class TenantManagementEndpoints
         [FromServices] IAuthorizationService authorizationService,
         [FromServices] IDistributedLock distributedLock)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
         if (await AuthorizeManageTenantsAsync(httpContext, authorizationService, currentShellSettings, localizer) is { } authError)
         {
             return authError;

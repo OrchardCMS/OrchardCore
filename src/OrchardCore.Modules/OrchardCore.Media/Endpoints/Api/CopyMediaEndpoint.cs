@@ -71,7 +71,7 @@ public static class CopyMediaEndpoint
         [FromServices] IOptions<MediaOptions> options,
         [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
         [FromBody] CopyMediaRequest request)
-        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, contentTypeProvider, fileVersionProvider, options, localizer, request.OldPath, request.NewPath);
+        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, contentTypeProvider, fileVersionProvider, options, localizer, request?.OldPath, request?.NewPath);
 
     private static async Task<IResult> HandleLegacyResultAsync(
         HttpContext httpContext,

@@ -220,6 +220,11 @@ internal static class WorkflowManagementApiEndpoints
             return httpContext.ApiForbidProblem();
         }
 
+        if (model is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
+
         var modelState = new ModelStateDictionary();
         var workflowType = await service.CreateWorkflowTypeAsync(model, modelState);
         return !modelState.IsValid
@@ -232,6 +237,11 @@ internal static class WorkflowManagementApiEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, WorkflowsPermissions.ManageWorkflows))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        if (model is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
         }
 
         var modelState = new ModelStateDictionary();
@@ -256,9 +266,14 @@ internal static class WorkflowManagementApiEndpoints
     }
 
     private static async Task<IResult> ValidateWorkflowTypeAsync(WorkflowTypeDto model, WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
-        => !await authorizationService.AuthorizeAsync(httpContext.User, WorkflowsPermissions.ManageWorkflows)
-            ? httpContext.ApiForbidProblem()
-            : TypedResults.Ok(await service.ValidateWorkflowTypeAsync(model));
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, WorkflowsPermissions.ManageWorkflows))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        return model is null ? httpContext.ApiMissingBodyProblem() : TypedResults.Ok(await service.ValidateWorkflowTypeAsync(model));
+    }
 
     private static async Task<IResult> ListActivityTypesAsync(WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext, int? skip = null, int? take = null)
     {

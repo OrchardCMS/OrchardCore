@@ -60,7 +60,7 @@ public static class MoveMediaListEndpoint
         [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
         [FromServices] IFileVersionProvider fileVersionProvider,
         [FromBody] MoveMediaBatchRequest request)
-        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, fileVersionProvider, localizer, request.MediaNames, request.SourceFolder, request.TargetFolder);
+        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, fileVersionProvider, localizer, request?.MediaNames, request?.SourceFolder, request?.TargetFolder);
 
     private static async Task<IResult> HandleLegacyResultAsync(
         HttpContext httpContext,

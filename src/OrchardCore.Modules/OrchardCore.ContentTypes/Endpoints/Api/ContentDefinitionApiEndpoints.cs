@@ -288,6 +288,11 @@ internal static class ContentDefinitionApiEndpoints
             return httpContext.ApiForbidProblem();
         }
 
+        if (model is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
+
         var modelState = new ModelStateDictionary();
         var definition = await service.CreateTypeAsync(model, modelState);
         return !modelState.IsValid
@@ -300,6 +305,11 @@ internal static class ContentDefinitionApiEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ContentTypesPermissions.EditContentTypes))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        if (model is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
         }
 
         var modelState = new ModelStateDictionary();
@@ -393,6 +403,11 @@ internal static class ContentDefinitionApiEndpoints
             return httpContext.ApiForbidProblem();
         }
 
+        if (model is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
+        }
+
         var modelState = new ModelStateDictionary();
         var definition = await service.CreatePartAsync(model, modelState);
         return !modelState.IsValid
@@ -405,6 +420,11 @@ internal static class ContentDefinitionApiEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ContentTypesPermissions.EditContentTypes))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        if (model is null)
+        {
+            return httpContext.ApiMissingBodyProblem();
         }
 
         var modelState = new ModelStateDictionary();
