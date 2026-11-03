@@ -91,6 +91,21 @@ public class IndexProfileManagementTests
         Assert.Equal(IndexProfileManagementResult.Success, await management.DeleteAsync(profile, force: true));
     }
 
+    [Fact]
+    public async Task Delete_ProviderCannotAnswer_KeepsLocalProfile()
+    {
+        var profile = Profile();
+        var profiles = new Mock<IIndexProfileManager>(MockBehavior.Strict);
+        var provider = new Mock<IIndexManager>(MockBehavior.Strict);
+        provider.As<IRemoteIndexManager>().Setup(value => value.TryGetExistsAsync(profile.IndexFullName)).ReturnsAsync((bool?)null);
+        using var services = Services(provider.Object);
+
+        var result = await new IndexProfileManagementService(profiles.Object, services).DeleteAsync(profile);
+
+        Assert.Equal(IndexProfileManagementResult.ProviderRejected, result);
+        profiles.VerifyNoOtherCalls();
+    }
+
     [Theory]
     [InlineData(true, true, true, IndexProfileManagementResult.Success)]
     [InlineData(true, false, true, IndexProfileManagementResult.ProviderRejected)]

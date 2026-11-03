@@ -40,7 +40,7 @@ public enum IndexProcessingStatus
     Completed,
     /// <summary>The index was already locked by another operation.</summary>
     Busy,
-    /// <summary>A required provider service is not registered.</summary>
+    /// <summary>A required provider service is not registered, or the provider's server couldn't answer.</summary>
     ProviderUnavailable,
     /// <summary>The provider does not contain the requested index.</summary>
     ProviderMissing,

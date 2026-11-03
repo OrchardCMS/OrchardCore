@@ -174,7 +174,16 @@ public abstract class NamedIndexingService
                     }
 
                     lease.EnsureActive();
-                    if (!await indexManager.ExistsAsync(indexProfile.IndexFullName))
+                    var exists = await indexManager.TryGetExistsAsync(indexProfile.IndexFullName);
+                    if (exists is null)
+                    {
+                        results[indexProfile.Id].Status = IndexProcessingStatus.ProviderUnavailable;
+                        Logger.LogWarning("The provider '{ProviderName}' could not tell whether the index '{IndexName}' exists.", indexProfile.ProviderName, indexProfile.IndexName);
+
+                        continue;
+                    }
+
+                    if (!exists.Value)
                     {
                         results[indexProfile.Id].Status = IndexProcessingStatus.ProviderMissing;
                         Logger.LogWarning("The index '{IndexName}' does not exist for the provider '{ProviderName}'.", indexProfile.IndexName, indexProfile.ProviderName);

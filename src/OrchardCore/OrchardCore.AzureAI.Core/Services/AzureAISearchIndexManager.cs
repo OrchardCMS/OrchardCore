@@ -11,7 +11,7 @@ using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.AzureAI.Services;
 
-public sealed class AzureAISearchIndexManager : IIndexManager
+public sealed class AzureAISearchIndexManager : IIndexManager, IRemoteIndexManager
 {
     public const string FullTextKey = "Content__ContentItem__FullText";
     public const string DisplayTextAnalyzedKey = "Content__ContentItem__DisplayText__Analyzed";
@@ -66,6 +66,27 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
     public async Task<bool> ExistsAsync(string indexFullName)
         => await GetAsync(indexFullName) != null;
+
+    /// <inheritdoc />
+    public async Task<bool?> TryGetExistsAsync(string indexFullName)
+    {
+        try
+        {
+            await _clientFactory.CreateSearchIndexClient().GetIndexAsync(indexFullName);
+
+            return true;
+        }
+        catch (RequestFailedException e) when (e.Status == 404)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unable to get index from Azure AI Search.");
+
+            return null;
+        }
+    }
 
     public async Task<SearchIndex> GetAsync(string indexFullName)
     {

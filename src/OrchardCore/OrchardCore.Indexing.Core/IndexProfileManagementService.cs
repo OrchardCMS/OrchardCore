@@ -68,7 +68,9 @@ public sealed class IndexProfileManagementService : IIndexProfileManagementServi
                 return IndexProfileManagementResult.ProviderUnavailable;
             }
 
-            if (await provider.ExistsAsync(profile.IndexFullName) && !await provider.DeleteAsync(profile))
+            // Removing the profile while the provider can't answer would leave its index behind, out of reach.
+            var exists = await provider.TryGetExistsAsync(profile.IndexFullName);
+            if (exists is null || (exists.Value && !await provider.DeleteAsync(profile)))
             {
                 return IndexProfileManagementResult.ProviderRejected;
             }

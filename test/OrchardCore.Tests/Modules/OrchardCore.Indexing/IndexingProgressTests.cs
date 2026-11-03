@@ -122,6 +122,29 @@ public class IndexingProgressTests
         locker.Verify(value => value.DisposeAsync(), Times.Once);
     }
 
+    [Fact]
+    public async Task ProcessRecords_ProviderCannotAnswer_IsReportedUnavailableNotMissing()
+    {
+        var profile = new IndexProfile { Id = "index", Name = "Index", ProviderName = "Test", Type = "Test", IndexFullName = "index" };
+        var profiles = new Mock<IIndexProfileStore>();
+        profiles.Setup(store => store.GetByTypeAsync("Test")).ReturnsAsync([profile]);
+        var indexes = new Mock<IIndexManager>();
+        indexes.As<IRemoteIndexManager>().Setup(manager => manager.TryGetExistsAsync("index")).ReturnsAsync((bool?)null);
+        var locking = new Mock<IDistributedLock>();
+        locking.Setup(value => value.TryAcquireLockAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+            .ReturnsAsync(() => (Mock.Of<ILocker>(), true));
+        using var services = new ServiceCollection().AddSingleton(TimeProvider.System).AddSingleton(locking.Object)
+            .AddKeyedSingleton<IDocumentIndexManager>("Test", Mock.Of<IDocumentIndexManager>())
+            .AddKeyedSingleton<IIndexManager>("Test", indexes.Object).BuildServiceProvider();
+        var tasks = new Mock<IIndexingTaskManager>(MockBehavior.Strict);
+        var indexing = new TestIndexingService(profiles.Object, tasks.Object, [], services);
+
+        var result = Assert.Single(await indexing.ProcessRecordsWithResultsAsync([profile.Id]));
+
+        Assert.Equal(IndexProcessingStatus.ProviderUnavailable, result.Status);
+        Assert.Null(result.LastTaskId);
+    }
+
     [Theory]
     [InlineData(IndexProcessingStatus.NotFound)]
     [InlineData(IndexProcessingStatus.Busy)]
