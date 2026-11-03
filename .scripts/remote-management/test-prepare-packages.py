@@ -44,6 +44,52 @@ class PreparePackagesTests(unittest.TestCase):
         self.assertEqual(len(publisher.REQUIRED), len(ordered))
         self.assertEqual('OrchardCore.cli.' + VERSION + '.nupkg', Path(ordered[-1]).name)
 
+    def remove_native(self):
+        for path in self.source.glob('OrchardCore.cli*'):
+            path.unlink()
+
+    def remove_server(self):
+        for path in self.source.glob('*.nupkg'):
+            if not path.name.lower().startswith('orchardcore.cli'):
+                path.unlink()
+
+    def test_server_set_is_complete_without_native_packages(self):
+        self.remove_native()
+        publisher.prepare(self.source, self.output, VERSION, 'server')
+        packages = json.loads((self.output / 'packages.json').read_text())['packages']
+        self.assertEqual(sorted(publisher.SERVER), sorted(packages))
+
+    def test_server_set_rejects_native_packages(self):
+        with self.assertRaisesRegex(ValueError, 'Unexpected package for server publication'):
+            publisher.prepare(self.source, self.output, VERSION, 'server')
+        self.assertFalse(self.output.exists())
+
+    def test_server_set_still_requires_its_packages(self):
+        self.remove_native()
+        next(self.source.glob('TheBlogTheme.*')).unlink()
+        with self.assertRaisesRegex(ValueError, 'Missing required packages: theblogtheme'):
+            publisher.prepare(self.source, self.output, VERSION, 'server')
+
+    def test_native_set_publishes_pointer_last(self):
+        self.remove_server()
+        self.package('OrchardCore.cli', folder='another-native-runner')
+        publisher.prepare(self.source, self.output, VERSION, 'native')
+        ordered = (self.output / 'publish-order.txt').read_text().splitlines()
+        self.assertEqual(len(publisher.NATIVE), len(ordered))
+        self.assertEqual('OrchardCore.cli.' + VERSION + '.nupkg', Path(ordered[-1]).name)
+
+    def test_native_set_requires_every_platform(self):
+        self.remove_server()
+        next(self.source.glob('*cli.win-arm64.*')).unlink()
+        with self.assertRaisesRegex(ValueError, 'Missing required packages'):
+            publisher.prepare(self.source, self.output, VERSION, 'native')
+        self.assertFalse(self.output.exists())
+
+    def test_native_set_rejects_server_packages(self):
+        with self.assertRaisesRegex(ValueError, 'Unexpected package for native publication'):
+            publisher.prepare(self.source, self.output, VERSION, 'native')
+        self.assertFalse(self.output.exists())
+
     def test_missing_platform_stops_before_staging(self):
         next(self.source.glob('*cli.win-arm64.*')).unlink()
         with self.assertRaisesRegex(ValueError, 'Missing required packages'):

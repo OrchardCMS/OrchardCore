@@ -27,7 +27,6 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   test:
-    needs: native
     runs-on: ${{ matrix.os }}
     name: Build, Test, Deploy
     environment: release
@@ -91,12 +90,6 @@ jobs:
           src/OrchardCore.Mvc.Web/App_Data_Tests/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
-    - name: Download native tool packages
-      if: matrix.os == 'ubuntu-24.04'
-      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-      with:
-        pattern: pomi-tool-*
-        path: src/native-tool-packages
     - name: Validate publication tooling
       if: matrix.os == 'ubuntu-24.04'
       run: python3 .scripts/remote-management/test-prepare-packages.py
@@ -110,7 +103,7 @@ jobs:
       if: matrix.os == 'ubuntu-24.04'
       run: |
         dotnet pack -c Release --no-build -p:Version=${{ steps.get_version.outputs.VERSION }} -p:TreatWarningsAsErrors=false
-        python3 .scripts/remote-management/prepare-packages.py src artifacts/packages "${{ steps.get_version.outputs.VERSION }}"
+        python3 .scripts/remote-management/prepare-packages.py src artifacts/packages "${{ steps.get_version.outputs.VERSION }}" --components server
         while IFS= read -r package; do
           dotnet nuget push "$package" -t 600 --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
         done < artifacts/packages/publish-order.txt
@@ -134,18 +127,47 @@ jobs:
         docker buildx build -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }} --push .
         docker buildx build -f Dockerfile-CI --platform=windows/amd64 -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} --push .
 
+  # Publishes what the native matrix builds. The server release above doesn't wait for that matrix, so
+  # a native failure can't hold it back, and re-running this job completes the release afterwards.
   native-assets:
     if: github.repository == 'OrchardCMS/OrchardCore'
-    needs: test
+    needs: [version, native, test]
     runs-on: ubuntu-24.04
     environment: release
     permissions:
+      attestations: write
       contents: write
+      id-token: write
     steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: ./.github/actions/setup-dotnet
     - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       with:
         pattern: pomi-*
         path: artifacts
+    - name: Validate native tool packages
+      env:
+        VERSION: ${{ needs.version.outputs.version }}
+      run: python3 .scripts/remote-management/prepare-packages.py artifacts native-packages "$VERSION" --components native
+    - name: Attest build provenance
+      uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+      with:
+        subject-path: |
+          artifacts/pomi-*/pomi-*.tar.gz
+          artifacts/pomi-*/pomi-*.zip
+          native-packages/*.nupkg
+    - name: NuGet login
+      id: nuget-login
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+      with:
+        user: Orchard
+    - name: Deploy native tool packages
+      env:
+        NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+      run: |
+        while IFS= read -r package; do
+          dotnet nuget push "$package" -t 600 --api-key "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate
+        done < native-packages/publish-order.txt
     - name: Publish native release archives and checksums
       env:
         GH_TOKEN: ${{ github.token }}
@@ -160,4 +182,13 @@ jobs:
           if [[ "$GITHUB_REF_NAME" == *-* ]]; then flags+=(--prerelease); fi
           gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes "${flags[@]}"
         fi
-        gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
+        # A published asset is never replaced: a re-run only adds the ones still missing.
+        existing="$(gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets[].name')"
+        for asset in "${assets[@]}"; do
+          name="$(basename "$asset")"
+          if grep -Fxq -- "$name" <<< "$existing"; then
+            echo "Skipping $name, which the release already has."
+          else
+            gh release upload "$GITHUB_REF_NAME" "$asset"
+          fi
+        done

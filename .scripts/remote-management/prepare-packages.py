@@ -11,13 +11,15 @@ RIDS = ('linux-x64', 'linux-arm64', 'win-x64', 'win-arm64', 'osx-x64', 'osx-arm6
 THEMES = {name.lower(): name for name in (
     'SafeMode', 'TheAdmin', 'TheAgencyTheme', 'TheBlogTheme',
     'TheComingSoonTheme', 'TheTheme')}
-REQUIRED = {
+NATIVE = {'orchardcore.cli', *('orchardcore.cli.' + rid for rid in RIDS)}
+SERVER = {
     'orchardcore.application.cms.targets', 'orchardcore.application.mvc.targets',
     'orchardcore.module.targets', 'orchardcore.theme.targets',
-    'orchardcore.projecttemplates', 'orchardcore.remotemanagement', 'orchardcore.cli',
-    *('orchardcore.cli.' + rid for rid in RIDS),
+    'orchardcore.projecttemplates', 'orchardcore.remotemanagement',
     *THEMES,
 }
+REQUIRED = SERVER | NATIVE
+COMPONENTS = {'all': REQUIRED, 'server': SERVER, 'native': NATIVE}
 
 
 def is_build_package(package_id):
@@ -25,7 +27,8 @@ def is_build_package(package_id):
     return key == 'orchardcore' or key.startswith('orchardcore.') or key in THEMES
 
 
-def prepare(source, destination, version):
+def prepare(source, destination, version, components='all'):
+    required = COMPONENTS[components]
     # Translation packs are separately published dependencies, not projects in this build.
     central = Path(__file__).resolve().parents[2] / 'Directory.Packages.props'
     external = {item.attrib['Include'].lower(): item.attrib['Version']
@@ -43,6 +46,9 @@ def prepare(source, destination, version):
             package_version = metadata.findtext('{*}version')
             if not is_build_package(package_id):
                 raise ValueError(f'Unexpected package ID: {package_id}')
+            # Each release job publishes its own packages, so none can depend on the other's outcome.
+            if (components == 'server' and package_id.lower() in NATIVE) or (components == 'native' and package_id.lower() not in NATIVE):
+                raise ValueError(f'Unexpected package for {components} publication: {package_id}')
             if package_version != version:
                 raise ValueError(f'{package_id}: expected version {version}, got {package_version}')
             key = package_id.lower()
@@ -63,7 +69,7 @@ def prepare(source, destination, version):
                     config = json.loads(archive.read(name))
                     if config['symbols']['OrchardVersion']['defaultValue'] != version:
                         raise ValueError(f'{name}: template uses a different Orchard version')
-    missing = REQUIRED - packages.keys()
+    missing = required - packages.keys()
     if missing:
         raise ValueError(f'Missing required packages: {", ".join(sorted(missing))}')
     for owner, dependency, constraint in dependencies:
@@ -86,7 +92,7 @@ def prepare(source, destination, version):
         staged.append(str(target))
     (destination / 'publish-order.txt').write_text('\n'.join(staged) + '\n')
     (destination / 'packages.json').write_text(json.dumps({'version': version, 'packages': ordered}, indent=2))
-    print(f'Validated {len(packages)} OrchardCore packages at {version}, including templates and all six native tools.')
+    print(f'Validated {len(packages)} OrchardCore packages at {version} ({components}).')
 
 
 if __name__ == '__main__':
@@ -94,5 +100,6 @@ if __name__ == '__main__':
     parser.add_argument('source', type=Path)
     parser.add_argument('destination', type=Path, help='New directory for the verified package set')
     parser.add_argument('version')
+    parser.add_argument('--components', choices=sorted(COMPONENTS), default='all', help='Which packages the source must contain')
     args = parser.parse_args()
-    prepare(args.source, args.destination, args.version)
+    prepare(args.source, args.destination, args.version, args.components)
