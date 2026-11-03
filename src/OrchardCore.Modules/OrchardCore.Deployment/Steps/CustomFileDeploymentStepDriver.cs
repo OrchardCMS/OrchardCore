@@ -41,7 +41,9 @@ public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentSte
         {
             foreach (var message in messages)
             {
+#pragma warning disable OCLOC104 // The messages are declared in DeploymentStepValidation.
                 context.Updater.ModelState.AddModelError(Prefix, nameof(CustomFileDeploymentStepViewModel.FileName), S[message]);
+#pragma warning restore OCLOC104
             }
         }
         if (errors.Count == 0)

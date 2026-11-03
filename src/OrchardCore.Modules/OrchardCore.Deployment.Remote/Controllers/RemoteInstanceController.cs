@@ -269,7 +269,9 @@ public sealed class RemoteInstanceController : Controller
         {
             foreach (var error in errors)
             {
+#pragma warning disable OCLOC104 // The messages are declared in RemoteDeploymentValidation.
                 ModelState.AddModelError(field, S[error]);
+#pragma warning restore OCLOC104
             }
         }
     }

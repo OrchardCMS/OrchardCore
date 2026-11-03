@@ -188,6 +188,21 @@ msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
 msgid "Invalid deployment step configuration. No changes have been made."
 msgstr ""
 
+#: Services/DeploymentStepValidation.cs
+msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStepDriver"
+msgid "Use a relative package file path without traversal; Recipe.json is reserved."
+msgstr ""
+
+#: Services/DeploymentStepValidation.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
+msgid "Invalid JSON supplied."
+msgstr ""
+
+#: Services/DeploymentStepValidation.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
+msgid "The recipe must be an object with a nonempty name string."
+msgstr ""
+
 #: Views/DeploymentPlan/Create.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
 msgid "Cancel"

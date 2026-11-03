@@ -458,10 +458,9 @@ internal sealed class ContentApiService
 
     private async Task<bool> CanViewAllItemsAsync(ClaimsPrincipal user, IEnumerable<ContentTypeDefinition> definitions)
     {
-        var template = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
         foreach (var definition in definitions)
         {
-            if (!await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(template, definition)))
+            if (!await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermissionOf(CommonPermissions.ViewContent, definition)))
             {
                 return false;
             }

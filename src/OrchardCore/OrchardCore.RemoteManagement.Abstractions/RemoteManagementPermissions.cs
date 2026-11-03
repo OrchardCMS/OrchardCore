@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.RemoteManagement;
@@ -6,10 +7,10 @@ public static class RemoteManagementPermissions
 {
     public static readonly Permission AccessRemoteManagement = new(
         "AccessRemoteManagement",
-        "Access remote management APIs");
+        LocalizationSource.Create("Access remote management APIs", typeof(RemoteManagementPermissions)));
 
     public static readonly Permission ManageRemoteManagementConfiguration = new(
         "ManageRemoteManagementConfiguration",
-        "Manage remote management configuration");
+        LocalizationSource.Create("Manage remote management configuration", typeof(RemoteManagementPermissions)));
 
 }

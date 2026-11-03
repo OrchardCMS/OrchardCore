@@ -55,6 +55,16 @@ msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
 msgid "Delete"
 msgstr ""
 
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Provide a client name of at most 256 characters."
+msgstr ""
+
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Provide an API key of at most 4096 characters."
+msgstr ""
+
 #: Controllers/RemoteClientController.cs
 msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
 msgid "Remote client created successfully."
@@ -78,6 +88,16 @@ msgstr ""
 #: Controllers/RemoteInstanceController.cs
 msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
 msgid "Delete"
+msgstr ""
+
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Provide a name of at most 256 characters."
+msgstr ""
+
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Provide an HTTPS URL without user information or a fragment; HTTP is allowed only for loopback development."
 msgstr ""
 
 #: Controllers/RemoteInstanceController.cs

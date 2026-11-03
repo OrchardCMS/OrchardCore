@@ -55,7 +55,9 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
         {
             foreach (var message in messages)
             {
+#pragma warning disable OCLOC104 // The messages are declared in QueryDeploymentConfiguration.
                 context.Updater.ModelState.AddModelError(Prefix, property, S[message]);
+#pragma warning restore OCLOC104
             }
         }
 

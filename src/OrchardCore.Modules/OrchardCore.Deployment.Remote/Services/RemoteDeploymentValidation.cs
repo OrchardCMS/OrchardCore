@@ -1,3 +1,5 @@
+using OrchardCore.Localization;
+
 namespace OrchardCore.Deployment.Remote.Services;
 
 /// <summary>Shared validation for the admin and remote deployment configuration paths.</summary>
@@ -9,11 +11,11 @@ public static class RemoteDeploymentValidation
         var errors = new Dictionary<string, string[]>();
         if (string.IsNullOrWhiteSpace(clientName) || clientName.Length > 256)
         {
-            errors["ClientName"] = ["Provide a client name of at most 256 characters."];
+            errors["ClientName"] = [LocalizationSource.Create<Controllers.RemoteClientController>("Provide a client name of at most 256 characters.").Value];
         }
         if (string.IsNullOrWhiteSpace(apiKey) || apiKey.Length > 4096)
         {
-            errors["ApiKey"] = ["Provide an API key of at most 4096 characters."];
+            errors["ApiKey"] = [LocalizationSource.Create<Controllers.RemoteClientController>("Provide an API key of at most 4096 characters.").Value];
         }
         return errors;
     }
@@ -24,11 +26,11 @@ public static class RemoteDeploymentValidation
         var errors = Client(clientName, apiKey);
         if (string.IsNullOrWhiteSpace(name) || name.Length > 256)
         {
-            errors["Name"] = ["Provide a name of at most 256 characters."];
+            errors["Name"] = [LocalizationSource.Create<Controllers.RemoteInstanceController>("Provide a name of at most 256 characters.").Value];
         }
         if (!IsSafeUrl(url))
         {
-            errors["Url"] = ["Provide an HTTPS URL without user information or a fragment; HTTP is allowed only for loopback development."];
+            errors["Url"] = [LocalizationSource.Create<Controllers.RemoteInstanceController>("Provide an HTTPS URL without user information or a fragment; HTTP is allowed only for loopback development.").Value];
         }
         return errors;
     }

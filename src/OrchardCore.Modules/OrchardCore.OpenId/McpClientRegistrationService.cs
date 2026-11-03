@@ -159,7 +159,7 @@ public sealed class McpClientRegistrationService
         foreach (var application in removable)
         {
             var id = await _applicationManager.GetIdAsync(application, cancellationToken);
-            if (!await _authorizationManager.FindByApplicationIdAsync(id, cancellationToken).AnyAsync())
+            if (!await _authorizationManager.FindByApplicationIdAsync(id, cancellationToken).AnyAsync(cancellationToken))
             {
                 await _applicationManager.DeleteAsync(application, cancellationToken);
                 registered--;

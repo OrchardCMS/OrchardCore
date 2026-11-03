@@ -113,7 +113,9 @@ internal static partial class LocalizationManagementEndpoints
         }
         else
         {
+#pragma warning disable OCLOC104 // The key is requested by the client, which declares it.
             template = localizer[request.Key];
+#pragma warning restore OCLOC104
         }
 
         // Bound alignment/precision as well as input size before invoking composite formatting.

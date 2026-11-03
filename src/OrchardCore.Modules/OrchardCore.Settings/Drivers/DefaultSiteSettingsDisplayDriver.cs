@@ -189,11 +189,4 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         return true;
     }
-
-    /// <summary>
-    /// Checks if the provided <paramref name="url"/> is a valid <see cref="Uri"/> and a suitable base URL. The latter
-    /// means that it should end with the path and not contain any query or hash parameters.   
-    /// </summary>
-    /// <param name="url">Raw value to validate</param>
-    /// <param name="restrictScheme">If <see langword="true"/>, only HTTP and HTTPS URLs are allowed.</param>
 }

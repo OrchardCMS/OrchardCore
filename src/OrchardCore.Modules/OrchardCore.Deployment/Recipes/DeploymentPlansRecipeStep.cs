@@ -85,7 +85,9 @@ public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
         {
             foreach (var message in messages)
             {
+#pragma warning disable OCLOC104 // The messages are declared in DeploymentStepValidation.
                 context.Errors.Add(S[message]);
+#pragma warning restore OCLOC104
             }
         }
         if (context.Errors.Count == 0)

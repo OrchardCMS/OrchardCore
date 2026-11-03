@@ -46,6 +46,21 @@ msgctxt "OrchardCore.Queries.Controllers.AdminController"
 msgid "Query updated successfully."
 msgstr ""
 
+#: Deployment/QueryDeploymentConfiguration.cs
+msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
+msgid "Make sure it is a valid JSON object. Example: { key : 'value' }"
+msgstr ""
+
+#: Deployment/QueryDeploymentConfiguration.cs
+msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
+msgid "Something is wrong with your JSON."
+msgstr ""
+
+#: Deployment/QueryDeploymentConfiguration.cs
+msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
+msgid "Your Query is not returning content items."
+msgstr ""
+
 #: Drivers/QueryDisplayDriver.cs
 msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
 msgid "A query with the same name already exists"

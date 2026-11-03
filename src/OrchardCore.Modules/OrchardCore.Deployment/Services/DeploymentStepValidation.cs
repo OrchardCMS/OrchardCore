@@ -1,7 +1,8 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json;
 using OrchardCore.Deployment.Deployment;
 using OrchardCore.Deployment.Steps;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Services;
 
@@ -18,12 +19,12 @@ internal static class DeploymentStepValidation
                     || value["name"] is not JsonValue name || !name.TryGetValue<string>(out var text)
                     || string.IsNullOrWhiteSpace(text))
                 {
-                    errors["json"] = ["The recipe must be an object with a nonempty name string."];
+                    errors["json"] = [LocalizationSource.Create<Steps.JsonRecipeDeploymentStepDriver>("The recipe must be an object with a nonempty name string.").Value];
                 }
             }
             catch (Exception exception) when (exception is JsonException or ArgumentException)
             {
-                errors["json"] = ["Invalid JSON supplied."];
+                errors["json"] = [LocalizationSource.Create<Steps.JsonRecipeDeploymentStepDriver>("Invalid JSON supplied.").Value];
             }
         }
         else if (step is CustomFileDeploymentStep file)
@@ -33,7 +34,7 @@ internal static class DeploymentStepValidation
                 || path.Split('/').Any(segment => segment is "" or "." or "..") || path.Any(char.IsControl)
                 || string.Equals(path, "Recipe.json", StringComparison.OrdinalIgnoreCase))
             {
-                errors["fileName"] = ["Use a relative package file path without traversal; Recipe.json is reserved."];
+                errors["fileName"] = [LocalizationSource.Create<Steps.CustomFileDeploymentStepDriver>("Use a relative package file path without traversal; Recipe.json is reserved.").Value];
             }
         }
         return errors;

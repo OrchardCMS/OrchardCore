@@ -65,7 +65,9 @@ public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentSte
         {
             foreach (var message in messages)
             {
+#pragma warning disable OCLOC104 // The messages are declared in DeploymentStepValidation.
                 context.Updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S[message]);
+#pragma warning restore OCLOC104
             }
         }
         if (errors.Count == 0)

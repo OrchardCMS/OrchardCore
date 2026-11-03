@@ -1,4 +1,5 @@
 using System.Text.Json;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Queries.Deployment;
 
@@ -10,18 +11,18 @@ internal static class QueryDeploymentConfiguration
         var query = string.IsNullOrWhiteSpace(queryName) ? null : await queries.GetQueryAsync(queryName);
         if (query is null || !query.ReturnContentItems)
         {
-            errors[nameof(QueryBasedContentDeploymentStep.QueryName)] = ["Your Query is not returning content items."];
+            errors[nameof(QueryBasedContentDeploymentStep.QueryName)] = [LocalizationSource.Create<QueryBasedContentDeploymentStepDriver>("Your Query is not returning content items.").Value];
         }
 
         if (parameters is not null)
         {
             if (!TryDeserializeParameters(parameters, out var parsed))
             {
-                errors[nameof(QueryBasedContentDeploymentStep.QueryParameters)] = ["Something is wrong with your JSON."];
+                errors[nameof(QueryBasedContentDeploymentStep.QueryParameters)] = [LocalizationSource.Create<QueryBasedContentDeploymentStepDriver>("Something is wrong with your JSON.").Value];
             }
             else if (parsed is null)
             {
-                errors[nameof(QueryBasedContentDeploymentStep.QueryParameters)] = ["Make sure it is a valid JSON object. Example: { key : 'value' }"];
+                errors[nameof(QueryBasedContentDeploymentStep.QueryParameters)] = [LocalizationSource.Create<QueryBasedContentDeploymentStepDriver>("Make sure it is a valid JSON object. Example: { key : 'value' }").Value];
             }
         }
 
