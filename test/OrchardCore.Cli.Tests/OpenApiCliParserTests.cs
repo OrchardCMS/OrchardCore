@@ -4,6 +4,25 @@ namespace OrchardCore.Cli.Tests;
 
 public class OpenApiCliParserTests
 {
+    [Theory]
+    [InlineData("#/components/parameters/Loop", "circular")]
+    [InlineData("#/components/parameters/Missing", "broken")]
+    public void Parse_InvalidParameterReference_ReportsTheDocumentIsBroken(string reference, string expected)
+    {
+        var document = """
+            {
+              "paths": {"/api/items": {"get": {
+                "operationId": "ApiListItems",
+                "x-oc-cli": {"commandGroup": ["items"], "verb": "list"},
+                "parameters": [{"$ref": "REFERENCE"}]
+              }}},
+              "components": {"parameters": {"Loop": {"$ref": "#/components/parameters/Loop"}}}
+            }
+            """.Replace("REFERENCE", reference, StringComparison.Ordinal);
+
+        Assert.Contains(expected, Assert.Throws<CliException>(() => OpenApiCliParser.Parse(document)).Message);
+    }
+
     [Fact]
     public void Parse_NullableTypesAndInheritedParameters_PreservesContract()
     {

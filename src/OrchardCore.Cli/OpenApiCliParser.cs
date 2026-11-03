@@ -98,6 +98,7 @@ internal static class OpenApiCliParser
             Hidden = extensionElement.TryGetProperty("hidden", out var hiddenElement) && hiddenElement.ValueKind == JsonValueKind.True,
             InputMode = ParseInputMode(CliUtilities.ReadString(extensionElement, "inputMode")),
             DefaultJsonBody = CliUtilities.ReadString(extensionElement, "defaultJsonBody"),
+            ProvisioningProperty = CliUtilities.ReadString(extensionElement, "provisioningProperty"),
         };
 
         foreach (var alias in CliUtilities.ReadStringArray(extensionElement, "aliases"))
@@ -401,12 +402,18 @@ internal static class OpenApiCliParser
 
     private static JsonElement ResolveReferences(JsonElement element, JsonElement root)
     {
+        var visited = new HashSet<string>(StringComparer.Ordinal);
         while (element.ValueKind == JsonValueKind.Object && element.TryGetProperty("$ref", out var refElement) && refElement.ValueKind == JsonValueKind.String)
         {
             var reference = refElement.GetString();
             if (string.IsNullOrWhiteSpace(reference) || !reference.StartsWith("#/", StringComparison.Ordinal))
             {
                 break;
+            }
+
+            if (!visited.Add(reference))
+            {
+                throw new CliException($"The tenant's OpenAPI document has a circular reference: '{reference}'.");
             }
 
             element = ResolveJsonPointer(root, reference);
@@ -421,7 +428,10 @@ internal static class OpenApiCliParser
         foreach (var rawSegment in pointer[2..].Split('/'))
         {
             var segment = rawSegment.Replace("~1", "/", StringComparison.Ordinal).Replace("~0", "~", StringComparison.Ordinal);
-            current = current.GetProperty(segment);
+            if (current.ValueKind != JsonValueKind.Object || !current.TryGetProperty(segment, out current))
+            {
+                throw new CliException($"The tenant's OpenAPI document has a broken reference: '{pointer}'.");
+            }
         }
 
         return current;
