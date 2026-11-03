@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
 
 namespace OrchardCore.Notifications.Drivers;
@@ -11,25 +13,22 @@ namespace OrchardCore.Notifications.Drivers;
 public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
 {
     private readonly INotificationVisibilityEvaluator _visibilityEvaluator;
-    private readonly INotificationManager _notificationManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly NotificationTypeOptions _notificationTypeOptions;
 
     public NotificationDisplayDriver(
         INotificationVisibilityEvaluator visibilityEvaluator,
-        INotificationManager notificationManager,
         IHttpContextAccessor httpContextAccessor,
         IOptions<NotificationTypeOptions> notificationTypeOptions)
     {
         _visibilityEvaluator = visibilityEvaluator;
-        _notificationManager = notificationManager;
         _httpContextAccessor = httpContextAccessor;
         _notificationTypeOptions = notificationTypeOptions.Value;
     }
 
     public override async Task<IDisplayResult> DisplayAsync(Notification notification, BuildDisplayContext context)
     {
-        var isRead = _notificationManager.IsRead(notification);
+        var isRead = notification.TryGet<NotificationReadInfo>(out var readInfo) && readInfo.IsRead;
         var visibility = await _visibilityEvaluator.EvaluateAsync(notification, _httpContextAccessor.HttpContext?.User);
 
         if (context.Shape is Shape shape)

@@ -47,15 +47,7 @@ public sealed class NotificationManager : INotificationManager
     {
         ArgumentNullException.ThrowIfNull(notification);
 
-        if (notification.Type?.Length > NotificationConstants.NotificationTypeLength)
-        {
-            throw new ArgumentException($"The notification type cannot be longer than {NotificationConstants.NotificationTypeLength} characters.", nameof(notification));
-        }
-
-        if (notification.ReferenceId?.Length > NotificationConstants.NotificationReferenceIdLength)
-        {
-            throw new ArgumentException($"The notification reference id cannot be longer than {NotificationConstants.NotificationReferenceIdLength} characters.", nameof(notification));
-        }
+        NotificationLengthValidator.Validate(notification.Type, notification.ReferenceId);
 
         if (!string.IsNullOrEmpty(notification.Url) && !NotificationUrlHelper.IsValid(notification.Url))
         {

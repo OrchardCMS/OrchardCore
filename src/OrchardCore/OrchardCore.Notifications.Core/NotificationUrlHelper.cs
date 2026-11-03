@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace OrchardCore.Notifications;
 
@@ -20,14 +21,9 @@ public static class NotificationUrlHelper
             return false;
         }
 
-        if (url.StartsWith("~/", StringComparison.Ordinal))
+        if (url.StartsWith("~/", StringComparison.Ordinal) || url.StartsWith('/'))
         {
-            return IsLocalPath(url.AsSpan(1));
-        }
-
-        if (url.StartsWith('/'))
-        {
-            return IsLocalPath(url);
+            return RedirectHttpResult.IsLocalUrl(url);
         }
 
         return Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
@@ -69,8 +65,4 @@ public static class NotificationUrlHelper
 
         return new UriBuilder(uri) { Host = uri.IdnHost }.Uri.AbsoluteUri;
     }
-
-    // A protocol-relative URL ('//host') or a backslash ('/\host') would leave the site.
-    private static bool IsLocalPath(ReadOnlySpan<char> path)
-        => path.Length == 1 || (path[1] != '/' && path[1] != '\\');
 }

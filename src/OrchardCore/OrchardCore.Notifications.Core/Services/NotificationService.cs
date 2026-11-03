@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -37,8 +38,7 @@ public class NotificationService : INotificationService
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        ValidateLength(message.Type, NotificationConstants.NotificationTypeLength, nameof(INotificationMessage.Type));
-        ValidateLength(message.ReferenceId, NotificationConstants.NotificationReferenceIdLength, nameof(INotificationMessage.ReferenceId));
+        NotificationLengthValidator.Validate(message.Type, message.ReferenceId);
 
         var notificationContext = new NotificationContext(message, notify);
 
@@ -112,10 +112,7 @@ public class NotificationService : INotificationService
         // The properties stored on the message are copied, so the display drivers of its type can show them.
         if (context.NotificationMessage is Entity entity)
         {
-            foreach (var property in entity.Properties)
-            {
-                notification.Properties[property.Key] = property.Value?.DeepClone();
-            }
+            notification.Properties.Merge(entity.Properties);
         }
 
         context.Notification = notification;
@@ -129,12 +126,4 @@ public class NotificationService : INotificationService
 
     private static string NullIfEmpty(string value)
         => string.IsNullOrEmpty(value) ? null : value;
-
-    private static void ValidateLength(string value, int maxLength, string name)
-    {
-        if (value?.Length > maxLength)
-        {
-            throw new ArgumentException($"The notification {name} cannot be longer than {maxLength} characters.");
-        }
-    }
 }

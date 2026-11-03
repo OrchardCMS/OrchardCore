@@ -17,6 +17,5 @@ public class NotifyUserTaskActivityViewModel
 
     public string Url { get; set; }
 
-    [MaxLength(NotificationConstants.NotificationTypeLength)]
     public string NotificationType { get; set; }
 }
