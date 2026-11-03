@@ -62,7 +62,7 @@ The commands below assume you run them from the repository root.
 
 ## 1. Confirm the host application wiring
 
-If you use the `OrchardCore.Cms.Web` project from this repository, the required wiring is already in place and you do not need to change `Program.cs`.
+If you use the `OrchardCore.Cms.Web` project from this repository, the required wiring is already in place, when the `OrchardCore:Clusters` section exists on start, and you do not need to change `Program.cs`.
 
 If you want to reproduce the demo in another Orchard Core host application, make sure its `Program.cs` includes the same clustering and YARP registration pattern:
 
@@ -76,8 +76,7 @@ builder.Host.UseNLogHost();
 
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup")
-    .AddClusteredTenantInactivityCheck();
+    .AddSetupFeatures("OrchardCore.AutoSetup");
 
 builder.Services
     .AddReverseProxy()
@@ -92,6 +91,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+app.UseTenantClusterRouting();
 app.UseOrchardCore();
 
 app.MapReverseProxy(proxyPipeline =>

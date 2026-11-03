@@ -12,13 +12,12 @@ Use tenant clustering when:
 
 ## Service registration
 
-Add a reference to the `OrchardCore.Clusters.Yarp` package, then register Orchard Core, the inactivity check, and the YARP integration in `Program.cs`:
+Add a reference to the `OrchardCore.Clusters.Yarp` package, then register the YARP integration in `Program.cs`:
 
 ```csharp
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup")
-    .AddClusteredTenantInactivityCheck();
+    .AddSetupFeatures("OrchardCore.AutoSetup");
 
 builder.Services
     .AddReverseProxy()
@@ -26,9 +25,13 @@ builder.Services
     .LoadFromConfig(builder.Configuration.GetSection("OrchardCore:Clusters"));
 ```
 
-Place the tenant clustering middleware first in the proxy pipeline:
+Add the routing middleware just before `UseOrchardCore()`, and the tenant clustering middleware first in the proxy pipeline:
 
 ```csharp
+app.UseTenantClusterRouting();
+
+app.UseOrchardCore();
+
 app.MapReverseProxy(proxyPipeline =>
 {
     proxyPipeline
@@ -38,6 +41,10 @@ app.MapReverseProxy(proxyPipeline =>
         .UsePassiveHealthChecks();
 });
 ```
+
+Use the same `Program.cs` on all the nodes, including the backend nodes with `Enabled` set to `false`: the routing middleware removes the secret of the forwarded requests before running a tenant, and `AddTenantClusters()` also adds the service releasing the idle tenants.
+
+The `OrchardCore.Cms.Web` application is already wired this way, but only when the `OrchardCore:Clusters` section exists on start, so that a site without clustering has no reverse proxy. On this application, every node should define this section, with at least `"Enabled": false` on a backend node, and adding it to a running node requires a restart.
 
 ## Configuration
 
@@ -108,7 +115,8 @@ When `Enabled` is `true`, a node with an invalid configuration (a missing route 
 2. The tenant's `TenantId` is hashed into a stable cluster slot.
 3. `ShellSettingsExtensions.GetClusterId()` finds the configured cluster whose `SlotRange` contains that slot.
 4. The request is marked with a `ClusterFeature`.
-5. `ClustersProxyMiddleware` reassigns the request to the matching YARP cluster, or returns a `503` response if YARP doesn't know this cluster.
+5. `ClustersRoutingMiddleware` runs the YARP route without entering the Orchard Core pipeline, so no tenant is built on the proxy.
+6. `ClustersProxyMiddleware` reassigns the request to the matching YARP cluster, or returns a `503` response if YARP doesn't know this cluster.
 
 The request is forwarded with its original `Host` header, so that the backend node resolves the same tenant, including the tenants mapped with a `RequestUrlHost`. Because of this, a backend reached over HTTPS must present a certificate valid for the host of the tenant, which is also the name sent to it during the TLS handshake.
 
@@ -200,9 +208,11 @@ Use a long random value of visible ASCII characters, and set the same one on all
 
 ## Idle tenant release
 
-`AddClusteredTenantInactivityCheck()` registers a background task that checks the last request time recorded for each tenant pipeline. When the configured `MaxIdleTime` expires, Orchard Core releases that shell context so it can be rebuilt on the next request.
+`AddTenantClusters()` registers a service that checks the last request time recorded for each tenant pipeline running on the node. When the configured `MaxIdleTime` expires, Orchard Core releases that shell context so it can be rebuilt on the next request.
 
-This background task runs each minute, so a tenant is released up to two minutes after `MaxIdleTime` expires. A tenant that didn't receive a request since it has been built isn't released.
+This check runs each minute, so a tenant is released up to one minute after `MaxIdleTime` expires. A tenant that didn't receive a request since it has been built isn't released.
+
+The tenants admin list of the `Default` tenant shows which tenants are awake or asleep on the node serving this page. Each node only knows its own tenants, so in a cluster a tenant running on another node is shown as asleep.
 
 The background tasks of a released tenant don't run until its next request, as is the case for any tenant that didn't receive a request since the application started. Don't set `MaxIdleTime` on tenants relying on scheduled work, such as scheduled publishing or timer workflow events.
 

@@ -27,15 +27,15 @@ The cluster is the placement boundary. A tenant maps to one cluster at a time, n
 | `AddTenantClusters()` | Also adds a YARP request transform setting the loop-prevention request header to the current `ProxySecret`. |
 | `ClustersProxyMatcherPolicy` | Only selects the YARP route template for the requests that the current node should forward. |
 | `ClustersProxyMiddleware` | Reassigns a YARP proxy request to the selected cluster. |
-| `ModularTenantContainerMiddleware` | Resolves the tenant, sets `ClusterFeature`, and bypasses normal tenant scope creation for proxy forwarding. |
-| `ModularTenantRouterMiddleware` | Bypasses proxy-forwarded requests and records the last request timestamp for tenant pipelines. |
-| `ClusteredTenantInactivityCheck` | Releases idle tenant shell contexts based on `MaxIdleTime`. |
+| `ClustersRoutingMiddleware` | Runs before `UseOrchardCore()`. Resolves the tenant, sets `ClusterFeature` and runs the YARP route, or removes the secret and lets the request run the tenant. |
+| `ModularTenantRouterMiddleware` | Records the last request timestamp for tenant pipelines. |
+| `ClusteredTenantInactivityService` | Releases idle tenant shell contexts based on `MaxIdleTime`. |
 
 ## Request flow
 
 ### 1. Edge request
 
-On a node acting as the clustering proxy, `ModularTenantContainerMiddleware` resolves the tenant first. When clustering applies, it computes the destination cluster ID and stores it in `ClusterFeature`.
+On a node acting as the clustering proxy, `ClustersRoutingMiddleware` resolves the tenant first. When clustering applies, it computes the destination cluster ID, stores it in `ClusterFeature` and runs the YARP route selected by the routing, so the request doesn't enter the Orchard Core pipeline.
 
 ### 2. Proxy routing
 
@@ -43,7 +43,7 @@ On a node acting as the clustering proxy, `ModularTenantContainerMiddleware` res
 
 ### 3. Loop prevention
 
-A YARP request transform sets the `From-Clusters-Proxy` header of the forwarded requests to the `ProxySecret`, replacing any value sent by the client. A node with `Enabled` set to `true` only skips redistribution when this header has its own `ProxySecret`, then removes it before executing the tenant. The same condition is evaluated on each request by `ClustersProxyMatcherPolicy` and `ModularTenantContainerMiddleware`, so the host level route is never selected for a request running the tenant pipeline, including after a configuration reload.
+A YARP request transform sets the `From-Clusters-Proxy` header of the forwarded requests to the `ProxySecret`, replacing any value sent by the client. A node with `Enabled` set to `true` only skips redistribution when this header has its own `ProxySecret`, then removes it before executing the tenant. The same condition is evaluated on each request by `ClustersProxyMatcherPolicy` and `ClustersRoutingMiddleware`, so the host level route is never selected for a request running the tenant pipeline, including after a configuration reload.
 
 ### 4. Backend tenant execution
 
@@ -51,7 +51,7 @@ On backend nodes, `ModularTenantRouterMiddleware` updates `ShellContext.LastRequ
 
 ## Inactivity handling
 
-`ClusteredTenantInactivityCheck` is a background task registered with `AddClusteredTenantInactivityCheck()`. It runs on a cron schedule and:
+`ClusteredTenantInactivityService` is a hosted service registered by `AddTenantClusters()`. It runs each minute and, for each tenant of the node:
 
 1. checks whether a tenant pipeline has already been built
 2. reads `ShellContext.LastRequestTimeUtc`
@@ -78,7 +78,7 @@ When slot ranges change because you add or remove a cluster, affected tenants ar
 
 1. the next request is forwarded to the newly selected cluster
 2. Orchard Core builds the tenant shell on that backend on demand
-3. the previous backend instance remains until it is released, for example by `ClusteredTenantInactivityCheck`
+3. the previous backend instance remains until it is released, for example by `ClusteredTenantInactivityService`
 
 There is no proactive tenant migration, no state copy performed by this feature, and no built-in warmup of the new backend pipeline.
 
