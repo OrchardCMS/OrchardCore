@@ -498,6 +498,16 @@ commands, explicit schemas, retries, invalid patch preservation, HTTP permission
 MCP creation/ordering and cleanup. It enables Deployment and MCP in the fixture
 and removes its temporary plan on completion.
 
+### Provider coverage
+
+Run `provider-coverage-smoke.py <fixture.json>` against a fixture started with
+`OC_FIXTURE_HTTPS=1`. It compares the feature preview with real changes, then
+for each provider settings section verifies its permissions, validation, secret
+redaction, retries and MCP behavior. It also checks the Elasticsearch and Azure AI
+Search definition routes, validation and the 503 of an unavailable provider. No
+search server is involved, so it does not prove that an index gets created. The
+fixture is left with many features enabled: discard it afterward.
+
 ### SMTP administration
 
 Run `smtp-smoke.py <fixture.json>` against a fixture started with
