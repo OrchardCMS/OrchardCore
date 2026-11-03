@@ -28,11 +28,11 @@ internal static class AzureAISearchIndexDefinitionEndpoints
     internal static void AddAzureAISearchIndexDefinitionEndpoints(this IEndpointRouteBuilder routes)
     {
         Configure(routes.MapGet("api/indexes/azure-ai-search/by-id", GetAsync), "ApiGetAzureAISearchIndexDefinition", "show", "Shows an Azure AI Search content index definition.")
-            .Produces<AzureAISearchIndexDefinitionResponse>();
+            .Produces<AzureAISearchIndexDefinitionResponse>().ProducesETag();
         Configure(routes.MapPost("api/indexes/azure-ai-search", CreateAsync), "ApiCreateAzureAISearchIndexDefinition", "create", "Creates an Azure AI Search content index and schedules synchronization.")
-            .Produces<AzureAISearchIndexDefinitionResponse>(201).Produces<AzureAISearchIndexDefinitionResponse>().ProducesProblem(409);
+            .Produces<AzureAISearchIndexDefinitionResponse>(201).Produces<AzureAISearchIndexDefinitionResponse>().ProducesETag().ProducesProblem(409);
         Configure(routes.MapPut("api/indexes/azure-ai-search/by-id", UpdateAsync), "ApiUpdateAzureAISearchIndexDefinition", "update", "Updates a definition; reindexing is a separate operation.")
-            .Produces<AzureAISearchIndexDefinitionResponse>();
+            .Produces<AzureAISearchIndexDefinitionResponse>().AcceptsIfMatch();
         Configure(routes.MapDelete("api/indexes/azure-ai-search/by-id", DeleteAsync), "ApiDeleteAzureAISearchIndexDefinition", "delete", "Removes an Azure AI Search content index and its profile.")
             .Produces(204);
         Configure(routes.MapGet("api/indexes/azure-ai-search/analyzers", AnalyzersAsync), "ApiListAzureAISearchIndexAnalyzers", "analyzers", "Lists configured Azure AI Search analyzer names.")
@@ -60,7 +60,7 @@ internal static class AzureAISearchIndexDefinitionEndpoints
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(id)) { return TypedResults.Problem("An index identifier is required.", statusCode: 400); }
         var profile = await profiles.FindByIdAsync(id);
-        return IsContentIndex(profile) ? TypedResults.Ok(Describe(profile)) : context.ApiNotFoundProblem();
+        return IsContentIndex(profile) ? TypedResults.Ok(context.WithApiETag(Describe(profile))) : context.ApiNotFoundProblem();
     }
 
     internal static async Task<IResult> AnalyzersAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -79,7 +79,7 @@ internal static class AzureAISearchIndexDefinitionEndpoints
         var existing = await profiles.FindByNameAsync(definition.Name);
         if (existing is not null)
         {
-            return IsContentIndex(existing) && Equivalent(existing, definition) ? TypedResults.Ok(Describe(existing))
+            return IsContentIndex(existing) && Equivalent(existing, definition) ? TypedResults.Ok(context.WithApiETag(Describe(existing)))
                 : TypedResults.Problem("An index with this display name already exists with a different definition.", statusCode: 409);
         }
         if (await profiles.FindByNameAndProviderAsync(definition.IndexName, AzureAISearchConstants.ProviderName) is not null)
@@ -91,7 +91,7 @@ internal static class AzureAISearchIndexDefinitionEndpoints
         {
             var result = await management.CreateAsync(profile);
             return result == IndexProfileManagementResult.Success
-                ? TypedResults.Created($"{context.Request.PathBase}/api/indexes/azure-ai-search/by-id?id={Uri.EscapeDataString(profile.Id)}", Describe(profile))
+                ? TypedResults.Created($"{context.Request.PathBase}/api/indexes/azure-ai-search/by-id?id={Uri.EscapeDataString(profile.Id)}", context.WithApiETag(Describe(profile)))
                 : MutationFailure(result);
         }
         catch (IndexProfileValidationException exception) { return ValidationFailure(exception.Errors); }
@@ -105,6 +105,7 @@ internal static class AzureAISearchIndexDefinitionEndpoints
         if (Validate(definition, options.Value) is { } invalid) { return invalid; }
         var profile = await profiles.FindByIdAsync(id);
         if (!IsContentIndex(profile)) { return context.ApiNotFoundProblem(); }
+        if (context.ApiIfMatchProblem(Describe(profile)) is { } preconditionFailed) { return preconditionFailed; }
         if (!string.Equals(profile.IndexName, definition.IndexName, StringComparison.Ordinal))
         {
             return TypedResults.Problem("The provider index name cannot be changed after creation.", statusCode: 400);
@@ -114,7 +115,7 @@ internal static class AzureAISearchIndexDefinitionEndpoints
             try { await profiles.UpdateAsync(profile, ToData(definition)); }
             catch (IndexProfileValidationException exception) { return ValidationFailure(exception.Errors); }
         }
-        return TypedResults.Ok(Describe(profile));
+        return TypedResults.Ok(context.WithApiETag(Describe(profile)));
     }
 
     internal static async Task<IResult> DeleteAsync(HttpContext context, [FromServices] IAuthorizationService authorization,

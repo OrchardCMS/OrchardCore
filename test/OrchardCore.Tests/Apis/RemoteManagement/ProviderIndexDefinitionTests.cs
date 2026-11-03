@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AzureAI;
 using OrchardCore.AzureAI.Endpoints.Management;
@@ -158,6 +160,108 @@ public class ProviderIndexDefinitionTests
         Assert.Equal(404, Status(await AzureAISearchIndexDefinitionEndpoints.DeleteAsync(http, Authorize(), profiles.Object, management.Object, "id")));
         management.VerifyNoOtherCalls();
     }
+
+    [Fact]
+    public async Task Show_ElasticsearchDefinition_ReturnsItsVersion()
+    {
+        var profile = ElasticsearchProfile();
+        var http = CreateContext();
+
+        await ElasticsearchIndexDefinitionEndpoints.GetAsync(http, Authorize(), Profiles(profile).Object, profile.Id);
+
+        Assert.Equal(ApiResourceVersionExtensions.ComputeApiETag(ElasticsearchIndexDefinitionEndpoints.Describe(profile)), http.Response.Headers.ETag);
+    }
+
+    [Fact]
+    public async Task Create_EquivalentElasticsearchDefinition_ReturnsItsVersion()
+    {
+        var profile = ElasticsearchProfile();
+        var profiles = Profiles(profile);
+        profiles.Setup(value => value.FindByNameAsync(profile.Name)).ReturnsAsync(profile);
+        var http = CreateContext();
+
+        var result = await ElasticsearchIndexDefinitionEndpoints.CreateAsync(http, Authorize(), profiles.Object, Mock.Of<IIndexProfileManagementService>(),
+            Options.Create(_elasticsearchOptions), ElasticsearchIndexDefinitionEndpoints.Describe(profile).Definition);
+
+        Assert.Equal(200, Status(result));
+        Assert.Equal(ApiResourceVersionExtensions.ComputeApiETag(ElasticsearchIndexDefinitionEndpoints.Describe(profile)), http.Response.Headers.ETag);
+    }
+
+    [Fact]
+    public async Task Update_StaleElasticsearchVersion_ChangesNothing()
+    {
+        var profile = ElasticsearchProfile();
+        var profiles = Profiles(profile);
+        var definition = ElasticsearchIndexDefinitionEndpoints.Describe(profile).Definition;
+        definition.IndexLatest = !definition.IndexLatest;
+        var http = CreateContext();
+        http.Request.Headers.IfMatch = "\"stale\"";
+
+        var result = await ElasticsearchIndexDefinitionEndpoints.UpdateAsync(http, Authorize(), profiles.Object, Options.Create(_elasticsearchOptions), profile.Id, definition);
+
+        Assert.Equal(412, Status(result));
+        Assert.Equal(ApiResourceVersionExtensions.ComputeApiETag(ElasticsearchIndexDefinitionEndpoints.Describe(profile)), http.Response.Headers.ETag);
+        profiles.Verify(value => value.UpdateAsync(It.IsAny<IndexProfile>(), It.IsAny<JsonNode>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Update_CurrentElasticsearchVersion_AppliesAndReturnsTheNewVersion()
+    {
+        var profile = ElasticsearchProfile();
+        var profiles = Profiles(profile);
+        var definition = ElasticsearchIndexDefinitionEndpoints.Describe(profile).Definition;
+        var current = ApiResourceVersionExtensions.ComputeApiETag(ElasticsearchIndexDefinitionEndpoints.Describe(profile));
+        definition.StoreSourceData = false;
+        var http = CreateContext();
+        http.Request.Headers.IfMatch = current;
+
+        var result = await ElasticsearchIndexDefinitionEndpoints.UpdateAsync(http, Authorize(), profiles.Object, Options.Create(_elasticsearchOptions), profile.Id, definition);
+
+        Assert.Equal(200, Status(result));
+        Assert.NotEqual(current, http.Response.Headers.ETag.ToString());
+        profiles.Verify(value => value.UpdateAsync(profile, It.IsAny<JsonNode>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Show_AzureDefinition_ReturnsItsVersion()
+    {
+        var profile = new IndexProfile { Id = "id", Name = "name", IndexName = "index", ProviderName = AzureAISearchConstants.ProviderName, Type = "Content" };
+        var http = CreateContext();
+
+        await AzureAISearchIndexDefinitionEndpoints.GetAsync(http, Authorize(), Profiles(profile).Object, profile.Id);
+
+        Assert.Equal(ApiResourceVersionExtensions.ComputeApiETag(AzureAISearchIndexDefinitionEndpoints.Describe(profile)), http.Response.Headers.ETag);
+    }
+
+    private static IndexProfile ElasticsearchProfile()
+    {
+        var profile = new IndexProfile
+        {
+            Id = "id",
+            Name = "name",
+            IndexName = "index",
+            ProviderName = ElasticsearchConstants.ProviderName,
+            Type = "Content",
+        };
+        profile.Put(new ContentIndexMetadata { IndexedContentTypes = ["Article"] });
+
+        return profile;
+    }
+
+    private static Mock<IIndexProfileManager> Profiles(IndexProfile profile)
+    {
+        var profiles = new Mock<IIndexProfileManager>();
+        profiles.Setup(value => value.FindByIdAsync(profile.Id)).ReturnsAsync(profile);
+
+        return profiles;
+    }
+
+    private static DefaultHttpContext CreateContext() => new()
+    {
+        RequestServices = new ServiceCollection()
+            .AddSingleton(Mock.Of<IStringLocalizer<ProblemDetailsApiLocalization>>())
+            .BuildServiceProvider(),
+    };
 
     private static IAuthorizationService Authorize()
     {

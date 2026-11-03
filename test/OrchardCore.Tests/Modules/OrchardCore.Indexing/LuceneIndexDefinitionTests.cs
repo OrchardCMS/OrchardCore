@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
@@ -52,6 +53,28 @@ public class LuceneIndexDefinitionTests
         profiles.Verify(value => value.FindByIdAsync("id"), Times.Once);
         profiles.VerifyNoOtherCalls();
         management.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Update_StaleVersion_ChangesNothing()
+    {
+        var profile = Profile();
+        var profiles = new Mock<IIndexProfileManager>(MockBehavior.Strict);
+        profiles.Setup(value => value.FindByIdAsync("id")).ReturnsAsync(profile);
+        var definition = LuceneIndexDefinitionEndpoints.Describe(profile).Definition;
+        definition.IndexLatest = !definition.IndexLatest;
+        var http = new DefaultHttpContext
+        {
+            RequestServices = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider(),
+        };
+        http.Request.Headers.IfMatch = "\"stale\"";
+
+        var result = await LuceneIndexDefinitionEndpoints.UpdateAsync(http, Authorize(), profiles.Object, "id", definition);
+
+        Assert.Equal(412, Status(result));
+        Assert.Equal(ApiResourceVersionExtensions.ComputeApiETag(LuceneIndexDefinitionEndpoints.Describe(profile)), http.Response.Headers.ETag);
+        profiles.Verify(value => value.FindByIdAsync("id"), Times.Once);
+        profiles.VerifyNoOtherCalls();
     }
 
     [Fact]

@@ -28,11 +28,11 @@ internal static class LuceneIndexDefinitionEndpoints
     internal static void AddLuceneIndexDefinitionEndpoints(this IEndpointRouteBuilder routes)
     {
         Configure(routes.MapGet("api/indexes/lucene/by-id", GetAsync), "ApiGetLuceneIndexDefinition", "show", "Shows a Lucene content index definition.")
-            .Produces<LuceneIndexDefinitionResponse>();
+            .Produces<LuceneIndexDefinitionResponse>().ProducesETag();
         Configure(routes.MapPost("api/indexes/lucene", CreateAsync), "ApiCreateLuceneIndexDefinition", "create", "Creates a Lucene content index and schedules synchronization.")
-            .Produces<LuceneIndexDefinitionResponse>(201).Produces<LuceneIndexDefinitionResponse>().ProducesProblem(409);
+            .Produces<LuceneIndexDefinitionResponse>(201).Produces<LuceneIndexDefinitionResponse>().ProducesETag().ProducesProblem(409);
         Configure(routes.MapPut("api/indexes/lucene/by-id", UpdateAsync), "ApiUpdateLuceneIndexDefinition", "update", "Updates a definition; reindexing is a separate operation.")
-            .Produces<LuceneIndexDefinitionResponse>();
+            .Produces<LuceneIndexDefinitionResponse>().AcceptsIfMatch();
         Configure(routes.MapDelete("api/indexes/lucene/by-id", DeleteAsync), "ApiDeleteLuceneIndexDefinition", "delete", "Removes a Lucene content index and its profile.")
             .Produces(204);
         Configure(routes.MapGet("api/indexes/lucene/analyzers", AnalyzersAsync), "ApiListLuceneIndexAnalyzers", "analyzers", "Lists registered Lucene analyzer names.")
@@ -60,7 +60,7 @@ internal static class LuceneIndexDefinitionEndpoints
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(id)) { return TypedResults.Problem("An index identifier is required.", statusCode: 400); }
         var profile = await profiles.FindByIdAsync(id);
-        return IsLuceneContent(profile) ? TypedResults.Ok(Describe(profile)) : context.ApiNotFoundProblem();
+        return IsLuceneContent(profile) ? TypedResults.Ok(context.WithApiETag(Describe(profile))) : context.ApiNotFoundProblem();
     }
 
     internal static async Task<IResult> AnalyzersAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -78,7 +78,7 @@ internal static class LuceneIndexDefinitionEndpoints
         var existing = await profiles.FindByNameAsync(definition.Name);
         if (existing is not null)
         {
-            return IsLuceneContent(existing) && Equivalent(existing, definition) ? TypedResults.Ok(Describe(existing))
+            return IsLuceneContent(existing) && Equivalent(existing, definition) ? TypedResults.Ok(context.WithApiETag(Describe(existing)))
                 : TypedResults.Problem("An index with this display name already exists with a different definition.", statusCode: 409);
         }
         if (await profiles.FindByNameAndProviderAsync(definition.IndexName, LuceneConstants.ProviderName) is not null)
@@ -90,7 +90,7 @@ internal static class LuceneIndexDefinitionEndpoints
         {
             var result = await management.CreateAsync(profile);
             return result == IndexProfileManagementResult.Success
-                ? TypedResults.Created($"{context.Request.PathBase}/api/indexes/lucene/by-id?id={Uri.EscapeDataString(profile.Id)}", Describe(profile))
+                ? TypedResults.Created($"{context.Request.PathBase}/api/indexes/lucene/by-id?id={Uri.EscapeDataString(profile.Id)}", context.WithApiETag(Describe(profile)))
                 : MutationFailure(result);
         }
         catch (IndexProfileValidationException exception) { return ValidationFailure(exception.Errors); }
@@ -104,6 +104,7 @@ internal static class LuceneIndexDefinitionEndpoints
         if (Validate(definition) is { } invalid) { return invalid; }
         var profile = await profiles.FindByIdAsync(id);
         if (!IsLuceneContent(profile)) { return context.ApiNotFoundProblem(); }
+        if (context.ApiIfMatchProblem(Describe(profile)) is { } preconditionFailed) { return preconditionFailed; }
         if (!string.Equals(profile.IndexName, definition.IndexName, StringComparison.Ordinal))
         {
             return TypedResults.Problem("The provider index name cannot be changed after creation.", statusCode: 400);
@@ -113,7 +114,7 @@ internal static class LuceneIndexDefinitionEndpoints
             try { await profiles.UpdateAsync(profile, ToData(definition)); }
             catch (IndexProfileValidationException exception) { return ValidationFailure(exception.Errors); }
         }
-        return TypedResults.Ok(Describe(profile));
+        return TypedResults.Ok(context.WithApiETag(Describe(profile)));
     }
 
     internal static async Task<IResult> DeleteAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
