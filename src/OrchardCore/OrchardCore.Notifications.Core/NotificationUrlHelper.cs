@@ -51,10 +51,23 @@ public static class NotificationUrlHelper
         if (url.StartsWith("~/", StringComparison.Ordinal))
         {
             // The base path never ends with a slash, and is empty for a tenant without a URL prefix.
-            return pathBase.Value + url[1..];
+            url = pathBase.Value + url[1..];
         }
 
-        return url;
+        return Encode(url);
+    }
+
+    // A redirect sends the URL in the 'Location' header, which only accepts ASCII characters.
+    private static string Encode(string url)
+    {
+        if (url.StartsWith('/'))
+        {
+            return new Uri(url, UriKind.Relative).GetComponents(UriComponents.SerializationInfoString, UriFormat.UriEscaped);
+        }
+
+        var uri = new Uri(url);
+
+        return new UriBuilder(uri) { Host = uri.IdnHost }.Uri.AbsoluteUri;
     }
 
     // A protocol-relative URL ('//host') or a backslash ('/\host') would leave the site.

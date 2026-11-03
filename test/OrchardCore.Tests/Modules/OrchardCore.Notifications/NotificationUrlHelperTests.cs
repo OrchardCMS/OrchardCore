@@ -43,6 +43,17 @@ public class NotificationUrlHelperTests
         Assert.Equal(expected, NotificationUrlHelper.Resolve(url, new PathString(pathBase)));
     }
 
+    [Theory]
+    [InlineData("~/caf\u00e9?q=\u00e9#\u00e9", "/tenant1", "/tenant1/caf%C3%A9?q=%C3%A9#%C3%A9")]
+    [InlineData("/caf\u00e9", "", "/caf%C3%A9")]
+    [InlineData("~/a b", "", "/a%20b")]
+    [InlineData("~/a%20b%2Fc?x=1&y=2", "", "/a%20b%2Fc?x=1&y=2")]
+    [InlineData("https://ex\u00e4mple.com/caf\u00e9?q=a%20b", "", "https://xn--exmple-cua.com/caf%C3%A9?q=a%20b")]
+    public void Resolve_NonAsciiUrl_ReturnsUrlValidInHeader(string url, string pathBase, string expected)
+    {
+        Assert.Equal(expected, NotificationUrlHelper.Resolve(url, new PathString(pathBase)));
+    }
+
     [Fact]
     public void Resolve_InvalidUrl_ReturnsNull()
     {
