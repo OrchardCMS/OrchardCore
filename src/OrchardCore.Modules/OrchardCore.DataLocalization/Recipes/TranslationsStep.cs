@@ -24,6 +24,9 @@ public sealed class TranslationsStep : IRecipeStepHandler
         S = stringLocalizer;
     }
 
+    /// <inheritdoc />
+    public IReadOnlyCollection<string> StepNames => ["Translations", "DynamicDataTranslations"];
+
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
         if (string.Equals(context.Name, "Translations", StringComparison.OrdinalIgnoreCase))

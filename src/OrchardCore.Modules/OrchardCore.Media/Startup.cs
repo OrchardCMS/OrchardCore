@@ -214,6 +214,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<MoveAttachedMediaFieldsStepExecutor>();
         services.AddDataMigration<Migrations>();
         services.AddRecipeExecutionStep<MediaStep>();
+        services.AddRecipeStepValidator<MediaStepValidator>();
         services.AddRecipeExecutionStep<MoveAttachedMediaFieldsStep>();
 
         // MIME types

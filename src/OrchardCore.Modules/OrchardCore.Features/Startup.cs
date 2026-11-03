@@ -27,6 +27,7 @@ public sealed class Startup : StartupBase
     {
         services.AddSingleton<IRemoteManagementCapabilityProvider, FeatureRemoteManagementCapabilityProvider>();
         services.AddRecipeExecutionStep<FeatureStep>();
+        services.AddRecipeStepValidator<FeatureStepValidator>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IModuleService, ModuleService>();
         services.AddScoped<FeatureService>();

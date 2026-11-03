@@ -33,7 +33,7 @@ public sealed class FeatureStep : NamedRecipeStepHandler
         }
     }
 
-    private sealed class FeatureStepModel
+    internal sealed class FeatureStepModel
     {
         public string Name { get; set; }
         public string[] Disable { get; set; }

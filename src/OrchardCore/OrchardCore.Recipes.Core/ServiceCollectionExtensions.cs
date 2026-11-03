@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IRecipeExecutor, RecipeExecutor>();
         services.AddScoped<IRecipeMigrator, RecipeMigrator>();
         services.AddScoped<IRecipeReader, RecipeReader>();
+        services.AddScoped<IRecipeValidator, RecipeValidator>();
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentFeatureProvider>();
 
         return services;

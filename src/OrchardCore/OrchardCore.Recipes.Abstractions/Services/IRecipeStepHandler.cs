@@ -13,4 +13,11 @@ public interface IRecipeStepHandler
     /// </summary>
     /// <param name="context">The context object representing the processed step.</param>
     Task ExecuteAsync(RecipeExecutionContext context);
+
+    /// <summary>
+    /// Gets the names of the steps that this handler processes, which are not case-sensitive. A recipe is validated
+    /// with them without executing it. When this is <see langword="null"/>, a step that no other handler declares
+    /// can't be reported as unknown, since this handler may process it.
+    /// </summary>
+    IReadOnlyCollection<string> StepNames => null;
 }

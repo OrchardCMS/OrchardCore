@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json.Nodes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -119,6 +120,46 @@ public class RecipeExecutorTests
             // well rather than only the gaps between the steps.
             Assert.NotEmpty(scriptingManager.CancellationTokens);
             Assert.All(scriptingManager.CancellationTokens, token => Assert.Equal(cancellationTokenSource.Token, token));
+        });
+    }
+
+    [Theory]
+    [InlineData("""{"steps":[{"name":"NoSuchStep"}]}""")]
+    [InlineData("""{"steps":[{"Name":"NoName"}]}""")]
+    [InlineData("""{"name":"NoSteps"}""")]
+    public async Task ExecuteAsync_NothingToApply_SucceedsWithoutError(string recipe)
+    {
+        await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
+        {
+            var localizerMock = new Mock<IStringLocalizer<RecipeExecutor>>();
+            localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
+                .Returns((string name) => new LocalizedString(name, name));
+            var shellHostMock = new Mock<IShellHost>();
+            shellHostMock.Setup(h => h.GetScopeAsync(It.IsAny<ShellSettings>()))
+                .Returns(GetScopeAsync);
+            var recipeExecutor = new RecipeExecutor(shellHostMock.Object, scope.ShellContext.Settings, [], new Mock<ILogger<RecipeExecutor>>().Object, localizerMock.Object);
+            var fileInfo = new Mock<IFileInfo>();
+            fileInfo.Setup(value => value.CreateReadStream()).Returns(() => new MemoryStream(Encoding.UTF8.GetBytes(recipe)));
+            var executionId = Guid.NewGuid().ToString("n");
+
+            var result = await recipeExecutor.ExecuteAsync(executionId, new RecipeDescriptor { RecipeFileInfo = fileInfo.Object }, new Dictionary<string, object>(), CancellationToken.None);
+
+            Assert.Equal(executionId, result);
+        });
+    }
+
+    [Theory]
+    [InlineData("""{"steps":[1]}""")]
+    [InlineData("""{"variables":[],"steps":[]}""")]
+    public async Task ExecuteAsync_ValueThatIsNotAnObject_Fails(string recipe)
+    {
+        await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
+        {
+            var recipeExecutor = new RecipeExecutor(Mock.Of<IShellHost>(), scope.ShellContext.Settings, [], new Mock<ILogger<RecipeExecutor>>().Object, Mock.Of<IStringLocalizer<RecipeExecutor>>());
+            var fileInfo = new Mock<IFileInfo>();
+            fileInfo.Setup(value => value.CreateReadStream()).Returns(() => new MemoryStream(Encoding.UTF8.GetBytes(recipe)));
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => recipeExecutor.ExecuteAsync(Guid.NewGuid().ToString("n"), new RecipeDescriptor { RecipeFileInfo = fileInfo.Object }, new Dictionary<string, object>(), CancellationToken.None));
         });
     }
 

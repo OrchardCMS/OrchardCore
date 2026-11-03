@@ -34,6 +34,8 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<CommandStep>();
         services.AddRecipeExecutionStep<RecipesStep>();
         services.AddRecipeExecutionStep<ReloadTenantStep>();
+        services.AddRecipeStepValidator<CommandStepValidator>();
+        services.AddRecipeStepValidator<RecipesStepValidator>();
 
         services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
 

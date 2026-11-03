@@ -46,12 +46,12 @@ public sealed class RecipesStep : NamedRecipeStepHandler
         context.InnerRecipes = innerRecipes;
     }
 
-    private sealed class InternalStep
+    internal sealed class InternalStep
     {
         public InternalStepValue[] Values { get; set; }
     }
 
-    private sealed class InternalStepValue
+    internal sealed class InternalStepValue
     {
         public string ExecutionId { get; set; }
 

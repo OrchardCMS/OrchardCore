@@ -28,6 +28,7 @@ public sealed class Startup : StartupBase
     {
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddRecipeExecutionStep<ThemesStep>();
+        services.AddRecipeStepValidator<ThemesStepValidator>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IThemeSelector, SiteThemeSelector>();
         services.AddScoped<ISiteThemeService, SiteThemeService>();
