@@ -40,7 +40,7 @@ public sealed class ShapeTemplateFiles
     /// Lists the template files that render the shapes of a theme. Each shape is listed once, with the file
     /// that renders it, e.g. a file of the theme rather than the one of a module that the theme overrides.
     /// </summary>
-    /// <param name="themeId">The theme whose shape table is listed.</param>
+    /// <param name="themeId">The theme whose shape table is listed, or <see langword="null"/> for the modules only, as when there is no theme.</param>
     public async Task<IReadOnlyList<SourceTemplate>> GetTemplatesAsync(string themeId)
     {
         var shapeTable = await _shapeTableManager.GetShapeTableAsync(themeId);
@@ -74,14 +74,12 @@ public sealed class ShapeTemplateFiles
     /// <summary>
     /// Gets the extensions whose template files render the shapes of a theme.
     /// </summary>
-    /// <param name="themeId">The theme whose shape table is listed, if any.</param>
-    /// <returns>The extension identifiers by template name, none when there is no theme.</returns>
+    /// <param name="themeId">The theme whose shape table is listed, or <see langword="null"/> for the modules only, as when there is no theme.</param>
+    /// <returns>The extension identifiers by template name.</returns>
     public async Task<IReadOnlyDictionary<string, string>> GetRenderingExtensionsAsync(string themeId)
-        => themeId == null
-            ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            : (await GetTemplatesAsync(themeId))
-                .GroupBy(template => template.Name, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(group => group.Key, group => group.First().ExtensionId, StringComparer.OrdinalIgnoreCase);
+        => (await GetTemplatesAsync(themeId))
+            .GroupBy(template => template.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First().ExtensionId, StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Finds the template file a shape binding renders, e.g. to tell which file renders a shape.

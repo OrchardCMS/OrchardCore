@@ -73,8 +73,6 @@ public sealed class FeatureTemplateSource : ITemplateSource
             scope = null;
         }
 
-        // The module templates by shape, of the modules in the order of the enabled features, so that the last one,
-        // a module depending on the others, wins, as it does in the shape table.
         var templatesByModule = modules.ToDictionary(
             module => module.Id,
             module => _shapeTemplateFiles.GetExtensionTemplates([module.Id]),
@@ -85,13 +83,23 @@ public sealed class FeatureTemplateSource : ITemplateSource
             return [];
         }
 
+        // The modules rendering the shapes without a theme, from the shape table, which orders them. Otherwise, e.g. when
+        // code renders the shape, the template of the last module in the order of the features is the one listed.
+        var renderedByModule = await _shapeTemplateFiles.GetRenderingExtensionsAsync(null);
         var winners = new Dictionary<string, SourceTemplate>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var module in modules)
         {
             foreach (var template in templatesByModule[module.Id])
             {
-                winners[template.Name] = template;
+                if (!renderedByModule.TryGetValue(template.Name, out var extensionId) || string.Equals(extensionId, template.ExtensionId, StringComparison.OrdinalIgnoreCase))
+                {
+                    winners[template.Name] = template;
+                }
+                else
+                {
+                    winners.TryAdd(template.Name, template);
+                }
             }
         }
 

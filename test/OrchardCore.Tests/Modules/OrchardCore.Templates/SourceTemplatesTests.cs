@@ -28,6 +28,7 @@ public sealed class SourceTemplatesTests : IDisposable
     private readonly AdminTemplateOverridesDocument _adminOverrides = new();
     private readonly List<IExtensionInfo> _extensions = [];
     private readonly Dictionary<string, ShapeBinding> _bindings = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, ShapeBinding> _moduleBindings = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _disabled = [];
     private string _siteThemeId = "SiteTheme";
 
@@ -325,6 +326,42 @@ public sealed class SourceTemplatesTests : IDisposable
     }
 
     [Fact]
+    public async Task GetTemplatesAsync_ShapeTableOrdersModulesDifferently_ListsTemplateOfModuleRenderingIt()
+    {
+        // The application module is last in the shape table, wherever its feature is enabled.
+        AddExtension("SiteTheme");
+        AddExtension("Application.Module", isTheme: false);
+        AddExtension("Other.Module", isTheme: false);
+        AddFile("Application.Module", "Views/TextField.cshtml", "application");
+        AddFile("Other.Module", "Views/TextField.cshtml", "other");
+        BindModule("TextField", "Application.Module", "Views/TextField.cshtml");
+
+        var source = CreateFeatureSource();
+
+        var template = Assert.Single(await source.GetTemplatesAsync(adminTemplates: false, scope: null));
+        Assert.Equal("Application.Module", template.ExtensionId);
+        Assert.Null(template.OverriddenBy);
+
+        template = Assert.Single(await source.GetTemplatesAsync(adminTemplates: false, scope: "Other.Module"));
+        Assert.Equal("Application.Module", template.OverriddenBy);
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_NoActiveTheme_MarksTemplatesOverriddenByModule()
+    {
+        _siteThemeId = null;
+        AddExtension("Base.Module", isTheme: false);
+        AddExtension("Dependent.Module", isTheme: false);
+        AddFile("Base.Module", "Views/TextField.cshtml", "base");
+        AddFile("Dependent.Module", "Views/TextField.cshtml", "dependent");
+        BindModule("TextField", "Dependent.Module", "Views/TextField.cshtml");
+
+        var template = Assert.Single(await CreateFeatureSource().GetTemplatesAsync(adminTemplates: false, scope: "Base.Module"));
+
+        Assert.Equal("Dependent.Module", template.OverriddenBy);
+    }
+
+    [Fact]
     public async Task GetTemplatesAsync_OneFeature_MarksTemplatesOverriddenByThemeOrModule()
     {
         AddExtension("SiteTheme");
@@ -351,10 +388,14 @@ public sealed class SourceTemplatesTests : IDisposable
     }
 
     private void Bind(string shapeType, string extensionId, string relativePath)
-    {
-        var filePath = $"{Application.ModulesRoot}{extensionId}/{relativePath}";
-        _bindings[shapeType] = new ShapeBinding { BindingName = shapeType.ToLowerInvariant(), BindingSource = filePath };
-    }
+        => _bindings[shapeType] = CreateBinding(shapeType, extensionId, relativePath);
+
+    // The shape table without a theme, of the modules only.
+    private void BindModule(string shapeType, string extensionId, string relativePath)
+        => _moduleBindings[shapeType] = CreateBinding(shapeType, extensionId, relativePath);
+
+    private static ShapeBinding CreateBinding(string shapeType, string extensionId, string relativePath)
+        => new() { BindingName = shapeType.ToLowerInvariant(), BindingSource = $"{Application.ModulesRoot}{extensionId}/{relativePath}" };
 
     private FeatureTemplateSource CreateFeatureSource()
     {
@@ -437,7 +478,9 @@ public sealed class SourceTemplatesTests : IDisposable
 
         var shapeTableManager = new Mock<IShapeTableManager>();
         shapeTableManager.Setup(manager => manager.GetShapeTableAsync(It.IsAny<string>()))
-            .ReturnsAsync(() => new ShapeTable(new Dictionary<string, ShapeDescriptor>(), _bindings.Values.ToDictionary(binding => binding.BindingName, StringComparer.OrdinalIgnoreCase)));
+            .ReturnsAsync((string themeId) => new ShapeTable(
+                new Dictionary<string, ShapeDescriptor>(),
+                (themeId == null ? _moduleBindings : _bindings).Values.ToDictionary(binding => binding.BindingName, StringComparer.OrdinalIgnoreCase)));
 
         return new ShapeTemplateFiles(shapeTableManager.Object, CreateExtensionManager(), fileProviderAccessor.Object, [liquid.Object, razor.Object]);
     }

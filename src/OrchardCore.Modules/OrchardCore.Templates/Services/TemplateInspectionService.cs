@@ -110,7 +110,7 @@ public sealed class TemplateInspectionService
     private async Task ResolveTemplatesAsync(IReadOnlyList<InspectedShape> shapes, bool adminTemplates)
     {
         var themeId = await _activeThemes.GetThemeIdAsync(adminTemplates);
-        var bindings = themeId == null ? null : (await _shapeTableManager.GetShapeTableAsync(themeId)).Bindings;
+        var bindings = (await _shapeTableManager.GetShapeTableAsync(themeId)).Bindings;
         var localTemplates = await _sourceTemplatesService.GetTemplatesDocumentAsync(adminTemplates);
 
         foreach (var shape in shapes)
@@ -124,7 +124,7 @@ public sealed class TemplateInspectionService
                     break;
                 }
 
-                if (bindings != null && bindings.TryGetValue(name, out var binding))
+                if (bindings.TryGetValue(name, out var binding))
                 {
                     shape.RenderedWith = name;
 
