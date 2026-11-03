@@ -85,6 +85,12 @@ def tool(resource, verb, arguments=None, client='cli-openid-applications', statu
     return content['body']
 
 
+def assert_tool_excluded(resource, verb):
+    result = request('mcp', 'POST', {'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call',
+        'params': {'name': 'openid_' + resource + '_' + verb, 'arguments': {}}})['result']
+    assert result['isError'] and result['content'][0]['text'] == 'Unknown or unavailable tool.'
+
+
 def set_application_secret(value):
     global application_secret
     application_secret = value
@@ -128,8 +134,6 @@ with tempfile.TemporaryDirectory(prefix='openid-credentials-cli-', dir=state_pat
         for denied in ['cli-denied', 'cli-discovery', 'cli-openid-scopes', name]:
             request(rotate_path, 'POST', client=denied, status=403)
             request(revoke_path, 'POST', client=denied, status=403)
-            if denied != 'cli-denied':
-                tool('applications_credentials', 'rotate', {'query': {'clientId': name}}, client=denied, status=403)
         request(rotate_path, 'POST', client=None, status=401)
         authenticate(original_secret)
         # Neither a missing destination nor an occupied destination may rotate the secret.
@@ -172,7 +176,8 @@ with tempfile.TemporaryDirectory(prefix='openid-credentials-cli-', dir=state_pat
             assert response.status == 200
         request('api/features/OrchardCore.RemoteManagement.Cli:disable', 'POST')
         try:
-            credentials = tool('applications_credentials', 'rotate', {'query': {'clientId': name}})
+            assert_tool_excluded('applications_credentials', 'rotate')
+            credentials = request(rotate_path, 'POST')
             set_application_secret(credentials['clientSecret'])
             authenticate(application_secret)
             tool('applications_credentials', 'revoke', {'query': {'clientId': name}}, status=204)

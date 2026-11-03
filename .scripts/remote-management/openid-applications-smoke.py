@@ -85,6 +85,12 @@ def tool(resource, verb, arguments=None, client='cli-openid-applications', statu
     return content['body']
 
 
+def assert_tool_excluded(resource, verb):
+    result = request('mcp', 'POST', {'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call',
+        'params': {'name': 'openid_' + resource + '_' + verb, 'arguments': {}}})['result']
+    assert result['isError'] and result['content'][0]['text'] == 'Unknown or unavailable tool.'
+
+
 def authenticate_application(expected_error=None):
     tokens.pop(name, None)
     try:
@@ -116,7 +122,7 @@ with tempfile.TemporaryDirectory(prefix='openid-applications-cli-', dir=state_pa
         assert application_secret not in json.dumps(created)
         assert not {'clientSecret', 'properties', 'jsonWebKeySet', 'settings'} & created.keys()
         assert pomi('openid', 'applications', 'create', body=body) == created
-        assert tool('applications', 'create', {'body': body}) == created
+        assert_tool_excluded('applications', 'create')
         pomi('openid', 'applications', 'create', body={**body, 'displayName': 'Conflicting'}, status=409)
         pomi('openid', 'applications', 'create', body={**body, 'clientSecret': secrets.token_urlsafe(32)}, status=409)
         authenticate_application()
@@ -136,15 +142,13 @@ with tempfile.TemporaryDirectory(prefix='openid-applications-cli-', dir=state_pa
             request('api/openid/applications', 'POST', body, client=denied, status=403)
             request(path, 'PUT', body, client=denied, status=403)
             request(path, 'DELETE', client=denied, status=403)
-            if denied != 'cli-denied':
-                tool('applications', 'update', {'query': {'clientId': name}, 'body': body}, client=denied, status=403)
         request('api/openid/applications', 'POST', body, client=None, status=401)
         replacement = {key: value for key, value in body.items() if key != 'clientSecret'}
         replacement['displayName'] = 'Updated'
         changed = pomi('openid', 'applications', 'update', name, body=replacement)
         assert changed['id'] == created['id'] and changed['displayName'] == 'Updated'
         assert pomi('openid', 'applications', 'update', name, body=replacement) == changed
-        assert tool('applications', 'update', {'query': {'clientId': name}, 'body': replacement}) == changed
+        assert_tool_excluded('applications', 'update')
         authenticate_application()
         request('api/openid/scopes', client=name)
         without_roles = {key: value for key, value in replacement.items() if key != 'roles'}
