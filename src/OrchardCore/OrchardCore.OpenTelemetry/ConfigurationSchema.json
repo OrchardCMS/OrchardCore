@@ -34,7 +34,7 @@
                   "type": "number",
                   "minimum": 0,
                   "maximum": 1,
-                  "description": "The ratio, from 0 to 1, of the traces that are sampled. A trace started by a sampled parent is always sampled. When not set, all traces are sampled."
+                  "description": "The ratio, from 0 to 1, of the traces that are sampled. A trace started by a sampled parent is always sampled. When not set, the standard 'OTEL_TRACES_SAMPLER' configuration value is used, and otherwise all traces are sampled."
                 },
                 "Sources": {
                   "type": "array",
@@ -91,11 +91,11 @@
             },
             "Otlp": {
               "type": "object",
-              "description": "Configures the OTLP exporter. When neither 'Endpoint' nor the 'OTEL_EXPORTER_OTLP_ENDPOINT' configuration value is set, the telemetry is not exported over OTLP.",
+              "description": "Configures the OTLP exporter. When neither 'Endpoint' nor the 'OTEL_EXPORTER_OTLP_ENDPOINT' and 'OTEL_EXPORTER_OTLP_{SIGNAL}_ENDPOINT' configuration values are set, the telemetry is not exported over OTLP.",
               "properties": {
                 "Endpoint": {
                   "type": "string",
-                  "description": "The endpoint of the OTLP receiver, e.g. 'http://localhost:4317' for gRPC or 'http://localhost:4318' for HTTP."
+                  "description": "The endpoint of the OTLP receiver for all signals, e.g. 'http://localhost:4317' for gRPC or 'http://localhost:4318' for HTTP."
                 },
                 "Protocol": {
                   "type": "string",
@@ -103,8 +103,7 @@
                     "Grpc",
                     "HttpProtobuf"
                   ],
-                  "default": "Grpc",
-                  "description": "The protocol used to export to the endpoint."
+                  "description": "The protocol used to export to the endpoint. When not set, the 'OTEL_EXPORTER_OTLP_{SIGNAL}_PROTOCOL' and 'OTEL_EXPORTER_OTLP_PROTOCOL' configuration values are used, and otherwise 'Grpc'."
                 }
               }
             }

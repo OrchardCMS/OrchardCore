@@ -488,9 +488,6 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Whether or not a shell can be added to the list of available shells.
-    /// </summary>
-    /// <summary>
     /// Counts the release of a built shell, placeholders have nothing to release.
     /// </summary>
     private static void RecordRelease(ShellContext context, string reason)
@@ -506,6 +503,9 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             new KeyValuePair<string, object>(OrchardCoreTelemetryConstants.Attributes.TenantReleaseReason, reason));
     }
 
+    /// <summary>
+    /// Whether or not a shell can be added to the list of available shells.
+    /// </summary>
     private static bool CanCreateShell(ShellSettings shellSettings) =>
         shellSettings.IsRunning() ||
         shellSettings.IsUninitialized() ||
