@@ -73,16 +73,55 @@ public sealed class NotificationVisibilityEvaluator : INotificationVisibilityEva
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                // Notifications whose access could not be checked must not be shown.
-                _logger.LogError(ex, "The handler '{Handler}' failed to evaluate {Count} notifications, which are hidden.", handler.GetType().FullName, contexts.Count);
+                if (contexts.Count == 1)
+                {
+                    // A notification whose access could not be checked must not be shown.
+                    _logger.LogError(ex, "The handler '{Handler}' failed to evaluate a notification, which is hidden.", handler.GetType().FullName);
 
-                contexts.ForEach(context => context.Hide());
+                    contexts[0].Hide();
+
+                    continue;
+                }
+
+                // One notification can make the whole batch fail, for example one of a type the handler doesn't expect:
+                // each notification is evaluated on its own, so that only those that fail are hidden.
+                _logger.LogWarning(ex, "The handler '{Handler}' failed to evaluate {Count} notifications, which are evaluated one by one.", handler.GetType().FullName, contexts.Count);
+
+                await EvaluateOneByOneAsync(handler, contexts, cancellationToken);
             }
         }
 
         foreach (var context in contexts)
         {
             _decisions[GetKey(context.Notification, user)] = context.Visibility;
+        }
+    }
+
+    private async Task EvaluateOneByOneAsync(INotificationVisibilityHandler handler, List<NotificationVisibilityContext> contexts, CancellationToken cancellationToken)
+    {
+        Exception lastException = null;
+        var hidden = 0;
+
+        foreach (var context in contexts)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
+            {
+                await handler.EvaluateAsync([context], cancellationToken);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                // A notification whose access could not be checked must not be shown.
+                context.Hide();
+                lastException = ex;
+                hidden++;
+            }
+        }
+
+        if (hidden > 0)
+        {
+            _logger.LogError(lastException, "The handler '{Handler}' failed to evaluate {Count} of {Total} notifications, which are hidden.", handler.GetType().FullName, hidden, contexts.Count);
         }
     }
 

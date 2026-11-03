@@ -21,7 +21,8 @@ public interface INotificationVisibilityHandler
     /// <summary>
     /// Evaluates the visibility of notifications for the current user, and calls
     /// <see cref="NotificationVisibilityContext.Hide"/> or <see cref="NotificationVisibilityContext.Restrict"/> to limit them.
-    /// When the method throws, all these notifications are hidden.
+    /// When the method throws, it is called again for each notification on its own, and the notifications
+    /// for which it still throws are hidden.
     /// </summary>
     /// <param name="contexts">The visibility context of each notification, all for the same user. It is never empty.</param>
     /// <param name="cancellationToken">The cancellation token.</param>

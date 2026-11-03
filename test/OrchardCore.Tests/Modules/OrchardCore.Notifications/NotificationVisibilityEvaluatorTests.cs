@@ -110,6 +110,36 @@ public class NotificationVisibilityEvaluatorTests
         Assert.Empty(visible);
     }
 
+    [Fact]
+    public async Task FilterAsync_HandlerThrowsForOneNotification_HidesOnlyThatNotification()
+    {
+        var evaluator = new NotificationVisibilityEvaluator(
+            [
+                new BatchHandler(contexts =>
+                {
+                    if (contexts.Any(c => c.Notification.ReferenceId == "broken"))
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }),
+                new DelegateHandler(context =>
+                {
+                    if (context.Notification.Type == "Mention")
+                    {
+                        context.Restrict();
+                    }
+                }),
+            ],
+            NullLogger<NotificationVisibilityEvaluator>.Instance);
+
+        var notifications = new[] { CreateNotification("1", null), CreateNotification("2", "Mention", "broken"), CreateNotification("3", "Mention") };
+
+        var visible = await evaluator.FilterAsync(notifications, _user, TestContext.Current.CancellationToken);
+
+        Assert.Equal(["1", "3"], visible.Select(n => n.NotificationId));
+        Assert.Equal(NotificationVisibility.Restricted, await evaluator.EvaluateAsync(notifications[2], _user, TestContext.Current.CancellationToken));
+    }
+
     private static Notification CreateNotification(string id, string type, string referenceId = null)
         => new()
         {
