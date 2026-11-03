@@ -18,6 +18,11 @@ msgstr ""
 
 #: Controllers/BackgroundTaskController.cs
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Background tasks can't be run on demand because the background service is not registered."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "Disable"
 msgstr ""
 
@@ -38,7 +43,55 @@ msgstr ""
 
 #: Controllers/BackgroundTaskController.cs
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Last run failed"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "Please select one or more tasks."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Run now"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Running or queued"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The schedule must be a valid cron expression."
+msgstr ""
+
+#. Format arguments: {0}: title
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task '{0}' can't run yet because the background service didn't load it. Please try again in a moment."
+msgstr ""
+
+#. Format arguments: {0}: title
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task '{0}' has been queued and will run shortly."
+msgstr ""
+
+#. Format arguments: {0}: title
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task '{0}' is already queued to run."
+msgstr ""
+
+#. Format arguments: {0}: title
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task '{0}' is already running."
 msgstr ""
 
 #: Controllers/BackgroundTaskController.cs
@@ -69,6 +122,200 @@ msgstr ""
 #: Permissions.cs
 msgctxt "OrchardCore.BackgroundTasks.Permissions"
 msgid "Manage background tasks"
+msgstr ""
+
+#. Format arguments: {0}: Model.DefaultSchedule
+#: Views/BackgroundTask/Details.cshtml
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "(default: {0})"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Atomic"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Background Tasks"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Completed runs"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Details"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Disabled"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Duration"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Edit"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Enabled"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Error"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Execution"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Failed runs"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Idle"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Last error"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Last run"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Last run duration"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Last run triggered by"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Never"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Next run"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "No"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Not scheduled, the task is disabled."
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Recent runs"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Result"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Run now"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Schedule"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Settings"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Started"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Status"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Technical name"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "The execution state is tracked in memory by the server handling this request, since the application started."
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "The execution state of the task is not available because the background service is not registered."
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "The schedule is not a valid cron expression."
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "The task has not completed any run yet."
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Triggered by"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Use tenant pipeline"
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Waiting for the background service to load this task."
+msgstr ""
+
+#: Views/BackgroundTask/Details.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Yes"
+msgstr ""
+
+#. Format arguments: {0}: Model.LockTimeout; {1}: Model.LockExpiration
+#: Views/BackgroundTask/Details.cshtml
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
+msgid "Yes, lock timeout {0} ms, lock expiration {1} ms"
 msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
@@ -188,6 +435,16 @@ msgstr ""
 
 #: Views/BackgroundTask/Index.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Last run"
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Next run"
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "Search"
 msgstr ""
 
@@ -198,12 +455,86 @@ msgstr ""
 
 #: Views/BackgroundTask/Index.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "The execution state of the tasks is not available because the background service is not registered."
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "Title"
 msgstr ""
 
 #: Views/BackgroundTask/Index.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "selected"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskActions.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskActions"
+msgid "Actions"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskActions.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskActions"
+msgid "Disable"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskActions.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskActions"
+msgid "Enable"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskActions.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskActions"
+msgid "Run now"
+msgstr ""
+
+#. Format arguments: {0}: Model.TotalMilliseconds
+#: Views/BackgroundTask/_BackgroundTaskDuration.cshtml
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskDuration"
+msgid "{0} ms"
+msgstr ""
+
+#. Format arguments: {0}: Math.Round(Model.TotalSeconds, 1)
+#: Views/BackgroundTask/_BackgroundTaskDuration.cshtml
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskDuration"
+msgid "{0} s"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskRunResult.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskRunResult"
+msgid "Canceled"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskRunResult.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskRunResult"
+msgid "Failed"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskRunResult.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskRunResult"
+msgid "Succeeded"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskStatus.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskStatus"
+msgid "Queued"
+msgstr ""
+
+#: Views/BackgroundTask/_BackgroundTaskStatus.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskStatus"
+msgid "Running"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Details"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run now"
 msgstr ""
 
 #: Views/BackgroundTaskEntry.Buttons.SummaryAdmin.cshtml
@@ -234,6 +565,48 @@ msgstr ""
 #: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
 msgid "Status"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.LastRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.LastRun.SummaryAdmin"
+msgid "Last run"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.LastRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.LastRun.SummaryAdmin"
+msgid "never"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.NextRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.NextRun.SummaryAdmin"
+msgid "Next run"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.NextRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.NextRun.SummaryAdmin"
+msgid "invalid schedule"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.NextRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.NextRun.SummaryAdmin"
+msgid "not scheduled"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Status.SummaryAdmin"
+msgid "Failed runs"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Status.SummaryAdmin"
+msgid "Waiting for the background service to load this task"
+msgstr ""
+
+#. Format arguments: {0}: state.FailureCount; {1}: state.RunCount
+#: Views/BackgroundTaskEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Status.SummaryAdmin"
+msgid "{0} of {1}"
 msgstr ""
 
 #: Views/BackgroundTasksFilters.cshtml
