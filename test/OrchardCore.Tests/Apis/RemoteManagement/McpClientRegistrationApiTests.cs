@@ -244,7 +244,17 @@ public class McpClientRegistrationApiTests
 
         using var tools = await client.PostAsJsonAsync("mcp", new { jsonrpc = "2.0", id = 1, method = "tools/list" }, cancellationToken);
 
-        Assert.True(tools.IsSuccessStatusCode, await tools.Content.ReadAsStringAsync(cancellationToken));
+        var catalog = await tools.Content.ReadAsStringAsync(cancellationToken);
+        Assert.True(tools.IsSuccessStatusCode, catalog);
+        Assert.Contains("management_whoami", catalog);
+        Assert.DoesNotContain("features_disable", catalog);
+
+        // The tool runs through the tenant's real services, with the identity of the token.
+        using var call = await client.PostAsJsonAsync("mcp", new { jsonrpc = "2.0", id = 2, method = "tools/call", @params = new { name = "management_whoami", arguments = new { } } }, cancellationToken);
+        var result = await call.Content.ReadAsStringAsync(cancellationToken);
+        Assert.True(call.IsSuccessStatusCode, result);
+        Assert.DoesNotContain("\"isError\":true", result);
+        Assert.Contains(credentials.ClientId, result);
     }
 
     private static async Task<HttpResponseMessage> GetTenantPageAsync(HttpClient client, Uri uri, CancellationToken cancellationToken)

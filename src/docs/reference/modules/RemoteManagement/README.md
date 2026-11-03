@@ -56,7 +56,7 @@ or repairs the CLI application. Both resolve the current tenant automatically.
 
 The public bootstrap document is available at `/.well-known/orchardcore-management`. It contains only the protocol version, authentication authority, client ID, and supported grants. The authenticated `/api/management/manifest` endpoint additionally returns tenant identity, compatibility ranges, capabilities, OpenAPI coordinates, and documentation index information.
 
-Access to the authenticated manifest and management APIs requires the **Access remote management API** permission. Each contributed operation also enforces its own Orchard Core permission.
+Access to the authenticated manifest and management APIs requires the **Access remote management API** permission. Each contributed operation also enforces its own Orchard Core permission. `GET /api/management/me` (`pomi management whoami`) returns the tenant, the user or client, the scopes and the effective permissions of the caller.
 
 ## Install the CLI
 

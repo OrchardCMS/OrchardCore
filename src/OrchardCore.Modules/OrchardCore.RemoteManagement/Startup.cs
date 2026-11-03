@@ -55,6 +55,8 @@ public sealed class Startup : StartupBase
         routes.MapGet("api/management/manifest", HandleManifestAsync)
             .WithName("ApiGetRemoteManagementManifest")
             .WithTags("RemoteManagement");
+
+        routes.AddRemoteManagementIdentityEndpoints();
     }
 
     [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]

@@ -35,6 +35,7 @@ The service builds absolute URLs from the effective request scheme, host, and `P
 | `GET` | `/.well-known/orchardcore-management` | Anonymous | Bootstrap authentication and manifest coordinates |
 | `GET` | `/api/management/manifest` | `Api` bearer + `AccessRemoteManagement` | Full tenant manifest and capabilities |
 | `HEAD` | `/api/management/manifest` | `Api` bearer + `AccessRemoteManagement` | Check the active API revision without downloading metadata |
+| `GET` | `/api/management/me` | `Api` bearer + `AccessRemoteManagement` | The identity, scopes and effective permissions of the caller |
 
 ## OpenAPI security
 
@@ -286,6 +287,39 @@ Representative `403`:
 }
 ```
 
+### Get the identity of the caller
+
+```http
+GET /api/management/me
+Authorization: Bearer ACCESS_TOKEN
+```
+
+Pomi exposes this as `pomi management whoami` and MCP as the `management_whoami` tool. The response uses `Cache-Control: no-store`.
+
+```json
+{
+  "tenant": "Default",
+  "type": "user",
+  "subject": "4ch7s3qw1xdm2v8ngz9p0j5tkb",
+  "name": "admin",
+  "clientId": "orchardcore-cli",
+  "scopes": ["openid", "orchardcore.management"],
+  "permissions": ["AccessRemoteManagement", "ManageTenants"]
+}
+```
+
+| JSON property | Type | Nullable | Meaning |
+| --- | --- | --- | --- |
+| `tenant` | string | No | Name of the tenant the token is used on. |
+| `type` | string | No | `user`, or `client` for an application authenticating for itself, such as with client credentials. |
+| `subject` | string | Yes | Identifier of the user or client. |
+| `name` | string | Yes | Name of the user or client, when the token has one. |
+| `clientId` | string | Yes | OpenID application the token was issued to, when known. |
+| `scopes` | string array | No | Scopes of the token. |
+| `permissions` | string array | No | Permissions enabled on the tenant that this caller effectively has, evaluated with the same authorization checks as the APIs. |
+
+An operation can also check a permission for a specific resource, so a permission listed here doesn't promise that every call succeeds. Other responses are `401` and `403`.
+
 ## Compatibility
 
 Compatibility is body-based; these endpoints define no custom compatibility request or response headers.
@@ -304,19 +338,19 @@ The Pomi CLI fetches bootstrap first, then the authenticated manifest, and refus
 
 | Status | Endpoint | Meaning |
 | --- | --- | --- |
-| `200 OK` | Both | Document returned. |
-| `401 Unauthorized` | Authenticated manifest | No valid `Api` bearer identity; includes an authentication challenge. |
-| `403 Forbidden` | Authenticated manifest | Authenticated identity lacks `AccessRemoteManagement`. |
+| `200 OK` | All | Document returned. |
+| `401 Unauthorized` | Authenticated manifest and identity | No valid `Api` bearer identity; includes an authentication challenge. |
+| `403 Forbidden` | Authenticated manifest and identity | Authenticated identity lacks `AccessRemoteManagement`. |
 
-No request validation errors are defined because neither operation accepts input parameters.
+No request validation errors are defined because no operation accepts input parameters.
 
 ## Endpoint coverage and sources
 
-This page covers all **2 Remote Management discovery route/method operations**.
+This page covers all **4 Remote Management discovery route/method operations**.
 
 Source-derived from:
 
-- `OrchardCore.RemoteManagement/Startup.cs`, `Manifest.cs`, `RemoteManagementManifestService.cs`, `DefaultCapabilityProvider.cs`, and `Permissions.cs`
+- `OrchardCore.RemoteManagement/Startup.cs`, `Manifest.cs`, `RemoteManagementManifestService.cs`, `RemoteManagementIdentityEndpoints.cs`, `DefaultCapabilityProvider.cs`, and `Permissions.cs`
 - `OrchardCore.RemoteManagement.Abstractions/RemoteManagementManifest.cs`, authentication/capability models, constants, and permissions
 - Media and Queries capability providers
 - `OrchardCore.Cli/CliApplication.cs`, `CliUtilities.cs`, `CompatibilityService.cs`, and `CacheService.cs`
