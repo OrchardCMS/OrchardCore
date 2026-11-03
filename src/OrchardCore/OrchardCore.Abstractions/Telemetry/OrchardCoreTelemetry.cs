@@ -28,38 +28,31 @@ public static class OrchardCoreTelemetry
     /// </summary>
     public static Meter Meter { get; } = new(OrchardCoreTelemetryConstants.MeterName, s_version);
 
-    internal static Histogram<double> TenantContainerDuration { get; } = Meter.CreateHistogram(
+    internal static Histogram<double> TenantContainerDuration { get; } = CreateDurationHistogram(
         OrchardCoreTelemetryConstants.Instruments.TenantContainerDuration,
-        unit: "s",
-        description: "Duration of building the service container of a tenant.",
-        tags: null,
-        advice: s_durationAdvice);
+        "Duration of building the service container of a tenant.");
 
-    internal static Histogram<double> TenantPipelineDuration { get; } = Meter.CreateHistogram(
+    internal static Histogram<double> TenantPipelineDuration { get; } = CreateDurationHistogram(
         OrchardCoreTelemetryConstants.Instruments.TenantPipelineDuration,
-        unit: "s",
-        description: "Duration of building the request pipeline of a tenant.",
-        tags: null,
-        advice: s_durationAdvice);
+        "Duration of building the request pipeline of a tenant.");
 
-    internal static Histogram<double> TenantActivationDuration { get; } = Meter.CreateHistogram(
+    internal static Histogram<double> TenantActivationDuration { get; } = CreateDurationHistogram(
         OrchardCoreTelemetryConstants.Instruments.TenantActivationDuration,
-        unit: "s",
-        description: "Duration of activating a tenant.",
-        tags: null,
-        advice: s_durationAdvice);
+        "Duration of activating a tenant.");
 
     internal static Counter<long> TenantReleases { get; } = Meter.CreateCounter<long>(
         OrchardCoreTelemetryConstants.Instruments.TenantReleases,
         unit: "{release}",
         description: "Number of times a tenant was released, so that it gets rebuilt on its next use.");
 
-    internal static Histogram<double> BackgroundTaskDuration { get; } = Meter.CreateHistogram(
+    internal static Histogram<double> BackgroundTaskDuration { get; } = CreateDurationHistogram(
         OrchardCoreTelemetryConstants.Instruments.BackgroundTaskDuration,
-        unit: "s",
-        description: "Duration of running a background task.",
-        tags: null,
-        advice: s_durationAdvice);
+        "Duration of running a background task.");
+
+    private static Histogram<double> CreateDurationHistogram(string name, string description)
+    {
+        return Meter.CreateHistogram(name, unit: "s", description: description, tags: null, advice: s_durationAdvice);
+    }
 
     /// <summary>
     /// Marks an <see cref="Activity"/> as failed by the provided <see cref="Exception"/>.
