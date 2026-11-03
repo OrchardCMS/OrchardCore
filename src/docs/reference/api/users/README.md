@@ -44,6 +44,9 @@ All paths are relative to the tenant URL:
 | `POST` | `/api/users` | `ApiCreateUser` | Create a user and assign authorized roles. | `EditUsers`, plus role-assignment permissions |
 | `PUT` | `/api/users/{userId}` | `ApiUpdateUser` | Update an account and authorized roles. | Resource-aware `EditUsers`, plus role-assignment permissions |
 | `POST` | `/api/users/{userId}:disable` | `ApiDisableUser` | Disable an account. | Resource-aware `EditUsers` |
+| `POST` | `/api/users/{userId}:unlock` | `ApiUnlockUser` | End a lockout and reset the failed-access count. | Resource-aware `EditUsers` |
+| `POST` | `/api/users/{userId}:confirm-email` | `ApiConfirmUserEmail` | Mark the email as confirmed. | Resource-aware `EditUsers` |
+| `POST` | `/api/users/{userId}:send-reset` | `ApiSendUserPasswordReset` | Send the password reset email. | Resource-aware `EditUsers` |
 | `DELETE` | `/api/users/{userId}` | `ApiDeleteUser` | Delete an account. | Resource-aware `DeleteUsers` |
 
 ## User representation
@@ -415,6 +418,56 @@ Accept: application/json
 | `403 Forbidden` | The caller cannot edit this user. |
 | `404 Not Found` | The user manager cannot resolve `userId`. |
 
+## Unlock a user
+
+```http
+POST /api/users/{userId}:unlock
+```
+
+There is no request body. This ends the user's lockout and resets the failed-access count, like the admin UI. Unlocking a user who isn't locked out succeeds.
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` | The user is unlocked. Returns the user representation. |
+| `400 Bad Request` | The Identity user manager rejected the operation. |
+| `401 Unauthorized` | The bearer token is absent or rejected. |
+| `403 Forbidden` | The caller cannot edit this user. |
+| `404 Not Found` | The user manager cannot resolve `userId`. |
+
+## Confirm a user's email
+
+```http
+POST /api/users/{userId}:confirm-email
+```
+
+There is no request body. Confirming an email that is already confirmed succeeds and changes nothing.
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` | The email is confirmed. Returns the user representation. |
+| `400 Bad Request` | The Identity user manager rejected the operation. |
+| `401 Unauthorized` | The bearer token is absent or rejected. |
+| `403 Forbidden` | The caller cannot edit this user. |
+| `404 Not Found` | The user manager cannot resolve `userId`. |
+
+## Send a password reset email
+
+```http
+POST /api/users/{userId}:send-reset
+```
+
+There is no request body. This sends the user the same email as the password recovery page, and returns the user representation without the reset token. It needs the **Reset Password** feature with its setting on, and the **Email** feature with a working provider.
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` | The email was sent. |
+| `400 Bad Request` | The user has no email address. |
+| `401 Unauthorized` | The bearer token is absent or rejected. |
+| `403 Forbidden` | The caller cannot edit this user. |
+| `404 Not Found` | The user manager cannot resolve `userId`. |
+| `409 Conflict` | Password reset isn't available in this tenant. |
+| `502 Bad Gateway` | The email provider failed to send the email. |
+
 ## Delete a user
 
 ```http
@@ -575,7 +628,7 @@ validation problems.
 
 ## Endpoint coverage and sources
 
-This page covers all 6 routes mapped by:
+This page covers all 9 routes mapped by:
 
 - `src/OrchardCore.Modules/OrchardCore.Users/Endpoints/Management/UserManagementEndpoints.cs`
 

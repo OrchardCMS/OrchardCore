@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
+using OrchardCore.Settings;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Endpoints.Management;
@@ -394,6 +395,76 @@ public class UserManagementEndpointsTests
         Assert.Equal(StatusCodes.Status400BadRequest, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
         Assert.Equal("old@example.test", user.Email);
         userManager.Verify(manager => manager.UpdateAsync(It.IsAny<IUser>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UnlockAsync_LockedUser_ClearsLockout()
+    {
+        var user = new User { UserId = "alice", UserName = "alice" };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+        userManager.Setup(manager => manager.ResetAccessFailedCountAsync(user)).ReturnsAsync(IdentityResult.Success);
+        userManager.Setup(manager => manager.SetLockoutEndDateAsync(user, null)).ReturnsAsync(IdentityResult.Success);
+
+        var result = await UserManagementEndpoints.UnlockAsync(CreateHttpContext(), "alice", userManager.Object, AuthorizeAll(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        userManager.Verify(manager => manager.ResetAccessFailedCountAsync(user), Times.Once);
+        userManager.Verify(manager => manager.SetLockoutEndDateAsync(user, null), Times.Once);
+    }
+
+    [Fact]
+    public async Task ConfirmEmailAsync_UnconfirmedUser_ConfirmsIt()
+    {
+        var user = new User { UserId = "alice", UserName = "alice" };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+        userManager.Setup(manager => manager.IsEmailConfirmedAsync(user)).ReturnsAsync(false);
+        userManager.Setup(manager => manager.GenerateEmailConfirmationTokenAsync(user)).ReturnsAsync("token");
+        userManager.Setup(manager => manager.ConfirmEmailAsync(user, "token")).ReturnsAsync(IdentityResult.Success);
+
+        var result = await UserManagementEndpoints.ConfirmEmailAsync(CreateHttpContext(), "alice", userManager.Object, AuthorizeAll(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        userManager.Verify(manager => manager.ConfirmEmailAsync(user, "token"), Times.Once);
+    }
+
+    [Theory]
+    [InlineData("unlock")]
+    [InlineData("confirm-email")]
+    [InlineData("send-reset")]
+    public async Task ActionRoutes_CallerCannotEditUser_ReturnsForbidden(string action)
+    {
+        var user = new User { UserId = "alice", UserName = "alice" };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+        var authorization = Mock.Of<IAuthorizationService>(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), user, It.IsAny<IEnumerable<IAuthorizationRequirement>>()) == Task.FromResult(AuthorizationResult.Failed()));
+        var context = CreateHttpContext();
+
+        var result = action switch
+        {
+            "unlock" => await UserManagementEndpoints.UnlockAsync(context, "alice", userManager.Object, authorization, CreateLocalizer()),
+            "confirm-email" => await UserManagementEndpoints.ConfirmEmailAsync(context, "alice", userManager.Object, authorization, CreateLocalizer()),
+            _ => await UserManagementEndpoints.SendPasswordResetAsync(context, "alice", userManager.Object, Mock.Of<ISiteService>(), authorization, CreateServices(), CreateLocalizer()),
+        };
+
+        Assert.Equal(StatusCodes.Status403Forbidden, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+    }
+
+    [Fact]
+    public async Task SendPasswordResetAsync_ResetDisabled_ReturnsConflict()
+    {
+        var user = new User { UserId = "alice", UserName = "alice", Email = "alice@example.test" };
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("alice")).ReturnsAsync(user);
+        var site = new Mock<ISite>();
+        site.Setup(value => value.GetOrCreate<ResetPasswordSettings>()).Returns(new ResetPasswordSettings { AllowResetPassword = false });
+        var siteService = Mock.Of<ISiteService>(service => service.GetSiteSettingsAsync() == Task.FromResult(site.Object));
+
+        var result = await UserManagementEndpoints.SendPasswordResetAsync(CreateHttpContext(), "alice", userManager.Object, siteService, AuthorizeAll(), CreateServices(), CreateLocalizer());
+
+        Assert.Equal(StatusCodes.Status409Conflict, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        userManager.Verify(manager => manager.GeneratePasswordResetTokenAsync(It.IsAny<IUser>()), Times.Never);
     }
 
     private static DefaultHttpContext CreateHttpContext(string claimType = null, string claimValue = null)

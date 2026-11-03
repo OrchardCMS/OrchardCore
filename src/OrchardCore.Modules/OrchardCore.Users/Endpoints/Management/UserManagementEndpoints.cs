@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.RemoteManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
+using OrchardCore.Settings;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -116,6 +117,53 @@ internal static class UserManagementEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
+
+        routes.MapPost(RoutePrefix + "/{userId}:unlock", UnlockAsync)
+            .WithName("ApiUnlockUser")
+            .WithSummary("Unlocks a user.")
+            .WithDescription("Ends a user's lockout and resets the failed-access count.")
+            .WithCliCommand(new CliOperationMetadata(["users"], "unlock")
+            {
+                Capability = UserManagementApiEndpointConventions.CapabilityName,
+                Arguments = { new CliArgumentMetadata("userId", 0) },
+            })
+            .Produces<UserResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        routes.MapPost(RoutePrefix + "/{userId}:confirm-email", ConfirmEmailAsync)
+            .WithName("ApiConfirmUserEmail")
+            .WithSummary("Confirms a user's email.")
+            .WithDescription("Marks the user's email as confirmed. An already confirmed email is left unchanged.")
+            .WithCliCommand(new CliOperationMetadata(["users"], "confirm-email")
+            {
+                Capability = UserManagementApiEndpointConventions.CapabilityName,
+                Arguments = { new CliArgumentMetadata("userId", 0) },
+            })
+            .Produces<UserResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        routes.MapPost(RoutePrefix + "/{userId}:send-reset", SendPasswordResetAsync)
+            .WithName("ApiSendUserPasswordReset")
+            .WithSummary("Sends a password reset email to a user.")
+            .WithDescription("Sends the password reset email. Requires the password reset feature and setting, the email feature, and an address on the user. It returns no reset token.")
+            .WithCliCommand(new CliOperationMetadata(["users"], "send-reset")
+            {
+                Capability = UserManagementApiEndpointConventions.CapabilityName,
+                Arguments = { new CliArgumentMetadata("userId", 0) },
+            })
+            .Produces<UserResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status502BadGateway);
 
         routes.MapDelete(RoutePrefix + "/{userId}", DeleteAsync)
             .WithName("ApiDeleteUser")
@@ -401,6 +449,99 @@ internal static class UserManagementEndpoints
         if (!await userService.DisableAsync(user))
         {
             return httpContext.ApiBadRequestProblem(detail: localizer["Could not disable the user."]);
+        }
+
+        return TypedResults.Ok(ToResponse(user));
+    }
+
+    internal static async Task<IResult> UnlockAsync(HttpContext httpContext, string userId, UserManager<IUser> userManager, IAuthorizationService authorizationService, IStringLocalizer<AdminController> localizer)
+    {
+        if (await userManager.FindByIdAsync(userId) is not User user)
+        {
+            return httpContext.ApiNotFoundProblem(detail: localizer["User not found."]);
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, user))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        await userManager.ResetAccessFailedCountAsync(user);
+        var result = await userManager.SetLockoutEndDateAsync(user, null);
+        if (!result.Succeeded)
+        {
+            return TypedResults.Problem(
+                title: localizer["Could not unlock the user."],
+                detail: string.Join(", ", result.Errors.Select(error => error.Description)),
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        return TypedResults.Ok(ToResponse(user));
+    }
+
+    internal static async Task<IResult> ConfirmEmailAsync(HttpContext httpContext, string userId, UserManager<IUser> userManager, IAuthorizationService authorizationService, IStringLocalizer<AdminController> localizer)
+    {
+        if (await userManager.FindByIdAsync(userId) is not User user)
+        {
+            return httpContext.ApiNotFoundProblem(detail: localizer["User not found."]);
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, user))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        if (await userManager.IsEmailConfirmedAsync(user))
+        {
+            return TypedResults.Ok(ToResponse(user));
+        }
+
+        var result = await userManager.ConfirmEmailAsync(user, await userManager.GenerateEmailConfirmationTokenAsync(user));
+        if (!result.Succeeded)
+        {
+            return TypedResults.Problem(
+                title: localizer["Could not confirm the email."],
+                detail: string.Join(", ", result.Errors.Select(error => error.Description)),
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        return TypedResults.Ok(ToResponse(user));
+    }
+
+    internal static async Task<IResult> SendPasswordResetAsync(HttpContext httpContext, string userId, UserManager<IUser> userManager, ISiteService siteService, IAuthorizationService authorizationService, IServiceProvider serviceProvider, IStringLocalizer<AdminController> localizer)
+    {
+        if (await userManager.FindByIdAsync(userId) is not User user)
+        {
+            return httpContext.ApiNotFoundProblem(detail: localizer["User not found."]);
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.EditUsers, user))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        // The link in the email only works when the reset password pages are available.
+        if (!(await siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword
+            || serviceProvider.GetService<UserEmailService>() is not { } userEmailService)
+        {
+            return TypedResults.Problem(
+                title: localizer["Password reset is not available."],
+                detail: localizer["Enable the password reset feature and setting and the email feature to send a password reset email."],
+                statusCode: StatusCodes.Status409Conflict);
+        }
+
+        if (string.IsNullOrEmpty(user.Email))
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["The user has no email address."]);
+        }
+
+        user.ResetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+
+        if (!await userEmailService.SendPasswordResetAsync(user))
+        {
+            return TypedResults.Problem(
+                title: localizer["Could not send the password reset email."],
+                statusCode: StatusCodes.Status502BadGateway);
         }
 
         return TypedResults.Ok(ToResponse(user));

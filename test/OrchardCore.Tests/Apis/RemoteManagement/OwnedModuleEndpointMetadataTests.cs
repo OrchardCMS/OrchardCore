@@ -76,6 +76,9 @@ public class OwnedModuleEndpointMetadataTests
         AssertOperation(endpoints, "api/users", "POST", "ApiCreateUser", "Users", ["users"], "create", "application/json", [200, 201, 400, 401, 403, 409]);
         AssertOperation(endpoints, "api/users/{userId}", "PUT", "ApiUpdateUser", "Users", ["users"], "update", "application/json", [200, 400, 401, 403, 404]);
         AssertOperation(endpoints, "api/users/{userId}:disable", "POST", "ApiDisableUser", "Users", ["users"], "disable", null, [200, 400, 401, 403, 404]);
+        AssertOperation(endpoints, "api/users/{userId}:unlock", "POST", "ApiUnlockUser", "Users", ["users"], "unlock", null, [200, 400, 401, 403, 404]);
+        AssertOperation(endpoints, "api/users/{userId}:confirm-email", "POST", "ApiConfirmUserEmail", "Users", ["users"], "confirm-email", null, [200, 400, 401, 403, 404]);
+        AssertOperation(endpoints, "api/users/{userId}:send-reset", "POST", "ApiSendUserPasswordReset", "Users", ["users"], "send-reset", null, [200, 400, 401, 403, 404, 409, 502]);
         AssertOperation(endpoints, "api/users/{userId}", "DELETE", "ApiDeleteUser", "Users", ["users"], "delete", null, [200, 204, 400, 401, 403]);
 
         AssertOperation(endpoints, "api/roles", "GET", "ApiListRoles", "Roles", ["roles"], "list", null, [200, 400, 401, 403]);
