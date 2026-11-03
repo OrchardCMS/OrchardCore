@@ -14,7 +14,7 @@ internal static class HumanOutputFormatter
         }
 
         var mutation = output.HttpMethod is not null
-            ? output.HttpMethod is not ("GET" or "HEAD")
+            ? output.HttpMethod is not ("GET" or "HEAD") && output.Operation?.ReadOnly != true
             : PastTense(verb) is not null;
         if (!mutation && (output.Json.ValueKind == JsonValueKind.Array || verb is "list" or "search"))
         {

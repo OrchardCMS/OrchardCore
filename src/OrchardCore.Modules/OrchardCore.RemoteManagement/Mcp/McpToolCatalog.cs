@@ -169,7 +169,7 @@ internal sealed class McpToolCatalog
                 }
 
                 RewriteReferences(schema);
-                var readOnly = HttpMethods.IsGet(method) || HttpMethods.IsHead(method);
+                var readOnly = metadata.ReadOnly || HttpMethods.IsGet(method) || HttpMethods.IsHead(method);
                 tools.Add(new McpToolDefinition
                 {
                     Endpoint = endpoint,

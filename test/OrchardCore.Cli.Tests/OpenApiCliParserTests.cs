@@ -100,7 +100,7 @@ public class OpenApiCliParserTests
         var operation = Assert.Single(OpenApiCliParser.Parse("""
             {"paths":{"/api/sites":{"post":{"x-oc-cli":{
               "commandGroup":["sites"],"verb":"create","resourceName":"Site","summaryProperties":["name","state"],
-              "itemsProperty":"results","setupPasswordProperty":"administratorPassword","completedAction":"launched","longRunning":true,"requestSchemaPath":"api/sites/{name}/schema",
+              "itemsProperty":"results","setupPasswordProperty":"administratorPassword","completedAction":"launched","longRunning":true,"readOnly":true,"requestSchemaPath":"api/sites/{name}/schema",
               "nextSteps":[{"description":"check it.","whenProperty":"state","whenValue":"Running","arguments":["sites","show","{name}"],
                 "optionalArguments":[{"whenMissing":"owner","arguments":["--owner","<owner>"]}],"note":"Read this."},{"savesContext":true}]}}}}}
             """));
@@ -111,6 +111,7 @@ public class OpenApiCliParserTests
         Assert.Equal("administratorPassword", operation.CliMetadata.SetupPasswordProperty);
         Assert.Equal("launched", operation.CliMetadata.CompletedAction);
         Assert.True(operation.CliMetadata.LongRunning);
+        Assert.True(operation.CliMetadata.ReadOnly);
         Assert.Equal("api/sites/{name}/schema", operation.CliMetadata.RequestSchemaPath);
         Assert.Equal(2, operation.CliMetadata.NextSteps.Count);
         var step = operation.CliMetadata.NextSteps[0];

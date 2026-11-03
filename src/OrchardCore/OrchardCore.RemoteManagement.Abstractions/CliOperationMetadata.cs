@@ -144,6 +144,12 @@ public sealed class CliOperationMetadata
     public bool RequiresConfirmation { get; set; }
 
     /// <summary>
+    /// Gets or sets whether an operation using a method that usually changes something, such as a <c>POST</c> that
+    /// validates its input, changes nothing. MCP annotates it as read-only, and Pomi doesn't report a change.
+    /// </summary>
+    public bool ReadOnly { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the command is hidden from normal help output.
     /// </summary>
     public bool Hidden { get; set; }

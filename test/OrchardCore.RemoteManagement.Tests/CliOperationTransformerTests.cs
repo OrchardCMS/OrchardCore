@@ -17,6 +17,7 @@ public class CliOperationTransformerTests
         {
             CompletedAction = "launched",
             LongRunning = true,
+            ReadOnly = true,
             RequestSchemaPath = "api/tenants/{name}/schema",
             NextSteps =
             {
@@ -35,6 +36,7 @@ public class CliOperationTransformerTests
 
         Assert.Equal("launched", extension["completedAction"]!.GetValue<string>());
         Assert.True(extension["longRunning"]!.GetValue<bool>());
+        Assert.True(extension["readOnly"]!.GetValue<bool>());
         Assert.Equal("api/tenants/{name}/schema", extension["requestSchemaPath"]!.GetValue<string>());
         Assert.True(JsonNode.DeepEquals(
             JsonNode.Parse("""
@@ -52,6 +54,7 @@ public class CliOperationTransformerTests
 
         Assert.False(extension.ContainsKey("completedAction"));
         Assert.False(extension.ContainsKey("longRunning"));
+        Assert.False(extension.ContainsKey("readOnly"));
         Assert.False(extension.ContainsKey("requestSchemaPath"));
         Assert.False(extension.ContainsKey("nextSteps"));
     }

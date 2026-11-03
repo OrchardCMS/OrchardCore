@@ -46,6 +46,27 @@ public class OutputFormatterTests
     }
 
     [Theory]
+    [InlineData("{\"valid\":true,\"notice\":\"Not a guarantee.\"}", null)]
+    [InlineData("{\"valid\":false,\"notice\":\"Not a guarantee.\"}", "unsuccessful result.")]
+    public async Task Human_ReadOnlyPost_DoesNotClaimAChange(string json, string? expected)
+    {
+        using var document = JsonDocument.Parse(json);
+        using var writer = new StringWriter();
+        await OutputFormatter.WriteAsync(new CommandOutput
+        {
+            Json = document.RootElement, CommandPath = ["recipes", "validate"], HttpMethod = "POST", StatusCode = 200,
+            Operation = new CliOperationMetadata(["recipes"], "validate") { ReadOnly = true },
+        }, OutputFormat.Human, writer, TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain("completed successfully", writer.ToString());
+        Assert.Contains("Not a guarantee.", writer.ToString());
+        if (expected is not null)
+        {
+            Assert.Contains(expected, writer.ToString());
+        }
+    }
+
+    [Theory]
     [InlineData("{\"name\":\"Demo\"}", 200, "completed successfully.")]
     [InlineData("{\"name\":\"Demo\"}", 202, "Request accepted.")]
     [InlineData("{\"success\":false,\"message\":\"Import failed\"}", 200, "unsuccessful result.")]

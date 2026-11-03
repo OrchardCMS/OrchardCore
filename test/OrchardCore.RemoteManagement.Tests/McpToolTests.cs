@@ -47,6 +47,16 @@ public class McpToolTests
     }
 
     [Fact]
+    public void CreateTools_ReadOnlyOperationWithABody_IsAnnotatedAsReadOnly()
+    {
+        var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint(new CliOperationMetadata(["widgets"], "validate") { ReadOnly = true })], Document()));
+
+        Assert.True(tool.Tool.Annotations.ReadOnlyHint);
+        Assert.False(tool.Tool.Annotations.DestructiveHint);
+        Assert.True(tool.Tool.Annotations.IdempotentHint);
+    }
+
+    [Fact]
     public void CreateTools_DuplicateNames_AreExcluded()
     {
         Assert.Empty(McpToolCatalog.CreateTools([CreateEndpoint(), CreateEndpoint()], Document()));

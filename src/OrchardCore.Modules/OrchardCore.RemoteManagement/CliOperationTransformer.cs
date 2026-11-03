@@ -93,6 +93,11 @@ internal sealed class CliOperationTransformer : IOpenApiOperationTransformer
             extension["longRunning"] = true;
         }
 
+        if (metadata.ReadOnly)
+        {
+            extension["readOnly"] = true;
+        }
+
         if (metadata.FileResponse)
         {
             extension["fileResponse"] = true;
