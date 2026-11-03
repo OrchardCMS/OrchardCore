@@ -432,7 +432,7 @@ uncertain outcomes before retrying. Pomi's `--force` above confirms the destruct
 command locally; it does not request server-side force deletion.
 
 MCP exposes `indexes_lucene_show`, `indexes_lucene_create`, `indexes_lucene_update`,
-`indexes_lucene_delete`, and `indexes_lucene_analyzers`. They remain available when
+`indexes_lucene_delete` (when the tenant allows operations requiring a confirmation), and `indexes_lucene_analyzers`. They remain available when
 the MCP feature is enabled and the CLI feature is disabled.
 
 Enable `OrchardCore.Indexing.Worker` for ongoing scheduled content-index updates.

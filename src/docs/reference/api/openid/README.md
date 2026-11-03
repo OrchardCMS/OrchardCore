@@ -183,11 +183,9 @@ application grant configuration and credential lifecycle are separate concerns.
 With the tenant MCP feature enabled, the same reads are available as
 `openid_applications_list`, `openid_applications_show`, `openid_scopes_list` and
 `openid_scopes_show`. Scope mutations add `openid_scopes_create`,
-`openid_scopes_update` and `openid_scopes_delete`. Application mutations add
-`openid_applications_create`, `openid_applications_update` and
-`openid_applications_delete`. Credential operations add
-`openid_applications_credentials_rotate` and `openid_applications_credentials_revoke`.
-MCP rotation returns the secret directly to the caller, which must store it securely
-and keep it out of transcripts and logs. All use the same permission
-checks and response contracts,
-including when the Pomi CLI feature is disabled.
+`openid_scopes_update` and, when the tenant
+[allows operations requiring a confirmation](../../modules/RemoteManagement/README.md#tools),
+`openid_scopes_delete`, `openid_applications_delete` and `openid_applications_credentials_revoke`.
+Creating and updating applications and rotating their credentials take or return secrets, so they
+are only available through Pomi and the HTTP API. All use the same permission checks and response
+contracts, including when the Pomi CLI feature is disabled.
