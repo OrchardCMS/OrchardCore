@@ -76,6 +76,7 @@ internal sealed class CliPaths
             CacheKind.Manifest => "manifest.json",
             CacheKind.OpenApi => "openapi.json",
             CacheKind.Documentation => "documentation.json",
+            CacheKind.OidcDiscovery => "oidc-discovery.json",
             _ => throw new ArgumentOutOfRangeException(nameof(kind)),
         });
     }

@@ -71,7 +71,7 @@ internal sealed partial class CliApplication
         var cacheService = new CacheService(paths);
         credentialStore ??= CredentialStoreFactory.CreateDefault(paths);
         var configuration = await contextStore.LoadAsync(cancellationToken);
-        var oauthClient = new OAuthClient(httpClient, Console.Error);
+        var oauthClient = new OAuthClient(httpClient, Console.Error, cache: cacheService);
 
         var outputOption = new Option<string?>("--output")
         {
@@ -349,7 +349,7 @@ internal sealed partial class CliApplication
         command.SetAction(async (parseResult, cancellationToken) =>
         {
             var context = RequireContext(parseResult.GetValue(contextArgument) ?? parseResult.GetValue(_contextOption));
-            var discovery = await _oauthClient.GetDiscoveryAsync(GetAuthority(context), cancellationToken);
+            var discovery = await _oauthClient.GetDiscoveryAsync(GetAuthority(context), cancellationToken, refresh: true);
             var grantType = parseResult.GetValue(grantOption)?.Trim().ToLowerInvariant() ?? "browser";
             EnsureGrantSupported(context, grantType);
 
@@ -1448,7 +1448,7 @@ internal sealed partial class CliApplication
         }
 
         var discoveryDocument = await _oauthClient.GetDiscoveryAsync(GetAuthority(context), cancellationToken);
-        CliUtilities.EnsureIssuerMatches(discoveryDocument.Issuer, stored.Issuer);
+        EnsureIssuerMatches(discoveryDocument, stored);
         if (stored.ExpiresAt <= DateTimeOffset.UtcNow.AddMinutes(1))
         {
             stored = await _oauthClient.RefreshAsync(context, discoveryDocument, stored, cancellationToken);
@@ -1456,6 +1456,20 @@ internal sealed partial class CliApplication
         }
 
         return stored.AccessToken;
+    }
+
+    private void EnsureIssuerMatches(OidcDiscoveryDocument discovery, StoredToken stored)
+    {
+        try
+        {
+            CliUtilities.EnsureIssuerMatches(discovery.Issuer, stored.Issuer);
+        }
+        catch (CliException)
+        {
+            // The authority may have moved since the document was cached.
+            _oauthClient.InvalidateDiscovery();
+            throw;
+        }
     }
 
     private async Task<bool> CanUseEnvironmentCredentialsAsync(TenantContextRecord context, CancellationToken cancellationToken)

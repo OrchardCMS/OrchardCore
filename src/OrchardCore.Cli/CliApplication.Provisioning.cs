@@ -57,7 +57,7 @@ internal sealed partial class CliApplication
         var discovery = await _oauthClient.GetDiscoveryAsync(authority, cancellationToken);
         if (!string.IsNullOrEmpty(stored.Issuer))
         {
-            CliUtilities.EnsureIssuerMatches(discovery.Issuer, stored.Issuer);
+            EnsureIssuerMatches(discovery, stored);
         }
 
         if (stored.ExpiresAt <= DateTimeOffset.UtcNow.AddMinutes(1))

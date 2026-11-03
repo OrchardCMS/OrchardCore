@@ -3,32 +3,122 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 namespace OrchardCore.Cli;
 
 internal sealed class OAuthClient
 {
+    // Long enough to spare the commands of a script a request each, short enough to notice a change.
+    private static readonly TimeSpan _discoveryTtl = TimeSpan.FromMinutes(5);
+
     private readonly HttpClient _httpClient;
     private readonly TextWriter _stderr;
     private readonly Action<string> _launchBrowser;
+    private readonly CacheService? _cache;
+    private Uri? _discoveryAuthority;
 
-    public OAuthClient(HttpClient httpClient, TextWriter stderr, Action<string>? launchBrowser = null)
+    public OAuthClient(HttpClient httpClient, TextWriter stderr, Action<string>? launchBrowser = null, CacheService? cache = null)
     {
         _httpClient = httpClient;
         _stderr = stderr;
         _launchBrowser = launchBrowser ?? LaunchBrowser;
+        _cache = cache;
     }
 
-    public async Task<OidcDiscoveryDocument> GetDiscoveryAsync(Uri authority, CancellationToken cancellationToken)
+    /// <summary>Gets the OpenID Connect discovery document of an authority, from the cache unless <paramref name="refresh"/> is set.</summary>
+    public async Task<OidcDiscoveryDocument> GetDiscoveryAsync(Uri authority, CancellationToken cancellationToken, bool refresh = false)
     {
         ArgumentNullException.ThrowIfNull(authority);
 
         CliUriPolicy.RequireSecureEndpoint(authority.AbsoluteUri);
+        _discoveryAuthority = authority;
+        if (!refresh && await ReadCachedDiscoveryAsync(authority, cancellationToken) is { } cached)
+        {
+            return cached;
+        }
+
         var discoveryUri = new Uri($"{authority.AbsoluteUri.TrimEnd('/')}/.well-known/openid-configuration");
-        using var response = await _httpClient.GetAsync(discoveryUri, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        try
+        {
+            using var response = await _httpClient.GetAsync(discoveryUri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var discovery = ParseDiscovery(authority, content);
+            await WriteCachedDiscoveryAsync(authority, discoveryUri, content, cancellationToken);
+            return discovery;
+        }
+        catch
+        {
+            InvalidateDiscovery();
+            throw;
+        }
+    }
+
+    /// <summary>Forgets the discovery document last used by this client, for the next command to request it again.</summary>
+    public void InvalidateDiscovery()
+    {
+        if (_cache is not null && _discoveryAuthority is not null)
+        {
+            try
+            {
+                _cache.Remove(_discoveryAuthority.AbsoluteUri, CacheKind.OidcDiscovery);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // The entry still expires, and this must not replace the failure being reported.
+            }
+        }
+    }
+
+    private async Task<OidcDiscoveryDocument?> ReadCachedDiscoveryAsync(Uri authority, CancellationToken cancellationToken)
+    {
+        if (_cache is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var record = await _cache.ReadAsync(authority.AbsoluteUri, CacheKind.OidcDiscovery, cancellationToken);
+
+            // Validate it again, as a request for credentials follows.
+            return record is not null && record.ExpiresAt > DateTimeOffset.UtcNow ? ParseDiscovery(authority, record.Content) : null;
+        }
+        catch (Exception exception) when (exception is JsonException or CliException or IOException or UnauthorizedAccessException)
+        {
+            InvalidateDiscovery();
+            return null;
+        }
+    }
+
+    private async Task WriteCachedDiscoveryAsync(Uri authority, Uri discoveryUri, string content, CancellationToken cancellationToken)
+    {
+        if (_cache is null)
+        {
+            return;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        try
+        {
+            await _cache.WriteAsync(authority.AbsoluteUri, CacheKind.OidcDiscovery, new CachedContentRecord
+            {
+                Url = discoveryUri.AbsoluteUri,
+                FetchedAt = now,
+                ExpiresAt = now.Add(_discoveryTtl),
+                Content = content,
+            }, cancellationToken);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // The cache is an optimization: authenticating doesn't depend on it.
+        }
+    }
+
+    private static OidcDiscoveryDocument ParseDiscovery(Uri authority, string content)
+    {
         var discovery = CliUtilities.ParseDiscoveryDocument(content);
         CliUtilities.EnsureIssuerMatches(authority.AbsoluteUri, discovery.Issuer);
         CliUriPolicy.RequireSameOrigin(authority, discovery.TokenEndpoint);
@@ -39,7 +129,32 @@ internal sealed class OAuthClient
                 CliUriPolicy.RequireSameOrigin(authority, endpoint);
             }
         }
+
         return discovery;
+    }
+
+    // Sends a request to an endpoint read from the discovery document. When that endpoint fails,
+    // the next command requests the document again instead of trusting a cached address.
+    private async Task<HttpResponseMessage> SendToDiscoveredEndpointAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+
+            // These are about the request, like the pending state of a device login, not the endpoint.
+            if (!response.IsSuccessStatusCode
+                && response.StatusCode is not (HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.TooManyRequests))
+            {
+                InvalidateDiscovery();
+            }
+
+            return response;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException)
+        {
+            InvalidateDiscovery();
+            throw;
+        }
     }
 
     public async Task<StoredToken> LoginWithAuthorizationCodeAsync(TenantContextRecord context, OidcDiscoveryDocument discovery, CancellationToken cancellationToken, bool openBrowser = true)
@@ -85,7 +200,7 @@ internal sealed class OAuthClient
             }),
         };
 
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await SendToDiscoveredEndpointAsync(request, cancellationToken);
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
         response.EnsureSuccessStatusCode();
         var tokenResponse = CliUtilities.ParseTokenResponse(responseContent);
@@ -129,7 +244,7 @@ internal sealed class OAuthClient
                 ["scope"] = scope,
             }),
         };
-        using var deviceResponse = await _httpClient.SendAsync(deviceRequest, cancellationToken);
+        using var deviceResponse = await SendToDiscoveredEndpointAsync(deviceRequest, cancellationToken);
         var deviceContent = await deviceResponse.Content.ReadAsStringAsync(cancellationToken);
         deviceResponse.EnsureSuccessStatusCode();
 
@@ -187,7 +302,7 @@ internal sealed class OAuthClient
                     ["device_code"] = session.DeviceCode,
                 }),
             };
-            using var tokenResponse = await _httpClient.SendAsync(tokenRequest, cancellationToken);
+            using var tokenResponse = await SendToDiscoveredEndpointAsync(tokenRequest, cancellationToken);
             var tokenContent = await tokenResponse.Content.ReadAsStringAsync(cancellationToken);
             if ((int)tokenResponse.StatusCode >= 500 || tokenResponse.StatusCode == HttpStatusCode.TooManyRequests)
             {
@@ -247,7 +362,7 @@ internal sealed class OAuthClient
             }),
         };
 
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await SendToDiscoveredEndpointAsync(request, cancellationToken);
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
         {
@@ -279,7 +394,7 @@ internal sealed class OAuthClient
             }),
         };
 
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await SendToDiscoveredEndpointAsync(request, cancellationToken);
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
         {
@@ -315,7 +430,7 @@ internal sealed class OAuthClient
             }),
         };
 
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await SendToDiscoveredEndpointAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 

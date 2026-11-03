@@ -48,6 +48,8 @@ internal sealed class CacheService
         }
     }
 
+    public void Remove(string tenantUrl, CacheKind kind) => File.Delete(_paths.GetCacheFilePath(tenantUrl, kind));
+
     public async Task InvalidateAsync(string tenantUrl, CancellationToken cancellationToken)
     {
         foreach (var kind in new[] { CacheKind.Manifest, CacheKind.OpenApi })

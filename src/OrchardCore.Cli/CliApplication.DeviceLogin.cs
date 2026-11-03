@@ -17,7 +17,7 @@ internal sealed partial class CliApplication
             EnsureGrantSupported(context, "device");
             var store = new DeviceLoginSessionStore(_paths);
             await store.PruneExpiredAsync(cancellationToken);
-            var discovery = await _oauthClient.GetDiscoveryAsync(GetAuthority(context), cancellationToken);
+            var discovery = await _oauthClient.GetDiscoveryAsync(GetAuthority(context), cancellationToken, refresh: true);
             var session = await _oauthClient.StartDeviceAuthorizationAsync(context, discovery, cancellationToken);
             await store.SaveAsync(session, cancellationToken);
             return await WriteDeviceSessionAsync(parseResult, session, parseResult.GetValue(startQr), cancellationToken);

@@ -23,6 +23,7 @@ internal enum CacheKind
     Manifest,
     OpenApi,
     Documentation,
+    OidcDiscovery,
 }
 
 internal sealed class CliConfiguration
