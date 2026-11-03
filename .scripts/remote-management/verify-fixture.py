@@ -84,6 +84,8 @@ for path, item in schema['paths'].items():
             status, _ = request(target, method.upper(), bearer, body, content_type)
             if identity == 'discovery':
                 expected = missing_resource_status.get(command, 403)
+                if command == 'management whoami':
+                    expected = 200  # Answers any caller with access to the remote management APIs.
             if operation.get('operationId') == 'ApiGetMediaLocalizations':
                 expected = 200  # Public, non-sensitive gallery UI labels, deliberately anonymous.
             if status != expected:

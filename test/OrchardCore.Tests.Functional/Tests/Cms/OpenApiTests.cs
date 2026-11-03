@@ -447,6 +447,14 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         {
             Has = page.Locator(".opblock-summary-path[data-path='/api/content/{contentItemId}']"),
         });
+
+        // Swagger UI only renders the operations near the viewport.
+        for (var i = 0; i < 200 && await operation.CountAsync() == 0; i++)
+        {
+            await page.Mouse.WheelAsync(0, 500);
+            await page.WaitForTimeoutAsync(50);
+        }
+
         await operation.Locator(".opblock-summary").ClickAsync();
         await operation.Locator("button.try-out__btn").ClickAsync();
         await operation.Locator("tr[data-param-name='contentItemId'] input").FillAsync("does-not-exist");
