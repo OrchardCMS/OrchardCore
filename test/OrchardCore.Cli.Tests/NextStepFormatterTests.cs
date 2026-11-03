@@ -170,7 +170,7 @@ public class NextStepFormatterTests
     }
 
     [Fact]
-    public void DisabledRemoteManagement_SuggestsEnablingAgain()
+    public void Format_DisabledRemoteManagement_SuggestsEnablingAgain()
     {
         var text = Format(["tenants", "disable-remote-management"], """{"name":"Demo","state":"Running"}""");
 
@@ -179,13 +179,13 @@ public class NextStepFormatterTests
     }
 
     [Fact]
-    public void ReloadedTenant_HasNoNextStep()
+    public void Format_ReloadedTenant_HasNoNextStep()
     {
         Assert.Null(Format(["tenants", "reload"], """{"name":"Demo","state":"Running"}"""));
     }
 
     [Fact]
-    public void OperationWithoutMetadata_SuggestsNothing()
+    public void Format_OperationWithoutMetadata_SuggestsNothing()
     {
         using var data = JsonDocument.Parse("""{"name":"Demo","state":"Running"}""");
 

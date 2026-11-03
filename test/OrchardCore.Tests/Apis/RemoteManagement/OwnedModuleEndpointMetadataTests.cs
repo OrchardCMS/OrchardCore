@@ -148,6 +148,43 @@ public class OwnedModuleEndpointMetadataTests
             .ToArray();
     }
 
+    [Theory]
+    [InlineData("api/tenants/{tenantName}:install", true, null, "Running")]
+    [InlineData("api/tenants/{tenantName}:setup", true, null, "Running")]
+    [InlineData("api/tenants/{tenantName}:start", false, null, "Running")]
+    [InlineData("api/tenants/{tenantName}:enable-remote-management", true, "configured for remote management", "Running")]
+    [InlineData("api/tenants/{tenantName}:disable-remote-management", true, "disabled for remote management", null)]
+    [InlineData("api/tenants/{tenantName}:reload", false, "reloaded", null)]
+    public void Endpoints_TenantAction_DescribesSummaryAndNextStep(string route, bool longRunning, string completedAction, string nextStepState)
+    {
+        var metadata = CreateEndpoints()
+            .Single(endpoint => string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), route, StringComparison.Ordinal))
+            .Metadata.GetRequiredMetadata<CliOperationMetadata>();
+
+        Assert.Equal("Tenant", metadata.ResourceName);
+        Assert.Contains("state", metadata.SummaryProperties);
+        Assert.Equal(longRunning, metadata.LongRunning);
+        Assert.Equal(completedAction, metadata.CompletedAction);
+        if (route.EndsWith(":reload", StringComparison.Ordinal))
+        {
+            Assert.Empty(metadata.NextSteps);
+        }
+        else
+        {
+            Assert.Equal(nextStepState, Assert.Single(metadata.NextSteps).WhenValue);
+        }
+    }
+
+    [Fact]
+    public void Endpoints_RecipeExecution_IsLongRunning()
+    {
+        var metadata = CreateEndpoints()
+            .Single(endpoint => string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), "api/recipes/{recipeId}:execute", StringComparison.Ordinal))
+            .Metadata.GetRequiredMetadata<CliOperationMetadata>();
+
+        Assert.True(metadata.LongRunning);
+    }
+
     private static void AssertOperation(
         IEnumerable<RouteEndpoint> endpoints,
         string route,
