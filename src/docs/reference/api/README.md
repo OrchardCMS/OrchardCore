@@ -141,7 +141,7 @@ pomi roles show Editor --show-etag --output json
 pomi roles update Editor --if-match '"90a4c79054827d59ffac501494fc6462"' --stdin < role.json
 ```
 
-MCP tools can't send this header, so their updates apply unconditionally.
+MCP tools can't send headers, so the result of a tool has the version in its `etag` property, and a tool whose operation accepts the header has an optional `ifMatch` argument. A stale version returns a result with the `412` `statusCode` and the current `etag`, and changes nothing.
 
 ## Rate limits
 

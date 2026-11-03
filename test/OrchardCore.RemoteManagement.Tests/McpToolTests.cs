@@ -133,6 +133,7 @@ public class McpToolTests
     [InlineData("{\"path\":{},\"body\":{}}")]
     [InlineData("{\"path\":{\"id\":\"a\"},\"body\":{},\"url\":\"https://evil.example\"}")]
     [InlineData("{\"path\":{\"id\":\"a\"},\"body\":{},\"query\":{\"unexpected\":true}}")]
+    [InlineData("{\"path\":{\"id\":\"a\"},\"body\":{},\"ifMatch\":\"\\\"any\\\"\"}")]
     public async Task InvokeEndpointAsync_InvalidArguments_DoesNotExecute(string arguments)
     {
         await using var services = CreateServices();
@@ -209,7 +210,7 @@ public class McpToolTests
     }
 
     [Fact]
-    public void CreateTools_OptionalIfMatchHeader_KeepsTheToolWithoutTheHeader()
+    public void CreateTools_OptionalIfMatchHeader_DeclaresItAsAnArgument()
     {
         var document = Document();
         document["paths"]["/api/widgets/{id}"]["put"]["parameters"].AsArray().Add(JsonNode.Parse("""{"name":"If-Match","in":"header","schema":{"type":"string"}}"""));
@@ -217,6 +218,72 @@ public class McpToolTests
         var tool = Assert.Single(McpToolCatalog.CreateTools([CreateEndpoint()], document));
 
         Assert.DoesNotContain("If-Match", tool.Tool.InputSchema.GetRawText());
+        Assert.True(tool.Tool.InputSchema.GetProperty("properties").TryGetProperty("ifMatch", out _));
+        Assert.DoesNotContain("ifMatch", tool.Tool.InputSchema.GetProperty("required").EnumerateArray().Select(required => required.GetString()));
+    }
+
+    [Fact]
+    public async Task InvokeEndpointAsync_IfMatchArgument_SendsTheHeaderAndReturnsTheETag()
+    {
+        await using var services = CreateServices();
+        var parent = CreateContext(services);
+        string header = null;
+        var endpoint = CreateEndpoint(handler: context =>
+        {
+            header = context.Request.Headers.IfMatch;
+            context.Response.Headers.ETag = "\"next\"";
+            return Task.CompletedTask;
+        });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], IfMatchDocument()));
+
+        var result = await InvokeAsync(tool, parent, """{"path":{"id":"a"},"body":{},"ifMatch":"\"current\""}""");
+
+        Assert.Equal("\"current\"", header);
+        using var content = JsonDocument.Parse(Assert.IsType<TextContentBlock>(Assert.Single(result.Content)).Text);
+        Assert.Equal("\"next\"", content.RootElement.GetProperty("etag").GetString());
+    }
+
+    [Fact]
+    public async Task InvokeEndpointAsync_NoVersion_OmitsTheHeaderAndTheETag()
+    {
+        await using var services = CreateServices();
+        var parent = CreateContext(services);
+        var hasHeader = true;
+        var endpoint = CreateEndpoint(handler: context =>
+        {
+            hasHeader = context.Request.Headers.ContainsKey("If-Match");
+            return Task.CompletedTask;
+        });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], IfMatchDocument()));
+
+        var result = await InvokeAsync(tool, parent, """{"path":{"id":"a"},"body":{}}""");
+
+        Assert.False(hasHeader);
+        using var content = JsonDocument.Parse(Assert.IsType<TextContentBlock>(Assert.Single(result.Content)).Text);
+        Assert.False(content.RootElement.TryGetProperty("etag", out _));
+    }
+
+    [Fact]
+    public async Task InvokeEndpointAsync_IfMatchArgumentNotAString_DoesNotExecute()
+    {
+        await using var services = CreateServices();
+        var parent = CreateContext(services);
+        var invoked = false;
+        var endpoint = CreateEndpoint(handler: context => { invoked = true; return Task.CompletedTask; });
+        var tool = Assert.Single(McpToolCatalog.CreateTools([endpoint], IfMatchDocument()));
+
+        var result = await InvokeAsync(tool, parent, """{"path":{"id":"a"},"body":{},"ifMatch":1}""");
+
+        Assert.True(result.IsError);
+        Assert.False(invoked);
+    }
+
+    private static JsonNode IfMatchDocument()
+    {
+        var document = Document();
+        document["paths"]["/api/widgets/{id}"]["put"]["parameters"].AsArray().Add(JsonNode.Parse("""{"name":"If-Match","in":"header","schema":{"type":"string"}}"""));
+
+        return document;
     }
 
     [Fact]

@@ -12,6 +12,8 @@ namespace OrchardCore.RemoteManagement.Mcp;
 
 internal sealed class McpToolCatalog
 {
+    internal const string IfMatchArgument = "ifMatch";
+
     private readonly McpEndpointRegistry _registry;
     private readonly IOpenApiDocumentProvider _documents;
     private readonly McpToolOptions _options;
@@ -95,7 +97,8 @@ internal sealed class McpToolCatalog
 
                 var parameters = (path.Value["parameters"]?.AsArray() ?? [])
                     .Concat(operation["parameters"]?.AsArray() ?? []).ToArray();
-                // A tool can't send a header. The If-Match one is optional, so the operation doesn't depend on it.
+                // A tool can't send a header, so the optional If-Match one is an argument of its own.
+                var acceptsIfMatch = parameters.Any(IsIfMatchHeader);
                 parameters = parameters.Where(parameter => !IsIfMatchHeader(parameter)).ToArray();
                 if (parameters.Any(parameter => parameter["in"]?.GetValue<string>() is not ("path" or "query")))
                 {
@@ -137,6 +140,15 @@ internal sealed class McpToolCatalog
                             required.Add(location);
                         }
                     }
+                }
+
+                if (acceptsIfMatch)
+                {
+                    properties[IfMatchArgument] = new JsonObject
+                    {
+                        ["type"] = "string",
+                        ["description"] = "The etag of the result that returned the resource. The update fails with a 412 status code and changes nothing when the resource changed since. Without it, the update applies unconditionally.",
+                    };
                 }
 
                 if (body is not null)

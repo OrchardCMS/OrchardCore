@@ -144,6 +144,16 @@ internal sealed class McpToolInvoker
             }
         }
 
+        if (arguments.TryGetValue(McpToolCatalog.IfMatchArgument, out var ifMatch))
+        {
+            if (ifMatch.ValueKind != JsonValueKind.String)
+            {
+                return Error($"The {McpToolCatalog.IfMatchArgument} argument must be a string.");
+            }
+
+            context.Request.Headers.IfMatch = ifMatch.GetString();
+        }
+
         context.Request.Path = path;
         context.Request.QueryString = QueryString.Create(query);
         var body = arguments.TryGetValue("body", out var bodyArgument) ? bodyArgument.GetRawText() : tool.Metadata.DefaultJsonBody;
@@ -180,7 +190,7 @@ internal sealed class McpToolInvoker
             return new CallToolResult
             {
                 IsError = context.Response.StatusCode >= StatusCodes.Status400BadRequest,
-                Content = [new TextContentBlock { Text = FormatResult(context.Response.StatusCode, responseBody) }],
+                Content = [new TextContentBlock { Text = FormatResult(context.Response.StatusCode, context.Response.Headers.ETag, responseBody) }],
             };
         }
         catch (McpToolResponseTooLargeException)
@@ -202,7 +212,7 @@ internal sealed class McpToolInvoker
         }
     }
 
-    private static string FormatResult(int statusCode, string body)
+    private static string FormatResult(int statusCode, string etag, string body)
     {
         JsonNode content;
         try
@@ -214,7 +224,13 @@ internal sealed class McpToolInvoker
             content = JsonValue.Create(body);
         }
 
-        return new JsonObject { ["statusCode"] = statusCode, ["body"] = content }.ToJsonString(s_resultSerializerOptions);
+        var result = new JsonObject { ["statusCode"] = statusCode, ["body"] = content };
+        if (!string.IsNullOrEmpty(etag))
+        {
+            result["etag"] = etag;
+        }
+
+        return result.ToJsonString(s_resultSerializerOptions);
     }
 
     private static CallToolResult TooLargeError(int maximumResponseBytes) =>

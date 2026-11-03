@@ -235,16 +235,36 @@ with tempfile.TemporaryDirectory(prefix='occ-smoke-') as config_home:
     assert json.loads(refused.stderr or refused.stdout)['error']['details']['code'] == 'precondition_failed'
     pomi('roles', 'update', role, '--if-match', etag, body={'roleDescription': 'accepted'})
 
-# MCP tools can't send the header, and stay available for the same operations.
+# MCP tools can't send the header, so they read the version from their result and send it as an argument.
 request('api/features/OrchardCore.RemoteManagement.Mcp:enable?force=true', 'POST')
 token = fetch_token()
-req = urllib.request.Request(base + 'mcp', method='POST', data=json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': 'tools/list', 'params': {}}).encode(),
-    headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'})
-with urllib.request.urlopen(req, timeout=120) as response:
-    text = response.read().decode()
-payload = next((line[5:] for line in text.splitlines() if line.startswith('data:')), text)
-tools = {tool['name']: tool for tool in json.loads(payload)['result']['tools']}
-assert 'roles_update' in tools and 'If-Match' not in json.dumps(tools['roles_update']['inputSchema'])
+
+
+def mcp(method, params):
+    req = urllib.request.Request(base + 'mcp', method='POST', data=json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params}).encode(),
+        headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'})
+    with urllib.request.urlopen(req, timeout=120) as response:
+        text = response.read().decode()
+    return json.loads(next((line[5:] for line in text.splitlines() if line.startswith('data:')), text))['result']
+
+
+def tool(name, arguments):
+    return json.loads(mcp('tools/call', {'name': name, 'arguments': arguments})['content'][0]['text'])
+
+
+tools = {definition['name']: definition for definition in mcp('tools/list', {})['tools']}
+schema = tools['roles_update']['inputSchema']
+assert 'If-Match' not in json.dumps(schema) and 'ifMatch' in schema['properties'] and 'ifMatch' not in schema['required'], schema
+assert 'ifMatch' not in tools['roles_show']['inputSchema']['properties']
+path = {next(iter(schema['properties']['path']['properties'])): role}
+shown = tool('roles_show', {'path': path})
+assert shown['statusCode'] == 200 and shown['etag'], shown
+updated = tool('roles_update', {'path': path, 'body': {'roleDescription': 'by a tool'}, 'ifMatch': shown['etag']})
+assert updated['statusCode'] == 200 and updated['etag'] != shown['etag'], updated
+stale = tool('roles_update', {'path': path, 'body': {'roleDescription': 'lost'}, 'ifMatch': shown['etag']})
+assert stale['statusCode'] == 412 and stale['etag'] == updated['etag'] and stale['body']['code'] == 'precondition_failed', stale
+assert tool('roles_show', {'path': path})['body']['roleDescription'] == 'by a tool'
+assert tool('roles_update', {'path': path, 'body': {'roleDescription': 'unconditional'}})['statusCode'] == 200
 
 # Clean up what doesn't go away with the fixture and could disturb another smoke script.
 request('api/layers/by-name?name=' + layer, 'DELETE')
