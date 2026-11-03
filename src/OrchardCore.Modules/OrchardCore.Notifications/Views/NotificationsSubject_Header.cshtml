@@ -4,7 +4,7 @@
 
 @inject IHtmlSanitizerService HtmlSanitizerService
 
-@if (!string.IsNullOrEmpty(Model.Notification.Url))
+@if (NotificationUrlHelper.IsValid(Model.Notification.Url))
 {
     <a class="notification-subject notification-link stretched-link" href="@Url.RouteUrl(OpenNotificationEndpoints.RouteName, new { notificationId = Model.Notification.NotificationId })">@Model.Notification.Subject</a>
 }

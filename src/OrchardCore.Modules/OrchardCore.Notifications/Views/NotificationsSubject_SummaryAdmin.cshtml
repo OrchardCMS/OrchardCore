@@ -9,7 +9,7 @@
     var notification = Model.Notification;
     string href = null;
 
-    if (!string.IsNullOrEmpty(notification.Url))
+    if (NotificationUrlHelper.IsValid(notification.Url))
     {
         href = Url.RouteUrl(OpenNotificationEndpoints.RouteName, new { notificationId = notification.NotificationId });
     }

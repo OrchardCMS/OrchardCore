@@ -5,7 +5,7 @@
     var listUrl = Url.Action("List", "Admin", new { area = NotificationConstants.Features.Notifications });
 }
 
-@if (Model.Visibility == NotificationVisibility.Visible && !string.IsNullOrEmpty(Model.Notification.Url))
+@if (Model.Visibility == NotificationVisibility.Visible && NotificationUrlHelper.IsValid(Model.Notification.Url))
 {
     <a class="btn btn-primary" href="@Url.RouteUrl(OpenNotificationEndpoints.RouteName, new { notificationId = Model.Notification.NotificationId })">@T["Open"]</a>
 }
