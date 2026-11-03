@@ -30,8 +30,8 @@ internal static class LayerManagementEndpoints
             .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>(201).ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut(RoutePrefix + "/by-name", UpdateAsync), "ApiUpdateLayer", "Replaces a layer definition and all its conditions. The name cannot change.", "update", argument: true, input: true)
             .Accepts<LayerDefinitionDto>("application/json").Produces<LayerDefinitionDto>().ProducesProblem(404).AcceptsIfMatch();
-        Configure(routes.MapDelete(RoutePrefix + "/by-name", DeleteAsync), "ApiDeleteLayer", "Deletes an unreferenced layer; missing layers are a successful no-op.", "delete", argument: true, confirmation: true)
-            .Produces(204).ProducesProblem(409);
+        Configure(routes.MapDelete(RoutePrefix + "/by-name", DeleteAsync), "ApiDeleteLayer", "Deletes an unreferenced layer; a missing layer returns 404.", "delete", argument: true, confirmation: true)
+            .Produces(204).ProducesProblem(404).ProducesProblem(409);
         return routes;
     }
 
@@ -178,9 +178,12 @@ internal static class LayerManagementEndpoints
             return context.ApiForbidProblem();
         }
         var result = await layers.DeleteAsync(name);
-        return result.Status == LayerMutationStatus.Referenced
-            ? TypedResults.Problem("Remove or move the associated widgets before deleting this layer.", statusCode: 409)
-            : TypedResults.NoContent();
+        return result.Status switch
+        {
+            LayerMutationStatus.NotFound => context.ApiNotFoundProblem(),
+            LayerMutationStatus.Referenced => TypedResults.Problem("Remove or move the associated widgets before deleting this layer.", statusCode: 409),
+            _ => TypedResults.NoContent(),
+        };
     }
 
     private static Task<bool> AuthorizedAsync(HttpContext context, IAuthorizationService authorization) =>

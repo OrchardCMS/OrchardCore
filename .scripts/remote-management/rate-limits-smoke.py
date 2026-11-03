@@ -189,7 +189,7 @@ with tempfile.TemporaryDirectory(prefix='rate-limits-cli-', dir=state_path.paren
         try:
             if policy_id:
                 pomi('rate-limits', 'policies', 'delete', policy_id, '--force')
-                pomi('rate-limits', 'policies', 'delete', policy_id, '--force')
+                pomi('rate-limits', 'policies', 'delete', policy_id, '--force', status=404)
         finally:
             for value in globals_enabled:
                 request('api/rate-limits/policies/by-id:enable?policyId=' + value, 'POST', status=204)

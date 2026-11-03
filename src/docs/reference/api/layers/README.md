@@ -29,7 +29,7 @@ Paths are relative to the tenant URL, including any tenant prefix.
 | `POST /api/layers:validate` | `layers validate` | `isValid` and path-keyed `errors`; never saves or evaluates conditions. |
 | `POST /api/layers` | `layers create` | 201 with the saved definition and tenant-relative Location; 409 on a different existing definition. |
 | `PUT /api/layers/by-name?name={name}` | `layers update <name>` | 200 with the replacement; 404 when absent. |
-| `DELETE /api/layers/by-name?name={name}` | `layers delete <name> --force` | 204, including an absent layer; 409 while any latest or published widget references it. |
+| `DELETE /api/layers/by-name?name={name}` | `layers delete <name> --force` | 204; 404 when absent; 409 while any latest or published widget references it. |
 
 List accepts a case-insensitive `search` over names/descriptions, nonnegative `skip` (default 0),
 and `take` from 1 to 200 (default 50). Results are sorted by name. Invalid paging returns 400.

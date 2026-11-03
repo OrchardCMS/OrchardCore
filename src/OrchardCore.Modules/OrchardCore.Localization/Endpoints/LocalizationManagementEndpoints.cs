@@ -54,9 +54,9 @@ internal static partial class LocalizationManagementEndpoints
             .Produces<CultureSettings>().ProducesValidationProblem().ProducesProblem(401).ProducesProblem(403);
         group.MapDelete("/cultures/{culture}", RemoveCultureAsync)
             .WithName("ApiRemoveLocalizationCulture").WithSummary("Removes a supported culture.")
-            .WithDescription("Removes one supported culture without deleting translations. The default culture cannot be removed; change it with localization settings update first. Repeating a removal is harmless. Requires ManageCultures.")
+            .WithDescription("Removes one supported culture without deleting translations. The default culture cannot be removed; change it with localization settings update first. A culture that isn't supported returns 404. Requires ManageCultures.")
             .WithCliCommand(new CliOperationMetadata(["localization", "cultures"], "remove") { Capability = Capability, RequiresConfirmation = true, Arguments = { new("culture", 0) } })
-            .Produces<CultureSettings>().ProducesValidationProblem().ProducesProblem(401).ProducesProblem(403);
+            .Produces<CultureSettings>().ProducesValidationProblem().ProducesProblem(401).ProducesProblem(403).ProducesProblem(404);
         group.MapGet("/settings", GetAsync)
             .WithName("ApiGetLocalizationSettings").WithSummary("Shows culture settings.")
             .WithDescription("Returns the default culture, supported cultures and parent-culture fallback. Requires ManageCultures.")
@@ -182,10 +182,17 @@ internal static partial class LocalizationManagementEndpoints
         var name = localization.GetAllCulturesAndAliases().FirstOrDefault(item => string.Equals(item.Name, culture, StringComparison.OrdinalIgnoreCase))?.Name;
         if (name is null)
         {
-            return TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["culture"] = [S["Use an available culture from localization cultures available."]] });
+            return remove
+                ? context.ApiNotFoundProblem()
+                : TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["culture"] = [S["Use an available culture from localization cultures available."]] });
         }
 
         var current = await ReadAsync(localization);
+        if (remove && !current.SupportedCultures.Contains(name, StringComparer.OrdinalIgnoreCase))
+        {
+            return context.ApiNotFoundProblem();
+        }
+
         if (remove && string.Equals(current.DefaultCulture, name, StringComparison.OrdinalIgnoreCase))
         {
             return TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["culture"] = [S["The default culture cannot be removed. Change the default with localization settings update first."]] });

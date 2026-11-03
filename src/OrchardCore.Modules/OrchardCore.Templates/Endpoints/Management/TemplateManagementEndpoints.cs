@@ -88,7 +88,7 @@ internal static class TemplateManagementEndpoints
         routes.MapDelete(RoutePrefix + "/{name}", DeleteAsync)
             .WithName("ApiDeleteTemplate")
             .WithSummary("Deletes a custom template.")
-            .WithDescription("Deletes a stored custom Liquid template. Repeating the operation after the template is absent succeeds without another mutation.")
+            .WithDescription("Deletes a stored custom Liquid template. A missing template returns 404.")
             .WithCliCommand(new CliOperationMetadata(["templates"], "delete")
             {
                 Capability = TemplateManagementEndpointConventions.CapabilityName,
@@ -96,9 +96,9 @@ internal static class TemplateManagementEndpoints
                 Arguments = { new CliArgumentMetadata("name", 0) },
             })
             .Produces<TemplateDefinitionDto>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return builder;
     }
@@ -243,7 +243,7 @@ internal static class TemplateManagementEndpoints
         var result = await templatesManager.RemoveTemplateIfExistsAsync(name);
         if (result is null)
         {
-            return TypedResults.NoContent();
+            return httpContext.ApiNotFoundProblem();
         }
 
         return TypedResults.Ok(ToDefinition(result.Name, result.Template));

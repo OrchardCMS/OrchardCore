@@ -51,7 +51,8 @@ internal static class SitemapSourceEndpoints
         var sitemap = await manager.LoadSitemapAsync(id);
         if (sitemap is null) { return context.ApiNotFoundProblem(); }
         if (sitemap is not Sitemap) { return TypedResults.Problem("Update an index's contained sitemap IDs instead.", statusCode: 400); }
-        if (sitemap.SitemapSources.RemoveAll(source => source.Id == sourceId) > 0) { await manager.UpdateSitemapAsync(sitemap); }
+        if (sitemap.SitemapSources.RemoveAll(source => source.Id == sourceId) == 0) { return context.ApiNotFoundProblem(); }
+        await manager.UpdateSitemapAsync(sitemap);
         return TypedResults.NoContent();
     }
 }

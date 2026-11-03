@@ -160,10 +160,10 @@ with tempfile.TemporaryDirectory(prefix='deployment-cli-', dir=state_path.parent
         assert len(tool('deployment_plans_steps_list', {'query': {'planId': int(plan_id)}})) == 9
         print('PASS: seven feature-owned adapters discovered and configured through Pomi, MCP readback, invalid patches preserved', flush=True)
         assert pomi('deployment', 'plans', 'steps', 'delete', plan_id, 'recipe', '--force')['changed']
-        assert not pomi('deployment', 'plans', 'steps', 'delete', plan_id, 'recipe', '--force')['changed']
+        pomi('deployment', 'plans', 'steps', 'delete', plan_id, 'recipe', '--force', status=404)
         print('PASS: HTTP permissions, CLI discovery/CRUD/retries, MCP add/order, safe readback and invalid-patch preservation', flush=True)
     finally:
         request(by_id, 'DELETE')
-    assert not pomi('deployment', 'plans', 'delete', plan_id, '--force')['changed']
+    pomi('deployment', 'plans', 'delete', plan_id, '--force', status=404)
     request(by_id, status=404)
-    print('PASS: deployment cleanup and repeatable delete', flush=True)
+    print('PASS: deployment cleanup and missing delete', flush=True)

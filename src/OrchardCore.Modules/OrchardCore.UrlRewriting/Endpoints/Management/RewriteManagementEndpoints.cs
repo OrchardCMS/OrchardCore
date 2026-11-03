@@ -21,7 +21,7 @@ internal static class RewriteManagementEndpoints
         Configure(routes.MapPost(Prefix + ":validate", ValidateAsync), "ApiValidateUrlRewriteRule", "validate", "Validates a complete definition without saving or matching a request.", input: true).Produces<RewriteValidationResponse>();
         Configure(routes.MapPost(Prefix, CreateAsync), "ApiCreateUrlRewriteRule", "create", "Creates a rule; an identical retry with the same explicit id returns the stored rule.", input: true).Produces<RewriteResponse>(201).Produces<RewriteResponse>().ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut(Prefix + "/{id}", UpdateAsync), "ApiUpdateUrlRewriteRule", "update", "Replaces the complete built-in rule definition without changing its source or order.", argument: true, input: true).Produces<RewriteResponse>().ProducesProblem(404).AcceptsIfMatch();
-        Configure(routes.MapDelete(Prefix + "/{id}", DeleteAsync), "ApiDeleteUrlRewriteRule", "delete", "Deletes a rule; a missing rule is a no-op.", argument: true, confirmation: true).Produces(204);
+        Configure(routes.MapDelete(Prefix + "/{id}", DeleteAsync), "ApiDeleteUrlRewriteRule", "delete", "Deletes a rule; a missing rule returns 404.", argument: true, confirmation: true).Produces(204).ProducesProblem(404);
         Configure(routes.MapPut(Prefix + "/{id}/position", MoveAsync), "ApiMoveUrlRewriteRule", "move", "Moves a rule to a zero-based position in the complete ordered list.", argument: true, input: true).Produces<RewriteResponse>().ProducesProblem(404);
     }
 
@@ -160,10 +160,11 @@ internal static class RewriteManagementEndpoints
             return context.ApiForbidProblem();
         }
         var rule = await manager.FindByIdAsync(id);
-        if (rule is not null)
+        if (rule is null)
         {
-            await manager.DeleteAsync(rule);
+            return context.ApiNotFoundProblem();
         }
+        await manager.DeleteAsync(rule);
         return TypedResults.NoContent();
     }
 

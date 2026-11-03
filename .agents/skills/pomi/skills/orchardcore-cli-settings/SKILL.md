@@ -123,7 +123,7 @@ Use `move <id> --body '{"position":0}'` to move a rule to the beginning of the
 complete list. Verify persisted order and actual HTTP behavior, including status,
 capture substitution and query-string handling. Rewrites retain the target
 endpoint's authorization. The configured admin prefix is excluded from matching.
-Delete with `delete <id> --force`; missing deletes and unchanged updates are no-ops.
+Delete with `delete <id> --force`; a missing rule returns 404. Unchanged updates are no-ops.
 Use narrow test paths so a rule does not unintentionally intercept management URLs.
 
 ## Site Settings
@@ -459,8 +459,8 @@ commands take sitemap ID followed by source ID. Built-in custom-path and content
 sources are supported only when registered; other extensions expose identity.
 
 Create generates an ID: read back after an uncertain result before retrying.
-Updates/status changes and absent deletes can be retried without unnecessary
-writes. Verify public XML, including indexes after changing child paths/status.
+Updates and status changes can be retried without unnecessary writes. Deleting
+an absent sitemap or source returns 404. Verify public XML, including indexes after changing child paths/status.
 All sitemap operations require `ManageSitemaps` and remote access. Follow the
 existing mutation confirmation policy; deletion commands require `--force`.
 

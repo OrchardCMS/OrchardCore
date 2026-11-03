@@ -57,7 +57,7 @@ responses use `application/json`; Problem Details responses use
 | Get setup options | `GET` | `/api/tenants/setup-options` | `200 OK` |
 | Get setup status | `GET` | `/api/tenants/{tenantName}/setup-status` | `200 OK` |
 | Update tenant | `PUT` | `/api/tenants/{tenantName}` | `200 OK` |
-| Delete tenant | `DELETE` | `/api/tenants/{tenantName}` | `200 OK`, already absent `204 No Content` |
+| Delete tenant | `DELETE` | `/api/tenants/{tenantName}` | `200 OK`, absent `404 Not Found` |
 | Start tenant | `POST` | `/api/tenants/{tenantName}:start` | `200 OK` |
 | Stop tenant | `POST` | `/api/tenants/{tenantName}:stop` | `200 OK` |
 | Reload tenant | `POST` | `/api/tenants/{tenantName}:reload` | `200 OK` |

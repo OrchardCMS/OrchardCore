@@ -24,8 +24,8 @@ internal static class OpenIdScopeManagementEndpoints
             "Replaces a scope's editable fields while preserving extension properties.", input: true, argument: true)
             .Produces<OpenIdScopeResponse>().ProducesProblem(404).AcceptsIfMatch();
         Configure(routes.MapDelete("api/openid/scopes/by-name", DeleteAsync), "ApiDeleteOpenIdScope", "delete",
-            "Deletes a scope; an absent scope is a successful no-op. Existing tokens are not revoked.", argument: true)
-            .Produces(204);
+            "Deletes a scope; a missing scope returns 404. Existing tokens are not revoked.", argument: true)
+            .Produces(204).ProducesProblem(404);
     }
 
     private static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string id, string verb, string summary,
@@ -123,7 +123,8 @@ internal static class OpenIdScopeManagementEndpoints
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(name)) { return TypedResults.Problem("The scope name is required.", statusCode: 400); }
         var scope = await manager.FindByNameAsync(name, context.RequestAborted);
-        if (scope is not null) { await manager.DeleteAsync(scope, context.RequestAborted); }
+        if (scope is null) { return context.ApiNotFoundProblem(); }
+        await manager.DeleteAsync(scope, context.RequestAborted);
         return TypedResults.NoContent();
     }
 

@@ -137,9 +137,9 @@ public static class QueryManagementEndpoints
                 },
             })
             .Produces<QueryDefinitionDto>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         routes.MapPost("api/queries/named/{name}:execute", ExecuteAsync)
             .WithName("ApiExecuteQuery")
@@ -380,7 +380,7 @@ public static class QueryManagementEndpoints
         var query = await queryManager.GetQueryAsync(name);
         if (query is null)
         {
-            return TypedResults.NoContent();
+            return httpContext.ApiNotFoundProblem();
         }
 
         await queryManager.DeleteQueryAsync(name);

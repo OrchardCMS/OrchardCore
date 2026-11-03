@@ -27,7 +27,7 @@ Every operation requires an `Api` scheme bearer token, **Access remote managemen
 
 These operations are MCP tools, except delete, which needs `AllowConfirmationRequiredTools`. See [MCP server](../../modules/RemoteManagement/README.md#mcp-server).
 
-Saving a changed rule, deleting a rule or moving a rule reloads the tenant. An unchanged save and the deletion of a missing rule don't.
+Saving a changed rule, deleting a rule or moving a rule reloads the tenant. An unchanged save doesn't, and deleting a missing rule returns `404`.
 
 ## Definition
 

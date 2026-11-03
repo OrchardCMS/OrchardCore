@@ -27,8 +27,8 @@ internal static class PlacementManagementEndpoints
             .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>(201).ProducesProblem(409).ProducesETag();
         Configure(routes.MapPut(RoutePrefix + "/by-shape", UpdateAsync), "ApiUpdatePlacement", "Replaces complete placement rules; an empty array removes the override.", "update", argument: true, input: true)
             .Accepts<PlacementDefinition>("application/json").Produces<PlacementDefinition>().Produces(204).ProducesProblem(404).AcceptsIfMatch();
-        Configure(routes.MapDelete(RoutePrefix + "/by-shape", DeleteAsync), "ApiDeletePlacement", "Removes stored placement rules; absent rules are a successful no-op.", "delete", argument: true, confirmation: true)
-            .Produces(204);
+        Configure(routes.MapDelete(RoutePrefix + "/by-shape", DeleteAsync), "ApiDeletePlacement", "Removes stored placement rules; missing rules return 404.", "delete", argument: true, confirmation: true)
+            .Produces(204).ProducesProblem(404);
     }
 
     private static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string operationId, string summary,
@@ -163,7 +163,13 @@ internal static class PlacementManagementEndpoints
         {
             return context.ApiForbidProblem();
         }
-        await manager.RemoveShapePlacementsAsync(shapeType);
+        var placements = await manager.ListShapePlacementsAsync();
+        var entry = placements.FirstOrDefault(entry => string.Equals(entry.Key, shapeType, StringComparison.OrdinalIgnoreCase));
+        if (entry.Key is null)
+        {
+            return context.ApiNotFoundProblem();
+        }
+        await manager.RemoveShapePlacementsAsync(entry.Key);
         return TypedResults.NoContent();
     }
 

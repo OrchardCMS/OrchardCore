@@ -239,7 +239,7 @@ pomi templates schema --operation update
 
 Deletes the matching template through `TemplatesManager`. Matching is case-insensitive.
 
-Deletion is convergent. The first request for an existing template removes it in one Templates document write and returns `200 OK` with the deleted representation. Repeating the request after the template is absent returns `204 No Content` and performs no write. There are no partial steps.
+A request for an existing template removes it in one Templates document write and returns `200 OK` with the deleted representation. A request for a template that doesn't exist returns `404 Not Found` and performs no write. There are no partial steps.
 
 The CLI marks this operation destructive and requires confirmation:
 

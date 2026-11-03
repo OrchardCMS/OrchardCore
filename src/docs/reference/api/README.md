@@ -146,11 +146,13 @@ With the [Rate Limits](../modules/RateLimits/README.md) feature, a rejected requ
 
 ## Retrying mutations
 
-Do not infer retry behavior from the HTTP method alone. Each resource page documents the implemented contract for repeated mutations, including:
+Deleting a resource that doesn't exist returns `404 Not Found` on every management API, with the exception of the legacy routes that predate them, so a client repeating a delete must accept this status. A successful deletion returns what the page of the resource documents.
+
+Do not infer other retry behavior from the HTTP method alone. Each resource page documents the implemented contract for repeated mutations, including:
 
 - the status returned for an identical retry;
 - the fields used to decide whether an existing resource is equivalent or conflicting;
-- whether deletes and lifecycle transitions converge when the requested state already exists;
+- whether lifecycle transitions converge when the requested state already exists;
 - whether destination creation or replacement is atomic during concurrent requests;
 - stable client-supplied identifiers that make creation retry-safe;
 - partial-progress recovery for multi-step operations.

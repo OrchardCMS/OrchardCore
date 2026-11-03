@@ -446,8 +446,8 @@ curl -X DELETE -H "Authorization: Bearer $TOKEN" \
   https://localhost:5001/api/workflows/types/4workflowtype
 ```
 
-`204 No Content` has no body. Deleting an already absent workflow type is a convergent retry and
-also returns `204`. Other responses are `401` or `403`.
+`204 No Content` has no body. An absent workflow type returns `404`. Other responses are `401` or
+`403`.
 
 ### Validate a workflow graph
 
@@ -802,8 +802,8 @@ curl -X DELETE -H "Authorization: Bearer $TOKEN" \
   https://localhost:5001/api/workflows/instances/4workflowinstance
 ```
 
-`204 No Content` has no body. Canceling an already absent workflow instance is a convergent retry
-and also returns `204`. Other responses are `401` or `403`.
+`204 No Content` has no body. An absent workflow instance returns `404`. Other responses are `401`
+or `403`.
 
 ## Endpoint coverage and sources
 

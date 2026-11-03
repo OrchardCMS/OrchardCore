@@ -174,7 +174,7 @@ with tempfile.TemporaryDirectory(prefix='lucene-lifecycle-cli-', dir=state_path.
     finally:
         request('api/features/OrchardCore.Lucene:enable?force=true', 'POST')
         if query_created:
-            request('api/queries/named/' + query_name, 'DELETE', status=(200, 204))
+            request('api/queries/named/' + query_name, 'DELETE', status=(200, 404))
         if index_id:
             pomi('indexes', 'lucene', 'delete', index_id, '--force')
         if item_id:

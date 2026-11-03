@@ -218,10 +218,10 @@ internal static partial class TenantManagementEndpoints
                 RequiresConfirmation = true,
             })
             .Produces<TenantOperationResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         routes.MapPost(RoutePrefix + "/{tenantName}:start", StartAsync)
             .WithName("ApiStartTenant")
@@ -1113,7 +1113,7 @@ internal static partial class TenantManagementEndpoints
 
         if (!shellHost.TryGetSettings(tenantName, out var shellSettings))
         {
-            return TypedResults.NoContent();
+            return httpContext.ApiNotFoundProblem();
         }
 
         if (!shellSettings.IsRemovable())

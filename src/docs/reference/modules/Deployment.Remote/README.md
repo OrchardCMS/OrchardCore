@@ -108,8 +108,8 @@ Client bodies contain `clientName` and `apiKey`. Destination bodies contain `nam
 `url`, `clientName` and `apiKey`. All non-key fields are required on update; an
 omitted or null key preserves its stored value. Empty keys are rejected; delete the
 client to revoke it. Creation retries with identical names and configuration return
-`changed: false`; conflicting configuration returns 409. Equivalent updates and
-repeated deletes are unchanged. IDs belong to the selected tenant.
+`changed: false`; conflicting configuration returns 409. Equivalent updates are
+unchanged, and deleting an absent resource returns 404. IDs belong to the selected tenant.
 
 Keys are write-only through these APIs. Readback returns `hasApiKey` and never
 returns plaintext or protected keys. Supply keys using stdin or private body files,

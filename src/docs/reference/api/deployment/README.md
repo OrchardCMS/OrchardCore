@@ -113,7 +113,7 @@ The body is the same as for creating a plan. Renaming preserves the steps, their
 
 `DELETE /api/deployment/plans/by-id?id=123`
 
-Returns `200` with `changed: true` and a null `plan`. Deleting an absent plan returns `200` with `changed: false`, so a repeated delete converges. A nonpositive `id` returns `400`.
+Returns `200` with `changed: true` and a null `plan`. An absent plan returns `404`. A nonpositive `id` returns `400`.
 
 ## Step types
 
@@ -218,7 +218,7 @@ The values are a patch: omitted properties, including write-only ones, keep thei
 
 `DELETE /api/deployment/plans/steps/by-id?planId=123&stepId=site-css`
 
-Returns `200` with `changed: true` and a null `step`. An absent step in an existing plan returns `200` with `changed: false`.
+Returns `200` with `changed: true` and a null `step`. An absent step returns `404`.
 
 ### Order steps
 
@@ -293,7 +293,7 @@ pomi deployment artifacts download <id> --output-file ./package.zip
 
 `DELETE /api/deployment/artifacts/{id}`
 
-`200` returns `{ "changed": true }`, or `{ "changed": false }` when the artifact is already absent. An artifact being read returns `409`: retry later.
+`200` returns `{ "changed": true }`. An absent artifact, or one of another identity, returns `404`. An artifact being read returns `409`: retry later.
 
 ## Operations
 

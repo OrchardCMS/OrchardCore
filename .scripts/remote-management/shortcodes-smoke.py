@@ -45,7 +45,7 @@ def request(path, method='GET', body=None, client='cli-fixture', status=200, raw
         response = error
     with response:
         text = response.read().decode()
-        assert response.status == status, (method, path, response.status, text[:600])
+        assert (response.status in status if isinstance(status, tuple) else response.status == status), (method, path, response.status, text[:600])
         if raw:
             return text
         if response.headers.get('Content-Type', '').startswith('text/event-stream'):
@@ -171,7 +171,7 @@ with tempfile.TemporaryDirectory(prefix='shortcodes-cli-', dir=state_path.parent
         assert set(catalog()[0]) == set(ids)
         pomi('api', 'refresh', '--force')
         pomi('shortcodes', 'templates', 'delete', saved_name, '--force')
-        pomi('shortcodes', 'templates', 'delete', saved_name, '--force')
+        pomi('shortcodes', 'templates', 'delete', saved_name, '--force', status=404)
         pomi('shortcodes', 'templates', 'show', saved_name, status=404)
         print('Unique catalogs, feature removal/restoration and MCP with CLI disabled: passed', flush=True)
     finally:
@@ -179,5 +179,5 @@ with tempfile.TemporaryDirectory(prefix='shortcodes-cli-', dir=state_path.parent
             pomi('content', 'items', 'delete', item_id, '--force', client='cli-fixture')
         for type_name in reversed(types):
             pomi('content', 'types', 'delete', type_name, '--force', client='cli-fixture')
-        request('api/shortcode-templates/by-name?name=' + saved_name, 'DELETE', status=204)
+        request('api/shortcode-templates/by-name?name=' + saved_name, 'DELETE', status=(204, 404))
 print('Shortcodes smoke passed; feature and theme changes remain confined to the disposable fixture.')

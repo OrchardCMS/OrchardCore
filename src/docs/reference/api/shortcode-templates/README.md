@@ -127,8 +127,7 @@ to support renaming through one shared document mutation and refuses an occupied
 ## Delete
 
 `DELETE api/shortcode-templates/by-name?name=callout` requires the query name and accepts no body.
-It returns `204` whether the template was removed or was already absent. Repeated deletion does
-not mutate an already-absent entry. Pomi requires confirmation (`--force` for automation).
+It returns `204` when the template was removed, and `404` when it doesn't exist. Pomi requires confirmation (`--force` for automation).
 Content that references the shortcode is retained. Inspect rendered pages after removing an override.
 
 ## Shared services and errors

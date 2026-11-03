@@ -20,7 +20,7 @@ internal static class DeploymentStepEndpoints
             .Produces<DeploymentStepWriteResponse>();
         Configure(routes.MapPut("api/deployment/plans/steps/by-id", UpdateAsync), "ApiUpdateDeploymentStep", "update", "Patches a typed step while retaining identity and order.", true)
             .Produces<DeploymentStepWriteResponse>();
-        Configure(routes.MapDelete("api/deployment/plans/steps/by-id", DeleteAsync), "ApiDeleteDeploymentStep", "delete", "Deletes a step; an already absent step is unchanged.", true)
+        Configure(routes.MapDelete("api/deployment/plans/steps/by-id", DeleteAsync), "ApiDeleteDeploymentStep", "delete", "Deletes a step; a missing plan or step returns 404.", true)
             .Produces<DeploymentStepWriteResponse>();
         Configure(routes.MapPut("api/deployment/plans/steps/order", OrderAsync), "ApiOrderDeploymentSteps", "order", "Reorders all steps after validating the complete identity list.")
             .Produces<DeploymentStepWriteResponse>();
@@ -103,7 +103,7 @@ internal static class DeploymentStepEndpoints
         if (planId <= 0 || string.IsNullOrWhiteSpace(stepId)) { return Invalid(); }
         var plan = await plans.GetAsync(planId);
         if (plan is null) { return context.ApiNotFoundProblem(); }
-        if (Find(plan, stepId) < 0) { return TypedResults.Ok(new DeploymentStepWriteResponse()); }
+        if (Find(plan, stepId) < 0) { return context.ApiNotFoundProblem(); }
         var result = await plans.DeleteStepAsync(planId, stepId);
         return result.Error == DeploymentStepManagementError.None ? TypedResults.Ok(new DeploymentStepWriteResponse { Changed = result.Changed }) : Failure(result.Error);
     }

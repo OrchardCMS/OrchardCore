@@ -206,7 +206,7 @@ sources. Source updates regenerate the sitemap cache identifier.
 
 Create operations generate IDs. After an uncertain create response, list/read back
 before retrying to avoid duplicate sources. Identical updates and status changes
-avoid unnecessary writes; deleting an already absent source is unchanged.
+avoid unnecessary writes; deleting an absent sitemap or source returns 404.
 
 When SEO is also enabled, `settings sections show/schema/update sitemaps-robots`
 exposes `includeSitemaps` using `ManageSeoSettings`. The existing robots provider

@@ -904,7 +904,7 @@ An unknown `mode` or `format` returns a `400` Problem Details, and other invalid
 
 #### Delete a profile
 
-`DELETE /api/media/profiles/by-name?name=thumbnail` returns `204`. An absent profile returns `404`, so a client repeating a delete must accept this status.
+`DELETE /api/media/profiles/by-name?name=thumbnail` returns `204`. An absent profile returns `404`.
 
 #### Show the caches
 

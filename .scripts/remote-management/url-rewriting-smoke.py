@@ -170,7 +170,7 @@ with tempfile.TemporaryDirectory(prefix='rewrite-cli-', dir=state_path.parent) a
     request('api/features/OrchardCore.RemoteManagement.Cli:enable?force=true', 'POST')
     for rule_id in [first_id, second_id, rewrite_id]:
         pomi('url-rewriting', 'rules', 'delete', rule_id, '--force')
-        pomi('url-rewriting', 'rules', 'delete', rule_id, '--force')
+        pomi('url-rewriting', 'rules', 'delete', rule_id, '--force', status=404)
     probe(path, 404)
     assert pomi('url-rewriting', 'rules', 'list', '--take', '200')['items'] == initial
     print('PASS: rewrite rules CLI/MCP CRUD, stable retries, source validation and persisted ordering')

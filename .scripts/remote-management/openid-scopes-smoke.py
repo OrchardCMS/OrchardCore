@@ -44,7 +44,7 @@ def request(path, method='GET', body=None, client='cli-fixture', status=200, raw
         response = error
     with response:
         text = response.read().decode()
-        assert response.status == status, (method, path, response.status, text[:600])
+        assert (response.status in status if isinstance(status, tuple) else response.status == status), (method, path, response.status, text[:600])
         if raw:
             return text, response.headers
         if response.headers.get('Content-Type', '').startswith('text/event-stream'):
@@ -122,11 +122,11 @@ with tempfile.TemporaryDirectory(prefix='openid-scopes-cli-', dir=state_path.par
         try:
             assert tool('scopes', 'show', {'query': {'name': name}}) == changed
             request(path, 'DELETE', client='cli-openid-scopes', status=204)
-            request(path, 'DELETE', client='cli-openid-scopes', status=204)
+            request(path, 'DELETE', client='cli-openid-scopes', status=404)
         finally:
             request('api/features/OrchardCore.RemoteManagement.Cli:enable?force=true', 'POST')
         pomi('openid', 'scopes', 'show', name, status=404)
-        pomi('openid', 'scopes', 'delete', name, '--force')
+        pomi('openid', 'scopes', 'delete', name, '--force', status=404)
         print('PASS: scope create/update/delete, equivalent retries, conflict/invalid/denied writes, HTTP/Pomi/MCP readback and MCP without CLI.')
     finally:
-        request(path, 'DELETE', status=204)
+        request(path, 'DELETE', status=(204, 404))

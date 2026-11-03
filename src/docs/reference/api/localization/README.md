@@ -152,9 +152,9 @@ default, and parent fallback are preserved. Removing a culture does not delete
 its PO files, database translations, or localized content. Adding one does not
 install translation catalogs.
 
-Adding an already supported culture or removing an already absent available
-culture returns the current settings without saving or releasing the tenant.
-Unknown names and removal of the default return `400` validation details.
+Adding an already supported culture returns the current settings without saving
+or releasing the tenant. Removing a culture that isn't supported returns `404`.
+Adding an unknown name and removing the default return `400` validation details.
 Change the default with `settings update` before removing it. CLI removal asks
 for confirmation; use `--force` for an unattended operation.
 
@@ -390,7 +390,7 @@ Returns `200 OK`:
 { "culture": "fr", "context": "Content Types", "key": "Page", "value": null, "changed": true }
 ```
 
-Only the exact pair is removed; other translations remain. Repeating deletion, including deletion of an absent pair, succeeds with `changed: false` and no save. Invalid input returns `400`. Cache invalidation and concurrency behavior are the same as set.
+Only the exact pair is removed; other translations remain. An absent pair returns `404` without saving. Invalid input returns `400`. Cache invalidation and concurrency behavior are the same as set.
 
 ## Errors and source
 

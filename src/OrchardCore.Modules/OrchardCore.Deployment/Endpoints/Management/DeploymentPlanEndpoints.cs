@@ -27,8 +27,8 @@ internal static class DeploymentPlanEndpoints
             "Renames a plan while preserving all steps and their order.", "id")
             .Produces<DeploymentPlanWriteResponse>().ProducesProblem(404).ProducesProblem(409);
         Configure(routes.MapDelete("api/deployment/plans/by-id", DeleteAsync), "ApiDeleteDeploymentPlan", "delete",
-            "Deletes a plan; an already absent plan is unchanged.", "id")
-            .Produces<DeploymentPlanWriteResponse>();
+            "Deletes a plan; a missing plan returns 404.", "id")
+            .Produces<DeploymentPlanWriteResponse>().ProducesProblem(404);
     }
 
     internal static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string name, string verb, string summary, string argument = null, string resource = "plans", string[] group = null, string secondArgument = null)
@@ -107,7 +107,7 @@ internal static class DeploymentPlanEndpoints
     {
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (id <= 0) { return InvalidId(); }
-        return TypedResults.Ok(new DeploymentPlanWriteResponse { Changed = await plans.DeleteAsync(id) });
+        return await plans.DeleteAsync(id) ? TypedResults.Ok(new DeploymentPlanWriteResponse { Changed = true }) : context.ApiNotFoundProblem();
     }
 
     private static IResult Result(DeploymentPlanManagementResult result) => result.Error switch

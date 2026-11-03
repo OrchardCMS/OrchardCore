@@ -58,7 +58,7 @@ commas/surrounding whitespace. Names are editable and must be unique. Discover r
 names through `schema`; preserve order because later matching rules take precedence.
 Updates replace all editable values; omitted rules or `[]` clears them, while null
 and unknown rule names are rejected. Equivalent create retries succeed; a different
-definition under the same ID conflicts. Repeated deletion succeeds.
+definition under the same ID conflicts. Deleting a missing profile returns 404.
 
 Assign existing IDs through the tenant API's `featureProfiles` field, using the
 [tenant update workflow](../orchardcore-cli/references/tenants.md) and preserving the
@@ -149,7 +149,7 @@ are rejected; an empty selected query-field list is allowed, but content types m
 be nonempty and unique.
 
 Equivalent create/update retries are no-ops; conflicting creates require inspection.
-Deletion of an already missing profile succeeds. `--force` confirms deletion locally;
+Deleting a missing profile returns 404. `--force` confirms deletion locally;
 it does not force server-side removal after provider failure. Do not automatically
 retry uncertain provider or post-persistence handler failures.
 
@@ -388,7 +388,7 @@ the artifact/operation workflow below. Invalid patches leave the step unchanged.
 Ordering takes `{"stepIds":["readme","metadata"]}` with every existing ID exactly
 once. Unsupported factories are discoverable with `canConfigure:false`; do not
 invent schemas or serialize arbitrary CLR properties. Disabled-feature steps retain
-their stored configuration and identity. Plan/step deletion is repeatable.
+their stored configuration and identity. Deleting a missing plan or step returns 404.
 
 ## Deployment packages and queued operations
 

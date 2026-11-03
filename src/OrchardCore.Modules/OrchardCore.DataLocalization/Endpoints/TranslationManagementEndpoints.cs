@@ -36,8 +36,8 @@ internal static class TranslationManagementEndpoints
             .Produces<TranslationResult>().ProducesValidationProblem().ProducesProblem(401).ProducesProblem(403).ProducesProblem(404);
         group.MapDelete("", DeleteAsync)
             .WithName("ApiDeleteDataTranslation").WithSummary("Removes one stored dynamic translation.")
-            .WithDescription("Removes an exact context/key in one supported culture, restoring source text or fallback. Repeating deletion is safe. Requires ManageTranslations or the culture-specific ManageTranslations permission.")
-            .Produces<TranslationResult>().ProducesProblem(400).ProducesProblem(401).ProducesProblem(403);
+            .WithDescription("Removes an exact context/key in one supported culture, restoring source text or fallback. A missing translation returns 404. Requires ManageTranslations or the culture-specific ManageTranslations permission.")
+            .Produces<TranslationResult>().ProducesProblem(400).ProducesProblem(401).ProducesProblem(403).ProducesProblem(404);
     }
 
     internal static async Task<IResult> ListAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
@@ -135,13 +135,14 @@ internal static class TranslationManagementEndpoints
 
         var document = await manager.LoadTranslationsDocumentAsync();
         var translations = (document.Translations.GetValueOrDefault(culture) ?? []).ToList();
-        var changed = translations.RemoveAll(item => item.Context == request.Context && item.Key == request.Key) > 0;
-        if (changed)
+        if (translations.RemoveAll(item => item.Context == request.Context && item.Key == request.Key) == 0)
         {
-            await manager.UpdateTranslationAsync(culture, translations);
+            return context.ApiNotFoundProblem();
         }
 
-        return TypedResults.Ok(new TranslationResult { Culture = culture, Context = request.Context, Key = request.Key, Changed = changed });
+        await manager.UpdateTranslationAsync(culture, translations);
+
+        return TypedResults.Ok(new TranslationResult { Culture = culture, Context = request.Context, Key = request.Key, Changed = true });
     }
 
     private static bool ValidKey(string context, string key) =>

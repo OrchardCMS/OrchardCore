@@ -28,7 +28,7 @@ internal static class RateLimitEndpoints
             .Produces<RateLimitPolicyResponse>(201);
         Configure(routes.MapPut(Prefix + "/by-id", UpdateAsync), "ApiUpdateRateLimitPolicy", "update", "Replaces policy metadata and target; disable first to change its target.", ["policyId"], input: true)
             .Produces<RateLimitPolicyResponse>();
-        Configure(routes.MapDelete(Prefix + "/by-id", DeleteAsync), "ApiDeleteRateLimitPolicy", "delete", "Deletes a policy; an absent policy is unchanged.", ["policyId"])
+        Configure(routes.MapDelete(Prefix + "/by-id", DeleteAsync), "ApiDeleteRateLimitPolicy", "delete", "Deletes a policy; a missing policy returns 404.", ["policyId"])
             .Produces(204);
         Configure(routes.MapPost(Prefix + "/by-id:enable", EnableAsync), "ApiEnableRateLimitPolicy", "enable", "Enables a policy and reloads tenant rate limiting.", ["policyId"])
             .Produces(204);
@@ -44,7 +44,7 @@ internal static class RateLimitEndpoints
             .Produces<RateLimitLimiterResponse>();
         Configure(routes.MapPut(Prefix + "/limiters/by-id", UpdateLimiterAsync), "ApiUpdateRateLimitLimiter", "update", "Replaces a disabled policy limiter's complete settings.", ["policyId", "limiterId"], true, ["rate-limits", "policies", "limiters"])
             .Produces<RateLimitLimiterResponse>();
-        Configure(routes.MapDelete(Prefix + "/limiters/by-id", DeleteLimiterAsync), "ApiDeleteRateLimitLimiter", "delete", "Deletes a limiter from a disabled policy; an absent limiter is unchanged.", ["policyId", "limiterId"], group: ["rate-limits", "policies", "limiters"])
+        Configure(routes.MapDelete(Prefix + "/limiters/by-id", DeleteLimiterAsync), "ApiDeleteRateLimitLimiter", "delete", "Deletes a limiter from a disabled policy; a missing policy or limiter returns 404.", ["policyId", "limiterId"], group: ["rate-limits", "policies", "limiters"])
             .Produces(204);
     }
 
@@ -152,7 +152,8 @@ internal static class RateLimitEndpoints
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(policyId)) { return Invalid("A policy ID is required."); }
         var policy = await policies.FindByIdAsync(policyId, PolicyVersion.Current);
-        if (policy is not null) { await mutations.DeleteAsync([policy]); }
+        if (policy is null) { return context.ApiNotFoundProblem(); }
+        await mutations.DeleteAsync([policy]);
         return TypedResults.NoContent();
     }
 
@@ -242,7 +243,7 @@ internal static class RateLimitEndpoints
         if (string.IsNullOrWhiteSpace(policyId)) { return Invalid("A policy ID is required."); }
         var policy = await policies.FindByIdAsync(policyId, PolicyVersion.Current);
         if (policy is null) { return context.ApiNotFoundProblem(); }
-        if (!policy.Limiters.Any(item => item.Id == limiterId)) { return TypedResults.NoContent(); }
+        if (!policy.Limiters.Any(item => item.Id == limiterId)) { return context.ApiNotFoundProblem(); }
         if (!RateLimitLimiterMutations.CanModify(policy)) { return Conflict("Disable the policy before changing its limiters."); }
         await mutations.DeleteAsync(policy, limiterId);
         return TypedResults.NoContent();

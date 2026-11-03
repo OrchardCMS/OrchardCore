@@ -138,9 +138,8 @@ module placement rules can become effective again after an override is removed.
 
 ## Delete
 
-`DELETE api/placements/by-shape?shapeType=HtmlBodyPart` accepts no body. It returns `204` whether
-an override was removed or was already absent. Repeating deletion does not mutate an absent
-entry. Pomi requires confirmation (`--force` for automation). Content, shapes and module/theme
+`DELETE api/placements/by-shape?shapeType=HtmlBodyPart` accepts no body. It returns `204` when the
+override was removed, and `404` when there is none. Pomi requires confirmation (`--force` for automation). Content, shapes and module/theme
 files are retained; this removes only the selected tenant's stored override.
 
 ## Shared services and storage ownership

@@ -421,8 +421,7 @@ curl -X DELETE -H "Authorization: Bearer $TOKEN" \
   https://localhost:5001/api/content-definition/types/PressRelease
 ```
 
-`204 No Content` has no response body. Deleting an already absent type is a convergent retry and
-also returns `204`. Other responses are `401` or `403`.
+`204 No Content` has no response body. An absent type returns `404`. Other responses are `401` or `403`.
 
 ## Registered type operations
 
@@ -681,8 +680,7 @@ curl -X DELETE -H "Authorization: Bearer $TOKEN" \
   https://localhost:5001/api/content-definition/parts/ContactPart
 ```
 
-`204 No Content` has no body. Deleting an already absent part is a convergent retry and also
-returns `204`. Other responses are `401` or `403`.
+`204 No Content` has no body. An absent part returns `404`. Other responses are `401` or `403`.
 
 ## Content field operations
 
@@ -846,8 +844,7 @@ curl -X DELETE -H "Authorization: Bearer $TOKEN" \
   https://localhost:5001/api/content-definition/parts/ContactPart/fields/Email
 ```
 
-`204 No Content` has no body. Deleting an already absent field is a convergent retry and also
-returns `204`; an absent parent part does not change that result. Other responses are `401` or
+`204 No Content` has no body. An absent field or parent part returns `404`. Other responses are `401` or
 `403`.
 
 ## Endpoint coverage and sources

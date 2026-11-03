@@ -119,12 +119,14 @@ internal static class DeploymentArtifactEndpoints
         var owner = await OwnerAsync(context, authorization);
         if (owner is null) { return context.ApiForbidProblem(); }
         var artifact = await store.FindAsync(id, owner, includeExpired: true);
-        if (artifact is null) { return TypedResults.Ok(new DeploymentArtifactDeleteResponse()); }
+        if (artifact is null) { return context.ApiNotFoundProblem(); }
         if (!await AllowedAsync(context, authorization, artifact)) { return context.ApiForbidProblem(); }
-        var result = await store.DeleteAsync(id, owner);
-        return result == ArtifactDeleteResult.Busy
-            ? TypedResults.Problem("The artifact is currently in use.", statusCode: 409)
-            : TypedResults.Ok(new DeploymentArtifactDeleteResponse { Changed = result == ArtifactDeleteResult.Deleted });
+        return await store.DeleteAsync(id, owner) switch
+        {
+            ArtifactDeleteResult.Busy => TypedResults.Problem("The artifact is currently in use.", statusCode: 409),
+            ArtifactDeleteResult.Deleted => TypedResults.Ok(new DeploymentArtifactDeleteResponse { Changed = true }),
+            _ => context.ApiNotFoundProblem(),
+        };
     }
 
     internal static async Task<IResult> DownloadAsync(HttpContext context, [FromServices] IAuthorizationService authorization,

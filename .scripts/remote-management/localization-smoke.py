@@ -82,7 +82,8 @@ added = {**updated, 'supportedCultures': ['de', 'en', 'fr']}
 assert pomi('localization', 'cultures', 'add', 'DE') == added
 assert pomi('localization', 'cultures', 'add', 'de') == added
 assert pomi('localization', 'cultures', 'remove', 'de', '--force') == updated
-assert pomi('localization', 'cultures', 'remove', 'de', '--force') == updated
+pomi('localization', 'cultures', 'remove', 'de', '--force', status=404)
+pomi('localization', 'cultures', 'remove', 'unknown-culture', '--force', status=404)
 pomi('localization', 'cultures', 'remove', 'en', '--force', status=400)
 pomi('localization', 'cultures', 'add', 'unknown-culture', status=400)
 assert pomi('localization', 'settings', 'show') == updated
@@ -143,7 +144,7 @@ api('GET', 'api/localization/translations', query={'culture': 'fr'}, client='cli
 api('PUT', 'api/localization/translations', body={**translation, 'key': 'Unregistered CLI key'}, status=404)
 query = {'context': key['context'], 'key': key['key'], 'culture': 'fr'}
 assert api('DELETE', 'api/localization/translations', query=query)['changed']
-assert not api('DELETE', 'api/localization/translations', query=query)['changed']
+api('DELETE', 'api/localization/translations', query=query, status=404)
 # Anonymous callers cannot reach any of the new read APIs.
 for route in ('api/localization/messages', 'api/localization/cultures', 'api/localization/cultures/available', 'api/localization/settings', 'api/localization/strings', 'api/localization/strings/media-gallery', 'api/localization/translations?culture=fr'):
     try:

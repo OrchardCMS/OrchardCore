@@ -499,6 +499,6 @@ management or token endpoints.
 
 Delete a limiter with `policies limiters delete <policy-id> <limiter-id> --force`;
 delete a policy with `policies delete <policy-id> --force`. Repeating a successful
-delete is harmless. Host-contributed route/group limits configured in code remain
+delete returns 404. Host-contributed route/group limits configured in code remain
 outside these tenant-policy mutations. The same JSON operations are available as
 MCP tools when the tenant MCP feature is enabled; binary transfer is unnecessary.

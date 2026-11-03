@@ -95,7 +95,7 @@ Repeating the request with the same name and key returns `changed: false`. The s
 
 `DELETE /api/deployment/remote-clients/{id}`
 
-Returns `200` with `changed: true`, or `changed: false` when the client is already absent. `resource` is null.
+Returns `200` with `changed: true` and a null `resource`, and `404` when the client doesn't exist.
 
 ## Remote instances
 
@@ -138,7 +138,7 @@ All the properties except `apiKey` are required. An omitted or null `apiKey` kee
 
 `DELETE /api/deployment/remote-instances/{id}`
 
-Returns `200` with `changed: true`, or `changed: false` when the instance is already absent. `resource` is null.
+Returns `200` with `changed: true` and a null `resource`, and `404` when the instance doesn't exist.
 
 ## Targets
 

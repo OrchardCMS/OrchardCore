@@ -87,7 +87,8 @@ internal static class WorkflowManagementApiEndpoints
             .WithCliCommand(Cli(["workflow", "types"], "delete", arguments: [new CliArgumentMetadata("workflowTypeId", 0)], requiresConfirmation: true))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/types:validate", ValidateWorkflowTypeAsync)
             .WithName("ApiValidateWorkflowType")
@@ -190,7 +191,8 @@ internal static class WorkflowManagementApiEndpoints
             .WithCliCommand(Cli(["workflow", "instances"], "cancel", arguments: [new CliArgumentMetadata("workflowId", 0)], requiresConfirmation: true))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return builder;
     }
@@ -269,8 +271,7 @@ internal static class WorkflowManagementApiEndpoints
             return httpContext.ApiForbidProblem();
         }
 
-        await service.DeleteWorkflowTypeAsync(workflowTypeId);
-        return TypedResults.NoContent();
+        return await service.DeleteWorkflowTypeAsync(workflowTypeId) ? TypedResults.NoContent() : httpContext.ApiNotFoundProblem();
     }
 
     private static async Task<IResult> ValidateWorkflowTypeAsync(WorkflowTypeDto model, WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext)
@@ -360,8 +361,7 @@ internal static class WorkflowManagementApiEndpoints
             return httpContext.ApiForbidProblem();
         }
 
-        await service.CancelInstanceAsync(workflowId);
-        return TypedResults.NoContent();
+        return await service.CancelInstanceAsync(workflowId) ? TypedResults.NoContent() : httpContext.ApiNotFoundProblem();
     }
 
     private static async Task<IResult> SetEnabledAsync(string workflowTypeId, bool isEnabled, WorkflowApiService service, IAuthorizationService authorizationService, HttpContext httpContext)

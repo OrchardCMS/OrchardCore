@@ -103,7 +103,7 @@ Replaces the definition, with the body of creation, and keeps the sources. `kind
 
 `DELETE /api/sitemaps/{id}`
 
-Returns `204`, also when the sitemap is absent. The indexes referring to it have their cache invalidated.
+Returns `204`, and `404` when the sitemap is absent. The indexes referring to it have their cache invalidated.
 
 ### Enable or disable a sitemap
 
@@ -181,7 +181,7 @@ Replaces the complete configuration, with the body of creation. `type` can't cha
 
 `DELETE /api/sitemaps/{id}/sources/{sourceId}`
 
-Returns `204`, also when the source is absent. An absent sitemap returns `404`, and an index `400`.
+Returns `204`. An absent sitemap or source returns `404`, and an index `400`.
 
 ## Errors
 

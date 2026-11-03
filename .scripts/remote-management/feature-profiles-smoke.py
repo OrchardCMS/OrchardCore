@@ -44,7 +44,7 @@ def request(path, method='GET', body=None, client='cli-fixture', status=200, raw
         response = error
     with response:
         text = response.read().decode()
-        assert response.status == status, (method, path, response.status, status)
+        assert (response.status in status if isinstance(status, tuple) else response.status == status), (method, path, response.status, status)
         if raw:
             return text, response.headers
         if response.headers.get('Content-Type', '').startswith('text/event-stream'):
@@ -146,8 +146,8 @@ with tempfile.TemporaryDirectory(prefix='feature-profiles-cli-', dir=state_path.
         pomi('api', 'refresh', '--force')
         pomi('tenants', 'feature-profiles', 'delete', name, '--force')
         assert not [tool_name for tool_name in catalog() if tool_name.endswith('_delete')], 'deleting needs a confirmation, so it is not a tool'
-        request(path, 'DELETE', client='cli-feature-profiles', status=204)
+        request(path, 'DELETE', client='cli-feature-profiles', status=404)
         request(path, client='cli-feature-profiles', status=404)
     finally:
-        request(path, 'DELETE', client='cli-feature-profiles', status=204)
+        request(path, 'DELETE', client='cli-feature-profiles', status=(204, 404))
 print('PASS: profile CRUD, retries, schema, permissions, feature lifecycle and HTTP/Pomi/MCP parity')

@@ -26,8 +26,8 @@ internal static class ShortcodeTemplateManagementEndpoints
             .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateDefinition>(201).ProducesProblem(409);
         Configure(routes.MapPut(RoutePrefix + "/by-name", UpdateAsync), "ApiUpdateShortcodeTemplate", "Replaces a complete shortcode template. The name cannot change.", "update", argument: true, input: true)
             .Accepts<ShortcodeTemplateDefinition>("application/json").Produces<ShortcodeTemplateDefinition>().ProducesProblem(404);
-        Configure(routes.MapDelete(RoutePrefix + "/by-name", DeleteAsync), "ApiDeleteShortcodeTemplate", "Deletes a shortcode template; missing templates are a successful no-op.", "delete", argument: true, confirmation: true)
-            .Produces(204);
+        Configure(routes.MapDelete(RoutePrefix + "/by-name", DeleteAsync), "ApiDeleteShortcodeTemplate", "Deletes a shortcode template; a missing template returns 404.", "delete", argument: true, confirmation: true)
+            .Produces(204).ProducesProblem(404);
     }
 
     private static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string operationId, string summary,
@@ -147,8 +147,7 @@ internal static class ShortcodeTemplateManagementEndpoints
         {
             return context.ApiForbidProblem();
         }
-        await manager.RemoveIfExistsAsync(name);
-        return TypedResults.NoContent();
+        return await manager.RemoveIfExistsAsync(name) ? TypedResults.NoContent() : context.ApiNotFoundProblem();
     }
 
     private static Task<bool> AuthorizedAsync(HttpContext context, IAuthorizationService authorization) =>

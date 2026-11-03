@@ -34,7 +34,7 @@ The seeded Default Global Policy also limits discovery, management and token req
 
 These operations are MCP tools, except the deletions, which need `AllowConfirmationRequiredTools`. See [MCP server](../../modules/RemoteManagement/README.md#mcp-server).
 
-Every operation with a `policyId` returns `400` when it is missing, and `404` when the policy is absent, except deleting a policy.
+Every operation with a `policyId` returns `400` when it is missing, and `404` when the policy is absent.
 
 ## Limiter types
 
@@ -134,7 +134,7 @@ While the policy is enabled, the name and the description can change, but a diff
 
 `DELETE /api/rate-limits/policies/by-id?policyId=5k8d2n1xq`
 
-Returns `204`, also when the policy is absent. Deleting an active policy reloads the tenant's rate limiting.
+Returns `204`. Deleting an active policy reloads the tenant's rate limiting.
 
 ### Enable or disable a policy
 
@@ -199,7 +199,7 @@ Replaces the complete settings, with the body of adding a limiter. `id` must mat
 
 `DELETE /api/rate-limits/policies/limiters/by-id?policyId=5k8d2n1xq&limiterId=search-window`
 
-Returns `204`, also when the limiter is absent. A deletion from an enabled policy returns `409`: disable it first.
+Returns `204`, and `404` when the limiter is absent. A deletion from an enabled policy returns `409`: disable it first.
 
 ## Errors
 

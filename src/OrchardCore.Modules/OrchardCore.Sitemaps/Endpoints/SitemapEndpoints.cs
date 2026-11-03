@@ -17,7 +17,7 @@ internal static class SitemapEndpoints
         Configure(routes.MapGet("api/sitemaps/{id}", GetAsync), "ApiGetSitemap", "show", "Shows a sitemap definition.", "id").Produces<SitemapResponse>().ProducesETag();
         Configure(routes.MapPost("api/sitemaps", CreateAsync), "ApiCreateSitemap", "create", "Creates a sitemap or index. Read back the server-generated ID before retrying.", input: true).Produces<SitemapResponse>().ProducesETag();
         Configure(routes.MapPut("api/sitemaps/{id}", UpdateAsync), "ApiUpdateSitemap", "update", "Replaces a definition while retaining its sources.", "id", true).Produces<SitemapResponse>().AcceptsIfMatch();
-        Configure(routes.MapDelete("api/sitemaps/{id}", DeleteAsync), "ApiDeleteSitemap", "delete", "Deletes a sitemap; an absent ID is unchanged.", "id").Produces(204);
+        Configure(routes.MapDelete("api/sitemaps/{id}", DeleteAsync), "ApiDeleteSitemap", "delete", "Deletes a sitemap; a missing ID returns 404.", "id").Produces(204);
         Configure(routes.MapPost("api/sitemaps/{id}:enable", EnableAsync), "ApiEnableSitemap", "enable", "Enables public sitemap routing.", "id").Produces(204);
         Configure(routes.MapPost("api/sitemaps/{id}:disable", DisableAsync), "ApiDisableSitemap", "disable", "Disables public sitemap routing.", "id").Produces(204);
     }
@@ -67,9 +67,10 @@ internal static class SitemapEndpoints
         if (result.Errors.Count > 0) { return TypedResults.ValidationProblem(result.Errors); }
         return TypedResults.Ok(context.WithApiETag(Describe(result.Sitemap)));
     }
-    internal static async Task<IResult> DeleteAsync([FromServices] ISitemapManager manager, string id)
+    internal static async Task<IResult> DeleteAsync(HttpContext context, [FromServices] ISitemapManager manager, string id)
     {
-        if (await manager.LoadSitemapAsync(id) is not null) { await manager.DeleteSitemapAsync(id); }
+        if (await manager.LoadSitemapAsync(id) is null) { return context.ApiNotFoundProblem(); }
+        await manager.DeleteSitemapAsync(id);
         return TypedResults.NoContent();
     }
     internal static Task<IResult> EnableAsync(HttpContext context, [FromServices] ISitemapManager manager, string id) => StatusAsync(context, manager, id, true);

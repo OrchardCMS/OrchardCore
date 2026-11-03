@@ -157,8 +157,8 @@ with tempfile.TemporaryDirectory(prefix='remote-deployment-cli-', dir=state_path
     for denied in [None, 'cli-discovery', 'cli-denied']:
         request('api/deployment/targets', client=denied, status=401 if denied is None else 403)
     assert pomi('deployment', 'remote-instances', 'delete', instance_id, '--force')['changed']
-    assert not pomi('deployment', 'remote-instances', 'delete', instance_id, '--force')['changed']
+    pomi('deployment', 'remote-instances', 'delete', instance_id, '--force', status=404)
     select(target_path)
     assert pomi('deployment', 'remote-clients', 'delete', client_id, '--force')['changed']
-    assert not pomi('deployment', 'remote-clients', 'delete', client_id, '--force')['changed']
+    pomi('deployment', 'remote-clients', 'delete', client_id, '--force', status=404)
     print('PASS: remote client/instance CRUD, redaction, key preservation, HTTP/Pomi/MCP, tenant isolation and actual remote recipe delivery', flush=True)

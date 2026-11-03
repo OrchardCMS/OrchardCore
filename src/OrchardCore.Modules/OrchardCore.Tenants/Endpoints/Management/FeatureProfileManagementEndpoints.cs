@@ -29,8 +29,8 @@ internal static class FeatureProfileManagementEndpoints
             .Accepts<FeatureProfileDefinition>("application/json").Produces<FeatureProfileDefinition>(201).Produces<FeatureProfileDefinition>().ProducesProblem(409);
         Configure(routes.MapPut(Prefix + "/by-id", UpdateAsync), "ApiUpdateTenantFeatureProfile", "update", "Replaces a profile's display name and ordered rules without changing its identifier.", argument: true, input: true)
             .Accepts<FeatureProfileDefinition>("application/json").Produces<FeatureProfileDefinition>().ProducesProblem(404);
-        Configure(routes.MapDelete(Prefix + "/by-id", DeleteAsync), "ApiDeleteTenantFeatureProfile", "delete", "Deletes a profile definition. Tenant assignments and enabled features are not changed.", argument: true, confirmation: true)
-            .Produces(204);
+        Configure(routes.MapDelete(Prefix + "/by-id", DeleteAsync), "ApiDeleteTenantFeatureProfile", "delete", "Deletes a profile definition. Tenant assignments and enabled features are not changed. A missing profile returns 404.", argument: true, confirmation: true)
+            .Produces(204).ProducesProblem(404);
     }
 
     private static RouteHandlerBuilder Configure(RouteHandlerBuilder builder, string operationId, string verb, string summary,
@@ -125,6 +125,10 @@ internal static class FeatureProfileManagementEndpoints
     {
         if (!await AuthorizedAsync(context, authorization, shell)) { return context.ApiForbidProblem(); }
         if (string.IsNullOrWhiteSpace(id)) { return TypedResults.Problem("A profile identifier is required.", statusCode: 400); }
+        if (!(await manager.GetFeatureProfilesDocumentAsync()).FeatureProfiles.ContainsKey(id))
+        {
+            return context.ApiNotFoundProblem();
+        }
         await manager.RemoveFeatureProfileAsync(id);
         return TypedResults.NoContent();
     }

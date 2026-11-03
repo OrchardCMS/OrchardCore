@@ -246,7 +246,7 @@ An equivalent definition doesn't write anything. A different `indexName` or an i
 
 `DELETE /api/indexes/lucene/by-id?id=4x7qk2m9w`
 
-Removes the provider index and the profile, and returns `204`. An absent profile also returns `204`, so a repeated delete converges. `503` means the provider rejected the operation or the profile couldn't be removed: inspect the index before retrying.
+Removes the provider index and the profile, and returns `204`. An absent profile returns `404`. `503` means the provider rejected the operation or the profile couldn't be removed: inspect the index before retrying.
 
 ## Elasticsearch and Azure AI Search content indexes
 

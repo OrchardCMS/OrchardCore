@@ -173,7 +173,7 @@ match the query name; this API does not rename scopes. An unknown update target
 returns `404`. Manager validation failures return `400` without retaining rejected
 values in the tracked scope.
 
-Scope deletion returns `204`, including when the scope is already absent. Deleting
+Scope deletion returns `204`, and `404` when the scope doesn't exist. Deleting
 or changing a scope does not remove application permission strings or revoke
 previously issued tokens. These operations manage the registered scope definition;
 application grant configuration and credential lifecycle are separate concerns.

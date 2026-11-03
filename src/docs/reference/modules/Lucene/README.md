@@ -423,7 +423,7 @@ The same filename rule protects direct Lucene filesystem access for existing pro
 | `GET api/indexes/lucene/by-id?id=...` | Show a Lucene content definition; other provider/source profiles return 404. |
 | `POST api/indexes/lucene` | Create with 201; an equivalent retry returns 200; a conflicting display/provider name returns 409. |
 | `PUT api/indexes/lucene/by-id?id=...` | Replace editable values; an equivalent retry does not write or schedule work. |
-| `DELETE api/indexes/lucene/by-id?id=...` | Delete provider resource and profile; an already missing profile returns 204. |
+| `DELETE api/indexes/lucene/by-id?id=...` | Delete provider resource and profile; a missing profile returns 404. |
 
 Creation uses the shared profile/provider coordinator and schedules synchronization.
 It does not wait for documents to be indexed. Updating a definition does not rebuild

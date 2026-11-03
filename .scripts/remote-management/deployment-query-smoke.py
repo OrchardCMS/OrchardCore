@@ -143,4 +143,4 @@ with tempfile.TemporaryDirectory(prefix='query-deployment-cli-', dir=state_path.
         print('PASS: Pomi/MCP query adapter, invalid-patch preservation, parameter clearing and queued export through the existing query source', flush=True)
     finally:
         pomi('deployment', 'plans', 'delete', plan_id, '--force')
-        request('api/queries/named/' + name, 'DELETE', status=(200, 204))
+        request('api/queries/named/' + name, 'DELETE', status=(200, 404))

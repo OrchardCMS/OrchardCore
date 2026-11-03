@@ -104,9 +104,9 @@ internal static class RemoteDeploymentEndpoints
     private static async Task<IResult> DeleteClientAsync(string id, HttpContext context, [FromServices] RemoteClientService service)
     {
         if (Secure(context) is { } failure) { return failure; }
-        var exists = await service.GetRemoteClientAsync(id) is not null;
-        if (exists) { await service.DeleteRemoteClientAsync(id); }
-        return TypedResults.Ok(new RemoteDeploymentWriteResponse<RemoteClientResponse> { Changed = exists });
+        if (await service.GetRemoteClientAsync(id) is null) { return context.ApiNotFoundProblem(); }
+        await service.DeleteRemoteClientAsync(id);
+        return TypedResults.Ok(new RemoteDeploymentWriteResponse<RemoteClientResponse> { Changed = true });
     }
 
     private static async Task<IResult> ListInstancesAsync([FromServices] RemoteInstanceService service) => TypedResults.Ok((await service.GetRemoteInstanceListAsync()).RemoteInstances.OrderBy(value => value.Name, StringComparer.Ordinal).Select(Describe).ToArray());
@@ -145,8 +145,8 @@ internal static class RemoteDeploymentEndpoints
     private static async Task<IResult> DeleteInstanceAsync(string id, HttpContext context, [FromServices] RemoteInstanceService service)
     {
         if (Secure(context) is { } failure) { return failure; }
-        var exists = await service.GetRemoteInstanceAsync(id) is not null;
-        if (exists) { await service.DeleteRemoteInstanceAsync(id); }
-        return TypedResults.Ok(new RemoteDeploymentWriteResponse<RemoteInstanceResponse> { Changed = exists });
+        if (await service.GetRemoteInstanceAsync(id) is null) { return context.ApiNotFoundProblem(); }
+        await service.DeleteRemoteInstanceAsync(id);
+        return TypedResults.Ok(new RemoteDeploymentWriteResponse<RemoteInstanceResponse> { Changed = true });
     }
 }

@@ -158,7 +158,7 @@ with tempfile.TemporaryDirectory(prefix='lucene-runtime-cli-', dir=state_path.pa
         print('PASS: background indexing replaces old indexed terms and existing named queries see updated content', flush=True)
     finally:
         for query_name in query_names:
-            request('api/queries/named/' + query_name, 'DELETE', status=(200, 204))
+            request('api/queries/named/' + query_name, 'DELETE', status=(200, 404))
         if index_id:
             pomi('indexes', 'lucene', 'delete', index_id, '--force')
         if item_id:

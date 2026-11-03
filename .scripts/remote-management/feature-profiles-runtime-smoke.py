@@ -61,6 +61,7 @@ pomi('context', 'add', name + '-parent', state['url'], '--current', parent=True)
 pomi('features', 'enable', 'OrchardCore.Tenants.FeatureProfiles', parent=True)
 pomi('api', 'refresh', '--force', parent=True)
 profile_id = name + 'Profile'
+profile_deleted = False
 definition = {'id': profile_id, 'name': profile_id,
               'featureRules': [{'rule': 'Exclude', 'expression': 'OrchardCore.Markdown'}]}
 pomi('tenants', 'feature-profiles', 'create', body=definition, parent=True)
@@ -95,13 +96,15 @@ try:
     pomi('tenants', 'feature-profiles', 'update', profile_id, body=dependencies, parent=True)
     pomi('features', 'enable', 'OrchardCore.Markdown', context=context, status=404)
     pomi('tenants', 'feature-profiles', 'delete', profile_id, '--force', parent=True)
+    profile_deleted = True
     # Missing profiles preserve the existing allow behavior, without rewriting assignment.
     assert pomi('tenants', 'show', name, parent=True)['featureProfiles'] == [profile_id]
     assert pomi('features', 'show', 'OrchardCore.Markdown', context=context)['id'] == 'OrchardCore.Markdown'
 finally:
     assignment['featureProfiles'] = []
     pomi('tenants', 'update', name, body=assignment, parent=True)
-    pomi('tenants', 'feature-profiles', 'delete', profile_id, '--force', parent=True)
+    if not profile_deleted:
+        pomi('tenants', 'feature-profiles', 'delete', profile_id, '--force', parent=True)
 assert all('login' not in args for args in calls)
 print('PASS: provisioned context without login, private administrator handoff, profile assignment, rule order, dependencies and fresh-request updates')
 print('Private administrator handoff: ' + str(root / (child['tenantId'] + '-administrator.json')))

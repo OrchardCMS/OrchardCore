@@ -146,7 +146,7 @@ Both create and update accept a JSON object with a required `name` string:
 Creation makes an empty plan. Retrying an existing name returns its plan without
 changing its steps. Update renames the identified plan and preserves step order,
 identifiers and configuration. Duplicate rename targets are rejected. Equivalent
-updates and repeated deletes report `changed: false`. Plan identifiers are local
+updates report `changed: false`, and deleting an absent plan returns 404. Plan identifiers are local
 to a tenant; use discovery in the target tenant instead of copying identifiers
 between sites.
 
@@ -202,7 +202,7 @@ once. Invalid or incomplete orders leave the plan unchanged. List/show include
 position, factory type, explicit configuration support and allowlisted readable
 values. Unsupported step types retain their stored configuration and can be listed,
 ordered or deleted, but configuration changes require an enabled explicit contract.
-Deleting an already absent step is unchanged; an absent plan returns 404.
+Deleting an absent step, or a step of an absent plan, returns 404.
 
 These operations require the same management permissions as plan metadata and do
 not execute an export. Write-only custom-file contents and embedded recipe JSON
@@ -315,7 +315,7 @@ and removes an incomplete download on failure. It is not exposed as an MCP tool.
 Artifact access requires `AccessRemoteManagement`, the artifact's Export or Import
 permission, and the same tenant, issuer, entity kind and subject that created it.
 Metadata omits the owner identity and server paths. An active read prevents deletion
-with a conflict response; repeated deletion of an absent artifact is unchanged.
+with a conflict response; deleting an absent artifact returns 404.
 Upload a ZIP or JSON package with `POST api/deployment/artifacts?fileName=package.zip`
 and an `application/octet-stream` request body, or use
 `pomi deployment artifacts upload package.zip --file ./package.zip`. Upload requires

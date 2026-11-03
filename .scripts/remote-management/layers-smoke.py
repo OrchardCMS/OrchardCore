@@ -197,8 +197,8 @@ with tempfile.TemporaryDirectory(prefix='layers-cli-', dir=state_path.parent) as
             pomi('content', 'items', 'delete', item_id, '--force', client='cli-fixture')
         for type_name in reversed(types):
             pomi('content', 'types', 'delete', type_name, '--force', client='cli-fixture')
-        pomi('layers', 'delete', name + '/space % name', '--force')
+        pomi('layers', 'delete', name + '/space % name', '--force', status=404)
         pomi('layers', 'delete', name, '--force')
-        pomi('layers', 'delete', name, '--force')
+        pomi('layers', 'delete', name, '--force', status=404)
 
 print('Layers smoke passed; feature and theme changes remain confined to the disposable fixture.')

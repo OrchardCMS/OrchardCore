@@ -202,6 +202,8 @@ with tempfile.TemporaryDirectory(prefix='sitemaps-cli-', dir=state_path.parent) 
         robots, _ = request('robots.txt', client=None, raw=True)
         assert 'secondary-only' not in robots
         pomi('sitemaps', 'delete', sitemap_id, '--force')
+        pomi('sitemaps', 'delete', sitemap_id, '--force', status=404)
+        sitemap_id = None
         assert locations(index_definition['path']) == []
         print('PASS: robots public output, sitemap/source CRUD, XML regeneration and index child path/status/deletion invalidation, Pomi/MCP and permissions.', flush=True)
     finally:

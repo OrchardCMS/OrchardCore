@@ -86,7 +86,7 @@ try:
     pomi('indexes', 'lucene', 'show', parent_index['id'], context=context, status=404)
     pomi('indexes', 'lucene', 'show', child_index['id'], parent=True, status=404)
     pomi('indexes', 'lucene', 'update', parent_index['id'], body=definition, context=context, status=404)
-    pomi('indexes', 'lucene', 'delete', parent_index['id'], '--force', context=context)
+    pomi('indexes', 'lucene', 'delete', parent_index['id'], '--force', context=context, status=404)
     assert pomi('indexes', 'lucene', 'show', parent_index['id'], parent=True) == parent_index
     changed = {**child_index['definition'], 'storeSourceData': True}
     assert pomi('indexes', 'lucene', 'update', child_index['id'], body=changed, context=context)['definition'] == changed
