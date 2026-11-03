@@ -14,7 +14,7 @@ namespace OrchardCore.Clusters;
 public static class ClustersProxyBuilderExtensions
 {
     /// <summary>
-    /// Registers tenant clusters proxy components.
+    /// Registers the tenant clusters components, on all the nodes of a clustered application.
     /// </summary>
     public static IReverseProxyBuilder AddTenantClusters(this IReverseProxyBuilder builder)
     {
@@ -28,6 +28,7 @@ public static class ClustersProxyBuilderExtensions
                 Options.DefaultName,
                 serviceProvider.GetRequiredService<IConfiguration>().GetSection(ClustersOptions.ConfigurationSection)));
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ClustersProxyMatcherPolicy>());
+        builder.Services.AddHostedService<ClusteredTenantInactivityService>();
 
         // Replaces a value sent by the client, and is read on each request to follow the configuration reloads.
         builder.AddTransforms(context =>
@@ -52,6 +53,12 @@ public static class ClustersProxyBuilderExtensions
 
         return builder.AddConfigFilter<ClustersProxyConfigFilter>();
     }
+
+    /// <summary>
+    /// Forwards the requests of the tenants when this node is a clusters proxy, should be placed just before <c>UseOrchardCore()</c>.
+    /// </summary>
+    public static IApplicationBuilder UseTenantClusterRouting(this IApplicationBuilder builder) =>
+        builder.UseMiddleware<ClustersRoutingMiddleware>();
 
     /// <summary>
     /// Distributes requests across tenant clusters, should be placed first in the proxy pipeline.

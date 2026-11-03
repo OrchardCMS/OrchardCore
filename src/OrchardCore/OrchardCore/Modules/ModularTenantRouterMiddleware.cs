@@ -11,31 +11,19 @@ namespace OrchardCore.Modules;
 /// </summary>
 public class ModularTenantRouterMiddleware
 {
-    private readonly RequestDelegate _next;
     private readonly ILogger _logger;
 
-    public ModularTenantRouterMiddleware(
-        RequestDelegate next,
-        ILogger<ModularTenantRouterMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+    public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
+        => _logger = logger;
 
     public Task Invoke(HttpContext httpContext)
     {
-        var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
-
-        // No tenant scope was created as a clusters proxy forwards this request to the tenant cluster.
-        if (shellContext is null)
-        {
-            return _next(httpContext);
-        }
-
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Begin Routing Request");
         }
+
+        var shellContext = httpContext.Features.Get<ShellContextFeature>().ShellContext;
 
         // Define a new 'PathBase' for the current request based on the tenant 'RequestUrlPrefix'.
         // Because IIS or another middleware might have already set it, we just append the prefix.
@@ -48,7 +36,7 @@ public class ModularTenantRouterMiddleware
             httpContext.Request.Path = remainingPath;
         }
 
-        // Update the last request time (done atomically).
+        // Used to release the tenants that are idle.
         shellContext.LastRequestTimeUtc = DateTime.UtcNow;
 
         // Do we need to rebuild the pipeline?

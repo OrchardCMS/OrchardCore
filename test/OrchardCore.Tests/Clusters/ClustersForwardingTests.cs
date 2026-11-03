@@ -9,13 +9,12 @@ using global::Microsoft.Extensions.DependencyInjection;
 using global::Microsoft.Extensions.Hosting;
 using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using Yarp.ReverseProxy.Forwarder;
 
 namespace OrchardCore.Tests.Clusters;
 
 /// <summary>
-/// Runs a request through the tenant container middleware and the actual YARP pipeline, the backends being replaced by <see cref="BackendHandler"/>.
+/// Runs a request through the routing middleware and the actual YARP pipeline, the tenant pipeline and the backends being replaced by test doubles.
 /// </summary>
 public class ClustersForwardingTests
 {
@@ -36,7 +35,7 @@ public class ClustersForwardingTests
         Assert.Equal("http://tenant-cluster.test/prefix/page?id=1", request.Uri);
         Assert.Equal("tenant.example", request.Host);
         Assert.Equal(Secret, request.ProxyHeader);
-        edge.ShellHost.Verify(host => host.GetScopeAsync(It.IsAny<ShellSettings>()), Times.Never);
+        Assert.False(edge.TenantRan);
     }
 
     [Theory]
@@ -50,26 +49,30 @@ public class ClustersForwardingTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(Secret, Assert.Single(edge.Backend.Requests).ProxyHeader);
-        edge.ShellHost.Verify(host => host.GetScopeAsync(It.IsAny<ShellSettings>()), Times.Never);
+        Assert.False(edge.TenantRan);
     }
 
     [Fact]
-    public async Task Forward_RequestWithSecret_RunsTheTenantWithoutForwarding()
+    public async Task Forward_RequestWithSecret_RunsTheTenantWithoutTheHeader()
     {
         await using var edge = await Edge.StartAsync();
 
-        await Assert.ThrowsAsync<TenantRunException>(() => edge.SendAsync("http://tenant.example/", Secret));
+        await edge.SendAsync("http://tenant.example/", Secret);
 
+        Assert.True(edge.TenantRan);
+        Assert.Empty(edge.TenantProxyHeader);
         Assert.Empty(edge.Backend.Requests);
     }
 
     [Fact]
-    public async Task Forward_ClusteringDisabled_RunsTheTenantWithoutForwarding()
+    public async Task Forward_ClusteringDisabled_RunsTheTenantWithoutTheHeader()
     {
         await using var edge = await Edge.StartAsync(enabled: false);
 
-        await Assert.ThrowsAsync<TenantRunException>(() => edge.SendAsync("http://tenant.example/"));
+        await edge.SendAsync("http://tenant.example/", Secret);
 
+        Assert.True(edge.TenantRan);
+        Assert.Empty(edge.TenantProxyHeader);
         Assert.Empty(edge.Backend.Requests);
     }
 
@@ -81,10 +84,14 @@ public class ClustersForwardingTests
         edge.Configuration["OrchardCore:Clusters:ProxySecret"] = "rotated";
         edge.Configuration.Reload();
 
-        await edge.SendAsync("http://tenant.example/");
-        await Assert.ThrowsAsync<TenantRunException>(() => edge.SendAsync("http://tenant.example/", "rotated"));
+        await edge.SendAsync("http://tenant.example/", Secret);
 
+        Assert.False(edge.TenantRan);
         Assert.Equal("rotated", Assert.Single(edge.Backend.Requests).ProxyHeader);
+
+        await edge.SendAsync("http://tenant.example/", "rotated");
+
+        Assert.True(edge.TenantRan);
     }
 
     [Fact]
@@ -96,27 +103,51 @@ public class ClustersForwardingTests
 
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         Assert.Empty(edge.Backend.Requests);
+        Assert.False(edge.TenantRan);
+    }
+
+    [Fact]
+    public async Task Forward_NoTenantMatches_ReturnsNotFound()
+    {
+        await using var edge = await Edge.StartAsync(tenantMatches: false);
+
+        var response = await edge.SendAsync("http://unknown.example/");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Empty(edge.Backend.Requests);
+        Assert.False(edge.TenantRan);
+    }
+
+    [Fact]
+    public async Task Forward_EndpointOfTheHost_IsNotForwarded()
+    {
+        await using var edge = await Edge.StartAsync();
+
+        await edge.SendAsync("http://tenant.example/host-endpoint");
+
+        Assert.Empty(edge.Backend.Requests);
+        Assert.True(edge.TenantRan);
     }
 
     private sealed class Edge : IAsyncDisposable
     {
-        private readonly IHost _host;
+        private IHost _host;
 
-        private Edge(IHost host, IConfigurationRoot configuration, BackendHandler backend, Mock<IShellHost> shellHost)
+        private Edge(IConfigurationRoot configuration, BackendHandler backend)
         {
-            _host = host;
             Configuration = configuration;
             Backend = backend;
-            ShellHost = shellHost;
         }
 
         public IConfigurationRoot Configuration { get; }
 
         public BackendHandler Backend { get; }
 
-        public Mock<IShellHost> ShellHost { get; }
+        public bool TenantRan { get; private set; }
 
-        public static async Task<Edge> StartAsync(bool enabled = true, bool tenantInCluster = true)
+        public string TenantProxyHeader { get; private set; }
+
+        public static async Task<Edge> StartAsync(bool enabled = true, bool tenantInCluster = true, bool tenantMatches = true)
         {
             var settings = new ShellSettings { Name = "Tenant", VersionId = "tenant-identifier" };
             var slot = settings.GetClusterSlot();
@@ -140,16 +171,17 @@ public class ClustersForwardingTests
 
             var shellHost = new Mock<IShellHost>();
             shellHost.Setup(host => host.InitializeAsync()).Returns(Task.CompletedTask);
-            shellHost.Setup(host => host.GetScopeAsync(settings)).ThrowsAsync(new TenantRunException());
 
             var runningShellTable = new Mock<IRunningShellTable>();
             runningShellTable
                 .Setup(table => table.Match(It.IsAny<HostString>(), It.IsAny<PathString>(), true))
-                .Returns(settings);
+                .Returns(tenantMatches ? settings : null);
 
             var backend = new BackendHandler();
 
-            var host = await new HostBuilder()
+            var edge = new Edge(configuration, backend);
+
+            edge._host = await new HostBuilder()
                 .ConfigureWebHost(webHost => webHost
                     .UseTestServer()
                     .ConfigureServices(services =>
@@ -167,12 +199,26 @@ public class ClustersForwardingTests
                     .Configure(app =>
                     {
                         app.UseRouting();
-                        app.UseMiddleware<ModularTenantContainerMiddleware>();
-                        app.UseEndpoints(endpoints => endpoints.MapReverseProxy(pipeline => pipeline.UseTenantClusters()));
+                        app.UseTenantClusterRouting();
+
+                        // Stands for 'UseOrchardCore()', a forwarded request should not reach it.
+                        app.Use((HttpContext httpContext, RequestDelegate _) =>
+                        {
+                            edge.TenantRan = true;
+                            edge.TenantProxyHeader = httpContext.Request.Headers[RequestHeaderNames.FromClustersProxy].ToString();
+
+                            return Task.CompletedTask;
+                        });
+
+                        app.UseEndpoints(endpoints =>
+                        {
+                            endpoints.MapGet("/host-endpoint", () => "host");
+                            endpoints.MapReverseProxy(pipeline => pipeline.UseTenantClusters());
+                        });
                     }))
                 .StartAsync(TestContext.Current.CancellationToken);
 
-            return new Edge(host, configuration, backend, shellHost);
+            return edge;
         }
 
         public Task<HttpResponseMessage> SendAsync(string url, string proxyHeader = null)
@@ -193,8 +239,6 @@ public class ClustersForwardingTests
             _host.Dispose();
         }
     }
-
-    private sealed class TenantRunException : Exception;
 
     private sealed record ForwardedRequest(string Uri, string Host, string ProxyHeader);
 

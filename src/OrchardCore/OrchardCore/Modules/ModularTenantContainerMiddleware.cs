@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Modules;
@@ -15,18 +13,15 @@ public class ModularTenantContainerMiddleware
     private readonly RequestDelegate _next;
     private readonly IShellHost _shellHost;
     private readonly IRunningShellTable _runningShellTable;
-    private readonly IOptionsMonitor<ClustersOptions> _clustersOptionsMonitor;
 
     public ModularTenantContainerMiddleware(
         RequestDelegate next,
         IShellHost shellHost,
-        IRunningShellTable runningShellTable,
-        IOptionsMonitor<ClustersOptions> clustersOptionsMonitor)
+        IRunningShellTable runningShellTable)
     {
         _next = next;
         _shellHost = shellHost;
         _runningShellTable = runningShellTable;
-        _clustersOptionsMonitor = clustersOptionsMonitor;
     }
 
     public async Task Invoke(HttpContext httpContext)
@@ -39,32 +34,6 @@ public class ModularTenantContainerMiddleware
         // We only serve the next request if the tenant has been resolved.
         if (shellSettings is not null)
         {
-            var clustersOptions = _clustersOptionsMonitor.CurrentValue;
-
-            // When this instance is a clusters proxy, the tenant only runs on the cluster serving it.
-            if (httpContext.AsClustersProxy(clustersOptions))
-            {
-                var clusterId = shellSettings.GetClusterId(clustersOptions);
-
-                if (clusterId is null)
-                {
-                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                    await httpContext.Response.WriteAsync("No cluster is configured for the requested tenant.");
-                    return;
-                }
-
-                httpContext.Features.Set(new ClusterFeature
-                {
-                    ClusterId = clusterId,
-                });
-
-                await _next(httpContext);
-                return;
-            }
-
-            // The proxy secret should not be readable by the code running in a tenant.
-            httpContext.Request.Headers.Remove(RequestHeaderNames.FromClustersProxy);
-
             if (shellSettings.IsInitializing())
             {
                 httpContext.Response.Headers.Append(HeaderNames.RetryAfter, "10");

@@ -39,6 +39,6 @@ public sealed class ClustersProxyMatcherPolicy : MatcherPolicy, IEndpointSelecto
         return Task.CompletedTask;
     }
 
-    private static bool IsRouteTemplate(Endpoint endpoint) =>
+    internal static bool IsRouteTemplate(Endpoint endpoint) =>
         endpoint.Metadata.GetMetadata<RouteModel>()?.Config.RouteId == ClustersOptions.RouteTemplate;
 }

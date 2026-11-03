@@ -7,8 +7,7 @@ builder.Host.UseNLogHost();
 
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup")
-    .AddClusteredTenantInactivityCheck();
+    .AddSetupFeatures("OrchardCore.AutoSetup");
 
 builder.Services
     .AddReverseProxy()
@@ -23,6 +22,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
+app.UseTenantClusterRouting();
 
 app.UseOrchardCore();
 
