@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using OpenIddict.Abstractions;
 using OrchardCore.Security;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.RemoteManagement;
 
@@ -14,7 +13,7 @@ internal sealed class ManagementScopeAuthorizationHandler : AuthorizationHandler
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
         if (requirement.Permission.Name == RemoteManagementPermissions.AccessRemoteManagement.Name &&
-            context.User.GetTokenType() == TokenTypeHints.AccessToken &&
+            !string.IsNullOrEmpty(context.User.GetTokenType()) &&
             !context.User.HasScope(RemoteManagementConstants.ManagementScope))
         {
             context.Fail();

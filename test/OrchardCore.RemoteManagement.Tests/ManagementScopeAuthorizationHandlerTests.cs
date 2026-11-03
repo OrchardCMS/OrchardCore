@@ -21,7 +21,7 @@ public class ManagementScopeAuthorizationHandlerTests
         principal.SetScopes(scope);
         if (isToken)
         {
-            principal.SetTokenType(TokenTypeHints.AccessToken);
+            principal.SetTokenType(TokenTypeIdentifiers.AccessToken);
         }
 
         var requirement = new PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement);
@@ -36,7 +36,7 @@ public class ManagementScopeAuthorizationHandlerTests
     public async Task Handle_OtherPermission_IsNotAffected()
     {
         var principal = new ClaimsPrincipal(new ClaimsIdentity("Test"));
-        principal.SetTokenType(TokenTypeHints.AccessToken);
+        principal.SetTokenType(TokenTypeIdentifiers.AccessToken);
         var context = new AuthorizationHandlerContext([new PermissionRequirement(new Permission("Other"))], principal, null);
 
         await new ManagementScopeAuthorizationHandler().HandleAsync(context);
