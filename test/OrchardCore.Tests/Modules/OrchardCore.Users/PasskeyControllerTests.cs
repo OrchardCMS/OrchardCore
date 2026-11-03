@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users;
@@ -227,6 +229,54 @@ public class PasskeyControllerTests
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
         Assert.NotNull(cookies.GetCookies(client.BaseAddress)["orchauth_" + context.TenantName]);
+    }
+
+    [Fact]
+    public async Task Login_WithRequiredTwoFactor_StillMeetsItAfterSignInIsRefreshed()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
+        using var authenticator = new TestPasskeyAuthenticator();
+
+        var registrationClient = CreateClient(context, out _);
+        await LoginWithPasswordAsync(registrationClient);
+        await RegisterPasskeyAsync(registrationClient, authenticator, "My laptop");
+
+        string userId = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
+
+            site.Put(new TwoFactorLoginSettings { RequireTwoFactorAuthentication = true });
+
+            await siteService.UpdateSiteSettingsAsync(site);
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+            userId = await userManager.GetUserIdAsync(await userManager.FindByNameAsync(AdminUserName));
+        });
+
+        var client = CreateClient(context, out _);
+        await LoginWithPasskeyAsync(client, authenticator);
+
+        var adminResponse = await client.GetAsync("Admin", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, adminResponse.StatusCode);
+
+        var editPage = await client.GetStringAsync($"Admin/Users/Edit/{userId}", TestContext.Current.CancellationToken);
+
+        // Act: saving their own user refreshes the sign-in of a user.
+        var editResponse = await PostAsync(client, $"Admin/Users/Edit/{userId}", AntiForgeryHelper.ExtractAntiForgeryToken(editPage), new()
+        {
+            ["User.UserName"] = AdminUserName,
+        });
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, editResponse.StatusCode);
+
+        adminResponse = await client.GetAsync("Admin", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, adminResponse.StatusCode);
     }
 
     [Fact]

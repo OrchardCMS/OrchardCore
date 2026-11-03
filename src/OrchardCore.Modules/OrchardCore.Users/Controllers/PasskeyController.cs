@@ -332,14 +332,12 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
                 });
         }
 
-        List<Claim> claims = [new Claim(UserConstants.AuthenticationMethodsClaimType, UserConstants.ProofOfPossessionAuthenticationMethod)];
+        // A single claim, as 'SignInManager.RefreshSignInAsync()' only keeps the first one of this type.
+        var authenticationMethod = isMultiFactor
+            ? UserConstants.MultiFactorAuthenticationMethod
+            : UserConstants.ProofOfPossessionAuthenticationMethod;
 
-        if (isMultiFactor)
-        {
-            claims.Add(new Claim(UserConstants.AuthenticationMethodsClaimType, UserConstants.MultiFactorAuthenticationMethod));
-        }
-
-        await SignInManager.SignInWithClaimsAsync(user, rememberMe, claims);
+        await SignInManager.SignInWithClaimsAsync(user, rememberMe, [new Claim(UserConstants.AuthenticationMethodsClaimType, authenticationMethod)]);
 
         _logger.LogInformation("User logged in with a passkey.");
 
