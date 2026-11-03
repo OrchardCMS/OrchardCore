@@ -230,10 +230,10 @@ unavailable providers, provider rejection and failure to remove the local profil
 The default profile manager propagates failures from initialization, mutation and
 validation handlers. It does not save after a creating/updating/validation handler
 fails. Failed updates restore the tracked values from before the updating handlers,
-including nested extension properties. A handler failure after persistence also
-propagates, but does not undo stored data or provider operations; inspect the result
-before retrying an uncertain operation. This behavior applies to admin, recipe and
-remote-management callers using the default manager.
+including nested extension properties. The `Created`, `Updated` and `Deleted` handlers
+run after the write is committed, so their failures are logged instead of being
+reported to the caller, and the remaining handlers are still notified. This behavior
+applies to admin, recipe and remote-management callers using the default manager.
 
 `IndexProfileIdentityValidator` supplies the required-name, length and uniqueness
 checks shared by the index editor and default profile handler. The editor maps these

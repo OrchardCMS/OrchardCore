@@ -8,7 +8,7 @@ namespace OrchardCore.Indexing;
 /// <summary>Manages index profile definitions and their lifecycle handlers.</summary>
 /// <remarks>
 /// The default manager propagates mutation and validation handler failures.
-/// Failures after persistence do not imply that stored or provider state was rolled back.
+/// Failures of the handlers notified after persistence are logged and don't reach the caller.
 /// </remarks>
 public interface IIndexProfileManager
 {

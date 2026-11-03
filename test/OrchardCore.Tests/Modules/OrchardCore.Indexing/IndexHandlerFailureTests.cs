@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
@@ -53,20 +54,20 @@ public class IndexHandlerFailureTests
     [InlineData("created")]
     [InlineData("updated")]
     [InlineData("deleted")]
-    public async Task PostPersistenceFailure_PropagatesWithoutClaimingRollback(string phase)
+    public async Task Save_PostPersistenceHandlerFails_LogsAndKeepsCommittedWrite(string phase)
     {
         var profile = new IndexProfile { Id = "id", Name = "Original" };
         profile.Properties["Extension"] = new JsonObject { ["Value"] = "Original" };
         var store = new Mock<IIndexProfileStore>();
         store.Setup(value => value.DeleteAsync(profile)).ReturnsAsync(true);
-        var manager = new DefaultIndexProfileManager(store.Object, [new FailingHandler(phase)], NullLogger<DefaultIndexProfileManager>.Instance);
+        var later = new RecordingHandler();
+        var logger = new Mock<ILogger<DefaultIndexProfileManager>>();
+        logger.Setup(value => value.IsEnabled(LogLevel.Error)).Returns(true);
+        var manager = new DefaultIndexProfileManager(store.Object, [new FailingHandler(phase), later], logger.Object);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-        {
-            if (phase == "created") { await manager.CreateAsync(profile); }
-            else if (phase == "updated") { await manager.UpdateAsync(profile); }
-            else { await manager.DeleteAsync(profile); }
-        });
+        if (phase == "created") { await manager.CreateAsync(profile); }
+        else if (phase == "updated") { await manager.UpdateAsync(profile); }
+        else { Assert.True(await manager.DeleteAsync(profile)); }
 
         if (phase == "created") { store.Verify(value => value.CreateAsync(profile), Times.Once); }
         else if (phase == "updated")
@@ -75,6 +76,10 @@ public class IndexHandlerFailureTests
             Assert.Equal("Changed", profile.Name);
         }
         else { store.Verify(value => value.DeleteAsync(profile), Times.Once); }
+
+        Assert.True(later.Notified, "A failing handler must not prevent the next ones from being notified.");
+        logger.Verify(value => value.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(),
+            It.IsAny<InvalidOperationException>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
     }
 
     [Fact]
@@ -84,6 +89,21 @@ public class IndexHandlerFailureTests
         var manager = new DefaultIndexProfileManager(store.Object, [new FailingHandler("reset")], NullLogger<DefaultIndexProfileManager>.Instance);
         await Assert.ThrowsAsync<InvalidOperationException>(() => manager.ResetAsync(new IndexProfile()).AsTask());
         store.VerifyNoOtherCalls();
+    }
+
+    private sealed class RecordingHandler : IndexProfileHandlerBase
+    {
+        public bool Notified { get; private set; }
+
+        public override Task CreatedAsync(CreatedContext<IndexProfile> context) => Notify();
+        public override Task UpdatedAsync(UpdatedContext<IndexProfile> context) => Notify();
+        public override Task DeletedAsync(DeletedContext<IndexProfile> context) => Notify();
+
+        private Task Notify()
+        {
+            Notified = true;
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class FailingHandler : IndexProfileHandlerBase

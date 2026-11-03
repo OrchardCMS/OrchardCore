@@ -40,7 +40,7 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
         var removed = await _store.DeleteAsync(indexProfile);
 
         var deletedContext = new DeletedContext<IndexProfile>(indexProfile);
-        await InvokeRequiredAsync(deletedContext, static (handler, ctx) => handler.DeletedAsync(ctx));
+        await _handlers.InvokeAsync(static (handler, ctx) => handler.DeletedAsync(ctx), deletedContext, _logger);
 
         return removed;
     }
@@ -149,7 +149,7 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
         await _store.CreateAsync(index);
 
         var createdContext = new CreatedContext<IndexProfile>(index);
-        await InvokeRequiredAsync(createdContext, static (handler, ctx) => handler.CreatedAsync(ctx));
+        await _handlers.InvokeAsync(static (handler, ctx) => handler.CreatedAsync(ctx), createdContext, _logger);
     }
 
     public async ValueTask UpdateAsync(IndexProfile index, JsonNode data = null)
@@ -194,7 +194,7 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
         await _store.UpdateAsync(index);
 
         var updatedContext = new UpdatedContext<IndexProfile>(index);
-        await InvokeRequiredAsync(updatedContext, static (handler, ctx) => handler.UpdatedAsync(ctx));
+        await _handlers.InvokeAsync(static (handler, ctx) => handler.UpdatedAsync(ctx), updatedContext, _logger);
     }
 
     public async ValueTask<ValidationResultDetails> ValidateAsync(IndexProfile index)
@@ -274,7 +274,8 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
     private async Task InvokeRequiredAsync<TContext>(TContext context, Func<IIndexProfileHandler, TContext, Task> invoke)
     {
         // Mutation and validation handlers are prerequisites, not best-effort notifications.
-        // Post-persistence errors also propagate, but cannot imply rollback of committed work.
+        // The handlers notified after persistence use the logging InvokeAsync instead: the write is
+        // committed, so an exception would only tell the caller it failed when it didn't.
         foreach (var handler in _handlers)
         {
             await invoke(handler, context);
