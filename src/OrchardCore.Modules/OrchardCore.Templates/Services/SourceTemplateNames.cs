@@ -77,7 +77,7 @@ public static class SourceTemplateNames
     private static readonly HashSet<string> s_adminWords = new(StringComparer.OrdinalIgnoreCase)
     {
         // Display types and shapes of editors.
-        "Admin", "Edit", "Editor", "Thumbnail", "Settings", "Option", "Options", "Picker", "Wizard", "Modal",
+        "Admin", "Edit", "Editor", "Thumbnail", "Settings", "Option", "Options", "Wizard", "Modal",
 
         // Admin pages: the dashboard, the admin menu, the lists and the designers of workflows, deployment
         // plans, data pipelines, rules, recipes, tenants and roles.

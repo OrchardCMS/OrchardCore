@@ -63,10 +63,13 @@ public sealed class SourceTemplatesTests : IDisposable
     [InlineData("ContentPartSettings_Edit", true)]
     [InlineData("NavigationItemText__multitenancy_Id", true)]
     [InlineData("ScriptTask_Fields_Design", true)]
+    [InlineData("ContentPickerField_Option", true)]
     [InlineData("Content_Summary__BlogPost", false)]
     [InlineData("TextField", false)]
     [InlineData("MenuItemLink__ContentMenuItem", false)]
     [InlineData("Credits", false)]
+    [InlineData("ContentPickerField", false)]
+    [InlineData("UserPickerField_Display__UserNames", false)]
     public void IsAdminTemplate_TemplateName_GuessesAdmin(string templateName, bool expected)
     {
         Assert.Equal(expected, SourceTemplateNames.IsAdminTemplate(templateName));
