@@ -135,7 +135,9 @@ public class BackgroundTaskControllerTests
         monitor.Verify(x => x.RequestRunAsync(Tenant, _firstTaskName), Times.Once);
         monitor.Verify(x => x.RequestRunAsync(Tenant, _secondTaskName), Times.Once);
         monitor.Verify(x => x.RequestRunAsync(Tenant, "Unknown.Task"), Times.Never);
-        Assert.Equal(2, notifier.Entries.Count(entry => entry.Type == NotifyType.Success));
+        var entry = Assert.Single(notifier.Entries);
+        Assert.Equal(NotifyType.Success, entry.Type);
+        Assert.Contains("2 tasks", entry.Message.Value);
     }
 
     [Fact]

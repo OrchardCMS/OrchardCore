@@ -66,28 +66,28 @@ msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "The schedule must be a valid cron expression."
 msgstr ""
 
-#. Format arguments: {0}: title
+#. Format arguments: {0}: titles[0]
 #: Controllers/BackgroundTaskController.cs
 #, csharp-format
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "The task '{0}' can't run yet because the background service didn't load it. Please try again in a moment."
 msgstr ""
 
-#. Format arguments: {0}: title
+#. Format arguments: {0}: titles[0]
 #: Controllers/BackgroundTaskController.cs
 #, csharp-format
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "The task '{0}' has been queued and will run shortly."
 msgstr ""
 
-#. Format arguments: {0}: title
+#. Format arguments: {0}: titles[0]
 #: Controllers/BackgroundTaskController.cs
 #, csharp-format
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "The task '{0}' is already queued to run."
 msgstr ""
 
-#. Format arguments: {0}: title
+#. Format arguments: {0}: titles[0]
 #: Controllers/BackgroundTaskController.cs
 #, csharp-format
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
@@ -117,6 +117,34 @@ msgstr ""
 #: Controllers/BackgroundTaskController.cs
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "The tasks have been enabled."
+msgstr ""
+
+#. Format arguments: {0}: titles.Count
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "{0} tasks are already queued to run."
+msgstr ""
+
+#. Format arguments: {0}: titles.Count
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "{0} tasks are already running."
+msgstr ""
+
+#. Format arguments: {0}: titles.Count
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "{0} tasks can't run yet because the background service didn't load them. Please try again in a moment."
+msgstr ""
+
+#. Format arguments: {0}: titles.Count
+#: Controllers/BackgroundTaskController.cs
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "{0} tasks have been queued and will run shortly."
 msgstr ""
 
 #: Permissions.cs

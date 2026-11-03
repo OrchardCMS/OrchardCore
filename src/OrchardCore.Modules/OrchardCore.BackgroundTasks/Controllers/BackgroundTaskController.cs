@@ -512,6 +512,8 @@ public sealed class BackgroundTaskController : Controller
             return;
         }
 
+        var titlesByResult = new Dictionary<BackgroundTaskRunRequestResult, List<string>>();
+
         foreach (var name in names)
         {
             var task = _backgroundTasks.GetTaskByName(name);
@@ -520,24 +522,44 @@ public sealed class BackgroundTaskController : Controller
                 continue;
             }
 
-            var title = task.GetDefaultSettings().Title;
+            var result = await _backgroundTaskMonitor.RequestRunAsync(_shellSettings.Name, name);
+            if (!titlesByResult.TryGetValue(result, out var titles))
+            {
+                titlesByResult[result] = titles = [];
+            }
 
-            switch (await _backgroundTaskMonitor.RequestRunAsync(_shellSettings.Name, name))
+            titles.Add(task.GetDefaultSettings().Title);
+        }
+
+        // One notification per outcome, as the notifications are carried in a cookie across the redirect.
+        foreach (var (result, titles) in titlesByResult)
+        {
+            var isSingle = titles.Count == 1;
+
+            switch (result)
             {
                 case BackgroundTaskRunRequestResult.Queued:
-                    await _notifier.SuccessAsync(H["The task '{0}' has been queued and will run shortly.", title]);
+                    await _notifier.SuccessAsync(isSingle
+                        ? H["The task '{0}' has been queued and will run shortly.", titles[0]]
+                        : H["{0} tasks have been queued and will run shortly.", titles.Count]);
                     break;
 
                 case BackgroundTaskRunRequestResult.AlreadyQueued:
-                    await _notifier.InformationAsync(H["The task '{0}' is already queued to run.", title]);
+                    await _notifier.InformationAsync(isSingle
+                        ? H["The task '{0}' is already queued to run.", titles[0]]
+                        : H["{0} tasks are already queued to run.", titles.Count]);
                     break;
 
                 case BackgroundTaskRunRequestResult.AlreadyRunning:
-                    await _notifier.WarningAsync(H["The task '{0}' is already running.", title]);
+                    await _notifier.WarningAsync(isSingle
+                        ? H["The task '{0}' is already running.", titles[0]]
+                        : H["{0} tasks are already running.", titles.Count]);
                     break;
 
                 default:
-                    await _notifier.WarningAsync(H["The task '{0}' can't run yet because the background service didn't load it. Please try again in a moment.", title]);
+                    await _notifier.WarningAsync(isSingle
+                        ? H["The task '{0}' can't run yet because the background service didn't load it. Please try again in a moment.", titles[0]]
+                        : H["{0} tasks can't run yet because the background service didn't load them. Please try again in a moment.", titles.Count]);
                     break;
             }
         }

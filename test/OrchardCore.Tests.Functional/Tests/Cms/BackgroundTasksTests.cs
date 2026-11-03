@@ -152,7 +152,7 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
         await page.Locator("#modalOkButton").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        await Assertions.Expect(page.Locator(".message-success")).ToHaveCountAsync(2);
+        await Assertions.Expect(page.Locator(".message-success")).ToHaveCountAsync(1);
 
         await Assertions.Expect(page.Locator($"li[data-task-name='{SucceedingTestBackgroundTask.TaskName}']"))
             .ToHaveAttributeAsync("data-task-run-count", ToText(succeedingRunCount + 1), new LocatorAssertionsToHaveAttributeOptions { Timeout = _runTimeout });
