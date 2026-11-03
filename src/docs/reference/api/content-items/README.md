@@ -261,11 +261,19 @@ curl -H "Authorization: Bearer $TOKEN" \
   "https://localhost:5001/api/content?contentType=Article&status=published&skip=0&take=20"
 ```
 
-The service first checks `ListContent` once per content type against a synthetic item. It then
-checks each real result with resource-aware `ViewContent` when published or `PreviewContent`
-otherwise. Types or items the caller cannot access are omitted rather than producing `403`.
-Authorization filtering happens before `skip` and `take`, so `totalCount` is the exact authorized
-count before paging. Results are ordered by `ModifiedUtc` descending and then index ID ascending.
+The service first checks `ListContent` once per content type against a synthetic item. Types or
+items the caller cannot access are omitted rather than producing `403`. Results are ordered by
+`ModifiedUtc` descending and then index ID ascending.
+
+A caller who can view the items of others in all the listed types, with `ViewContent` for published
+items and `PreviewContent` for the others, is paged in the database and gets an exact `totalCount`.
+
+Otherwise, for example with only `ViewOwnContent`, each item is checked before `skip` and `take` apply.
+The scan stops as soon as an item is known to exist after the requested page, and after 5,000 versions
+at most. The response then has `"totalCountIsEstimate": true`, and `totalCount` is the number of items
+the caller can view among those read, so more can exist. Keep requesting pages until one comes back
+with fewer than `take` items. Items past the scan limit aren't reachable: use `contentType` to narrow
+the list. The property is omitted when `totalCount` is exact.
 
 `200 OK` returns:
 

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
@@ -107,6 +108,99 @@ public class ContentItemManagementApiTests
             Assert.Equal("BlogPost", schema.Schema["properties"]?[nameof(ContentItem.ContentType)]?["const"]?.ToString());
         });
     }
+
+    [Theory]
+    [InlineData("draft", "Draft listing 2")]
+    [InlineData("latest", "Draft listing 2")]
+    public async Task ListAsync_CallerCanViewAllItems_PagesInTheDatabase(string status, string expectedFirst)
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ContentApiService>();
+            var user = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "Test")], nameof(StubIdentity)));
+            foreach (var text in new[] { "Draft listing 1", "Draft listing 2" })
+            {
+                await service.SaveAsync(user, new ContentItem { ContentType = "BlogPost", DisplayText = text }, publish: false, allowCreate: true, allowUpdate: true);
+            }
+            await scope.ServiceProvider.GetRequiredService<YesSql.ISession>().SaveChangesAsync();
+
+            var list = await service.ListAsync(user, "BlogPost", status, 0, 1);
+
+            Assert.False(list.TotalCountIsEstimate);
+            Assert.True(list.TotalCount >= 2);
+            Assert.Equal(expectedFirst, Assert.Single(list.Items).DisplayText);
+        });
+    }
+
+    [Fact]
+    public async Task ScanAuthorizedItemsAsync_PageIsFollowedByAnItem_StopsAndFlagsAnEstimate()
+    {
+        var loads = 0;
+
+        var response = await ContentApiService.ScanAuthorizedItemsAsync(
+            _ =>
+            {
+                loads++;
+                return Task.FromResult<IEnumerable<ContentItem>>(Items(100));
+            },
+            _ => Task.FromResult(true),
+            skip: 10,
+            take: 20);
+
+        Assert.Equal(1, loads);
+        Assert.Equal(20, response.Items.Count);
+        Assert.Equal(100, response.TotalCount);
+        Assert.True(response.TotalCountIsEstimate);
+    }
+
+    [Fact]
+    public async Task ScanAuthorizedItemsAsync_NothingAuthorized_StopsAtTheScanLimit()
+    {
+        var loads = 0;
+
+        var response = await ContentApiService.ScanAuthorizedItemsAsync(
+            _ =>
+            {
+                loads++;
+                return Task.FromResult<IEnumerable<ContentItem>>(Items(100));
+            },
+            _ => Task.FromResult(false),
+            skip: 0,
+            take: 20,
+            scanLimit: 300);
+
+        Assert.Equal(3, loads);
+        Assert.Empty(response.Items);
+        Assert.True(response.TotalCountIsEstimate);
+    }
+
+    [Fact]
+    public async Task ScanAuthorizedItemsAsync_StoreExhausted_ReturnsAnExactCount()
+    {
+        var offsets = new List<int>();
+
+        var response = await ContentApiService.ScanAuthorizedItemsAsync(
+            offset =>
+            {
+                offsets.Add(offset);
+                return Task.FromResult<IEnumerable<ContentItem>>(Items(offset == 0 ? 100 : 40));
+            },
+            contentItem => Task.FromResult(contentItem.Owner == "me"),
+            skip: 60,
+            take: 20);
+
+        Assert.Equal([0, 100], offsets);
+        Assert.Equal(70, response.TotalCount);
+        Assert.Equal(10, response.Items.Count);
+        Assert.False(response.TotalCountIsEstimate);
+        Assert.DoesNotContain("totalCountIsEstimate", JsonSerializer.Serialize(response), StringComparison.Ordinal);
+    }
+
+    private static ContentItem[] Items(int count)
+        => Enumerable.Range(0, count).Select(index => new ContentItem { Owner = index % 2 == 0 ? "me" : "other" }).ToArray();
 
     [Fact]
     public async Task CanViewContentItemAsync_PublishedItem_RequiresViewPermission()

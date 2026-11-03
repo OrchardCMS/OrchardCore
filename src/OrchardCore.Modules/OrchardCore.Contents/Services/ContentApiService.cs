@@ -30,6 +30,9 @@ internal sealed class ContentApiService
 {
     private const int AuthorizationBatchSize = 100;
 
+    // The most versions read for a caller whose access has to be checked on each item.
+    internal const int AuthorizationScanLimit = 5000;
+
     private static readonly JsonMergeSettings s_updateJsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
@@ -111,67 +114,83 @@ internal sealed class ContentApiService
             return response;
         }
 
-        // Only per-item permissions, like viewing one's own items, require reading every item to count them.
-        if (status?.ToLowerInvariant() is not ("draft" or "latest") &&
-            await CanViewAllItemsAsync(user, typeDefinitions.Where(definition => allowedTypes.Contains(definition.Name))))
+        var normalizedStatus = status?.ToLowerInvariant();
+
+        // Only per-item permissions, like viewing one's own items, require reading the items to filter them.
+        if (await CanViewAllItemsAsync(user, allowedTypes, normalizedStatus))
         {
-            var published = _session.Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(allowedTypes.ToArray()) && index.Published);
-            response.TotalCount = await published.CountAsync();
-            response.Items = (await published.OrderByDescending(index => index.ModifiedUtc).ThenBy(index => index.Id).Skip(skip).Take(take).ListAsync()).ToList();
+            var query = CreateListQuery(allowedTypes, normalizedStatus);
+            response.TotalCount = await query.CountAsync();
+            response.Items = (await query.Skip(skip).Take(take).ListAsync()).ToList();
             return response;
         }
 
-        async Task<IEnumerable<ContentItem>> LoadBatchAsync(int offset)
+        return await ScanAuthorizedItemsAsync(
+            async offset => await CreateListQuery(allowedTypes, normalizedStatus).Skip(offset).Take(AuthorizationBatchSize).ListAsync(),
+            contentItem => CanViewContentItemAsync(_authorizationService, user, contentItem),
+            skip,
+            take);
+    }
+
+    private IQuery<ContentItem> CreateListQuery(List<string> contentTypes, string status)
+    {
+        var query = _session.Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(contentTypes.ToArray()));
+        query = status switch
         {
-            var query = _session.Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(allowedTypes.ToArray()));
-            query = status?.ToLowerInvariant() switch
-            {
-                "draft" => query.Where(index => index.Latest && !index.Published),
-                "latest" => query.Where(index => index.Latest),
-                _ => query.Where(index => index.Published),
-            };
+            "draft" => query.Where(index => index.Latest && !index.Published),
+            "latest" => query.Where(index => index.Latest),
+            _ => query.Where(index => index.Published),
+        };
 
-            return await query.OrderByDescending(index => index.ModifiedUtc)
-                .ThenBy(index => index.Id)
-                .Skip(offset)
-                .Take(AuthorizationBatchSize)
-                .ListAsync();
-        }
+        return query.OrderByDescending(index => index.ModifiedUtc).ThenBy(index => index.Id);
+    }
 
-        var authorizedItems = new List<ContentItem>(take);
-        var authorizedCount = 0;
+    /// <summary>
+    /// Reads a page of the items a caller can view, when that can only be checked on each item. The scan stops as soon
+    /// as an item is known to exist after the page, or at <paramref name="scanLimit"/>. The total is then the number of
+    /// items the caller can view among the ones read, and <see cref="ContentItemsResponse.TotalCountIsEstimate"/> is set.
+    /// </summary>
+    internal static async Task<ContentItemsResponse> ScanAuthorizedItemsAsync(
+        Func<int, Task<IEnumerable<ContentItem>>> loadBatchAsync,
+        Func<ContentItem, Task<bool>> canViewAsync,
+        int skip,
+        int take,
+        int scanLimit = AuthorizationScanLimit)
+    {
+        var response = new ContentItemsResponse { Skip = skip, Take = take };
         var offset = 0;
 
         while (true)
         {
-            var batch = (await LoadBatchAsync(offset)).ToArray();
+            var batch = (await loadBatchAsync(offset)).ToArray();
             foreach (var contentItem in batch)
             {
-                if (!await CanViewContentItemAsync(_authorizationService, user, contentItem))
+                if (!await canViewAsync(contentItem))
                 {
                     continue;
                 }
 
-                if (authorizedCount >= skip && authorizedItems.Count < take)
+                if (response.TotalCount >= skip && response.Items.Count < take)
                 {
-                    authorizedItems.Add(contentItem);
+                    response.Items.Add(contentItem);
                 }
 
-                authorizedCount++;
-            }
-
-            if (batch.Length < AuthorizationBatchSize)
-            {
-                break;
+                response.TotalCount++;
             }
 
             offset += batch.Length;
+
+            if (batch.Length < AuthorizationBatchSize)
+            {
+                return response;
+            }
+
+            if ((long)skip + take < response.TotalCount || offset >= scanLimit)
+            {
+                response.TotalCountIsEstimate = true;
+                return response;
+            }
         }
-
-        response.TotalCount = authorizedCount;
-        response.Items = authorizedItems;
-
-        return response;
     }
 
     public async Task<ContentItem> GetAsync(string contentItemId, string version)
@@ -456,11 +475,14 @@ internal sealed class ContentApiService
         };
     }
 
-    private async Task<bool> CanViewAllItemsAsync(ClaimsPrincipal user, IEnumerable<ContentTypeDefinition> definitions)
+    // Published items need the view permission and the others the preview one, see CanViewContentItemAsync().
+    private async Task<bool> CanViewAllItemsAsync(ClaimsPrincipal user, IEnumerable<string> contentTypes, string status)
     {
-        foreach (var definition in definitions)
+        foreach (var contentType in contentTypes)
         {
-            if (!await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermissionOf(CommonPermissions.ViewContent, definition)))
+            // An owner that is nobody checks access to the items of others, even for a caller without a user identifier.
+            if ((status is not "draft" && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentType, owner: string.Empty))
+                || (status is "draft" or "latest" && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.PreviewContent, contentType, owner: string.Empty)))
             {
                 return false;
             }
