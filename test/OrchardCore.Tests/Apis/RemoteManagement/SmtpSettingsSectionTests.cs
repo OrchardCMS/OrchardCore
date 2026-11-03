@@ -44,6 +44,20 @@ public class SmtpSettingsSectionTests
     }
 
     [Fact]
+    public async Task ChangingHost_StoredPassword_MustBeProvidedAgain()
+    {
+        var fixture = Create();
+        await fixture.Provider.UpdateAsync(new JsonObject { ["password"] = "test-secret" });
+        var host = fixture.Site.GetOrCreate<SmtpSettings>().Host;
+
+        var rejected = await fixture.Provider.UpdateAsync(new JsonObject { ["host"] = "other.example.test" });
+
+        Assert.True(rejected.Errors.ContainsKey("password"));
+        Assert.Equal(host, fixture.Site.GetOrCreate<SmtpSettings>().Host);
+        Assert.Empty((await fixture.Provider.UpdateAsync(new JsonObject { ["host"] = "other.example.test", ["clearPassword"] = true })).Errors);
+    }
+
+    [Fact]
     public async Task PasswordIsProtectedRedactedRetainedOnOmissionAndExplicitlyCleared()
     {
         var fixture = Create();

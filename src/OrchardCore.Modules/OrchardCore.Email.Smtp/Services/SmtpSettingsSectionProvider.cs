@@ -199,6 +199,11 @@ internal sealed class SmtpSettingsSectionProvider : ISiteSettingsSectionProvider
         {
             errors["password"] = [S["Do not set and clear the password in the same request."]];
         }
+        else if (!clearPassword && model.Password is null && !string.IsNullOrEmpty(current.Password) && !string.Equals(model.Host, current.Host, StringComparison.OrdinalIgnoreCase))
+        {
+            // The stored password must not follow a new destination: require the caller to know it.
+            errors["password"] = [S["Provide the password again or clear it when changing the host."]];
+        }
         if (!model.IsEnabled && values.Any(entry => entry.Key is not "isEnabled" and not "clearPassword"))
         {
             errors["isEnabled"] = [S["Enable the SMTP provider when updating its configuration."]];
