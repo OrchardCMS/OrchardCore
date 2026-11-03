@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -183,6 +184,30 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     public void OtlpExporterOptionsFactory_NoEndpoint_ReturnsNull()
     {
         Assert.Null(OtlpExporterOptionsFactory.Create(new OrchardCoreOpenTelemetryOptions(), new ConfigurationBuilder().Build(), OtlpExporterOptionsFactory.Metrics));
+    }
+
+    [Fact]
+    public void TenantMetrics_Created_PublishesInstrumentsWithTheVersionOfTheMeter()
+    {
+        using var services = new ServiceCollection().AddMetrics().BuildServiceProvider();
+
+        var versions = new ConcurrentQueue<string>();
+        using var listener = new MeterListener
+        {
+            InstrumentPublished = (instrument, _) =>
+            {
+                if (instrument.Name == OrchardCoreTelemetryConstants.Instruments.Tenants)
+                {
+                    versions.Enqueue(instrument.Meter.Version);
+                }
+            },
+        };
+        listener.Start();
+
+        _ = new TenantMetrics(Mock.Of<IShellHost>(), services.GetRequiredService<IMeterFactory>());
+
+        Assert.NotEmpty(versions);
+        Assert.All(versions, version => Assert.Equal(OrchardCoreTelemetry.Meter.Version, version));
     }
 
     [Theory]

@@ -17,7 +17,7 @@ internal sealed class TenantMetrics
     {
         _shellHost = shellHost;
 
-        var meter = meterFactory.Create(OrchardCoreTelemetryConstants.MeterName);
+        var meter = meterFactory.Create(OrchardCoreTelemetryConstants.MeterName, OrchardCoreTelemetry.Meter.Version);
 
         // A gauge, as every instance of the application reports the same tenants: their counts don't add up.
         meter.CreateObservableGauge(
