@@ -368,7 +368,7 @@ internal static class UserManagementEndpoints
         return TypedResults.Ok(ToResponse(user));
     }
 
-    internal static async Task<IResult> DeleteAsync(HttpContext httpContext, string userId, UserManager<IUser> userManager, IAuthorizationService authorizationService, IStringLocalizer<AdminController> localizer)
+    internal static async Task<IResult> DeleteAsync(HttpContext httpContext, string userId, UserManager<IUser> userManager, IAuthorizationService authorizationService, IServiceProvider serviceProvider, IStringLocalizer<AdminController> localizer)
     {
         if (await userManager.FindByIdAsync(userId) is not User user)
         {
@@ -378,6 +378,11 @@ internal static class UserManagementEndpoints
         if (!await authorizationService.AuthorizeAsync(httpContext.User, UsersPermissions.DeleteUsers, user))
         {
             return httpContext.ApiForbidProblem();
+        }
+
+        if (await IsSoleEnabledAdministratorAsync(serviceProvider, userManager, user))
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["Cannot delete the only enabled administrator."]);
         }
 
         var result = await userManager.DeleteAsync(user);
@@ -483,19 +488,9 @@ internal static class UserManagementEndpoints
                 continue;
             }
 
-            var isAdminRole = await roleService.IsAdminRoleAsync(roleName);
-
-            if (isAdminRole)
+            if (await roleService.IsAdminRoleAsync(roleName) && await IsOnlyEnabledUserInRoleAsync(userManager, user, roleName))
             {
-                var enabledAdminUsers = (await userManager.GetUsersInRoleAsync(roleName))
-                    .Cast<User>()
-                    .Where(candidate => candidate.IsEnabled)
-                    .ToArray();
-
-                if (enabledAdminUsers.Length == 1 && enabledAdminUsers[0].UserId == user.UserId)
-                {
-                    continue;
-                }
+                continue;
             }
 
             await userRoleStore.RemoveFromRoleAsync(user, userManager.NormalizeName(roleName), default);
@@ -517,6 +512,35 @@ internal static class UserManagementEndpoints
         }
 
         user.RoleNames = (await userRoleStore.GetRolesAsync(user, default)).ToArray();
+    }
+
+    private static async Task<bool> IsSoleEnabledAdministratorAsync(IServiceProvider serviceProvider, UserManager<IUser> userManager, User user)
+    {
+        var roleService = serviceProvider.GetService<IRoleService>();
+        if (roleService is null)
+        {
+            return false;
+        }
+
+        foreach (var roleName in user.RoleNames ?? [])
+        {
+            if (await roleService.IsAdminRoleAsync(roleName) && await IsOnlyEnabledUserInRoleAsync(userManager, user, roleName))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static async Task<bool> IsOnlyEnabledUserInRoleAsync(UserManager<IUser> userManager, User user, string roleName)
+    {
+        var enabledUsers = (await userManager.GetUsersInRoleAsync(roleName))
+            .Cast<User>()
+            .Where(candidate => candidate.IsEnabled)
+            .ToArray();
+
+        return enabledUsers.Length == 1 && enabledUsers[0].UserId == user.UserId;
     }
 
     private static string BuildFilterText(UserListRequest request)

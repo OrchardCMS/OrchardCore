@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
 using OrchardCore.Users;
+using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Endpoints.Management;
 using OrchardCore.Users.Models;
 
@@ -40,6 +41,48 @@ public class UserManagementEndpointsTests
         Assert.DoesNotContain("password", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("securityStamp", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("resetToken", json, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData(false, StatusCodes.Status400BadRequest, 0)]
+    [InlineData(true, StatusCodes.Status200OK, 1)]
+    public async Task DeleteAsync_Administrator_KeepsTheOnlyEnabledOne(bool hasOtherAdministrator, int expectedStatus, int expectedDeletions)
+    {
+        var user = new User { UserId = "admin", UserName = "admin", IsEnabled = true, RoleNames = [OrchardCoreConstants.Roles.Administrator] };
+        var administrators = new List<IUser> { user };
+        if (hasOtherAdministrator)
+        {
+            administrators.Add(new User { UserId = "other", UserName = "other", IsEnabled = true });
+        }
+
+        var userManager = CreateUserManager();
+        userManager.Setup(manager => manager.FindByIdAsync("admin")).ReturnsAsync(user);
+        userManager.Setup(manager => manager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator)).ReturnsAsync(administrators);
+        userManager.Setup(manager => manager.DeleteAsync(user)).ReturnsAsync(IdentityResult.Success);
+        var roleService = new Mock<IRoleService>();
+        roleService.Setup(service => service.IsAdminRoleAsync(OrchardCoreConstants.Roles.Administrator)).ReturnsAsync(true);
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddLocalization();
+        services.AddSingleton(roleService.Object);
+        var provider = services.BuildServiceProvider();
+        var authorization = new Mock<IAuthorizationService>();
+        authorization
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(AuthorizationResult.Success());
+        var localizer = new Mock<IStringLocalizer<AdminController>>();
+        localizer.Setup(value => value[It.IsAny<string>()]).Returns<string>(name => new LocalizedString(name, name));
+
+        var result = await UserManagementEndpoints.DeleteAsync(
+            new DefaultHttpContext { RequestServices = provider },
+            "admin",
+            userManager.Object,
+            authorization.Object,
+            provider,
+            localizer.Object);
+
+        Assert.Equal(expectedStatus, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        userManager.Verify(manager => manager.DeleteAsync(user), Times.Exactly(expectedDeletions));
     }
 
     [Fact]
