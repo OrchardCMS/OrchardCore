@@ -34,20 +34,29 @@ internal static class AuditTrailEndpoints
 
     internal static async Task<IResult> ListAsync(HttpContext context, [FromServices] IAuthorizationService authorization,
         [FromServices] IAuditTrailAdminListFilterParser parser, [FromServices] IAuditTrailAdminListQueryService queries,
-        [FromQuery] string q, [FromQuery] int? page, [FromQuery] int? pageSize)
+        [FromQuery] string q, [FromQuery] int? skip, [FromQuery] int? take)
     {
         if (!await authorization.AuthorizeAsync(context.User, AuditTrailPermissions.ViewAuditTrail)) { return context.ApiForbidProblem(); }
-        var selectedPage = page ?? 1;
-        var selectedSize = pageSize ?? 50;
-        if (selectedPage < 1 || selectedPage > 1000000 || selectedSize < 1 || selectedSize > 200 || q?.Length > 4096)
+        var selectedSkip = skip ?? 0;
+        var selectedTake = take ?? 50;
+        if (context.ApiPagingProblem(selectedSkip, selectedTake) is { } pagingError) { return pagingError; }
+        if (selectedSkip > int.MaxValue - (2L * selectedTake) || q?.Length > 4096)
         {
-            return TypedResults.Problem("Page must be between 1 and 1000000, pageSize between 1 and 200, and q at most 4096 characters.", statusCode: 400);
+            return TypedResults.Problem("The offset must fit a 32-bit integer, and q must have at most 4096 characters.", statusCode: 400);
         }
-        var result = await queries.QueryAsync(selectedPage, selectedSize, new AuditTrailIndexOptions { FilterResult = parser.Parse(q ?? string.Empty) });
+        var options = new AuditTrailIndexOptions { FilterResult = parser.Parse(q ?? string.Empty) };
+        var result = await queries.QueryAsync((selectedSkip / selectedTake) + 1, selectedTake, options);
+        var events = result.Events;
+        // The query service reads whole pages, so an offset between two of them spans both.
+        if (selectedSkip % selectedTake != 0)
+        {
+            var next = await queries.QueryAsync((selectedSkip / selectedTake) + 2, selectedTake, options);
+            events = events.Concat(next.Events).Skip(selectedSkip % selectedTake).Take(selectedTake).ToArray();
+        }
         return TypedResults.Ok(new AuditTrailPage
         {
-            Page = selectedPage, PageSize = selectedSize, TotalCount = result.TotalCount,
-            Items = result.Events.Select(Describe).ToArray(),
+            Skip = selectedSkip, Take = selectedTake, TotalCount = result.TotalCount,
+            Items = events.Select(Describe).ToArray(),
         });
     }
 
@@ -70,10 +79,10 @@ internal static class AuditTrailEndpoints
 /// <summary>A bounded page of tenant audit metadata.</summary>
 public sealed class AuditTrailPage
 {
-    /// <summary>Gets the one-based page number.</summary>
-    public int Page { get; init; }
+    /// <summary>Gets the applied zero-based offset.</summary>
+    public int Skip { get; init; }
     /// <summary>Gets the maximum number of events returned.</summary>
-    public int PageSize { get; init; }
+    public int Take { get; init; }
     /// <summary>Gets the total count matching the filters.</summary>
     public int TotalCount { get; init; }
     /// <summary>Gets the event metadata, excluding arbitrary recorded payloads.</summary>

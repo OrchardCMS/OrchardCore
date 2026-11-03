@@ -39,9 +39,10 @@ public class AuditTaskManagementTests
         var queries = new Mock<IAuditTrailAdminListQueryService>();
         queries.Setup(value => value.QueryAsync(3, 2, It.Is<AuditTrailIndexOptions>(options => options.FilterResult == parsed)))
             .ReturnsAsync(new AuditTrailEventQueryResult { TotalCount = 5, Events = [new AuditTrailEvent { EventId = "event" }] });
-        var result = Assert.IsType<Ok<AuditTrailPage>>(await AuditTrailEndpoints.ListAsync(new DefaultHttpContext(), Authorization(), parser.Object, queries.Object, query, 3, 2));
+        var result = Assert.IsType<Ok<AuditTrailPage>>(await AuditTrailEndpoints.ListAsync(new DefaultHttpContext(), Authorization(), parser.Object, queries.Object, query, 4, 2));
         Assert.Equal(5, result.Value.TotalCount);
-        Assert.Equal(3, result.Value.Page);
+        Assert.Equal(4, result.Value.Skip);
+        Assert.Equal(2, result.Value.Take);
         Assert.Equal("event", Assert.Single(result.Value.Items).EventId);
         queries.VerifyAll();
         parser.VerifyAll();
@@ -192,17 +193,34 @@ public class AuditTaskManagementTests
         manager.Verify(value => value.GetEventAsync("event"), Times.Once);
     }
 
-    [Theory]
-    [InlineData(0, 50)]
-    [InlineData(1, 0)]
-    [InlineData(1, 201)]
-    [InlineData(int.MaxValue, 200)]
-    public async Task AuditBounds_AreRejectedBeforeParsingOrQuerying(int page, int pageSize)
+    [Fact]
+    public async Task AuditSearch_SkipBetweenPages_ReadsBothAndReturnsTheRequestedSlice()
     {
+        var events = Enumerable.Range(0, 10).Select(i => new AuditTrailEvent { EventId = "event" + i }).ToArray();
+        var parser = new Mock<IAuditTrailAdminListFilterParser>();
+        parser.Setup(value => value.Parse(string.Empty)).Returns(new QueryEngineBuilder<AuditTrailEvent>().Build().Parse(string.Empty));
+        var queries = new Mock<IAuditTrailAdminListQueryService>();
+        queries.Setup(value => value.QueryAsync(It.IsAny<int>(), 4, It.IsAny<AuditTrailIndexOptions>()))
+            .ReturnsAsync((int page, int size, AuditTrailIndexOptions _) => new AuditTrailEventQueryResult { TotalCount = 10, Events = events.Skip((page - 1) * size).Take(size).ToArray() });
+
+        var result = Assert.IsType<Ok<AuditTrailPage>>(await AuditTrailEndpoints.ListAsync(new DefaultHttpContext(), Authorization(), parser.Object, queries.Object, null, 3, 4));
+
+        Assert.Equal(["event3", "event4", "event5", "event6"], result.Value.Items.Select(item => item.EventId));
+        Assert.Equal(10, result.Value.TotalCount);
+    }
+
+    [Theory]
+    [InlineData(-1, 50)]
+    [InlineData(0, 0)]
+    [InlineData(0, 201)]
+    [InlineData(int.MaxValue, 200)]
+    public async Task AuditBounds_AreRejectedBeforeParsingOrQuerying(int skip, int take)
+    {
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
         var parser = new Mock<IAuditTrailAdminListFilterParser>(MockBehavior.Strict);
         var queries = new Mock<IAuditTrailAdminListQueryService>(MockBehavior.Strict);
-        Assert.Equal(400, Assert.IsType<ProblemHttpResult>(await AuditTrailEndpoints.ListAsync(new DefaultHttpContext(), Authorization(),
-            parser.Object, queries.Object, null, page, pageSize)).StatusCode);
+        Assert.Equal(400, Assert.IsAssignableFrom<IStatusCodeHttpResult>(await AuditTrailEndpoints.ListAsync(new DefaultHttpContext { RequestServices = services }, Authorization(),
+            parser.Object, queries.Object, null, skip, take)).StatusCode);
         parser.VerifyNoOtherCalls();
         queries.VerifyNoOtherCalls();
     }

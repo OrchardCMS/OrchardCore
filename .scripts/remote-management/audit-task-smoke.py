@@ -112,7 +112,7 @@ with tempfile.TemporaryDirectory(prefix='audit-task-cli-', dir=state_path.parent
     secondary_name = None
     try:
         query = 'id:' + user_id + ' category:User event:Created'
-        page = pomi('audit-trail', 'events', 'list', '--q', query, '--page-size', '1')
+        page = pomi('audit-trail', 'events', 'list', '--q', query, '--take', '1')
         assert page['totalCount'] >= 1 and len(page['items']) == 1
         event = page['items'][0]
         assert event['category'] == 'User' and event['name'] == 'Created' and event['correlationId'] == user_id
@@ -120,8 +120,8 @@ with tempfile.TemporaryDirectory(prefix='audit-task-cli-', dir=state_path.parent
         assert shown == event
         assert not {'properties', 'clientIpAddress', 'snapshot'} & shown.keys()
         assert tool('audit-trail_events_show', {'query': {'eventId': event['eventId']}}) == shown
-        assert pomi('audit-trail', 'events', 'list', '--q', query, '--page', '2', '--page-size', '1')['items'] == []
-        pomi('audit-trail', 'events', 'list', '--page-size', '201', status=400)
+        assert pomi('audit-trail', 'events', 'list', '--q', query, '--skip', str(page['totalCount']), '--take', '1')['items'] == []
+        pomi('audit-trail', 'events', 'list', '--take', '201', status=400)
         pomi('audit-trail', 'events', 'show', 'missing-event', status=404)
         assert any(value['name'] == task_name for value in pomi('background-tasks', 'list'))
         pomi('background-tasks', 'disable', task_name)

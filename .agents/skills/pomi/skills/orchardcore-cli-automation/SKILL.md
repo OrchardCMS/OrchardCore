@@ -108,7 +108,7 @@ support merely from its appearance in the provider list.
 
 ```bash
 pomi indexes providers list
-pomi indexes list --page 1 --page-size 50
+pomi indexes list --skip 0 --take 50
 pomi indexes show INDEX_ID
 pomi indexes lucene analyzers
 pomi indexes lucene create --body-file index.json
@@ -412,9 +412,9 @@ for file upload/download; binary transfers are excluded from MCP tools.
 
 ## Audit and scheduled task administration
 
-Use `pomi audit-trail events list --q 'category:User event:Created' --page-size 50`
+Use `pomi audit-trail events list --q 'category:User event:Created' --take 50`
 and `audit-trail events show <event-id>` with `ViewAuditTrail`. These operations
-return metadata rather than snapshots/payloads. Paginate with `page` and `pageSize`
+return metadata rather than snapshots/payloads. Paginate with `skip` and `take`
 (maximum 200); `id:` filters by correlation ID. The existing admin filter syntax
 and enabled event producers still apply.
 

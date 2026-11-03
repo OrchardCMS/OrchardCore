@@ -2,19 +2,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Indexing.Endpoints.Management;
 
-/// <summary>Filters and pages index definitions using the existing store paging contract.</summary>
+/// <summary>Filters and pages index definitions.</summary>
 public sealed class IndexListRequest
 {
     /// <summary>Gets a name search using the configured store's comparison rules.</summary>
     public string Search { get; init; }
 
-    /// <summary>Gets the one-based page number, defaulting to one.</summary>
-    [Range(1, int.MaxValue)]
-    public int? Page { get; init; }
+    /// <summary>Gets the zero-based offset, defaulting to zero.</summary>
+    [Range(0, int.MaxValue)]
+    public int? Skip { get; init; }
 
-    /// <summary>Gets the page size, defaulting to 50 and limited to 200.</summary>
+    /// <summary>Gets the number of items to return, defaulting to 50 and limited to 200.</summary>
     [Range(1, 200)]
-    public int? PageSize { get; init; }
+    public int? Take { get; init; }
 }
 
 /// <summary>Describes the public identity of a stored index profile.</summary>
@@ -37,10 +37,10 @@ public sealed class IndexProfileResponse
 /// <summary>A bounded page of index identities without private provider properties.</summary>
 public sealed class IndexListResponse
 {
-    /// <summary>Gets the applied one-based page.</summary>
-    public int Page { get; init; }
-    /// <summary>Gets the applied page size.</summary>
-    public int PageSize { get; init; }
+    /// <summary>Gets the applied zero-based offset.</summary>
+    public int Skip { get; init; }
+    /// <summary>Gets the maximum number of items returned.</summary>
+    public int Take { get; init; }
     /// <summary>Gets the number of matches before paging.</summary>
     public int TotalCount { get; init; }
     /// <summary>Gets the profiles on this page.</summary>

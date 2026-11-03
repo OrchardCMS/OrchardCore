@@ -39,10 +39,10 @@ public class IndexDiscoveryTests
         manager.Setup(value => value.PageAsync(2, 10, It.Is<QueryContext>(query => query.Name == "Article" && query.Sorted)))
             .ReturnsAsync(new PageResult<IndexProfile> { Count = 25, Models = [profile] });
         var result = Assert.IsType<Ok<IndexListResponse>>(await IndexDiscoveryEndpoints.ListAsync(new DefaultHttpContext(), Authorize(), manager.Object,
-            new() { Page = 2, PageSize = 10, Search = "Article" }));
+            new() { Skip = 10, Take = 10, Search = "Article" }));
         Assert.Equal(25, result.Value.TotalCount);
-        Assert.Equal(2, result.Value.Page);
-        Assert.Equal(10, result.Value.PageSize);
+        Assert.Equal(10, result.Value.Skip);
+        Assert.Equal(10, result.Value.Take);
         Assert.Equal("id", Assert.Single(result.Value.Items).Id);
         var json = JsonSerializer.Serialize(result.Value);
         Assert.DoesNotContain("private-", json);
@@ -51,15 +51,34 @@ public class IndexDiscoveryTests
         manager.VerifyNoOtherCalls();
     }
 
-    [Theory]
-    [InlineData(0, 10)]
-    [InlineData(1, 201)]
-    [InlineData(int.MaxValue, 200)]
-    public async Task List_InvalidPage_RejectsBeforeReading(int page, int size)
+    [Fact]
+    public async Task List_SkipBetweenStorePages_ReadsBothAndReturnsTheRequestedSlice()
     {
+        var names = Enumerable.Range(0, 10).Select(i => new IndexProfile { Id = "id" + i, Name = "Index" + i }).ToArray();
         var manager = new Mock<IIndexProfileManager>(MockBehavior.Strict);
-        Assert.Equal(400, Status(await IndexDiscoveryEndpoints.ListAsync(new DefaultHttpContext(), Authorize(), manager.Object,
-            new() { Page = page, PageSize = size })));
+        manager.Setup(value => value.PageAsync(It.IsAny<int>(), 4, It.IsAny<QueryContext>()))
+            .ReturnsAsync((int page, int size, QueryContext _) => new PageResult<IndexProfile> { Count = 10, Models = names.Skip((page - 1) * size).Take(size).ToArray() });
+
+        var result = Assert.IsType<Ok<IndexListResponse>>(await IndexDiscoveryEndpoints.ListAsync(new DefaultHttpContext(), Authorize(), manager.Object,
+            new() { Skip = 3, Take = 4 }));
+
+        Assert.Equal(["id3", "id4", "id5", "id6"], result.Value.Items.Select(item => item.Id));
+        Assert.Equal(10, result.Value.TotalCount);
+        manager.Verify(value => value.PageAsync(1, 4, It.IsAny<QueryContext>()), Times.Once);
+        manager.Verify(value => value.PageAsync(2, 4, It.IsAny<QueryContext>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(-1, 10)]
+    [InlineData(0, 0)]
+    [InlineData(0, 201)]
+    [InlineData(int.MaxValue, 200)]
+    public async Task List_InvalidPaging_RejectsBeforeReading(int skip, int take)
+    {
+        using var services = new ServiceCollection().AddLogging().AddLocalization().BuildServiceProvider();
+        var manager = new Mock<IIndexProfileManager>(MockBehavior.Strict);
+        Assert.Equal(400, Status(await IndexDiscoveryEndpoints.ListAsync(new DefaultHttpContext { RequestServices = services }, Authorize(), manager.Object,
+            new() { Skip = skip, Take = take })));
         manager.VerifyNoOtherCalls();
     }
 

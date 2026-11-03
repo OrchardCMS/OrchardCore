@@ -182,16 +182,15 @@ and `ManageIndexes`. The same permission checks apply to in-process MCP invocati
 
 ```bash
 pomi indexes providers list
-pomi indexes list --page 1 --page-size 50
-pomi indexes list --search Articles --page 1 --page-size 20
+pomi indexes list --skip 0 --take 50
+pomi indexes list --search Articles --skip 0 --take 20
 pomi indexes show <id>
 ```
 
-`GET api/indexes` uses the existing index store's one-based paging contract. `page`
-defaults to 1 and `pageSize` defaults to 50, with a maximum of 200. Negative/zero
-values and offsets beyond a 32-bit integer are rejected. `search` filters profile
-names using the configured store's comparison rules. Responses contain `page`,
-`pageSize`, `totalCount` and `items`; names determine ordering.
+`GET api/indexes` pages with a zero-based `skip`, which defaults to 0, and `take`, which
+defaults to 50 with a maximum of 200. Other values and offsets beyond a 32-bit integer are
+rejected. `search` filters profile names using the configured store's comparison rules.
+Responses contain `skip`, `take`, `totalCount` and `items`; names determine ordering.
 
 `GET api/indexes/by-id?id=...` retrieves an index by its stable administrative ID,
 returning `404` when it is absent. Each index response contains `id`, `name`,

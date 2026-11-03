@@ -40,17 +40,23 @@ internal static class IndexDiscoveryEndpoints
         [FromServices] IIndexProfileManager manager, [AsParameters] IndexListRequest request)
     {
         if (!await AuthorizedAsync(context, authorization)) { return context.ApiForbidProblem(); }
-        var page = request.Page ?? 1;
-        var pageSize = request.PageSize ?? 50;
-        if (page < 1 || pageSize < 1 || pageSize > 200 || (long)(page - 1) * pageSize > int.MaxValue)
+        var skip = request.Skip ?? 0;
+        var take = request.Take ?? 50;
+        if (context.ApiPagingProblem(skip, take) is { } pagingError) { return pagingError; }
+        if (skip > int.MaxValue - (2L * take)) { return TypedResults.Problem("The offset must fit a 32-bit integer.", statusCode: 400); }
+        var query = new QueryContext { Name = request.Search, Sorted = true };
+        var result = await manager.PageAsync((skip / take) + 1, take, query);
+        var items = result.Models;
+        // The store reads whole pages, so an offset between two of them spans both.
+        if (skip % take != 0)
         {
-            return TypedResults.Problem("Page must be positive, page size must be between 1 and 200, and the offset must fit a 32-bit integer.", statusCode: 400);
+            var next = await manager.PageAsync((skip / take) + 2, take, query);
+            items = items.Concat(next.Models).Skip(skip % take).Take(take).ToArray();
         }
-        var result = await manager.PageAsync(page, pageSize, new QueryContext { Name = request.Search, Sorted = true });
         return TypedResults.Ok(new IndexListResponse
         {
-            Page = page, PageSize = pageSize, TotalCount = result.Count,
-            Items = result.Models.Select(Describe).ToArray(),
+            Skip = skip, Take = take, TotalCount = result.Count,
+            Items = items.Select(Describe).ToArray(),
         });
     }
 

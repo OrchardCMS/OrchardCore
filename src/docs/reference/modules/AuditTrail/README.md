@@ -115,13 +115,13 @@ Operations require API bearer authentication, `AccessRemoteManagement`, and
 feature does not configure OpenID itself.
 
 ```bash
-pomi audit-trail events list --q 'category:User event:Created' --page 1 --page-size 50
+pomi audit-trail events list --q 'category:User event:Created' --skip 0 --take 50
 pomi audit-trail events list --q 'id:correlation-id'
 pomi audit-trail events show <event-id>
 ```
 
-The default page is 1 with 50 events. `pageSize` accepts 1–200 and `page` accepts
-1–1,000,000; `q` is limited to 4096 characters. Responses include `page`, `pageSize`,
+Events are paged with a zero-based `skip`, which defaults to 0, and `take`, which accepts
+1–200 and defaults to 50; `q` is limited to 4096 characters. Responses include `skip`, `take`,
 `totalCount`, and `items`. Use the existing admin filter syntax, including `id`
 (correlation ID), `category`, `event`, `date`, `username`, `userid`, and `sort`.
 Enabled modules can contribute additional filters. Filtering and ordering have the
