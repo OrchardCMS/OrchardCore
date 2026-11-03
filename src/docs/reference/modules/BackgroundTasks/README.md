@@ -32,7 +32,7 @@ Clicking the title of a task, or the **Details** item of its **Actions** menu, o
 - The most recent runs of the task, with their start time, duration, trigger, outcome and error.
 - The settings of the task.
 
-The list and the details page stay up to date while they are visible: they check the status of the tasks in the background, every 10 seconds or every few seconds while a task is queued or running, and update a task as soon as it starts or completes a run, whether it was scheduled or run on demand, without reloading the page.
+The list and the details page stay up to date while they are visible: they check the status of the tasks in the background, every 10 seconds or every few seconds while a task is queued or running, and update a task as soon as it starts or completes a run, whether it was scheduled or run on demand, without reloading the page. When the list is filtered to show the tasks that are running or queued, or whose last run failed, the page is reloaded when another task starts matching the filter.
 
 !!! note
     The execution state is kept in memory by the background service of each server, it is not stored in the database. It reflects the runs of the server handling the request since the application started, so it is reset when the application restarts, and in a web farm each server shows the runs it executed itself.

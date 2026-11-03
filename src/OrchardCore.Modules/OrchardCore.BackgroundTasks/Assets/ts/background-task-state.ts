@@ -30,11 +30,16 @@ const getTaskElements = (root: ParentNode) => {
     return elements;
 };
 
+const isMenuOpen = (element: HTMLElement) => element.querySelector("[aria-expanded='true']") !== null;
+
+// Whether the list only shows the tasks in a given execution state, so that the other tasks can enter it.
+const isFilteredByState = () => ["running", "failed"].includes(new URLSearchParams(window.location.search).get("Options.Status")?.toLowerCase() ?? "");
+
 const hasPendingTask = (root: HTMLElement) =>
     Array.from(getTaskElements(root).values()).some((element) => element.dataset.taskStatus === "Queued" || element.dataset.taskStatus === "Running");
 
 // Replaces the given tasks with their fresh rendering. Returns false when the page needs to be reloaded instead.
-const refreshTasksAsync = async (root: HTMLElement, names: string[]) => {
+const refreshTasksAsync = async (root: HTMLElement, names: string[], addedNames: string[]) => {
     const response = await fetch(window.location.href, {
         headers: { Accept: "text/html" },
         credentials: "same-origin",
@@ -49,6 +54,11 @@ const refreshTasksAsync = async (root: HTMLElement, names: string[]) => {
     const currentTasks = getTaskElements(root);
     const freshTasks = getTaskElements(freshDocument);
 
+    // A task entered the list filtered by state.
+    if (addedNames.some((name) => freshTasks.has(name))) {
+        return false;
+    }
+
     for (const name of names) {
         const current = currentTasks.get(name);
         const fresh = freshTasks.get(name);
@@ -62,8 +72,8 @@ const refreshTasksAsync = async (root: HTMLElement, names: string[]) => {
             return false;
         }
 
-        // Don't replace a task whose actions menu is open, its signature is still outdated so it is retried later.
-        if (current.querySelector("[aria-expanded='true']")) {
+        // Don't replace a task whose actions menu was opened in the meantime, its signature is still outdated so it is retried later.
+        if (isMenuOpen(current)) {
             continue;
         }
 
@@ -92,6 +102,7 @@ if (container && statesUrl) {
     let delay = activeDelay;
     let timeout: number | undefined;
     let polling = false;
+    const otherTaskSignatures = new Map<string, string>();
 
     const schedule = () => {
         window.clearTimeout(timeout);
@@ -123,15 +134,26 @@ if (container && statesUrl) {
                 const states = (await response.json()) as BackgroundTaskStatusResponse[];
                 const currentTasks = getTaskElements(container);
 
-                const changedNames = states
-                    .filter((state) => {
-                        const element = currentTasks.get(state.name);
+                const changedNames: string[] = [];
+                const addedNames: string[] = [];
 
-                        return element && getSignature(element.dataset.taskStatus, element.dataset.taskRunCount) !== getSignature(state.status, state.runCount);
-                    })
-                    .map((state) => state.name);
+                for (const state of states) {
+                    const signature = getSignature(state.status, state.runCount);
+                    const element = currentTasks.get(state.name);
 
-                if (changedNames.length > 0 && !(await refreshTasksAsync(container, changedNames))) {
+                    if (!element) {
+                        const previous = otherTaskSignatures.get(state.name);
+                        otherTaskSignatures.set(state.name, signature);
+
+                        if (previous !== undefined && previous !== signature && isFilteredByState()) {
+                            addedNames.push(state.name);
+                        }
+                    } else if (!isMenuOpen(element) && getSignature(element.dataset.taskStatus, element.dataset.taskRunCount) !== signature) {
+                        changedNames.push(state.name);
+                    }
+                }
+
+                if ((changedNames.length > 0 || addedNames.length > 0) && !(await refreshTasksAsync(container, changedNames, addedNames))) {
                     window.location.reload();
                     return;
                 }
@@ -152,5 +174,6 @@ if (container && statesUrl) {
         }
     });
 
-    schedule();
+    // Poll right away, to know the state of the tasks that are not on the page from now on.
+    poll();
 }
