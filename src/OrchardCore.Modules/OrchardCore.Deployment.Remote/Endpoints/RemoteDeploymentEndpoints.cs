@@ -125,7 +125,8 @@ internal static class RemoteDeploymentEndpoints
         if (request is null) { return TypedResults.BadRequest(); }
         var value = await service.GetRemoteInstanceAsync(id);
         if (value is null) { return TypedResults.NotFound(); }
-        var key = request.ApiKey ?? value.ApiKey;
+        // A stored key must not follow a new destination: require the caller to know it.
+        var key = request.ApiKey ?? (value.Url == request.Url ? value.ApiKey : null);
         var errors = RemoteDeploymentValidation.Instance(request.Name, request.Url, request.ClientName, key);
         if (errors.Count > 0) { return TypedResults.ValidationProblem(errors); }
         if ((await service.GetRemoteInstanceListAsync()).RemoteInstances.Any(other => other.Id != value.Id && other.Name == request.Name)) { return Conflict(); }

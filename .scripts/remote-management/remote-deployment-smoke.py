@@ -137,6 +137,8 @@ with tempfile.TemporaryDirectory(prefix='remote-deployment-cli-', dir=state_path
     assert not pomi('deployment', 'remote-instances', 'create', body=body)['changed']
     assert not pomi('deployment', 'remote-instances', 'update', instance_id, body={k:v for k,v in body.items() if k != 'apiKey'})['changed']
     pomi('deployment', 'remote-instances', 'update', instance_id, body={**body, 'url': 'http://example.org/import'}, status=400)
+    # The stored key must not follow a new destination unless the caller supplies it again.
+    pomi('deployment', 'remote-instances', 'update', instance_id, body={k:v for k,v in {**body, 'url': 'https://other.example/import'}.items() if k != 'apiKey'}, status=400)
     assert pomi('deployment', 'remote-instances', 'show', instance_id)['url'] == target_url
     assert any(value['id'] == instance_id for value in tool('deployment_targets_list', {}))
     assert key not in json.dumps(pomi('deployment', 'remote-instances', 'list'))
