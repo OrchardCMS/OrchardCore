@@ -148,6 +148,11 @@ internal static class FeatureManagementEndpoints
         }
 
         var wasEnabled = (await shellFeaturesManager.GetEnabledFeaturesAsync()).Any(candidate => candidate.Id == feature.Id);
+        if (feature.EnabledByDependencyOnly && !wasEnabled)
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["This feature is only enabled as a dependency of another feature."]);
+        }
+
         var enabledFeatures = await shellFeaturesManager.EnableFeaturesAsync([feature], force);
         if (!wasEnabled && !enabledFeatures.Any(candidate => candidate.Id == feature.Id))
         {
@@ -177,6 +182,13 @@ internal static class FeatureManagementEndpoints
         }
 
         var wasEnabled = (await shellFeaturesManager.GetEnabledFeaturesAsync()).Any(candidate => candidate.Id == feature.Id);
+
+        // The shell would enable it again for its dependents, after reporting it as disabled.
+        if (feature.EnabledByDependencyOnly && wasEnabled)
+        {
+            return httpContext.ApiBadRequestProblem(detail: localizer["This feature is only disabled when no enabled feature depends on it anymore."]);
+        }
+
         var disabledFeatures = await shellFeaturesManager.DisableFeaturesAsync([feature], force);
         if (wasEnabled && !disabledFeatures.Any(candidate => candidate.Id == feature.Id))
         {

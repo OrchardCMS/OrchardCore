@@ -81,11 +81,13 @@ msgctxt "OrchardCore.Features.Permissions"
 msgid "The feature '{0}' could not be enabled. Check its dependencies and the active feature profile."
 msgstr ""
 
+#: Endpoints/Management/FeatureManagementEndpoints.cs
 #: Endpoints/Management/FeaturePreviewEndpoints.cs
 msgctxt "OrchardCore.Features.Permissions"
 msgid "This feature is only disabled when no enabled feature depends on it anymore."
 msgstr ""
 
+#: Endpoints/Management/FeatureManagementEndpoints.cs
 #: Endpoints/Management/FeaturePreviewEndpoints.cs
 msgctxt "OrchardCore.Features.Permissions"
 msgid "This feature is only enabled as a dependency of another feature."

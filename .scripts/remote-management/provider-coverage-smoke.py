@@ -213,6 +213,13 @@ def check_feature_preview():
     extra = after - before - set(preview['featuresToEnable'])
     assert not extra, (extra, preview)
 
+    # An action refuses what its preview blocks, instead of reporting a change that the shell undoes.
+    dependency = 'OrchardCore.Facebook'
+    assert dependency in after
+    assert call(f'api/features/{dependency}/preview?action=disable')['isAllowed'] is False
+    assert send(f'api/features/{dependency}:disable', 'POST')[0] == 400
+    assert dependency in enabled_features(), 'A refused change disabled the feature.'
+
     preview = call(f'api/features/{target}/preview?action=disable')
     assert preview['featuresToDisable'][-1] == target, preview
     expected = set(preview['featuresToDisable']) | set(preview['dependencyOnlyFeaturesToDisable'])

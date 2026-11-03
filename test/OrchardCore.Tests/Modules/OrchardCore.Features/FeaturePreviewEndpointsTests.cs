@@ -144,6 +144,35 @@ public class FeaturePreviewEndpointsTests
         Assert.Equal(StatusCodes.Status403Forbidden, forbidden.StatusCode);
     }
 
+    [Fact]
+    public async Task Disable_FeatureEnabledByDependencyOnly_IsRefusedLikeThePreview()
+    {
+        var fixture = new Fixture();
+        fixture.Add("Target", enabled: true, byDependencyOnly: true);
+        fixture.Add("Dependent", enabled: true, dependencies: ["Target"]);
+
+        Assert.False((await fixture.PreviewAsync("Target", "disable")).IsAllowed);
+
+        var result = Assert.IsAssignableFrom<IStatusCodeHttpResult>(await fixture.ChangeAsync("Target", enable: false));
+
+        Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+        fixture.VerifyNothingChanged();
+    }
+
+    [Fact]
+    public async Task Enable_FeatureEnabledByDependencyOnly_IsRefusedLikeThePreview()
+    {
+        var fixture = new Fixture();
+        fixture.Add("Target", enabled: false, byDependencyOnly: true);
+
+        Assert.False((await fixture.PreviewAsync("Target", "enable")).IsAllowed);
+
+        var result = Assert.IsAssignableFrom<IStatusCodeHttpResult>(await fixture.ChangeAsync("Target", enable: true));
+
+        Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+        fixture.VerifyNothingChanged();
+    }
+
     private sealed class Fixture
     {
         private readonly List<IFeatureInfo> _features = [];
@@ -208,6 +237,29 @@ public class FeaturePreviewEndpointsTests
                 new StringLocalizer<global::OrchardCore.Features.Permissions>(new global::OrchardCore.Localization.NullStringLocalizerFactory()),
                 action,
                 force);
+        }
+
+        public async Task<IResult> ChangeAsync(string id, bool enable)
+        {
+            // Sets up the shared mocks.
+            await InvokeAsync(id, "enable");
+
+            var extensions = new Mock<IExtensionManager>();
+            var authorization = new Mock<IAuthorizationService>();
+            authorization
+                .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success());
+
+            var services = new ServiceCollection()
+                .AddSingleton<IStringLocalizer<ProblemDetailsApiLocalization>>(new StringLocalizer<ProblemDetailsApiLocalization>(new global::OrchardCore.Localization.NullStringLocalizerFactory()))
+                .BuildServiceProvider();
+            var context = new DefaultHttpContext { RequestServices = services };
+            var featureService = new FeatureService(_manager.Object, extensions.Object);
+            var localizer = new StringLocalizer<global::OrchardCore.Features.Permissions>(new global::OrchardCore.Localization.NullStringLocalizerFactory());
+
+            return enable
+                ? await FeatureManagementEndpoints.EnableAsync(context, id, authorization.Object, featureService, _manager.Object, localizer)
+                : await FeatureManagementEndpoints.DisableAsync(context, id, authorization.Object, featureService, _manager.Object, localizer);
         }
 
         // Like the extension manager: dependencies first, then the feature.

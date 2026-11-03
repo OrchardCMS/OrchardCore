@@ -247,6 +247,8 @@ POST /api/features/{featureId}:enable
 
 The shell feature manager resolves and enables dependencies. The operation is idempotent when the requested feature is already enabled.
 
+A disabled feature whose `enabledByDependencyOnly` is `true` can't be enabled directly and returns `400 Bad Request`, as its preview reports. Enable a feature that depends on it instead.
+
 ### Parameters
 
 | Location | Name | Type | Required | Default | Constraints and behavior |
@@ -302,6 +304,8 @@ The response is the updated [feature representation](#feature-representation), w
 ```http
 POST /api/features/{featureId}:disable
 ```
+
+An enabled feature whose `enabledByDependencyOnly` is `true` can't be disabled directly and returns `400 Bad Request`, as its preview reports. It's disabled when no enabled feature depends on it anymore.
 
 The shell feature manager checks enabled dependents before disabling the feature. The operation is idempotent when the feature is already disabled.
 
