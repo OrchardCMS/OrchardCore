@@ -1205,7 +1205,7 @@ Legacy enable and disable are convergent and return `200` when the tenant is alr
 requested state. Legacy remove returns `204` when the tenant is already absent. Legacy edit
 preserves the existing tenant secret and generates one only when an uninitialized tenant has no
 secret. Legacy create returns `200` for initial creation and `201` with a stable setup URL when an
-existing tenant is retried. These compatibility routes are not part of the eight management
+existing tenant is retried. These compatibility routes are not part of the management
 routes summarized above.
 
 ## Validation and common errors
