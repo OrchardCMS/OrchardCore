@@ -13,13 +13,24 @@ namespace OrchardCore.Tests.Clusters;
 public class ClustersProxyTests
 {
     [Fact]
-    public async Task ConfigureRoute_RouteTemplate_KeepsOriginalHost()
+    public async Task ConfigureRoute_RouteTemplate_KeepsOriginalHostAndTenantRequestLimits()
     {
         var route = new RouteConfig { RouteId = ClustersOptions.RouteTemplate };
 
         var configured = await new ClustersProxyConfigFilter().ConfigureRouteAsync(route, null, TestContext.Current.CancellationToken);
 
         Assert.Contains(configured.Transforms, transform => transform.TryGetValue("RequestHeaderOriginalHost", out var value) && value == "True");
+        Assert.Equal(-1, configured.MaxRequestBodySize);
+    }
+
+    [Fact]
+    public async Task ConfigureRoute_MaxRequestBodySizeConfigured_IsKept()
+    {
+        var route = new RouteConfig { RouteId = ClustersOptions.RouteTemplate, MaxRequestBodySize = 1024 };
+
+        var configured = await new ClustersProxyConfigFilter().ConfigureRouteAsync(route, null, TestContext.Current.CancellationToken);
+
+        Assert.Equal(1024, configured.MaxRequestBodySize);
     }
 
     [Fact]

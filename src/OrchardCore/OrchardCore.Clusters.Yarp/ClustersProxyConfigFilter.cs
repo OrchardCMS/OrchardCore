@@ -20,7 +20,10 @@ public sealed class ClustersProxyConfigFilter : IProxyConfigFilter
             return new ValueTask<RouteConfig>(route);
         }
 
+        // A tenant decides its own request size limits, as for any action allowing larger uploads.
+        var configuredRoute = route with { MaxRequestBodySize = route.MaxRequestBodySize ?? -1 };
+
         // Backends resolve the tenant from the request, so they need the host requested by the client.
-        return new ValueTask<RouteConfig>(route.WithTransformUseOriginalHostHeader());
+        return new ValueTask<RouteConfig>(configuredRoute.WithTransformUseOriginalHostHeader());
     }
 }
