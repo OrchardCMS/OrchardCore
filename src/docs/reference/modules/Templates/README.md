@@ -38,6 +38,8 @@ The status of each template shows whether it is overridden, and monitors the tem
 
 The list can be filtered by these statuses, and by language with the **Liquid** and **Razor** options, in the **Theme Templates** and **Feature Templates** lists. The clone records are stored by tenant next to the templates, but are not part of their recipes and deployments, so the templates imported in another tenant are shown as **Overridden**.
 
+Local templates are not tied to a theme: when the active theme changes, the templates cloned from the previous theme keep overriding the shapes of the new one. They are shown as **Cloned from** the previous theme.
+
 ## Feature Templates
 
 The **Feature Templates** button, next to **Theme Templates**, lists the templates of the enabled features, all of them by default, or those of the feature selected in the dropdown. They are almost all Razor templates, so they can be viewed as a reference to write a Liquid template with the same name, with the **Create override** button, which shows the name of each shape to override.
@@ -64,9 +66,7 @@ When a template of the active theme or of a feature renders the shape, or is bou
 
 The templates are resolved as the front end does, with the active site theme and the templates, on the **Templates** page, and as the admin does, with the active admin theme and the admin templates, on the **Admin Templates** page. The content item is rendered the same way to find its shapes, so the placement of the theme and the shapes its templates render in their own markup are taken into account. It is rendered on its own, without the layout of a page, so the shapes of the layout, e.g. the widgets, are not listed.
 
-### Template sources
-
-Local templates are not tied to a theme: when the active theme changes, the templates cloned from the previous theme keep overriding the shapes of the new one. They are shown as **Cloned from** the previous theme.
+## Template sources
 
 The templates are listed by template sources, each shown as a button of the templates list. A source can have scopes, e.g. the themes of the theme templates, selected with the dropdown. A module can list the templates of other extensions by registering an `ITemplateSource`:
 
