@@ -256,6 +256,36 @@ public class ResourceRecipeExportTests
     }
 
     [Fact]
+    public async Task DeploymentRecipeStep_StepWithNames_StoresTheFilter()
+    {
+        using var site = await CreateSiteAsync();
+
+        await ExecuteRecipeAsync(site, new JsonObject
+        {
+            ["steps"] = new JsonArray(new JsonObject
+            {
+                ["name"] = "deployment",
+                ["Plans"] = new JsonArray(new JsonObject
+                {
+                    ["Name"] = "Selected queries",
+                    ["Steps"] = new JsonArray(new JsonObject
+                    {
+                        ["Type"] = nameof(AllQueriesDeploymentStep),
+                        ["Step"] = new JsonObject { ["Names"] = new JsonArray("selected") },
+                    }),
+                }),
+            }),
+        });
+
+        await site.UsingTenantScopeAsync(async scope =>
+        {
+            var plan = await scope.ServiceProvider.GetRequiredService<IDeploymentPlanService>().FindByNameAsync("Selected queries");
+            var step = Assert.IsType<AllQueriesDeploymentStep>(Assert.Single(plan.DeploymentSteps));
+            Assert.Equal(["selected"], step.Names);
+        });
+    }
+
+    [Fact]
     public async Task AllTemplatesStep_ExportAsFilesWithNames_WritesOnlyTheSelectedFiles()
     {
         using var site = await CreateSiteAsync();

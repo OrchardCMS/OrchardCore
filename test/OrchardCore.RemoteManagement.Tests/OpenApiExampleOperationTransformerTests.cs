@@ -59,7 +59,7 @@ public class OpenApiExampleOperationTransformerTests
         await TransformAsync(operation, new OpenApiExampleMetadata("{}", "{}"));
 
         Assert.Null(operation.RequestBody);
-        Assert.Null(operation.Responses);
+        Assert.Empty(operation.Responses);
     }
 
     [Fact]
