@@ -193,6 +193,20 @@ public sealed class SourceTemplatesTests : IDisposable
     }
 
     [Fact]
+    public async Task FindSourceTemplatesAsync_Names_ReturnsThoseOfTheSources()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        var service = CreateService();
+
+        var templates = await service.FindSourceTemplatesAsync(["layout", "NotInASource"], adminTemplates: false);
+
+        var template = Assert.Single(templates).Value;
+        Assert.Equal(ThemeTemplateSource.SourceName, template.Source);
+        Assert.Equal("Layout", template.Template.Name);
+    }
+
+    [Fact]
     public async Task ForgetClonesAsync_DeletedClone_TemplateWrittenByHandLaterIsNotCloned()
     {
         AddExtension("SiteTheme");

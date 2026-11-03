@@ -110,6 +110,34 @@ public sealed class SourceTemplatesService
     }
 
     /// <summary>
+    /// Finds the templates of the sources that have some names, to view or clone them.
+    /// </summary>
+    /// <param name="names">The names of the templates.</param>
+    /// <param name="adminTemplates">Whether to look for admin templates.</param>
+    /// <returns>
+    /// The templates by name. The sources are in their registration order, the theme before the features,
+    /// as the template of the theme wins when both have one.
+    /// </returns>
+    public async Task<IReadOnlyDictionary<string, InspectedSourceTemplate>> FindSourceTemplatesAsync(IEnumerable<string> names, bool adminTemplates)
+    {
+        var lookup = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+        var sourceTemplates = new Dictionary<string, InspectedSourceTemplate>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var source in _sources)
+        {
+            foreach (var template in await source.GetTemplatesAsync(adminTemplates, null))
+            {
+                if (lookup.Contains(template.Name))
+                {
+                    sourceTemplates.TryAdd(template.Name, new InspectedSourceTemplate { Source = source.Name, Template = template });
+                }
+            }
+        }
+
+        return sourceTemplates;
+    }
+
+    /// <summary>
     /// Reads the content of a template of a source.
     /// </summary>
     public Task<string> ReadAsync(SourceTemplate template) => _shapeTemplateFiles.ReadAsync(template);

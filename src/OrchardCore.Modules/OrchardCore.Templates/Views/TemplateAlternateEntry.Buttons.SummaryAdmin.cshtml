@@ -16,29 +16,22 @@
        asp-route-returnUrl="@FullRequestPath"
        class="btn btn-primary btn-sm">@T["Edit"]</a>
 }
-else if (entry.RenderedBy != null)
-{
-    @* A template of the theme or a feature already renders the alternate: start from it, rather than from the shape's template. *@
-    <a asp-action="Display"
-       asp-controller="TemplateSource"
-       asp-route-source="@entry.RenderedBySource"
-       asp-route-name="@entry.Alternate.Name"
-       asp-route-admintemplates="@entry.Base.AdminTemplates"
-       asp-route-returnUrl="@FullRequestPath"
-       class="btn btn-secondary btn-sm">@T["View"]</a>
-
-    <a asp-action="Create"
-       asp-controller="Template"
-       asp-route-name="@entry.Alternate.Name"
-       asp-route-admintemplates="@entry.Base.AdminTemplates"
-       asp-route-returnUrl="@FullRequestPath"
-       class="btn btn-secondary btn-sm">@T["Create"]</a>
-}
 else
 {
-    @* A Liquid template of the active theme can be cloned under the alternate name, as a starting point. *@
-    if (template.CanClone)
+    if (entry.RenderedBySource != null)
     {
+        @* A template of the theme or a feature already renders the alternate: start from it, rather than from the shape's template. *@
+        <a asp-action="Display"
+           asp-controller="TemplateSource"
+           asp-route-source="@entry.RenderedBySource"
+           asp-route-name="@entry.Alternate.Name"
+           asp-route-admintemplates="@entry.Base.AdminTemplates"
+           asp-route-returnUrl="@FullRequestPath"
+           class="btn btn-secondary btn-sm">@T["View"]</a>
+    }
+    else if (entry.RenderedBy == null && template.CanClone)
+    {
+        @* A Liquid template of the active theme can be cloned under the alternate name, as a starting point. *@
         <a asp-action="CloneAs"
            asp-controller="TemplateSource"
            asp-route-source="@entry.Base.Source"

@@ -7,7 +7,6 @@ using OrchardCore.Modules;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
-using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 using OrchardCore.Templates.ViewModels;
 using YesSql;
@@ -103,32 +102,12 @@ public sealed class TemplateInspectorController : Controller
             (model.Shapes, model.Error) = await _templateInspectionService.InspectAsync(contentItem, displayType, adminTemplates);
             model.ContentItem = contentItem;
             model.LocalTemplates = new HashSet<string>(localTemplates.Templates.Keys, StringComparer.OrdinalIgnoreCase);
-            model.SourceTemplates = await GetSourceTemplatesAsync(model.Shapes, adminTemplates);
+            model.SourceTemplates = await _sourceTemplatesService.FindSourceTemplatesAsync(
+                model.Shapes.SelectMany(shape => shape.Alternates.Append(shape.Type)),
+                adminTemplates);
         }
 
         return View(model);
-    }
-
-    // The templates of the sources, e.g. of the active theme, bound to the types or the alternates of the shapes,
-    // to view or clone them. The sources are in their registration order, the theme before the features, as the
-    // template of the theme wins when both have one.
-    private async Task<IReadOnlyDictionary<string, InspectedSourceTemplate>> GetSourceTemplatesAsync(IEnumerable<InspectedShape> shapes, bool adminTemplates)
-    {
-        var names = new HashSet<string>(shapes.SelectMany(shape => shape.Alternates.Append(shape.Type)), StringComparer.OrdinalIgnoreCase);
-        var sourceTemplates = new Dictionary<string, InspectedSourceTemplate>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var source in _sourceTemplatesService.Sources)
-        {
-            foreach (var template in await source.GetTemplatesAsync(adminTemplates, null))
-            {
-                if (names.Contains(template.Name))
-                {
-                    sourceTemplates.TryAdd(template.Name, new InspectedSourceTemplate { Source = source.Name, Template = template });
-                }
-            }
-        }
-
-        return sourceTemplates;
     }
 
     /// <summary>

@@ -418,12 +418,6 @@ public sealed class TemplateSourceController : Controller
                 .GroupBy(template => template.Name, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(group => group.Key, group => group.First().ExtensionId, StringComparer.OrdinalIgnoreCase);
 
-        // The alternates the active theme renders are listed by the theme templates, the others by the feature templates.
-        var themeSource = _sourceTemplatesService.GetSource(ThemeTemplateSource.SourceName);
-        var themeTemplateNames = themeSource == null
-            ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            : (await themeSource.GetTemplatesAsync(adminTemplates, null)).Select(template => template.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
-
         var pager = new Pager(pagerParameters, _pagerOptions);
         var routeData = new RouteData();
         routeData.Values.TryAdd(nameof(name), template.Name);
@@ -440,6 +434,11 @@ public sealed class TemplateSourceController : Controller
         }
 
         var pagerShape = await _shapeFactory.PagerAsync(pager, sortedAlternates.Count, routeData);
+
+        var pageAlternates = sortedAlternates.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
+
+        // The templates rendering the alternates, to view them from the source listing them.
+        var sourceTemplates = await _sourceTemplatesService.FindSourceTemplatesAsync(pageAlternates.Select(alternate => alternate.Name), adminTemplates);
 
         var searchShape = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
         {
@@ -461,16 +460,14 @@ public sealed class TemplateSourceController : Controller
             Search = search,
             Alternates = new AdminListContext<TemplateAlternateEntry>
             {
-                Source = sortedAlternates
-                    .Skip(pager.GetStartIndex())
-                    .Take(pager.PageSize)
+                Source = pageAlternates
                     .Select(alternate => new TemplateAlternateEntry
                     {
                         Alternate = alternate,
                         Base = entry,
                         IsOverridden = localTemplates.Templates.ContainsKey(alternate.Name),
                         RenderedBy = renderedBy.GetValueOrDefault(alternate.Name),
-                        RenderedBySource = themeTemplateNames.Contains(alternate.Name) ? ThemeTemplateSource.SourceName : FeatureTemplateSource.SourceName,
+                        RenderedBySource = sourceTemplates.GetValueOrDefault(alternate.Name)?.Source,
                     })
                     .ToList(),
                 Search = searchShape,

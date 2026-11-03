@@ -27,7 +27,8 @@ public sealed class TemplateAlternateEntry
     public string RenderedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the template source listing the template that renders the alternate, to view it.
+    /// Gets or sets the template source listing the template that renders the alternate, to view it,
+    /// or <see langword="null"/> when no source lists it.
     /// </summary>
     public string RenderedBySource { get; set; }
 }
