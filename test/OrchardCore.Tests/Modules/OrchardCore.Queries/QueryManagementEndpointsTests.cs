@@ -16,9 +16,10 @@ public class QueryManagementEndpointsTests
         var queryManager = new Mock<IQueryManager>();
         queryManager.Setup(manager => manager.GetQueryAsync("PublishedContent")).ReturnsAsync(CreateQuery());
         var definition = CreateDefinition();
+        var httpContext = new DefaultHttpContext();
 
         var result = await QueryManagementEndpoints.CreateAsync(
-            new DefaultHttpContext(),
+            httpContext,
             CreateAuthorizationService(),
             queryManager.Object,
             [CreateQuerySource()],
@@ -27,6 +28,7 @@ public class QueryManagementEndpointsTests
             definition);
 
         Assert.Equal(StatusCodes.Status200OK, Assert.IsAssignableFrom<IStatusCodeHttpResult>(result).StatusCode);
+        Assert.NotEmpty(httpContext.Response.Headers.ETag.ToString());
         queryManager.Verify(manager => manager.NewAsync(It.IsAny<string>(), It.IsAny<System.Text.Json.Nodes.JsonNode>()), Times.Never);
         queryManager.Verify(manager => manager.SaveAsync(It.IsAny<Query[]>()), Times.Never);
     }

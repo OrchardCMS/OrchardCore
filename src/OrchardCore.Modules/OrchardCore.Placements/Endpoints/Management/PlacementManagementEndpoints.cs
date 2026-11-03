@@ -126,7 +126,7 @@ internal static class PlacementManagementEndpoints
         }
         if (result.Status == PlacementMutationStatus.Existing)
         {
-            return TypedResults.Ok(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes });
+            return TypedResults.Ok(context.WithApiETag(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes }));
         }
         return TypedResults.Created($"{context.Request.PathBase}/{RoutePrefix}/by-shape?shapeType={Uri.EscapeDataString(result.ShapeType)}",
             context.WithApiETag(new PlacementDefinition { ShapeType = result.ShapeType, Nodes = result.Nodes }));

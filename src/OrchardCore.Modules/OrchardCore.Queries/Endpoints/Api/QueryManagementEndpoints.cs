@@ -303,7 +303,7 @@ public static class QueryManagementEndpoints
         {
             var existingDefinition = ToDefinitionDto(existing);
             return AreEquivalent(definition, existingDefinition)
-                ? TypedResults.Ok(existingDefinition)
+                ? TypedResults.Ok(httpContext.WithApiETag(existingDefinition))
                 : TypedResults.Problem(
                     detail: $"A query named '{definition.Name}' already exists with a different definition.",
                     statusCode: StatusCodes.Status409Conflict);

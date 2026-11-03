@@ -126,7 +126,7 @@ internal static class LayerManagementEndpoints
         {
             var existing = mutation.Layer;
             return Equivalent(Describe(existing, rules), definition, rules.Describe(result.Rule))
-                ? TypedResults.Ok(Describe(existing, rules))
+                ? TypedResults.Ok(context.WithApiETag(Describe(existing, rules)))
                 : TypedResults.Problem("A layer with this name already exists with a different definition.", statusCode: 409);
         }
         return TypedResults.Created(Location(context, mutation.Layer.Name), context.WithApiETag(Describe(mutation.Layer, rules)));
