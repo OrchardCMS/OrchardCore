@@ -129,7 +129,13 @@ per-tenant database needs no additional prefix by default.
 4. Pass `--output json` explicitly for automation and schema capture. The
    default `auto` uses human-readable messages in a terminal and JSON when
    redirected. In a terminal, lists remain tables and schema commands retain JSON. Do not parse human success messages;
-   use the explicit JSON response and process exit code.
+   use the explicit JSON response and process exit code. A failed
+   API request reports its stable kind in `error.details.code`, such as `not_found`,
+   `conflict`, `precondition_failed` or `rate_limited`, in the JSON error output.
+   When an update must not overwrite someone else's change, read the resource with
+   `--show-etag`, which writes the `ETag` to standard error, and pass that value with
+   its quotes to the `--if-match` option of the update. On `precondition_failed`, read
+   the resource again and reapply the change; never retry it unchanged.
 5. Select the intended context explicitly when changing more than one tenant:
    `pomi --context <name> ...`. Use a new context name when changing tenant URLs.
 6. Never put passwords or client secrets directly on a command line.
