@@ -50,6 +50,24 @@ internal sealed class LocalSiteInstallOutput
 internal static partial class LocalSiteInstaller
 {
     internal const string NugetSource = "https://api.nuget.org/v3/index.json";
+    private const string NugetSourceKey = "nuget.org";
+    private const string OrchardCoreSourceKey = "OrchardCore";
+    private const string TranslationPackagesPattern = "OrchardCore.Translations.*";
+
+    // The IDs of the packages of an Orchard Core build, which include the themes under their original
+    // names. .scripts/remote-management/prepare-packages.py validates the same set.
+    private static readonly string[] _orchardCorePackagePatterns =
+    [
+        "OrchardCore",
+        "OrchardCore.*",
+        "SafeMode",
+        "TheAdmin",
+        "TheAgencyTheme",
+        "TheBlogTheme",
+        "TheComingSoonTheme",
+        "TheTheme",
+    ];
+
     private const string AutoSetupPrefix = "OrchardCore__OrchardCore_AutoSetup__";
 
     public static void Validate(LocalSiteInstallOptions options)
@@ -133,6 +151,34 @@ internal static partial class LocalSiteInstaller
         return source;
     }
 
+    internal static XDocument CreateNuGetConfig(LocalSiteInstallOptions options)
+    {
+        var sources = new XElement("packageSources");
+        if (options.ClearSources)
+        {
+            sources.Add(new XElement("clear"));
+        }
+
+        sources.Add(new XElement("add", new XAttribute("key", NugetSourceKey), new XAttribute("value", NugetSource)));
+        var configuration = new XElement("configuration", sources);
+        var source = ResolveSource(options);
+        if (source != NugetSource)
+        {
+            sources.Add(new XElement("add", new XAttribute("key", OrchardCoreSourceKey), new XAttribute("value", source)));
+
+            // A custom feed only supplies Orchard Core, so it can't replace any other dependency of the
+            // site. Translations are published separately to nuget.org, and may also be on the feed.
+            configuration.Add(new XElement("packageSourceMapping",
+                CreatePackageSource(NugetSourceKey, ["*", TranslationPackagesPattern]),
+                CreatePackageSource(OrchardCoreSourceKey, [.. _orchardCorePackagePatterns, TranslationPackagesPattern])));
+        }
+
+        return new XDocument(configuration);
+    }
+
+    private static XElement CreatePackageSource(string key, IEnumerable<string> patterns) =>
+        new("packageSource", new XAttribute("key", key), patterns.Select(pattern => new XElement("package", new XAttribute("pattern", pattern))));
+
     internal static string GetSiteUrl(LocalSiteInstallOptions options)
     {
         var urls = ParseListenUrls(options.Urls!);
@@ -200,22 +246,8 @@ internal static partial class LocalSiteInstaller
             await DotnetEnvironment.RunAsync(["new", "occms", "--output", options.Directory], scratch, environment, diagnostics, cancellationToken, options.SecretEnvironmentVariables);
             await WriteSdkSelectionAsync(options.Directory, sdk, cancellationToken);
             await WriteListenUrlsAsync(options.Directory, options.Urls, cancellationToken);
-            var sources = new XElement("packageSources");
-            if (options.ClearSources)
-            {
-                sources.Add(new XElement("clear"));
-            }
-
-            sources.Add(new XElement("add", new XAttribute("key", "nuget.org"), new XAttribute("value", NugetSource)));
-            var config = new XDocument(new XElement("configuration", sources));
-            var source = ResolveSource(options);
-            if (source != NugetSource)
-            {
-                sources.Add(new XElement("add", new XAttribute("key", "OrchardCore"), new XAttribute("value", source)));
-            }
-
             var nugetConfig = Path.Combine(options.Directory, "NuGet.Config");
-            await File.WriteAllTextAsync(nugetConfig, config.ToString(), cancellationToken);
+            await File.WriteAllTextAsync(nugetConfig, CreateNuGetConfig(options).ToString(), cancellationToken);
             var programPath = Path.Combine(options.Directory, "Program.cs");
             var program = await File.ReadAllTextAsync(programPath, cancellationToken);
             const string orchardBuilder = ".AddOrchardCms()";

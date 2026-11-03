@@ -7,6 +7,92 @@ namespace OrchardCore.Cli.Tests;
 
 public class LocalSiteInstallerTests
 {
+    [Fact]
+    public void CreateNuGetConfig_DefaultSource_HasNoSourceMapping()
+    {
+        var config = LocalSiteInstaller.CreateNuGetConfig(new LocalSiteInstallOptions
+        {
+            Directory = "unused", SiteName = "Test", UserName = "admin", Email = "admin@example.com",
+        });
+
+        Assert.Empty(config.Descendants("packageSourceMapping"));
+        Assert.Equal("nuget.org", Assert.Single(config.Descendants("add")).Attribute("key")!.Value);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CreateNuGetConfig_CustomSource_MapsOnlyOrchardCorePackagesToIt(bool clearSources)
+    {
+        var config = LocalSiteInstaller.CreateNuGetConfig(new LocalSiteInstallOptions
+        {
+            Directory = "unused", SiteName = "Test", UserName = "admin", Email = "admin@example.com",
+            Source = "https://feed.example/v3/index.json", ClearSources = clearSources,
+        });
+
+        Assert.Equal(clearSources, config.Descendants("clear").Any());
+        Assert.Equal(["nuget.org", "OrchardCore"], config.Descendants("add").Select(source => source.Attribute("key")!.Value));
+        var mapping = config.Root!.Element("packageSourceMapping")!.Elements("packageSource")
+            .ToDictionary(source => source.Attribute("key")!.Value, source => source.Elements("package").Select(package => package.Attribute("pattern")!.Value).ToArray());
+        Assert.Equal(["*", "OrchardCore.Translations.*"], mapping["nuget.org"]);
+        Assert.Equal(
+            ["OrchardCore", "OrchardCore.*", "SafeMode", "TheAdmin", "TheAgencyTheme", "TheBlogTheme", "TheComingSoonTheme", "TheTheme", "OrchardCore.Translations.*"],
+            mapping["OrchardCore"]);
+        Assert.DoesNotContain("*", mapping["OrchardCore"]);
+    }
+
+    [Fact]
+    public void ResolveDotnetPath_HostPathIsSet_PrefersIt()
+    {
+        var host = CreateDotnet(nameof(ResolveDotnetPath_HostPathIsSet_PrefersIt) + "Host");
+        var onPath = CreateDotnet(nameof(ResolveDotnetPath_HostPathIsSet_PrefersIt) + "Path");
+
+        Assert.Equal(host, DotnetEnvironment.ResolveDotnetPath(host, Path.GetDirectoryName(onPath)));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("dotnet")]
+    public void ResolveDotnetPath_UnusableHostPath_SearchesPath(string? hostPath)
+    {
+        var onPath = CreateDotnet(nameof(ResolveDotnetPath_UnusableHostPath_SearchesPath));
+        var missing = Path.Combine(Path.GetDirectoryName(onPath)!, "missing");
+
+        Assert.Equal(onPath, DotnetEnvironment.ResolveDotnetPath(hostPath, missing + Path.PathSeparator + Path.GetDirectoryName(onPath)));
+    }
+
+    [Fact]
+    public void ResolveDotnetPath_MissingHostFile_SearchesPath()
+    {
+        var onPath = CreateDotnet(nameof(ResolveDotnetPath_MissingHostFile_SearchesPath));
+
+        Assert.Equal(onPath, DotnetEnvironment.ResolveDotnetPath(Path.Combine(Path.GetDirectoryName(onPath)!, "missing"), Path.GetDirectoryName(onPath)));
+    }
+
+    [Fact]
+    public void ResolveDotnetPath_RelativePathEntries_AreIgnored()
+    {
+        var relative = Path.GetRelativePath(global::System.Environment.CurrentDirectory, Path.GetDirectoryName(CreateDotnet(nameof(ResolveDotnetPath_RelativePathEntries_AreIgnored)))!);
+
+        var exception = Assert.Throws<CliException>(() => DotnetEnvironment.ResolveDotnetPath(null, string.Join(Path.PathSeparator, ".", string.Empty, relative)));
+
+        Assert.Contains("SDK", exception.Message);
+    }
+
+    [Fact]
+    public void CreateStartInfo_AnyEnvironment_StartsAFullyQualifiedPath()
+    {
+        Assert.True(Path.IsPathFullyQualified(DotnetEnvironment.CreateStartInfo(["--info"], "unused", null).FileName));
+    }
+
+    private static string CreateDotnet(string name)
+    {
+        var path = Path.Combine(TestPaths.CreateScratchDirectory(name), OperatingSystem.IsWindows() ? "dotnet.exe" : "dotnet");
+        File.WriteAllText(path, string.Empty);
+        return path;
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

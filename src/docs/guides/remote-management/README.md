@@ -242,7 +242,11 @@ their original package IDs. Dependency restore still needs network access or
 a populated package cache; embedding the template does not embed the runtime
 or the site's packages. `--source` adds an explicit Orchard dependency feed
 alongside nuget.org, using an HTTPS NuGet URL or local package directory. It
-does not replace the embedded template or change the Orchard version.
+does not replace the embedded template or change the Orchard version. The generated
+`NuGet.Config` then has a `packageSourceMapping` section that restores only the Orchard Core
+packages, whose IDs start with `OrchardCore` or are those of its themes, from that feed, and
+everything else from nuget.org, so the feed can't replace another dependency of the site. To
+restore a dependency of your own from the feed, add it to that section.
 
 When restoring a build that references official preview packages, configure
 Cloudsmith in a parent/user NuGet configuration or pass it explicitly:

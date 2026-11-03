@@ -35,10 +35,34 @@ internal static class DotnetEnvironment
         }
     }
 
+    // Starting a bare name can run a 'dotnet' from the working directory, which is a site's folder
+    // here, and Windows always looks there. Only absolute locations are considered.
+    internal static string ResolveDotnetPath(string? hostPath, string? searchPath)
+    {
+        if (!string.IsNullOrWhiteSpace(hostPath) && Path.IsPathFullyQualified(hostPath) && File.Exists(hostPath))
+        {
+            return hostPath;
+        }
+
+        var executable = OperatingSystem.IsWindows() ? "dotnet.exe" : "dotnet";
+        foreach (var entry in (searchPath ?? string.Empty).Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var directory = entry.Trim('"');
+            if (Path.IsPathFullyQualified(directory) && File.Exists(Path.Combine(directory, executable)))
+            {
+                return Path.Combine(directory, executable);
+            }
+        }
+
+        throw new CliException($"Install the .NET {RequiredMajor} SDK and make 'dotnet' available on PATH to use 'pomi install'.");
+    }
+
     internal static ProcessStartInfo CreateStartInfo(IEnumerable<string> arguments, string directory, IReadOnlyDictionary<string, string>? environment,
         IEnumerable<string>? secretEnvironmentVariables = null)
     {
-        var info = new ProcessStartInfo("dotnet")
+        var info = new ProcessStartInfo(ResolveDotnetPath(
+            global::System.Environment.GetEnvironmentVariable("DOTNET_HOST_PATH"),
+            global::System.Environment.GetEnvironmentVariable("PATH")))
         {
             WorkingDirectory = directory,
             UseShellExecute = false,
