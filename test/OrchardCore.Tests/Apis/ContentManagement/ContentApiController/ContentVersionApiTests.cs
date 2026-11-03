@@ -67,9 +67,9 @@ public class ContentVersionApiTests
         Assert.Equal(draft.ContentItemVersionId, published.ContentItemVersionId);
         Assert.Equal(HttpStatusCode.Conflict, (await context.Client.DeleteAsync($"api/content/versions/{draft.ContentItemVersionId}", TestContext.Current.CancellationToken)).StatusCode);
 
-        Assert.Equal(HttpStatusCode.OK, (await context.Client.DeleteAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, (await context.Client.GetAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, (await context.Client.DeleteAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await context.Client.GetAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await context.Client.DeleteAsync($"api/content/versions/{firstVersion}", TestContext.Current.CancellationToken)).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await context.Client.PostAsync($"api/content/versions/{firstVersion}/restore", null, TestContext.Current.CancellationToken)).StatusCode);
         var final = await (await context.Client.GetAsync($"api/content/{id}?version=latest", TestContext.Current.CancellationToken)).Content.ReadAsAsync<ContentItem>();
         Assert.Equal(replaced.ContentItemVersionId, final.ContentItemVersionId);
