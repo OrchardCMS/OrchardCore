@@ -6,11 +6,7 @@ Orchard Core also provides `INotifier` for transient UI notifications rendered b
 
 This video shows the notification bell, the notification center, the notification preferences, a workflow that sends notifications, and how a module uses the notification center as its inbox.
 
-<video controls preload="metadata" width="100%" poster="videos/notifications-module.jpg">
-    <source src="videos/notifications-module.mp4" type="video/mp4">
-    <track kind="captions" src="videos/notifications-module.vtt" srclang="en" label="English">
-    Your browser does not support embedded videos. <a href="videos/notifications-module.mp4">Download the video</a>.
-</video>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/oSrCqT6fLVg?si=YIWZZ1JK8LHGVRsO" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Configurations
 
