@@ -135,11 +135,11 @@ TheComingSoon theme is based on the [Start Bootstrap Coming Soon Theme](https://
 - Liquid content templates stored in the database with the Templates features
 - Bootstrap
 
-### SaaS Recipe with TheSaaSTheme
+### SaaS Recipe with TheTheme
 
 The SaaS recipe provides a production-ready multi-tenant starting point.
 
-It configures the public site and authentication pages with TheSaaSTheme, enables
+It configures the site to use TheTheme, enables
 Remote Management, and provisions the OpenID Connect and OpenAPI settings needed
 by the Pomi CLI. After setup, register the tenant and sign in directly:
 
@@ -153,7 +153,7 @@ You can then create additional tenants using any available setup recipe.
 #### SaaS Recipe Contents
 
 - Multi-tenancy feature
-- Responsive SaaS site and authentication theme
+- TheTheme for the site
 - Remote Management discovery and API documentation
 - Authorization code and device login flows for the Pomi CLI
 

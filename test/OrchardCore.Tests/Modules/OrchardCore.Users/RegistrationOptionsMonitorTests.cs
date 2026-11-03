@@ -44,8 +44,7 @@ public class RegistrationOptionsMonitorTests
 
             Assert.False(options.UsersMustValidateEmail);
             Assert.False(options.UsersAreModerated);
-            // The SaaS recipe enables the site theme for registration.
-            Assert.True(options.UseSiteTheme);
+            Assert.False(options.UseSiteTheme);
 
             return Task.CompletedTask;
         });
@@ -58,7 +57,7 @@ public class RegistrationOptionsMonitorTests
                     .Single(provider => provider.Descriptor.Name == "user-registration");
                 var result = await section.UpdateAsync(new JsonObject
                 {
-                    ["usersMustValidateEmail"] = true, ["usersAreModerated"] = true, ["useSiteTheme"] = false,
+                    ["usersMustValidateEmail"] = true, ["usersAreModerated"] = true, ["useSiteTheme"] = true,
                 });
                 Assert.Empty(result.Errors);
                 Assert.True(result.Changed);
@@ -73,7 +72,7 @@ public class RegistrationOptionsMonitorTests
                 {
                     UsersMustValidateEmail = true,
                     UsersAreModerated = true,
-                    UseSiteTheme = false,
+                    UseSiteTheme = true,
                 });
 
                 notifier.RequestUpdate<RegistrationOptions>();
@@ -92,7 +91,7 @@ public class RegistrationOptionsMonitorTests
 
             Assert.True(options.UsersMustValidateEmail);
             Assert.True(options.UsersAreModerated);
-            Assert.False(options.UseSiteTheme);
+            Assert.True(options.UseSiteTheme);
 
             return Task.CompletedTask;
         });

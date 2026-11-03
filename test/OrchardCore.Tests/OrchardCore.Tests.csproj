@@ -60,7 +60,6 @@
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.RemoteManagement\OrchardCore.RemoteManagement.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.SignalR.Azure\OrchardCore.SignalR.Azure.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.SignalR.Redis\OrchardCore.SignalR.Redis.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore.Themes\TheSaaSTheme\TheSaaSTheme.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj" />

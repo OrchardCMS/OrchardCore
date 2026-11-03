@@ -214,7 +214,6 @@
     <Project Path="src/OrchardCore.Themes/TheAgencyTheme/TheAgencyTheme.csproj" />
     <Project Path="src/OrchardCore.Themes/TheBlogTheme/TheBlogTheme.csproj" />
     <Project Path="src/OrchardCore.Themes/TheComingSoonTheme/TheComingSoonTheme.csproj" />
-    <Project Path="src/OrchardCore.Themes/TheSaaSTheme/TheSaaSTheme.csproj" />
     <Project Path="src/OrchardCore.Themes/TheTheme/TheTheme.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore/">

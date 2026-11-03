@@ -35,7 +35,6 @@
         "OrchardCore.Users",
 
         // Themes
-        "TheSaaSTheme",
         "TheTheme",
         "TheAdmin",
         "SafeMode"
@@ -44,7 +43,7 @@
     {
       "name": "themes",
       "admin": "TheAdmin",
-      "site": "TheSaaSTheme"
+      "site": "TheTheme"
     },
     {
       "name": "RemoteManagementCliConfiguration"
@@ -55,18 +54,6 @@
         "Action": "Index",
         "Controller": "Home",
         "Area": "TheTheme"
-      },
-      "LoginSettings": {
-        "UseSiteTheme": true
-      },
-      "RegistrationSettings": {
-        "UseSiteTheme": true
-      },
-      "ResetPasswordSettings": {
-        "UseSiteTheme": true
-      },
-      "TwoFactorLoginSettings": {
-        "UseSiteTheme": true
       }
     },
     {

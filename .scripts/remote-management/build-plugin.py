@@ -35,7 +35,7 @@ def build(output, repo=REPO):
         raise ValueError(f'{output} already exists; choose a new output directory')
     output.mkdir(parents=True)
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip()
-    inputs = ['.agents/skills/pomi', '.agents/plugins', '.claude-plugin', '.scripts/remote-management', 'design/artifacts/logos/pomi', 'LICENSE', '.gitattributes']
+    inputs = ['.agents/skills/pomi', '.agents/plugins', '.claude-plugin', '.scripts/remote-management', 'LICENSE', '.gitattributes']
     dirty = bool(subprocess.check_output(['git', 'status', '--porcelain', '--', *inputs], cwd=repo, text=True).strip())
     marketplace = output / 'pomi-plugin'
     source = repo / '.agents/skills/pomi'

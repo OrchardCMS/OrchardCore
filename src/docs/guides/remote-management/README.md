@@ -396,14 +396,6 @@ to apply your site's branding.
 
 ![Browser authorization page asking for consent to Pomi CLI](images/consent.png)
 
-With **The SaaS Theme** selected as the site theme and **Use site theme for
-login page** enabled, the same consent request uses green accents, softer
-cards, and locally available serif headings. It follows your browser's light
-or dark color preference. **Allow access** receives focus, so Enter approves
-the request; Tab moves to **Deny**.
-
-![SaaS theme consent page with green accents and the Allow access button focused](images/saas-consent.png)
-
 The callback page confirms **Authorization received** and directs you back to
 the terminal. You can close that browser tab. The terminal reports
 `Grant type: browser` and the tenant issuer when the token exchange succeeds;
@@ -411,8 +403,7 @@ receiving the authorization alone does not mean login has finished. The CLI
 serves this page locally, with light and dark appearances and no external
 assets. It is separate from the tenant's themeable consent page.
 
-The callback shares the SaaS theme's Orchard-inspired palette but keeps its
-CSS and icons inline and uses system fonts. It does not download theme files,
+The callback keeps its CSS and icons inline and uses system fonts. It does not download theme files,
 fonts, scripts, or images from the tenant or another website.
 Both pages include a subtle decorative leaf watermark rendered as inline SVG.
 The CLI callback's browser-tab icon uses the Pomi terminal-and-leaf symbol,

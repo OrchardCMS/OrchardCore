@@ -10,7 +10,7 @@ import zipfile
 RIDS = ('linux-x64', 'linux-arm64', 'win-x64', 'win-arm64', 'osx-x64', 'osx-arm64')
 THEMES = {name.lower(): name for name in (
     'SafeMode', 'TheAdmin', 'TheAgencyTheme', 'TheBlogTheme',
-    'TheComingSoonTheme', 'TheSaaSTheme', 'TheTheme')}
+    'TheComingSoonTheme', 'TheTheme')}
 REQUIRED = {
     'orchardcore.application.cms.targets', 'orchardcore.application.mvc.targets',
     'orchardcore.module.targets', 'orchardcore.theme.targets',

@@ -27,8 +27,7 @@ public sealed class SaasTests : IAsyncLifetime
     {
         var page = await _fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync($"/{_fixture.Tenant.Prefix}");
-        await Assertions.Expect(page.Locator("body")).ToHaveClassAsync("saas-page");
-        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync($"Welcome to {_fixture.Tenant.Name}");
+        await Assertions.Expect(page.Locator("h4")).ToContainTextAsync("Welcome to Orchard Core, your site has been successfully set up.");
         await page.CloseAsync();
     }
 
@@ -59,48 +58,6 @@ public sealed class SaasTests : IAsyncLifetime
         Assert.Equal(tenantUrl.TrimEnd('/'), discovery.RootElement.GetProperty("issuer").GetString());
         Assert.Equal($"{tenantUrl}connect/authorize", discovery.RootElement.GetProperty("authorization_endpoint").GetString());
         Assert.Equal($"{tenantUrl}connect/device", discovery.RootElement.GetProperty("device_authorization_endpoint").GetString());
-
-        await page.CloseAsync();
-    }
-
-    [Fact]
-    public async Task SaasRemoteManagementAuthenticationPages_Default_UseSaasTheme()
-    {
-        var page = await _fixture.CreatePageAsync();
-        var prefix = $"/{_fixture.Tenant.Prefix}";
-
-        await page.SetViewportSizeAsync(1440, 900);
-        await page.GotoAndAssertOkAsync($"{prefix}/login");
-        await Assertions.Expect(page.Locator("body")).ToHaveClassAsync("saas-auth-page");
-        await Assertions.Expect(page.Locator(".saas-auth-header")).ToBeVisibleAsync();
-
-        await page.LoginAsync(prefix);
-
-        await page.SetViewportSizeAsync(390, 844);
-        await page.GotoAndAssertOkAsync($"{prefix}/connect/verify");
-        await Assertions.Expect(page.Locator("body")).ToHaveClassAsync("saas-auth-page");
-        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Connect a trusted device");
-        await Assertions.Expect(page.Locator("#user_code")).ToBeVisibleAsync();
-
-        const string codeChallenge = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG";
-        var authorizeUrl = $"{prefix}/connect/authorize"
-            + "?client_id=orchardcore-cli"
-            + "&response_type=code"
-            + "&redirect_uri=http%3A%2F%2F127.0.0.1%2Fcallback"
-            + "&scope=openid%20profile%20roles%20orchardcore.management"
-            + $"&code_challenge={codeChallenge}"
-            + "&code_challenge_method=S256";
-
-        await page.GotoAndAssertOkAsync(authorizeUrl);
-        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Allow access to your tenant?");
-        var allowAccess = page.GetByRole(AriaRole.Button, new() { Name = "Allow access" });
-        await Assertions.Expect(allowAccess).ToBeVisibleAsync();
-        await Assertions.Expect(allowAccess).ToHaveAttributeAsync("value", "yes");
-
-        await page.GotoAndAssertOkAsync(
-            $"{prefix}/connect/logout?client_id=orchardcore-cli&post_logout_redirect_uri=http%3A%2F%2F127.0.0.1%2F");
-        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Sign out of this tenant?");
-        await Assertions.Expect(page.GetByRole(AriaRole.Button, new() { Name = "Sign out" })).ToHaveAttributeAsync("value", "yes");
 
         await page.CloseAsync();
     }

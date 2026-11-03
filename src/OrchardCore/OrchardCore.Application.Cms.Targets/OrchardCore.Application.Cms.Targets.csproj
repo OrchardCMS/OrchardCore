@@ -12,7 +12,6 @@
     - TheAgency Theme
     - TheBlog Theme
     - TheComingSoon Theme
-    - TheSaaS Theme
     - TheTheme theme</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
@@ -36,7 +35,6 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Themes\TheSaaSTheme\TheSaaSTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
   </ItemGroup>
 
