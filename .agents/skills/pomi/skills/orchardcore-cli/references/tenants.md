@@ -224,6 +224,31 @@ Each application is tenant-local. Do not proxy the Default-tenant identity into 
 child; use its own returned context for content and design work. The administrator
 user remains available for human sign-in with the password in the handoff file.
 
+## Inspect, reload and disable
+
+From the Default-tenant context:
+
+```bash
+pomi --context "$HOST_CONTEXT" tenants setup-options show
+pomi --context "$HOST_CONTEXT" tenants setup-status News
+pomi --context "$HOST_CONTEXT" tenants reload News
+pomi --context "$HOST_CONTEXT" tenants disable-remote-management News --force
+```
+
+`setup-options show` lists the setup recipes and database providers to choose from.
+`setup-status` returns why the last setup of an uninitialized tenant failed, so read it
+before retrying `tenants setup`. `reload` rebuilds the shell of a running tenant from its
+settings and features, and requests in progress complete normally.
+
+`disable-remote-management` needs a confirmation, and the same permissions as enabling:
+`ManageTenants` and `ManageRemoteManagementConfiguration`. It stops the management APIs
+and `/mcp` of the tenant, and keeps its OpenID applications, scopes and settings, so
+removing them is a separate decision. It refuses the Default tenant. Don't run it unless
+the user asked: you lose access to the tenant through its own context.
+
+From any context, `pomi management whoami` shows the tenant, the identity, the scopes
+and the effective permissions of the caller.
+
 For host presets, validation, permissions, and complete DTOs, read the versioned
 [tenant API reference](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/tenants/README.md).
 

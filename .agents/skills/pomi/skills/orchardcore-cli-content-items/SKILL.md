@@ -140,6 +140,9 @@ pomi content items unpublish <id>
 pomi content items validate --body-file item.json
 pomi content items validate-update <id> --body-file item.json
 pomi content items render <id> --version draft --display-type Detail
+pomi content items clone <id>
+pomi content items discard-draft <id> --force
+pomi content items bulk --body '{"action":"publish","contentItemIds":["<id>"]}' --force
 pomi content items delete <id> --force
 ```
 

@@ -44,14 +44,23 @@ Omit the flag when only recipe-driven setup and an administrator account are wan
 
 Human access to an existing site can use `pomi login` (browser with PKCE or device
 authorization). Existing automation can use a confidential application with injected
-`OC_CLIENT_ID` and `OC_CLIENT_SECRET`. These environment variables override stored
-credentials: do not carry a host's injected credentials into a provisioned child
-context. Omit those overrides from the child command's environment; preserve them
-for any host commands that need them.
+`OC_CLIENT_ID` and `OC_CLIENT_SECRET`, and `OC_CONTEXT` naming the context they belong
+to. These variables replace the stored credentials only of the context `OC_CONTEXT`
+names. Without `OC_CONTEXT`, they only apply to a context without stored credentials
+that the command names, or that is the only saved one. Always set `OC_CONTEXT` when
+several contexts exist, and never point it at a provisioned child context: a child uses
+its saved credentials. Read [authentication and contexts](authentication.md#environment-credentials).
+Run `pomi management whoami` to check the tenant, identity, scopes and effective
+permissions of the selected context before relying on them.
 Never use the public `orchardcore-cli` client for client credentials. Read
 [authentication and contexts](authentication.md) when onboarding, changing
 identities, handling device approval, or diagnosing authentication. Never print
 tokens, client secrets, passwords, or unredacted connection strings.
+
+Tenant MCP clients don't get the operations for which Pomi asks a confirmation, such
+as deletions, recipe execution or deployment imports, unless the server sets
+`OrchardCore:RemoteManagement:Mcp:AllowConfirmationRequiredTools`. Operations that
+take or return secrets and file transfers are never MCP tools. Use Pomi for these.
 
 ## Unique context names after setup
 

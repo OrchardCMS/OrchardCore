@@ -76,7 +76,9 @@ pomi recipes execute <recipe-id> --body-file parameters.json --force
 
 Use the opaque case-sensitive ID returned by list/show. Recipe execution starts
 a new execution and is not generally retry-idempotent; do not automatically
-repeat it after an ambiguous failure.
+repeat it after an ambiguous failure. To be able to recover the outcome, send a
+`requestId` you generate: repeating it reports the first outcome instead of executing
+again, and `pomi recipes executions show <execution-id>` returns the status.
 
 ## Queries
 
@@ -208,6 +210,9 @@ pomi users list --search editor --role Editor --take 200
 pomi users show <user-id>
 pomi users update <user-id> --body-file user.json
 pomi users disable <user-id> --force
+pomi users unlock <user-id>
+pomi users confirm-email <user-id>
+pomi users send-reset <user-id>
 pomi users delete <user-id> --force
 
 pomi roles schema --operation create
@@ -274,14 +279,16 @@ Do not automatically retry rotation after an uncertain response. Recover with an
 explicit new rotation using another authorized identity or a still-valid token.
 Revocation retires the shared secret while retaining the confidential client and
 its settings; it does not disable other authentication methods or necessarily
-invalidate issued tokens. MCP callers receive the secret directly and must keep it
-out of transcripts and store it securely. Public clients reject both operations.
+invalidate issued tokens. Rotation isn't an MCP tool, as it returns a secret, and
+revocation is only one when the server sets `AllowConfirmationRequiredTools`.
+Public clients reject both operations.
 
 Application provisioning does not alter the independent administrator account.
 Unattended installation still saves its application context automatically. For an
 additional application, select its tenant context and use the existing
-`OC_CLIENT_ID`/`OC_CLIENT_SECRET` credential sources for noninteractive requests;
-keep the administrator handoff file separate from application credentials.
+`OC_CLIENT_ID`/`OC_CLIENT_SECRET` credential sources for noninteractive requests, with
+`OC_CONTEXT` naming that context so that they can't reach another tenant; keep the
+administrator handoff file separate from application credentials.
 
 Scope create/update bodies require `name` and `displayName`. Updates replace the
 editable fields: omitted `description` is cleared, and omitted `resources` or
@@ -406,8 +413,9 @@ commit. Inspect the recorded state and target effects before deciding to submit
 new work. Uncertain operations are never automatically replayed. Keep exported
 packages private; they may contain application configuration or content.
 
-MCP exposes JSON operation and artifact metadata plus execution commands. Use Pomi
-for file upload/download; binary transfers are excluded from MCP tools.
+MCP exposes JSON operation and artifact metadata plus export commands. Use Pomi
+for file upload/download; binary transfers are excluded from MCP tools. Queuing an
+import and deleting are only tools when the server sets `AllowConfirmationRequiredTools`.
 
 
 ## Audit and scheduled task administration

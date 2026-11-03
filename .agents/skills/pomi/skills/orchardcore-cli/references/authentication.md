@@ -19,8 +19,9 @@ application, and return a unique `context`. Select that name explicitly and run
 Pomi discovers the authority, obtains an application token, and renews it when
 needed. No `context add`, `pomi login`, or device approval is required.
 
-Do not supply a host's `OC_CLIENT_ID`/`OC_CLIENT_SECRET` to a child command:
-explicit environment credentials take precedence over the saved credentials.
+Do not supply a host's `OC_CLIENT_ID`/`OC_CLIENT_SECRET` to a child command: a child
+context uses its saved credentials, and the variables are only for the context
+`OC_CONTEXT` names, as [environment credentials](#environment-credentials) explains.
 Keep the administrator username/password in the separate
 [private handoff file](setup-password.md#credential-handoff) for the user.
 The application represents itself, not that administrator, and retains its own
@@ -117,12 +118,31 @@ For automation, use a dedicated confidential OpenID application with minimal
 permissions:
 
 ```bash
+export OC_CONTEXT="$CONTEXT"
 export OC_CLIENT_ID=orchard-automation
 export OC_CLIENT_SECRET='<injected-by-secret-store>'
 pomi --context "$CONTEXT" content items list
+pomi --context "$CONTEXT" management whoami
 ```
 
 Do not use the public `orchardcore-cli` client for client credentials.
+
+### Environment credentials
+
+These credentials are only valid in one tenant, so Pomi limits where it sends them:
+
+| Situation | Credentials sent |
+| --- | --- |
+| `OC_CONTEXT` names the context | `OC_CLIENT_ID` and `OC_CLIENT_SECRET`, instead of any stored login |
+| `OC_CONTEXT` names another context | The stored login of the context, if any |
+| `OC_CONTEXT` is not set and the context has a stored login | The stored login |
+| `OC_CONTEXT` is not set, no stored login, and the command names the context | `OC_CLIENT_ID` and `OC_CLIENT_SECRET` |
+| `OC_CONTEXT` is not set, no stored login, and it is the only saved context | `OC_CLIENT_ID` and `OC_CLIENT_SECRET` |
+| `OC_CONTEXT` is not set, no stored login, and it is the current one among several | None, with a warning on standard error |
+
+`OC_CONTEXT` only limits the variables. Select the context of a command with `--context`
+or `pomi context use`. Set `OC_CONTEXT` whenever these variables are present in an
+environment that can reach several tenants.
 
 ## Manage contexts
 
