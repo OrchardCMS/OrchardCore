@@ -15,6 +15,7 @@ public sealed class UserPasskeyDisplayDriver : DisplayDriver<User>
         }
 
         return Initialize<SummaryAdminUserViewModel>("UserPasskeyActionsMenu", model => model.User = user)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:11");
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:11")
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:11");
     }
 }

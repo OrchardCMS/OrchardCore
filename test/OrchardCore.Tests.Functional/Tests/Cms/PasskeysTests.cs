@@ -68,6 +68,18 @@ public sealed class PasskeysTests : CmsTestBase<BlogFixture>, IClassFixture<Blog
         await page.GotoAndAssertOkAsync($"{baseUrl}/Security");
         await Assertions.Expect(passkey).ToBeVisibleAsync();
 
+        // Administrators find the action that removes the passkeys of a user in the Actions menu of both layouts of the list.
+        await page.GotoAndAssertOkAsync($"{baseUrl}/Admin/Settings/admin");
+        await page.GetByLabel("Let users choose the layout of a list").SetCheckedAsync(true);
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        foreach (var layout in new[] { "List", "Grid" })
+        {
+            await page.GotoAndAssertOkAsync($"{baseUrl}/Admin/Users/Index?q=admin&layout={layout}");
+            await Assertions.Expect(page.Locator(".actions-menu a[data-title='Remove passkeys']")).ToHaveCountAsync(1);
+        }
+
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
