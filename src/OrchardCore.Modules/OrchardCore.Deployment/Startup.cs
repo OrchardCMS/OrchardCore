@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Core;
+using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Artifacts;
 using OrchardCore.Deployment.Operations;
 using OrchardCore.Deployment.Deployment;
@@ -21,6 +22,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.FileStorage;
 using OrchardCore.Modules;
 using OrchardCore.Deployment.ViewModels;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.RemoteManagement;
@@ -30,6 +32,13 @@ namespace OrchardCore.Deployment;
 
 public sealed class Startup : StartupBase
 {
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
+    {
+        _shellConfiguration = shellConfiguration;
+    }
+
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.AddDeploymentPlanEndpoints();
@@ -43,6 +52,8 @@ public sealed class Startup : StartupBase
     {
         services.TryAddTransient<FileCreationService>();
         services.AddDeploymentServices();
+        services.Configure<DeploymentPackageOptions>(_shellConfiguration.GetSection("Deployment:Package"));
+        services.Configure<DeploymentOperationOptions>(_shellConfiguration.GetSection("Deployment:Operations"));
         services.AddOptions<DeploymentArtifactOptions>();
         services.AddScoped<DeploymentArtifactStore>();
         services.AddScoped<DeploymentOperationStore>();

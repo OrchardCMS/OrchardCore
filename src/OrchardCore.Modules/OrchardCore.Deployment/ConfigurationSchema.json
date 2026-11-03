@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Deployment": {
+          "type": "object",
+          "description": "Configures the deployment of packages. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Deployment'. See https://docs.orchardcore.net/en/latest/reference/modules/Deployment/.",
+          "properties": {
+            "Package": {
+              "type": "object",
+              "description": "The limits applied to a deployment package when it's imported. All the limits must be positive.",
+              "properties": {
+                "MaxUploadBytes": {
+                  "type": "integer",
+                  "description": "The maximum size of a package, in bytes.",
+                  "default": 104857600
+                },
+                "MaxExpandedBytes": {
+                  "type": "integer",
+                  "description": "The maximum total size of the files of a package once expanded, in bytes.",
+                  "default": 524288000
+                },
+                "MaxEntries": {
+                  "type": "integer",
+                  "description": "The maximum number of entries of a package.",
+                  "default": 10000
+                }
+              }
+            },
+            "Operations": {
+              "type": "object",
+              "description": "The queued deployment operations of the management API. See https://docs.orchardcore.net/en/latest/reference/modules/Deployment/#queued-deployment-operations.",
+              "properties": {
+                "Retention": {
+                  "type": "string",
+                  "description": "How long an operation stays available after it ended, in the 'd.hh:mm:ss' format. Its request ID can be used again afterwards. A value of zero keeps operations forever.",
+                  "default": "7.00:00:00"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
