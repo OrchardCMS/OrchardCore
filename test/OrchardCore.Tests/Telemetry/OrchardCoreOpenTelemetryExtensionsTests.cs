@@ -61,6 +61,28 @@ public class OrchardCoreOpenTelemetryExtensionsTests
     }
 
     [Theory]
+    [InlineData("Elastic.Transport")]
+    [InlineData("MailKit.Net.SmtpClient")]
+    [InlineData("Azure.Storage.Blobs.BlobContainerClient")]
+    public void AddOpenTelemetry_ClientLibrariesExcluded_DoesNotSampleTheirTraces(string sourceName)
+    {
+        var builder = CreateBuilder(new()
+        {
+            ["OrchardCore:OpenTelemetry:Tracing:IncludeClientLibraries"] = "false",
+        });
+
+        new OrchardCoreBuilder(builder.Services).AddOpenTelemetry();
+
+        using var host = builder.Build();
+        host.Services.GetRequiredService<TracerProvider>();
+
+        using var source = new ActivitySource(sourceName);
+        using var activity = source.StartActivity("Operation");
+
+        Assert.Null(activity);
+    }
+
+    [Theory]
     [InlineData("true", null, "always_off", false)]
     [InlineData("true", null, "always_on", true)]
     [InlineData("true", null, null, true)]
