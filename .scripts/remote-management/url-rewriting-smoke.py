@@ -154,7 +154,7 @@ with tempfile.TemporaryDirectory(prefix='rewrite-cli-', dir=state_path.parent) a
     request(path.lstrip('/'), client='cli-denied', status=403)
     for client in ['cli-discovery', 'cli-denied']:
         for method, route, body in [('GET', '', None), ('GET', '/' + first_id, None),
-                ('POST', '/validate', first), ('POST', '', first), ('PUT', '/' + first_id, first),
+                ('POST', ':validate', first), ('POST', '', first), ('PUT', '/' + first_id, first),
                 ('PUT', '/' + first_id + '/position', {'position': 0}), ('DELETE', '/' + first_id, None)]:
             request('api/url-rewriting/rules' + route, method, body, client=client, status=403)
         request('api/url-rewriting/sources', client=client, status=403)

@@ -55,7 +55,7 @@ missing_resource_status = {
     'settings sections schema': 404,
     'content localizations list': 404, 'content localizations create': 404,
     # Scoped to the caller's own uploads and operations, with no shared resource to protect.
-    'deployment artifacts show': 404, 'deployment artifacts delete': 200,
+    'deployment artifacts show': 404, 'deployment artifacts delete': 404,
     'deployment artifacts download': 404, 'deployment operations show': 404,
 }
 ids = set()

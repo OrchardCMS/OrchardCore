@@ -12,7 +12,7 @@ state = json.loads(Path(sys.argv[1]).read_text())
 base = state['url']
 
 features = ['OrchardCore.ContentTypes', 'OrchardCore.DataLocalization', 'OrchardCore.Deployment', 'OrchardCore.Deployment.Remote',
-    'OrchardCore.Layers', 'OrchardCore.Localization', 'OrchardCore.Search.Lucene', 'OrchardCore.Media', 'OrchardCore.Placements', 'OrchardCore.Queries',
+    'OrchardCore.Layers', 'OrchardCore.Localization', 'OrchardCore.Lucene', 'OrchardCore.Media', 'OrchardCore.Placements', 'OrchardCore.Queries',
     'OrchardCore.RateLimits', 'OrchardCore.Roles', 'OrchardCore.Shortcodes.Templates', 'OrchardCore.Sitemaps',
     'OrchardCore.Templates', 'OrchardCore.Tenants.FeatureProfiles', 'OrchardCore.UrlRewriting', 'OrchardCore.Workflows']
 missing = 'missing' + secrets.token_hex(6)
@@ -73,6 +73,10 @@ bearer = token()
 for feature in features:
     status, _, text = send('api/features/' + feature + ':enable?force=true', 'POST', bearer)
     assert status in (200, 204), (feature, status, text[:300])
+
+# A translation is only addressable in a supported culture.
+status, _, text = send('api/localization/cultures/fr', 'PUT', bearer)
+assert status == 200, (status, text[:300])
 
 failures = []
 for route in routes:
