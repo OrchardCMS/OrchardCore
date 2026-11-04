@@ -258,7 +258,11 @@ public static class LiquidViewTemplateExtensions
                 actionContext.HttpContext,
                 tempDataProvider),
             TextWriter.Null,
-            new HtmlHelperOptions());
+            new HtmlHelperOptions())
+        {
+            // The view localizer needs a file path, which is only set while a Razor page executes.
+            ExecutingFilePath = viewResult.View.Path,
+        };
 
         if (viewContext.View is RazorView razorView)
         {
