@@ -59,7 +59,8 @@ public class GeneratedTextBoundaryTests
 
         await CreateAliasHandler("").CloningAsync(new CloneContentContext(item, clone), part);
 
-        Assert.Equal(prefix + "-1", clone.As<AliasPart>().Alias);
+        Assert.True(clone.TryGet<AliasPart>(out var clonedPart));
+        Assert.Equal(prefix + "-1", clonedPart.Alias);
     }
 
     [Theory]
