@@ -69,7 +69,7 @@ public class ModuleAttributeTests : ModuleAttributeTests<ModuleAttribute>
         var author = LoremWords(2);
         var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
         var website = LoremWebsiteUrl();
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
         var tags = LoremWords(5).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
@@ -137,7 +137,7 @@ public class ModuleAttributeTests : ModuleAttributeTests<ModuleAttribute>
         var author = LoremWords(2);
         var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
         var website = LoremWebsiteUrl();
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
         var tags = LoremWords(5).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
@@ -207,7 +207,7 @@ public class ModuleAttributeTests : ModuleAttributeTests<ModuleAttribute>
         var author = LoremWords(2);
         var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
         var website = LoremWebsiteUrl();
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
         var tags = LoremWords(5).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
@@ -278,7 +278,7 @@ public class ModuleAttributeTests : ModuleAttributeTests<ModuleAttribute>
         var author = LoremWords(2);
         var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
         var website = LoremWebsiteUrl();
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
         var tags = LoremWords(5).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
