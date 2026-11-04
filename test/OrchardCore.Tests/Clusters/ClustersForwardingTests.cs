@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ using global::Microsoft.Extensions.Hosting;
 using global::Microsoft.Extensions.Options;
 using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Telemetry;
 using Yarp.ReverseProxy.Forwarder;
 
 namespace OrchardCore.Tests.Clusters;
@@ -37,6 +39,30 @@ public class ClustersForwardingTests
         Assert.Equal("tenant.example", request.Host);
         Assert.Equal(Secret, request.ProxyHeader);
         Assert.False(edge.TenantRan);
+    }
+
+    [Fact]
+    public async Task Forward_TenantRequest_TagsTheProxySpanWithClusterAndTenant()
+    {
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == "Yarp.ReverseProxy",
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+        };
+
+        ActivitySource.AddActivityListener(listener);
+
+        await using var edge = await Edge.StartAsync();
+
+        await edge.SendAsync("http://tenant.example/");
+
+        var span = edge.Backend.Activity;
+
+        Assert.Equal("proxy.forwarder", span.OperationName);
+
+        // An exporter sends all the values of an attribute, not only the first one.
+        Assert.Equal("tenant-cluster", Assert.Single(span.TagObjects, tag => tag.Key == "proxy.cluster_id").Value);
+        Assert.Equal("Tenant", span.GetTagItem(OrchardCoreTelemetryConstants.Attributes.TenantName));
     }
 
     [Theory]
@@ -272,8 +298,12 @@ public class ClustersForwardingTests
     {
         public List<ForwardedRequest> Requests { get; } = [];
 
+        public Activity Activity { get; private set; }
+
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            Activity = Activity.Current;
+
             request.Headers.TryGetValues(RequestHeaderNames.FromClustersProxy, out var values);
 
             Requests.Add(new ForwardedRequest(request.RequestUri.ToString(), request.Headers.Host, string.Join(',', values ?? [])));

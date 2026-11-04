@@ -72,6 +72,7 @@ public sealed class ClustersRoutingMiddleware
         httpContext.Features.Set(new ClusterFeature
         {
             ClusterId = clusterId,
+            TenantName = shellSettings.Name,
         });
 
         await endpoint.RequestDelegate(httpContext);

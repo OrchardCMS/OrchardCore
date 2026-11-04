@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Telemetry;
 using Yarp.ReverseProxy.Transforms;
 
 namespace OrchardCore.Clusters;
@@ -46,6 +48,14 @@ public static class ClustersProxyBuilderExtensions
 
                 headers.Remove(RequestHeaderNames.FromClustersProxy);
                 headers.TryAddWithoutValidation(RequestHeaderNames.FromClustersProxy, optionsMonitor.CurrentValue.ProxySecret);
+
+                // The 'proxy.forwarder' span refers to the cluster of the route, and no tenant runs here to add its name.
+                // This can't be done before the transforms, as YARP adds the cluster to this span just before them.
+                var clusterFeature = transformContext.HttpContext.Features.Get<ClusterFeature>();
+
+                Activity.Current?
+                    .SetTag("proxy.cluster_id", clusterFeature?.ClusterId)
+                    .SetTag(OrchardCoreTelemetryConstants.Attributes.TenantName, clusterFeature?.TenantName);
 
                 return ValueTask.CompletedTask;
             });

@@ -218,6 +218,24 @@ The background tasks of a released tenant don't run until its next request, as i
 
 When `BackgroundServiceOptions.ShellWarmup` is enabled, the background service builds all the tenants of the node and runs their background tasks, including a tenant which has just been released, so only its request pipeline is released. Don't enable it on a clustering proxy, as this node would then run all the tenants.
 
+## Tracing
+
+With [OpenTelemetry](../OpenTelemetry/README.md), add `Yarp.ReverseProxy` to the `Tracing:Sources` setting of the proxy to collect a `proxy.forwarder` span for each forwarded request:
+
+```json
+{
+  "OrchardCore": {
+    "OpenTelemetry": {
+      "Tracing": {
+        "Sources": [ "Yarp.ReverseProxy" ]
+      }
+    }
+  }
+}
+```
+
+No tenant runs on the proxy, so this span carries the tenant name in `orchardcore.tenant.name`, and in `proxy.cluster_id` the cluster selected for this tenant instead of the cluster of the route. Without this source, the proxy adds these two attributes to the span of the HTTP request.
+
 ## Operational behavior
 
 ### Removing a node or cluster from configuration
