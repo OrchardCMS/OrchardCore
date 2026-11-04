@@ -20,7 +20,7 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class ShapeFactoryBenchmark
 {
-    private static readonly FilterArguments s_filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+    private static readonly FilterArguments s_filterArguments = new FilterArguments().Add("utc", DateTimeValue.Create(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
     private static readonly FluidValue s_input = StringValue.Create("DateTime");
     private static readonly TemplateContext s_templateContext;
 
@@ -65,7 +65,7 @@ public class ShapeFactoryBenchmark
             throw new ArgumentException("DisplayHelper missing while invoking 'shape_render'");
         }
 
-        if (input.ToObjectValue() is IShape shape)
+        if (input.ToObjectValue(context) is IShape shape)
         {
             return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
         }

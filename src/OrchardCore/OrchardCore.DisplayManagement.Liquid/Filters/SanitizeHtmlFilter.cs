@@ -15,10 +15,10 @@ public class SanitizeHtmlFilter : ILiquidFilter
     }
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var html = input.ToStringValue();
+        var html = input.ToStringValue(ctx);
 
         html = _htmlSanitizerService.Sanitize(html);
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(html));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(html));
     }
 }

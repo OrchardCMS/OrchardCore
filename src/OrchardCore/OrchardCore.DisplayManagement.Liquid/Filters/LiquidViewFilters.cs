@@ -12,7 +12,7 @@ public static class LiquidViewFilters
     [SkipLocalizationExtraction]
     public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
-        var localizer = ctx.GetValue("ViewLocalizer")?.ToObjectValue() as IViewLocalizer;
+        var localizer = ctx.GetValue("ViewLocalizer")?.ToObjectValue(ctx) as IViewLocalizer;
 
         if (localizer == null)
         {
@@ -41,25 +41,25 @@ public static class LiquidViewFilters
         {
             if (i != noteIndex)
             {
-                parameters[j++] = arguments.At(i).ToStringValue();
+                parameters[j++] = arguments.At(i).ToStringValue(ctx);
             }
         }
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(localizer.GetString(input.ToStringValue(ctx), parameters)));
     }
 
-    public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments _1, TemplateContext _2)
+    public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments _, TemplateContext context)
     {
-        return ValueTask.FromResult<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(input.ToStringValue(context).HtmlClassify()));
     }
 
     public static ValueTask<FluidValue> ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
-        if (input.ToObjectValue() is IShape shape)
+        if (input.ToObjectValue(ctx) is IShape shape)
         {
             foreach (var name in arguments.Names)
             {
-                shape.Properties[name.ToPascalCaseUnderscore()] = arguments[name].ToObjectValue();
+                shape.Properties[name.ToPascalCaseUnderscore()] = arguments[name].ToObjectValue(ctx);
             }
             return FluidValue.Create(shape, ctx.Options);
         }

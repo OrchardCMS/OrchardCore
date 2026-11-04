@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin;
@@ -16,7 +15,7 @@ using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Recipes;
 using OrchardCore.Layers.Services;
-using OrchardCore.Layers.ViewModels;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -29,12 +28,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<WidgetWrapper>();
-            o.MemberAccessStrategy.Register<LayerMetadata>();
-        });
-
         // The filter is resolved from the container instead of being activated by reflection on each request.
         services.AddTransient<LayerFilter>();
         services.Configure<MvcOptions>((options) =>

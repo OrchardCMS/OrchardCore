@@ -22,10 +22,10 @@ public class ShapeStringifyFilter : ILiquidFilter
         {
             using var writer = new ZStringWriter();
             (await task).WriteTo(writer, NullHtmlEncoder.Default);
-            return new StringValue(writer.ToString(), false);
+            return StringValue.Create(writer.ToString(), encode: false);
         }
 
-        if (input.ToObjectValue() is IShape shape)
+        if (input.ToObjectValue(ctx) is IShape shape)
         {
             var task = _displayHelper.ShapeExecuteAsync(shape);
             if (!task.IsCompletedSuccessfully)
@@ -35,7 +35,7 @@ public class ShapeStringifyFilter : ILiquidFilter
 
             using var writer = new ZStringWriter();
             task.Result.WriteTo(writer, NullHtmlEncoder.Default);
-            return ValueTask.FromResult<FluidValue>(new StringValue(writer.ToString(), false));
+            return ValueTask.FromResult<FluidValue>(StringValue.Create(writer.ToString(), encode: false));
         }
 
         return ValueTask.FromResult<FluidValue>(StringValue.Empty);

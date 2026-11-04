@@ -9,19 +9,19 @@ namespace OrchardCore.Resources.Liquid;
 
 public class ResourcesTag
 {
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IFluidOutput output, TextEncoder _, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
         var processors = services.GetRequiredService<IEnumerable<IResourcesTagHelperProcessor>>();
 
-        var processorContext = new ResourcesTagHelperProcessorContext(ResourceTagType.Footer, writer);
+        var processorContext = new ResourcesTagHelperProcessorContext(ResourceTagType.Footer, output.AsTextWriter());
 
         foreach (var argument in argumentsList)
         {
             switch (argument.Name)
             {
                 case "type":
-                    var typeString = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    var typeString = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     if (Enum.TryParse<ResourceTagType>(typeString, out var type))
                     {
                         processorContext = processorContext with { Type = type };
