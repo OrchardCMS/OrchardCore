@@ -240,7 +240,8 @@ describe("FileLibraryManager", () => {
 
     const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
     expect(mockInstance.copyMedia).toHaveBeenCalledWith("/Images/photo1.jpg", "/Documents/photo1.jpg");
-    expect(fileItems.value.find((x) => x.filePath === "/Other/photo1.jpg")).toBeDefined();
+    // The copy landed in /Other, not in the selected /Images folder, so it is not listed.
+    expect(fileItems.value.find((x) => x.filePath === "/Other/photo1.jpg")).toBeUndefined();
     expect(notify).toHaveBeenCalledTimes(1);
   });
 
