@@ -4,6 +4,7 @@ using AngleSharp.Html.Dom;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
@@ -28,7 +29,7 @@ public class StyleTagTests : IDisposable
         // Arrange
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.css"),
@@ -59,7 +60,7 @@ public class StyleTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.css"),
@@ -94,7 +95,7 @@ public class StyleTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.css"),
@@ -134,7 +135,7 @@ public class StyleTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.css"),
@@ -164,7 +165,7 @@ public class StyleTagTests : IDisposable
         // Arrange — StyleTag only renders inline when at=Inline (unlike ScriptTag).
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.css"),
@@ -192,7 +193,7 @@ public class StyleTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "bootstrap-css"),
@@ -224,7 +225,7 @@ public class StyleTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-style"),
@@ -252,7 +253,7 @@ public class StyleTagTests : IDisposable
         // Arrange
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-style"),
@@ -287,7 +288,7 @@ public class StyleTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-style"),
@@ -320,7 +321,7 @@ public class StyleTagTests : IDisposable
         // Arrange — When "name" and "src" path are provided, but no "at" is provided.
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-style"),
@@ -365,8 +366,8 @@ public class StyleTagTests : IDisposable
         );
 
         // Act — Register the same style twice.
-        await StyleTag.WriteToAsync(arguments, new StringWriter(), null, context);
-        await StyleTag.WriteToAsync(arguments, new StringWriter(), null, context);
+        await StyleTag.WriteToAsync(arguments, new ViewBufferTextWriterContent(), null, context);
+        await StyleTag.WriteToAsync(arguments, new ViewBufferTextWriterContent(), null, context);
 
         // Assert — Only one resource definition should exist.
         var requiredResources = resourceManager.GetRequiredResources("stylesheet");
@@ -397,7 +398,7 @@ public class StyleTagTests : IDisposable
             .AddSingleton(resourceManager)
             .BuildServiceProvider();
 
-        return new LiquidTemplateContext(services, new TemplateOptions());
+        return new LiquidTemplateContext(services, TemplateOptions.Default);
     }
 
     private static List<FilterArgument> CreateArguments(params (string name, string value)[] args)
@@ -407,7 +408,7 @@ public class StyleTagTests : IDisposable
 
     private async Task<IDocument> ParseHtmlAsync(HtmlContentBuilder content)
     {
-        using var writer = new StringWriter();
+        using var writer = new ViewBufferTextWriterContent();
 
         content.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
 

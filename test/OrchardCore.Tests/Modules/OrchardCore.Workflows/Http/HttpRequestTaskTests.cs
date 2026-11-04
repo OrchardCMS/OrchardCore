@@ -88,13 +88,17 @@ public class HttpRequestTaskTests
     private static HttpRequestTask CreateTask(HttpMessageHandler handler)
     {
         var services = new ServiceCollection();
+        services.AddLiquidTemplateOptions();
         services.Configure<FluidParserOptions>(_ => { });
         services.Configure<LiquidViewOptions>(_ => { });
-        services.Configure<TemplateOptions>(options =>
+        services.Configure<TemplateOptionsBuilder>(options =>
         {
-            options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
-            options.MemberAccessStrategy.Register<WorkflowExecutionContext>();
-            options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
+            options.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+                strategy.Register<WorkflowExecutionContext>();
+                strategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
+            });
         });
         services.AddHttpContextAccessor();
         services.AddScoped(_ => new ViewContextAccessor { ViewContext = new ViewContext() });
