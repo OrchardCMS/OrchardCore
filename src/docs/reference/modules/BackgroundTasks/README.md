@@ -31,13 +31,13 @@ Clicking the title of a task, or the **Details** item of its **Actions** menu, o
 The list and the details page stay up to date while they are visible: they check the status of the tasks in the background, every 10 seconds or every few seconds while a task is queued or running, and update a task as soon as it starts or completes a run, whether it was scheduled or run on demand, without reloading the page. When the list is filtered to show the tasks that are running or queued, or whose last run failed, the page is reloaded when another task starts matching the filter.
 
 !!! note
-    The execution state is kept in memory by the background service of each server, it is not stored in the database. It reflects the runs of the server handling the request since the application started, so it is reset when the application restarts, and in a web farm each server shows the runs it executed itself.
+    The execution state is kept in memory by the background service of each server, it is not stored in the database. It reflects the runs of the server handling the request since the application started, so it is reset when the application restarts, and in a web farm each server shows the runs it executed itself, so these pages [require session affinity](#running-in-a-web-farm).
 
 ## Running a Task on Demand
 
 The **Run now** item of the **Actions** menu of a task, available in the list and on the details page, queues the task to run as soon as possible, regardless of its schedule. With the **Menu** layout of the actions of the admin lists, it's in the menu of the row of the task. Select several tasks and use the **Run now** bulk action to queue them all at once.
 
-- A task that is already running or queued is not queued again.
+- A task that is already running or queued on the server handling the request is not queued again.
 - A disabled task can also be run on demand, which is convenient to check a task before enabling it. Its schedule is not affected.
 - The task runs only on the server that handled the request, usually within a second or two, as the background service doesn't wait for the end of its polling time nor of its minimum idle time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run. In a web farm, the other servers are not affected, see [Running in a Web Farm](#running-in-a-web-farm).
 - The background service waits for all the tasks it started to complete before starting others, on any tenant. While a long task runs, a requested task stays queued, and a scheduled task is shown as due, until that task completes.
@@ -55,7 +55,12 @@ When the application runs on several servers, each server runs its own backgroun
 
 **Run now** doesn't follow this behavior: it runs the task only on the server that handled the request, and doesn't affect the other servers, which keep running the task on schedule. This is enough for a task that works on shared data, such as the database, as most tasks do. For a task that works on the local data of each server, such as a local cache, it only processes the data of the server that ran it.
 
-As the execution state is kept in memory by each server, the pages show the runs of the server handling the request, so a run requested on demand is only shown by the server that ran it.
+The execution state and the run requests are kept in memory by each server and are not shared, so the background tasks admin pages require session affinity (sticky sessions) on the load balancer, or accessing a single server directly. Without it, consecutive requests reach different servers:
+
+- A page shows the runs of the server that rendered it, so a task queued on a server can look idle on the next page.
+- A **Run now** that is retried from such a page can run the task again on another server, as a task is only recognized as already running or queued by the server that holds it. A distributed lock prevents these runs from overlapping, but not from happening.
+
+An open page only updates from the server that rendered it and ignores the answers of the others. It is reloaded when that server no longer answers for a few minutes, for instance after a restart.
 
 ## Configuration
 
