@@ -5,9 +5,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseNLogHost();
 
-builder.Services
+var orchardCore = builder.Services
     .AddOrchardCms()
     .AddSetupFeatures("OrchardCore.AutoSetup");
+
+// Exports traces, metrics and logs when an OTLP endpoint is configured, e.g. with the 'OTEL_EXPORTER_OTLP_ENDPOINT' environment variable.
+// Without one nothing would be exported, so nothing is collected.
+// See https://docs.orchardcore.net/en/latest/reference/modules/OpenTelemetry/.
+if (builder.Configuration.HasOtlpEndpoint())
+{
+    orchardCore.AddOpenTelemetry();
+}
 
 // Tenant clustering is only wired when its configuration section exists on start.
 var clustersSection = builder.Configuration.GetSection(ClustersOptions.ConfigurationSection);
