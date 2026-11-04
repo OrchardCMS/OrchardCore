@@ -354,6 +354,20 @@ public sealed class DesignerAddStepRequest
     public DesignerConnectFrom ConnectFrom { get; set; }
 }
 
+public sealed class DesignerAddDataSourceRequest
+{
+    public int Revision { get; set; }
+
+    /// <summary>
+    /// Gets or sets the data source and the data set to read, such as <c>Contents::BlogPost</c>.
+    /// </summary>
+    public string DataSet { get; set; }
+
+    public int X { get; set; }
+
+    public int Y { get; set; }
+}
+
 public sealed class DesignerRevisionRequest
 {
     public int Revision { get; set; }

@@ -45,7 +45,7 @@
     @Html.ValidationSummary()
 
     <div class="ocat-limited-wrapper">
-        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
         <div class="ocat-limited">
             <input asp-for="DisplayName" autofocus class="form-control" />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
@@ -78,7 +78,7 @@
             <div class="ocat-wrapper">
                 <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="Editor" class="form-select" id="field-editor-select">
+                    <select asp-for="Editor" class="form-select" data-field-editor-select>
                         @foreach (var editorShape in editorShapes)
                         {
                             var shape = await Factory.CreateAsync(editorShape);
@@ -99,7 +99,7 @@
             <div class="ocat-wrapper">
                 <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="DisplayMode" class="form-select" id="field-display-select">
+                    <select asp-for="DisplayMode" class="form-select" data-field-display-select>
                         @foreach (var displayShape in displayShapes)
                         {
                             var shape = await Factory.CreateAsync(displayShape);
@@ -116,14 +116,12 @@
         </div>
     }
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-            @if (Url.IsLocalUrl(returnUrl))
-            {
-                <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
-            }
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        @if (Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+        }
     </div>
 </form>
 

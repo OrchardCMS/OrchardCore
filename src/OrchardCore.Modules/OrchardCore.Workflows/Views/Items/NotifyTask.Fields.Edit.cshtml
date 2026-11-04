@@ -12,7 +12,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="Message">
-    <label asp-for="Message" class="ocat-label">@T["Message"]</label>
+    <label asp-for="Message" class="ocat-label ocat-label-required">@T["Message"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="Message" class="form-control code" />
         <span asp-validation-for="Message"></span>

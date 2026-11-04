@@ -10,6 +10,7 @@ using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.DataPipelines.ViewModels.Designer;
+using OrchardCore.DataSources;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
@@ -42,6 +43,8 @@ public sealed class DataPipelineDesignerController : Controller
     private readonly IOptions<ShellOptions> _shellOptions;
     private readonly ShellSettings _shellSettings;
     private readonly IOptions<DataPipelineOptions> _options;
+    private readonly IDataSourceManager _dataSourceManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IStringLocalizer S;
 
     public DataPipelineDesignerController(
@@ -59,6 +62,8 @@ public sealed class DataPipelineDesignerController : Controller
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
         IOptions<DataPipelineOptions> options,
+        IDataSourceManager dataSourceManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<DataPipelineDesignerController> localizer)
     {
         _pipelineManager = pipelineManager;
@@ -75,6 +80,8 @@ public sealed class DataPipelineDesignerController : Controller
         _shellOptions = shellOptions;
         _shellSettings = shellSettings;
         _options = options;
+        _dataSourceManager = dataSourceManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -219,8 +226,63 @@ public sealed class DataPipelineDesignerController : Controller
             return this.ApiForbidProblem();
         }
 
+        return await AddStepAsync(pipelineId, request?.Revision ?? 0, request?.Type, request?.X ?? 0, request?.Y ?? 0, request?.ConnectFrom, configure: null);
+    }
+
+    /// <summary>
+    /// Lists the data sets the user may read, for the designer's dialog that adds a <see cref="DataSourceStep"/>.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> DataSets()
+    {
+        if (!await AuthorizeAsync(DataPipelinePermissions.ManageDataPipelines))
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var dataSets = await DataSetOption.ListAsync(_dataSourceManager, _localizerFactory, User, HttpContext.RequestAborted);
+
+        return Ok(new
+        {
+            dataSets = dataSets.Select(option => new
+            {
+                value = option.Value,
+                displayName = option.Text,
+                description = option.Description,
+                source = option.Source,
+                group = option.Group,
+            }),
+        });
+    }
+
+    /// <summary>
+    /// Adds a <see cref="DataSourceStep"/> that reads a data set the user may read.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> AddDataSource(string pipelineId, [FromBody] DesignerAddDataSourceRequest request)
+    {
+        if (!await AuthorizeAsync(DataPipelinePermissions.ManageDataPipelines))
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var dataSets = await DataSetOption.ListAsync(_dataSourceManager, _localizerFactory, User, HttpContext.RequestAborted);
+        var (source, dataSet) = DataSetOption.Parse(request?.DataSet);
+
+        if (source is null || !dataSets.Any(option => option.Value == request.DataSet))
+        {
+            return this.ApiBadRequestProblem();
+        }
+
+        return await AddStepAsync(pipelineId, request.Revision, DataSourceStep.StepName, request.X, request.Y, connectFrom: null, step =>
+            step.Put(new DataSourceStepSettings { Source = source, DataSet = dataSet }));
+    }
+
+    // Adds a step to the draft, configured by configure, and connected after an output when connectFrom is set.
+    private async Task<IActionResult> AddStepAsync(string pipelineId, int expectedRevision, string type, int x, int y, DesignerConnectFrom connectFrom, Action<DataPipelineStep> configure)
+    {
         var pipeline = await _pipelineManager.GetAsync(pipelineId);
-        var stepType = _stepTypeManager.GetStepType(request?.Type);
+        var stepType = _stepTypeManager.GetStepType(type);
 
         if (pipeline is null || stepType is null)
         {
@@ -230,20 +292,22 @@ public sealed class DataPipelineDesignerController : Controller
         var step = new DataPipelineStep
         {
             StepId = _idGenerator.GenerateUniqueId(),
-            Type = request.Type,
-            X = request.X,
-            Y = request.Y,
+            Type = type,
+            X = x,
+            Y = y,
         };
+
+        configure?.Invoke(step);
 
         DataPipelineConnection connection = null;
 
         try
         {
-            var revision = await _pipelineManager.SaveDraftAsync(pipeline, request.Revision, draft =>
+            var revision = await _pipelineManager.SaveDraftAsync(pipeline, expectedRevision, draft =>
             {
                 draft.Steps.Add(step);
 
-                if (request.ConnectFrom is { } from && draft.FindStep(from.StepId) is { } source && _stepTypeManager.GetStepType(source.Type) is { } sourceType)
+                if (connectFrom is { } from && draft.FindStep(from.StepId) is { } source && _stepTypeManager.GetStepType(source.Type) is { } sourceType)
                 {
                     var output = sourceType.GetOutputs(source).FirstOrDefault(port => port.Name == from.Port);
                     var input = output is null ? null : stepType.GetInputs(step).FirstOrDefault(port => port.Kind == output.Kind);

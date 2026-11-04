@@ -21,14 +21,12 @@
     <input type="hidden" asp-for="AdminNodeId" />
     <input type="hidden" asp-for="AdminNodeType" />
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-success create" type="submit">@T["Create"]</button>
-            <a class="btn btn-secondary cancel"
-               role="button"
-               asp-route-controller="Node"
-               asp-route-action="List"
-               asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-success create" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary cancel"
+           role="button"
+           asp-route-controller="Node"
+           asp-route-action="List"
+           asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
     </div>
 </form>

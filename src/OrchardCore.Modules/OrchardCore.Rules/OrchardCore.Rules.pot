@@ -1,0 +1,468 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Rules\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: ex.Message
+#: Drivers/JavascriptConditionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
+msgid "JavaScript evaluation resulted in an exception. Details: {0}"
+msgstr ""
+
+#: Drivers/JavascriptConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
+msgid "Please provide a script."
+msgstr ""
+
+#. Format arguments: {0}: details
+#: Drivers/JavascriptConditionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
+msgid "The script couldn't be parsed. Details: {0}"
+msgstr ""
+
+#. Format arguments: {0}: ex.Message
+#: Drivers/JavascriptConditionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
+msgid "The script evaluation failed. Details: {0}"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Contains"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not contain"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not end with"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not equal"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Does not start with"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Ends with"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Equals"
+msgstr ""
+
+#: Services/ConditionOperatorConfigureOptions.cs
+msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
+msgid "Starts with"
+msgstr ""
+
+#: Views/Condition.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Add"
+msgstr ""
+
+#: Views/Condition.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Delete"
+msgstr ""
+
+#: Views/Condition.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Condition.Summary"
+msgid "Edit"
+msgstr ""
+
+#: Views/Condition.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Condition.Thumbnail"
+msgid "Add"
+msgstr ""
+
+#: Views/ConditionsModal.cshtml
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Available Rules"
+msgstr ""
+
+#: Views/ConditionsModal.cshtml
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Cancel"
+msgstr ""
+
+#: Views/ConditionsModal.cshtml
+msgctxt "OrchardCore.Rules.Views.ConditionsModal"
+msgid "Filter"
+msgstr ""
+
+#: Views/Items/AllCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
+msgid "All"
+msgstr ""
+
+#: Views/Items/AllCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/AllCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Summary"
+msgid "All conditions"
+msgstr ""
+
+#: Views/Items/AllCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Thumbnail"
+msgid "All condition group"
+msgstr ""
+
+#: Views/Items/AllCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Thumbnail"
+msgid "An all condition group contains other conditions which are all required to be true."
+msgstr ""
+
+#: Views/Items/AnyCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
+msgid "Any"
+msgstr ""
+
+#: Views/Items/AnyCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/AnyCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Summary"
+msgid "Any conditions"
+msgstr ""
+
+#: Views/Items/AnyCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Thumbnail"
+msgid "An any condition group contains other conditions but only requires any condition to be true."
+msgstr ""
+
+#: Views/Items/AnyCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Thumbnail"
+msgid "Any condition"
+msgstr ""
+
+#: Views/Items/BooleanCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "Boolean"
+msgstr ""
+
+#: Views/Items/BooleanCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "False"
+msgstr ""
+
+#: Views/Items/BooleanCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
+msgid "True"
+msgstr ""
+
+#: Views/Items/BooleanCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Summary"
+msgid "Boolean condition"
+msgstr ""
+
+#: Views/Items/BooleanCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Thumbnail"
+msgid "A boolean condition can be either true or false."
+msgstr ""
+
+#: Views/Items/BooleanCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Thumbnail"
+msgid "Boolean condition"
+msgstr ""
+
+#: Views/Items/ConditionGroup.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ConditionGroup.Fields.Summary"
+msgid "No conditions found. Please add at least one condition."
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Content type"
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Select the rule operator."
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Summary"
+msgid "Content type"
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Thumbnail"
+msgid "A content type condition evaluates the currently displayed content types against a value."
+msgstr ""
+
+#: Views/Items/ContentTypeCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Thumbnail"
+msgid "Content type condition"
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Culture"
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Summary"
+msgid "Culture"
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Thumbnail"
+msgid "A culture condition evaluates the current ui culture against a value."
+msgstr ""
+
+#: Views/Items/CultureCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Thumbnail"
+msgid "Culture condition"
+msgstr ""
+
+#: Views/Items/HomepageCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Homepage"
+msgstr ""
+
+#: Views/Items/HomepageCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Is homepage"
+msgstr ""
+
+#: Views/Items/HomepageCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
+msgid "Is not homepage"
+msgstr ""
+
+#: Views/Items/HomepageCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Summary"
+msgid "Is homepage"
+msgstr ""
+
+#: Views/Items/HomepageCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Summary"
+msgid "Is not homepage"
+msgstr ""
+
+#: Views/Items/HomepageCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Thumbnail"
+msgid "Homepage condition"
+msgstr ""
+
+#: Views/Items/HomepageCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Thumbnail"
+msgid "Whether the current page is the site homepage."
+msgstr ""
+
+#: Views/Items/IsAnonymousCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Edit"
+msgid "Is anonymous condition"
+msgstr ""
+
+#: Views/Items/IsAnonymousCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Summary"
+msgid "Is anonymous"
+msgstr ""
+
+#: Views/Items/IsAnonymousCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Thumbnail"
+msgid "Is anonymous condition"
+msgstr ""
+
+#: Views/Items/IsAnonymousCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAnonymousCondition.Fields.Thumbnail"
+msgid "Whether the current user is anonymous, i.e. not authenticated."
+msgstr ""
+
+#: Views/Items/IsAuthenticatedCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Edit"
+msgid "Is authenticated condition"
+msgstr ""
+
+#: Views/Items/IsAuthenticatedCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Summary"
+msgid "Is authenticated"
+msgstr ""
+
+#: Views/Items/IsAuthenticatedCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Thumbnail"
+msgid "Is authenticated condition"
+msgstr ""
+
+#: Views/Items/IsAuthenticatedCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.IsAuthenticatedCondition.Fields.Thumbnail"
+msgid "Whether the current user is authenticated."
+msgstr ""
+
+#: Views/Items/JavascriptCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "Javascript"
+msgstr ""
+
+#: Views/Items/JavascriptCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "Script"
+msgstr ""
+
+#: Views/Items/JavascriptCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
+msgid "The script must return true or false."
+msgstr ""
+
+#: Views/Items/JavascriptCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Summary"
+msgid "Javascript condition"
+msgstr ""
+
+#: Views/Items/JavascriptCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Thumbnail"
+msgid "A script condition written in javascript."
+msgstr ""
+
+#: Views/Items/JavascriptCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Thumbnail"
+msgid "Javascript condition"
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Role"
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Summary"
+msgid "Role"
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Thumbnail"
+msgid "A role condition evaluates the current users roles against a value."
+msgstr ""
+
+#: Views/Items/RoleCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Thumbnail"
+msgid "Role condition"
+msgstr ""
+
+#: Views/Items/Rule.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.Rule.Fields.Summary"
+msgid "Rules"
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Operation"
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Select the condition operator."
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "The value for the operation."
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Url"
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
+msgid "Value"
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Summary"
+msgid "Url"
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Thumbnail"
+msgid "A url condition evaluates the current url against a value."
+msgstr ""
+
+#: Views/Items/UrlCondition.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Thumbnail"
+msgid "Url condition"
+msgstr ""
+
+#: Views/Rule.Summary.cshtml
+msgctxt "OrchardCore.Rules.Views.Rule.Summary"
+msgid "Add"
+msgstr ""

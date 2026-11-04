@@ -52,7 +52,7 @@
         }
         else
         {
-            <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every date and time"]">
+            <select asp-for="Fields" multiple data-dp-select data-live-search="true" data-actions-box="true" data-select-all-text="@T["Select all"]" data-deselect-all-text="@T["Deselect all"]" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" title="@T["Every date and time"]">
                 @foreach (var field in Model.AvailableFields)
                 {
                     <option value="@field.Name" selected="@Model.Fields.Contains(field.Name)">@field.Name</option>

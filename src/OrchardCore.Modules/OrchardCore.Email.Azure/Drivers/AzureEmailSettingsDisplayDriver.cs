@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -15,6 +14,7 @@ using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Azure.Email.Drivers;
@@ -24,8 +24,9 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IEmailAddressValidator _emailValidator;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -33,15 +34,17 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
         IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
         IEmailAddressValidator emailValidator,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _emailValidator = emailValidator;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -59,7 +62,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
         {
             model.IsEnabled = settings.IsEnabled;
             model.DefaultSender = settings.DefaultSender;
-            model.ConnectionString = settings.ConnectionString;
+            model.ConnectionString = SecretInputViewModel.Create(settings.ConnectionString, settings.ConnectionStringSecretName);
         }).Location("Content:5#Azure Communication Services")
         .OnGroup(SettingsGroupId);
     }
@@ -105,23 +108,29 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
 
             settings.DefaultSender = model.DefaultSender;
 
-            if (string.IsNullOrWhiteSpace(model.ConnectionString))
+            var connectionString = await model.ConnectionString.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.ConnectionString)}")
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
-            }
-            else
+                ProtectedValue = settings.ConnectionString,
+                SecretName = settings.ConnectionStringSecretName,
+            });
+
+            if (connectionString.Succeeded)
             {
-                if (model.ConnectionString != settings.ConnectionString)
+                if (string.IsNullOrEmpty(connectionString.ProtectedValue) && string.IsNullOrEmpty(connectionString.SecretName))
                 {
-                    // Encrypt the connection string.
-                    var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
+                }
+                else
+                {
+                    hasChanges |= connectionString.ProtectedValue != settings.ConnectionString ||
+                        connectionString.SecretName != settings.ConnectionStringSecretName;
 
-                    var protectedConnection = protector.Protect(model.ConnectionString);
-
-                    // Check if the connection string changed before setting it.
-                    hasChanges |= protectedConnection != settings.ConnectionString;
-
-                    settings.ConnectionString = protectedConnection;
+                    settings.ConnectionString = connectionString.ProtectedValue;
+                    settings.ConnectionStringSecretName = connectionString.SecretName;
                 }
             }
         }

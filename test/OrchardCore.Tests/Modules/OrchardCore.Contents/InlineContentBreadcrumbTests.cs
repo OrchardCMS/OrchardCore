@@ -68,8 +68,8 @@ public class InlineContentBreadcrumbTests
         {
             permissions.Add(listPermissionContentType.Length == 0
                 ? CommonPermissions.ListContent
-                : ContentTypePermissionsHelper.CreateDynamicPermission(
-                    ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ListContent),
+                : ContentTypePermissionsHelper.CreateDynamicPermissionOf(
+                    CommonPermissions.ListContent.Name,
                     listPermissionContentType));
         }
 

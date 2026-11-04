@@ -10,7 +10,8 @@ namespace OrchardCore.Roles;
 /// </summary>
 public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly RoleManager<IRole> _roleManager;
+    private readonly IRoleStore<IRole> _roleStore;
+    private readonly ILookupNormalizer _lookupNormalizer;
     private readonly IPermissionGrantingService _permissionGrantingService;
 
 
@@ -20,10 +21,14 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
     private Claim[] _authenticatedClaims;
 
     public RolesPermissionsHandler(
-        RoleManager<IRole> roleManager,
+        IRoleStore<IRole> roleStore,
+        ILookupNormalizer lookupNormalizer,
         IPermissionGrantingService permissionGrantingService)
     {
-        _roleManager = roleManager;
+        // The role store is used directly, as the role manager, its validators and all their dependencies
+        // would otherwise be built on each request only to look up a role by its normalized name.
+        _roleStore = roleStore;
+        _lookupNormalizer = lookupNormalizer;
         _permissionGrantingService = permissionGrantingService;
     }
 
@@ -56,7 +61,7 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
 
     private async Task<IEnumerable<RoleClaim>> GetRoleClaimsAsync(string roleName)
     {
-        var role = await _roleManager.FindByNameAsync(roleName);
+        var role = await _roleStore.FindByNameAsync(_lookupNormalizer.NormalizeName(roleName), CancellationToken.None);
 
         if (role != null)
         {

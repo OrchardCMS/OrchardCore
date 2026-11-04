@@ -50,7 +50,7 @@
 </div>
 
 <div id="Path_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Endpoint ? string.Empty : "d-none")" asp-validation-class-for="Path">
-    <label asp-for="Path" class="ocat-label">@T["Request path"]</label>
+    <label asp-for="Path" class="ocat-label ocat-label-required">@T["Request path"]</label>
     <div class="ocat-end">
         @if (isTargetLocked)
         {
@@ -72,7 +72,7 @@
 </div>
 
 <div id="GroupName_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Group ? string.Empty : "d-none")" asp-validation-class-for="GroupName">
-    <label asp-for="GroupName" class="ocat-label">@T["Rate-limit group"]</label>
+    <label asp-for="GroupName" class="ocat-label ocat-label-required">@T["Rate-limit group"]</label>
     <div class="ocat-end">
         @if (isTargetLocked)
         {

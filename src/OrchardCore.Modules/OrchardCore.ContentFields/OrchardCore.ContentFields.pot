@@ -1,0 +1,1695 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.ContentFields\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/ContentPickerFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.ContentPickerFieldDisplayDriver"
+msgid "The {0} field cannot contain multiple items."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/ContentPickerFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.ContentPickerFieldDisplayDriver"
+msgid "The {0} field is required."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/DateFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.DateFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/DateTimeFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.DateTimeFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/LinkFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.LinkFieldDisplayDriver"
+msgid "The link text is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/LinkFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.LinkFieldDisplayDriver"
+msgid "The text default value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/LinkFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.LinkFieldDisplayDriver"
+msgid "The url is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: field.Url
+#: Drivers/LinkFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.LinkFieldDisplayDriver"
+msgid "{0} is an invalid url."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/LocalizationSetContentPickerFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.LocalizationSetContentPickerFieldDisplayDriver"
+msgid "The {0} field cannot contain multiple items."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/LocalizationSetContentPickerFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.LocalizationSetContentPickerFieldDisplayDriver"
+msgid "The {0} field is required."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/NumericFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.NumericFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName(); {1}: settings.Scale
+#: Drivers/NumericFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.NumericFieldDisplayDriver"
+msgid "Invalid number of digits for {0}, max allowed: {1}."
+msgstr ""
+
+#. Format arguments: {0}: settings.Minimum.Value
+#: Drivers/NumericFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.NumericFieldDisplayDriver"
+msgid "The value must be greater than {0}."
+msgstr ""
+
+#. Format arguments: {0}: settings.Maximum.Value
+#: Drivers/NumericFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.NumericFieldDisplayDriver"
+msgid "The value must be less than {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/NumericFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.NumericFieldDisplayDriver"
+msgid "The {0} field must be an integer."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/NumericFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.NumericFieldDisplayDriver"
+msgid "{0} is an invalid number."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/TextFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.TextFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName(); {1}: settings.MaxLength
+#: Drivers/TextFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.TextFieldDisplayDriver"
+msgid "{0} can't be longer than {1} characters."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName(); {1}: settings.MinLength
+#: Drivers/TextFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.TextFieldDisplayDriver"
+msgid "{0} must be at least {1} characters long."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/TimeFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.TimeFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/UserPickerFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.UserPickerFieldDisplayDriver"
+msgid "The value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/UserPickerFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.UserPickerFieldDisplayDriver"
+msgid "The {0} field cannot contain multiple items."
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/YoutubeFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Drivers.YoutubeFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#: Drivers/YoutubeFieldDisplayDriver.cs
+msgctxt "OrchardCore.ContentFields.Drivers.YoutubeFieldDisplayDriver"
+msgid "The format of the url is invalid"
+msgstr ""
+
+#. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
+#: Drivers/MultiTextFieldDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Fields.MultiTextFieldDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""
+
+#: GraphQL/Types/ContentPickerFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.ContentPickerFieldQueryObjectType"
+msgid "content item ids"
+msgstr ""
+
+#: GraphQL/Types/ContentPickerFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.ContentPickerFieldQueryObjectType"
+msgid "publication status of the content item"
+msgstr ""
+
+#: GraphQL/Types/ContentPickerFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.ContentPickerFieldQueryObjectType"
+msgid "the content items"
+msgstr ""
+
+#: GraphQL/Fields/ContentFieldsProvider.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Fields.ContentFieldsProvider"
+msgid "Boolean field"
+msgstr ""
+
+#: GraphQL/Fields/ContentFieldsProvider.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Fields.ContentFieldsProvider"
+msgid "Date & time field"
+msgstr ""
+
+#: GraphQL/Fields/ContentFieldsProvider.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Fields.ContentFieldsProvider"
+msgid "Date field"
+msgstr ""
+
+#: GraphQL/Fields/ContentFieldsProvider.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Fields.ContentFieldsProvider"
+msgid "Multi text field"
+msgstr ""
+
+#: GraphQL/Fields/ContentFieldsProvider.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Fields.ContentFieldsProvider"
+msgid "Numeric field"
+msgstr ""
+
+#: GraphQL/Fields/ContentFieldsProvider.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Fields.ContentFieldsProvider"
+msgid "Text field"
+msgstr ""
+
+#: GraphQL/Fields/ContentFieldsProvider.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Fields.ContentFieldsProvider"
+msgid "Time field"
+msgstr ""
+
+#: GraphQL/Types/HtmlFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.HtmlFieldQueryObjectType"
+msgid "Content stored as HTML."
+msgstr ""
+
+#: GraphQL/Types/HtmlFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.HtmlFieldQueryObjectType"
+msgid "the HTML content"
+msgstr ""
+
+#: GraphQL/Types/LinkFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Types.LinkFieldQueryObjectType"
+msgid "the target of the link"
+msgstr ""
+
+#: GraphQL/Types/LinkFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Types.LinkFieldQueryObjectType"
+msgid "the text of the link"
+msgstr ""
+
+#: GraphQL/Types/LinkFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.Types.LinkFieldQueryObjectType"
+msgid "the url of the link"
+msgstr ""
+
+#: GraphQL/Types/UserPickerFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.UserPickerFieldQueryObjectType"
+msgid "the user items"
+msgstr ""
+
+#: GraphQL/Types/UserPickerFieldQueryObjectType.cs
+msgctxt "OrchardCore.ContentFields.GraphQL.UserPickerFieldQueryObjectType"
+msgid "user ids"
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/ContentPickerFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.ContentPickerFieldHandler"
+msgid "The {0} field cannot contain multiple items."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/ContentPickerFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.ContentPickerFieldHandler"
+msgid "The {0} field is required."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/DateFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.DateFieldHandler"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/DateTimeFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.DateTimeFieldHandler"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/LinkFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.LinkFieldHandler"
+msgid "The link text is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/LinkFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.LinkFieldHandler"
+msgid "The text default value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/LinkFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.LinkFieldHandler"
+msgid "The url is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: field.Url
+#: Handlers/LinkFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.LinkFieldHandler"
+msgid "{0} is an invalid url."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/LocalizationSetContentPickerFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.LocalizationSetContentPickerFieldHandler"
+msgid "The {0} field cannot contain multiple items."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/LocalizationSetContentPickerFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.LocalizationSetContentPickerFieldHandler"
+msgid "The {0} field is required."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/MultiTextFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.MultiTextFieldHandler"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/NumericFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.NumericFieldHandler"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName(); {1}: settings.Scale
+#: Handlers/NumericFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.NumericFieldHandler"
+msgid "Invalid number of digits for {0}, max allowed: {1}."
+msgstr ""
+
+#. Format arguments: {0}: settings.Minimum.Value
+#: Handlers/NumericFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.NumericFieldHandler"
+msgid "The value must be greater than {0}."
+msgstr ""
+
+#. Format arguments: {0}: settings.Maximum.Value
+#: Handlers/NumericFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.NumericFieldHandler"
+msgid "The value must be less than {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/NumericFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.NumericFieldHandler"
+msgid "The {0} field must be an integer."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/TextFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.TextFieldHandler"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/TimeFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.TimeFieldHandler"
+msgid "A value is required for {0}."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/UserPickerFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.UserPickerFieldHandler"
+msgid "The {0} field cannot contain multiple items."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/UserPickerFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.UserPickerFieldHandler"
+msgid "The {0} field is required."
+msgstr ""
+
+#. Format arguments: {0}: context.ContentPartFieldDefinition.DisplayName()
+#: Handlers/YoutubeFieldHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Handlers.YoutubeFieldHandler"
+msgid "A value is required for '{0}'."
+msgstr ""
+
+#: Handlers/YoutubeFieldHandler.cs
+msgctxt "OrchardCore.ContentFields.Handlers.YoutubeFieldHandler"
+msgid "The format of the url is invalid"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "(Optional) The default to assign to the text field."
+msgstr ""
+
+#. Format arguments: {0}: "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"
+#: Services/ContentFieldsJSLocalizer.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "A JSON representation of the allowed values, e.g. {0}"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Add an option"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Cancel"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Default value"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Default?"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Edit Data"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Enter a name"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Enter a value"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "No result found"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "No values found"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Not enabled"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Not published"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "OK"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Option Label"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Options"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Remove"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Remove element from list"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Select"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Type to search"
+msgstr ""
+
+#: Services/ContentFieldsJSLocalizer.cs
+msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
+msgid "Value"
+msgstr ""
+
+#: Settings/ContentPickerFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
+msgid "At least one content type must be selected."
+msgstr ""
+
+#: Settings/ContentPickerFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
+msgid "Please provide a Stereotype."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(" ", titleErrors)
+#: Settings/ContentPickerFieldSettingsDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
+msgid "Title Pattern does not contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Settings/HtmlFieldMonacoEditorSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.HtmlFieldMonacoEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/HtmlFieldTrumbowygEditorSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.HtmlFieldTrumbowygEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/MultiTextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.MultiTextFieldSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/TextFieldMonacoEditorSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldMonacoEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/TextFieldPredefinedListEditorSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldPredefinedListEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/TextFieldPredefinedListEditorSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldPredefinedListEditorSettingsDriver"
+msgid "The options can't contain more than one element with the same label and value."
+msgstr ""
+
+#: Settings/TextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "A pattern is required when using the selected behavior type."
+msgstr ""
+
+#. Format arguments: {0}: partFieldDefinition.DisplayName()
+#: Settings/TextFieldSettingsDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "A value for {0} should be in #RGB, #RGBA, #RRGGBB, or #RRGGBBAA formats."
+msgstr ""
+
+#: Settings/TextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "Editable"
+msgstr ""
+
+#: Settings/TextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "Generated Disabled"
+msgstr ""
+
+#: Settings/TextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "Generated Hidden"
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', errors)
+#: Settings/TextFieldSettingsDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Settings/TextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "The maximum length can't be a negative number."
+msgstr ""
+
+#: Settings/TextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "The maximum length can't be smaller than the minimum length."
+msgstr ""
+
+#: Settings/TextFieldSettingsDriver.cs
+msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
+msgid "The minimum length can't be a negative number."
+msgstr ""
+
+#: Views/BooleanField-Switch.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanField-Switch.Option"
+msgid "Switch"
+msgstr ""
+
+#: Views/BooleanField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/BooleanField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/BooleanFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanFieldSettings.Edit"
+msgid "Default value is true"
+msgstr ""
+
+#: Views/BooleanFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/BooleanFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanFieldSettings.Edit"
+msgid "Label"
+msgstr ""
+
+#: Views/BooleanFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanFieldSettings.Edit"
+msgid "The default value this field will be initialized with when creating a new item."
+msgstr ""
+
+#: Views/BooleanFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/BooleanFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.BooleanFieldSettings.Edit"
+msgid "The text associated to the checkbox."
+msgstr ""
+
+#: Views/ContentPickerField.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField"
+msgid "No content items."
+msgstr ""
+
+#: Views/ContentPickerField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/ContentPickerField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "All content types of these Stereotypes"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Allow multiple"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Contained Content Types"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Content Types"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Display All Content Types"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Stereotype"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Stereotypes"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "The Stereotypes of the content types that this field can contain. You may define multiple Stereotypes using the comma (,) as a separator"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "The content types to display. Choose at least one."
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "The pattern used to render the title in content picker. With Liquid support."
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "The placeholder text to display for this field on the editor."
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Title Pattern"
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Whether to allow multiple elements to be selected."
+msgstr ""
+
+#: Views/ContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
+msgid "Whether to ensure at least one element is selected."
+msgstr ""
+
+#: Views/DateField-Localized.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateField-Localized.Option"
+msgid "Localized"
+msgstr ""
+
+#: Views/DateField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/DateField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/DateFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/DateFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/DateFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/DateFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#: Views/DateTimeField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateTimeField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/DateTimeField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateTimeField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/DateTimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateTimeFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/DateTimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateTimeFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/DateTimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateTimeFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/DateTimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.DateTimeFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#: Views/HtmlField-Monaco.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlField-Monaco.Option"
+msgid "Monaco editor"
+msgstr ""
+
+#: Views/HtmlField-Multiline.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlField-Multiline.Option"
+msgid "Multiline"
+msgstr ""
+
+#: Views/HtmlField-Trumbowyg.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlField-Trumbowyg.Option"
+msgid "Trumbowyg editor"
+msgstr ""
+
+#: Views/HtmlField-Wysiwyg.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlField-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr ""
+
+#: Views/HtmlField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/HtmlField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/HtmlFieldMonacoEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldMonacoEditorSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#: Views/HtmlFieldMonacoEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldMonacoEditorSettings.Edit"
+msgid "Enter the editor options, language is always set to `html` when saved."
+msgstr ""
+
+#: Views/HtmlFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/HtmlFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldSettings.Edit"
+msgid "Sanitize Html"
+msgstr ""
+
+#: Views/HtmlFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/HtmlFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/HtmlFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldSettings.Edit"
+msgid "Whether the Html is sanitized, e.g. by removing script tags (and more)."
+msgstr ""
+
+#: Views/HtmlFieldTrumbowygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldTrumbowygEditorSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#: Views/HtmlFieldTrumbowygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldTrumbowygEditorSettings.Edit"
+msgid "Enter the editor options"
+msgstr ""
+
+#: Views/HtmlFieldTrumbowygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldTrumbowygEditorSettings.Edit"
+msgid "Insert Media with url"
+msgstr ""
+
+#: Views/HtmlFieldTrumbowygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.HtmlFieldTrumbowygEditorSettings.Edit"
+msgid "Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."
+msgstr ""
+
+#: Views/LinkField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "Link text"
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "Opens the linked document in a new window or tab."
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "Opens the linked document in the full body of the window."
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "Opens the linked document in the parent frame."
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "Opens the linked document in the same frame as it was clicked (default)."
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "Target"
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "The target attribute of the anchor tag, see more:"
+msgstr ""
+
+#: Views/LinkField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkField.Edit"
+msgid "Url"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "A hint (placeholder) to display when the input of the text is empty."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "A hint (placeholder) to display when the input of the url is empty."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "A valid url proposed when creating a content item."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Default value of the Target"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Default value of the text"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Default value of the url"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Hint for the text"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Hint for the url"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Opens the linked document in a new window or tab."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Opens the linked document in the full body of the window."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Opens the linked document in the parent frame."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Opens the linked document in the same frame as it was clicked (default)."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Text"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Text is optional"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Text is required"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "The default link text proposed when creating a content item."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "The default target proposed when creating a content item."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "The hint text to display for the text of the link on the editor."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "The hint text to display for the url on the editor."
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Use the default value"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Use the url of the link"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Watermark for the text"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Watermark for the url"
+msgstr ""
+
+#: Views/LinkFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LinkFieldSettings.Edit"
+msgid "Whether the url is required."
+msgstr ""
+
+#: Views/LocalizationSetContentPickerField.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField"
+msgid "No content items."
+msgstr ""
+
+#: Views/LocalizationSetContentPickerField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "Allow multiple"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "Content Types"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "The content types to display. Choose at least one."
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "Whether to allow multiple elements to be selected."
+msgstr ""
+
+#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
+msgid "Whether to ensure at least one element is selected."
+msgstr ""
+
+#: Views/MultiTextField.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField"
+msgid ", "
+msgstr ""
+
+#: Views/MultiTextField-CheckboxList.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField-CheckboxList.Option"
+msgid "Checkbox List"
+msgstr ""
+
+#: Views/MultiTextField-Picker.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Option"
+msgid "Picker"
+msgstr ""
+
+#: Views/MultiTextField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/MultiTextField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/MultiTextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/MultiTextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextFieldSettings.Edit"
+msgid "Options"
+msgstr ""
+
+#: Views/MultiTextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/MultiTextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/MultiTextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#: Views/NumericField-Range.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericField-Range.Option"
+msgid "Range"
+msgstr ""
+
+#: Views/NumericField-Select.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericField-Select.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/NumericField-Select.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericField-Select.Option"
+msgid "Select"
+msgstr ""
+
+#: Views/NumericField-Slider.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericField-Slider.Option"
+msgid "Slider"
+msgstr ""
+
+#: Views/NumericField-Spinner.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericField-Spinner.Option"
+msgid "Spinner"
+msgstr ""
+
+#: Views/NumericField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/NumericField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericField.Option"
+msgid "Number"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "A hint to display when the input is empty. (optional)"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Default value"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Maximum"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Minimum"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Scale"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "The default value. (optional)"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "The maximum value allowed. (optional)"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "The minimum value allowed. (optional)"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "The number of digits after the decimal point."
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Watermark (placeholder)"
+msgstr ""
+
+#: Views/NumericFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#: Views/TextField-CodeMirror.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-CodeMirror.Option"
+msgid "Code Mirror"
+msgstr ""
+
+#: Views/TextField-Color.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Color.Edit"
+msgid "Opacity"
+msgstr ""
+
+#: Views/TextField-Color.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Color.Option"
+msgid "Color"
+msgstr ""
+
+#: Views/TextField-Email.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Email.Option"
+msgid "Email"
+msgstr ""
+
+#: Views/TextField-Header.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Header.DisplayOption"
+msgid "Header"
+msgstr ""
+
+#: Views/TextField-IconPicker.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-IconPicker.Option"
+msgid "Icon picker"
+msgstr ""
+
+#: Views/TextField-Monaco.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Monaco.Option"
+msgid "Monaco editor"
+msgstr ""
+
+#: Views/TextField-PredefinedList.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-PredefinedList.Option"
+msgid "Predefined List"
+msgstr ""
+
+#: Views/TextField-Tel.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Tel.Option"
+msgid "Phone"
+msgstr ""
+
+#: Views/TextField-TextArea.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-TextArea.Option"
+msgid "Multi-line"
+msgstr ""
+
+#: Views/TextField-Url.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Url.Option"
+msgid "Url"
+msgstr ""
+
+#: Views/TextField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/TextField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldHeaderDisplaySettings.Edit"
+msgid "H1"
+msgstr ""
+
+#: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldHeaderDisplaySettings.Edit"
+msgid "H2"
+msgstr ""
+
+#: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldHeaderDisplaySettings.Edit"
+msgid "H3"
+msgstr ""
+
+#: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldHeaderDisplaySettings.Edit"
+msgid "H4"
+msgstr ""
+
+#: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldHeaderDisplaySettings.Edit"
+msgid "H5"
+msgstr ""
+
+#: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldHeaderDisplaySettings.Edit"
+msgid "H6"
+msgstr ""
+
+#: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldHeaderDisplaySettings.Edit"
+msgid "Select the header level to use"
+msgstr ""
+
+#: Views/TextFieldMonacoEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldMonacoEditorSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#: Views/TextFieldMonacoEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldMonacoEditorSettings.Edit"
+msgid "Enter the editor options."
+msgstr ""
+
+#: Views/TextFieldPredefinedListEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldPredefinedListEditorSettings.Edit"
+msgid "Drop down list"
+msgstr ""
+
+#: Views/TextFieldPredefinedListEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldPredefinedListEditorSettings.Edit"
+msgid "Options"
+msgstr ""
+
+#: Views/TextFieldPredefinedListEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldPredefinedListEditorSettings.Edit"
+msgid "Radio buttons"
+msgstr ""
+
+#: Views/TextFieldPredefinedListEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldPredefinedListEditorSettings.Edit"
+msgid "What type of list editor should be used?"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Default value"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Maximum length"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Minimum length"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Pattern"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Specifies the maximum number of characters allowed. Leave blank for no maximum limit."
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Specifies the minimum number of characters allowed. Leave blank for no minimum limit."
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "The default value. (optional)"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "The pattern used to generate the value for this field. With Liquid support."
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "The placeholder text to display for this field on the editor."
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Type"
+msgstr ""
+
+#: Views/TextFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#: Views/TimeField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/TimeField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/TimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
+msgid "For seconds use a divisor of 60 e.g. '15', for ms a decimal equal to a divisor of 1000 divided by 1000 e.g. '0.250'."
+msgstr ""
+
+#: Views/TimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/TimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/TimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
+msgid "Step"
+msgstr ""
+
+#: Views/TimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/TimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
+msgid "The step attribute of the time input allowing to edit seconds and ms."
+msgstr ""
+
+#: Views/TimeFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#: Views/UserPickerField.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField"
+msgid "No users."
+msgstr ""
+
+#: Views/UserPickerField-UserNames.Display.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.Display"
+msgid "No users."
+msgstr ""
+
+#: Views/UserPickerField-UserNames.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.DisplayOption"
+msgid "User Names"
+msgstr ""
+
+#: Views/UserPickerField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/UserPickerField.Option.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Allow multiple"
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Display All Users"
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Roles"
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "The placeholder text to display for this field on the editor."
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "The roles that a user must belong to. Choose at least one."
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Whether to allow multiple elements to be selected."
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Whether to allow picker to display users from all roles."
+msgstr ""
+
+#: Views/UserPickerFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
+msgid "Whether to ensure at least one element is selected."
+msgstr ""
+
+#: Views/YoutubeField.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "Height"
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "Required"
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "The height of the Videobox"
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "The placeholder text to display for this field on the editor."
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "The width of the Videobox"
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "Whether a value is required."
+msgstr ""
+
+#: Views/YoutubeFieldSetting.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.YoutubeFieldSetting.Edit"
+msgid "Width"
+msgstr ""
+
+#: ViewModels/EditYoutubeFieldViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The field only accepts Urls"
+msgstr ""

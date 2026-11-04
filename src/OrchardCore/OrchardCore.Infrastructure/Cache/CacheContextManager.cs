@@ -2,20 +2,22 @@ namespace OrchardCore.Environment.Cache;
 
 public class CacheContextManager : ICacheContextManager
 {
-    private readonly IEnumerable<ICacheContextProvider> _cacheContextProviders;
+    private readonly ICacheContextProvider[] _cacheContextProviders;
 
     public CacheContextManager(IEnumerable<ICacheContextProvider> cacheContextProviders)
     {
-        _cacheContextProviders = cacheContextProviders;
+        // The providers resolved from the container are already an array, it is iterated without copying it.
+        _cacheContextProviders = cacheContextProviders as ICacheContextProvider[] ?? cacheContextProviders.ToArray();
     }
 
     public async Task<IEnumerable<CacheContextEntry>> GetDiscriminatorsAsync(IEnumerable<string> contexts)
     {
         var entries = new List<CacheContextEntry>();
 
-        foreach (var provider in _cacheContextProviders.Reverse())
+        // The providers are invoked in the reverse order of their registration.
+        for (var i = _cacheContextProviders.Length - 1; i >= 0; i--)
         {
-            await provider.PopulateContextEntriesAsync(contexts, entries);
+            await _cacheContextProviders[i].PopulateContextEntriesAsync(contexts, entries);
         }
 
         return entries;

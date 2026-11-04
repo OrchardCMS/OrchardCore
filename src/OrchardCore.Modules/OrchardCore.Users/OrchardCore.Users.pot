@@ -1,0 +1,3255 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Users\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: ViewModels/ChangePasswordViewModel.cs
+#: ViewModels/EditPasswordViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Current password is required."
+msgstr ""
+
+#: ViewModels/ChangeEmailViewModel.cs
+#: ViewModels/EditUserEmailViewModel.cs
+#: ViewModels/RegisterViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Email is required."
+msgstr ""
+
+#: ViewModels/ChangeEmailViewModel.cs
+#: ViewModels/EditUserEmailViewModel.cs
+#: ViewModels/ForgotPasswordViewModel.cs
+#: ViewModels/RegisterViewModel.cs
+#: ViewModels/ResetPasswordViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid Email."
+msgstr ""
+
+#. Format arguments: {0}
+#: ViewModels/ChangeEmailViewModel.cs
+#: ViewModels/EditUserEmailViewModel.cs
+#: ViewModels/ForgotPasswordViewModel.cs
+#: ViewModels/RegisterViewModel.cs
+#: ViewModels/ResetPasswordViewModel.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Invalid {0}."
+msgstr ""
+
+#: ViewModels/EditPasswordViewModel.cs
+#: ViewModels/ResetPasswordViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "New password is required."
+msgstr ""
+
+#: ViewModels/ChangePasswordViewModel.cs
+#: ViewModels/LinkExternalLoginViewModel.cs
+#: ViewModels/LoginViewModel.cs
+#: ViewModels/RegisterViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Password is required."
+msgstr ""
+
+#: ViewModels/ChangePasswordViewModel.cs
+#: ViewModels/EditPasswordViewModel.cs
+#: ViewModels/RegisterViewModel.cs
+#: ViewModels/ResetPasswordViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "The new password and confirmation password do not match."
+msgstr ""
+
+#: ViewModels/LoginViewModel.cs
+#: ViewModels/RegisterViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Username is required."
+msgstr ""
+
+#: ViewModels/EditPasswordViewModel.cs
+#: ViewModels/ForgotPasswordViewModel.cs
+#: ViewModels/ResetPasswordViewModel.cs
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "Username or email address is required."
+msgstr ""
+
+#. Format arguments: {0}
+#: ViewModels/ChangeEmailViewModel.cs
+#: ViewModels/ChangePasswordViewModel.cs
+#: ViewModels/EditUserEmailViewModel.cs
+#: ViewModels/LinkExternalLoginViewModel.cs
+#: ViewModels/LoginViewModel.cs
+#: ViewModels/RegisterViewModel.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages"
+msgid "{0} is required."
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Users.AdminMenu"
+msgid "Access Control"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Users.AdminMenu"
+msgid "Security"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Users.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Users.AdminMenu"
+msgid "User Login"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Users.AdminMenu"
+msgid "Users"
+msgstr ""
+
+#: AuditTrail/AdminMenu.cs
+msgctxt "OrchardCore.Users.AuditTrail.AdminMenu"
+msgid "Security"
+msgstr ""
+
+#: AuditTrail/AdminMenu.cs
+msgctxt "OrchardCore.Users.AuditTrail.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AuditTrail/AdminMenu.cs
+msgctxt "OrchardCore.Users.AuditTrail.AdminMenu"
+msgid "User Audit Trail"
+msgstr ""
+
+#: AuditTrail/Startup.cs
+msgctxt "OrchardCore.Users.AuditTrail.DeploymentStartup"
+msgid "Exports the user audit trail settings."
+msgstr ""
+
+#: AuditTrail/Startup.cs
+msgctxt "OrchardCore.Users.AuditTrail.DeploymentStartup"
+msgid "User Audit Trail settings"
+msgstr ""
+
+#: AuditTrail/Permissions.cs
+msgctxt "OrchardCore.Users.AuditTrail.Permissions"
+msgid "Manage Audit Trail settings for user events"
+msgstr ""
+
+#: AuditTrail/Permissions.cs
+msgctxt "OrchardCore.Users.AuditTrail.Permissions"
+msgid "View Audit Trail events about own user"
+msgstr ""
+
+#: AuditTrail/Permissions.cs
+msgctxt "OrchardCore.Users.AuditTrail.Permissions"
+msgid "View Audit Trail events about users"
+msgstr ""
+
+#: AuditTrail/Registration/UserRegistrationAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Registration.UserRegistrationAuditTrailEventConfiguration"
+msgid "A user was successfully registered."
+msgstr ""
+
+#: AuditTrail/Registration/UserRegistrationAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Registration.UserRegistrationAuditTrailEventConfiguration"
+msgid "Registered"
+msgstr ""
+
+#: AuditTrail/Registration/UserRegistrationAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Registration.UserRegistrationAuditTrailEventConfiguration"
+msgid "User"
+msgstr ""
+
+#: AuditTrail/ResetPassword/UserResetPasswordAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.ResetPassword.UserResetPasswordAuditTrailEventConfiguration"
+msgid "A user successfully recovered the password."
+msgstr ""
+
+#: AuditTrail/ResetPassword/UserResetPasswordAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.ResetPassword.UserResetPasswordAuditTrailEventConfiguration"
+msgid "A user successfully reset the password."
+msgstr ""
+
+#: AuditTrail/ResetPassword/UserResetPasswordAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.ResetPassword.UserResetPasswordAuditTrailEventConfiguration"
+msgid "Password recovered"
+msgstr ""
+
+#: AuditTrail/ResetPassword/UserResetPasswordAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.ResetPassword.UserResetPasswordAuditTrailEventConfiguration"
+msgid "Password reset"
+msgstr ""
+
+#: AuditTrail/ResetPassword/UserResetPasswordAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.ResetPassword.UserResetPasswordAuditTrailEventConfiguration"
+msgid "User"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "A user was confirmed."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "A user was created."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "A user was deleted."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "A user was disabled."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "A user was enabled."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "A user was successfully logged in."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "A user was updated."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "An attempt to login failed because the user is locked out."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "An attempt to login failed."
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Confirmed"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Created"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Deleted"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Disabled"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Enabled"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Logged in"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Login account locked"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Login failed"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "Updated"
+msgstr ""
+
+#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
+msgid "User"
+msgstr ""
+
+#: ChangeEmailAdminMenu.cs
+msgctxt "OrchardCore.Users.ChangeEmailAdminMenu"
+msgid "Change Email"
+msgstr ""
+
+#: ChangeEmailAdminMenu.cs
+msgctxt "OrchardCore.Users.ChangeEmailAdminMenu"
+msgid "Security"
+msgstr ""
+
+#: ChangeEmailAdminMenu.cs
+msgctxt "OrchardCore.Users.ChangeEmailAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ChangeEmailDeploymentStartup"
+msgid "Change Email settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ChangeEmailDeploymentStartup"
+msgid "Exports the Change Email settings."
+msgstr ""
+
+#: Commands/UserCommands.cs
+msgctxt "OrchardCore.Users.Commands.UserCommands"
+msgid "User created successfully"
+msgstr ""
+
+#: Controllers/AccountController.cs
+msgctxt "OrchardCore.Users.Controllers.AccountController"
+msgid "Invalid login attempt."
+msgstr ""
+
+#: Controllers/AccountController.cs
+msgctxt "OrchardCore.Users.Controllers.AccountController"
+msgid "Local login is disabled."
+msgstr ""
+
+#: Controllers/AccountController.cs
+msgctxt "OrchardCore.Users.Controllers.AccountController"
+msgid "The account is locked out"
+msgstr ""
+
+#: Controllers/AccountController.cs
+msgctxt "OrchardCore.Users.Controllers.AccountController"
+msgid "Your password has been changed successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "All Users"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Any role"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Authenticated (no roles)"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Confirm email"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Could not delete the user."
+msgstr ""
+
+#. Format arguments: {0}: count; {1}: string.Join(", ", errorDescriptions)
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Could not delete the user. {1}"
+msgid_plural "Could not delete the user. Errors: {1}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Could not disable the user."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Could not enable the user."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Could not unlock the user."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Disable"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Disabled Users"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Email"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Enable"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Enabled Users"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "Name"
+msgstr ""
+
+#. Format arguments: {0}: user.UserName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "The email for {0} has been successfully confirmed."
+msgstr ""
+
+#. Format arguments: {0}: user.UserName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "The email for {0} is already confirmed."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "The password has been changed successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User account was successfully disabled."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User account was successfully enabled."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User created successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User deleted successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User unlocked successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User updated successfully."
+msgstr ""
+
+#. Format arguments: {0}: user.UserName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User {0} successfully deleted."
+msgstr ""
+
+#. Format arguments: {0}: user.UserName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User {0} successfully disabled."
+msgstr ""
+
+#. Format arguments: {0}: user.UserName
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Controllers.AdminController"
+msgid "User {0} successfully enabled."
+msgstr ""
+
+#: Controllers/AuthenticatorAppController.cs
+msgctxt "OrchardCore.Users.Controllers.AuthenticatorAppController"
+msgid "Verification code is invalid."
+msgstr ""
+
+#: Controllers/AuthenticatorAppController.cs
+msgctxt "OrchardCore.Users.Controllers.AuthenticatorAppController"
+msgid "Your authenticator app has been verified."
+msgstr ""
+
+#: Controllers/AuthenticatorAppController.cs
+msgctxt "OrchardCore.Users.Controllers.AuthenticatorAppController"
+msgid "Your authenticator app key has been reset."
+msgstr ""
+
+#: Controllers/ChangeEmailController.cs
+msgctxt "OrchardCore.Users.Controllers.ChangeEmailController"
+msgid "A user with the same email already exists."
+msgstr ""
+
+#: Controllers/ChangeEmailController.cs
+msgctxt "OrchardCore.Users.Controllers.ChangeEmailController"
+msgid "This email is already your current one."
+msgstr ""
+
+#: Controllers/EmailConfirmationController.cs
+msgctxt "OrchardCore.Users.Controllers.EmailConfirmationController"
+msgid "A confirmation email was sent recently. Please wait a minute before requesting another one."
+msgstr ""
+
+#: Controllers/EmailConfirmationController.cs
+msgctxt "OrchardCore.Users.Controllers.EmailConfirmationController"
+msgid "The verification email could not be sent."
+msgstr ""
+
+#: Controllers/EmailConfirmationController.cs
+msgctxt "OrchardCore.Users.Controllers.EmailConfirmationController"
+msgid "Verification email sent."
+msgstr ""
+
+#: Controllers/EmailConfirmationController.cs
+msgctxt "OrchardCore.Users.Controllers.EmailConfirmationController"
+msgid "Your email is already confirmed."
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "An error occurred in external provider."
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "Confirm Password do not match"
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "Email is required!"
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "Invalid Email."
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "Invalid login attempt."
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "New registrations are disabled for this site."
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "Password is required!"
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "Unable to create internal account and link it to the external user."
+msgstr ""
+
+#: Controllers/ExternalAuthenticationsController.cs
+msgctxt "OrchardCore.Users.Controllers.ExternalAuthenticationsController"
+msgid "Username is required!"
+msgstr ""
+
+#: Controllers/ResetPasswordController.cs
+msgctxt "OrchardCore.Users.Controllers.ResetPasswordController"
+msgid "Before you can reset your password, you need to verify your email address."
+msgstr ""
+
+#: Controllers/SmsAuthenticatorController.cs
+msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
+msgid "Invalid phone number used."
+msgstr ""
+
+#: Controllers/SmsAuthenticatorController.cs
+msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
+msgid "Invalid verification code."
+msgstr ""
+
+#: Controllers/SmsAuthenticatorController.cs
+msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
+msgid "Unable to find a phone number."
+msgstr ""
+
+#: Controllers/SmsAuthenticatorController.cs
+msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
+msgid "We are unable to send you an SMS message at this time. Please try again later."
+msgstr ""
+
+#: Controllers/SmsAuthenticatorController.cs
+msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
+msgid "We have successfully sent an verification code to your phone number. Please retrieve the code from your device."
+msgstr ""
+
+#: Controllers/SmsAuthenticatorController.cs
+msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
+msgid "Your phone number has been confirmed."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationBaseController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationBaseController"
+msgid "New recovery codes were generated."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationBaseController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationBaseController"
+msgid "Unable to disable two-factor authentication."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationBaseController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationBaseController"
+msgid "You cannot remove the only active two-factor method."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationBaseController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationBaseController"
+msgid "Your two-factor authentication has been disabled."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Cannot generate recovery codes for user because they do not have 2FA enabled."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Invalid recovery code entered."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Invalid verification code."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Preferences were updated successfully."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "The account is locked out"
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "The account is locked out."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "To enable two-factor authentication, enable at least one two-factor method."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Two-factor authentication cannot be disabled for the current user."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Two-factor authentication has been disabled."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Two-factor authentication has been enabled."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Unable to find an active two-factor provider."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Unable to update preferences."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "Unexpected error occurred disabling two-factor authentication."
+msgstr ""
+
+#: Controllers/TwoFactorAuthenticationController.cs
+msgctxt "OrchardCore.Users.Controllers.TwoFactorAuthenticationController"
+msgid "You have generated new recovery codes."
+msgstr ""
+
+#. Format arguments: {0}
+#: CustomUserSettingsPermissions.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.CustomUserSettingsPermissions"
+msgid "Manage Own Custom User Settings - {0}"
+msgstr ""
+
+#: Drivers/RegisterUserFormDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.RegisterUserFormDisplayDriver"
+msgid "A user with the same email address already exists."
+msgstr ""
+
+#: Drivers/RegisterUserFormDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.RegisterUserFormDisplayDriver"
+msgid "A user with the same username already exists."
+msgstr ""
+
+#: Drivers/RoleLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.RoleLoginSettingsDisplayDriver"
+msgid "Select at least one role."
+msgstr ""
+
+#: Drivers/TwoFactorLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.TwoFactorLoginSettingsDisplayDriver"
+msgid "Number of Recovery Codes to Generate should be grater than 0."
+msgstr ""
+
+#: Drivers/UserDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserDisplayDriver"
+msgid "A password is required"
+msgstr ""
+
+#: Drivers/UserDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserDisplayDriver"
+msgid "The password and the password confirmation fields must match."
+msgstr ""
+
+#: Drivers/UserInformationDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserInformationDisplayDriver"
+msgid "Please provide a valid phone number."
+msgstr ""
+
+#. Format arguments: {0}: OrchardCoreConstants.Roles.Administrator
+#: Drivers/UserRoleDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Drivers.UserRoleDisplayDriver"
+msgid "Cannot remove {0} role from the only enabled administrator."
+msgstr ""
+
+#: Endpoints/EmailAuthenticator/SendCode.cs
+msgctxt "OrchardCore.Users.Endpoints.EmailAuthenticator.SendCode"
+msgid "A verification code has been sent via email. Please check your email for the code."
+msgstr ""
+
+#: Endpoints/EmailAuthenticator/SendCode.cs
+msgctxt "OrchardCore.Users.Endpoints.EmailAuthenticator.SendCode"
+msgid "The email could not be sent. Please attempt to request the code at a later time."
+msgstr ""
+
+#: Endpoints/SmsAuthenticator/SendCode.cs
+msgctxt "OrchardCore.Users.Endpoints.SmsAuthenticator.SendCode"
+msgid "A verification code has been sent to your phone number. Please check your device for the code."
+msgstr ""
+
+#: Endpoints/SmsAuthenticator/SendCode.cs
+msgctxt "OrchardCore.Users.Endpoints.SmsAuthenticator.SendCode"
+msgid "The SMS message could not be sent. Please attempt to request the code at a later time."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ExternalAuthenticationDeploymentStartup"
+msgid "Exports the external login settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ExternalAuthenticationDeploymentStartup"
+msgid "Exports the external registration settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ExternalAuthenticationDeploymentStartup"
+msgid "External login settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ExternalAuthenticationDeploymentStartup"
+msgid "External registration settings"
+msgstr ""
+
+#: GraphQL/CurrentUserQuery.cs
+msgctxt "OrchardCore.Users.GraphQL.CurrentUserQuery"
+msgid "Gets the currently authenticated user."
+msgstr ""
+
+#: Handlers/DisabledUserLoginFormEvent.cs
+msgctxt "OrchardCore.Users.Handlers.DisabledUserLoginFormEvent"
+msgid "The specified user is not allowed to sign in."
+msgstr ""
+
+#: Localization/Drivers/UserLocalizationDisplayDriver.cs
+msgctxt "OrchardCore.Users.Localization.Drivers.UserLocalizationDisplayDriver"
+msgid "Use site's culture"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.LoginDeploymentStartup"
+msgid "Exports the Login settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.LoginDeploymentStartup"
+msgid "Login settings"
+msgstr ""
+
+#: RegistrationAdminMenu.cs
+msgctxt "OrchardCore.Users.RegistrationAdminMenu"
+msgid "Registration"
+msgstr ""
+
+#: RegistrationAdminMenu.cs
+msgctxt "OrchardCore.Users.RegistrationAdminMenu"
+msgid "Security"
+msgstr ""
+
+#: RegistrationAdminMenu.cs
+msgctxt "OrchardCore.Users.RegistrationAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.RegistrationDeploymentStartup"
+msgid "Exports the Registration settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.RegistrationDeploymentStartup"
+msgid "Registration settings"
+msgstr ""
+
+#: ResetPasswordAdminMenu.cs
+msgctxt "OrchardCore.Users.ResetPasswordAdminMenu"
+msgid "Reset Password"
+msgstr ""
+
+#: ResetPasswordAdminMenu.cs
+msgctxt "OrchardCore.Users.ResetPasswordAdminMenu"
+msgid "Security"
+msgstr ""
+
+#: ResetPasswordAdminMenu.cs
+msgctxt "OrchardCore.Users.ResetPasswordAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ResetPasswordDeploymentStartup"
+msgid "Exports the Reset Password settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.Users.ResetPasswordDeploymentStartup"
+msgid "Reset Password settings"
+msgstr ""
+
+#: Services/CustomUserSettingsStereotypesProvider.cs
+msgctxt "OrchardCore.Users.Services.CustomUserSettingsStereotypesProvider"
+msgid "Custom User Settings"
+msgstr ""
+
+#: Services/UserEmailService.cs
+msgctxt "OrchardCore.Users.Services.UserEmailService"
+msgid "Confirm your account"
+msgstr ""
+
+#: Services/UserEmailService.cs
+msgctxt "OrchardCore.Users.Services.UserEmailService"
+msgid "Reset your password"
+msgstr ""
+
+#: UsersLocalizationSources.cs
+msgctxt "OrchardCore.Users.UsersLocalizationSources"
+msgid "Custom User Settings"
+msgstr ""
+
+#: Views/Account/ChangePassword.cshtml
+msgctxt "OrchardCore.Users.Views.Account.ChangePassword"
+msgid "Change password"
+msgstr ""
+
+#: Views/Account/ChangePassword.cshtml
+msgctxt "OrchardCore.Users.Views.Account.ChangePassword"
+msgid "Current password"
+msgstr ""
+
+#: Views/Account/ChangePassword.cshtml
+msgctxt "OrchardCore.Users.Views.Account.ChangePassword"
+msgid "New password"
+msgstr ""
+
+#: Views/Account/ChangePassword.cshtml
+msgctxt "OrchardCore.Users.Views.Account.ChangePassword"
+msgid "New password confirmation"
+msgstr ""
+
+#: Views/Account/ChangePasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.Account.ChangePasswordConfirmation"
+msgid "Change Password"
+msgstr ""
+
+#: Views/Account/ChangePasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.Account.ChangePasswordConfirmation"
+msgid "Your password has been changed successfully."
+msgstr ""
+
+#: Views/Account/Login.cshtml
+msgctxt "OrchardCore.Users.Views.Account.Login"
+msgid "Log in"
+msgstr ""
+
+#. Format arguments: {0}: provider.DisplayName
+#: Views/Account/Login.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.Account.Login"
+msgid "Log in using your {0} account"
+msgstr ""
+
+#: Views/Account/Login.cshtml
+msgctxt "OrchardCore.Users.Views.Account.Login"
+msgid "Use another service to log in"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.Create"
+msgid "Create User"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.Create"
+msgid "Users"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.Edit"
+msgid "Edit User"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.Edit"
+msgid "Users"
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "Change Password"
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "Current password"
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "New password"
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "New password confirmation"
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "Submit"
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "To confirm the change, please provide your password."
+msgstr ""
+
+#: Views/Admin/EditPassword.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
+msgid "Users"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Users.Views.Admin.Index"
+msgid "Users"
+msgstr ""
+
+#: Views/AdminDashboardUsers.cshtml
+msgctxt "OrchardCore.Users.Views.AdminDashboardUsers"
+msgid "Add users and assign roles and permissions."
+msgstr ""
+
+#: Views/AdminDashboardUsers.cshtml
+msgctxt "OrchardCore.Users.Views.AdminDashboardUsers"
+msgid "Go to users"
+msgstr ""
+
+#: Views/AdminDashboardUsers.cshtml
+msgctxt "OrchardCore.Users.Views.AdminDashboardUsers"
+msgid "Manage users"
+msgstr ""
+
+#: Views/AuditTrailAdmin/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
+msgid "Audit Trail User Event Settings"
+msgstr ""
+
+#: Views/AuditTrailAdmin/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
+msgid "Store"
+msgstr ""
+
+#. Format arguments: {0}: new Uri("https://learn.microsoft.com/en-us/dotnet/core/extensions/data-redaction")
+#: Views/AuditTrailAdmin/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
+msgid "The properties of the <code>User</code> object are stored in the event's \"User Snapshot\" property. If no option is selected, that property will not be stored. The property is retained as text if the \"Store\" option is selected. Otherwise, the selected service is used to redact its content. You can learn more about data redaction <a href=\"{0}\">here</a>."
+msgstr ""
+
+#: Views/AuditTrailAdmin/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
+msgid "User Properties to Store"
+msgstr ""
+
+#: Views/AuthenticatorApp/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Configure Authenticator App"
+msgstr ""
+
+#. Format arguments: {0}: "https://go.microsoft.com/fwlink/?Linkid=825072"; {1}: "https://go.microsoft.com/fwlink/?Linkid=825073"
+#: Views/AuthenticatorApp/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Download a two-factor authenticator app like Microsoft Authenticator for <a href='{0}'>Android</a> and <a href='{1}'>iOS</a>."
+msgstr ""
+
+#: Views/AuthenticatorApp/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Once you have scanned the QR code or input the key above, your two-factor authentication app will provide you with a unique code. Enter the code in the confirmation box below."
+msgstr ""
+
+#. Format arguments: {0}: "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en"; {1}: "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"
+#: Views/AuthenticatorApp/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Or, Google Authenticator for <a href='{0}'>Android</a> and <a href='{1}'>iOS</a>."
+msgstr ""
+
+#: Views/AuthenticatorApp/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Please enter the code"
+msgstr ""
+
+#. Format arguments: {0}: Model.SharedKey
+#: Views/AuthenticatorApp/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Scan the QR Code below, or enter the key <kbd>{0}</kbd> into your two-factor authenticator app. You may ignore spaces and casing."
+msgstr ""
+
+#: Views/AuthenticatorApp/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "To use an authenticator app go through the following steps:"
+msgstr ""
+
+#: Views/AuthenticatorApp/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/AuthenticatorApp/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Verification code"
+msgstr ""
+
+#: Views/AuthenticatorApp/Index.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Index"
+msgid "Verify"
+msgstr ""
+
+#: Views/AuthenticatorApp/Reset.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
+msgid "Configure Authenticator App"
+msgstr ""
+
+#: Views/AuthenticatorApp/Reset.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
+msgid "If you reset your authenticator key your authenticator app will not work until you reconfigure it."
+msgstr ""
+
+#: Views/AuthenticatorApp/Reset.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
+msgid "Reset Authenticator App"
+msgstr ""
+
+#: Views/AuthenticatorApp/Reset.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
+msgid "Reset authenticator key"
+msgstr ""
+
+#: Views/AuthenticatorApp/Reset.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
+msgid "This process disables the two-factor authentication for your account."
+msgstr ""
+
+#: Views/AuthenticatorApp/Reset.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#. Format arguments: {0}: Url.Action("Index", "AuthenticatorApp")
+#: Views/AuthenticatorApp/Reset.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.AuthenticatorApp.Reset"
+msgid "Two-Factor authentication is required and you cannot remove the only active method. If you want to add another device, <a href=\"{0}\">click here</a> to reconfigure it."
+msgstr ""
+
+#: Views/AuthenticatorAppLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorAppLoginSettings.Edit"
+msgid "Authenticator App Settings"
+msgstr ""
+
+#: Views/AuthenticatorAppLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorAppLoginSettings.Edit"
+msgid "Show email address in the app"
+msgstr ""
+
+#: Views/AuthenticatorAppLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorAppLoginSettings.Edit"
+msgid "When selected, the users will see their email address in the authenticator app. Otherwise, the username will be displayed."
+msgstr ""
+
+#: Views/AuthenticatorAppValidation.cshtml
+msgctxt "OrchardCore.Users.Views.AuthenticatorAppValidation"
+msgid "Please use your authenticator app to obtain one-time verification code, and enter it below"
+msgstr ""
+
+#: Views/ChangeEmail/ChangeEmailConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ChangeEmail.ChangeEmailConfirmation"
+msgid "Email changed"
+msgstr ""
+
+#: Views/ChangeEmail/ChangeEmailConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ChangeEmail.ChangeEmailConfirmation"
+msgid "Thank you for changing your email."
+msgstr ""
+
+#: Views/ChangeEmail/Index.cshtml
+msgctxt "OrchardCore.Users.Views.ChangeEmail.Index"
+msgid "Change Email"
+msgstr ""
+
+#: Views/ChangeEmail/Index.cshtml
+msgctxt "OrchardCore.Users.Views.ChangeEmail.Index"
+msgid "Email"
+msgstr ""
+
+#: Views/ChangeEmail/Index.cshtml
+msgctxt "OrchardCore.Users.Views.ChangeEmail.Index"
+msgid "Submit"
+msgstr ""
+
+#: Views/ChangeEmailSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ChangeEmailSettings.Edit"
+msgid "Allow the users to change their email"
+msgstr ""
+
+#: Views/EmailAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EmailAuthenticatorLoginSettings.Edit"
+msgid "Email Authenticator Settings"
+msgstr ""
+
+#: Views/EmailAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EmailAuthenticatorLoginSettings.Edit"
+msgid "Email Body"
+msgstr ""
+
+#: Views/EmailAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EmailAuthenticatorLoginSettings.Edit"
+msgid "Email Subject"
+msgstr ""
+
+#: Views/EmailAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EmailAuthenticatorLoginSettings.Edit"
+msgid "The body to the email for sending the verification code. Liquid syntax is supported."
+msgstr ""
+
+#: Views/EmailAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EmailAuthenticatorLoginSettings.Edit"
+msgid "The subject to the email for sending the verification code. Liquid syntax is supported."
+msgstr ""
+
+#: Views/EmailAuthenticatorValidation.cshtml
+msgctxt "OrchardCore.Users.Views.EmailAuthenticatorValidation"
+msgid "Please <a href=\"#\" id=\"RequestCode\">click here</a> to receive a one-time verification code via email."
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmail.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmail"
+msgid "Email confirmation"
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmail.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmail"
+msgid "Home"
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmail.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmail"
+msgid "Thank you for confirming your email."
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmailSent.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmailSent"
+msgid "An email has been sent to you. Please click on the link it contains in order to have access on this site."
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmailSent.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmailSent"
+msgid "Confirm your email"
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmailSent.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmailSent"
+msgid "Email confirmation sent"
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmailSent.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmailSent"
+msgid "Home"
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmailSent.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmailSent"
+msgid "Previous Page"
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmailSent.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmailSent"
+msgid "Send confirmation email"
+msgstr ""
+
+#: Views/EmailConfirmation/ConfirmEmailSent.cshtml
+msgctxt "OrchardCore.Users.Views.EmailConfirmation.ConfirmEmailSent"
+msgid "You must confirm your email. A confirmation email was sent when the account was created."
+msgstr ""
+
+#: Views/ExternalAuthentications/LinkExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.LinkExternalLogin"
+msgid "Link your account."
+msgstr ""
+
+#: Views/ExternalAuthentications/LinkExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.LinkExternalLogin"
+msgid "Password"
+msgstr ""
+
+#: Views/ExternalAuthentications/LinkExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.LinkExternalLogin"
+msgid "Register"
+msgstr ""
+
+#: Views/ExternalAuthentications/LinkExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.LinkExternalLogin"
+msgid "Username"
+msgstr ""
+
+#. Format arguments: {0}: ViewData["LoginProvider"]
+#: Views/ExternalAuthentications/LinkExternalLogin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.LinkExternalLogin"
+msgid "You've successfully authenticated with <strong>{0}</strong>. You already have an account that can be linked with this external login. Enter your local account password and click the Register button to link the accounts and finish logging in."
+msgstr ""
+
+#: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
+msgid "Confirm password"
+msgstr ""
+
+#: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
+msgid "Create a new account."
+msgstr ""
+
+#: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
+msgid "Email"
+msgstr ""
+
+#: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
+msgid "Password"
+msgstr ""
+
+#: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
+msgid "Register"
+msgstr ""
+
+#: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
+msgid "Username"
+msgstr ""
+
+#. Format arguments: {0}: ViewData["LoginProvider"]
+#: Views/ExternalAuthentications/RegisterExternalLogin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
+msgid "You've successfully authenticated with <strong>{0}</strong>. Please fill the form below and click the Register button to complete the registration."
+msgstr ""
+
+#: Views/ExternalLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
+msgid "Configuring External Authentication for User Login with Third-Party Providers"
+msgstr ""
+
+#: Views/ExternalLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
+msgid "If only one external provider is defined, auto challenge the provider to login. You should also configure registration options"
+msgstr ""
+
+#. Format arguments: {0}: nameof(IExternalLoginEventHandler)
+#: Views/ExternalLoginSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
+msgid "If selected, none of the implemented {0}, if any, will be triggered."
+msgstr ""
+
+#: Views/ExternalLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
+msgid "Reset Script"
+msgstr ""
+
+#: Views/ExternalLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
+msgid "Use a script to set user roles, user claims and user properties based on external provider claims"
+msgstr ""
+
+#: Views/ExternalLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
+msgid "Use external provider for login."
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "Configuring External Authentication for User Registration with Third-Party Providers"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "Disable new external registration"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "Do not ask email address"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "Do not ask username"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "Do not create local password"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "If selected, any IExternalLoginEventHandlers defined in modules are not triggered"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "If selected, only users with existing local accounts will be able to authenticate, and new users will not be able to register using external authentication. Users without a local account will not be able to authenticate."
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "Reset Script"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "Use a script to generate userName based on external provider claims"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "When a new user logs in with an external provider and the email claim is defined, they are not required to provide a local email address."
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "When a new user logs in with an external provider, they are not required to provide a local password."
+msgstr ""
+
+#: Views/ExternalRegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
+msgid "When a new user logs in with an external provider, they are not required to provide a local username. You can customize how it works by providing an IExternalLoginEventHandler or writing a script."
+msgstr ""
+
+#: Views/ForgotPasswordForm.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ForgotPasswordForm.Edit"
+msgid "Forgot password?"
+msgstr ""
+
+#: Views/ForgotPasswordForm.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ForgotPasswordForm.Edit"
+msgid "Submit"
+msgstr ""
+
+#: Views/ForgotPasswordFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.ForgotPasswordFormIdentifier"
+msgid "Username or email address"
+msgstr ""
+
+#: Views/Items/AllUsersDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AllUsersDeploymentStep.Edit"
+msgid "All Users"
+msgstr ""
+
+#: Views/Items/AllUsersDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AllUsersDeploymentStep.Summary"
+msgid "Adds all users to the plan."
+msgstr ""
+
+#: Views/Items/AllUsersDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AllUsersDeploymentStep.Summary"
+msgid "All Users"
+msgstr ""
+
+#: Views/Items/AllUsersDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AllUsersDeploymentStep.Thumbnail"
+msgid "All Users"
+msgstr ""
+
+#: Views/Items/AllUsersDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AllUsersDeploymentStep.Thumbnail"
+msgid "Exports every user."
+msgstr ""
+
+#: Views/Items/AssignUserRoleTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Design"
+msgid "Assign user to role"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.UserName; {1}: Model.Activity.RoleName
+#: Views/Items/AssignUserRoleTask.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Design"
+msgid "{0} to role {1}"
+msgstr ""
+
+#: Views/Items/AssignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Edit"
+msgid "RoleName"
+msgstr ""
+
+#: Views/Items/AssignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Edit"
+msgid "The Role to assign. With Liquid support."
+msgstr ""
+
+#: Views/Items/AssignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Edit"
+msgid "The User to assign. With Liquid support."
+msgstr ""
+
+#: Views/Items/AssignUserRoleTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Edit"
+msgid "UserName"
+msgstr ""
+
+#: Views/Items/AssignUserRoleTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Thumbnail"
+msgid "Assign user to role"
+msgstr ""
+
+#: Views/Items/AssignUserRoleTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AssignUserRoleTask.Fields.Thumbnail"
+msgid "Assigns a user to a role."
+msgstr ""
+
+#: Views/Items/AuditTrailUserEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AuditTrailUserEventDetail.DetailAdmin"
+msgid "User ID"
+msgstr ""
+
+#: Views/Items/AuditTrailUserEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AuditTrailUserEventDetail.DetailAdmin"
+msgid "User Info"
+msgstr ""
+
+#: Views/Items/AuditTrailUserEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AuditTrailUserEventDetail.DetailAdmin"
+msgid "User Snapshot"
+msgstr ""
+
+#: Views/Items/AuditTrailUserEventDetail.DetailAdmin.cshtml
+msgctxt "OrchardCore.Users.Views.Items.AuditTrailUserEventDetail.DetailAdmin"
+msgid "Username"
+msgstr ""
+
+#: Views/Items/CustomUserSettingsDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.CustomUserSettingsDeploymentStep.Fields.Edit"
+msgid "Include all custom user settings."
+msgstr ""
+
+#: Views/Items/CustomUserSettingsDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.CustomUserSettingsDeploymentStep.Fields.Edit"
+msgid "The custom user settings to add as part of the plan."
+msgstr ""
+
+#: Views/Items/CustomUserSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Users.Views.Items.CustomUserSettingsDeploymentStep.Fields.Summary"
+msgid "All"
+msgstr ""
+
+#: Views/Items/CustomUserSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Users.Views.Items.CustomUserSettingsDeploymentStep.Fields.Summary"
+msgid "Custom User Settings"
+msgstr ""
+
+#: Views/Items/CustomUserSettingsDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Users.Views.Items.CustomUserSettingsDeploymentStep.Fields.Summary"
+msgid "No custom user settings selected."
+msgstr ""
+
+#: Views/Items/CustomUserSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.CustomUserSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Custom User Settings"
+msgstr ""
+
+#: Views/Items/CustomUserSettingsDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.CustomUserSettingsDeploymentStep.Fields.Thumbnail"
+msgid "Exports all or specified custom user settings."
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Design"
+msgid "Register User"
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Edit"
+msgid "Send confirmation email"
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Edit"
+msgid "Subject for confirmation email"
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Edit"
+msgid "Template for confirmation email"
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Edit"
+msgid "The message to send. Access email confirmation url with Workflow.Properties.EmailConfirmationUrl liquid property."
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Edit"
+msgid "The subject of the message. Supports Liquid syntax."
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Edit"
+msgid "Users must be approved before they can log in"
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Thumbnail"
+msgid "Register User"
+msgstr ""
+
+#: Views/Items/RegisterUserTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.RegisterUserTask.Fields.Thumbnail"
+msgid "Register user from form fields."
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Authenticator.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Authenticator.Actions"
+msgid "Add"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Authenticator.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Authenticator.Actions"
+msgid "Reset"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Authenticator.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Authenticator.Actions"
+msgid "Set"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Authenticator.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Authenticator.Content"
+msgid "Authenticator app"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Authenticator.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Authenticator.Content"
+msgid "Use an authentication app or browser extension to generate one-time codes."
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Email.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Email.Actions"
+msgid "Verified"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Email.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Email.Actions"
+msgid "Verify Email"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Email.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Email.Actions"
+msgid "Your email is not yet verified. To use email for two-factor authentication, you must first verify it."
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Email.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Email.Content"
+msgid "Email authentication"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Email.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Email.Content"
+msgid "Use your email to receive one-time codes."
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Phone.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Actions"
+msgid "Edit"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Phone.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Actions"
+msgid "Verified"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Phone.Actions.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Actions"
+msgid "Verify Phone Number"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Phone.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Content"
+msgid "SMS authentication"
+msgstr ""
+
+#: Views/Items/TwoFactorMethod.Phone.Content.cshtml
+msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Content"
+msgid "Use your phone number to receive one-time codes."
+msgstr ""
+
+#: Views/Items/UserConfirmedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserConfirmedEvent.Fields.Design"
+msgid "User Confirmed"
+msgstr ""
+
+#: Views/Items/UserConfirmedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserConfirmedEvent.Fields.Thumbnail"
+msgid "User Confirmed"
+msgstr ""
+
+#: Views/Items/UserConfirmedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserConfirmedEvent.Fields.Thumbnail"
+msgid "User Confirmed Email."
+msgstr ""
+
+#: Views/Items/UserCreatedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserCreatedEvent.Fields.Design"
+msgid "User Created"
+msgstr ""
+
+#: Views/Items/UserCreatedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserCreatedEvent.Fields.Thumbnail"
+msgid "User Created"
+msgstr ""
+
+#: Views/Items/UserCreatedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserCreatedEvent.Fields.Thumbnail"
+msgid "User is created."
+msgstr ""
+
+#: Views/Items/UserDeletedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserDeletedEvent.Fields.Design"
+msgid "User Deleted"
+msgstr ""
+
+#: Views/Items/UserDeletedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserDeletedEvent.Fields.Thumbnail"
+msgid "User Deleted"
+msgstr ""
+
+#: Views/Items/UserDeletedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserDeletedEvent.Fields.Thumbnail"
+msgid "User is Deleted."
+msgstr ""
+
+#: Views/Items/UserDisabledEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserDisabledEvent.Fields.Design"
+msgid "User Disabled"
+msgstr ""
+
+#: Views/Items/UserDisabledEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserDisabledEvent.Fields.Thumbnail"
+msgid "User Disabled"
+msgstr ""
+
+#: Views/Items/UserDisabledEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserDisabledEvent.Fields.Thumbnail"
+msgid "User is disabled."
+msgstr ""
+
+#: Views/Items/UserEnabledEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserEnabledEvent.Fields.Design"
+msgid "User Enabled"
+msgstr ""
+
+#: Views/Items/UserEnabledEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserEnabledEvent.Fields.Thumbnail"
+msgid "User Enabled"
+msgstr ""
+
+#: Views/Items/UserEnabledEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserEnabledEvent.Fields.Thumbnail"
+msgid "User is enabled."
+msgstr ""
+
+#: Views/Items/UserLoggedInEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserLoggedInEvent.Fields.Design"
+msgid "User LoggedIn"
+msgstr ""
+
+#: Views/Items/UserLoggedInEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserLoggedInEvent.Fields.Thumbnail"
+msgid "User Logged in"
+msgstr ""
+
+#: Views/Items/UserLoggedInEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserLoggedInEvent.Fields.Thumbnail"
+msgid "User Logged in."
+msgstr ""
+
+#: Views/Items/UserLoggedOutEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserLoggedOutEvent.Fields.Design"
+msgid "User LoggedOut"
+msgstr ""
+
+#: Views/Items/UserLoggedOutEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserLoggedOutEvent.Fields.Thumbnail"
+msgid "User Logged out"
+msgstr ""
+
+#: Views/Items/UserLoggedOutEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserLoggedOutEvent.Fields.Thumbnail"
+msgid "User Logged out."
+msgstr ""
+
+#: Views/Items/UserSendConfirmationActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserSendConfirmationActionsMenu"
+msgid "Send verification email"
+msgstr ""
+
+#: Views/Items/UserUpdatedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserUpdatedEvent.Fields.Design"
+msgid "User Updated"
+msgstr ""
+
+#: Views/Items/UserUpdatedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserUpdatedEvent.Fields.Thumbnail"
+msgid "User Updated"
+msgstr ""
+
+#: Views/Items/UserUpdatedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UserUpdatedEvent.Fields.Thumbnail"
+msgid "User is updated."
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Email.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Email.Thumbnail"
+msgid "Email"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Email.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Email.Thumbnail"
+msgid "Filters on the email address of a user."
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Email.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Email.Thumbnail"
+msgid "Supports logical operators and groups"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Name.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Name.Thumbnail"
+msgid "Default term - may be entered with or without the term name"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Name.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Name.Thumbnail"
+msgid "Filters on the name of a user."
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Name.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Name.Thumbnail"
+msgid "Name"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Name.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Name.Thumbnail"
+msgid "Supports logical operators and groups"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Role.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Role.Thumbnail"
+msgid "Accepts a single value"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Role.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Role.Thumbnail"
+msgid "Filters on a role name."
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Role.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Role.Thumbnail"
+msgid "Role"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Sort.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Sort.Thumbnail"
+msgid "Accepts a single value"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Sort.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Sort.Thumbnail"
+msgid "Orders by a user value."
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Sort.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Sort.Thumbnail"
+msgid "Sort"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Status.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Status.Thumbnail"
+msgid "Accepts a single value"
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Status.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Status.Thumbnail"
+msgid "Filters on a user status."
+msgstr ""
+
+#: Views/Items/UsersAdminFilters-Status.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Status.Thumbnail"
+msgid "Status"
+msgstr ""
+
+#: Views/Items/ValidateUserTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Users.Views.Items.ValidateUserTask.Fields.Design"
+msgid "Validate User"
+msgstr ""
+
+#: Views/Items/ValidateUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.ValidateUserTask.Fields.Edit"
+msgid "Roles"
+msgstr ""
+
+#: Views/Items/ValidateUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.ValidateUserTask.Fields.Edit"
+msgid "Set the 'UserName' workflow property if the user is authenticated"
+msgstr ""
+
+#: Views/Items/ValidateUserTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.Items.ValidateUserTask.Fields.Edit"
+msgid "The 'InRole' outcome will be triggered if the user has at least one of the selected roles."
+msgstr ""
+
+#: Views/Items/ValidateUserTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.ValidateUserTask.Fields.Thumbnail"
+msgid "Check if the user exists for the current request and has the specified role(s)."
+msgstr ""
+
+#: Views/Items/ValidateUserTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Users.Views.Items.ValidateUserTask.Fields.Thumbnail"
+msgid "Validate User"
+msgstr ""
+
+#: Views/LoginForm.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginForm.Edit"
+msgid "Log in"
+msgstr ""
+
+#: Views/LoginFormCredentials.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormCredentials"
+msgid "Password"
+msgstr ""
+
+#: Views/LoginFormCredentials.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormCredentials"
+msgid "Remember me"
+msgstr ""
+
+#: Views/LoginFormCredentials.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormCredentials"
+msgid "Username or email address"
+msgstr ""
+
+#: Views/LoginFormForgotPassword.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormForgotPassword"
+msgid "Forgot your password?"
+msgstr ""
+
+#: Views/LoginFormRegisterUser.cshtml
+msgctxt "OrchardCore.Users.Views.LoginFormRegisterUser"
+msgid "Register as a new user"
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Allow user to be remembered during login"
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Allow user to change their email address"
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Allow user to change their phone number"
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Allow user to change their username"
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Disable local password login."
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Requires an active site theme."
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Use persistent authentication cookies by default"
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "Use site theme for login page"
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "When Remember me is allowed, this is the default checkbox value. When Remember me is disabled, this controls whether login cookies are persistent."
+msgstr ""
+
+#: Views/LoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+msgid "When selected, users are not allowed to login with username/password. Make sure there is at least one admin with linked account"
+msgstr ""
+
+#: Views/LoginSettingsRoles.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettingsRoles.Edit"
+msgid "Require two-factor authentication specific roles"
+msgstr ""
+
+#: Views/LoginSettingsRoles.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettingsRoles.Edit"
+msgid "Select the roles to require two-factor authentication for."
+msgstr ""
+
+#: Views/RegisterUserForm.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.RegisterUserForm.Edit"
+msgid "Register"
+msgstr ""
+
+#: Views/RegisterUserForm.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.RegisterUserForm.Edit"
+msgid "Register a new account"
+msgstr ""
+
+#: Views/RegisterUserFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.RegisterUserFormIdentifier"
+msgid "Confirm password"
+msgstr ""
+
+#: Views/RegisterUserFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.RegisterUserFormIdentifier"
+msgid "Email address"
+msgstr ""
+
+#: Views/RegisterUserFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.RegisterUserFormIdentifier"
+msgid "Password"
+msgstr ""
+
+#: Views/RegisterUserFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.RegisterUserFormIdentifier"
+msgid "Username"
+msgstr ""
+
+#: Views/Registration/RegistrationPending.cshtml
+msgctxt "OrchardCore.Users.Views.Registration.RegistrationPending"
+msgid "Home"
+msgstr ""
+
+#: Views/Registration/RegistrationPending.cshtml
+msgctxt "OrchardCore.Users.Views.Registration.RegistrationPending"
+msgid "Previous Page"
+msgstr ""
+
+#: Views/Registration/RegistrationPending.cshtml
+msgctxt "OrchardCore.Users.Views.Registration.RegistrationPending"
+msgid "User Registration Pending"
+msgstr ""
+
+#: Views/Registration/RegistrationPending.cshtml
+msgctxt "OrchardCore.Users.Views.Registration.RegistrationPending"
+msgid "Your user account has been created but has to be approved before it can be used."
+msgstr ""
+
+#: Views/RegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.RegistrationSettings.Edit"
+msgid "Requires an active site theme."
+msgstr ""
+
+#: Views/RegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.RegistrationSettings.Edit"
+msgid "The users whose email address has not been confirmed will not be able to login or reset their password."
+msgstr ""
+
+#: Views/RegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.RegistrationSettings.Edit"
+msgid "Use site theme for registration page"
+msgstr ""
+
+#: Views/RegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.RegistrationSettings.Edit"
+msgid "Users must be approved before they can log in"
+msgstr ""
+
+#: Views/RegistrationSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.RegistrationSettings.Edit"
+msgid "Users must verify their email address"
+msgstr ""
+
+#: Views/ResetPassword/ForgotPasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPassword.ForgotPasswordConfirmation"
+msgid "Forgot Password Confirmation"
+msgstr ""
+
+#: Views/ResetPassword/ForgotPasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPassword.ForgotPasswordConfirmation"
+msgid "Please check your email to reset your password."
+msgstr ""
+
+#: Views/ResetPassword/ResetPasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPassword.ResetPasswordConfirmation"
+msgid "Click here to log in"
+msgstr ""
+
+#: Views/ResetPassword/ResetPasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPassword.ResetPasswordConfirmation"
+msgid "Please "
+msgstr ""
+
+#: Views/ResetPassword/ResetPasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPassword.ResetPasswordConfirmation"
+msgid "Reset Password"
+msgstr ""
+
+#: Views/ResetPassword/ResetPasswordConfirmation.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPassword.ResetPasswordConfirmation"
+msgid "Your password has been reset."
+msgstr ""
+
+#: Views/ResetPasswordForm.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordForm.Edit"
+msgid "Reset password"
+msgstr ""
+
+#: Views/ResetPasswordFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordFormIdentifier"
+msgid "New password"
+msgstr ""
+
+#: Views/ResetPasswordFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordFormIdentifier"
+msgid "New password confirmation"
+msgstr ""
+
+#: Views/ResetPasswordFormIdentifier.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordFormIdentifier"
+msgid "Username or email address"
+msgstr ""
+
+#: Views/ResetPasswordSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordSettings.Edit"
+msgid "Allow the users to reset their password"
+msgstr ""
+
+#: Views/ResetPasswordSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordSettings.Edit"
+msgid "An email will be sent to the user's email address with a reset link."
+msgstr ""
+
+#: Views/ResetPasswordSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordSettings.Edit"
+msgid "Requires an active site theme."
+msgstr ""
+
+#: Views/ResetPasswordSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ResetPasswordSettings.Edit"
+msgid "Use site theme for password reset page"
+msgstr ""
+
+#: Views/SmsAuthenticator/Index.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
+msgid "Configure SMS Authenticator"
+msgstr ""
+
+#: Views/SmsAuthenticator/Index.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
+msgid "Phone Number"
+msgstr ""
+
+#: Views/SmsAuthenticator/Index.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
+msgid "Phone number must include a country code. For example, +1 for United States."
+msgstr ""
+
+#: Views/SmsAuthenticator/Index.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
+msgid "Request Code"
+msgstr ""
+
+#: Views/SmsAuthenticator/Index.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
+msgid "To utilize SMS as a two-factor authentication method, please click the 'Request Code' button below in order to confirm your Phone number."
+msgstr ""
+
+#: Views/SmsAuthenticator/Index.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/SmsAuthenticator/ValidateCode.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
+msgid "Configure SMS Authenticator"
+msgstr ""
+
+#: Views/SmsAuthenticator/ValidateCode.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
+msgid "Please check your phone for a verification code and provide it below."
+msgstr ""
+
+#: Views/SmsAuthenticator/ValidateCode.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
+msgid "Please enter the code"
+msgstr ""
+
+#: Views/SmsAuthenticator/ValidateCode.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
+msgid "SMS Code Validation"
+msgstr ""
+
+#: Views/SmsAuthenticator/ValidateCode.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/SmsAuthenticator/ValidateCode.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
+msgid "Verification code"
+msgstr ""
+
+#: Views/SmsAuthenticator/ValidateCode.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticator.ValidateCode"
+msgid "Verify"
+msgstr ""
+
+#: Views/SmsAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticatorLoginSettings.Edit"
+msgid "Message Body"
+msgstr ""
+
+#: Views/SmsAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticatorLoginSettings.Edit"
+msgid "SMS Authenticator Settings"
+msgstr ""
+
+#: Views/SmsAuthenticatorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticatorLoginSettings.Edit"
+msgid "The body to the message for sending the verification code. Liquid syntax is supported."
+msgstr ""
+
+#: Views/SmsAuthenticatorValidation.cshtml
+msgctxt "OrchardCore.Users.Views.SmsAuthenticatorValidation"
+msgid "Please <a href=\"#\" id=\"RequestCode\">click here</a> to receive a one-time verification code via SMS."
+msgstr ""
+
+#. Format arguments: {0}: Model.User.UserName
+#: Views/TemplateUserConfirmEmail.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TemplateUserConfirmEmail"
+msgid "Dear {0},"
+msgstr ""
+
+#. Format arguments: {0}: Html.Raw(Model.ConfirmEmailUrl)
+#: Views/TemplateUserConfirmEmail.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TemplateUserConfirmEmail"
+msgid "Please <a href=\"{0}\">click here</a> to confirm your account."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/TemplateUserConfirmEmail.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TemplateUserConfirmEmail"
+msgid "Please be aware that this link will expire in {0} minute."
+msgid_plural "Please be aware that this link will expire in {0} minutes."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/TemplateUserConfirmEmail.cshtml
+msgctxt "OrchardCore.Users.Views.TemplateUserConfirmEmail"
+msgid "Thank you"
+msgstr ""
+
+#: Views/TemplateUserLostPassword.cshtml
+msgctxt "OrchardCore.Users.Views.TemplateUserLostPassword"
+msgid "If you did not request a password reset please ignore this email - your password will not be changed."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/TemplateUserLostPassword.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TemplateUserLostPassword"
+msgid "Please be aware that this link will expire in {0} minute."
+msgid_plural "Please be aware that this link will expire in {0} minutes."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: Model.User.UserName
+#: Views/TemplateUserLostPassword.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TemplateUserLostPassword"
+msgid "Someone recently requested that the password be reset for <b>{0}</b>."
+msgstr ""
+
+#. Format arguments: {0}: Model.LostPasswordUrl
+#: Views/TemplateUserLostPassword.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TemplateUserLostPassword"
+msgid "To reset your password please click this link: <a href=\"{0}\">Reset Password</a>"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/DisableTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.DisableTwoFactorAuthentication"
+msgid "Disable Two-Factor Authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/DisableTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.DisableTwoFactorAuthentication"
+msgid "Disable Two-factor Authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/DisableTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.DisableTwoFactorAuthentication"
+msgid "This action disables two-factor authentication for your account."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/DisableTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.DisableTwoFactorAuthentication"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/GenerateRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.GenerateRecoveryCodes"
+msgid "Generate Recovery Codes"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/GenerateRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.GenerateRecoveryCodes"
+msgid "If you lose your device and don't have the recovery codes you will lose access to your account."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/GenerateRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.GenerateRecoveryCodes"
+msgid "Store these codes in a safe place."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/GenerateRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.GenerateRecoveryCodes"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Disable two-factor authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Enable"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Enabled"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Forget this device"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "No authentication methods are available."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Please enable at least one two-factor authentication method."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Preferred Two-Factor Method"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Recovery codes"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor verification codes."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Recovery options"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Reset codes"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Select the method"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "The current device has been saved during the two-factor authentication process."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Two-factor authentication can't be disabled for your user."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Two-factor authentication is disabled."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Two-factor authentication is enabled."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Two-factor authentication is not enabled yet. To enable it, please add one of the below two-factor methods."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Two-factor authentication must be enabled before proceeding."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Two-factor methods"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "Update"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/TwoFactorAuthentication/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "You have 1 recovery code left."
+msgid_plural "You have {0} recovery codes left."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Views/TwoFactorAuthentication/Index.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.Index"
+msgid "You have no recovery codes left."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithRecoveryCode.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithRecoveryCode"
+msgid "Log in"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithRecoveryCode.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithRecoveryCode"
+msgid "Recovery Code"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithRecoveryCode.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithRecoveryCode"
+msgid "Recovery code verification"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithRecoveryCode.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithRecoveryCode"
+msgid "You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again."
+msgstr ""
+
+#. Format arguments: {0}: url
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Don't have access to your authenticator device? You can <a href=\"{0}\">log in with a recovery code</a>."
+msgstr ""
+
+#. Format arguments: {0}: link
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Having trouble? <a href=\"{0}\">Sign in another way</a>."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Log in"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Remember this device"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Two-factor authentication"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Verification code"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/LoginWithTwoFactorAuthentication.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.LoginWithTwoFactorAuthentication"
+msgid "Your login is protected with a second authentication method."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/ShowRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.ShowRecoveryCodes"
+msgid "Any of the following codes can be used to login."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/ShowRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.ShowRecoveryCodes"
+msgid "If you lose your device and don't have the recovery codes you will lose access to your account."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/ShowRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.ShowRecoveryCodes"
+msgid "Recovery Codes"
+msgstr ""
+
+#: Views/TwoFactorAuthentication/ShowRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.ShowRecoveryCodes"
+msgid "Store these codes in a safe place."
+msgstr ""
+
+#: Views/TwoFactorAuthentication/ShowRecoveryCodes.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorAuthentication.ShowRecoveryCodes"
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "Allow users to remember client"
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "Number of recovery codes to generate"
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "Require two-factor authentication"
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "Requires an active site theme."
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "The number of recovery codes to generate. Default is 5."
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "Two-Factor Settings"
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "Use site theme for two-factor authentication pages"
+msgstr ""
+
+#: Views/TwoFactorLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
+msgid "When selected, any user with enabled two-factor authentication authentication will be required to use it."
+msgstr ""
+
+#: Views/User.DetailAdmin.cshtml
+msgctxt "OrchardCore.Users.Views.User.DetailAdmin"
+msgid "Users"
+msgstr ""
+
+#: Views/User.DetailAdmin.cshtml
+msgctxt "OrchardCore.Users.Views.User.DetailAdmin"
+msgid "View User"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Are you sure you want to confirm the email for this user?"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Are you sure you want to disable this user?"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Are you sure you want to enable this user?"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Are you sure you want to unlock this user?"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Change password"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Confirm email"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Delete"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Disable"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Disable user"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Enable"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Enable user"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Unlock"
+msgstr ""
+
+#: Views/UserActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserActionsMenu"
+msgid "Unlock user"
+msgstr ""
+
+#: Views/UserButtons.cshtml
+msgctxt "OrchardCore.Users.Views.UserButtons"
+msgid "Edit"
+msgstr ""
+
+#: Views/UserButtons.cshtml
+msgctxt "OrchardCore.Users.Views.UserButtons"
+msgid "View"
+msgstr ""
+
+#: Views/UserCulture.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserCulture.Edit"
+msgid "Default User Culture"
+msgstr ""
+
+#: Views/UserCulture.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserCulture.Edit"
+msgid "Determines the default culture used by this user."
+msgstr ""
+
+#: Views/UserEmail.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserEmail.Edit"
+msgid "Email"
+msgstr ""
+
+#: Views/UserFields.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields"
+msgid "Disabled"
+msgstr ""
+
+#: Views/UserFields.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields"
+msgid "Locked"
+msgstr ""
+
+#. Format arguments: {0}: Model.User.Email
+#: Views/UserFields.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.UserFields"
+msgid "The email address '{0}' has not been confirmed."
+msgstr ""
+
+#: Views/UserFields.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields"
+msgid "The user is currently locked out."
+msgstr ""
+
+#: Views/UserFields.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields"
+msgid "Unconfirmed"
+msgstr ""
+
+#: Views/UserFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields.Edit"
+msgid "Copy password"
+msgstr ""
+
+#: Views/UserFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields.Edit"
+msgid "Generate password"
+msgstr ""
+
+#: Views/UserFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields.Edit"
+msgid "Password"
+msgstr ""
+
+#: Views/UserFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields.Edit"
+msgid "Password Confirmation"
+msgstr ""
+
+#: Views/UserFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields.Edit"
+msgid "Password confirmation"
+msgstr ""
+
+#: Views/UserInfo.cshtml
+msgctxt "OrchardCore.Users.Views.UserInfo"
+msgid "Disabled"
+msgstr ""
+
+#: Views/UserInfo.cshtml
+msgctxt "OrchardCore.Users.Views.UserInfo"
+msgid "Email"
+msgstr ""
+
+#: Views/UserInfo.cshtml
+msgctxt "OrchardCore.Users.Views.UserInfo"
+msgid "Enabled"
+msgstr ""
+
+#: Views/UserInfo.cshtml
+msgctxt "OrchardCore.Users.Views.UserInfo"
+msgid "Phone Number"
+msgstr ""
+
+#: Views/UserInfo.cshtml
+msgctxt "OrchardCore.Users.Views.UserInfo"
+msgid "Status"
+msgstr ""
+
+#: Views/UserInfo.cshtml
+msgctxt "OrchardCore.Users.Views.UserInfo"
+msgid "User Info"
+msgstr ""
+
+#: Views/UserInfo.cshtml
+msgctxt "OrchardCore.Users.Views.UserInfo"
+msgid "Username"
+msgstr ""
+
+#: Views/UserMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenu"
+msgid "Log in"
+msgstr ""
+
+#: Views/UserMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenu"
+msgid "Users"
+msgstr ""
+
+#: Views/UserMenuItems-ChangeEmail.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-ChangeEmail"
+msgid "Change Email"
+msgstr ""
+
+#: Views/UserMenuItems-ChangePassword.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-ChangePassword"
+msgid "Change password"
+msgstr ""
+
+#: Views/UserMenuItems-ChangePassword.DetailAdmin.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-ChangePassword.DetailAdmin"
+msgid "Change password"
+msgstr ""
+
+#: Views/UserMenuItems-Dashboard.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-Dashboard"
+msgid "Dashboard"
+msgstr ""
+
+#: Views/UserMenuItems-ExternalLogins.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-ExternalLogins"
+msgid "External Logins"
+msgstr ""
+
+#: Views/UserMenuItems-Profile.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-Profile"
+msgid "Profile"
+msgstr ""
+
+#: Views/UserMenuItems-SignOut.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-SignOut"
+msgid "Log off"
+msgstr ""
+
+#: Views/UserMenuItems-SignedUser.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-SignedUser"
+msgid "Signed in as"
+msgstr ""
+
+#: Views/UserMenuItems-TwoFactor.cshtml
+msgctxt "OrchardCore.Users.Views.UserMenuItems-TwoFactor"
+msgid "Security"
+msgstr ""
+
+#: Views/UserName.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserName.Edit"
+msgid "User name"
+msgstr ""
+
+#: Views/UserPhoneNumber.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
+msgid "Phone Number"
+msgstr ""
+
+#: Views/UserPhoneNumber.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
+msgid "Phone number must include a country code. For example, +1 for United States."
+msgstr ""
+
+#: Views/UserPhoneNumber.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
+msgid "Unverified"
+msgstr ""
+
+#: Views/UserPhoneNumber.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
+msgid "Verified"
+msgstr ""
+
+#: Views/UserRoleFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserRoleFields.Edit"
+msgid "Roles"
+msgstr ""
+
+#: Views/UserRoles.cshtml
+msgctxt "OrchardCore.Users.Views.UserRoles"
+msgid "Roles"
+msgstr ""
+
+#: Views/UserRolesMeta.cshtml
+msgctxt "OrchardCore.Users.Views.UserRolesMeta"
+msgid "The roles this user has"
+msgstr ""
+
+#: Views/UserSaveButtons.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserSaveButtons.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/UserSaveButtons.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserSaveButtons.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/UserTimeZone.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserTimeZone.Edit"
+msgid "Default Time Zone"
+msgstr ""
+
+#: Views/UserTimeZone.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserTimeZone.Edit"
+msgid "Determines the time zone used when displaying and editing dates and times."
+msgstr ""
+
+#: Views/UserTimeZone.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.UserTimeZone.Edit"
+msgid "Use site's time zone"
+msgstr ""
+
+#: Views/UserTwoFactorActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserTwoFactorActionsMenu"
+msgid "Are you sure you want to disable two-factor authentication for this user?"
+msgstr ""
+
+#: Views/UserTwoFactorActionsMenu.cshtml
+msgctxt "OrchardCore.Users.Views.UserTwoFactorActionsMenu"
+msgid "Disable two-factor authentication"
+msgstr ""
+
+#: Views/UsersAdminList.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminList"
+msgid "Actions"
+msgstr ""
+
+#: Views/UsersAdminList.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminList"
+msgid "Roles"
+msgstr ""
+
+#: Views/UsersAdminList.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminList"
+msgid "User"
+msgstr ""
+
+#: Views/UsersAdminList.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminList"
+msgid "selected"
+msgstr ""
+
+#: Views/UsersAdminList.Fields.BulkActions.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminList.Fields.BulkActions"
+msgid "Actions"
+msgstr ""
+
+#. Format arguments: {0}: @item.Text.ToLower()
+#: Views/UsersAdminListBulkActions.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.UsersAdminListBulkActions"
+msgid "Are you sure you want to {0} these items?"
+msgstr ""
+
+#: Views/UsersAdminListBulkActions.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListBulkActions"
+msgid "Bulk Action"
+msgstr ""
+
+#: Views/UsersAdminListCreate.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListCreate"
+msgid "Add User"
+msgstr ""
+
+#: Views/UsersAdminListFilters.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListFilters"
+msgid "Filter by role"
+msgstr ""
+
+#: Views/UsersAdminListFilters.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListFilters"
+msgid "Filter by status"
+msgstr ""
+
+#: Views/UsersAdminListFilters.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListFilters"
+msgid "Role"
+msgstr ""
+
+#: Views/UsersAdminListFilters.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListFilters"
+msgid "Show"
+msgstr ""
+
+#: Views/UsersAdminListFilters.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListFilters"
+msgid "Sort"
+msgstr ""
+
+#: Views/UsersAdminListFilters.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListFilters"
+msgid "Sort by"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "A single value can be entered"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Available Filters"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Close"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Combines, e.g."
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Current filter"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Default"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Escape operators, e.g."
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Filter syntax"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Filters"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Groups operators, e.g."
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Logical operators and groups are supported"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Multiple"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Negates, e.g."
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "No current filter applied"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Only disabled users"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Only enabled users"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Search"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "Single"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "The default operator when whitespace is found, e.g."
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "including all implied groups and operators"
+msgstr ""
+
+#: Views/UsersAdminListSearch.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
+msgid "may be entered with or without the term name"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/UsersAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.UsersAdminListSummary"
+msgid " / {0} item in total"
+msgid_plural " / {0} items in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: Model.StartIndex; {1}: Model.EndIndex
+#: Views/UsersAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.UsersAdminListSummary"
+msgid "Items {0} to {1}"
+msgstr ""
+
+#: Views/UsersAdminListSummary.cshtml
+msgctxt "OrchardCore.Users.Views.UsersAdminListSummary"
+msgid "Select All"
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Views/UsersAdminListSummary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.UsersAdminListSummary"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: Workflows/Activities/AssignUserRoleTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
+msgid "Assign User Role Task"
+msgstr ""
+
+#: Workflows/Activities/AssignUserRoleTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/AssignUserRoleTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
+msgid "Failed"
+msgstr ""
+
+#: Workflows/Activities/RegisterUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/RegisterUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
+msgid "Invalid"
+msgstr ""
+
+#: Workflows/Activities/RegisterUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
+msgid "Register User Task"
+msgstr ""
+
+#: Workflows/Activities/RegisterUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
+msgid "The URL that confirms the email of the registered user."
+msgstr ""
+
+#: Workflows/Activities/RegisterUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
+msgid "Valid"
+msgstr ""
+
+#: Workflows/Activities/UserActivity.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserActivity"
+msgid "Done"
+msgstr ""
+
+#: Workflows/Activities/UserConfirmedEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserConfirmedEvent"
+msgid "User Confirmed Event"
+msgstr ""
+
+#: Workflows/Activities/UserCreatedEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserCreatedEvent"
+msgid "User Created Event"
+msgstr ""
+
+#: Workflows/Activities/UserDeletedEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserDeletedEvent"
+msgid "User Deleted Event"
+msgstr ""
+
+#: Workflows/Activities/UserDisabledEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserDisabledEvent"
+msgid "User Disabled Event"
+msgstr ""
+
+#: Workflows/Activities/UserEnabledEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserEnabledEvent"
+msgid "User Enabled Event"
+msgstr ""
+
+#: Workflows/Activities/UserEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserEvent"
+msgid "The user of the event."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The claims of the external login."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The external login provider, or nothing for a local login."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The name of the user who logged in."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "The names of the user's roles."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedInEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedInEvent"
+msgid "User Loggedin Event"
+msgstr ""
+
+#: Workflows/Activities/UserLoggedOutEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedOutEvent"
+msgid "The name of the user who logged out."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedOutEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedOutEvent"
+msgid "The names of the user's roles."
+msgstr ""
+
+#: Workflows/Activities/UserLoggedOutEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserLoggedOutEvent"
+msgid "User Loggedout Event"
+msgstr ""
+
+#: Workflows/Activities/UserUpdatedEvent.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.UserUpdatedEvent"
+msgid "User Updated Event"
+msgstr ""
+
+#: Workflows/Activities/ValidateUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
+msgid "Anonymous"
+msgstr ""
+
+#: Workflows/Activities/ValidateUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
+msgid "Authenticated"
+msgstr ""
+
+#: Workflows/Activities/ValidateUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
+msgid "InRole"
+msgstr ""
+
+#: Workflows/Activities/ValidateUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
+msgid "The name of the signed-in user."
+msgstr ""
+
+#: Workflows/Activities/ValidateUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
+msgid "The names of the user's roles, when the user is in one of the roles."
+msgstr ""
+
+#: Workflows/Activities/ValidateUserTask.cs
+msgctxt "OrchardCore.Users.Workflows.Activities.ValidateUserTask"
+msgid "Validate User Task"
+msgstr ""
+
+#. Format arguments: {0}: nameof(viewModel.ConfirmationEmailSubject), nameof(viewModel.ConfirmationEmailTemplate)
+#: Workflows/Drivers/RegisterUserTaskDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Users.Workflows.Drivers.RegisterUserTaskDisplayDriver"
+msgid "A value is required for {0}."
+msgstr ""

@@ -14,7 +14,7 @@
 
 <div id="Azure_Provider_Settings" class="collapse @(Model.IsEnabled ? " show" : string.Empty)">
     <div class="ocat-wrapper" asp-validation-class-for="DefaultSender">
-        <label asp-for="DefaultSender" class="ocat-label">@T["Sender email address"]</label>
+        <label asp-for="DefaultSender" class="ocat-label ocat-label-required">@T["Sender email address"]</label>
         <div class="ocat-end">
             <input asp-for="DefaultSender" class="form-control" type="text" />
             <span asp-validation-for="DefaultSender"></span>
@@ -23,9 +23,9 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="ConnectionString">
-        <label asp-for="ConnectionString" class="ocat-label">@T["Connection String"]</label>
+        <label asp-for="ConnectionString" class="ocat-label ocat-label-required">@T["Connection String"]</label>
         <div class="ocat-end">
-            <input type="password" asp-for="ConnectionString" class="form-control" placeholder="@T["Azure connection string"]" autocomplete="off" />
+            <secret-input asp-for="ConnectionString" secret-name="@AzureEmailConstants.SecretNames.ConnectionString" placeholder="@T["Azure connection string"].Value" />
             <span asp-validation-for="ConnectionString"></span>
         </div>
     </div>

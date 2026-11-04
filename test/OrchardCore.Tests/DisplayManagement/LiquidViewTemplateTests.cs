@@ -1,3 +1,4 @@
+using System.Globalization;
 using Fluid;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -137,6 +138,21 @@ public class LiquidViewTemplateTests
             .Verify(localizer => localizer.Contextualize(It.IsAny<ViewContext>()), Times.Never);
     }
 
+    [Fact]
+    public async Task RenderAsync_LocalizeWithNamedArgumentsAndNote_IgnoresNote()
+    {
+        using var services = CreateServiceProvider();
+        var options = new TemplateOptions();
+        options.Filters.AddFilter("t", LiquidViewFilters.Localize);
+        var context = new LiquidTemplateContext(services, options);
+        var parser = new FluidParser();
+        Assert.True(parser.TryParse("{{ 'in {0} years' | t: note: 'Relative date.', years: 3 }} {{ 'in {0} years' | t: years: 4, note: 'Relative date.' }} {{ 'in {0} years' | t: 5 }}", out var template, out var error), error);
+
+        var result = await LiquidViewTemplateExtensions.RenderAsync(template, NullEncoder.Default, context, "Inner");
+
+        Assert.Equal("in 3 years (1) in 4 years (1) in 5 years (1)", result);
+    }
+
     private static async Task<string> RenderAsync(IFluidTemplate template, LiquidTemplateContext context, bool useWriter)
     {
         if (!useWriter)
@@ -158,6 +174,8 @@ public class LiquidViewTemplateTests
         localizer.As<IViewContextAware>();
         localizer.Setup(value => value.GetString("Name", It.IsAny<object[]>()))
             .Returns(new LocalizedString("Name", "Localized name"));
+        localizer.Setup(value => value.GetString("in {0} years", It.IsAny<object[]>()))
+            .Returns((string name, object[] arguments) => new LocalizedString(name, string.Format(CultureInfo.InvariantCulture, name, arguments) + $" ({arguments.Length})"));
         services.AddSingleton(localizer.Object);
         var localClock = new Mock<ILocalClock>();
         localClock.Setup(clock => clock.GetLocalNowAsync()).ReturnsAsync(DateTimeOffset.UtcNow);

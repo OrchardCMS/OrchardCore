@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -5,11 +6,8 @@ namespace OrchardCore.DataLocalization.Deployment;
 
 public class AllDataTranslationsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllDataTranslationsDeploymentStep>("Internationalization");
+    public override string Name => "AllDataTranslations";
 
-    public AllDataTranslationsDeploymentStep()
-    {
-        Name = "AllDataTranslations";
-        Category = s_category;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => DataLocalizationLocalizationSources.Internationalization;
 }

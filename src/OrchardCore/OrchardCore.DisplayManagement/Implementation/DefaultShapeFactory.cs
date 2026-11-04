@@ -111,7 +111,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         shapeMetadata.Type = shapeType;
 
         // Merge wrappers if there are any.
-        if (shapeDescriptor != null && shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
+        if (shapeDescriptor != null && shapeDescriptor.Wrappers.Count > 0)
         {
             shapeMetadata.Wrappers.AddRange(shapeDescriptor.Wrappers);
         }

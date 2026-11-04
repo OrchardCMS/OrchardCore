@@ -1,14 +1,13 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Drivers;
@@ -17,22 +16,22 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public MicrosoftAccountSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
-        ILogger<MicrosoftAccountSettingsDisplayDriver> logger)
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
     }
 
     protected override string SettingsGroupId
@@ -49,24 +48,7 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
         return Initialize<MicrosoftAccountSettingsViewModel>("MicrosoftAccountSettings_Edit", model =>
         {
             model.AppId = settings.AppId;
-            if (!string.IsNullOrWhiteSpace(settings.AppSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-                    model.AppSecret = protector.Unprotect(settings.AppSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.AppSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.AppSecret = string.Empty;
-            }
+            model.AppSecret = SecretInputViewModel.Create(settings.AppSecret, settings.AppSecretSecretName);
             if (settings.CallbackPath.HasValue)
             {
                 model.CallbackPath = settings.CallbackPath.Value;
@@ -87,16 +69,25 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
         var model = new MicrosoftAccountSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var appSecret = await model.AppSecret.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount),
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.AppSecret)}")
+        {
+            ProtectedValue = settings.AppSecret,
+            SecretName = settings.AppSecretSecretName,
+        });
+
+        if (appSecret.Succeeded)
+        {
+            settings.AppSecret = appSecret.ProtectedValue;
+            settings.AppSecretSecretName = appSecret.SecretName;
+        }
+
         settings.AppId = model.AppId;
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-
-            settings.AppSecret = protector.Protect(model.AppSecret);
-        }
 
         _shellReleaseManager.RequestRelease();
 

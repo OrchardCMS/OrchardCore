@@ -1,0 +1,483 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Queries\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Queries.AdminMenu"
+msgid "All Queries"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Queries.AdminMenu"
+msgid "Queries"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Queries.AdminMenu"
+msgid "Search"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Queries successfully removed."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query created successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query deleted successfully."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Queries.Controllers.AdminController"
+msgid "Query updated successfully."
+msgstr ""
+
+#: Deployment/QueryBasedContentDeploymentStepDriver.cs
+msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
+msgid "Make sure it is a valid JSON object. Example: { key : 'value' }"
+msgstr ""
+
+#: Deployment/QueryBasedContentDeploymentStepDriver.cs
+msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
+msgid "Something is wrong with your JSON."
+msgstr ""
+
+#: Deployment/QueryBasedContentDeploymentStepDriver.cs
+msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
+msgid "Your Query is not returning content items."
+msgstr ""
+
+#: Drivers/QueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "A query with the same name already exists"
+msgstr ""
+
+#: Drivers/QueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "Invalid schema JSON supplied."
+msgstr ""
+
+#: Drivers/QueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "Name contains illegal characters"
+msgstr ""
+
+#: Drivers/QueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "Name is required"
+msgstr ""
+
+#: QueriesLocalizationSources.cs
+msgctxt "OrchardCore.Queries.QueriesLocalizationSources"
+msgid "Queried Content Items"
+msgstr ""
+
+#. Format arguments: {0}: name
+#: Recipes/QueryStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.Recipes.QueryStep"
+msgid "Could not find query source value. The query '{0}' will not be imported."
+msgstr ""
+
+#. Format arguments: {0}: sourceName; {1}: name
+#: Recipes/QueryStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.Recipes.QueryStep"
+msgid "Could not find query source: '{0}'. The query '{1}' will not be imported."
+msgstr ""
+
+#: Recipes/QueryStep.cs
+msgctxt "OrchardCore.Queries.Recipes.QueryStep"
+msgid "Query name is missing or empty. The query will not be imported."
+msgstr ""
+
+#: Sql/AdminMenu.cs
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "Queries"
+msgstr ""
+
+#: Sql/AdminMenu.cs
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "Run SQL Query"
+msgstr ""
+
+#: Sql/AdminMenu.cs
+msgctxt "OrchardCore.Queries.Sql.AdminMenu"
+msgid "Search"
+msgstr ""
+
+#. Format arguments: {0}: e.Message
+#: Sql/Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.Sql.Controllers.AdminController"
+msgid "An error occurred while executing the SQL query: {0}"
+msgstr ""
+
+#: Sql/Drivers/SqlQueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Sql.Drivers.SqlQueryDisplayDriver"
+msgid "Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this SQL query. Avoid injecting user input with Liquid output and use SQL parameters instead."
+msgstr ""
+
+#: Sql/Drivers/SqlQueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Sql.Drivers.SqlQueryDisplayDriver"
+msgid "The query field is required"
+msgstr ""
+
+#. Format arguments: {0}: query.Source; {1}: query.Name
+#: Sql/GraphQL/SqlQueryFieldTypeProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.Sql.GraphQL.Queries.SqlQueryFieldTypeProvider"
+msgid "Represents the {0} Query : {1}"
+msgstr ""
+
+#. Format arguments: {0}: Model.SourceName
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Queries.Views.Admin.Create"
+msgid "New {0} query"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Create"
+msgid "Queries"
+msgstr ""
+
+#. Format arguments: {0}: Model.Name
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Queries.Views.Admin.Edit"
+msgid "Edit '{0}' query"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Edit"
+msgid "Queries"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "<strong>Nothing here!</strong> There are no queries for the moment."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Add Query"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Available Query Types"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Go to Features"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Queries"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "Source"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "You need to enable a feature which provides a query source."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "An optional Json object containing the parameter values for this query."
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Create"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Final SQL Query"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Parameters"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Queries"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Query"
+msgstr ""
+
+#. Format arguments: {0}: Model.Elapsed.TotalMilliseconds
+#: Views/Admin/Query.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Query executed in {0} ms"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "SQL Query"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "Template"
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."
+msgstr ""
+
+#: Views/Admin/Query.cshtml
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "The query as it will be executed by the SQL database."
+msgstr ""
+
+#. Format arguments: {0}: Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))
+#: Views/Admin/Query.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Queries.Views.Admin.Query"
+msgid "You can <a href=\"{0}\">click here</a> to query all content items."
+msgstr ""
+
+#: Views/Items/AllQueriesDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Edit"
+msgid "All Queries"
+msgstr ""
+
+#: Views/Items/AllQueriesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Summary"
+msgid "Adds all queries to the plan."
+msgstr ""
+
+#: Views/Items/AllQueriesDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Summary"
+msgid "All Queries"
+msgstr ""
+
+#: Views/Items/AllQueriesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Thumbnail"
+msgid "All Queries"
+msgstr ""
+
+#: Views/Items/AllQueriesDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.AllQueriesDeploymentStep.Thumbnail"
+msgid "Exports every query."
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "An optional JSON object containing the parameter values for this query."
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "Check if the data should be exported as a Setup recipe."
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "Export As Setup recipe"
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "If checked, you will have to manually declare variables for content item references like Content Picker Fields, Taxonomy Fields, Tags Fields, and List item IDs and replace them where needed in the recipe. Any reference to these content items will be lost."
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "Note: The Query must be configured to return Documents."
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "Query"
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Edit"
+msgid "The name of the Query which will be used to fetch content items."
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Summary.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Summary"
+msgid "Content Items fetched by a Query"
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Thumbnail"
+msgid "Exports all content items fetched by a Query."
+msgstr ""
+
+#: Views/Items/QueryBasedContentDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Queries.Views.Items.QueryBasedContentDeploymentStep.Fields.Thumbnail"
+msgid "Queried Content Items"
+msgstr ""
+
+#: Views/Query-Sql.Link.cshtml
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "Add"
+msgstr ""
+
+#: Views/Query-Sql.Link.cshtml
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "Queries the SQL database."
+msgstr ""
+
+#: Views/Query-Sql.Link.cshtml
+msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
+msgid "SQL"
+msgstr ""
+
+#: Views/Query.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/Query.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/Query.Fields.Buttons.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Query.Fields.Buttons.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
+msgid "Save"
+msgstr ""
+
+#: Views/Query.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Query.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "Schema"
+msgstr ""
+
+#: Views/Query.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/Query.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "The schema the GraphQL API will use to return results."
+msgstr ""
+
+#: Views/Query.Fields.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "The technical name of the query."
+msgstr ""
+
+#: Views/SqlQuery.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Buttons.SummaryAdmin"
+msgid "Run"
+msgstr ""
+
+#: Views/SqlQuery.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Check to return the corresponding documents."
+msgstr ""
+
+#: Views/SqlQuery.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this query template. This can lead to SQL injection if untrusted input is rendered directly into SQL."
+msgstr ""
+
+#: Views/SqlQuery.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Query"
+msgstr ""
+
+#: Views/SqlQuery.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "Return Documents"
+msgstr ""
+
+#: Views/SqlQuery.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "SQL queries are Liquid templates. Never inject user input with Liquid output expressions like '{{ input }}'. Use SQL parameters (for example '@name' or '@name:default') passed in by the caller for user-provided values."
+msgstr ""
+
+#: Views/SqlQuery.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "The SQL query to execute."
+msgstr ""
+
+#: Views/SqlQuery.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.Edit"
+msgid "When checked, the result has to be a list of document ids."
+msgstr ""
+
+#: Views/SqlQuery.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.SummaryAdmin"
+msgid "SQL query"
+msgstr ""
+
+#: Views/SqlQuery.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQuery.SummaryAdmin"
+msgid "Source"
+msgstr ""

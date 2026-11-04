@@ -13,6 +13,7 @@ public sealed class ExpressionCompiler
     private readonly IExpressionFunctionCatalog _functions;
     private readonly IStringLocalizer S;
     private readonly HashSet<string> _references = new(StringComparer.Ordinal);
+    private readonly List<ExpressionAggregate> _aggregates = [];
 
     private ExpressionCompiler(IExpressionScope scope, IExpressionFunctionCatalog functions, IStringLocalizer localizer)
     {
@@ -64,7 +65,8 @@ public sealed class ExpressionCompiler
             compiled.DataType,
             compiled.Level == Level.Aggregate,
             compiler._references,
-            compiled.Evaluate);
+            compiled.Evaluate,
+            compiler._aggregates);
     }
 
     private Node CompileNode(ExpressionNode node, bool insideAggregate)
@@ -109,9 +111,32 @@ public sealed class ExpressionCompiler
                 throw new ExpressionException(S["The field [{0}] is already aggregated and cannot be aggregated again.", field.Key], field.Position);
             }
 
-            var aggregate = binding.Aggregate.Evaluate;
+            // The aggregates of the field are aggregates of this formula, and the field reads their results from its
+            // own part of the results of this formula.
+            var nested = binding.Aggregate;
+            var offset = _aggregates.Count;
+            var evaluate = nested.Evaluate;
 
-            return new Node(binding.DataType, Level.Aggregate, aggregate);
+            _aggregates.AddRange(nested.Aggregates);
+
+            return new Node(binding.DataType, Level.Aggregate, context =>
+            {
+                if (context.AggregateValues is not { } values)
+                {
+                    return evaluate(context);
+                }
+
+                context.AggregateValues = new AggregateValuesSlice(values, offset, nested.Aggregates.Count);
+
+                try
+                {
+                    return evaluate(context);
+                }
+                finally
+                {
+                    context.AggregateValues = values;
+                }
+            });
         }
 
         var index = binding.Index;
@@ -278,9 +303,18 @@ public sealed class ExpressionCompiler
         }
 
         var aggregate = function.Aggregate;
+        var position = _aggregates.Count;
+
+        _aggregates.Add(new ExpressionAggregate(function.AggregateFunction, evaluateArgument));
 
         return new Node(function.ReturnType(argumentTypes), Level.Aggregate, context =>
         {
+            // The aggregate was computed as the rows of the group arrived.
+            if (context.AggregateValues is { } computed)
+            {
+                return position < computed.Count ? computed[position] : null;
+            }
+
             var rows = context.Group ?? (context.Row is null ? [] : [context.Row]);
             var saved = context.Row;
             var values = new object[rows.Count];
@@ -313,4 +347,32 @@ public sealed class ExpressionCompiler
     }
 
     private sealed record Node(DataFieldType DataType, Level Level, Func<ExpressionContext, object> Evaluate, bool IsNull = false);
+
+    // The results of the aggregates of a field a formula reads, within the results of the aggregates of the formula.
+    private sealed class AggregateValuesSlice : IReadOnlyList<object>
+    {
+        private readonly IReadOnlyList<object> _values;
+        private readonly int _offset;
+
+        public AggregateValuesSlice(IReadOnlyList<object> values, int offset, int count)
+        {
+            _values = values;
+            _offset = offset;
+            Count = Math.Max(0, Math.Min(count, values.Count - offset));
+        }
+
+        public int Count { get; }
+
+        public object this[int index] => index >= 0 && index < Count ? _values[_offset + index] : null;
+
+        public IEnumerator<object> GetEnumerator()
+        {
+            for (var index = 0; index < Count; index++)
+            {
+                yield return this[index];
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
 }

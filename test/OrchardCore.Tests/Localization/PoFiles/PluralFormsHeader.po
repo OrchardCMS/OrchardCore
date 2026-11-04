@@ -1,0 +1,16 @@
+# Czech translation.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Language: cs\n"
+
+msgctxt "OrchardCore.Localization"
+msgid "ball"
+msgid_plural "{0} balls"
+msgstr[0] "míč"
+msgstr[1] "{0} míče"
+msgstr[2] "{0} míčů"
+
+msgid "car"
+msgstr "auto"

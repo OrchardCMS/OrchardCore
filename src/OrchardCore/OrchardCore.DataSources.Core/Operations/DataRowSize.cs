@@ -33,6 +33,7 @@ internal static class DataRowSize
             null => 0,
             string text => ObjectHeader + (2L * text.Length),
             decimal or Guid or DateTimeOffset => ObjectHeader + 16,
+            DataPartialAggregate part => ObjectHeader + 8 + (3 * Reference) + Estimate(part.Sum) + Estimate(part.Min) + Estimate(part.Max),
             _ => ObjectHeader + 8,
         };
     }

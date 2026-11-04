@@ -50,7 +50,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             model.ShowBreadcrumb = settings.ShowBreadcrumb;
             model.MenuBehavior = settings.MenuBehavior;
             model.ListLayout = settings.ListLayout;
-            model.ListActionsLayout = settings.ListActionsLayout;
+            model.ActionsLayout = settings.ActionsLayout;
             model.AllowUserListLayoutSelection = settings.AllowUserListLayoutSelection;
         }, settings).Location("Content:3")
         .OnGroup(SettingsGroupId);
@@ -83,10 +83,10 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.MenuBehavior = model.MenuBehavior;
 
         var listLayout = model.ListLayout;
-        var listActionsLayout = model.ListActionsLayout;
+        var actionsLayout = model.ActionsLayout;
 
         if (settings.ListLayout != listLayout ||
-            settings.ListActionsLayout != listActionsLayout ||
+            settings.ActionsLayout != actionsLayout ||
             settings.AllowUserListLayoutSelection != model.AllowUserListLayoutSelection)
         {
             // Refreshes IOptionsMonitor<AdminListOptions> once this shell scope commits.
@@ -94,7 +94,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         }
 
         settings.ListLayout = listLayout;
-        settings.ListActionsLayout = listActionsLayout;
+        settings.ActionsLayout = actionsLayout;
         settings.AllowUserListLayoutSelection = model.AllowUserListLayoutSelection;
 
         return await EditAsync(site, settings, context);

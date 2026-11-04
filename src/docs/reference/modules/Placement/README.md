@@ -322,8 +322,6 @@ To apply a position modifier, or column width modifier, apply the appropriate va
 
 Fields or Parts which do not have a grouping will fall into the default `Content` group when other fields apply a grouping.
 
-Tab and card names, the default `Content` group included, are displayed through `IStringLocalizer`, so they are translated like any other string: add the name as a `msgid` to the module's PO file. The name itself remains the identifier of the group, so placement rules and the generated element ids are the same in every culture.
-
 !!! warning "Shape position vs. group position"
     The **position** (the number after `:`) controls the order of shapes **within a zone**. The **group position** (the number after `;`) controls the order of the **groups themselves** (e.g., which tab appears first). These are two different things.
 
@@ -531,6 +529,44 @@ Our placement would look like this (note the `_Summary` suffix to ContentPart na
 ```
 
 This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where `DisplayAsync` was called.
+
+### Translating tab and card names
+
+The captions of the tabs and cards, the default `Content` group included, are translated with [Data Localization](../DataLocalization/README.md), in the `Tabs and Cards` category. A name remains the identifier of its group, so placement rules and the generated element ids are the same in every culture. When the `OrchardCore.DataLocalization` feature is disabled, or a name has no translation, the caption shows the name.
+
+The names are listed for translation without rendering any editor, from:
+
+- The constant locations of the display drivers, such as `.Location("Content:5#Settings")`, `.Tab("Settings")` and `.Card("Details")`. They are read at build time into a placement catalog of the assembly, and listed when their driver, or a driver derived from it, belongs to an enabled feature.
+- The rules of the `placement.json` files of the enabled modules and themes, whatever their filters.
+- The rules stored by the Placements feature.
+
+A location that isn't a compile-time constant can't be read at build time, and the analyzer rule [`OCLOC105`](../Localize/README.md#analyzer-rules) reports it. When its values are known, declare them on the driver with `[PlacementLocation]`, referencing the same constants. A derived driver that sets another location declares its own.
+
+```csharp
+[PlacementLocation(DefaultEditorLocation)]
+public class ProfileToolsDisplayDriver : DisplayDriver<Profile>
+{
+    private const string DefaultEditorLocation = "Content:7#Capabilities;9";
+
+    protected virtual string EditorLocation => DefaultEditorLocation;
+
+    public override IDisplayResult Edit(Profile profile, BuildEditorContext context)
+        => View("ProfileTools_Edit", profile).Location(EditorLocation);
+}
+```
+
+When the names come from data, list them with an `ITabAndCardNameContributor` registered when the `OrchardCore.DataLocalization` feature is enabled, and disable the rule around the call with `#pragma warning disable OCLOC105`.
+
+```csharp
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ITabAndCardNameContributor, ProfileTabNameContributor>();
+    }
+}
+```
 
 ## Fluent Location API
 

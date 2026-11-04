@@ -4,9 +4,9 @@ namespace OrchardCore.Widgets;
 
 internal static class ContentCardAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<ContentCardAlternatesCacheKey, string[]> _editCache = new();
-    private static readonly ConcurrentDictionary<ContentCardAlternatesCacheKey, string[]> _frameCache = new();
-    private static readonly ConcurrentDictionary<string, string[]> _fieldsEditCache = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<ContentCardAlternatesCacheKey, string[]> s_editCache = new();
+    private static readonly ConcurrentDictionary<ContentCardAlternatesCacheKey, string[]> s_frameCache = new();
+    private static readonly ConcurrentDictionary<string, string[]> s_fieldsEditCache = new(StringComparer.Ordinal);
 
     private const string ContentCardEdit = "ContentCard_Edit";
     private const string ContentCardFrame = "ContentCard_Frame";
@@ -19,7 +19,7 @@ internal static class ContentCardAlternatesFactory
             parentContentType ?? string.Empty,
             namedPart ?? string.Empty);
 
-        return _editCache.GetOrAdd(key, static k => BuildAlternates(ContentCardEdit, k));
+        return s_editCache.GetOrAdd(key, static k => BuildAlternates(ContentCardEdit, k));
     }
 
     public static string[] GetFrameAlternates(string collectionType, string contentType, string parentContentType, string namedPart)
@@ -30,12 +30,12 @@ internal static class ContentCardAlternatesFactory
             parentContentType ?? string.Empty,
             namedPart ?? string.Empty);
 
-        return _frameCache.GetOrAdd(key, static k => BuildAlternates(ContentCardFrame, k));
+        return s_frameCache.GetOrAdd(key, static k => BuildAlternates(ContentCardFrame, k));
     }
 
     public static string[] GetFieldsEditAlternates(string collectionType)
     {
-        return _fieldsEditCache.GetOrAdd(collectionType, static c => [$"{c}_Fields_Edit"]);
+        return s_fieldsEditCache.GetOrAdd(collectionType, static c => [$"{c}_Fields_Edit"]);
     }
 
     private static string[] BuildAlternates(string shapeType, ContentCardAlternatesCacheKey key)

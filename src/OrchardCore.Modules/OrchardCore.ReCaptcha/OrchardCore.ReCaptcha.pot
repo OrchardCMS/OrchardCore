@@ -1,0 +1,116 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.ReCaptcha\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ReCaptcha.AdminMenu"
+msgid "Security"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ReCaptcha.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ReCaptcha.AdminMenu"
+msgid "reCaptcha"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.ReCaptcha.DeploymentStartup"
+msgid "Exports the ReCaptcha settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.ReCaptcha.DeploymentStartup"
+msgid "ReCaptcha settings"
+msgstr ""
+
+#: Views/Items/ReCaptchaPart.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ReCaptchaPart"
+msgid "ReCaptcha settings are not configured."
+msgstr ""
+
+#. Format arguments: {0}: hyperLinkAttributes
+#: Views/Items/ReCaptchaPart.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ReCaptchaPart.Fields.Edit"
+msgid "<a {0}>ReCaptcha settings</a> are configured."
+msgstr ""
+
+#. Format arguments: {0}: hyperLinkAttributes
+#: Views/Items/ReCaptchaPart.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ReCaptchaPart.Fields.Edit"
+msgid "<a {0}>ReCaptcha settings</a> are not configured. The captcha will not be displayed."
+msgstr ""
+
+#: Views/Items/ValidateReCaptchaTask.Fields.Design.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ValidateReCaptchaTask.Fields.Design"
+msgid "Validate ReCaptcha"
+msgstr ""
+
+#: Views/Items/ValidateReCaptchaTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ValidateReCaptchaTask.Fields.Thumbnail"
+msgid "Validate ReCaptcha"
+msgstr ""
+
+#: Views/Items/ValidateReCaptchaTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.Items.ValidateReCaptchaTask.Fields.Thumbnail"
+msgid "Validates the recaptcha token for the current HTTP context in which the workflow executes."
+msgstr ""
+
+#: Views/ReCaptchaSettings.Edit.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Get your reCaptcha at"
+msgstr ""
+
+#: Views/ReCaptchaSettings.Edit.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Secret Key"
+msgstr ""
+
+#: Views/ReCaptchaSettings.Edit.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Site Key"
+msgstr ""
+
+#: Views/ReCaptchaSettings.Edit.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Your Google's reCaptcha Secret Key."
+msgstr ""
+
+#: Views/ReCaptchaSettings.Edit.cshtml
+msgctxt "OrchardCore.ReCaptcha.Views.ReCaptchaSettings.Edit"
+msgid "Your Google's reCaptcha Site Key."
+msgstr ""
+
+#: Workflows/ValidateReCaptchaTask.cs
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Captcha validation failed. Try again."
+msgstr ""
+
+#: Workflows/ValidateReCaptchaTask.cs
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Done"
+msgstr ""
+
+#: Workflows/ValidateReCaptchaTask.cs
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Invalid"
+msgstr ""
+
+#: Workflows/ValidateReCaptchaTask.cs
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Valid"
+msgstr ""
+
+#: Workflows/ValidateReCaptchaTask.cs
+msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
+msgid "Validate ReCaptcha Task"
+msgstr ""

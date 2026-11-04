@@ -386,7 +386,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var typePartShapeResult = ShapeResult.Create(shapeType, static (_, _) => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()), shapeType);
         typePartShapeResult.Differentiator($"{contentType}-{partName}");
         typePartShapeResult.Name(partName);
+#pragma warning disable OCLOC105 // The location only holds the position of the part, never a tab or a card.
         typePartShapeResult.Location($"Parts:{partPosition}");
+#pragma warning restore OCLOC105
         typePartShapeResult.OnGroup(groupId);
         typePartShapeResult.Displaying(ctx =>
         {

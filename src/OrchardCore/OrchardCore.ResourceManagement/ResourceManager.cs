@@ -190,9 +190,7 @@ public class ResourceManager : IResourceManager
         {
             var resourceDefinition = definitions[i];
 
-            var version = resourceDefinition.Version != null
-                ? new Version(resourceDefinition.Version)
-                : null;
+            var version = resourceDefinition.ParsedVersion;
 
             if (lower != null)
             {
@@ -203,7 +201,7 @@ public class ResourceManager : IResourceManager
             }
 
             // Use the highest version of all matches. Resources that don't specify a version have the lowest priority.
-            if (resource?.Version is null || new Version(resource.Version) < version)
+            if (resource?.ParsedVersion is null || resource.ParsedVersion < version)
             {
                 resource = resourceDefinition;
             }
@@ -393,20 +391,10 @@ public class ResourceManager : IResourceManager
 
         allResources.AddExpandingResource(resource, settings);
 
-        // Use any additional dependencies from the settings without mutating the resource that is held in a singleton collection.
-        List<string> dependencies = null;
-        if (resource.Dependencies != null)
-        {
-            dependencies = new List<string>(resource.Dependencies);
-            if (settings.Dependencies != null)
-            {
-                dependencies.AddRange(settings.Dependencies);
-            }
-        }
-        else if (settings.Dependencies != null)
-        {
-            dependencies = new List<string>(settings.Dependencies);
-        }
+        // The dependencies of the resource, then any additional dependencies from the settings, are expanded
+        // without mutating the resource that is held in a singleton collection.
+        var resourceDependencies = resource.Dependencies;
+        var settingsDependencies = settings.Dependencies;
 
         // Settings is given so the location can cascade down into dependencies. For example, if Foo depends on Bar,
         // and Foo's required location is Head, so too should Bar's location, similarly, if Foo is First positioned,
@@ -424,39 +412,57 @@ public class ResourceManager : IResourceManager
         }
         dependencySettings = dependencySettings.CombinePosition(settings);
 
-        if (dependencies != null)
+        if (resourceDependencies != null || settingsDependencies != null)
         {
             // Share search instance.
             var tempSettings = new RequireSettings();
 
-            for (var i = 0; i < dependencies.Count; i++)
+            if (resourceDependencies != null)
             {
-                var d = dependencies[i];
-                var idx = d.IndexOf(':');
-                var name = d;
-                string version = null;
-                if (idx != -1)
-                {
-                    name = d[..idx];
-                    version = d[(idx + 1)..];
-                }
+                ExpandDependencies(resource, resourceDependencies, dependencySettings, tempSettings, allResources);
+            }
 
-                tempSettings.Type = resource.Type;
-                tempSettings.Name = name;
-                tempSettings.Version = version;
-
-                var dependency = FindResource(tempSettings);
-                if (dependency == null)
-                {
-                    continue;
-                }
-
-                ExpandDependenciesImplementation(dependency, dependencySettings, allResources, isTopLevel: false);
+            if (settingsDependencies != null)
+            {
+                ExpandDependencies(resource, settingsDependencies, dependencySettings, tempSettings, allResources);
             }
         }
 
         settings.UpdatePositionFromDependency(dependencySettings);
         allResources.AddExpandedResource(resource, dependencySettings);
+    }
+
+    private void ExpandDependencies(
+        ResourceDefinition resource,
+        List<string> dependencies,
+        RequireSettings dependencySettings,
+        RequireSettings tempSettings,
+        ResourceDictionary allResources)
+    {
+        for (var i = 0; i < dependencies.Count; i++)
+        {
+            var d = dependencies[i];
+            var idx = d.IndexOf(':');
+            var name = d;
+            string version = null;
+            if (idx != -1)
+            {
+                name = d[..idx];
+                version = d[(idx + 1)..];
+            }
+
+            tempSettings.Type = resource.Type;
+            tempSettings.Name = name;
+            tempSettings.Version = version;
+
+            var dependency = FindResource(tempSettings);
+            if (dependency == null)
+            {
+                continue;
+            }
+
+            ExpandDependenciesImplementation(dependency, dependencySettings, allResources, isTopLevel: false);
+        }
     }
 
     public void RegisterLink(LinkEntry link)

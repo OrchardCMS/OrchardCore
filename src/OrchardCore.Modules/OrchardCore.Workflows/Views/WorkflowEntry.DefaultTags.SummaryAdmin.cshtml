@@ -5,7 +5,8 @@
 @model ShapeViewModel<WorkflowEntry>
 
 @{
-    var statusCss = Model.Value.Workflow.Status switch
+    var workflow = Model.Value.Workflow;
+    var statusCss = workflow.Status switch
     {
         WorkflowStatus.Aborted => "warning",
         WorkflowStatus.Finished => "success",
@@ -15,4 +16,17 @@
     };
 }
 
-<span class="badge ta-badge fw-normal text-bg-@statusCss" data-bs-toggle="tooltip" title="@T["Status"]">@T.GetLocalizedStatus(Model.Value.Workflow.Status)</span>
+<span class="badge ta-badge fw-normal text-bg-@statusCss" data-bs-toggle="tooltip" title="@T["Status"]" data-cy="instance-status">@T.GetLocalizedStatus(workflow.Status)</span>
+
+@if (Model.Value.Version is not null)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@(Model.Value.IsPublishedVersion ? T["Runs on the published version"] : T["Runs on an earlier version"])" data-cy="instance-version">@T["Version {0}", Model.Value.Version]</span>
+}
+
+@if (workflow.Status == WorkflowStatus.Faulted && workflow.PendingRetry is not null)
+{
+    <span class="badge ta-badge fw-normal" data-cy="instance-pending-retry">
+        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+        @T["Retry {0} of {1} due {2}", workflow.PendingRetry.FailedAttempts, workflow.PendingRetry.MaxRetries, (object)(await DisplayAsync(await New.DateTime(Utc: workflow.PendingRetry.DueUtc, Format: "g")))]
+    </span>
+}

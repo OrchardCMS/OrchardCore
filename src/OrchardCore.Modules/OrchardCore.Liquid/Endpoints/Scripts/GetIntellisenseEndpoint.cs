@@ -16,7 +16,7 @@ namespace OrchardCore.Liquid.Endpoints.Scripts;
 public static class GetIntellisenseEndpoint
 {
     // Update this version when the script changes to invalidate client caches
-    private static readonly int ScriptVersion = 1;
+    private static readonly int s_scriptVersion = 1;
 
     public static IEndpointRouteBuilder AddGetIntellisenseScriptEndpoint(this IEndpointRouteBuilder builder)
     {
@@ -29,7 +29,7 @@ public static class GetIntellisenseEndpoint
 
     public static ulong HashCacheBustingValues(LiquidViewParser liquidViewParser, TemplateOptions templateOptions)
     {
-        var hash = new XxHash3(ScriptVersion);
+        var hash = new XxHash3(s_scriptVersion);
 
         foreach (var filter in templateOptions.Filters)
         {

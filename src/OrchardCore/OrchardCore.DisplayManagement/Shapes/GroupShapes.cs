@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ViewModels;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
@@ -11,11 +11,11 @@ namespace OrchardCore.DisplayManagement.Shapes;
 [Feature(Application.DefaultFeatureId)]
 public class GroupShapes : IShapeAttributeProvider
 {
-    protected readonly IStringLocalizer S;
+    private readonly IDataLocalizer _dataLocalizer;
 
-    public GroupShapes(IStringLocalizer<GroupShapes> localizer)
+    public GroupShapes(IDataLocalizer dataLocalizer)
     {
-        S = localizer;
+        _dataLocalizer = dataLocalizer;
     }
 
     [Shape]
@@ -65,8 +65,8 @@ public class GroupShapes : IShapeAttributeProvider
             aTag.Attributes["aria-controls"] = tabId;
             aTag.Attributes["aria-selected"] = "false";
 
-            // The tab name stays the identifier, only its caption is localized.
-            aTag.InnerHtml.Append(S[tab].Value);
+            // The name stays the identifier of the tab, only its caption is translated.
+            aTag.InnerHtml.Append(_dataLocalizer[tab, TabAndCardNames.DataLocalizationContext].Value);
 
             linkTag.InnerHtml.AppendHtml(aTag);
             tagBuilder.InnerHtml.AppendHtml(linkTag);
@@ -96,7 +96,7 @@ public class GroupShapes : IShapeAttributeProvider
 
         var headerTitleTag = new TagBuilder("h5");
         headerTitleTag.AddCssClass("float-start mb-0 mt-1");
-        headerTitleTag.InnerHtml.Append(S[shape.Grouping.Key].Value);
+        headerTitleTag.InnerHtml.Append(_dataLocalizer[shape.Grouping.Key, TabAndCardNames.DataLocalizationContext].Value);
 
         var buttonTag = new TagBuilder("button");
         buttonTag.AddCssClass("btn btn-link btn-block text-start float-end");

@@ -1,0 +1,72 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Abstractions\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: ProblemDetailsApiControllerExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "A validation error occurred."
+msgstr ""
+
+#: ProblemDetailsApiControllerExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "Bad request"
+msgstr ""
+
+#: ProblemDetailsApiControllerExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "Forbidden"
+msgstr ""
+
+#: ProblemDetailsApiControllerExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "Not Found"
+msgstr ""
+
+#: ProblemDetailsApiControllerExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "You do not have sufficient permissions to complete this request"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Configuration"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content Management"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Development"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Infrastructure"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Search"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Security"
+msgstr ""
+
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Settings"
+msgstr ""

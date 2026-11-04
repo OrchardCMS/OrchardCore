@@ -1,0 +1,104 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Title\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Drivers/TitlePartDisplayDriver.cs
+msgctxt "OrchardCore.Title.Drivers.TitlePartDisplayDriver"
+msgid "A value is required for Title."
+msgstr ""
+
+#: Handlers/TitlePartHandler.cs
+msgctxt "OrchardCore.Title.Handlers.TitlePartHandler"
+msgid "A value is required for Title."
+msgstr ""
+
+#: Settings/TitlePartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
+msgid "A pattern is required when using the selected behavior option."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', errors)
+#: Settings/TitlePartSettingsDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
+msgid "The pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Views/TitlePart.DisplayOption.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePart.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/TitlePart.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePart.Edit"
+msgid "The title will be auto-generated using the pattern."
+msgstr ""
+
+#: Views/TitlePart.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePart.Edit"
+msgid "Title"
+msgstr ""
+
+#: Views/TitlePart.Option.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePart.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Behavior option"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Check to render the title in display views."
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Pattern"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Placeholder"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Render Title"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "The pattern used to render the title of this content type. With Liquid support."
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "The placeholder text to display for this field on the editor."
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is editable"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is editable and required"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is generated and input is disabled"
+msgstr ""
+
+#: Views/TitlePartSettings.Edit.cshtml
+msgctxt "OrchardCore.Title.Views.TitlePartSettings.Edit"
+msgid "Title is generated and input is hidden"
+msgstr ""

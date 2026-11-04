@@ -15,8 +15,8 @@ public class RequiresPermissionValidationRuleTests
 {
     internal static readonly Dictionary<string, Permission> _permissions = new()
     {
-        { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
-        { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") },
+        { "permissionOne", PermissionHelpers.Create("TestPermissionOne", "TestPermissionOne") },
+        { "permissionTwo", PermissionHelpers.Create("TestPermissionTwo", "TestPermissionTwo") },
     };
 
     [Fact]

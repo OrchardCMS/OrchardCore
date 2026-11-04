@@ -6,3 +6,117 @@
 .second-action-bar {
     z-index: var(--oc-second-action-bar-zindex);
 }
+
+// The sticky action bar at the bottom of admin edit pages. Views only render
+// <div class="action-bar-bottom">...</div> around their buttons, and mark the
+// secondary actions with .action-bar-secondary. actionBar.ts moves the secondary
+// actions to an overflow menu when the actions layout is "Menu" or on small screens.
+.action-bar-bottom {
+    position: fixed !important;
+    bottom: 0;
+    left: var(--oc-start-navigation-width);
+    right: 0;
+    z-index: var(--oc-action-bar-bottom-zindex);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    margin: 0 !important;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    color: var(--bs-body-color);
+    background-color: var(--bs-tertiary-bg);
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    transition: left 0.2s ease-in-out;
+
+    // Neutralizes the spacing utilities the buttons used when they were rendered below the form.
+    > *,
+    > * > .btn {
+        margin: 0 !important;
+    }
+
+    > .btn-group,
+    > .input-group {
+        width: auto;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact .action-bar-bottom {
+        left: var(--oc-start-navigation-width-when-compact);
+    }
+}
+
+// Below the medium breakpoint the menu is an off canvas drawer, so the bar uses the whole width.
+@include media-breakpoint-down(md) {
+    .action-bar-bottom {
+        left: 0;
+        padding: 0.5rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+
+        .btn,
+        .form-control,
+        .form-select {
+            font-size: $input-btn-font-size-sm;
+            padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+        }
+    }
+
+    // Prevents the secondary actions from showing before they are moved to the menu.
+    .action-bar-bottom:not(.action-bar-ready) .action-bar-secondary {
+        display: none !important;
+    }
+}
+
+body[data-actions-layout="menu"] .action-bar-bottom:not(.action-bar-ready) .action-bar-secondary {
+    display: none !important;
+}
+
+.action-bar-menu[hidden] {
+    display: none !important;
+}
+
+// The overflow menu holding the secondary actions. Its items are stacked full width buttons, and can be
+// composite controls, like a date input followed by a button, so it does not close on inside clicks.
+.action-bar-menu-items {
+    min-width: 16rem;
+    max-width: calc(100vw - 1.5rem);
+    padding: 0.5rem;
+
+    &.show {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    > * {
+        width: 100%;
+        margin: 0 !important;
+    }
+
+    > .btn {
+        text-align: start;
+    }
+
+    > .btn-group {
+        display: flex;
+
+        > .btn:not(.dropdown-toggle-split) {
+            flex: 1 1 auto;
+            text-align: start;
+        }
+    }
+
+    .input-group {
+        flex-wrap: nowrap;
+    }
+}
+
+// Prevents the content from being hidden behind the fixed bottom action bar.
+.ta-content:has(.action-bar-bottom) {
+    padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 1rem);
+}
+
+// Keeps the elements that are focused or scrolled into view, e.g. with the keyboard, above the bar.
+html:has(.action-bar-bottom) {
+    scroll-padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 0.5rem);
+}
