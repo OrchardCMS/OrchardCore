@@ -11,7 +11,10 @@ namespace OrchardCore.Tests.ContentManagement;
 public class ContentItemIndexMigrationsTests : IAsyncLifetime
 {
     private const string ContentItemIdIndex = "IDX_ContentItemIndex_ContentItemId";
+    private const string ContentItemVersionIdIndex = "IDX_ContentItemIndex_ContentItemVersionId";
     private const string ContentTypeIndex = "IDX_ContentItemIndex_ContentType";
+    private const string DocumentIdContentTypeIndex = "IDX_ContentItemIndex_DocumentId_ContentType";
+    private const string ForeignKeyIndex = "IDX_FK_ContentItemIndex";
     private const string OwnerIndex = "IDX_ContentItemIndex_Owner";
 
     private IStore _store;
@@ -59,6 +62,19 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
 
         Assert.Equal(["ContentType", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync(ContentTypeIndex));
         Assert.Equal(["Owner", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync(OwnerIndex));
+        Assert.Equal(["ContentItemVersionId", "DocumentId"], await GetIndexColumnsAsync(ContentItemVersionIdIndex));
+    }
+
+    [Fact]
+    public async Task CreateAsync_CreatesOnlyExpectedIndexes()
+    {
+        await RunAsync(migrations => migrations.CreateAsync());
+
+        var indexes = await GetIndexesAsync();
+
+        Assert.Equal(
+            [ContentItemIdIndex, ContentItemVersionIdIndex, ContentTypeIndex, DocumentIdContentTypeIndex, OwnerIndex, ForeignKeyIndex],
+            indexes.Keys.Order(StringComparer.Ordinal));
     }
 
     [Fact]
@@ -77,23 +93,26 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task UpdateFrom7Async_CreatesSameIndexesAsCreateAsync()
+    public async Task UpdateFrom7Async_EndsWithSameIndexesAsCreateAsync()
     {
-        // The table and indexes as a tenant at version 7 has them.
         await RunAsync(migrations => migrations.CreateAsync());
-        var contentTypeColumns = await GetIndexColumnsAsync(ContentTypeIndex);
-        var ownerColumns = await GetIndexColumnsAsync(OwnerIndex);
-        await DropIndexAsync(ContentTypeIndex);
-        await DropIndexAsync(OwnerIndex);
+        var expected = await GetIndexesAsync();
 
-        Assert.Empty(await GetIndexColumnsAsync(ContentTypeIndex));
-        Assert.Empty(await GetIndexColumnsAsync(OwnerIndex));
+        // The indexes as a tenant at version 7 has them.
+        foreach (var index in expected.Keys.Where(x => x != ForeignKeyIndex))
+        {
+            await DropIndexAsync(index);
+        }
+
+        await RunAsync(migrations => migrations.UpdateFrom5Async());
+        await RunAsync(migrations => migrations.UpdateFrom6Async());
+
+        Assert.Contains("IDX_ContentItemIndex_DocumentId_DisplayText", (await GetIndexesAsync()).Keys);
 
         var version = await RunAsync(migrations => migrations.UpdateFrom7Async());
 
         Assert.Equal(8, version);
-        Assert.Equal(contentTypeColumns, await GetIndexColumnsAsync(ContentTypeIndex));
-        Assert.Equal(ownerColumns, await GetIndexColumnsAsync(OwnerIndex));
+        Assert.Equal(expected, await GetIndexesAsync());
     }
 
     private async Task<int> RunAsync(Func<ContentMigrations, Task<int>> step)
@@ -127,6 +146,29 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
         command.CommandText = $"SELECT name FROM sqlite_master WHERE type = 'index' AND name LIKE '%{index}'";
 
         return (string)await command.ExecuteScalarAsync(TestContext.Current.CancellationToken);
+    }
+
+    private async Task<Dictionary<string, List<string>>> GetIndexesAsync()
+    {
+        await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'ContentItemIndex' AND name NOT LIKE 'sqlite_%'";
+
+        var names = new List<string>();
+        await using var reader = await command.ExecuteReaderAsync(TestContext.Current.CancellationToken);
+        while (await reader.ReadAsync(TestContext.Current.CancellationToken))
+        {
+            names.Add(reader.GetString(0));
+        }
+
+        var indexes = new Dictionary<string, List<string>>();
+        foreach (var name in names)
+        {
+            indexes[name] = await GetIndexColumnsAsync(name);
+        }
+
+        return indexes;
     }
 
     private async Task<List<string>> GetIndexColumnsAsync(string index)
