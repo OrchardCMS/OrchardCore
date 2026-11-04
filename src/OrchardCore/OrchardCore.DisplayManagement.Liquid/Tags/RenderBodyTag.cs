@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class RenderBodyTag
 {
-    public static async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -18,7 +18,7 @@ public class RenderBodyTag
 
         var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Zones["Content"]);
 
-        htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(htmlContent, (HtmlEncoder)encoder);
         return Completion.Normal;
     }
 }
