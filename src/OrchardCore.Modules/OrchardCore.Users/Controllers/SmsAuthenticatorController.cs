@@ -203,8 +203,8 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
         var result = await _liquidTemplateManager.RenderHtmlContentAsync(message, _htmlEncoder, null,
             new Dictionary<string, FluidValue>()
             {
-                ["User"] = new ObjectValue(user),
-                ["Code"] = new StringValue(code),
+                ["User"] = ObjectValue.Create(user),
+                ["Code"] = StringValue.Create(code),
             });
 
         using var writer = new StringWriter();

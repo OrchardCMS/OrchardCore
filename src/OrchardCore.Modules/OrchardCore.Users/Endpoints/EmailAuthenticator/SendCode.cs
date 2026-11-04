@@ -104,8 +104,8 @@ public static class SendCode
         var result = await liquidTemplateManager.RenderHtmlContentAsync(message, htmlEncoder, null,
             new Dictionary<string, FluidValue>()
             {
-                ["User"] = new ObjectValue(user),
-                ["Code"] = new StringValue(code),
+                ["User"] = ObjectValue.Create(user),
+                ["Code"] = StringValue.Create(code),
             });
 
         using var writer = new StringWriter();

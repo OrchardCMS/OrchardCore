@@ -1,5 +1,6 @@
 using Fluid;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.Email.Smtp.Services;
 
@@ -153,8 +154,10 @@ internal static class SmtpPickupDirectoryResolver
 
     private static string ParseAndFormat(string template, FluidParser fluidParser, ShellOptions shellOptions, ShellSettings shellSettings)
     {
-        var templateOptions = new TemplateOptions();
-        templateOptions.MemberAccessStrategy.Register<ShellSettings>();
+        var templateOptions = new TemplateOptionsBuilder()
+            .WithMemberAccessStrategy<AllowListMemberAccessStrategy>()
+            .ConfigureMemberAccess(strategy => strategy.Register<ShellSettings>())
+            .Build();
 
         if (!fluidParser.TryParse(template, out var parsedTemplate, out var errors))
         {
