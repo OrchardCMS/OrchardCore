@@ -1,10 +1,8 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Liquid;
 using OrchardCore.ContentManagement.Display.Placement;
-using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Liquid;
 
@@ -14,12 +12,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ContentItemViewModel>();
-            o.MemberAccessStrategy.Register<ContentPartViewModel>();
-        });
-
         services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();
 
         services.AddScoped<IContentDisplayHandler, ContentItemDisplayCoordinator>();

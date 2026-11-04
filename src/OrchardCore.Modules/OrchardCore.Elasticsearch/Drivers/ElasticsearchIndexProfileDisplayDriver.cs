@@ -1,5 +1,6 @@
 using System.Text;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -76,7 +77,9 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
             var metadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
 
-            if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
+            IDictionary<PropertyName, IProperty> properties = metadata.IndexMappings?.Mapping?.Properties;
+
+            if (properties is null || properties.Count == 0)
             {
                 model.DefaultSearchFields = [];
             }

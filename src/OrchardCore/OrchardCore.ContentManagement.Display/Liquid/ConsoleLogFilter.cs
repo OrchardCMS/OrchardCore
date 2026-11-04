@@ -20,7 +20,7 @@ public class ConsoleLogFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
-        var content = input.ToObjectValue();
+        var content = input.ToObjectValue(context);
 
         if (content == null || _hostEnvironment.IsProduction())
         {
@@ -54,12 +54,12 @@ public class ConsoleLogFilter : ILiquidFilter
         }
         else
         {
-            sb.Append((await MiscFilters.Json(input, arguments, context)).ToStringValue());
+            sb.Append((await MiscFilters.Json(input, arguments, context)).ToStringValue(context));
         }
 
         sb.Append(")</script>");
 
-        var result = new StringValue(sb.ToString(), false);
+        var result = StringValue.Create(sb.ToString(), encode: false);
 
         return result;
     }
