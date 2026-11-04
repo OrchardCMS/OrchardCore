@@ -178,7 +178,7 @@ These skills provide step-by-step guidance, code templates, and references for c
 
 ## Videos
 
-Every video of Orchard Core (documentation, pull requests, walkthroughs) follows one specification: 1920x1080 at 30 fps, the Orchard Core logo, colors and Open Sans font on a dark background, recordings at 1536x864 in a green frame, the `en-US-AndrewMultilingualNeural` voice, WebVTT captions, and an H.264 encode under 10 MB. Always produce videos with the `orchardcore-video-producer` skill, and don't change its specification for a single video. Narration describes the current behavior, with no "new", "now", or version wording, so videos stay accurate. In the docs, keep a video in a `videos/` folder next to its page.
+Every video of Orchard Core (documentation, pull requests, walkthroughs) follows one specification: 1920x1080 at 30 fps, the Orchard Core logo, colors and Open Sans font on a dark background, recordings at 1536x864 in a green frame, the `en-US-AndrewMultilingualNeural` voice, WebVTT captions, and an H.264 encode under 10 MB. Always produce videos with the `orchardcore-video-producer` skill, and don't change its specification for a single video. Narration describes the current behavior, with no "new", "now", or version wording, so videos stay accurate. Never commit a video or its assets, such as captions or a poster, to the repository. Publish the video on the Orchard Core YouTube channel, with its captions, and embed it in the docs from `https://www.youtube-nocookie.com/embed/<id>`.
 
 ## Frontend Assets
 
