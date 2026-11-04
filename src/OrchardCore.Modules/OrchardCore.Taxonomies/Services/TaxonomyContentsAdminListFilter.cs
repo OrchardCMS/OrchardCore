@@ -22,6 +22,9 @@ public class TaxonomyContentsAdminListFilter : IContentsAdminListFilter
         _siteService = siteService;
     }
 
+    // TaxonomyIndex has a record per term of a content item, so an item with several terms of a taxonomy matches several times.
+    public bool CanReturnDuplicates { get; private set; }
+
     public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
     {
         var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
@@ -36,6 +39,7 @@ public class TaxonomyContentsAdminListFilter : IContentsAdminListFilter
                 if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
                 {
                     viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[9..];
+                    CanReturnDuplicates = true;
                     query.All(
                         x => query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == viewModel.SelectedContentItemId)
                     );
@@ -43,6 +47,7 @@ public class TaxonomyContentsAdminListFilter : IContentsAdminListFilter
                 else if (viewModel.SelectedContentItemId.StartsWith("Term:", StringComparison.OrdinalIgnoreCase))
                 {
                     viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[5..];
+                    CanReturnDuplicates = true;
                     query.All(
                         x => query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId)
                     );

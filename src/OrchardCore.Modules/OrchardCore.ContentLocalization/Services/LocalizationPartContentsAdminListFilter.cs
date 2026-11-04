@@ -20,6 +20,8 @@ public class LocalizationPartContentsAdminListFilter : IContentsAdminListFilter
         _contentDefinitionManager = contentDefinitionManager;
     }
 
+    public bool CanReturnDuplicates => false;
+
     public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
     {
         var viewModel = new LocalizationContentsAdminFilterViewModel();

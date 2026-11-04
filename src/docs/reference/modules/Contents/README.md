@@ -605,6 +605,35 @@ Now, when a user searches for a product's serial number in the administration UI
 
 The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
 
+## Filters and Duplicate Items in the Admin UI
+
+The content items admin list is sorted by modified date by default. When it only needs `ContentItemIndex`, which has one record per content item version, it reads the matches in the order of the `IDX_ContentItemIndex_ModifiedUtc` or `IDX_ContentItemIndex_ContentType_ModifiedUtc` index and stops as soon as the page is full. This doesn't apply to SQLite, whose query planner doesn't choose these indexes.
+
+An index can have several records per document, for example `TaxonomyIndex` has one per term. To return each content item once, the list then groups the matches by document before sorting them, which reads every match whatever the indexes. It does so when any of these is true:
+
+- The list is sorted by another order than the modified date.
+- The list is filtered with a search text.
+- The filter uses a term other than `status`, `sort`, `type` and `stereotype`.
+- An `IContentsAdminListFilterProvider` adds a term with `AlwaysRun()`.
+- An `IContentsAdminListFilter` has `CanReturnDuplicates` set to `true`, which is the default.
+
+A custom `IContentsAdminListFilter` that doesn't add any index with several records per document can set `CanReturnDuplicates` to `false`, so that it doesn't prevent the list from stopping early:
+
+```csharp
+public sealed class ProductContentsAdminListFilter : IContentsAdminListFilter
+{
+    // ProductIndex has a single record per document.
+    public bool CanReturnDuplicates => false;
+
+    public Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
+    {
+        // ...
+    }
+}
+```
+
+The property is read after `FilterAsync()` has run for the request, so a filter registered as a scoped service can return `true` only when it joined such an index. An `IContentsAdminListFilterProvider` that replaces the `status`, `type` or `stereotype` term has to keep to indexes with a single record per document.
+
 ## Documenting Filters in the Admin UI
 
 The content items admin list has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`text:`, `type:`, `status:`, `sort:`, …) as a compact grid of cards.

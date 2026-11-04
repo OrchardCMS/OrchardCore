@@ -12,4 +12,9 @@ public class ContentQueryContext : QueryExecutionContext<ContentItem>
     }
 
     public IServiceProvider ServiceProvider { get; }
+
+    /// <summary>
+    /// Gets or sets whether the <c>sort</c> term ordered the query by the modified date, which an index can serve.
+    /// </summary>
+    public bool OrderedByModified { get; set; }
 }

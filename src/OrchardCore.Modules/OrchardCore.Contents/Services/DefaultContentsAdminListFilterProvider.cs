@@ -72,14 +72,15 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                 .AlwaysRun()
             )
             .WithNamedTerm("sort", builder => builder
-                .OneCondition((val, query) =>
+                .OneCondition((val, query, ctx) =>
                 {
+                    var context = (ContentQueryContext)ctx;
                     if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                     {
                         switch (contentsOrder)
                         {
                             case ContentsOrder.Modified:
-                                query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenBy(cr => cr.Id);
+                                OrderByModified(query, context);
                                 break;
                             case ContentsOrder.Published:
                                 query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc).ThenBy(cr => cr.Id);
@@ -95,10 +96,10 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                     else
                     {
                         // Modified is a default value and applied when there is no filter.
-                        query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenBy(cr => cr.Id);
+                        OrderByModified(query, context);
                     }
 
-                    return query;
+                    return ValueTask.FromResult<IQuery<ContentItem>>(query);
                 })
                 .MapTo<ContentOptionsViewModel>((val, model) =>
                 {
@@ -299,5 +300,13 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                     (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
                 )
             );
+    }
+
+    // Both columns go in the same direction, in the order of the indexes on ModifiedUtc, so that these can be read backward. MySQL and
+    // SQL Server can't read an index in two directions, they would sort every match instead.
+    private static void OrderByModified(IQuery<ContentItem> query, ContentQueryContext context)
+    {
+        query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenByDescending(cr => cr.DocumentId);
+        context.OrderedByModified = true;
     }
 }
