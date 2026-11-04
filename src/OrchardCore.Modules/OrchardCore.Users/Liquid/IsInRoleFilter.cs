@@ -20,12 +20,12 @@ public class IsInRoleFilter : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        if (input.ToObjectValue() is LiquidUserAccessor)
+        if (input.ToObjectValue(ctx) is LiquidUserAccessor)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (user != null)
             {
-                var claimName = arguments["name"].Or(arguments.At(0)).ToStringValue();
+                var claimName = arguments["name"].Or(arguments.At(0)).ToStringValue(ctx);
                 var roleClaimType = _identityOptions.ClaimsIdentity.RoleClaimType;
 
                 if (user.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(claimName, StringComparison.OrdinalIgnoreCase)))

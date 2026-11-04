@@ -31,7 +31,7 @@ public class LiquidTagHelperMatching
         }
 
         // Does it expect any specific attribute?
-        if (!rule.Attributes.Any())
+        if (rule.Attributes.Count == 0)
         {
             return true;
         }

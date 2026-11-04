@@ -17,14 +17,14 @@ public class InheritedTermsFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var termContentItemId = input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem term
+        var termContentItemId = input.Type == FluidValues.Object && input.ToObjectValue(ctx) is ContentItem term
             ? term.ContentItemId
-            : input.ToStringValue();
+            : input.ToStringValue(ctx);
 
         var firstArg = arguments.At(0);
-        if (firstArg.Type != FluidValues.Object || input.ToObjectValue() is not ContentItem taxonomy)
+        if (firstArg.Type != FluidValues.Object || input.ToObjectValue(ctx) is not ContentItem taxonomy)
         {
-            taxonomy = await _contentManager.GetAsync(firstArg.ToStringValue());
+            taxonomy = await _contentManager.GetAsync(firstArg.ToStringValue(ctx));
         }
 
         if (taxonomy == null)

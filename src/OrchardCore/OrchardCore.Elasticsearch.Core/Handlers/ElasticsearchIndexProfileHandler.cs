@@ -51,7 +51,9 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
         // When the provider is 'Elasticsearch', "regardless of the type" we need to validate the index mappings.
         var metadata = context.Model.GetOrCreate<ElasticsearchIndexMetadata>();
 
-        if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
+        IDictionary<PropertyName, IProperty> properties = metadata.IndexMappings?.Mapping?.Properties;
+
+        if (properties is null || properties.Count == 0)
         {
             context.Result.Fail(new ValidationResult(S["At least one mapping property is required."]));
         }

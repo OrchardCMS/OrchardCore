@@ -47,8 +47,8 @@ public class LiquidViewParser : FluidParser
         RegisterParserTag("shape", ArgumentsList, ShapeTag.WriteToAsync);
         RegisterParserBlock("zone", ArgumentsList, ZoneTag.WriteToAsync);
 
-        RegisteredTags["a"] = ArgumentsList.AndSkip(TagEnd).And(Parsers.ZeroOrOne(AnyTagsList.AndSkip(CreateTag("enda")))).Then<Statement>(x => new ParserBlockStatement<IReadOnlyList<FilterArgument>>(x.Item1, x.Item2, DefaultAnchorTag.WriteToAsync));
-        RegisterParserBlock("form", ArgumentsList, (list, statements, writer, encoder, context) => FluidTagHelper.WriteToAsync("form", list, statements, writer, encoder, context));
+        RegisteredTags["a"] = ArgumentsList.AndSkip(TagEnd).And(AnyTagsList.AndSkip(CreateTag("enda")).Else(default(IReadOnlyList<Statement>))).Then<Statement>(x => new ParserBlockStatement<IReadOnlyList<FilterArgument>>(x.Item1, x.Item2, DefaultAnchorTag.WriteToAsync));
+        RegisterParserBlock("form", ArgumentsList, (list, statements, output, encoder, context) => FluidTagHelper.WriteToAsync("form", list, statements, output, encoder, context));
 
         // Dynamic caching
         RegisterParserBlock("cache", ArgumentsList, CacheTag.WriteToAsync);
@@ -68,9 +68,9 @@ public class LiquidViewParser : FluidParser
 
     internal sealed class ParserBlockStatement<T> : TagStatement
     {
-        private readonly Func<T, IReadOnlyList<Statement>, TextWriter, TextEncoder, TemplateContext, ValueTask<Completion>> _render;
+        private readonly Func<T, IReadOnlyList<Statement>, IFluidOutput, TextEncoder, TemplateContext, ValueTask<Completion>> _render;
 
-        public ParserBlockStatement(T value, IReadOnlyList<Statement> statements, Func<T, IReadOnlyList<Statement>, TextWriter, TextEncoder, TemplateContext, ValueTask<Completion>> render)
+        public ParserBlockStatement(T value, IReadOnlyList<Statement> statements, Func<T, IReadOnlyList<Statement>, IFluidOutput, TextEncoder, TemplateContext, ValueTask<Completion>> render)
             : base(statements)
         {
             ArgumentNullException.ThrowIfNull(render);
@@ -81,9 +81,9 @@ public class LiquidViewParser : FluidParser
 
         public T Value { get; }
 
-        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override ValueTask<Completion> WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
         {
-            return _render(Value, Statements, writer, encoder, context);
+            return _render(Value, Statements, output, encoder, context);
         }
     }
 }

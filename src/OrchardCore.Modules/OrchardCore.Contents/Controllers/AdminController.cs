@@ -913,7 +913,7 @@ public sealed class AdminController : Controller, IUpdateModel
     private RedirectToActionResult RedirectToListActionWithModelState()
     {
         var errors = ModelState
-            .Where(ms => ms.Value.Errors.Any())
+            .Where(ms => ms.Value.Errors.Count > 0)
             .ToDictionary(
                 kvp => kvp.Key,
                 kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
