@@ -8,7 +8,6 @@ using OrchardCore.Alias.Indexing;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Services;
 using OrchardCore.Alias.Settings;
-using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -31,8 +30,6 @@ public sealed class Startup : StartupBase
         {
             o.ConfigureMemberAccess(strategy =>
             {
-                strategy.Register<AliasPartViewModel>();
-
                 strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Alias", (obj, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;

@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -9,7 +8,6 @@ using OrchardCore.Flows.Handlers;
 using OrchardCore.Flows.Indexing;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.Settings;
-using OrchardCore.Flows.ViewModels;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -20,17 +18,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy =>
-            {
-                strategy.Register<BagPartViewModel>();
-                strategy.Register<FlowPartViewModel>();
-                strategy.Register<FlowMetadata>();
-                strategy.Register<FlowPart>();
-            });
-        });
-
         services.AddScoped<IContentPartIndexHandler, BagPartDocumentIndexHandler>();
 
         // Flow Part

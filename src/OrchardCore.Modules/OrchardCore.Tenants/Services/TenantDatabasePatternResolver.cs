@@ -3,7 +3,6 @@ using Fluid;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Liquid;
 using OrchardCore.Tenants.Models;
 
 namespace OrchardCore.Tenants.Services;
@@ -86,11 +85,7 @@ public partial class TenantDatabasePatternResolver
             return null;
         }
 
-        var templateOptions = new TemplateOptionsBuilder()
-            .WithMemberAccessStrategy<AllowListMemberAccessStrategy>()
-            .ConfigureMemberAccess(strategy => strategy.Register<ShellSettings>())
-            .Build();
-        var templateContext = new TemplateContext(templateOptions);
+        var templateContext = new TemplateContext(TemplateOptions.Default);
         templateContext.SetValue("ShellSettings", shellSettings);
 
         string value;

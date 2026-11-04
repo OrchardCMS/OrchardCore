@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
@@ -7,7 +6,6 @@ using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
@@ -29,35 +27,6 @@ public sealed class Startup : StartupBase
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddScoped<IJSLocalizer, ContentFieldsJSLocalizer>();
-
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy =>
-            {
-                strategy.Register<BooleanField>();
-                strategy.Register<DisplayBooleanFieldViewModel>();
-                strategy.Register<HtmlField>();
-                strategy.Register<DisplayHtmlFieldViewModel>();
-                strategy.Register<LinkField>();
-                strategy.Register<DisplayLinkFieldViewModel>();
-                strategy.Register<NumericField>();
-                strategy.Register<DisplayNumericFieldViewModel>();
-                strategy.Register<TextField>();
-                strategy.Register<DisplayTextFieldViewModel>();
-                strategy.Register<DateTimeField>();
-                strategy.Register<DisplayDateTimeFieldViewModel>();
-                strategy.Register<DateField>();
-                strategy.Register<DisplayDateFieldViewModel>();
-                strategy.Register<TimeField>();
-                strategy.Register<DisplayTimeFieldViewModel>();
-                strategy.Register<MultiTextField>();
-                strategy.Register<DisplayMultiTextFieldViewModel>();
-                strategy.Register<UserPickerField>();
-                strategy.Register<DisplayUserPickerFieldViewModel>();
-                strategy.Register<ContentPickerField>();
-                strategy.Register<DisplayContentPickerFieldViewModel>();
-            });
-        });
 
         // Boolean Field
         services.AddContentField<BooleanField>()
@@ -191,16 +160,6 @@ public sealed class UserPickerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy =>
-            {
-                strategy.Register<UserPickerField>();
-                strategy.Register<DisplayUserPickerFieldViewModel>();
-                strategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
-            });
-        });
-
         services.AddContentField<UserPickerField>()
             .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
             .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))

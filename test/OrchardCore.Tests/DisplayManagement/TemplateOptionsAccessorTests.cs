@@ -17,19 +17,18 @@ public class TemplateOptionsAccessorTests
             {
                 options.AddFilter("shout", (input, _, context) => StringValue.Create(input.ToStringValue(context).ToUpperInvariant()));
                 options.WithGlobalValue("Greeting", StringValue.Create("hello"));
-                options.ConfigureMemberAccess(strategy => strategy.Register<Model>());
+                options.ConfigureMemberAccess(strategy => strategy.Register<Model, string>("Computed", (_, _) => "Value"));
             })
             .BuildServiceProvider();
 
         var options = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
 
-        Assert.True(new FluidParser().TryParse("{{ Greeting | shout }} {{ Model.Name }} {{ Other.Name }}", out var template, out var error), error);
+        Assert.True(new FluidParser().TryParse("{{ Greeting | shout }} {{ Model.Name }} {{ Model.Computed }}", out var template, out var error), error);
 
         var context = new TemplateContext(options);
         context.SetValue("Model", FluidValue.Create(new Model(), options));
-        context.SetValue("Other", FluidValue.Create(new OtherModel(), options));
 
-        Assert.Equal("HELLO Name ", await template.RenderAsync(context));
+        Assert.Equal("HELLO Name Value", await template.RenderAsync(context));
     }
 
     [Fact]
@@ -45,7 +44,7 @@ public class TemplateOptionsAccessorTests
     }
 
     [Fact]
-    public void Value_DefaultStrategy_OnlyExposesRegisteredMembers()
+    public void Value_DefaultStrategy_IsFluidDefault()
     {
         using var services = new ServiceCollection()
             .AddLiquidTemplateOptions()
@@ -53,7 +52,7 @@ public class TemplateOptionsAccessorTests
 
         var options = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
 
-        Assert.IsType<AllowListMemberAccessStrategy>(options.MemberAccessStrategy);
+        Assert.IsType<DefaultMemberAccessStrategy>(options.MemberAccessStrategy);
     }
 
     [Fact]
@@ -73,10 +72,5 @@ public class TemplateOptionsAccessorTests
     public sealed class Model
     {
         public string Name { get; set; } = "Name";
-    }
-
-    public sealed class OtherModel
-    {
-        public string Name { get; set; } = "Other";
     }
 }

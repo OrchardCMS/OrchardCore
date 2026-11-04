@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -14,7 +13,6 @@ using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Migrations;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.Services;
-using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search;
@@ -56,15 +54,6 @@ public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy =>
-            {
-                strategy.Register<SearchIndexViewModel>();
-                strategy.Register<SearchFormViewModel>();
-                strategy.Register<SearchResultsViewModel>();
-            });
-        });
     }
 }
 

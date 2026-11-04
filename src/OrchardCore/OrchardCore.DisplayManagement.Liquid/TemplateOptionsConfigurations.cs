@@ -9,7 +9,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Liquid.Values;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
@@ -53,8 +52,6 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptionsBu
         {
             strategy.Register<Shape>("*", new ShapeAccessor());
             strategy.Register<ZoneHolding>("*", new ShapeAccessor());
-            strategy.Register<ShapeMetadata>();
-            strategy.Register<CultureInfo>();
 
             strategy.Register<FormCollection, FluidValue>((forms, name) =>
             {

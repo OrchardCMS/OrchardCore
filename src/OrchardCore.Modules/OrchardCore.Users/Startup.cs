@@ -393,12 +393,6 @@ public sealed class LiquidStartup : StartupBase
             o.AddFilter("has_claim", UserFilters.HasClaim);
             o.AddFilter("user_id", UserFilters.UserId);
 
-            o.ConfigureMemberAccess(strategy =>
-            {
-                strategy.Register<ClaimsPrincipal>();
-                strategy.Register<ClaimsIdentity>();
-            });
-
             o.WithGlobalValue("User", ObjectValue.Create(new LiquidUserAccessor()));
             o.ConfigureMemberAccess(strategy =>
             {
@@ -490,11 +484,6 @@ public sealed class ChangeEmailStartup : StartupBase
             .AddTransient<ChangeEmailTokenProvider>()
             .AddOptions<ChangeEmailTokenProviderOptions>();
 
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy => strategy.Register<ChangeEmailViewModel>());
-        });
-
         services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
         services.AddNavigationProvider<ChangeEmailAdminMenu>();
         services.AddDisplayDriver<UserMenu, ChangeEmailUserMenuDisplayDriver>();
@@ -521,11 +510,6 @@ public sealed class RegistrationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy => strategy.Register<ConfirmEmailViewModel>());
-        });
-
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
@@ -610,11 +594,6 @@ public sealed class ResetPasswordStartup : StartupBase
         services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
             .AddTransient<PasswordResetTokenProvider>()
             .AddOptions<PasswordResetTokenProviderOptions>();
-
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy => strategy.Register<LostPasswordViewModel>());
-        });
 
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
         services.AddNavigationProvider<ResetPasswordAdminMenu>();

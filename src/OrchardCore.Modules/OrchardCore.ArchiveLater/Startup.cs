@@ -1,10 +1,8 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ArchiveLater.Drivers;
 using OrchardCore.ArchiveLater.Indexes;
 using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ArchiveLater.Services;
-using OrchardCore.ArchiveLater.ViewModels;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -21,11 +19,6 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy => strategy.Register<ArchiveLaterPartViewModel>());
-        });
-
         services
             .AddContentPart<ArchiveLaterPart>()
             .UseDisplayDriver<ArchiveLaterPartDisplayDriver>();

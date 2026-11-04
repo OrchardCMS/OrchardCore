@@ -9,12 +9,11 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Registers the <see cref="IOptions{TemplateOptions}"/> of the tenant, which are built once from the
-    /// <see cref="TemplateOptionsBuilder"/> configured with <c>services.Configure&lt;TemplateOptionsBuilder&gt;()</c>,
-    /// and which only expose the members that are registered, see <see cref="AllowListMemberAccessStrategy"/>.
+    /// <see cref="TemplateOptionsBuilder"/> configured with <c>services.Configure&lt;TemplateOptionsBuilder&gt;()</c>.
     /// </summary>
     public static IServiceCollection AddLiquidTemplateOptions(this IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o => o.WithMemberAccessStrategy<AllowListMemberAccessStrategy>());
+        services.AddOptions();
         services.TryAddSingleton<IOptions<TemplateOptions>, TemplateOptionsAccessor>();
 
         return services;

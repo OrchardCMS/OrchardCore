@@ -10,9 +10,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Routing;
-using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
@@ -39,7 +37,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Tags;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -73,18 +70,6 @@ public sealed class Startup : StartupBase
 
         services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.ConfigureMemberAccess(strategy =>
-            {
-                strategy.Register<ContentItem>();
-                strategy.Register<ContentEventContext>();
-                strategy.Register<ContentElement>();
-                strategy.Register<ShapeViewModel<ContentItem>>();
-                strategy.Register<ContentTypePartDefinition>();
-                strategy.Register<ContentPartFieldDefinition>();
-                strategy.Register<ContentFieldDefinition>();
-                strategy.Register<ContentPartDefinition>();
-            });
-
             o.AddFilter("display_text", DisplayTextFilter.DisplayText);
 
             o.WithGlobalValue("Content", ObjectValue.Create(new LiquidContentAccessor()));

@@ -80,12 +80,6 @@ public sealed class Startup : StartupBase
         services
             .Configure<TemplateOptionsBuilder>(o =>
             {
-                o.ConfigureMemberAccess(strategy =>
-                {
-                    strategy.Register<DisplayMediaFieldViewModel>();
-                    strategy.Register<Anchor>();
-                });
-
                 o.AddFilter("img_tag", MediaFilters.ImgTag);
             })
             .AddLiquidFilter<AssetUrlFilter>("asset_url")

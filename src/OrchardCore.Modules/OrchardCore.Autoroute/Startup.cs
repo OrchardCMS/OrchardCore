@@ -13,7 +13,6 @@ using OrchardCore.Autoroute.Routing;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
-using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -44,8 +43,6 @@ public sealed class Startup : StartupBase
         {
             o.ConfigureMemberAccess(strategy =>
             {
-                strategy.Register<AutoroutePartViewModel>();
-
                 strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", (obj, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;

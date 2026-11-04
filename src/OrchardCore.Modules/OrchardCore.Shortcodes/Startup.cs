@@ -28,8 +28,6 @@ public sealed class Startup : StartupBase
         {
             o.ConfigureMemberAccess(strategy =>
             {
-                strategy.Register<ShortcodeViewModel>();
-
                 strategy.Register<Sc.Context, object>((obj, name) => obj[name]);
             });
 

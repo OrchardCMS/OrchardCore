@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -120,9 +119,5 @@ public sealed class Startup : StartupBase
 
         services.AddTagHelpers(typeof(BazTagHelper).Assembly);
 
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy => strategy.Register<OrchardCore.Demo.ViewModels.TodoViewModel>());
-        });
     }
 }

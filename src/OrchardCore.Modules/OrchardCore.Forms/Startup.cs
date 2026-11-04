@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -22,21 +21,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy =>
-            {
-                strategy.Register<FormPart>();
-                strategy.Register<FormElementPart>();
-                strategy.Register<FormInputElementPart>();
-                strategy.Register<LabelPart>();
-                strategy.Register<InputPart>();
-                strategy.Register<SelectPart>();
-                strategy.Register<TextAreaPart>();
-                strategy.Register<ButtonPart>();
-            });
-        });
-
         services.Configure<MvcOptions>(options =>
         {
             options.Filters.Add<ExportModelStateAttribute>();

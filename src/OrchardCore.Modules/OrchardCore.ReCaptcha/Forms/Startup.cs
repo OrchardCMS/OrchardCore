@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -13,11 +12,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptionsBuilder>(o =>
-        {
-            o.ConfigureMemberAccess(strategy => strategy.Register<ReCaptchaPart>());
-        });
-
         services.AddContentPart<ReCaptchaPart>()
             .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
 

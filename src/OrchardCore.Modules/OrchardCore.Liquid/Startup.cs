@@ -22,7 +22,6 @@ using OrchardCore.Liquid.DataMigrations;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.Security;
-using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
@@ -48,10 +47,6 @@ public sealed class Startup : StartupBase
 
             options.ConfigureMemberAccess(strategy =>
             {
-                strategy.Register<LiquidPartViewModel>();
-                strategy.Register<LiquidField>();
-                strategy.Register<LiquidFieldViewModel>();
-
                 // Used to provide a factory to return a value based on a property name that is unknown at registration time.
                 strategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
