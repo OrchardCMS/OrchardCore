@@ -11,6 +11,16 @@ namespace OrchardCore.Localization;
 public interface IJSLocalizer
 {
     /// <summary>
+    /// Returns the group identifiers advertised by this provider for discovery.
+    /// </summary>
+    /// <remarks>
+    /// Existing providers remain usable by name without implementing this method, but their groups
+    /// are not listed by the localization management API until they advertise them here.
+    /// </remarks>
+    /// <returns>The exact group names accepted by <see cref="GetLocalizations"/>.</returns>
+    IEnumerable<string> GetLocalizationGroups() => [];
+
+    /// <summary>
     /// Returns a dictionary of localized strings for the specified group, or <see langword="null"/> if this
     /// implementation does not handle the requested group.
     /// </summary>

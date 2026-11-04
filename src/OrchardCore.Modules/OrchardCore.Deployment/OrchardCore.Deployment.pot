@@ -68,11 +68,6 @@ msgstr ""
 
 #: Controllers/ImportController.cs
 msgctxt "OrchardCore.Deployment.Controllers.ImportController"
-msgid "Only zip or json files are supported."
-msgstr ""
-
-#: Controllers/ImportController.cs
-msgctxt "OrchardCore.Deployment.Controllers.ImportController"
 msgid "Please add a file to import."
 msgstr ""
 
@@ -123,6 +118,16 @@ msgctxt "OrchardCore.Deployment.Controllers.StepController"
 msgid "The deployment plan step has validation errors."
 msgstr ""
 
+#: Controllers/StepController.cs
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "The deployment step identifier is already in use."
+msgstr ""
+
+#: Controllers/StepController.cs
+msgctxt "OrchardCore.Deployment.Controllers.StepController"
+msgid "The deployment step identity or type is invalid."
+msgstr ""
+
 #: DeploymentLocalizationSources.cs
 msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
 msgid "Custom File"
@@ -158,21 +163,44 @@ msgctxt "OrchardCore.Deployment.FileDownloadDeploymentTargetProvider"
 msgid "File Download"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", unknownTypes)
 #: Recipes/DeploymentPlansRecipeStep.cs
-#, csharp-format
 msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
-msgid "No changes have been made. The following types of deployment plans cannot be added: {0}. Please ensure that the related features are enabled to add these types of deployment plans."
+msgid "A deployment plan array is required. No changes have been made."
 msgstr ""
 
-#: Steps/JsonRecipeDeploymentStepDriver.cs
-msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
-msgid "Invalid JSON supplied"
+#: Recipes/DeploymentPlansRecipeStep.cs
+msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
+msgid "Every deployment plan must be an object."
 msgstr ""
 
-#: Steps/JsonRecipeDeploymentStepDriver.cs
+#: Recipes/DeploymentPlansRecipeStep.cs
+msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
+msgid "Every deployment step requires an enabled factory type and a configuration object."
+msgstr ""
+
+#: Recipes/DeploymentPlansRecipeStep.cs
+msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
+msgid "Invalid deployment plan recipe structure. No changes have been made."
+msgstr ""
+
+#: Recipes/DeploymentPlansRecipeStep.cs
+msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
+msgid "Invalid deployment step configuration. No changes have been made."
+msgstr ""
+
+#: Services/DeploymentStepValidation.cs
+msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStepDriver"
+msgid "Use a relative package file path without traversal; Recipe.json is reserved."
+msgstr ""
+
+#: Services/DeploymentStepValidation.cs
 msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
-msgid "The recipe must have a name property"
+msgid "Invalid JSON supplied."
+msgstr ""
+
+#: Services/DeploymentStepValidation.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
+msgid "The recipe must be an object with a nonempty name string."
 msgstr ""
 
 #: Views/DeploymentPlan/Create.cshtml

@@ -33,7 +33,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     private readonly AutorouteOptions _options;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly ISiteService _siteService;
+    private readonly IHomeRouteService _homeRouteService;
     private readonly ITagCache _tagCache;
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
@@ -47,7 +47,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         IOptions<AutorouteOptions> options,
         ILiquidTemplateManager liquidTemplateManager,
         IContentDefinitionManager contentDefinitionManager,
-        ISiteService siteService,
+        IHomeRouteService homeRouteService,
         ITagCache tagCache,
         ISession session,
         IServiceProvider serviceProvider,
@@ -57,7 +57,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         _options = options.Value;
         _liquidTemplateManager = liquidTemplateManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _siteService = siteService;
+        _homeRouteService = homeRouteService;
         _tagCache = tagCache;
         _session = session;
         _serviceProvider = serviceProvider;
@@ -180,24 +180,19 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
     private async Task SetHomeRouteAsync(AutoroutePart part, Action<RouteValueDictionary> action)
     {
-        var site = await _siteService.LoadSiteSettingsAsync();
-
-        site.HomeRoute ??= [];
-
-        var homeRoute = site.HomeRoute;
-
-        foreach (var entry in _options.GlobalRouteValues)
+        await _homeRouteService.UpdateAsync(homeRoute =>
         {
-            homeRoute[entry.Key] = entry.Value;
-        }
+            foreach (var entry in _options.GlobalRouteValues)
+            {
+                homeRoute[entry.Key] = entry.Value;
+            }
 
-        action.Invoke(homeRoute);
+            action(homeRoute);
+        });
 
         // Once we took the flag into account we can dismiss it.
         part.SetHomepage = false;
         part.Apply();
-
-        await _siteService.UpdateSiteSettingsAsync(site);
     }
 
     private Task RemoveTagAsync(AutoroutePart part)

@@ -1,14 +1,11 @@
-using System.IO.Compression;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
-using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.FileStorage;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
@@ -18,40 +15,39 @@ namespace OrchardCore.Deployment.Remote.Controllers;
 [Admin("Deployment/ExportRemoteInstance/{action}/{id?}", "DeploymentExportRemoteInstance{action}")]
 public sealed class ExportRemoteInstanceController : Controller
 {
-    private readonly IDeploymentManager _deploymentManager;
+    private readonly IDeploymentArchiveService _archives;
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
     private readonly RemoteInstanceService _service;
     private readonly INotifier _notifier;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IHtmlLocalizer H;
 
+    /// <summary>Creates the existing remote export action with shared archive generation.</summary>
     public ExportRemoteInstanceController(
         IAuthorizationService authorizationService,
         ISession session,
         RemoteInstanceService service,
-        IDeploymentManager deploymentManager,
+        IDeploymentArchiveService archives,
         INotifier notifier,
         IHttpClientFactory httpClientFactory,
-        ITempDirectoryProvider tempDirectoryProvider,
         IHtmlLocalizer<ExportRemoteInstanceController> localizer)
     {
         _authorizationService = authorizationService;
-        _deploymentManager = deploymentManager;
+        _archives = archives;
         _session = session;
         _service = service;
         _notifier = notifier;
         _httpClientFactory = httpClientFactory;
-        _tempDirectoryProvider = tempDirectoryProvider;
         H = localizer;
     }
 
     [HttpPost]
     public async Task<IActionResult> Execute(long id, string remoteInstanceId, string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export)
+            || !await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportRemoteInstances))
         {
             return Forbid();
         }
@@ -70,57 +66,18 @@ public sealed class ExportRemoteInstanceController : Controller
             return NotFound();
         }
 
-        string archiveFileName;
         var filename = deploymentPlan.Name.ToSafeName() + ".zip";
+        await using var archive = await _archives.CreateAsync(deploymentPlan, new RecipeDescriptor());
 
-        var tempRoot = _tempDirectoryProvider.GetRootDirectory();
+        var status = await new RemoteDeploymentSender(_httpClientFactory).SendAsync(remoteInstance, archive, filename, HttpContext.RequestAborted);
 
-        using (var fileBuilder = new TemporaryFileBuilder(tempRoot))
+        if (status == System.Net.HttpStatusCode.OK)
         {
-            archiveFileName = PathExtensions.Combine(tempRoot, filename);
-
-            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
-            await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
-
-            if (System.IO.File.Exists(archiveFileName))
-            {
-                System.IO.File.Delete(archiveFileName);
-            }
-
-            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+            await _notifier.SuccessAsync(H["Deployment executed successfully."]);
         }
-
-        HttpResponseMessage response;
-
-        try
+        else
         {
-            using (var requestContent = new MultipartFormDataContent())
-            {
-                requestContent.Add(new StreamContent(
-                    new FileStream(archiveFileName,
-                    FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
-                ),
-                    nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
-                requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
-                requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
-
-                var httpClient = _httpClientFactory.CreateClient();
-
-                response = await httpClient.PostAsync(remoteInstance.Url, requestContent);
-            }
-
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                await _notifier.SuccessAsync(H["Deployment executed successfully."]);
-            }
-            else
-            {
-                await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
-            }
-        }
-        finally
-        {
-            System.IO.File.Delete(archiveFileName);
+            await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", status.ToString(), (int)status]);
         }
 
         if (!string.IsNullOrEmpty(returnUrl))

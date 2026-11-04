@@ -31,6 +31,9 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
     public override Task InitializingAsync(InitializingContext<IndexProfile> context)
         => PopulateAsync(context.Model, context.Data);
 
+    public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)
+        => PopulateAsync(context.Model, context.Data);
+
     public override async Task ResetAsync(IndexProfileResetContext context)
     {
         if (!string.Equals(IndexingConstants.ContentsIndexSource, context.IndexProfile.Type, StringComparison.Ordinal))
@@ -54,7 +57,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
 
     public override Task SynchronizedAsync(IndexProfileSynchronizedContext context)
     {
-        if (context.IndexProfile.Type != IndexingConstants.ContentsIndexSource)
+        if (context.IsIndexingCompleted || context.IndexProfile.Type != IndexingConstants.ContentsIndexSource)
         {
             return Task.CompletedTask;
         }

@@ -82,6 +82,8 @@ public class OpenIdServerDeploymentSourceTests
             result.LogoutEndpointPath = "/connect/logout";
             result.UserinfoEndpointPath = "/connect/userinfo";
             result.IntrospectionEndpointPath = "/connect/introspect";
+            result.DeviceAuthorizationEndpointPath = "/connect/device";
+            result.EndUserVerificationEndpointPath = "/connect/verify";
             result.PushedAuthorizationEndpointPath = "/connect/par";
             result.RevocationEndpointPath = "/connect/revoke";
 
@@ -95,6 +97,7 @@ public class OpenIdServerDeploymentSourceTests
 
             result.AllowAuthorizationCodeFlow = true;
             result.AllowClientCredentialsFlow = true;
+            result.AllowDeviceAuthorizationFlow = true;
             result.AllowHybridFlow = true;
             result.AllowImplicitFlow = true;
             result.AllowPasswordFlow = true;

@@ -13,11 +13,6 @@ msgstr ""
 
 #: Handlers/DefaultIndexProfileHandler.cs
 msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
-msgid "Index name is required."
-msgstr ""
-
-#: Handlers/DefaultIndexProfileHandler.cs
-msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
 msgid "Index profile-source is required."
 msgstr ""
 
@@ -38,26 +33,31 @@ msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
 msgid "The index full name is required. Unable to find a index name provider that with the provider name '{0}'."
 msgstr ""
 
-#: Handlers/DefaultIndexProfileHandler.cs
-msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
-msgid "The index name cannot be longer than 255 characters."
-msgstr ""
-
-#: Handlers/DefaultIndexProfileHandler.cs
-msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
-msgid "The index name is required."
-msgstr ""
-
-#: Handlers/DefaultIndexProfileHandler.cs
-msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
-msgid "There is already another index with the same name."
-msgstr ""
-
 #. Format arguments: {0}: context.Model.ProviderName; {1}: context.Model.Type
 #: Handlers/DefaultIndexProfileHandler.cs
 #, csharp-format
 msgctxt "OrchardCore.Indexing.Core.Handlers.DefaultIndexProfileHandler"
 msgid "Unable to find a provider named '{0}' with the type '{1}'."
+msgstr ""
+
+#: IndexProfileIdentityValidator.cs
+msgctxt "OrchardCore.Indexing.Core.IndexProfileIdentityValidator"
+msgid "Index name is required."
+msgstr ""
+
+#: IndexProfileIdentityValidator.cs
+msgctxt "OrchardCore.Indexing.Core.IndexProfileIdentityValidator"
+msgid "The index name cannot be longer than 255 characters."
+msgstr ""
+
+#: IndexProfileIdentityValidator.cs
+msgctxt "OrchardCore.Indexing.Core.IndexProfileIdentityValidator"
+msgid "The index name is required."
+msgstr ""
+
+#: IndexProfileIdentityValidator.cs
+msgctxt "OrchardCore.Indexing.Core.IndexProfileIdentityValidator"
+msgid "There is already another index with the same name."
 msgstr ""
 
 #: IndexingLocalizationSources.cs

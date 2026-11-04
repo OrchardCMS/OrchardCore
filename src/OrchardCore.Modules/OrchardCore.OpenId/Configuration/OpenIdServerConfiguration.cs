@@ -105,6 +105,18 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
                 settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
         }
 
+        if (settings.DeviceAuthorizationEndpointPath.HasValue)
+        {
+            options.DeviceAuthorizationEndpointUris.Add(new Uri(
+                settings.DeviceAuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+        }
+
+        if (settings.EndUserVerificationEndpointPath.HasValue)
+        {
+            options.EndUserVerificationEndpointUris.Add(new Uri(
+                settings.EndUserVerificationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+        }
+
         if (settings.PushedAuthorizationEndpointPath.HasValue)
         {
             options.PushedAuthorizationEndpointUris.Add(new Uri(
@@ -136,6 +148,11 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
         if (settings.AllowClientCredentialsFlow)
         {
             options.GrantTypes.Add(GrantTypes.ClientCredentials);
+        }
+
+        if (settings.AllowDeviceAuthorizationFlow)
+        {
+            options.GrantTypes.Add(GrantTypes.DeviceCode);
         }
 
         if (settings.AllowHybridFlow)
@@ -212,6 +229,7 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
         // in its dedicated ASP.NET Core MVC controller, which requires enabling the pass-through mode.
         options.EnableAuthorizationEndpointPassthrough = true;
         options.EnableEndSessionEndpointPassthrough = true;
+        options.EnableEndUserVerificationEndpointPassthrough = true;
         options.EnableTokenEndpointPassthrough = true;
         options.EnableUserInfoEndpointPassthrough = true;
 

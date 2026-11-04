@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
@@ -22,6 +21,7 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
     public override Task UpdatingAsync(UpdatingRewriteRuleContext context)
         => PopulateAsync(context.Rule, context.Data);
 
+    /// <summary>Validates the source arguments shared by admin and recipe updates.</summary>
     public override Task ValidatingAsync(ValidatingRewriteRuleContext context)
     {
         if (context.Rule.Source != UrlRewriteRuleSource.SourceName)
@@ -31,23 +31,8 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
 
         var metadata = context.Rule.GetOrCreate<UrlRewriteSourceMetadata>();
 
-        if (string.IsNullOrWhiteSpace(metadata.Pattern))
-        {
-            context.Result.Fail(new ValidationResult(S["The Match URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
-        }
-        else if (!PatternHelper.IsValidRegex(metadata.Pattern))
-        {
-            context.Result.Fail(new ValidationResult(S["A valid Match URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
-        }
-
-        if (string.IsNullOrWhiteSpace(metadata.SubstitutionPattern))
-        {
-            context.Result.Fail(new ValidationResult(S["The Substitution URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]));
-        }
-        else if (!PatternHelper.IsValidRegex(metadata.SubstitutionPattern))
-        {
-            context.Result.Fail(new ValidationResult(S["A valid Substitution URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]));
-        }
+        RewriteRuleValidation.Validate(context.Result, metadata.Pattern, metadata.SubstitutionPattern,
+            metadata.QueryStringPolicy, S);
 
         return Task.CompletedTask;
     }

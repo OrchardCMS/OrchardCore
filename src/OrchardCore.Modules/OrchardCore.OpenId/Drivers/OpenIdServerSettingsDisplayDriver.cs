@@ -54,11 +54,14 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
             model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
             model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
             model.EnableIntrospectionEndpoint = settings.IntrospectionEndpointPath.HasValue;
+            model.EnableDeviceAuthorizationEndpoint = settings.DeviceAuthorizationEndpointPath.HasValue;
+            model.EnableEndUserVerificationEndpoint = settings.EndUserVerificationEndpointPath.HasValue;
             model.EnablePushedAuthorizationEndpoint = settings.PushedAuthorizationEndpointPath.HasValue;
             model.EnableRevocationEndpoint = settings.RevocationEndpointPath.HasValue;
 
             model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
             model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
+            model.AllowDeviceAuthorizationFlow = settings.AllowDeviceAuthorizationFlow;
             model.AllowHybridFlow = settings.AllowHybridFlow;
             model.AllowImplicitFlow = settings.AllowImplicitFlow;
             model.AllowPasswordFlow = settings.AllowPasswordFlow;
@@ -123,6 +126,10 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
             new PathString("/connect/userinfo") : PathString.Empty;
         settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
             new PathString("/connect/introspect") : PathString.Empty;
+        settings.DeviceAuthorizationEndpointPath = model.EnableDeviceAuthorizationEndpoint ?
+            new PathString("/connect/device") : PathString.Empty;
+        settings.EndUserVerificationEndpointPath = model.EnableEndUserVerificationEndpoint ?
+            new PathString("/connect/verify") : PathString.Empty;
         settings.PushedAuthorizationEndpointPath = model.EnablePushedAuthorizationEndpoint ?
             new PathString("/connect/par") : PathString.Empty;
         settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
@@ -130,6 +137,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
 
         settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
         settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+        settings.AllowDeviceAuthorizationFlow = model.AllowDeviceAuthorizationFlow;
         settings.AllowHybridFlow = model.AllowHybridFlow;
         settings.AllowImplicitFlow = model.AllowImplicitFlow;
         settings.AllowPasswordFlow = model.AllowPasswordFlow;

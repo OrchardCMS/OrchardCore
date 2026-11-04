@@ -1,8 +1,6 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundJobs;
 using OrchardCore.Indexing.Core.Deployments;
-using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -12,9 +10,12 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
 {
     public const string Key = "RebuildIndex";
 
-    public RebuildIndexStep()
+    private readonly IServiceProvider _services;
+
+    public RebuildIndexStep(IServiceProvider services)
         : base(Key)
     {
+        _services = services;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -31,55 +32,12 @@ public sealed class RebuildIndexStep : NamedRecipeStepHandler
             return;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("rebuild-indexes", async scope =>
+        var profiles = _services.GetRequiredService<IIndexProfileManager>();
+        var operations = _services.GetRequiredService<Operations.IndexOperationRunner>();
+        var indexes = await profiles.GetAllAsync();
+        foreach (var index in indexes.Where(index => model.IncludeAll || model.IndexNames.Contains(index.Name, StringComparer.OrdinalIgnoreCase)))
         {
-            var indexProfileManager = scope.ServiceProvider.GetService<IIndexProfileManager>();
-            var distributedLock = scope.ServiceProvider.GetService<IDistributedLock>();
-
-            var indexes = model.IncludeAll
-                ? await indexProfileManager.GetAllAsync()
-                : (await indexProfileManager.GetAllAsync()).Where(x => model.IndexNames.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
-
-            Dictionary<string, IIndexManager> indexManagers = new();
-
-
-            foreach (var index in indexes)
-            {
-                if (!indexManagers.TryGetValue(index.ProviderName, out var indexManager))
-                {
-                    indexManager = scope.ServiceProvider.GetKeyedService<IIndexManager>(index.ProviderName);
-                    indexManagers[index.ProviderName] = indexManager;
-                }
-
-                if (indexManager is null)
-                {
-                    continue;
-                }
-
-                (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync($"IndexingService-{index.Id}", TimeSpan.FromSeconds(3), TimeSpan.FromMinutes(15));
-
-                if (!isLocked)
-                {
-                    continue;
-                }
-
-                try
-                {
-                    await indexProfileManager.ResetAsync(index);
-                    await indexProfileManager.UpdateAsync(index);
-                    if (await indexManager.RebuildAsync(index))
-                    {
-                        await indexProfileManager.SynchronizeAsync(index);
-                    }
-                }
-                finally
-                {
-                    if (isLocked)
-                    {
-                        await locker.DisposeAsync();
-                    }
-                }
-            }
-        });
+            await operations.QueueAsync(index.Id, IndexLifecycleAction.Rebuild);
+        }
     }
 }

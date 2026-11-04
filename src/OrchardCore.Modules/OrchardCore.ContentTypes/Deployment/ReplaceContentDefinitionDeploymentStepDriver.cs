@@ -39,16 +39,7 @@ public sealed class ReplaceContentDefinitionDeploymentStepDriver : DisplayDriver
             x => x.ContentParts,
             x => x.IncludeAll);
 
-        // don't have the selected option if include all
-        if (step.IncludeAll)
-        {
-            step.ContentTypes = [];
-            step.ContentParts = [];
-        }
-        else
-        {
-            step.ContentParts = step.ContentParts.Distinct().ToArray();
-        }
+        (step.ContentTypes, step.ContentParts) = ContentDefinitionSelection.Normalize(step.IncludeAll, step.ContentTypes, step.ContentParts);
 
         return Edit(step, context);
     }

@@ -15,6 +15,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication;
 
@@ -26,6 +27,7 @@ public sealed class MicrosoftAccountStartup : StartupBase
         services.AddPermissionProvider<Permissions>();
 
         services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
+        services.AddScoped<ISiteSettingsSectionProvider, MicrosoftAccountSettingsSectionProvider>();
         services.AddSiteDisplayDriver<MicrosoftAccountSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenuMicrosoftAccount>();
 

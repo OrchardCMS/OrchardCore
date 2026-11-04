@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentLocalization.Models;
+using OrchardCore.ContentLocalization.Services;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -51,7 +52,9 @@ public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDri
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        var proposed = new ContentRequestCultureProviderSettings { SetCookie = settings.SetCookie };
+        await context.Updater.TryUpdateModelAsync(proposed, Prefix);
+        ContentCultureSettingsEditor.Apply(settings, proposed);
 
         return await EditAsync(site, settings, context);
     }

@@ -31,6 +31,26 @@ msgctxt "OrchardCore.DataLocalization.DataLocalizationLocalizationSources"
 msgid "Internationalization"
 msgstr ""
 
+#: Endpoints/TranslationManagementEndpoints.cs
+msgctxt "OrchardCore.DataLocalization.Endpoints.TranslationManagementEndpoints"
+msgid "No data localization provider registers this exact context and key."
+msgstr ""
+
+#: Endpoints/TranslationManagementEndpoints.cs
+msgctxt "OrchardCore.DataLocalization.Endpoints.TranslationManagementEndpoints"
+msgid "Provide a supported non-invariant culture and context and key of 1–1000 characters."
+msgstr ""
+
+#: Endpoints/TranslationManagementEndpoints.cs
+msgctxt "OrchardCore.DataLocalization.Endpoints.TranslationManagementEndpoints"
+msgid "Provide a supported non-invariant culture, context and key of 1–1000 characters, and a nonblank value of at most 100000 characters. Use delete to remove a translation."
+msgstr ""
+
+#: Endpoints/TranslationManagementEndpoints.cs
+msgctxt "OrchardCore.DataLocalization.Endpoints.TranslationManagementEndpoints"
+msgid "Provide a supported non-invariant culture, nonnegative skip, take between 1 and 200, and search of at most 1000 characters."
+msgstr ""
+
 #: Recipes/TranslationsStep.cs
 msgctxt "OrchardCore.DataLocalization.Recipes.TranslationsStep"
 msgid "The 'translations' property is required."

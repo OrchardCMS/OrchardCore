@@ -42,15 +42,9 @@ public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentSt
         var model = new ContentItemDeploymentStepViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItemId);
-        var contentItem = await _contentManager.GetAsync(model.ContentItemId);
-
-        if (contentItem == null)
+        if (!await ContentItemDeploymentStepEditor.TryApplyAsync(_contentManager, step, model.ContentItemId))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(step.ContentItemId), S["Your content item does not exist."]);
-        }
-        else
-        {
-            step.ContentItemId = model.ContentItemId;
         }
 
         return Edit(step, context);

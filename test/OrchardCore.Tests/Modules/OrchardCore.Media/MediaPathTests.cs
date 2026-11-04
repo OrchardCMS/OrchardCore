@@ -2,6 +2,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Media;
 using OrchardCore.Media.Services;
+using OrchardCore.Settings;
 using MediaStartup = OrchardCore.Media.Startup;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
@@ -133,7 +134,11 @@ public class MediaPathTests
                 ["OrchardCore_Media:AllowedFileExtensions:0"] = ".dll",
             })
             .Build();
+        var siteService = new Mock<ISiteService>();
+        siteService.Setup(service => service.GetSiteSettingsAsync()).ReturnsAsync(new SiteSettings());
+
         var services = new ServiceCollection();
+        services.AddSingleton(siteService.Object);
         services.AddSingleton<IShellConfiguration>(new ShellConfiguration(configuration));
         using var settings = new ShellSettings { Name = "Tenant" };
         services.AddSingleton(settings);

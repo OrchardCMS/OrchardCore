@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Alias.Models;
@@ -10,5 +11,6 @@ public class AliasPart : ContentPart
     // minus 4 to allow at least to add a new integer column.
     public const int MaxAliasLength = 735;
 
+    [Description("The unique alias used to identify the content item.")]
     public string Alias { get; set; }
 }

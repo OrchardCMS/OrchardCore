@@ -29,6 +29,43 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
+    public async Task OnRejected_LimiterWithoutWindow_AddsNoRetryAfter()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var options = Configure(new RateLimitsOptions());
+        using var limiter = new ConcurrencyLimiter(new ConcurrencyLimiterOptions { PermitLimit = 1, QueueLimit = 0 });
+        using var held = await limiter.AcquireAsync(1, cancellationToken);
+        using var rejected = await limiter.AcquireAsync(1, cancellationToken);
+        var context = new DefaultHttpContext();
+
+        await options.OnRejected(new OnRejectedContext { HttpContext = context, Lease = rejected }, cancellationToken);
+
+        Assert.False(rejected.IsAcquired);
+        Assert.False(context.Response.Headers.ContainsKey("Retry-After"));
+    }
+
+    [Fact]
+    public async Task OnRejected_RouteRejectionHandler_StillRunsAndCanOverrideRetryAfter()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var rateLimitsOptions = new RateLimitsOptions();
+        rateLimitsOptions.AddRouteRejectionHandler("Login", (rejectedContext, _) =>
+        {
+            rejectedContext.HttpContext.Response.Headers.RetryAfter = "7";
+            return ValueTask.CompletedTask;
+        });
+        var options = Configure(rateLimitsOptions);
+        using var limiter = new FixedWindowRateLimiter(new FixedWindowRateLimiterOptions { PermitLimit = 1, QueueLimit = 0, Window = TimeSpan.FromMinutes(1) });
+        using var held = await limiter.AcquireAsync(1, cancellationToken);
+        using var rejected = await limiter.AcquireAsync(1, cancellationToken);
+        var context = CreateHttpContext("Login", HttpMethods.Post);
+
+        await options.OnRejected(new OnRejectedContext { HttpContext = context, Lease = rejected }, cancellationToken);
+
+        Assert.Equal("7", context.Response.Headers.RetryAfter);
+    }
+
+    [Fact]
     public async Task Only_ApplyCustomRouteLimitToMatchingHttpMethods_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;

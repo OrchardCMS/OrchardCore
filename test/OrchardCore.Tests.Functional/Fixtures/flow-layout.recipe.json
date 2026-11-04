@@ -1,0 +1,517 @@
+{
+  "name": "FlowLayout",
+  "displayName": "Flow layout",
+  "description": "Imported Flow and Bag widgets without editor-generated metadata.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [
+    "tests"
+  ],
+  "tags": [
+    "tests"
+  ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.Features",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "TheAdmin",
+        "SafeMode",
+        "OrchardCore.Flows",
+        "OrchardCore.Widgets",
+        "OrchardCore.Html"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": ""
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "LayoutWidget",
+          "DisplayName": "Layout widget",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart"
+            }
+          ]
+        },
+        {
+          "Name": "FlowStandard",
+          "DisplayName": "FlowStandard",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Sections",
+              "PartName": "FlowPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": ""
+                },
+                "FlowPartSettings": {
+                  "ContainedContentTypes": [
+                    "LayoutWidget"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "BagStandard",
+          "DisplayName": "BagStandard",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Sections",
+              "PartName": "BagPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": ""
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "LayoutWidget"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "NestedStandard",
+          "DisplayName": "NestedStandard",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Sections",
+              "PartName": "FlowPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": ""
+                },
+                "FlowPartSettings": {
+                  "ContainedContentTypes": [
+                    "LayoutWidget"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ContainerStandard",
+          "DisplayName": "ContainerStandard",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Cards",
+              "PartName": "BagPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": ""
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "NestedStandard"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "FlowBlocks",
+          "DisplayName": "FlowBlocks",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Sections",
+              "PartName": "FlowPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": "Blocks"
+                },
+                "FlowPartSettings": {
+                  "ContainedContentTypes": [
+                    "LayoutWidget"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "BagBlocks",
+          "DisplayName": "BagBlocks",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Sections",
+              "PartName": "BagPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": "Blocks"
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "LayoutWidget"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "NestedBlocks",
+          "DisplayName": "NestedBlocks",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Sections",
+              "PartName": "FlowPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": "Blocks"
+                },
+                "FlowPartSettings": {
+                  "ContainedContentTypes": [
+                    "LayoutWidget"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ContainerBlocks",
+          "DisplayName": "ContainerBlocks",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "Name": "Cards",
+              "PartName": "BagPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": "Blocks"
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "NestedBlocks"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "flowstandard",
+          "ContentType": "FlowStandard",
+          "DisplayText": "FlowStandard",
+          "Published": false,
+          "Latest": true,
+          "Sections": {
+            "Widgets": [
+              {
+                "ContentItemId": "FlowStandardfirst",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "FlowStandardsecond",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "FlowStandardhalf",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {
+                  "Size": 50,
+                  "Alignment": "Right"
+                }
+              },
+              {
+                "ContentItemId": "FlowStandardempty",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {}
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "bagstandard",
+          "ContentType": "BagStandard",
+          "DisplayText": "BagStandard",
+          "Published": false,
+          "Latest": true,
+          "Sections": {
+            "ContentItems": [
+              {
+                "ContentItemId": "BagStandardfirst",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "BagStandardsecond",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "BagStandardhalf",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {
+                  "Size": 50,
+                  "Alignment": "Right"
+                }
+              },
+              {
+                "ContentItemId": "BagStandardempty",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {}
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "containerstandard",
+          "ContentType": "ContainerStandard",
+          "Published": false,
+          "Latest": true,
+          "Cards": {
+            "ContentItems": [
+              {
+                "ContentItemId": "nestedstandard",
+                "ContentType": "NestedStandard",
+                "Sections": {
+                  "Widgets": [
+                    {
+                      "ContentItemId": "NestedStandardfirst",
+                      "ContentType": "LayoutWidget",
+                      "HtmlBodyPart": {
+                        "Html": "<p>Layout content</p>"
+                      }
+                    },
+                    {
+                      "ContentItemId": "NestedStandardsecond",
+                      "ContentType": "LayoutWidget",
+                      "HtmlBodyPart": {
+                        "Html": "<p>Layout content</p>"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "flowblocks",
+          "ContentType": "FlowBlocks",
+          "DisplayText": "FlowBlocks",
+          "Published": false,
+          "Latest": true,
+          "Sections": {
+            "Widgets": [
+              {
+                "ContentItemId": "FlowBlocksfirst",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "FlowBlockssecond",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "FlowBlockshalf",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {
+                  "Size": 50,
+                  "Alignment": "Right"
+                }
+              },
+              {
+                "ContentItemId": "FlowBlocksempty",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {}
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "bagblocks",
+          "ContentType": "BagBlocks",
+          "DisplayText": "BagBlocks",
+          "Published": false,
+          "Latest": true,
+          "Sections": {
+            "ContentItems": [
+              {
+                "ContentItemId": "BagBlocksfirst",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "BagBlockssecond",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                }
+              },
+              {
+                "ContentItemId": "BagBlockshalf",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {
+                  "Size": 50,
+                  "Alignment": "Right"
+                }
+              },
+              {
+                "ContentItemId": "BagBlocksempty",
+                "ContentType": "LayoutWidget",
+                "HtmlBodyPart": {
+                  "Html": "<p>Layout content</p>"
+                },
+                "FlowMetadata": {}
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "containerblocks",
+          "ContentType": "ContainerBlocks",
+          "Published": false,
+          "Latest": true,
+          "Cards": {
+            "ContentItems": [
+              {
+                "ContentItemId": "nestedblocks",
+                "ContentType": "NestedBlocks",
+                "Sections": {
+                  "Widgets": [
+                    {
+                      "ContentItemId": "NestedBlocksfirst",
+                      "ContentType": "LayoutWidget",
+                      "HtmlBodyPart": {
+                        "Html": "<p>Layout content</p>"
+                      }
+                    },
+                    {
+                      "ContentItemId": "NestedBlockssecond",
+                      "ContentType": "LayoutWidget",
+                      "HtmlBodyPart": {
+                        "Html": "<p>Layout content</p>"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

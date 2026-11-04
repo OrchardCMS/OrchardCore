@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 
@@ -27,6 +28,37 @@ public sealed class SaasTests : IAsyncLifetime
         var page = await _fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync($"/{_fixture.Tenant.Prefix}");
         await Assertions.Expect(page.Locator("h4")).ToContainTextAsync("Welcome to Orchard Core, your site has been successfully set up.");
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task SaasRemoteManagementBootstrap_Default_UsesTenantAuthority()
+    {
+        var page = await _fixture.CreatePageAsync();
+        var tenantUrl = $"{_fixture.BaseUrl.TrimEnd('/')}/{_fixture.Tenant.Prefix}/";
+
+        var bootstrapResponse = await page.APIRequest.GetAsync(
+            $"{tenantUrl}.well-known/orchardcore-management");
+
+        Assert.True(bootstrapResponse.Ok);
+        using var bootstrap = JsonDocument.Parse(await bootstrapResponse.TextAsync());
+        var authentication = bootstrap.RootElement.GetProperty("authentication");
+
+        Assert.Equal(tenantUrl, authentication.GetProperty("authority").GetString());
+        Assert.Equal("orchardcore-cli", authentication.GetProperty("clientId").GetString());
+        Assert.Contains("authorization_code", authentication.GetProperty("grantTypes").EnumerateArray().Select(value => value.GetString()));
+        Assert.Contains("urn:ietf:params:oauth:grant-type:device_code", authentication.GetProperty("grantTypes").EnumerateArray().Select(value => value.GetString()));
+        Assert.Contains("orchardcore.management", authentication.GetProperty("scopes").EnumerateArray().Select(value => value.GetString()));
+
+        var discoveryResponse = await page.APIRequest.GetAsync(
+            $"{tenantUrl}.well-known/openid-configuration");
+
+        Assert.True(discoveryResponse.Ok);
+        using var discovery = JsonDocument.Parse(await discoveryResponse.TextAsync());
+        Assert.Equal(tenantUrl.TrimEnd('/'), discovery.RootElement.GetProperty("issuer").GetString());
+        Assert.Equal($"{tenantUrl}connect/authorize", discovery.RootElement.GetProperty("authorization_endpoint").GetString());
+        Assert.Equal($"{tenantUrl}connect/device", discovery.RootElement.GetProperty("device_authorization_endpoint").GetString());
+
         await page.CloseAsync();
     }
 

@@ -6,11 +6,13 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
 using OrchardCore.GitHub.Recipes;
+using OrchardCore.GitHub.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub;
 
@@ -27,6 +29,7 @@ public sealed class GitHubLoginStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ISiteSettingsSectionProvider, GitHubAuthenticationSettingsSectionProvider>();
         services.AddSiteDisplayDriver<GitHubAuthenticationSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenuGitHubLogin>();
 

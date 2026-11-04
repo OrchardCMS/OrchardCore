@@ -255,6 +255,7 @@ public sealed class DefaultQueryManager : IQueryManager
     private static void UpdateBaseProperties(JsonNode data, Query query)
     {
         query.Schema = data[nameof(Query.Schema)]?.GetValue<string>();
+        query.ParameterSchema = data[nameof(Query.ParameterSchema)]?.GetValue<string>();
 
         // For backward compatibility, we use the key 'ReturnDocuments'.
         var returnDocuments = data["ReturnDocuments"];

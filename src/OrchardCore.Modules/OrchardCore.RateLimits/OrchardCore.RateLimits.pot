@@ -193,36 +193,6 @@ msgctxt "OrchardCore.RateLimits.Drivers.ConcurrencyRateLimiterDisplayDriver"
 msgid "Oldest first (first come, first served)"
 msgstr ""
 
-#: Drivers/ConcurrencyRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.ConcurrencyRateLimiterDisplayDriver"
-msgid "Permit limit must be greater than zero."
-msgstr ""
-
-#: Drivers/FixedWindowRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.FixedWindowRateLimiterDisplayDriver"
-msgid "Permit limit must be greater than zero."
-msgstr ""
-
-#: Drivers/FixedWindowRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.FixedWindowRateLimiterDisplayDriver"
-msgid "Window must be greater than zero."
-msgstr ""
-
-#: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
-msgid "Permit limit must be greater than zero."
-msgstr ""
-
-#: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
-msgid "Segments per window must be greater than zero."
-msgstr ""
-
-#: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
-msgid "Window must be greater than zero."
-msgstr ""
-
 #: Drivers/TokenBucketRateLimiterDisplayDriver.cs
 msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
 msgid "Newest first (latest request first)"
@@ -231,21 +201,6 @@ msgstr ""
 #: Drivers/TokenBucketRateLimiterDisplayDriver.cs
 msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
 msgid "Oldest first (first come, first served)"
-msgstr ""
-
-#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
-msgid "Replenishment period must be greater than zero."
-msgstr ""
-
-#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
-msgid "Token limit must be greater than zero."
-msgstr ""
-
-#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
-msgid "Tokens per period must be greater than zero."
 msgstr ""
 
 #: Services/ConcurrencyRateLimiterSource.cs
@@ -280,6 +235,46 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Services.FixedWindowRateLimiterSource"
 msgid "{0} requests every {1} seconds, queue limit {2}"
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Permit limit must be greater than zero."
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Queue limit must be nonnegative."
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Replenishment period must be greater than zero."
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Segments per window must be greater than zero."
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Select a valid queue processing order."
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Token limit must be greater than zero."
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Tokens per period must be greater than zero."
+msgstr ""
+
+#: Services/RateLimitLimiterValidation.cs
+msgctxt "OrchardCore.RateLimits.Services.RateLimitLimiterValidation"
+msgid "Window must be greater than zero."
 msgstr ""
 
 #: Services/SlidingWindowRateLimiterSource.cs

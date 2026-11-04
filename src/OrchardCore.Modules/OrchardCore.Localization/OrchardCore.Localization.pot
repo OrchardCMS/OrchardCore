@@ -31,6 +31,41 @@ msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
 msgid "The site has been restarted for the settings to take effect."
 msgstr ""
 
+#: Endpoints/LocalizationManagementEndpoints.cs
+msgctxt "OrchardCore.Localization.Endpoints.LocalizationManagementEndpoints"
+msgid "No UI strings are registered for this group."
+msgstr ""
+
+#: Endpoints/LocalizationManagementEndpoints.cs
+msgctxt "OrchardCore.Localization.Endpoints.LocalizationManagementEndpoints"
+msgid "Provide a valid default culture and between 1 and 1000 available supported cultures. Use localization cultures available to discover names."
+msgstr ""
+
+#: Endpoints/LocalizationManagementEndpoints.cs
+msgctxt "OrchardCore.Localization.Endpoints.LocalizationManagementEndpoints"
+msgid "Skip must be nonnegative and take must be between 1 and 200."
+msgstr ""
+
+#: Endpoints/LocalizationManagementEndpoints.cs
+msgctxt "OrchardCore.Localization.Endpoints.LocalizationManagementEndpoints"
+msgid "The default culture cannot be removed. Change the default with localization settings update first."
+msgstr ""
+
+#: Endpoints/LocalizationManagementEndpoints.cs
+msgctxt "OrchardCore.Localization.Endpoints.LocalizationManagementEndpoints"
+msgid "The default culture must be included in supportedCultures."
+msgstr ""
+
+#: Endpoints/LocalizationManagementEndpoints.cs
+msgctxt "OrchardCore.Localization.Endpoints.LocalizationManagementEndpoints"
+msgid "Use a supported culture, a group name of at most 200 characters, nonnegative skip and take between 1 and 200."
+msgstr ""
+
+#: Endpoints/LocalizationManagementEndpoints.cs
+msgctxt "OrchardCore.Localization.Endpoints.LocalizationManagementEndpoints"
+msgid "Use an available culture from localization cultures available."
+msgstr ""
+
 #: GraphQL/CultureQueryObjectType.cs
 msgctxt "OrchardCore.Localization.GraphQL.CultureQueryObjectType"
 msgid "The culture code."

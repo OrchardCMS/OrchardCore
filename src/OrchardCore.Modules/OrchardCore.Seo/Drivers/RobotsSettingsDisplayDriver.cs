@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Settings;
+using OrchardCore.Seo.Services;
 
 namespace OrchardCore.Seo.Drivers;
 
@@ -72,7 +73,9 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        var model = new RobotsSettings { AllowAllAgents = settings.AllowAllAgents, DisallowAdmin = settings.DisallowAdmin, AdditionalRules = settings.AdditionalRules };
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        RobotsSettingsEditor.Apply(settings, model.AllowAllAgents, model.DisallowAdmin, model.AdditionalRules);
 
         return await EditAsync(site, settings, context);
     }

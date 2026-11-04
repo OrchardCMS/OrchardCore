@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Data.Migration;
@@ -15,6 +16,8 @@ public sealed class ExportContentToDeploymentTargetStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.TryAddScoped<ContentExportService>();
+        services.AddScoped<IDeploymentStepDefinition, ExportContentSelectionDefinition>();
         services.AddNavigationProvider<ExportContentToDeploymentTargetAdminMenu>();
 
         services.AddSiteDisplayDriver<ExportContentToDeploymentTargetSettingsDisplayDriver>();

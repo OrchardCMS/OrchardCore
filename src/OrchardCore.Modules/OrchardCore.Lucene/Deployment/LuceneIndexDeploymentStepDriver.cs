@@ -46,10 +46,7 @@ public sealed class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
                                           x => x.IncludeAll);
 
         // don't have the selected option if include all
-        if (step.IncludeAll)
-        {
-            step.IndexNames = [];
-        }
+        step.IndexNames = DeploymentSelection.Normalize(step.IncludeAll, step.IndexNames);
 
         return Edit(step, context);
     }

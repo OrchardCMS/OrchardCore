@@ -46,17 +46,17 @@ msgctxt "OrchardCore.Queries.Controllers.AdminController"
 msgid "Query updated successfully."
 msgstr ""
 
-#: Deployment/QueryBasedContentDeploymentStepDriver.cs
+#: Deployment/QueryDeploymentConfiguration.cs
 msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
 msgid "Make sure it is a valid JSON object. Example: { key : 'value' }"
 msgstr ""
 
-#: Deployment/QueryBasedContentDeploymentStepDriver.cs
+#: Deployment/QueryDeploymentConfiguration.cs
 msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
 msgid "Something is wrong with your JSON."
 msgstr ""
 
-#: Deployment/QueryBasedContentDeploymentStepDriver.cs
+#: Deployment/QueryDeploymentConfiguration.cs
 msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
 msgid "Your Query is not returning content items."
 msgstr ""
@@ -142,6 +142,55 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Queries.Sql.GraphQL.Queries.SqlQueryFieldTypeProvider"
 msgid "Represents the {0} Query : {1}"
+msgstr ""
+
+#: Sql/Services/SqlQuerySourceApiDescriptorProvider.cs
+msgctxt "OrchardCore.Queries.Sql.Services.SqlQuerySourceApiDescriptorProvider"
+msgid "Potentially unsafe Liquid output expressions ('{{ ... }}') were detected. Prefer SQL parameters when injecting user input."
+msgstr ""
+
+#: Sql/Services/SqlQuerySourceApiDescriptorProvider.cs
+msgctxt "OrchardCore.Queries.Sql.Services.SqlQuerySourceApiDescriptorProvider"
+msgid "The SQL query metadata is required."
+msgstr ""
+
+#: Sql/Services/SqlQuerySourceApiDescriptorProvider.cs
+msgctxt "OrchardCore.Queries.Sql.Services.SqlQuerySourceApiDescriptorProvider"
+msgid "The SQL template is required."
+msgstr ""
+
+#. Format arguments: {0}: definition.Name
+#: Endpoints/Api/QueryManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.Startup"
+msgid "A query named '{0}' already exists."
+msgstr ""
+
+#: Endpoints/Api/QueryManagementEndpoints.cs
+msgctxt "OrchardCore.Queries.Startup"
+msgid "The parameter schema must be a JSON object or boolean JSON schema."
+msgstr ""
+
+#: Endpoints/Api/QueryManagementEndpoints.cs
+msgctxt "OrchardCore.Queries.Startup"
+msgid "The query name is required."
+msgstr ""
+
+#. Format arguments: {0}: definition.Source
+#: Endpoints/Api/QueryManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Queries.Startup"
+msgid "The query source '{0}' is not available."
+msgstr ""
+
+#: Endpoints/Api/QueryManagementEndpoints.cs
+msgctxt "OrchardCore.Queries.Startup"
+msgid "The query source is required."
+msgstr ""
+
+#: Endpoints/Api/QueryManagementEndpoints.cs
+msgctxt "OrchardCore.Queries.Startup"
+msgid "The result schema must be a JSON object or boolean JSON schema."
 msgstr ""
 
 #. Format arguments: {0}: Model.SourceName

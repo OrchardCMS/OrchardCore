@@ -9,6 +9,7 @@ if (form) {
             configured: getDatasetBoolean(form, "settingsConfigured"),
             allowAuthorizationCodeFlow: getDatasetBoolean(form, "allowAuthorizationCodeFlow"),
             allowClientCredentialsFlow: getDatasetBoolean(form, "allowClientCredentialsFlow"),
+            allowDeviceAuthorizationFlow: getDatasetBoolean(form, "allowDeviceAuthorizationFlow"),
             allowImplicitFlow: getDatasetBoolean(form, "allowImplicitFlow"),
             allowHybridFlow: getDatasetBoolean(form, "allowHybridFlow"),
             allowPasswordFlow: getDatasetBoolean(form, "allowPasswordFlow"),

@@ -37,10 +37,7 @@ public sealed class CustomUserSettingsDeploymentStepDriver : DisplayDriver<Deplo
         step.SettingsTypeNames = [];
         await context.Updater.TryUpdateModelAsync(step, Prefix);
 
-        if (step.IncludeAll)
-        {
-            step.SettingsTypeNames = [];
-        }
+        step.SettingsTypeNames = DeploymentSelection.Normalize(step.IncludeAll, step.SettingsTypeNames);
 
         return Edit(step, context);
     }

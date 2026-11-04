@@ -8,6 +8,11 @@ msgstr ""
 
 #: ProblemDetailsApiControllerExtensions.cs
 msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "A JSON request body is required."
+msgstr ""
+
+#: ProblemDetailsApiControllerExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
 msgid "A validation error occurred."
 msgstr ""
 
@@ -24,6 +29,28 @@ msgstr ""
 #: ProblemDetailsApiControllerExtensions.cs
 msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
 msgid "Not Found"
+msgstr ""
+
+#: ApiResourceVersionExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "Precondition failed"
+msgstr ""
+
+#: ProblemDetailsApiControllerExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "Skip must be zero or greater and take must be greater than zero."
+msgstr ""
+
+#. Format arguments: {0}: MaximumTake
+#: ProblemDetailsApiControllerExtensions.cs
+#, csharp-format
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "Take cannot exceed {0}."
+msgstr ""
+
+#: ApiResourceVersionExtensions.cs
+msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
+msgid "The resource changed since it was read. Read it again, reapply your change, and send its current ETag in the If-Match header."
 msgstr ""
 
 #: ProblemDetailsApiControllerExtensions.cs

@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Settings.Services;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers;
@@ -89,7 +90,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         site.AppendVersion = model.AppendVersion;
         site.CacheMode = model.CacheMode;
 
-        if (ValidateUri(model.BaseUrl, restrictScheme: true))
+        if (SiteSettingsValidator.IsValidUrl(model.BaseUrl, restrictScheme: true))
         {
             site.BaseUrl = model.BaseUrl;
         }
@@ -99,7 +100,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         }
 
         // The site base URL is always HTTP or HTTPS, while the CDN base URL could be something else (like FTP) as well.
-        if (ValidateUri(model.CdnBaseUrl, restrictScheme: false))
+        if (SiteSettingsValidator.IsValidUrl(model.CdnBaseUrl, restrictScheme: false))
         {
             site.CdnBaseUrl = model.CdnBaseUrl;
         }
@@ -108,14 +109,9 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.CdnBaseUrl), S["The CDN base url must be a fully qualified URL."]);
         }
 
-        if (model.PageSize.Value < 1)
+        if (SiteSettingsValidator.ValidatePageSize(S, model.PageSize.Value, site.MaxPageSize) is { } pageSizeError)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
-        }
-
-        if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), pageSizeError);
         }
 
         if (TryParsePageSizeOptions(model.PageSizeOptions, out var pageSizeOptions))
@@ -193,16 +189,4 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         return true;
     }
-
-    /// <summary>
-    /// Checks if the provided <paramref name="url"/> is a valid <see cref="Uri"/> and a suitable base URL. The latter
-    /// means that it should end with the path and not contain any query or hash parameters.   
-    /// </summary>
-    /// <param name="url">Raw value to validate</param>
-    /// <param name="restrictScheme">If <see langword="true"/>, only HTTP and HTTPS URLs are allowed.</param>
-    private static bool ValidateUri(string url, bool restrictScheme) =>
-        Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
-        (!restrictScheme || uri.Scheme is "http" or "https") &&
-        string.IsNullOrEmpty(uri.Query) &&
-        string.IsNullOrEmpty(uri.Fragment);
 }

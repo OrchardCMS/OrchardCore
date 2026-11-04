@@ -36,25 +36,25 @@ msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
 msgid "Shortcode templates successfully removed."
 msgstr ""
 
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
-msgid "The name contains invalid characters."
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
+#: Services/ShortcodeTemplatesManager.cs
+msgctxt "OrchardCore.Shortcodes.Services.ShortcodeTemplatesManager"
 msgid "The name is mandatory."
 msgstr ""
 
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
+#: Services/ShortcodeTemplatesManager.cs
+msgctxt "OrchardCore.Shortcodes.Services.ShortcodeTemplatesManager"
+msgid "The name must be a valid shortcode identifier of at most 256 characters."
+msgstr ""
+
+#: Services/ShortcodeTemplatesManager.cs
+msgctxt "OrchardCore.Shortcodes.Services.ShortcodeTemplatesManager"
 msgid "The template content is mandatory."
 msgstr ""
 
-#. Format arguments: {0}: string.Join(" ", errors)
-#: Controllers/AdminController.cs
+#. Format arguments: {0}: string.Join(" ", liquidErrors)
+#: Services/ShortcodeTemplatesManager.cs
 #, csharp-format
-msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
+msgctxt "OrchardCore.Shortcodes.Services.ShortcodeTemplatesManager"
 msgid "The template doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 

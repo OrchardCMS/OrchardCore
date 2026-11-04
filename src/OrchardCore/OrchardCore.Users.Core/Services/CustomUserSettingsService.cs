@@ -82,6 +82,9 @@ public class CustomUserSettingsService
         return contentItems;
     }
 
+    /// <summary>
+    /// Builds a detached settings item using the canonical current type definition and stored user values.
+    /// </summary>
     public async Task<ContentItem> GetSettingsAsync(User user, ContentTypeDefinition settingsType, Func<Task> factoryAsync = null)
     {
         ContentItem contentItem;
@@ -91,8 +94,9 @@ public class CustomUserSettingsService
             var existing = property.ToObject<ContentItem>();
 
             // Create a new item to take into account the current type definition.
-            contentItem = await _contentManager.NewAsync(existing.ContentType);
+            contentItem = await _contentManager.NewAsync(settingsType.Name);
             contentItem.Merge(existing);
+            contentItem.ContentType = settingsType.Name;
 
             return contentItem;
         }
@@ -105,6 +109,16 @@ public class CustomUserSettingsService
         }
 
         return contentItem;
+    }
+
+    /// <summary>
+    /// Stores settings on their owning user without creating a standalone content item.
+    /// The caller persists the user through the identity manager.
+    /// </summary>
+    public static void SetSettings(User user, ContentTypeDefinition settingsType, ContentItem contentItem)
+    {
+        contentItem.ContentType = settingsType.Name;
+        user.Properties[settingsType.Name] = JObject.FromObject(contentItem);
     }
 
     private async Task<IDictionary<string, ContentTypeDefinition>> GetContentTypeAsync()

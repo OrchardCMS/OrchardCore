@@ -1,6 +1,6 @@
 ---
 name: orchardcore-docs-writer
-description: Authors OrchardCore documentation — MkDocs Material pages, module README docs, nav entries, admonitions, tabbed content, and redirects. Use when the user needs to add or edit a docs page, document a new module, build/serve the docs site, or wire a page into the navigation.
+description: Authors OrchardCore documentation — MkDocs Material pages, module and management API reference docs, nav entries, admonitions, tabbed content, and redirects. Use when the user needs to add or edit a docs page, document a module or OpenAPI management endpoint, build/serve the docs site, or wire a page into the navigation.
 ---
 
 # OrchardCore Docs Writer
@@ -18,6 +18,7 @@ Docs are **MkDocs** + **Material for MkDocs**. Config: `mkdocs.yml` at repo root
 | Guides (tutorials) | `guides/<name>/README.md` |
 | Key topics | `topics/<topic>/README.md` |
 | Module reference | `reference/modules/<Name>/README.md` |
+| Management API reference | `reference/api/<resource>/README.md` |
 | Releases | `releases/` |
 | Contributing | `contributing/` |
 
@@ -67,6 +68,10 @@ python -m mkdocs build                      # static site
 4. If it's a content part, also link from `reference/modules/ContentParts/README.md`.
 
 Module docs are **not** auto-discovered from the manifest — every link is manual.
+
+## Workflow C: document a management API
+
+Read `references/api-reference.md` before documenting a new or changed OpenAPI management endpoint. Verify the contract from endpoint mappings, the underlying resource authorization checks, mutation handlers, storage primitives, and tests. Every mutating operation must document its retry and idempotency behavior, including equivalence rules, conflict responses, convergent lifecycle operations, and exceptions that intentionally create a new server-generated resource or execution on every request. Keep the detailed HTTP contract in `reference/api/<resource>/README.md`, link it from the owning module page, and add it under **Reference → API Reference** in `mkdocs.yml`.
 
 ## Markdown conventions
 
@@ -150,6 +155,7 @@ Admonitions (`!!! type`), `pymdownx.superfences` (code), `pymdownx.tabbed` (`===
 ## References
 
 - `references/docs-structure.md` — full directory map, nav anatomy, extensions, redirects
+- `references/api-reference.md` — required structure and source-verification workflow for management API pages
 - `src/docs/contributing/contributing-documentation.md` (repo) — official guide
 - `mkdocs.yml` (repo root) — config + nav
 - `AGENTS.md` (repo root) — build commands

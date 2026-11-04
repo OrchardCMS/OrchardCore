@@ -9,6 +9,7 @@ using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Secrets;
 
@@ -25,6 +26,8 @@ public sealed class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ISiteSettingsSectionProvider, SmtpSettingsSectionProvider>();
+
         services.AddSmtpEmailProvider()
             .AddSiteDisplayDriver<SmtpSettingsDisplayDriver>()
             .AddSignalOptionsChangeTokenSource<SmtpOptions>()

@@ -1,4 +1,3 @@
-using Jint;
 using Jint.Runtime;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -16,6 +15,7 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
 {
     private readonly INotifier _notifier;
     private readonly JavascriptConditionEvaluator _evaluator;
+    private readonly IRuleManagementService _rules;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -24,11 +24,13 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
         IHtmlLocalizer<JavascriptConditionDisplayDriver> htmlLocalizer,
         IStringLocalizer<JavascriptConditionDisplayDriver> stringLocalizer,
         JavascriptConditionEvaluator evaluator,
+        IRuleManagementService rules,
         INotifier notifier)
     {
         H = htmlLocalizer;
         S = stringLocalizer;
         _evaluator = evaluator;
+        _rules = rules;
         _notifier = notifier;
     }
 
@@ -57,32 +59,29 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
 
         // CodeMirror hides the textarea which displays the error when updater.ModelState.AddModelError() is used,
         // that's why a notifier is used to show validation errors.
-        if (string.IsNullOrWhiteSpace(model.Script))
+        var candidate = new JavascriptCondition
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["Please provide a script."]);
-            await _notifier.ErrorAsync(H["Please provide a script."]);
+            ConditionId = condition.ConditionId,
+            Name = condition.Name,
+            Script = model.Script,
+        };
+        var errors = _rules.ValidateCondition(candidate);
+        if (errors.Count > 0)
+        {
+            foreach (var error in errors)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), error.Message);
+                await _notifier.ErrorAsync(H["{0}", error.Message]);
+            }
 
             return Edit(condition, context);
         }
 
         try
         {
-            _ = await _evaluator.EvaluateAsync(new()
-            {
-                ConditionId = condition.ConditionId,
-                Name = condition.Name,
-                Script = model.Script,
-            });
+            // The editor additionally previews execution in its current user/request context.
+            _ = await _evaluator.EvaluateAsync(candidate);
             condition.Script = model.Script;
-        }
-        catch (ScriptPreparationException ex) // Invalid syntax
-        {
-            // The parser exception is wrapped by Jint, and the inner exception carries the actual
-            // syntax error along with its position, which is what is worth showing to the user.
-            var details = (ex.InnerException ?? ex).Message;
-
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", details]);
-            await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", details]);
         }
         catch (JavaScriptException ex) // Evaluation threw an Error
         {

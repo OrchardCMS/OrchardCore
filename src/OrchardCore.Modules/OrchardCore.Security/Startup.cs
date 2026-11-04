@@ -10,6 +10,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 using OrchardCore.Security.Settings;
 using OrchardCore.Settings.Deployment;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Security;
 
@@ -24,6 +25,7 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<SecuritySettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<ISecurityService, SecurityService>();
+        services.AddScoped<ISiteSettingsSectionProvider, SecuritySettingsSectionProvider>();
 
         services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
     }

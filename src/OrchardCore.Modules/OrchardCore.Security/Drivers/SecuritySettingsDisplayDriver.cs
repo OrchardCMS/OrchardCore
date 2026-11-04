@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Security.Services;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
@@ -14,6 +17,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Drivers;
 
+/// <summary>Edits tenant security headers using the shared settings validation.</summary>
 public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySettings>
 {
     internal const string GroupId = "SecurityHeaders";
@@ -25,17 +29,20 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => GroupId;
 
+    /// <summary>Creates the security header settings editor.</summary>
     public SecuritySettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptionsSnapshot<SecuritySettings> securitySettings,
         INotifier notifier,
-        IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer)
+        IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer,
+        IStringLocalizer<SecuritySettingsDisplayDriver> localizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
@@ -43,6 +50,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         _securitySettings = securitySettings.Value;
         _notifier = notifier;
         H = htmlLocalizer;
+        S = localizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, SecuritySettings settings, BuildEditorContext context)
@@ -69,7 +77,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         {
             model.FromConfiguration = currentSettings.FromConfiguration;
 
-            model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
+            model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
 
             model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
                 currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
@@ -107,12 +115,23 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
 
         PrepareContentSecurityPolicyValues(model);
 
-        settings.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
-        settings.ContentSecurityPolicy = model.ContentSecurityPolicy;
-        settings.PermissionsPolicy = model.PermissionsPolicy;
-        settings.ReferrerPolicy = model.ReferrerPolicy;
-
-        _shellReleaseManager.RequestRelease();
+        var proposed = new SecuritySettings
+        {
+            ContentSecurityPolicy = model.ContentSecurityPolicy,
+            PermissionsPolicy = model.PermissionsPolicy,
+            ReferrerPolicy = model.ReferrerPolicy,
+        };
+        foreach (var error in SecuritySettingsEditor.Validate(proposed, S))
+        {
+            foreach (var message in error.Value)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, error.Key, message);
+            }
+        }
+        if (context.Updater.ModelState.IsValid && SecuritySettingsEditor.Apply(settings, proposed))
+        {
+            _shellReleaseManager.RequestRelease();
+        }
 
         return await EditAsync(site, settings, context);
     }

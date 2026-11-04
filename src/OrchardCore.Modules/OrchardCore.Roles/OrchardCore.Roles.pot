@@ -16,7 +16,15 @@ msgctxt "OrchardCore.Roles.AdminMenu"
 msgid "Roles"
 msgstr ""
 
+#. Format arguments: {0}: roleName
+#: Endpoints/Management/RoleManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "A role named '{0}' already exists with a different definition."
+msgstr ""
+
 #: Controllers/AdminController.cs
+#: Endpoints/Management/RoleManagementEndpoints.cs
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "Could not delete this role."
 msgstr ""
@@ -30,7 +38,13 @@ msgid_plural "Could not delete this role. Errors: {1}"
 msgstr[0] ""
 msgstr[1] ""
 
+#: Endpoints/Management/RoleManagementEndpoints.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Forbidden"
+msgstr ""
+
 #: Controllers/AdminController.cs
+#: Endpoints/Management/RoleManagementEndpoints.cs
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "Invalid role name."
 msgstr ""
@@ -46,8 +60,14 @@ msgid "Role deleted successfully."
 msgstr ""
 
 #: Controllers/AdminController.cs
+#: Endpoints/Management/RoleManagementEndpoints.cs
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "Role name is required."
+msgstr ""
+
+#: Endpoints/Management/RoleManagementEndpoints.cs
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "Role not found."
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -56,6 +76,7 @@ msgid "Role updated successfully."
 msgstr ""
 
 #: Controllers/AdminController.cs
+#: Endpoints/Management/RoleManagementEndpoints.cs
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "System roles cannot be deleted."
 msgstr ""
@@ -68,6 +89,13 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "The role was cloned successfully."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(", ", permissionNames)
+#: Endpoints/Management/RoleManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Roles.Controllers.AdminController"
+msgid "You can only grant permissions that you hold. Missing permissions: {0}."
 msgstr ""
 
 #. Format arguments: {0}: feature.Id

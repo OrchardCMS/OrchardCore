@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -49,11 +50,15 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
-
-        if (!_liquidTemplateManager.Validate(settings.Body, out var bodyErrors))
+        var model = UserPolicySettingsEditor.Clone(settings);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        foreach (var error in UserPolicySettingsEditor.Validate(model, _liquidTemplateManager))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Body), string.Join(' ', bodyErrors));
+            context.Updater.ModelState.AddModelError(Prefix, error.Key, string.Join(' ', error.Value));
+        }
+        if (context.Updater.ModelState.IsValid)
+        {
+            UserPolicySettingsEditor.Apply(settings, model);
         }
 
         return Edit(site, settings, context);

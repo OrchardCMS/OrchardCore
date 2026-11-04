@@ -206,7 +206,7 @@ public class AutoroutePartHandlerUniquePathTests : IAsyncLifetime
             Options.Create(new AutorouteOptions()),
             Mock.Of<ILiquidTemplateManager>(),
             Mock.Of<IContentDefinitionManager>(),
-            Mock.Of<ISiteService>(),
+            Mock.Of<IHomeRouteService>(),
             Mock.Of<ITagCache>(),
             session,
             Mock.Of<IServiceProvider>(),

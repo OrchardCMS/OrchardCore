@@ -2,6 +2,11 @@
 
 The auto-setup module allows to automatically install the application/tenants on the first request.
 
+To create and initialize a local CMS without writing Auto Setup configuration
+yourself, use [`pomi install`](../../../guides/remote-management/README.md#create-and-set-up-a-local-site).
+It creates the application from its embedded CMS template and passes setup
+credentials to a temporary local server through environment variables.
+
 ## JSON Configuration Parameters
 
 Auto-Setup parameters are defined in `appsettings.json`. Example excerpt:
@@ -187,3 +192,20 @@ Lock configuration parameters are optional and can be set via environment variab
 Please refer to separate sections for additional information on setup:
 
 - [OrchardCore.Setup - setting up an empty site](../Setup/README.md)
+
+## Optional remote management application
+
+Set both `RemoteManagementClientId` and `RemoteManagementClientSecret` in a tenant's
+Auto Setup options to enable Remote Management CLI and its OpenID dependencies
+after successful setup, and register a new confidential application with that
+tenant's administrator role. Supply a unique identifier and a cryptographically
+random secret through a secret configuration provider, not committed settings.
+Existing application identifiers are rejected rather than overwritten.
+
+Both settings are optional and must be supplied together. When omitted, Auto Setup
+keeps the selected recipe's normal behavior. The administrator account is created
+in either case, using the supplied administrator password. Feature profiles must
+allow the required remote management features. `pomi install
+--enable-remote-management` supplies these settings through the temporary setup
+process environment and saves the application credentials locally for subsequent
+commands.

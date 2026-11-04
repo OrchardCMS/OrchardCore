@@ -36,15 +36,14 @@ public sealed class SlidingWindowRateLimiterSource : RateLimiterSourceBase<Slidi
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, SlidingWindowRateLimiterData model)
     {
-        return RateLimitPartition.GetSlidingWindowLimiter(
-            partitionKey: $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetClientPartitionKey(context)}",
-            factory: _ => new SlidingWindowRateLimiterOptions
+        return RateLimitPartitionHelpers.GetSlidingWindowLimiter(
+            $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetClientPartitionKey(context)}",
+            _ => new SlidingWindowRateLimiterOptions
             {
                 PermitLimit = model.PermitLimit,
                 QueueLimit = model.QueueLimit,
                 Window = TimeSpan.FromSeconds(model.WindowSeconds),
                 SegmentsPerWindow = model.SegmentsPerWindow,
-                AutoReplenishment = true,
             });
     }
 

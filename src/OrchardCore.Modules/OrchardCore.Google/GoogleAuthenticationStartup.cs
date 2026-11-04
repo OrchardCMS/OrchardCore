@@ -21,6 +21,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Google;
 
@@ -31,6 +32,7 @@ public sealed class GoogleAuthenticationStartup : StartupBase
     {
         services.AddPermissionProvider<GoogleAuthenticationPermissionProvider>();
         services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
+        services.AddScoped<ISiteSettingsSectionProvider, GoogleAuthenticationSettingsSectionProvider>();
         services.AddSiteDisplayDriver<GoogleAuthenticationSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleAuthenticationAdminMenu>();
 
@@ -64,6 +66,7 @@ public sealed class GoogleAnalyticsStartup : StartupBase
         services.AddPermissionProvider<GoogleAnalyticsPermissionsProvider>();
         services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
 
+        services.AddScoped<ISiteSettingsSectionProvider, GoogleAnalyticsSettingsSectionProvider>();
         services.AddSiteDisplayDriver<GoogleAnalyticsSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleAnalyticsAdminMenu>();
 
@@ -81,6 +84,7 @@ public sealed class GoogleTagManagerStartup : StartupBase
     {
         services.AddPermissionProvider<GoogleTagManagerPermissionProvider>();
         services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
+        services.AddScoped<ISiteSettingsSectionProvider, GoogleTagManagerSettingsSectionProvider>();
         services.AddSiteDisplayDriver<GoogleTagManagerSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleTagManagerAdminMenu>();
 

@@ -14,6 +14,9 @@ public abstract class NamedRecipeStepHandler : IRecipeStepHandler
         StepName = stepName;
     }
 
+    /// <inheritdoc />
+    IReadOnlyCollection<string> IRecipeStepHandler.StepNames => [StepName];
+
     public Task ExecuteAsync(RecipeExecutionContext context)
     {
         if (!string.Equals(context.Name, StepName, StringComparison.OrdinalIgnoreCase))

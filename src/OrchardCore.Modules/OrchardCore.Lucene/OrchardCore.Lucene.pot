@@ -90,6 +90,13 @@ msgctxt "OrchardCore.Lucene.LuceneLocalizationSources"
 msgid "Reset Lucene Search Indices"
 msgstr ""
 
+#. Format arguments: {0}: indexName
+#: Recipes/LuceneIndexStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Lucene.Recipes.LuceneIndexStep"
+msgid "Unable to create the Lucene index '{0}'."
+msgstr ""
+
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Lucene.Views.Admin.Query"
 msgid "An optional Json object containing the parameter values for this query."

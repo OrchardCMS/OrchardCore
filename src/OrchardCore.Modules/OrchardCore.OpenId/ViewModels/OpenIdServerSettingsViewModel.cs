@@ -22,11 +22,14 @@ public class OpenIdServerSettingsViewModel
     public bool EnableLogoutEndpoint { get; set; }
     public bool EnableUserInfoEndpoint { get; set; }
     public bool EnableIntrospectionEndpoint { get; set; }
+    public bool EnableDeviceAuthorizationEndpoint { get; set; }
+    public bool EnableEndUserVerificationEndpoint { get; set; }
     public bool EnablePushedAuthorizationEndpoint { get; set; }
     public bool EnableRevocationEndpoint { get; set; }
     public bool AllowPasswordFlow { get; set; }
     public bool AllowClientCredentialsFlow { get; set; }
     public bool AllowAuthorizationCodeFlow { get; set; }
+    public bool AllowDeviceAuthorizationFlow { get; set; }
     public bool AllowRefreshTokenFlow { get; set; }
     public bool AllowHybridFlow { get; set; }
     public bool AllowImplicitFlow { get; set; }

@@ -58,18 +58,6 @@ msgstr ""
 
 #: Drivers/DefaultSiteSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
-msgid "The page size must be greater than zero."
-msgstr ""
-
-#. Format arguments: {0}: site.MaxPageSize
-#: Drivers/DefaultSiteSettingsDisplayDriver.cs
-#, csharp-format
-msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
-msgid "The page size must be less than or equal to {0}."
-msgstr ""
-
-#: Drivers/DefaultSiteSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
 msgid "The page size options must be a comma-separated list of positive numbers."
 msgstr ""
 
@@ -78,6 +66,38 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
 msgid "The page size options must be less than or equal to {0}."
+msgstr ""
+
+#: Services/SiteSettingsValidator.cs
+msgctxt "OrchardCore.Settings.Services.SiteSettingsValidator"
+msgid "The Base url must be a fully qualified URL."
+msgstr ""
+
+#: Services/SiteSettingsValidator.cs
+msgctxt "OrchardCore.Settings.Services.SiteSettingsValidator"
+msgid "The CDN base url must be a fully qualified URL."
+msgstr ""
+
+#: Services/SiteSettingsValidator.cs
+msgctxt "OrchardCore.Settings.Services.SiteSettingsValidator"
+msgid "The maximum page size must be zero or greater."
+msgstr ""
+
+#: Services/SiteSettingsValidator.cs
+msgctxt "OrchardCore.Settings.Services.SiteSettingsValidator"
+msgid "The maximum paged count must be zero or greater."
+msgstr ""
+
+#: Services/SiteSettingsValidator.cs
+msgctxt "OrchardCore.Settings.Services.SiteSettingsValidator"
+msgid "The page size must be greater than zero."
+msgstr ""
+
+#. Format arguments: {0}: maxPageSize
+#: Services/SiteSettingsValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Settings.Services.SiteSettingsValidator"
+msgid "The page size must be less than or equal to {0}."
 msgstr ""
 
 #: SettingsLocalizationSources.cs

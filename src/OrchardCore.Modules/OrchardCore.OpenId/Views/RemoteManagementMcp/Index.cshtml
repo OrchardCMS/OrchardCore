@@ -1,0 +1,72 @@
+@model OrchardCore.OpenId.ViewModels.RemoteManagementMcpViewModel
+@inject OrchardCore.OpenId.RemoteManagementConfigurationService ConfigurationService
+@inject Microsoft.Extensions.Options.IOptions<OrchardCore.OpenId.RemoteManagementMcpOptions> McpOptions
+@{
+    var ready = (await ConfigurationService.GetStatusAsync()).IsReady;
+}
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["MCP client authentication"])</h1></zone>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <p>@T["Connect your MCP client to:"] <code>@Context.Request.Scheme://@Context.Request.Host@Context.Request.PathBase/mcp</code></p>
+        @if (McpOptions.Value.AllowDynamicClientRegistration)
+        {
+            <div class="alert @(ready ? "alert-success" : "alert-warning")" role="status">
+                @(ready ? T["MCP authentication is ready. Compatible clients register automatically and open the sign-in and consent flow."] : T["Configure authentication once, then connect using only the MCP URL."])
+            </div>
+            <p>@T["You do not need to enter callback URLs for clients that support OAuth dynamic client registration. Each connecting client creates its own public OpenID application. Registration does not grant access: users must sign in, allow access, and have the required permissions."]</p>
+            <form asp-action="ConfigureAutomatic" method="post" class="no-multisubmit">
+                <button class="btn btn-primary" type="submit">@(ready ? T["Repair MCP authentication"] : T["Configure MCP authentication"])</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info" role="status">@T["Automatic client registration is disabled by the host. Register a client manually below."]</div>
+        }
+        <p class="hint">@T["Automatically registered application names are supplied by clients and are not verified identities. Review the application and requested permissions before allowing access. You can review or remove applications in OpenID Connect application management."]</p>
+        <p><a asp-controller="Application" asp-action="Index">@T["Manage OpenID applications"]</a></p>
+        <p>@T["Start the connection from your MCP client to sign in; the MCP endpoint is not a browser sign-in page."]</p>
+    </div>
+</div>
+
+<details open="@(ViewData.ModelState.IsValid ? null : "open")">
+    <summary>@T["Advanced: register a client manually"]</summary>
+    <form asp-action="Configure" method="post" class="no-multisubmit">
+        <div asp-validation-summary="All"></div>
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                @if (Model.IsConfigured)
+                {
+                    <div class="alert alert-success" role="status">@T["This MCP client's OAuth application is configured."]</div>
+                }
+                <p>@T["Register the callback URLs supplied by your MCP client. This creates a public application using authorization code flow, PKCE, explicit consent, and the remote management scope."]</p>
+                <p>@T["MCP endpoint:"] <code>@Context.Request.Scheme://@Context.Request.Host@Context.Request.PathBase/mcp</code></p>
+            </div>
+        </div>
+        <div class="ocat-wrapper" asp-validation-class-for="ClientId">
+            <label asp-for="ClientId" class="ocat-label ocat-label-required">@T["Client identifier"]</label>
+            <div class="ocat-end">
+                <input asp-for="ClientId" class="form-control" />
+                <span asp-validation-for="ClientId"></span>
+                <span class="hint">@T["Use this identifier when configuring OAuth in your MCP client. Choose a separate identifier for each client application."]</span>
+            </div>
+        </div>
+        <div class="ocat-wrapper" asp-validation-class-for="RedirectUris">
+            <label asp-for="RedirectUris" class="ocat-label ocat-label-required">@T["Callback URLs"]</label>
+            <div class="ocat-end">
+                <textarea asp-for="RedirectUris" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="RedirectUris"></span>
+                <span class="hint">@T["One exact URL per line. HTTPS is required except for local loopback HTTP callbacks. Saving replaces this application's registered callback URLs."]</span>
+            </div>
+        </div>
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <button class="btn btn-primary" type="submit">@(Model.IsConfigured ? T["Update MCP configuration"] : T["Register MCP client"])</button>
+                <a class="btn btn-secondary" asp-controller="RemoteManagement" asp-action="Index">@T["Shared authentication"]</a>
+                <span class="hint">@T["The signed-in user still needs remote management and operation permissions. This action does not create or change the Pomi application."]</span>
+            </div>
+        </div>
+    </form>
+
+</details>

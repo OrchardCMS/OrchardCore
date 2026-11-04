@@ -45,7 +45,19 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
 
             if (index is not null)
             {
-                await _indexProfileManager.UpdateAsync(index, token);
+                try
+                {
+                    await _indexProfileManager.UpdateAsync(index, token);
+                }
+                catch (IndexProfileValidationException exception)
+                {
+                    foreach (var error in exception.Errors)
+                    {
+                        context.Errors.Add(error.ErrorMessage);
+                    }
+
+                    continue;
+                }
             }
             else
             {

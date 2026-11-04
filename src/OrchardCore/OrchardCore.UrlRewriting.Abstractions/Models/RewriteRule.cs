@@ -18,6 +18,7 @@ public sealed class RewriteRule : Entity
 
     public string Author { get; set; }
 
+    /// <summary>Creates an independent copy, including all source metadata.</summary>
     public RewriteRule Clone()
     {
         return new RewriteRule
@@ -29,7 +30,7 @@ public sealed class RewriteRule : Entity
             CreatedUtc = CreatedUtc,
             OwnerId = OwnerId,
             Author = Author,
-            Properties = Properties,
+            Properties = Properties.DeepClone().AsObject(),
         };
     }
 }

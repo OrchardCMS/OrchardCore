@@ -26,7 +26,7 @@ msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
 msgid "Tools"
 msgstr ""
 
-#. Format arguments: {0}: response.ReasonPhrase; {1}: response.StatusCode
+#. Format arguments: {0}: status.ToString(); {1}: status
 #: Controllers/ExportRemoteInstanceController.cs
 #, csharp-format
 msgctxt "OrchardCore.Deployment.Remote.Controllers.ExportRemoteInstanceController"
@@ -75,16 +75,6 @@ msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
 msgid "Remote clients successfully removed."
 msgstr ""
 
-#: Controllers/RemoteClientController.cs
-msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
-msgid "The api key is mandatory."
-msgstr ""
-
-#: Controllers/RemoteClientController.cs
-msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
-msgid "The client name is mandatory."
-msgstr ""
-
 #: Controllers/RemoteInstanceController.cs
 msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
 msgid "Delete"
@@ -110,29 +100,24 @@ msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
 msgid "Remote instances successfully removed."
 msgstr ""
 
-#: Controllers/RemoteInstanceController.cs
-msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
-msgid "The api key is mandatory."
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Services.RemoteDeploymentValidation"
+msgid "Provide a client name of at most 256 characters."
 msgstr ""
 
-#: Controllers/RemoteInstanceController.cs
-msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
-msgid "The client name is mandatory."
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Services.RemoteDeploymentValidation"
+msgid "Provide a name of at most 256 characters."
 msgstr ""
 
-#: Controllers/RemoteInstanceController.cs
-msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
-msgid "The name is mandatory."
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Services.RemoteDeploymentValidation"
+msgid "Provide an API key of at most 4096 characters."
 msgstr ""
 
-#: Controllers/RemoteInstanceController.cs
-msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
-msgid "The url is invalid."
-msgstr ""
-
-#: Controllers/RemoteInstanceController.cs
-msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
-msgid "The url is mandatory."
+#: Services/RemoteDeploymentValidation.cs
+msgctxt "OrchardCore.Deployment.Remote.Services.RemoteDeploymentValidation"
+msgid "Provide an HTTPS URL without user information or a fragment; HTTP is allowed only for loopback development."
 msgstr ""
 
 #: Views/RemoteClient.Buttons.SummaryAdmin.cshtml

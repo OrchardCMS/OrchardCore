@@ -83,6 +83,21 @@ msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationQueryObjectType"
 msgid "The localizations of the content item."
 msgstr ""
 
+#: Services/ContentCultureSettingsSectionProvider.cs
+msgctxt "OrchardCore.ContentLocalization.Services.ContentCultureSettingsSectionProvider"
+msgid "A settings object is required."
+msgstr ""
+
+#: Services/ContentCultureSettingsSectionProvider.cs
+msgctxt "OrchardCore.ContentLocalization.Services.ContentCultureSettingsSectionProvider"
+msgid "Provide a Boolean value; null does not reset this property."
+msgstr ""
+
+#: Services/ContentCultureSettingsSectionProvider.cs
+msgctxt "OrchardCore.ContentLocalization.Services.ContentCultureSettingsSectionProvider"
+msgid "This property is not managed by the content culture picker settings section."
+msgstr ""
+
 #: Views/ContentCulturePickerSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentLocalization.Views.ContentCulturePickerSettings.Edit"
 msgid "Homepage redirect "

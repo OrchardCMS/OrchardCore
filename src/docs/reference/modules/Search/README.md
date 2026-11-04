@@ -62,3 +62,39 @@ The search UI is rendered through shapes that you can override in your theme:
 | `Search-List`    | `Search-List.cshtml`| The container of the result items.       |
 
 Copy these templates into your theme to customize the markup. Result highlighting is provided when the underlying search provider returns highlights.
+
+## Remote frontend search settings
+
+When the Search feature is enabled, the `frontend-search` settings section manages
+its default index, page title and placeholder through the common management API.
+Read and update require `ManageSearchSettings` in addition to remote-management
+access. Configuring a default does not grant permission to query that index.
+
+```bash
+pomi settings sections show frontend-search
+pomi settings sections schema frontend-search
+pomi settings sections update frontend-search --body-file search-settings.json
+```
+
+Example update:
+
+```json
+{
+  "defaultIndexProfileName": "Articles",
+  "pageTitle": "Search articles",
+  "placeholder": "Search by keyword"
+}
+```
+
+The default is the administrative profile name shown by `pomi indexes list`, not
+its opaque ID or provider resource name. A new selection must exist in the tenant.
+Null or blank clears the default; null clears either text override. Omitted
+properties retain their values, including an unchanged reference to a temporarily
+missing profile. Unknown properties and non-string/non-null values are rejected
+without applying the rest of the update. Equivalent updates do not save settings.
+
+The admin editor and management section share validation and assignment logic.
+Generic settings recipes retain their import behavior because an index definition
+may be created later in the recipe. This section does not enable a provider, rebuild
+an index or change per-index query permissions. The existing `/search` route uses
+the configured default and its normal provider and authorization checks.

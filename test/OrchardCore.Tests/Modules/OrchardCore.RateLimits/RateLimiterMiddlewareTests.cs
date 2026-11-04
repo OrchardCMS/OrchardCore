@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
@@ -144,6 +145,82 @@ public class RateLimiterMiddlewareTests
 
         Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
         Assert.Equal(HttpStatusCode.TooManyRequests, secondResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Reject_GlobalFixedWindowPolicy_AddsRetryAfter()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: null,
+            enabledPolicies: [CreateGlobalFixedWindowPolicy("Global", 1, 60)],
+            cancellationToken: TestContext.Current.CancellationToken);
+        var client = host.GetTestClient();
+
+        await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var rejected = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejected.StatusCode);
+        Assert.InRange(rejected.Headers.RetryAfter.Delta.Value.TotalSeconds, 1, 60);
+    }
+
+    [Fact]
+    public async Task Reject_SlidingWindowPolicyChainedWithAGlobalOne_AddsRetryAfter()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: null,
+            enabledPolicies:
+            [
+                CreateGlobalFixedWindowPolicy("Global", 100, 60),
+                CreateEndpointSlidingWindowPolicy("Sliding", "/tenant/other", 1, 60, 2),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken);
+        var client = host.GetTestClient();
+
+        await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+        var rejected = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejected.StatusCode);
+        Assert.InRange(rejected.Headers.RetryAfter.Delta.Value.TotalSeconds, 1, 60);
+    }
+
+    [Fact]
+    public async Task Reject_ApiRequest_WritesProblemDetailsWithTheCode()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: null,
+            enabledPolicies: [CreateGlobalFixedWindowPolicy("Global", 1, 60)],
+            cancellationToken: TestContext.Current.CancellationToken);
+        var client = host.GetTestClient();
+
+        await client.GetAsync("/api/limited", TestContext.Current.CancellationToken);
+        var rejected = await client.GetAsync("/api/limited", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejected.StatusCode);
+        Assert.Equal("application/problem+json", rejected.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("\"code\":\"rate_limited\"", await rejected.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Reject_OtherRequest_WritesNoBody()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: null,
+            enabledPolicies: [CreateGlobalFixedWindowPolicy("Global", 1, 60)],
+            cancellationToken: TestContext.Current.CancellationToken);
+        var client = host.GetTestClient();
+
+        await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var rejected = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+
+        Assert.Empty(await rejected.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -331,6 +408,8 @@ public class RateLimiterMiddlewareTests
                     services.AddRateLimiter();
                     services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
                     services.AddSingleton(CreatePolicyStore(enabledPolicies ?? []));
+                    services.AddProblemDetails();
+                    services.Configure<ProblemDetailsOptions>(options => options.CustomizeProblemDetails += ApiProblemCodes.Apply);
                     services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
                     services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
                     services.AddSingleton(new ConcurrencyRateLimiterSource(Mock.Of<IStringLocalizer<ConcurrencyRateLimiterSource>>()));
@@ -373,6 +452,7 @@ public class RateLimiterMiddlewareTests
                     {
                         endpoints.MapGet("/tenant/limited", () => Results.Text("tenant-response"))
                             .WithName("TenantLimitedRoute");
+                        endpoints.MapGet("/api/limited", () => Results.Text("api-response"));
                         endpoints.MapGet("/tenant/grouped", () => Results.Text("tenant-grouped-response"))
                             .WithName("TenantGroupedRoute")
                             .WithRateLimitGroups("tenant-authentication", "tenant-shared");

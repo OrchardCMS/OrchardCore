@@ -1,2 +1,6 @@
 @model ShapeViewModel<ExportContentToDeploymentTargetDeploymentStep>
 
+@if (Model.Value.ContentItemIds is not null)
+{
+    <p class="hint">@T["This step exports {0} explicitly selected content items. Latest versions: {1}.", Model.Value.ContentItemIds.Length, Model.Value.Latest]</p>
+}

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Forms.Models;
@@ -7,5 +8,6 @@ namespace OrchardCore.Forms.Models;
 /// </summary>
 public class FormInputElementPart : ContentPart
 {
+    [Description("The name used for the input value in submitted form data.")]
     public string Name { get; set; }
 }

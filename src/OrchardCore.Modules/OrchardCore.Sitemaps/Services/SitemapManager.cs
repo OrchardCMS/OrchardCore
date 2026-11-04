@@ -50,6 +50,7 @@ public class SitemapManager : ISitemapManager
     {
         var existing = await LoadDocumentAsync();
         existing.Sitemaps.Remove(sitemapId);
+        InvalidateIndexes(existing, sitemapId);
         await _documentManager.UpdateAsync(existing);
     }
 
@@ -58,6 +59,7 @@ public class SitemapManager : ISitemapManager
         var existing = await LoadDocumentAsync();
         existing.Sitemaps[sitemap.SitemapId] = sitemap;
         sitemap.Identifier = IdGenerator.GenerateId();
+        InvalidateIndexes(existing, sitemap.SitemapId);
         await _documentManager.UpdateAsync(existing);
     }
 
@@ -65,6 +67,19 @@ public class SitemapManager : ISitemapManager
     {
         var existing = await LoadDocumentAsync();
         await _documentManager.UpdateAsync(existing);
+    }
+
+    private static void InvalidateIndexes(SitemapDocument document, string sitemapId)
+    {
+        // Cached index XML includes the path/status/lastmod of its children.
+        // A child change must invalidate that output for every existing caller.
+        foreach (var index in document.Sitemaps.Values.OfType<SitemapIndex>())
+        {
+            if (index.SitemapSources.OfType<SitemapIndexSource>().Any(source => source.ContainedSitemapIds.Contains(sitemapId)))
+            {
+                index.Identifier = IdGenerator.GenerateId();
+            }
+        }
     }
 
     /// <summary>

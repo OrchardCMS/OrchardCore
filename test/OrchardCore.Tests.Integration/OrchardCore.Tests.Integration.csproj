@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" />
+    <!-- Override Testcontainers until it adopts the SCP path-validation fix (GHSA-q939-rpr3-3284). -->
+    <PackageReference Include="SSH.NET" />
     <PackageReference Include="Testcontainers" />
     <PackageReference Include="Testcontainers.Azurite" />
     <PackageReference Include="Testcontainers.LocalStack" />

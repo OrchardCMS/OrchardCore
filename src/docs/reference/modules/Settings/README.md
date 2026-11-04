@@ -6,6 +6,8 @@ Site settings are where global, site-wide options live (site name, time zone, pa
 
 For user-defined settings managed from the admin without writing code, see [Custom Settings](../CustomSettings/README.md). For application-level (`appsettings.json`) configuration, see [Configuration](../Configuration/README.md).
 
+For bearer-authenticated automation, see the [site settings management API](../../api/settings/README.md).
+
 ## General settings
 
 The built-in **General** group is available in the admin under **Settings** > **General** (requires the `Manage general settings` permission). It exposes options such as:

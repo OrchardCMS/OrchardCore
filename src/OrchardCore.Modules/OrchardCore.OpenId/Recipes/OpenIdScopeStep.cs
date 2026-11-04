@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
-using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
+using OrchardCore.OpenId.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -23,33 +23,7 @@ public sealed class OpenIdScopeStep : NamedRecipeStepHandler
     {
         var model = context.Step.ToObject<OpenIdScopeStepModel>();
         var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
-        var descriptor = new OpenIdScopeDescriptor();
-        var isNew = true;
-
-        if (scope != null)
-        {
-            isNew = false;
-            await _scopeManager.PopulateAsync(scope, descriptor);
-        }
-
-        descriptor.Description = model.Description;
-        descriptor.Name = model.ScopeName;
-        descriptor.DisplayName = model.DisplayName;
-
-        if (!string.IsNullOrEmpty(model.Resources))
-        {
-            descriptor.Resources.Clear();
-            descriptor.Resources.UnionWith(
-                model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        if (isNew)
-        {
-            await _scopeManager.CreateAsync(descriptor);
-        }
-        else
-        {
-            await _scopeManager.UpdateAsync(scope, descriptor);
-        }
+        await OpenIdScopeEditor.SaveAsync(_scopeManager, scope, model.ScopeName, model.DisplayName, model.Description,
+            string.IsNullOrEmpty(model.Resources) ? null : model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 }

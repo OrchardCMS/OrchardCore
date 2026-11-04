@@ -18,7 +18,7 @@ using OrchardCore.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Elasticsearch.Core.Services;
 
-public sealed class ElasticsearchIndexManager : IIndexManager
+public sealed class ElasticsearchIndexManager : IIndexManager, IRemoteIndexManager
 {
     private static readonly Dictionary<string, Type> s_analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -308,6 +308,10 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     /// Verify if an index exists for the current tenant.
     /// </summary>
     public async Task<bool> ExistsAsync(string indexFullName)
+        => await TryGetExistsAsync(indexFullName) ?? false;
+
+    /// <inheritdoc />
+    public async Task<bool?> TryGetExistsAsync(string indexFullName)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexFullName);
 
@@ -327,7 +331,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             }
         }
 
-        return response.Exists;
+        return response.Exists || response.ApiCallDetails.HttpStatusCode == 404 ? response.Exists : null;
     }
 
     public async Task<ElasticsearchResult> SearchAsync(ElasticsearchSearchContext context)

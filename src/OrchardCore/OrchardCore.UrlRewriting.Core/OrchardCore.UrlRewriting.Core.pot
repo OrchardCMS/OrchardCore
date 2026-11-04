@@ -16,44 +16,44 @@ msgctxt "OrchardCore.UrlRewriting.Handlers.RewriteRuleHandler"
 msgid "Source name is required"
 msgstr ""
 
-#: Handlers/UrlRedirectRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
+#: RewriteRuleValidation.cs
+msgctxt "OrchardCore.UrlRewriting.RewriteRuleValidation"
 msgid "A valid Match URL Pattern is required."
 msgstr ""
 
-#: Handlers/UrlRedirectRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
-msgid "A valid Substitution URL Pattern is required."
+#: RewriteRuleValidation.cs
+msgctxt "OrchardCore.UrlRewriting.RewriteRuleValidation"
+msgid "Select a valid query string policy."
 msgstr ""
 
-#: Handlers/UrlRedirectRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
-msgid "The Match URL Pattern is required."
+#: RewriteRuleValidation.cs
+msgctxt "OrchardCore.UrlRewriting.RewriteRuleValidation"
+msgid "Select a valid redirect status."
 msgstr ""
 
-#: Handlers/UrlRedirectRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
+#: RewriteRuleValidation.cs
+msgctxt "OrchardCore.UrlRewriting.RewriteRuleValidation"
 msgid "The Substitution URL Pattern is required."
 msgstr ""
 
-#: Handlers/UrlRewriteRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
-msgid "A valid Match URL Pattern is required."
+#: RewriteRuleValidation.cs
+msgctxt "OrchardCore.UrlRewriting.RewriteRuleValidation"
+msgid "Use URL-encoded characters instead of literal whitespace or control characters in the substitution."
 msgstr ""
 
-#: Handlers/UrlRewriteRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
-msgid "A valid Substitution URL Pattern is required."
+#: RewriteRuleValidation.cs
+msgctxt "OrchardCore.UrlRewriting.RewriteRuleValidation"
+msgid "Use escaped characters instead of literal whitespace or control characters in the match pattern."
 msgstr ""
 
-#: Handlers/UrlRewriteRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
-msgid "The Match URL Pattern is required."
+#: Services/RewriteRulesManager.cs
+msgctxt "OrchardCore.UrlRewriting.Services.RewriteRulesManager"
+msgid "The rule cannot be parsed by its runtime source."
 msgstr ""
 
-#: Handlers/UrlRewriteRuleHandler.cs
-msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
-msgid "The Substitution URL Pattern is required."
+#: Services/RewriteRulesManager.cs
+msgctxt "OrchardCore.UrlRewriting.Services.RewriteRulesManager"
+msgid "The rule source is not available."
 msgstr ""
 
 #: Services/UrlRedirectRuleSource.cs

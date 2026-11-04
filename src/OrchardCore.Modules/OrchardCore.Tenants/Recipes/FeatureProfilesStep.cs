@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
@@ -28,7 +29,14 @@ public sealed class FeatureProfilesStep : NamedRecipeStepHandler
                 var name = property.Key;
                 var value = property.Value.ToObject<FeatureProfile>();
 
-                await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
+                try
+                {
+                    await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
+                }
+                catch (ValidationException exception)
+                {
+                    context.Errors.Add(exception.Message);
+                }
             }
         }
     }

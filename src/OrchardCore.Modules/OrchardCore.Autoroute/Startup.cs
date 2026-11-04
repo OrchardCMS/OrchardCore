@@ -21,6 +21,7 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.Management;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
@@ -79,6 +80,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentHandler, AutorouteContentHandler>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
+        services.AddSingleton<IContentDefinitionManagementSchemaProvider, AutorouteContentDefinitionManagementSchemaProvider>();
         services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
         services.AddScoped<AutoroutePartIndexProvider>();

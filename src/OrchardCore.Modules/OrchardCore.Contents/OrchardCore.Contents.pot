@@ -407,6 +407,11 @@ msgctxt "OrchardCore.Contents.Settings.FullTextAspectSettingsDisplayDriver"
 msgid "Full-text doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
+#: Sitemaps/ContentTypesSitemapSourceDriver.cs
+msgctxt "OrchardCore.Contents.Sitemaps.ContentTypesSitemapSourceDriver"
+msgid "The sitemap source setting is invalid."
+msgstr ""
+
 #: VersionPruning/AdminMenu.cs
 msgctxt "OrchardCore.Contents.VersionPruning.AdminMenu"
 msgid "Content Version Pruning"
@@ -2066,6 +2071,13 @@ msgctxt "OrchardCore.Contents.Views.Items.ExportContentToDeploymentTarget-Conten
 msgid "Select"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.ContentItemIds.Length; {1}: Model.Value.Latest
+#: Views/Items/ExportContentToDeploymentTargetDeploymentStep.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Contents.Views.Items.ExportContentToDeploymentTargetDeploymentStep.Fields.Edit"
+msgid "This step exports {0} explicitly selected content items. Latest versions: {1}."
+msgstr ""
+
 #: Views/Items/ExportContentToDeploymentTargetDeploymentStep.Fields.Summary.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ExportContentToDeploymentTargetDeploymentStep.Fields.Summary"
 msgid "Allows the export content to deployment target feature to add content items to the plan."
@@ -2074,6 +2086,13 @@ msgstr ""
 #: Views/Items/ExportContentToDeploymentTargetDeploymentStep.Fields.Summary.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ExportContentToDeploymentTargetDeploymentStep.Fields.Summary"
 msgid "Export Content To Deployment Target"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.ContentItemIds.Length; {1}: Model.Value.Latest
+#: Views/Items/ExportContentToDeploymentTargetDeploymentStep.Fields.Summary.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Contents.Views.Items.ExportContentToDeploymentTargetDeploymentStep.Fields.Summary"
+msgid "This step exports {0} explicitly selected content items. Latest versions: {1}."
 msgstr ""
 
 #: Views/Items/ExportContentToDeploymentTargetDeploymentStep.Fields.Thumbnail.cshtml

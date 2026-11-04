@@ -53,10 +53,12 @@ public sealed class RewriteRulesStore : IRewriteRulesStore
             : null;
     }
 
+    /// <summary>Persists independent rule copies with contiguous zero-based order values.</summary>
     public async Task<IEnumerable<RewriteRule>> UpdateOrderAndSaveAsync(IEnumerable<RewriteRule> rules)
     {
         ArgumentNullException.ThrowIfNull(rules);
 
+        rules = rules.Select(rule => rule.Clone()).ToArray();
         var order = 0;
 
         foreach (var rule in rules)

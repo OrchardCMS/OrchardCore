@@ -3,6 +3,12 @@
 This article explains how a Content Item is rendered, and the many ways in which the HTML that is rendered can be customized.  
 It also explains the fundamental theming concepts, namely __Shapes__, __Alternates__, __Templates__, __Differentiators__, __Content Zones__ and __Display Types__.
 
+## Management API
+
+The [Theme management API](../../api/themes/README.md) exposes installed theme
+discovery, enablement, and current site/admin theme selection to authenticated
+remote clients and the `pomi` CLI.
+
 ## Goals
 
 Let's assume we want to add a portfolio section to our Blog where we could list all the projects we are working on, and be able to manage these projects individually, as opposed to having a static page where we would have to copy-paste the HTML for each project.

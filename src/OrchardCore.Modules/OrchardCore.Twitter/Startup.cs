@@ -9,6 +9,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
 using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
@@ -33,6 +34,7 @@ public sealed class TwitterStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ISiteSettingsSectionProvider, TwitterSettingsSectionProvider>();
         services.AddSiteDisplayDriver<TwitterSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
@@ -77,6 +79,7 @@ public sealed class TwitterSigninStartup : StartupBase
     {
         services.AddNavigationProvider<AdminMenuSignIn>();
         services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
+        services.AddScoped<ISiteSettingsSectionProvider, TwitterSigninSettingsSectionProvider>();
         services.AddSiteDisplayDriver<TwitterSigninSettingsDisplayDriver>();
 
         // Register the options initializers required by the Twitter Handler.

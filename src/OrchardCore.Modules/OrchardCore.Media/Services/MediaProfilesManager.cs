@@ -26,10 +26,17 @@ public class MediaProfilesManager
         await _documentManager.UpdateAsync(document);
     }
 
-    public async Task UpdateMediaProfileAsync(string name, MediaProfile mediaProfile)
+    /// <summary>Creates or replaces a profile using an invariant lowercase storage key.</summary>
+    public Task UpdateMediaProfileAsync(string name, MediaProfile mediaProfile) => SaveMediaProfileAsync(null, name, mediaProfile);
+
+    internal async Task SaveMediaProfileAsync(string sourceName, string name, MediaProfile mediaProfile)
     {
         var document = await LoadMediaProfilesDocumentAsync();
-        document.MediaProfiles[name.ToLower()] = mediaProfile;
+        if (sourceName is not null && !string.Equals(sourceName, name, StringComparison.OrdinalIgnoreCase))
+        {
+            document.MediaProfiles.Remove(sourceName);
+        }
+        document.MediaProfiles[name.ToLowerInvariant()] = mediaProfile;
         await _documentManager.UpdateAsync(document);
     }
 }

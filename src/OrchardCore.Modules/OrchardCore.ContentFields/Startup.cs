@@ -11,6 +11,7 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.Management;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
@@ -25,6 +26,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddHtmlServices();
+        services.AddSingleton<IContentDefinitionManagementSchemaProvider, ContentFieldsContentDefinitionManagementSchemaProvider>();
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddScoped<IJSLocalizer, ContentFieldsJSLocalizer>();

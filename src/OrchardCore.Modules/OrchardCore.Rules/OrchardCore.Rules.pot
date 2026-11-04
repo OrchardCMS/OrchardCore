@@ -13,23 +13,18 @@ msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
 msgid "JavaScript evaluation resulted in an exception. Details: {0}"
 msgstr ""
 
-#: Drivers/JavascriptConditionDisplayDriver.cs
-msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
-msgid "Please provide a script."
-msgstr ""
-
-#. Format arguments: {0}: details
-#: Drivers/JavascriptConditionDisplayDriver.cs
-#, csharp-format
-msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
-msgid "The script couldn't be parsed. Details: {0}"
-msgstr ""
-
 #. Format arguments: {0}: ex.Message
 #: Drivers/JavascriptConditionDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
 msgid "The script evaluation failed. Details: {0}"
+msgstr ""
+
+#. Format arguments: {0}: error.Message
+#: Drivers/JavascriptConditionDisplayDriver.cs
+#, csharp-format
+msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
+msgid "{0}"
 msgstr ""
 
 #: Services/ConditionOperatorConfigureOptions.cs
@@ -70,6 +65,18 @@ msgstr ""
 #: Services/ConditionOperatorConfigureOptions.cs
 msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
 msgid "Starts with"
+msgstr ""
+
+#: Services/RuleManagementService.cs
+msgctxt "OrchardCore.Rules.Services.RuleManagementService"
+msgid "Please provide a script."
+msgstr ""
+
+#. Format arguments: {0}: (exception.InnerException ?? exception).Message
+#: Services/RuleManagementService.cs
+#, csharp-format
+msgctxt "OrchardCore.Rules.Services.RuleManagementService"
+msgid "The script couldn't be parsed. Details: {0}"
 msgstr ""
 
 #: Views/Condition.Summary.cshtml

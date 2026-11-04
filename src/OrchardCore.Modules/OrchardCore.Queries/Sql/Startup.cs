@@ -4,8 +4,10 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.Core;
+using OrchardCore.Queries.Services;
 using OrchardCore.Queries.Sql.Drivers;
 using OrchardCore.Queries.Sql.Migrations;
+using OrchardCore.Queries.Sql.Services;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries.Sql;
@@ -26,5 +28,6 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddDataMigration<SqlQueryMigrations>();
         services.AddScoped<IQueryHandler, SqlQueryHandler>();
+        services.AddScoped<IQuerySourceApiDescriptorProvider, SqlQuerySourceApiDescriptorProvider>();
     }
 }

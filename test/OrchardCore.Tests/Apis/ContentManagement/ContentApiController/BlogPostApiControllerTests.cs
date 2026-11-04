@@ -51,7 +51,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task Only_CreateTwoContentItemRecordsForExistingContentItem_Succeeds()
+    public async Task Save_UnchangedPublishedContent_DoesNotCreateAnotherVersion()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -71,7 +71,7 @@ public class BlogPostApiControllerTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count);
+            Assert.Single(blogPosts);
         });
     }
 
@@ -207,7 +207,7 @@ public class BlogPostApiControllerTests
         contentItem
             .Weld(new AutoroutePart
             {
-                Path = "blog/post-1", // Deliberately set to an existing path.
+                Path = context.BlogPost.GetOrCreate<AutoroutePart>().Path, // Deliberately reuse the fixture permalink.
             });
 
         contentItem

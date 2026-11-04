@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -51,7 +52,12 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        var model = UserPolicySettingsEditor.Clone(section);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        if (context.Updater.ModelState.IsValid)
+        {
+            UserPolicySettingsEditor.Apply(section, model);
+        }
 
         return await EditAsync(site, section, context);
     }

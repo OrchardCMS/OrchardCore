@@ -5,7 +5,12 @@
     Application that references it will embed in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
+  <!--
+    Runs before the attributes are read rather than after the references are resolved. A solution build asks another
+    project's reference to build this one too, and a request finding AfterResolveReferences done wouldn't wait for
+    an AfterTargets hook still running in the other request, which would generate an assembly without its modules.
+  -->
+  <Target Name="ResolveModuleProjectReferences" BeforeTargets="GetAssemblyAttributes" DependsOnTargets="ResolveProjectReferences">
     <MSBuild
       Targets="GetModuleProjectName"
       BuildInParallel="$(BuildInParallel)"

@@ -88,6 +88,26 @@
         </div>
     </div>
 
+    <div class="ocat-wrapper" asp-validation-class-for="EnableDeviceAuthorizationEndpoint">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="EnableDeviceAuthorizationEndpoint" data-openid-field="EnableDeviceAuthorizationEndpoint">
+                <label class="form-check-label" asp-for="EnableDeviceAuthorizationEndpoint">@T["Enable Device Authorization Endpoint"]</label>
+                <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/device</code>
+            </div>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="EnableEndUserVerificationEndpoint">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="EnableEndUserVerificationEndpoint" data-openid-field="EnableEndUserVerificationEndpoint">
+                <label class="form-check-label" asp-for="EnableEndUserVerificationEndpoint">@T["Enable End-User Verification Endpoint"]</label>
+                <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/verify</code>
+            </div>
+        </div>
+    </div>
+
     <div class="ocat-wrapper" asp-validation-class-for="EnableRevocationEndpoint">
         <div class="ocat-end-offset">
             <div class="form-check">
@@ -112,6 +132,16 @@
                 <input type="checkbox" class="form-check-input" asp-for="AllowAuthorizationCodeFlow" data-openid-field="AllowAuthorizationCodeFlow">
                 <label class="form-check-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
                 <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"]</span>
+            </div>
+        </div>
+    </div>
+
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowDeviceAuthorizationFlow">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="AllowDeviceAuthorizationFlow" data-openid-field="AllowDeviceAuthorizationFlow">
+                <label class="form-check-label" asp-for="AllowDeviceAuthorizationFlow">@T["Allow Device Authorization Flow"]</label>
+                <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Device Authorization Grant.", "https://datatracker.ietf.org/doc/html/rfc8628"]</span>
             </div>
         </div>
     </div>

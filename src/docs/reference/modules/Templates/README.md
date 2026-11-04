@@ -2,6 +2,14 @@
 
 The templates module allows editors to create custom Liquid templates.
 
+## Remote management
+
+When `OrchardCore.Templates` and `OrchardCore.RemoteManagement` are enabled, authenticated remote clients can list, inspect, create, replace, and delete custom templates through the Templates management API. Every operation requires both **Access remote management API** and the security-critical **Manage templates** permission.
+
+The `pomi` CLI discovers the `templates` capability and exposes `templates list`, `templates show`, `templates create`, `templates update`, `templates delete`, and `templates schema` commands from the tenant OpenAPI document.
+
+See the [Templates management API reference](../../api/templates/README.md) for routes, request schemas, paging, permissions, and retry behavior.
+
 ## Available templates
 
 Templates can be defined using the web editor, or in a theme. Templates are distinguished by their name.  
@@ -1048,3 +1056,15 @@ option under the `Settings -> Security -> User Login` page in the admin.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bwFH-C18rrA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Deployment step configuration through Pomi
+
+The `AllTemplatesDeploymentStep` and `AllAdminTemplatesDeploymentStep` factories
+expose the Boolean `exportAsFiles` option. The admin template factory is available
+only when `OrchardCore.AdminTemplates` is enabled.
+Use `pomi deployment step-types schema <factory>` to inspect the contract and
+`pomi deployment plans steps add <planId> --body-file step.json` to add a step with
+`id`, `type` and `values`. Updates contain only `values`; omitted options retain
+their existing setting. Unknown properties, nulls and non-Boolean values are
+rejected before the persisted step changes. This requires the Deployment feature
+and its plan-management permission.

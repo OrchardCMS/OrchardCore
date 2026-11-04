@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -7,6 +9,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Elasticsearch.Endpoints.Management;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing.Core;
@@ -17,6 +20,7 @@ using OrchardCore.Queries;
 using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Search;
 using OrchardCore.Elasticsearch.Core.Deployment;
 using OrchardCore.Elasticsearch.Core.Handlers;
@@ -101,6 +105,8 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IRemoteManagementCapabilityProvider, ElasticsearchIndexCapabilityProvider>();
+        services.Configure<IndexLifecycleOptions>(options => options.RemoteProviders.Add(ElasticsearchConstants.ProviderName));
         services.AddDataMigration<IndexingMigrations>();
 
         // Register after IndexingMigrations so its deferred task, which rewrites obsolete per-index role
@@ -115,6 +121,9 @@ public sealed class ContentsStartup : StartupBase
                 o.Description = S["Create an Elasticsearch index based on site contents."];
             });
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddElasticsearchIndexDefinitionEndpoints();
 }
 
 [RequireFeatures("OrchardCore.Search")]

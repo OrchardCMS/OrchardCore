@@ -6,6 +6,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: SiteSettingsSectionProvider.cs
+msgctxt "OrchardCore.Settings.ISiteSettingsSectionProvider"
+msgid "A settings object is required."
+msgstr ""
+
 #: SettingsPermissions.cs
 msgctxt "OrchardCore.Settings.SettingsPermissions"
 msgid "Manage debugging settings"
@@ -19,4 +24,28 @@ msgstr ""
 #: SettingsPermissions.cs
 msgctxt "OrchardCore.Settings.SettingsPermissions"
 msgid "Manage settings"
+msgstr ""
+
+#. Format arguments: {0}: name
+#: SiteSettingsSectionProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Settings.SiteSettingsSectionProperties"
+msgid "Do not set and clear {0} in the same request."
+msgstr ""
+
+#: SiteSettingsSectionProvider.cs
+msgctxt "OrchardCore.Settings.SiteSettingsSectionProperties"
+msgid "Provide a valid value of the documented type."
+msgstr ""
+
+#. Format arguments: {0}: name
+#: SiteSettingsSectionProvider.cs
+#, csharp-format
+msgctxt "OrchardCore.Settings.SiteSettingsSectionProperties"
+msgid "The {0} property is required."
+msgstr ""
+
+#: SiteSettingsSectionProvider.cs
+msgctxt "OrchardCore.Settings.SiteSettingsSectionProperties"
+msgid "This property is not managed by this settings section."
 msgstr ""

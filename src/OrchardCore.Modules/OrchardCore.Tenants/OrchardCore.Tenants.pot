@@ -16,6 +16,31 @@ msgctxt "OrchardCore.Tenants.AdminMenu"
 msgid "Tenants"
 msgstr ""
 
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Disabled"
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Enabled"
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Remote management was disabled for a tenant."
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Remote management was enabled for a tenant."
+msgstr ""
+
+#: AuditTrail/TenantRemoteManagementAuditTrailEventConfiguration.cs
+msgctxt "OrchardCore.Tenants.AuditTrail.TenantRemoteManagementAuditTrailEventConfiguration"
+msgid "Tenant remote management"
+msgstr ""
+
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Tenants.Controllers.AdminController"
 msgid "All"
@@ -121,11 +146,6 @@ msgstr ""
 
 #: Controllers/FeatureProfilesController.cs
 msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
-msgid "A feature profile with the same name already exists."
-msgstr ""
-
-#: Controllers/FeatureProfilesController.cs
-msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
 msgid "Delete"
 msgstr ""
 
@@ -145,20 +165,40 @@ msgid "Invalid json supplied."
 msgstr ""
 
 #. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "An error occurred while deleting tenant '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
 #: Controllers/TenantApiController.cs
 #, csharp-format
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "An error occurred while removing the tenant '{0}'."
 msgstr ""
 
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "An error occurred while running the setup. Consult the application logs for details."
+msgstr ""
+
 #: Controllers/TenantApiController.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "An error occurred while saving the tenant settings."
 msgstr ""
 
 #: Controllers/TenantApiController.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "An error occurred while validating the tenant database settings."
+msgstr ""
+
+#: Endpoints/Management/TenantInstallEndpoints.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Conflict"
 msgstr ""
 
 #: Controllers/TenantApiController.cs
@@ -166,11 +206,119 @@ msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "Either a 'recipe' file or 'RecipeName' is required."
 msgstr ""
 
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Forbidden"
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Only the Default tenant can manage tenants."
+msgstr ""
+
+#. Format arguments: {0}: options.RequiredLength
+#: Endpoints/Management/TenantInstallEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Passwords must be at least {0} characters."
+msgstr ""
+
+#. Format arguments: {0}: options.RequiredUniqueChars
+#: Endpoints/Management/TenantInstallEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Passwords must contain at least {0} unique characters."
+msgstr ""
+
+#: Endpoints/Management/TenantInstallEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Passwords must have at least one digit character ('0'-'9')."
+msgstr ""
+
+#: Endpoints/Management/TenantInstallEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Passwords must have at least one lowercase character ('a'-'z')."
+msgstr ""
+
+#: Endpoints/Management/TenantInstallEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Passwords must have at least one non letter or digit character."
+msgstr ""
+
+#: Endpoints/Management/TenantInstallEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Passwords must have at least one uppercase character ('A'-'Z')."
+msgstr ""
+
 #. Format arguments: {0}: recipeName
 #: Controllers/TenantApiController.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
 #, csharp-format
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "Recipe '{0}' not found."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Remote management could not be enabled for tenant '{0}'. Check its active feature profile."
+msgstr ""
+
+#. Format arguments: {0}: request.Name
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' already exists with different settings."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantInstallEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' already exists. Inspect it and use the separate setup command if it is still uninitialized."
+msgstr ""
+
+#. Format arguments: {0}: tenantName; {1}: shellSettings.State
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' cannot be set up while it is in the '{1}' state."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantInstallEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' is already being created or set up."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' must be running before remote management can be disabled."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' must be running before remote management can be enabled."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' must be running to be reloaded."
+msgstr ""
+
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantInstallEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant '{0}' was created by another request. Inspect it before continuing."
 msgstr ""
 
 #. Format arguments: {0}: model.Name
@@ -180,7 +328,20 @@ msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "Tenant not found: '{0}'"
 msgstr ""
 
+#. Format arguments: {0}: tenantName
+#: Endpoints/Management/TenantManagementEndpoints.cs
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant not found: '{0}'."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "Tenant setup failed"
+msgstr ""
+
 #: Controllers/TenantApiController.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "The connection string is required for this database provider."
 msgstr ""
@@ -191,13 +352,35 @@ msgid "The database provider is not defined."
 msgstr ""
 
 #: Controllers/TenantApiController.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "The database provider is not supported."
 msgstr ""
 
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The database provider is required."
+msgstr ""
+
 #: Controllers/TenantApiController.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "The email is invalid."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The email is required."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The recipe name is required."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The site name is required."
 msgstr ""
 
 #: Controllers/TenantApiController.cs
@@ -205,11 +388,32 @@ msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "The tenant can't be setup."
 msgstr ""
 
-#. Format arguments: {0}: model.UserName
+#: Endpoints/Management/TenantInstallEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The tenant was created, but setup did not complete. Inspect its state and use the separate setup command if it is uninitialized."
+msgstr ""
+
+#: Endpoints/Management/TenantInstallEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The tenant was installed, but remote management could not be enabled. Check its feature profile, then use enable-remote-management with provisionClient=true."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "The user name is required."
+msgstr ""
+
+#. Format arguments: {0}: model.UserName, request.UserName
 #: Controllers/TenantApiController.cs
+#: Endpoints/Management/TenantManagementEndpoints.cs
 #, csharp-format
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "User name '{0}' is invalid, can only contain letters or digits."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You can only delete a disabled or uninitialized tenant."
 msgstr ""
 
 #: Controllers/TenantApiController.cs
@@ -225,6 +429,31 @@ msgstr ""
 #: Controllers/TenantApiController.cs
 msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "You can only remove a 'Disabled' or an 'Uninitialized' tenant."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You can only start a disabled tenant."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You can only stop a running tenant."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You cannot disable remote management for the Default tenant: it hosts this API."
+msgstr ""
+
+#: Endpoints/Management/TenantManagementEndpoints.cs
+msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
+msgid "You cannot stop the Default tenant."
+msgstr ""
+
+#: Endpoints/Management/TenantSetupDiagnosticsEndpoints.cs
+msgctxt "OrchardCore.Tenants.Endpoints.Management.FailureRecordingSetupService"
+msgid "An error occurred while running the setup. Consult the application logs for details."
 msgstr ""
 
 #: FeatureProfilesAdminMenu.cs
@@ -245,6 +474,41 @@ msgstr ""
 #: Permissions.cs
 msgctxt "OrchardCore.Tenants.Permissions"
 msgid "Manage tenants"
+msgstr ""
+
+#: Services/FeatureProfilesManager.cs
+msgctxt "OrchardCore.Tenants.Services.FeatureProfilesManager"
+msgid "A feature profile definition is required."
+msgstr ""
+
+#: Services/FeatureProfilesManager.cs
+msgctxt "OrchardCore.Tenants.Services.FeatureProfilesManager"
+msgid "A feature profile identifier is required and cannot contain a comma or surrounding whitespace."
+msgstr ""
+
+#: Services/FeatureProfilesManager.cs
+msgctxt "OrchardCore.Tenants.Services.FeatureProfilesManager"
+msgid "A feature profile name is required."
+msgstr ""
+
+#: Services/FeatureProfilesManager.cs
+msgctxt "OrchardCore.Tenants.Services.FeatureProfilesManager"
+msgid "A feature profile with the same identifier already exists."
+msgstr ""
+
+#: Services/FeatureProfilesManager.cs
+msgctxt "OrchardCore.Tenants.Services.FeatureProfilesManager"
+msgid "A feature profile with the same name already exists."
+msgstr ""
+
+#: Services/FeatureProfilesManager.cs
+msgctxt "OrchardCore.Tenants.Services.FeatureProfilesManager"
+msgid "Feature rules must contain registered rule names and nonempty expressions."
+msgstr ""
+
+#: Services/FeatureProfilesManager.cs
+msgctxt "OrchardCore.Tenants.Services.FeatureProfilesManager"
+msgid "The profile identifier must match its stored key."
 msgstr ""
 
 #. Format arguments: {0}: optionDisplayName

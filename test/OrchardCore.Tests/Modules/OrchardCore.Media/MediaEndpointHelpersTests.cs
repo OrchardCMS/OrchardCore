@@ -1,15 +1,51 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.StaticFiles;
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
 using OrchardCore.Media.Endpoints.Api;
 using OrchardCore.Media.Services;
 using OrchardCore.Security;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class MediaEndpointHelpersTests
 {
+    [Theory]
+    [InlineData("/blog/media/images/a%20b.png", "https://cms.example.com:8443/blog/media/images/a%20b.png?v=version", true)]
+    [InlineData("/media/logo.png", "https://cms.example.com:8443/media/logo.png?v=version", true)]
+    [InlineData("media/logo.png", "https://cms.example.com:8443/blog/media/logo.png?v=version", true)]
+    [InlineData("https://cdn.example.com/assets/a%23b.png?sig=a%2Fb", "https://cdn.example.com/assets/a%23b.png?sig=a%2Fb&v=version", true)]
+    [InlineData("//cdn.example.com/assets/logo.png", "https://cdn.example.com/assets/logo.png?v=version", true)]
+    [InlineData("/blog/media/logo.png", "/blog/media/logo.png?v=version", false)]
+    public void CreateFileResult_MappedUrl_PreservesPathAndResolvesManagementUrl(string mappedUrl, string expectedUrl, bool management)
+    {
+        const string path = "images/a b.png";
+        var store = new Mock<IMediaFileStore>();
+        store.Setup(value => value.MapPathToPublicUrl(path)).Returns(mappedUrl);
+        var versions = new Mock<IFileVersionProvider>();
+        versions.Setup(value => value.AddFileVersionToPath(It.IsAny<PathString>(), mappedUrl))
+            .Returns<PathString, string>((_, url) => url + (url.Contains('?') ? "&" : "?") + "v=version");
+        var context = new DefaultHttpContext();
+        context.Request.Scheme = "https";
+        context.Request.Host = new HostString("cms.example.com", 8443);
+        context.Request.PathBase = "/blog";
+        if (management)
+        {
+            context.SetEndpoint(new Endpoint(null, new EndpointMetadataCollection(new CliOperationMetadata(["media", "files"], "show")), null));
+        }
+
+        var file = MediaEndpointHelpers.CreateFileResult(
+            Mock.Of<IFileStoreEntry>(entry => entry.Path == path && entry.Name == "a b.png" && entry.DirectoryPath == "images"),
+            context, new FileExtensionContentTypeProvider(), versions.Object, store.Object);
+
+        Assert.Equal(path, file.FilePath);
+        Assert.Equal("images", file.DirectoryPath);
+        Assert.Equal(expectedUrl, file.Url);
+    }
+
     [Theory]
     [InlineData("../unauthorized/file.jpg", "file.jpg")]
     [InlineData(@"..\unauthorized\file.jpg", "file.jpg")]

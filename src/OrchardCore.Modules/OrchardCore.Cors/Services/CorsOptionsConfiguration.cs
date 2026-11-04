@@ -23,11 +23,14 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
             return;
         }
 
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        string firstPolicy = null;
+        string defaultPolicy = null;
         foreach (var corsPolicy in corsSettings.Policies)
         {
-            if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
+            if (_corsService.ValidatePolicy(corsPolicy).Count > 0 || !names.Add(corsPolicy.Name))
             {
-                _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered a security risk, the {PolicyName} policy will not be loaded.", corsPolicy.Name);
+                _logger.LogWarning("The invalid or duplicate CORS policy {PolicyName} will not be loaded.", corsPolicy?.Name);
                 continue;
             }
 
@@ -39,7 +42,7 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
                 }
                 else
                 {
-                    configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
+                    configurePolicy.WithHeaders(corsPolicy.AllowedHeaders ?? []);
                 }
 
                 if (corsPolicy.AllowAnyMethod)
@@ -48,7 +51,7 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
                 }
                 else
                 {
-                    configurePolicy.WithMethods(corsPolicy.AllowedMethods);
+                    configurePolicy.WithMethods(corsPolicy.AllowedMethods ?? []);
                 }
 
                 if (corsPolicy.AllowAnyOrigin)
@@ -57,7 +60,7 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
                 }
                 else
                 {
-                    configurePolicy.WithOrigins(corsPolicy.AllowedOrigins);
+                    configurePolicy.WithOrigins(corsPolicy.AllowedOrigins ?? []);
                 }
 
                 if (corsPolicy.AllowCredentials)
@@ -75,12 +78,16 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
                 }
             });
 
+            firstPolicy ??= corsPolicy.Name;
             if (corsPolicy.IsDefaultPolicy)
             {
-                options.DefaultPolicyName = corsPolicy.Name;
+                defaultPolicy ??= corsPolicy.Name;
             }
         }
 
-        options.DefaultPolicyName ??= corsSettings.Policies.FirstOrDefault()?.Name;
+        if (firstPolicy is not null)
+        {
+            options.DefaultPolicyName = defaultPolicy ?? firstPolicy;
+        }
     }
 }

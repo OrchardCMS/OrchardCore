@@ -1,0 +1,6 @@
+{
+  "pomi": "4.0.0 previews built from the same Orchard Core revision",
+  "server": "Orchard Core 4.0.0 previews with Remote Management enabled",
+  "managementProtocolMajor": 1,
+  "notes": "Commands depend on the target tenant's enabled modules. Use pomi api compatibility and live help before applying examples to another build. Remote native CLI usage requires no .NET runtime; local installation requires the matching .NET SDK. Automated creation requires CLI/server builds exposing --enable-remote-management (install) and --provision-client (enable-remote-management); use the returned context without login. Administrator credentials still need a private user handoff file."
+}

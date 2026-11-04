@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+using Lucene.Net.Util;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Indexing.Core.Handlers;
@@ -10,29 +12,55 @@ namespace OrchardCore.Lucene.Core.Handlers;
 public sealed class LuceneIndexProfileHandler : IndexProfileHandlerBase
 {
     public override Task InitializingAsync(InitializingContext<IndexProfile> context)
+        => PopulateAsync(context.Model, context.Data);
+
+    public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)
+        => PopulateAsync(context.Model, context.Data);
+
+    private static Task PopulateAsync(IndexProfile index, JsonNode data)
     {
-        if (!CanHandle(context.Model))
+        if (!CanHandle(index))
         {
             return Task.CompletedTask;
         }
 
-        var LuceneMetadata = context.Model.GetOrCreate<LuceneIndexMetadata>();
+        var LuceneMetadata = index.GetOrCreate<LuceneIndexMetadata>();
 
-        var analyzerName = context.Data[nameof(LuceneMetadata.AnalyzerName)]?.GetValue<string>();
+        var analyzerName = data[nameof(LuceneMetadata.AnalyzerName)]?.GetValue<string>();
 
         if (!string.IsNullOrEmpty(analyzerName))
         {
             LuceneMetadata.AnalyzerName = analyzerName;
         }
 
-        var storeSourceData = context.Data[nameof(LuceneMetadata.StoreSourceData)]?.GetValue<bool>();
+        var storeSourceData = data[nameof(LuceneMetadata.StoreSourceData)]?.GetValue<bool>();
 
         if (storeSourceData.HasValue)
         {
             LuceneMetadata.StoreSourceData = storeSourceData.Value;
         }
 
-        context.Model.Put(LuceneMetadata);
+        index.Put(LuceneMetadata);
+
+        var query = index.GetOrCreate<LuceneIndexDefaultQueryMetadata>();
+        if (data[nameof(query.QueryAnalyzerName)] is { } queryAnalyzer)
+        {
+            query.QueryAnalyzerName = queryAnalyzer.GetValue<string>();
+        }
+        if (data[nameof(query.AllowLuceneQueries)] is { } allowQueries)
+        {
+            query.AllowLuceneQueries = allowQueries.GetValue<bool>();
+        }
+        if (data[nameof(query.DefaultVersion)] is { } version)
+        {
+            query.DefaultVersion = version.ToObject<LuceneVersion>();
+        }
+        if (data[nameof(query.DefaultSearchFields)] is JsonArray fields)
+        {
+            // Definition updates replace selected fields; generic property merging appends arrays.
+            query.DefaultSearchFields = fields.Select(field => field.GetValue<string>()).ToArray();
+        }
+        index.Put(query);
 
         return Task.CompletedTask;
     }

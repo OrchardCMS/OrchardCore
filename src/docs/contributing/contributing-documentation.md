@@ -29,6 +29,10 @@ Do the following if you're adding docs for a newly developed extension, or if yo
 4. Link to the `README.md` file from the `mkdocs.yml` file in the repository root.
 5. If the module contains content parts, also link the `README.md` file from `reference/modules/ContentParts/README.md`.
 
+## Documenting a management API
+
+OpenAPI management endpoints use a consistent, source-derived reference format. When adding or changing one, follow [Documenting management APIs](documenting-management-apis.md) and update the endpoint reference in the same pull request.
+
 ## Running the documentation site locally
 
 With MkDocs you can get the full docs.orchardcore.net experience locally too. If you are looking to contribute substantial amount of docs then please do run the site locally to make sure what you write will actually look like it should.

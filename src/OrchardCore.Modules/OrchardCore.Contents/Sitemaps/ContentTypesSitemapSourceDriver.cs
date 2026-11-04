@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
@@ -8,10 +9,18 @@ namespace OrchardCore.Contents.Sitemaps;
 public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSource, ContentTypesSitemapSource>
 {
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
+    internal readonly IStringLocalizer S;
 
     public ContentTypesSitemapSourceDriver(IRouteableContentTypeCoordinator routeableContentTypeCoordinator)
+        : this(routeableContentTypeCoordinator, null)
+    {
+    }
+
+    public ContentTypesSitemapSourceDriver(IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
+        IStringLocalizer<ContentTypesSitemapSourceDriver> localizer)
     {
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
+        S = localizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ContentTypesSitemapSource sitemapSource, BuildDisplayContext context)
@@ -115,6 +124,10 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
             sitemap.LimitedContentType = new LimitedContentTypeSitemapEntry();
         }
 
+        foreach (var error in SitemapSourceValidation.Validate(sitemap))
+        {
+            context.Updater.ModelState.AddModelError(error.Key, S is null ? error.Value[0] : S["The sitemap source setting is invalid."].Value);
+        }
         return await EditAsync(sitemap, context);
     }
 }

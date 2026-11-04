@@ -126,18 +126,9 @@ msgctxt "OrchardCore.Sitemaps.Controllers.SourceController"
 msgid "The sitemap source has validation errors."
 msgstr ""
 
-#. Format arguments: {0}: invalidCharactersForMessage
 #: Drivers/CustomPathSitemapSourceDriver.cs
-#, csharp-format
 msgctxt "OrchardCore.Sitemaps.Drivers.CustomPathSitemapSourceDriver"
-msgid "Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead)."
-msgstr ""
-
-#. Format arguments: {0}: CustomPathSitemapSource.MaxPathLength
-#: Drivers/CustomPathSitemapSourceDriver.cs
-#, csharp-format
-msgctxt "OrchardCore.Sitemaps.Drivers.CustomPathSitemapSourceDriver"
-msgid "Your path is too long. The path can only be up to {0} characters."
+msgid "The sitemap source setting is invalid."
 msgstr ""
 
 #. Format arguments: {0}: invalidCharactersForMessage

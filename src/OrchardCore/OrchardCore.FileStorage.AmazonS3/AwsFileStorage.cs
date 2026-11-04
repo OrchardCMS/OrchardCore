@@ -191,6 +191,21 @@ public class AwsFileStore : IFileStore
         await TryDeleteFileAsync(oldPath);
     }
 
+    public async Task<bool> TryMoveFileAsync(string oldPath, string newPath)
+    {
+        if (!await TryCopyFileAsync(oldPath, newPath))
+        {
+            return false;
+        }
+
+        if (!await TryDeleteFileAsync(oldPath))
+        {
+            throw new FileStoreException($"File '{oldPath}' was copied to '{newPath}' but the source could not be deleted.");
+        }
+
+        return true;
+    }
+
     public async Task CopyFileAsync(string srcPath, string dstPath)
     {
         if (srcPath == dstPath)
@@ -241,6 +256,45 @@ public class AwsFileStore : IFileStore
                 throw new FileStoreException($"Error while copying file '{srcPath}'");
             }
 
+        }
+        catch (AmazonS3Exception ex)
+        {
+            throw new FileStoreException($"Error while copying file '{srcPath}': {ex.Message}", ex);
+        }
+    }
+
+    public async Task<bool> TryCopyFileAsync(string srcPath, string dstPath)
+    {
+        if (srcPath == dstPath)
+        {
+            throw new ArgumentException($"The values for {nameof(srcPath)} and {nameof(dstPath)} must not be the same.");
+        }
+
+        try
+        {
+            await using var source = await GetFileStreamAsync(srcPath);
+            var response = await _amazonS3Client.PutObjectAsync(new PutObjectRequest
+            {
+                BucketName = _options.BucketName,
+                Key = this.Combine(_basePrefix, dstPath),
+                InputStream = source,
+                IfNoneMatch = "*",
+            });
+
+            if (!response.IsSuccessful())
+            {
+                throw new FileStoreException($"Error while copying file '{srcPath}'.");
+            }
+
+            return true;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode is HttpStatusCode.Conflict or HttpStatusCode.PreconditionFailed)
+        {
+            return false;
+        }
+        catch (FileStoreException)
+        {
+            throw;
         }
         catch (AmazonS3Exception ex)
         {

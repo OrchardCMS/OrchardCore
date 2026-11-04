@@ -13,4 +13,10 @@ public class PlacementsDeploymentStep : DeploymentStep
 
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Development;
+
+    /// <summary>
+    /// Gets or sets the exact names of the shape types to export. All of them are exported when it is <see langword="null"/> or empty.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string[] Names { get; set; }
 }

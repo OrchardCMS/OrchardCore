@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class MoveMediaListEndpointTests
 {
     private static readonly MethodInfo s_handleAsyncMethod = typeof(MoveMediaListEndpoint)
-        .GetMethod("HandleAsync", BindingFlags.NonPublic | BindingFlags.Static);
+        .GetMethod("HandleLegacyAsync", BindingFlags.NonPublic | BindingFlags.Static);
 
     [Fact]
     public async Task HandleAsync_TargetPathOutsideAuthorizedFolders_DoesNotMoveFile()

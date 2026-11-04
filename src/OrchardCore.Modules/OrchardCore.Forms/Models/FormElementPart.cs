@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Forms.Models;
@@ -7,5 +8,6 @@ namespace OrchardCore.Forms.Models;
 /// </summary>
 public class FormElementPart : ContentPart
 {
+    [Description("The HTML id attribute of the form element.")]
     public string Id { get; set; }
 }

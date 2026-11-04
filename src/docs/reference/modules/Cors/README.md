@@ -14,7 +14,7 @@ CORS settings are stored in the current tenant's site settings. Policies are iso
 
 ## Create and apply a policy
 
-Select **Add a policy**, configure the policy, and select **Save**. Saving the settings reloads the current tenant shell so that the updated policies are registered.
+Select **Add a policy**, configure the policy, and select **Save**. A changed settings save reloads the current tenant shell so that the updated policies are registered. An equivalent save does not persist or reload the tenant.
 
 The module adds every configured policy to ASP.NET Core CORS by name. It applies one policy as the tenant's default:
 
@@ -55,7 +55,7 @@ Use `[DisableCors]` on an endpoint that must not use the global default policy. 
 An empty allowed-origins, allowed-methods, or allowed-headers list permits none of those categories when the corresponding **Allow any** option is disabled.
 
 !!! warning
-    Using **Allow credentials** and **Allow any origin** together is insecure. The admin rejects this combination, including an `AllowedOrigins` entry of `*`, and does not save the settings. At runtime, a policy configured with both **AllowCredentials** and **AllowAnyOrigin** is not loaded.
+    Using **Allow credentials** and **Allow any origin** together is insecure. The admin rejects this combination, including an `AllowedOrigins` entry of `*`, and does not save the settings. At runtime, invalid policies are skipped, including credentialed policies with **AllowAnyOrigin** or a literal `*` allowed origin. This also protects settings imported through recipes. Duplicate names are skipped, and the first valid policy is used when none is explicitly the default.
 
 ## Recipe and deployment support
 
@@ -141,3 +141,57 @@ For protocol details, see [Cross-Origin Resource Sharing (CORS) on MDN](https://
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/OYXFvKWyVGo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Remote settings section
+
+The `cors` provider uses the [typed settings section API](../../api/settings/README.md#typed-module-settings-sections)
+and the same `CorsService` validation and persistence as the admin editor. It requires
+`ManageCorsSettings` and `AccessRemoteManagement`. Pomi exposes it through
+`OrchardCore.RemoteManagement.Cli`; the independent MCP feature exposes the same section
+operations. An admin cookie alone does not authenticate the API.
+
+```bash
+pomi settings sections list
+pomi settings sections show cors
+pomi settings sections schema cors
+pomi settings sections update cors --body-file cors.json
+```
+
+A policy update contains a complete replacement array:
+
+```json
+{
+  "policies": [
+    {
+      "name": "Frontend",
+      "allowedOrigins": ["https://frontend.example.com"],
+      "allowedMethods": ["GET", "PUT"],
+      "allowedHeaders": ["Authorization", "Content-Type"],
+      "allowCredentials": false,
+      "exposedHeaders": ["X-Request-Id"],
+      "isDefaultPolicy": true
+    }
+  ]
+}
+```
+
+Omitting `policies` preserves the current collection; `policies: []` removes all tenant
+policies. Null is not a reset operation. Each supplied policy replaces its previous definition;
+omitted Boolean options are false and omitted arrays are empty. Unknown properties, null
+policies, null list values and incorrect JSON types are rejected. Policy names are unique using
+ordinal, case-sensitive comparison, nonempty and at most 256 characters, without surrounding
+whitespace or control characters. At most one policy can be explicitly default. Use the `allowAny`
+options to allow a whole category, or provide arrays for selected values.
+
+The shared validator rejects origins with paths, trailing slashes, user information, queries or
+fragments; supported origins use HTTP or HTTPS. A literal `*` is accepted only without credentials.
+Methods and allowed/exposed headers must be nonempty HTTP tokens. Invalid edits do not save or
+reload. The admin retains its posted model and reports validation errors; malformed or null
+posted collections do not remove existing policies.
+
+Readback projects only the tenant-stored policy fields with `source: tenant`. It does not enumerate
+host-added CORS options or expose arbitrary site settings. Settings providers are registered with
+their feature; disabling CORS removes this section while other sections remain available. A
+successful update reports `changed` and `reloadRequested`; an equivalent retry reports both false.
+After a change, verify actual preflight and simple request response headers from the expected
+origin. CORS response headers do not grant authentication or permission to execute an API operation.

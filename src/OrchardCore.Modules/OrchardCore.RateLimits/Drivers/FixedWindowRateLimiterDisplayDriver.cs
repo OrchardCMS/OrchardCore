@@ -51,22 +51,19 @@ public sealed class FixedWindowRateLimiterDisplayDriver : DisplayDriver<RateLimi
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.PermitLimit < 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PermitLimit), S["Permit limit must be greater than zero."]);
-        }
-
-        if (model.WindowSeconds < 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.WindowSeconds), S["Window must be greater than zero."]);
-        }
-
-        limiter.Put(new FixedWindowRateLimiterData
+        var data = new FixedWindowRateLimiterData
         {
             PermitLimit = model.PermitLimit,
             QueueLimit = model.QueueLimit,
             WindowSeconds = model.WindowSeconds,
-        });
+        };
+
+        foreach (var error in RateLimitLimiterValidation.Validate(data, S))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, error.Key, error.Value);
+        }
+
+        limiter.Put(data);
 
         return Edit(limiter, context);
     }

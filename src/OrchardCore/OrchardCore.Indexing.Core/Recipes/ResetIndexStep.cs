@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundJobs;
 using OrchardCore.Indexing.Core.Deployments;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -11,9 +10,12 @@ public sealed class ResetIndexStep : NamedRecipeStepHandler
 {
     public const string Key = "ResetIndex";
 
-    public ResetIndexStep()
+    private readonly IServiceProvider _services;
+
+    public ResetIndexStep(IServiceProvider services)
         : base(Key)
     {
+        _services = services;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -30,20 +32,12 @@ public sealed class ResetIndexStep : NamedRecipeStepHandler
             return;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("reset-indexes", async scope =>
+        var profiles = _services.GetRequiredService<IIndexProfileManager>();
+        var operations = _services.GetRequiredService<Operations.IndexOperationRunner>();
+        var indexes = await profiles.GetAllAsync();
+        foreach (var index in indexes.Where(index => model.IncludeAll || model.IndexNames.Contains(index.Name, StringComparer.OrdinalIgnoreCase)))
         {
-            var indexProfileManager = scope.ServiceProvider.GetService<IIndexProfileManager>();
-
-            var indexes = model.IncludeAll
-            ? await indexProfileManager.GetAllAsync()
-            : (await indexProfileManager.GetAllAsync()).Where(x => model.IndexNames.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
-
-            foreach (var index in indexes)
-            {
-                await indexProfileManager.ResetAsync(index);
-                await indexProfileManager.UpdateAsync(index);
-                await indexProfileManager.SynchronizeAsync(index);
-            }
-        });
+            await operations.QueueAsync(index.Id, IndexLifecycleAction.Reset);
+        }
     }
 }

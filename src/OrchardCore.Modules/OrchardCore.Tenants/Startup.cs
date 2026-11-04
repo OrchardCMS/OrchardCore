@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
@@ -14,11 +15,14 @@ using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
+using OrchardCore.Tenants.AuditTrail;
 using OrchardCore.Tenants.Deployment;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
+using OrchardCore.Tenants.Endpoints.Management;
 using OrchardCore.Tenants.ViewModels;
 using OrchardCore.Tenants.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
@@ -42,6 +46,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
+        services.AddTenantSetupDiagnostics();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, TenantRemoteManagementCapabilityProvider>();
 
         // Builds the rows of the tenants admin list. It belongs to this feature, not to the feature
         // profiles one: without it the rows of the list render empty.
@@ -50,6 +56,12 @@ public sealed class Startup : StartupBase
         // The 'OrchardCore_Tenants' section is deprecated and will be removed in a future major version, use 'Tenants' instead.
         services.Configure<TenantsOptions>(_shellConfiguration.GetSectionCompat("Tenants", "OrchardCore_Tenants"));
 
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddTenantManagementEndpoints();
+        routes.AddTenantSetupDiagnosticsEndpoints();
     }
 }
 
@@ -120,7 +132,9 @@ public sealed class FeatureProfilesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<FeatureProfilesAdminMenu>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<FeatureProfilesManager>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, FeatureProfilesRemoteManagementCapabilityProvider>();
 
         // Builds the rows of the feature profiles admin list.
         services.AddDisplayDriver<FeatureProfileEntry, FeatureProfileEntryDisplayDriver>();
@@ -131,6 +145,9 @@ public sealed class FeatureProfilesStartup : StartupBase
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
 
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddFeatureProfileManagementEndpoints();
 }
 
 [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Tenants.FeatureProfiles")]
@@ -139,6 +156,16 @@ public sealed class FeatureProfilesDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllFeatureProfilesDeploymentStep>(nameof(AllFeatureProfilesDeploymentStep)));
+    }
+}
+
+[RequireFeatures("OrchardCore.AuditTrail")]
+public sealed class AuditTrailStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<AuditTrailOptions>, TenantRemoteManagementAuditTrailEventConfiguration>();
     }
 }
 

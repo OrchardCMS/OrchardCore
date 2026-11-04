@@ -1,0 +1,20 @@
+{
+  "name": "orchardcore",
+  "interface": {
+    "displayName": "Orchard Core"
+  },
+  "plugins": [
+    {
+      "name": "pomi",
+      "source": {
+        "source": "local",
+        "path": "./.agents/skills/pomi"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

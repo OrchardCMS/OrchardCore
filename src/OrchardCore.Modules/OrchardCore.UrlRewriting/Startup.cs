@@ -9,6 +9,8 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.UrlRewriting.Drivers;
 using OrchardCore.UrlRewriting.Endpoints.Rules;
+using OrchardCore.UrlRewriting.Endpoints.Management;
+using OrchardCore.RemoteManagement;
 using OrchardCore.UrlRewriting.Extensions;
 using OrchardCore.UrlRewriting.Handlers;
 using OrchardCore.UrlRewriting.Models;
@@ -24,6 +26,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IRemoteManagementCapabilityProvider, UrlRewritingCapabilityProvider>();
         services.AddUrlRewritingServices()
             .AddNavigationProvider<AdminMenu>()
             .AddPermissionProvider<UrlRewritingPermissionProvider>()
@@ -45,6 +48,7 @@ public sealed class Startup : StartupBase
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.AddSortRulesEndpoint();
+        routes.MapManagementEndpoints();
 
         app.UseUrlRewriting(serviceProvider);
     }

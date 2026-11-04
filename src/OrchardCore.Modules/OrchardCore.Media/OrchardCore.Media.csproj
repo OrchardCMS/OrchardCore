@@ -38,6 +38,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.RateLimits.Core\OrchardCore.RateLimits.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.RemoteManagement.Abstractions\OrchardCore.RemoteManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Settings.Core\OrchardCore.Settings.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.SignalR\OrchardCore.SignalR.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.XmlRpc.Abstractions\OrchardCore.XmlRpc.Abstractions.csproj" />

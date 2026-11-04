@@ -6,6 +6,7 @@
 interface OpenIdApplicationSettings {
     configured: boolean;
     allowAuthorizationCodeFlow: boolean;
+    allowDeviceAuthorizationFlow: boolean;
     allowClientCredentialsFlow: boolean;
     allowImplicitFlow: boolean;
     allowHybridFlow: boolean;
@@ -81,12 +82,23 @@ const wireCredentialHelpers = () => {
 const refreshForbiddenFlows = (settings: OpenIdApplicationSettings) => {
     if (!settings.configured) {
         setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "show");
+        setCollapse(getElement("AllowDeviceAuthorizationFlowFieldSet"), "show");
         setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "show");
         setCollapse(getElement("AllowImplicitFlowFieldSet"), "show");
         setCollapse(getElement("AllowPasswordFlowFieldSet"), "show");
         setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "show");
         setCollapse(getElement("AllowLogoutEndpointFieldSet"), "show");
         return;
+    }
+
+    if (settings.allowDeviceAuthorizationFlow) {
+        setCollapse(getElement("AllowDeviceAuthorizationFlowFieldSet"), "show");
+    } else {
+        setCollapse(getElement("AllowDeviceAuthorizationFlowFieldSet"), "hide");
+        const checkbox = getElement<HTMLInputElement>("AllowDeviceAuthorizationFlow");
+        if (checkbox) {
+            checkbox.checked = false;
+        }
     }
 
     if (settings.allowAuthorizationCodeFlow) {
@@ -183,7 +195,7 @@ const refreshClientSecret = (
     }
 
     const clientSecretHints = document.querySelectorAll<HTMLElement>(
-        "#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint",
+        "#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowDeviceAuthorizationFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint",
     );
 
     if (defaultType === type.value) {
@@ -203,7 +215,7 @@ const refreshClientSecret = (
 
 const refreshOfflineAccessTip = (defaultValue?: boolean) => {
     const offlineAccessHints = document.querySelectorAll<HTMLElement>(
-        "#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint",
+        "#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowDeviceAuthorizationFlowRecommendedHint",
     );
     const allowRefreshTokenFlow = getElement<HTMLInputElement>("AllowRefreshTokenFlow");
 
@@ -231,13 +243,14 @@ const refreshAllowRefreshTokenFlowVisibility = () => {
     const allowRefreshTokenFlow = getElement<HTMLInputElement>("AllowRefreshTokenFlow");
     const allowPasswordFlow = getElement<HTMLInputElement>("AllowPasswordFlow");
     const allowAuthorizationCodeFlow = getElement<HTMLInputElement>("AllowAuthorizationCodeFlow");
+    const allowDeviceAuthorizationFlow = getElement<HTMLInputElement>("AllowDeviceAuthorizationFlow");
     const allowHybridFlow = getElement<HTMLInputElement>("AllowHybridFlow");
 
     if (!allowRefreshTokenFlow) {
         return;
     }
 
-    if (allowPasswordFlow?.checked || allowAuthorizationCodeFlow?.checked || allowHybridFlow?.checked) {
+    if (allowPasswordFlow?.checked || allowAuthorizationCodeFlow?.checked || allowDeviceAuthorizationFlow?.checked || allowHybridFlow?.checked) {
         allowRefreshTokenFlow.disabled = false;
     } else {
         allowRefreshTokenFlow.disabled = true;
@@ -308,7 +321,7 @@ const initOpenIdApplicationEditor = (options: OpenIdApplicationEditorOptions) =>
         refreshOfflineAccessTip();
     });
 
-    ["AllowClientCredentialsFlow", "AllowPasswordFlow", "AllowAuthorizationCodeFlow", "AllowImplicitFlow", "AllowHybridFlow", "AllowRefreshTokenFlow"]
+    ["AllowClientCredentialsFlow", "AllowPasswordFlow", "AllowAuthorizationCodeFlow", "AllowDeviceAuthorizationFlow", "AllowImplicitFlow", "AllowHybridFlow", "AllowRefreshTokenFlow"]
         .map((id) => getElement(id))
         .filter((element) => element !== null)
         .forEach((element) => {

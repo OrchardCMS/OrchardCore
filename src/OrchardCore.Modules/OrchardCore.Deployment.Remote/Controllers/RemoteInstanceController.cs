@@ -29,6 +29,8 @@ public sealed class RemoteInstanceController : Controller
     private readonly INotifier _notifier;
     private readonly RemoteInstanceService _service;
 
+    private readonly IStringLocalizer _validationLocalizer;
+
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
 
@@ -39,6 +41,7 @@ public sealed class RemoteInstanceController : Controller
         IShapeFactory shapeFactory,
         IStringLocalizer<RemoteInstanceController> stringLocalizer,
         IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
+        IStringLocalizerFactory stringLocalizerFactory,
         INotifier notifier
         )
     {
@@ -46,6 +49,7 @@ public sealed class RemoteInstanceController : Controller
         _pagerOptions = pagerOptions.Value;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;
+        _validationLocalizer = stringLocalizerFactory.Create(typeof(RemoteDeploymentValidation));
         H = htmlLocalizer;
         _notifier = notifier;
         _service = service;
@@ -265,30 +269,13 @@ public sealed class RemoteInstanceController : Controller
 
     private void ValidateViewModel(EditRemoteInstanceViewModel model)
     {
-        if (string.IsNullOrWhiteSpace(model.Name))
+        foreach (var (field, errors) in RemoteDeploymentValidation.Instance(model.Name, model.Url, model.ClientName, model.ApiKey))
         {
-            ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Name), S["The name is mandatory."]);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.ClientName))
-        {
-            ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ClientName), S["The client name is mandatory."]);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.ApiKey))
-        {
-            ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ApiKey), S["The api key is mandatory."]);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.Url))
-        {
-            ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is mandatory."]);
-        }
-        else
-        {
-            if (!Uri.TryCreate(model.Url, UriKind.Absolute, out _))
+            foreach (var error in errors)
             {
-                ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is invalid."]);
+#pragma warning disable OCLOC104 // The messages are declared in RemoteDeploymentValidation.
+                ModelState.AddModelError(field, _validationLocalizer[error]);
+#pragma warning restore OCLOC104
             }
         }
     }

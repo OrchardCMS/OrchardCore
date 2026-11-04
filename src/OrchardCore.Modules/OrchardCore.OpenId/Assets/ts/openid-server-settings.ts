@@ -21,6 +21,9 @@ const allowImplicitFlow = getField<HTMLInputElement>("AllowImplicitFlow");
 const allowHybridFlow = getField<HTMLInputElement>("AllowHybridFlow");
 const allowRefreshTokenFlow = getField<HTMLInputElement>("AllowRefreshTokenFlow");
 const allowClientCredentialsFlow = getField<HTMLInputElement>("AllowClientCredentialsFlow");
+const enableDeviceAuthorizationEndpoint = getField<HTMLInputElement>("EnableDeviceAuthorizationEndpoint");
+const enableEndUserVerificationEndpoint = getField<HTMLInputElement>("EnableEndUserVerificationEndpoint");
+const allowDeviceAuthorizationFlow = getField<HTMLInputElement>("AllowDeviceAuthorizationFlow");
 const accessTokenFormat = getField<HTMLSelectElement>("AccessTokenFormat");
 const disableAccessTokenEncryption = getField<HTMLInputElement>("DisableAccessTokenEncryption");
 const encryptionCertificateStoreLocation = getField<HTMLSelectElement>("EncryptionCertificateStoreLocation");
@@ -179,7 +182,7 @@ function refreshAllowRefreshTokenFlowVisibility() {
 
     if (
         enableTokenEndpoint.checked &&
-        (allowPasswordFlow.checked || allowAuthorizationCodeFlow.checked || allowHybridFlow.checked)
+        (allowPasswordFlow.checked || allowAuthorizationCodeFlow.checked || allowDeviceAuthorizationFlow?.checked || allowHybridFlow.checked)
     ) {
         setCollapse(allowRefreshTokenFlow.closest(".collapse"), "show");
     } else {
@@ -188,9 +191,23 @@ function refreshAllowRefreshTokenFlowVisibility() {
     }
 }
 
+function refreshAllowDeviceAuthorizationFlowVisibility() {
+    if (!allowDeviceAuthorizationFlow || !enableTokenEndpoint || !enableDeviceAuthorizationEndpoint || !enableEndUserVerificationEndpoint) {
+        return;
+    }
+
+    if (enableTokenEndpoint.checked && enableDeviceAuthorizationEndpoint.checked && enableEndUserVerificationEndpoint.checked) {
+        setCollapse(allowDeviceAuthorizationFlow.closest(".collapse"), "show");
+    } else {
+        allowDeviceAuthorizationFlow.checked = false;
+        setCollapse(allowDeviceAuthorizationFlow.closest(".collapse"), "hide");
+    }
+}
+
 function refreshEndpoints() {
     refreshEnableTokenEndpoint();
     refreshAllowAuthorizationCodeFlowVisibility();
+    refreshAllowDeviceAuthorizationFlowVisibility();
     refreshEnableAuthorizationEndpoint();
     refreshAllowHybridFlowVisibility();
     refreshAllowRefreshTokenFlowVisibility();
@@ -207,7 +224,7 @@ encryptionCertificateStoreName?.addEventListener("change", refreshEncryptionCert
 signingCertificateStoreLocation?.addEventListener("change", refreshSigningCertificates);
 signingCertificateStoreName?.addEventListener("change", refreshSigningCertificates);
 
-[enableTokenEndpoint, enableAuthorizationEndpoint, allowPasswordFlow, allowAuthorizationCodeFlow, allowHybridFlow]
+[enableTokenEndpoint, enableAuthorizationEndpoint, enableDeviceAuthorizationEndpoint, enableEndUserVerificationEndpoint, allowPasswordFlow, allowAuthorizationCodeFlow, allowDeviceAuthorizationFlow, allowHybridFlow]
     .filter((element) => element !== null)
     .forEach((element) => {
         element.addEventListener("change", refreshEndpoints);

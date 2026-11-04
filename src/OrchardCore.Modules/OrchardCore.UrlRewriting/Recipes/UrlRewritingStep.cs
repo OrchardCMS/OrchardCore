@@ -41,6 +41,7 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
 
                 if (rule != null)
                 {
+                    rule = rule.Clone();
                     await _rewriteRulesManager.UpdateAsync(rule, token);
                 }
             }

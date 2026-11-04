@@ -1,4 +1,5 @@
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Deployment.Services;
 
 namespace OrchardCore.Deployment.Core.Services;
@@ -9,11 +10,19 @@ public class DeploymentManager : IDeploymentManager
     private readonly IEnumerable<IDeploymentTargetProvider> _deploymentTargetProviders;
     private readonly IEnumerable<IDeploymentTargetHandler> _deploymentTargetHandlers;
 
+    private readonly DeploymentExecutionContext _execution;
+    private readonly IHttpContextAccessor _httpContext;
+
+    /// <summary>Creates a tenant deployment manager with an optional explicit execution principal.</summary>
     public DeploymentManager(
         IEnumerable<IDeploymentSource> deploymentSources,
         IEnumerable<IDeploymentTargetProvider> deploymentTargetProviders,
-        IEnumerable<IDeploymentTargetHandler> deploymentTargetHandlers)
+        IEnumerable<IDeploymentTargetHandler> deploymentTargetHandlers,
+        DeploymentExecutionContext execution = null,
+        IHttpContextAccessor httpContext = null)
     {
+        _execution = execution;
+        _httpContext = httpContext;
         _deploymentSources = deploymentSources;
         _deploymentTargetProviders = deploymentTargetProviders;
         _deploymentTargetHandlers = deploymentTargetHandlers;
@@ -21,6 +30,8 @@ public class DeploymentManager : IDeploymentManager
 
     public async Task ExecuteDeploymentPlanAsync(DeploymentPlan deploymentPlan, DeploymentPlanResult result)
     {
+        result.User ??= _execution?.User ?? _httpContext?.HttpContext?.User;
+
         foreach (var step in deploymentPlan.DeploymentSteps)
         {
             foreach (var source in _deploymentSources)

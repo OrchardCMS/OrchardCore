@@ -4,6 +4,7 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Setup.Services;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.AutoSetup.Services;
 
@@ -34,6 +35,19 @@ public class AutoSetupService : IAutoSetupService
         _logger.LogInformation("The AutoSetup is initializing the site.");
 
         await _setupService.SetupAsync(setupContext);
+
+        if (setupContext.Errors.Count == 0 && !string.IsNullOrWhiteSpace(setupOptions.RemoteManagementClientId))
+        {
+            if (!_shellHost.TryGetSettings(shellSettings.Name, out var runningSettings) ||
+                !await RemoteManagementProvisioning.ConfigureAsync(_shellHost, runningSettings, new RemoteManagementClientCredentials
+                {
+                    ClientId = setupOptions.RemoteManagementClientId,
+                    ClientSecret = setupOptions.RemoteManagementClientSecret,
+                }))
+            {
+                setupContext.Errors["RemoteManagement"] = "The site was installed, but remote management could not be enabled. Check its feature profile before provisioning a client.";
+            }
+        }
 
         if (setupContext.Errors.Count == 0)
         {

@@ -20,7 +20,12 @@
         "OrchardCore.Localization",
         "OrchardCore.Features",
         "OrchardCore.Navigation",
+        "OrchardCore.OpenApi",
+        "OrchardCore.OpenId.Management",
+        "OrchardCore.OpenId.Server",
+        "OrchardCore.OpenId.Validation",
         "OrchardCore.Recipes",
+        "OrchardCore.RemoteManagement.Cli",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
         "OrchardCore.Security",
@@ -41,12 +46,18 @@
       "site": "TheTheme"
     },
     {
+      "name": "RemoteManagementCliConfiguration"
+    },
+    {
       "name": "settings",
       "HomeRoute": {
         "Action": "Index",
         "Controller": "Home",
         "Area": "TheTheme"
       }
+    },
+    {
+      "name": "ReloadTenant"
     }
   ]
 }

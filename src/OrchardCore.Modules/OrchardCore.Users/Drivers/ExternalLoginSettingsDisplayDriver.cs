@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -47,11 +48,9 @@ public sealed class ExternalLoginSettingsDisplayDriver : SiteDisplayDriver<Exter
             return null;
         }
 
-        var valueBefore = settings.UseExternalProviderIfOnlyOneDefined;
-
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
-
-        if (valueBefore != settings.UseExternalProviderIfOnlyOneDefined)
+        var model = UserPolicySettingsEditor.Clone(settings);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        if (context.Updater.ModelState.IsValid && UserPolicySettingsEditor.Apply(settings, model))
         {
             _optionsUpdateNotifier.RequestUpdate<ExternalLoginOptions>();
         }

@@ -47,6 +47,10 @@ Options:
                          Default: 3.0.1
 ```
 
+The default CMS template uses NLog as its only logging provider, avoiding
+duplicate console messages. `NLog.config` sends hosting lifecycle messages
+and logs at the configured default level to the console and log files.
+
 Logging can be ignored with this command:
 
 ```CMD
@@ -85,6 +89,7 @@ using OrchardCore.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
 builder.Host.UseNLogHost();
 
 builder.Services

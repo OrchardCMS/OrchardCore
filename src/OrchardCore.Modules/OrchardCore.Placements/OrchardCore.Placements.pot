@@ -16,13 +16,6 @@ msgctxt "OrchardCore.Placements.AdminMenu"
 msgid "Placements"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", emptyNodesIndexes)
-#: Controllers/AdminController.cs
-#, csharp-format
-msgctxt "OrchardCore.Placements.Controllers.AdminController"
-msgid "A valid placement must contain either <b>place</b>, <b>shape</b>, <b>wrappers</b> or <b>alternates</b>. Please correct the placements at positions: {0}."
-msgstr ""
-
 #. Format arguments: {0}: jsonException.Message
 #: Controllers/AdminController.cs
 #, csharp-format
@@ -38,6 +31,13 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Placements.Controllers.AdminController"
 msgid "Delete"
+msgstr ""
+
+#. Format arguments: {0}: error.Key; {1}: message
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Controllers.AdminController"
+msgid "Placement error at {0}: {1}"
 msgstr ""
 
 #. Format arguments: {0}: viewModel.ShapeType
@@ -66,14 +66,51 @@ msgctxt "OrchardCore.Placements.Controllers.AdminController"
 msgid "The \"{0}\" placement have been saved."
 msgstr ""
 
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Placements.Controllers.AdminController"
-msgid "The Shape type can't be empty."
-msgstr ""
-
 #: Permissions.cs
 msgctxt "OrchardCore.Placements.Permissions"
 msgid "Manage placements"
+msgstr ""
+
+#: Services/PlacementsManager.cs
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "A valid placement must contain place, shape, wrappers or alternates."
+msgstr ""
+
+#: Services/PlacementsManager.cs
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "Alternate and wrapper names cannot be empty."
+msgstr ""
+
+#: Services/PlacementsManager.cs
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "Placement filters cannot be null."
+msgstr ""
+
+#: Services/PlacementsManager.cs
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "Provide a placement rules array."
+msgstr ""
+
+#: Services/PlacementsManager.cs
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "The Shape type can't be empty."
+msgstr ""
+
+#. Format arguments: {0}: filter.Key
+#: Services/PlacementsManager.cs
+#, csharp-format
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "The placement filter '{0}' is not registered by an enabled feature."
+msgstr ""
+
+#: Services/PlacementsManager.cs
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "The shape type must have at most 256 characters without surrounding whitespace or control characters."
+msgstr ""
+
+#: Services/PlacementsManager.cs
+msgctxt "OrchardCore.Placements.Services.PlacementsManager"
+msgid "This placement filter requires a string or an array of strings."
 msgstr ""
 
 #. Format arguments: {0}: displayName

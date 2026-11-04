@@ -7,6 +7,8 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.Media.Services;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Drivers;
@@ -60,10 +62,14 @@ public sealed class MediaApiSettingsDisplayDriver : SiteDisplayDriver<MediaApiSe
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (settings.AuthenticationScheme != model.AuthenticationScheme)
+        if (!MediaApiSettingsEditor.IsValid(model.AuthenticationScheme))
         {
-            settings.AuthenticationScheme = model.AuthenticationScheme;
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthenticationScheme), S["Select Cookie or Bearer authentication."]);
+            return Edit(site, settings, context);
+        }
 
+        if (MediaApiSettingsEditor.Apply(settings, model.AuthenticationScheme))
+        {
             // Rebuild the shell so the "MediaApi" authorization policy is reconfigured for the new scheme.
             _shellReleaseManager.RequestRelease();
         }

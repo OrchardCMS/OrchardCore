@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -15,6 +17,7 @@ using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.BackgroundTasks;
@@ -87,6 +90,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<WorkflowVariableValidator>();
         services.AddScoped<IWorkflowStore, WorkflowStore>();
         services.AddScoped<IWorkflowManager, WorkflowManager>();
+        services.AddScoped<WorkflowApiService>();
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
@@ -155,9 +159,15 @@ public sealed class Startup : StartupBase
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, WorkflowRemoteManagementCapabilityProvider>();
 
         services.AddTrimmingServices(_shellConfiguration);
 
+    }
+
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddWorkflowManagementApiEndpoints();
     }
 }
 
@@ -167,6 +177,7 @@ public sealed class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllWorkflowTypeDeploymentSource, AllWorkflowTypeDeploymentStep, AllWorkflowTypeDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllWorkflowTypeDeploymentStep>(nameof(AllWorkflowTypeDeploymentStep)));
     }
 }
 

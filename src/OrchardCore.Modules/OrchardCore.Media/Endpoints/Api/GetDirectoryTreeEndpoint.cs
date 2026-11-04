@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -15,10 +16,16 @@ public static class GetDirectoryTreeEndpoint
 {
     public static IEndpointRouteBuilder AddGetDirectoryTreeEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/media/GetDirectoryTree", HandleAsync)
+        builder.MapLegacyGet("api/media/GetDirectoryTree", HandleAsync);
+
+        builder.MapManagementGet("api/media/folders/tree", HandleAsync)
             .WithName("ApiGetDirectoryTree")
-            .WithTags("MediaApi")
-            .DisableAntiforgery()
+            .WithSummary("Lists the accessible media folder tree.")
+            .WithDescription("Returns the media folder hierarchy that the caller is allowed to browse. Inaccessible folders are omitted from the tree.")
+            .WithCliCommand(new CliOperationMetadata(["media", "folders"], "tree")
+            {
+                Capability = MediaApiEndpointConventions.CapabilityName,
+            })
             .Produces<DirectoryTreeNodeDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
@@ -26,14 +33,13 @@ public static class GetDirectoryTreeEndpoint
         return builder;
     }
 
-    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
-        IAuthorizationService authorizationService,
-        IMediaFileStore mediaFileStore,
-        IOptions<MediaOptions> options,
-        IUserAssetFolderNameProvider userAssetFolderNameProvider,
-        MediaDirectoryTreeCache directoryTreeCache)
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IOptions<MediaOptions> options,
+        [FromServices] IUserAssetFolderNameProvider userAssetFolderNameProvider,
+        [FromServices] MediaDirectoryTreeCache directoryTreeCache)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
             || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)string.Empty))

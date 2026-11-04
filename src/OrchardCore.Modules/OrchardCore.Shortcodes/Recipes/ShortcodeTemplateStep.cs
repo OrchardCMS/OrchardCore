@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using OrchardCore.Infrastructure.Html;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Shortcodes.Models;
@@ -13,13 +12,11 @@ namespace OrchardCore.Shortcodes.Recipes;
 public sealed class ShortcodeTemplateStep : NamedRecipeStepHandler
 {
     private readonly ShortcodeTemplatesManager _templatesManager;
-    private readonly IHtmlSanitizerService _htmlSanitizerService;
 
-    public ShortcodeTemplateStep(ShortcodeTemplatesManager templatesManager, IHtmlSanitizerService htmlSanitizerService)
+    public ShortcodeTemplateStep(ShortcodeTemplatesManager templatesManager)
         : base("ShortcodeTemplates")
     {
         _templatesManager = templatesManager;
-        _htmlSanitizerService = htmlSanitizerService;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -30,8 +27,6 @@ public sealed class ShortcodeTemplateStep : NamedRecipeStepHandler
             {
                 var name = property.Key;
                 var value = property.Value.ToObject<ShortcodeTemplate>();
-
-                value.Usage = _htmlSanitizerService.Sanitize(value.Usage);
 
                 await _templatesManager.UpdateShortcodeTemplateAsync(name, value);
             }

@@ -65,17 +65,7 @@ msgstr ""
 
 #: Controllers/ApplicationController.cs
 msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
-msgid "No client secret can be set for public applications."
-msgstr ""
-
-#: Controllers/ApplicationController.cs
-msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
 msgid "OpenID Connect settings are not properly configured."
-msgstr ""
-
-#: Controllers/ApplicationController.cs
-msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
-msgid "Setting a new client secret is required."
 msgstr ""
 
 #: Controllers/ApplicationController.cs
@@ -85,12 +75,48 @@ msgstr ""
 
 #: Controllers/ApplicationController.cs
 msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
-msgid "The client secret is required for confidential applications."
+msgid "There are no registered services to provide roles."
 msgstr ""
 
-#: Controllers/ApplicationController.cs
-msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
-msgid "There are no registered services to provide roles."
+#: Controllers/RemoteManagementCliController.cs
+msgctxt "OrchardCore.OpenId.Controllers.RemoteManagementCliController"
+msgid "Pomi CLI authentication was configured successfully."
+msgstr ""
+
+#. Format arguments: {0}: exception.Message
+#: Controllers/RemoteManagementCliController.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Controllers.RemoteManagementCliController"
+msgid "Remote Management could not be configured: {0}"
+msgstr ""
+
+#: Controllers/RemoteManagementController.cs
+msgctxt "OrchardCore.OpenId.Controllers.RemoteManagementController"
+msgid "Remote Management authentication was configured successfully."
+msgstr ""
+
+#. Format arguments: {0}: exception.Message
+#: Controllers/RemoteManagementController.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Controllers.RemoteManagementController"
+msgid "Remote Management could not be configured: {0}"
+msgstr ""
+
+#: Controllers/RemoteManagementMcpController.cs
+msgctxt "OrchardCore.OpenId.Controllers.RemoteManagementMcpController"
+msgid "MCP authentication is configured. Compatible clients can register automatically when connecting."
+msgstr ""
+
+#: Controllers/RemoteManagementMcpController.cs
+msgctxt "OrchardCore.OpenId.Controllers.RemoteManagementMcpController"
+msgid "MCP client authentication was configured successfully."
+msgstr ""
+
+#. Format arguments: {0}: exception.Message
+#: Controllers/RemoteManagementMcpController.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Controllers.RemoteManagementMcpController"
+msgid "Remote Management could not be configured: {0}"
 msgstr ""
 
 #: Controllers/ScopeController.cs
@@ -155,9 +181,46 @@ msgctxt "OrchardCore.OpenId.ManagementAdminMenu"
 msgid "Scopes"
 msgstr ""
 
+#: OpenIdApplicationSettings.cs
+msgctxt "OrchardCore.OpenId.OpenIdApplicationExtensions"
+msgid "Native applications must be public clients."
+msgstr ""
+
+#: OpenIdApplicationSettings.cs
+msgctxt "OrchardCore.OpenId.OpenIdApplicationExtensions"
+msgid "No client secret can be set for public applications."
+msgstr ""
+
+#: OpenIdApplicationSettings.cs
+msgctxt "OrchardCore.OpenId.OpenIdApplicationExtensions"
+msgid "Setting a new client secret is required."
+msgstr ""
+
+#: OpenIdApplicationSettings.cs
+msgctxt "OrchardCore.OpenId.OpenIdApplicationExtensions"
+msgid "The client secret is required for confidential applications."
+msgstr ""
+
 #: OpenIdLocalizationSources.cs
 msgctxt "OrchardCore.OpenId.OpenIdLocalizationSources"
 msgid "OpenID Connect"
+msgstr ""
+
+#: RemoteManagementAdminMenu.cs
+msgctxt "OrchardCore.OpenId.RemoteManagementAdminMenu"
+msgid "Remote Management"
+msgstr ""
+
+#: RemoteManagementAdminMenu.cs
+msgctxt "OrchardCore.OpenId.RemoteManagementAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#. Format arguments: {0}: configurationUrl
+#: RemoteManagementFeatureEventHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.RemoteManagementFeatureEventHandler"
+msgid "Remote Management is enabled. <a href=\"{0}\">Review and configure authentication</a> before connecting remote clients."
 msgstr ""
 
 #: Services/OpenIdClientService.cs
@@ -304,6 +367,16 @@ msgstr ""
 
 #: Services/OpenIdServerService.cs
 msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The device authorization flow cannot be enabled when the device authorization, end-user verification and token endpoints are disabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
+msgid "The end-user verification endpoint can only be enabled when the device authorization endpoint is enabled."
+msgstr ""
+
+#: Services/OpenIdServerService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
 msgid "The hybrid flow cannot be enabled when the authorization and token endpoints are disabled."
 msgstr ""
 
@@ -329,7 +402,7 @@ msgstr ""
 
 #: Services/OpenIdServerService.cs
 msgctxt "OrchardCore.OpenId.Services.OpenIdServerService"
-msgid "The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."
+msgid "The refresh token flow can only be enabled if the password, authorization code, device authorization or hybrid flows are enabled."
 msgstr ""
 
 #: Services/OpenIdServerService.cs
@@ -424,14 +497,31 @@ msgstr ""
 
 #: Views/Access/Authorize.cshtml
 msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
-msgid "Authorization"
+msgid "Allow access"
 msgstr ""
 
-#. Format arguments: {0}: Model.ApplicationName; {1}: Model.Scope
+#. Format arguments: {0}: Model.ApplicationName
 #: Views/Access/Authorize.cshtml
 #, csharp-format
 msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
-msgid "Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})"
+msgid "Authorize {0}"
+msgstr ""
+
+#: Views/Access/Authorize.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Access/Authorize.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
+msgid "Review the requested access. Only continue if you started this sign-in request."
+msgstr ""
+
+#. Format arguments: {0}: Model.UnverifiedClientHost
+#: Views/Access/Authorize.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
+msgid "This application registered itself, so its name is not verified. If you allow access, it receives your access to this site at <strong>{0}</strong>."
 msgstr ""
 
 #: Views/Access/Error.cshtml
@@ -449,6 +539,63 @@ msgctxt "OrchardCore.OpenId.Views.Access.Logout"
 msgid "Log out"
 msgstr ""
 
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "Allow access"
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "Check that this code matches the one in your application:"
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "Continue"
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "Device authorization"
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "Enter the user code shown by the client application."
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "If the codes do not match or you did not start this request, select Cancel."
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "The device is authorized. You can close this page and return to it."
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "The request was cancelled. The device did not receive access."
+msgstr ""
+
+#: Views/Access/Verify.cshtml
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "User code"
+msgstr ""
+
+#. Format arguments: {0}: Model.ApplicationName
+#: Views/Access/Verify.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Access.Verify"
+msgid "{0} is requesting access to your account."
+msgstr ""
+
 #: Views/Application/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
 msgid "Allow Authorization Code Flow"
@@ -457,6 +604,11 @@ msgstr ""
 #: Views/Application/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
 msgid "Allow Client Credentials Flow"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Allow Device Authorization Flow"
 msgstr ""
 
 #: Views/Application/Create.cshtml
@@ -491,6 +643,11 @@ msgstr ""
 
 #: Views/Application/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Application type"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
 msgid "Applications"
 msgstr ""
 
@@ -511,6 +668,13 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
 msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://datatracker.ietf.org/doc/html/rfc8628"
+#: Views/Application/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Device Authorization Grant."
 msgstr ""
 
 #. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"
@@ -569,6 +733,11 @@ msgstr ""
 #: Views/Application/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
 msgid "Client Secret"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Client type"
 msgstr ""
 
 #: Views/Application/Create.cshtml
@@ -628,6 +797,16 @@ msgstr ""
 
 #: Views/Application/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Native application"
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
+msgid "Native applications can use loopback redirect URIs with an ephemeral port."
+msgstr ""
+
+#: Views/Application/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Create"
 msgid "Post-Logout Redirect Uris"
 msgstr ""
 
@@ -678,7 +857,7 @@ msgstr ""
 
 #: Views/Application/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
-msgid "Type"
+msgid "Web application"
 msgstr ""
 
 #: Views/Application/Create.cshtml
@@ -704,6 +883,11 @@ msgstr ""
 #: Views/Application/Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Edit"
 msgid "Allow Client Credentials Flow"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Allow Device Authorization Flow"
 msgstr ""
 
 #: Views/Application/Edit.cshtml
@@ -748,6 +932,11 @@ msgstr ""
 
 #: Views/Application/Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Application type"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
 msgid "Applications"
 msgstr ""
 
@@ -768,6 +957,13 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.OpenId.Views.Application.Edit"
 msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://datatracker.ietf.org/doc/html/rfc8628"
+#: Views/Application/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Device Authorization Grant."
 msgstr ""
 
 #. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"
@@ -830,6 +1026,11 @@ msgstr ""
 
 #: Views/Application/Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Client type"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
 msgid "Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."
 msgstr ""
 
@@ -885,6 +1086,16 @@ msgstr ""
 
 #: Views/Application/Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Native application"
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
+msgid "Native applications can use loopback redirect URIs with an ephemeral port."
+msgstr ""
+
+#: Views/Application/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Application.Edit"
 msgid "Post-Logout Redirect Uris"
 msgstr ""
 
@@ -935,7 +1146,7 @@ msgstr ""
 
 #: Views/Application/Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Edit"
-msgid "Type"
+msgid "Web application"
 msgstr ""
 
 #: Views/Application/Edit.cshtml
@@ -1283,6 +1494,56 @@ msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
 msgid "query"
 msgstr ""
 
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Additional access"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Email address"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Manage this Orchard Core tenant"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Phone number"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Postal address"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Profile information"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Requested access"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Role membership"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Stay signed in"
+msgstr ""
+
+#: Views/OpenIdConsentScopes.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdConsentScopes"
+msgid "Your identity"
+msgstr ""
+
 #: Views/OpenIdScopeEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.Buttons.SummaryAdmin"
 msgid "Delete"
@@ -1365,6 +1626,11 @@ msgstr ""
 
 #: Views/OpenIdServerSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Allow Device Authorization Flow"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
 msgid "Allow Hybrid Flow"
 msgstr ""
 
@@ -1400,6 +1666,13 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
 msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow."
+msgstr ""
+
+#. Format arguments: {0}: "https://datatracker.ietf.org/doc/html/rfc8628"
+#: Views/OpenIdServerSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Device Authorization Grant."
 msgstr ""
 
 #. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"
@@ -1447,7 +1720,17 @@ msgstr ""
 
 #: Views/OpenIdServerSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable Device Authorization Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
 msgid "Enable End Session Endpoint"
+msgstr ""
+
+#: Views/OpenIdServerSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdServerSettings.Edit"
+msgid "Enable End-User Verification Endpoint"
 msgstr ""
 
 #: Views/OpenIdServerSettings.Edit.cshtml
@@ -1685,6 +1968,251 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.OpenId.Views.OpenIdValidationSettings.Edit"
 msgid "Token type validation can be disabled to accept JWT tokens from servers that do not support the '{0}' type header."
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Authentication is not fully configured. Review the checks below, then configure or repair the required settings."
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Authorization code flow"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Client applications are configured separately by the CLI and MCP features."
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Client credentials flow"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Configure MCP authentication"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Configure Pomi CLI"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Configure Remote Management"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Only settings required by Remote Management are added or repaired. Other OpenID Connect settings are preserved."
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Refresh token flow"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Remote Management"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Remote management scope"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Repair configuration"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Requirement"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Server endpoints"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "This tenant is ready to accept authenticated remote management connections."
+msgstr ""
+
+#: Views/RemoteManagement/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement.Index"
+msgid "Token validation for this tenant"
+msgstr ""
+
+#: Views/RemoteManagement/_RemoteManagementCheck.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement._RemoteManagementCheck"
+msgid "Action required"
+msgstr ""
+
+#: Views/RemoteManagement/_RemoteManagementCheck.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagement._RemoteManagementCheck"
+msgid "Configured"
+msgstr ""
+
+#: Views/RemoteManagementCli/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementCli.Index"
+msgid "Configure CLI authentication"
+msgstr ""
+
+#: Views/RemoteManagementCli/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementCli.Index"
+msgid "Configures shared Remote Management authentication, the orchardcore-cli public native application, its loopback callback, and the device authorization flow. Existing unrelated settings are preserved."
+msgstr ""
+
+#: Views/RemoteManagementCli/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementCli.Index"
+msgid "Pomi CLI authentication"
+msgstr ""
+
+#: Views/RemoteManagementCli/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementCli.Index"
+msgid "Repair CLI configuration"
+msgstr ""
+
+#: Views/RemoteManagementCli/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementCli.Index"
+msgid "Shared authentication"
+msgstr ""
+
+#: Views/RemoteManagementCli/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementCli.Index"
+msgid "The Pomi client and device authorization flow are configured."
+msgstr ""
+
+#: Views/RemoteManagementCli/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementCli.Index"
+msgid "The Pomi client or device authorization flow needs configuration."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Advanced: register a client manually"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Automatic client registration is disabled by the host. Register a client manually below."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Automatically registered application names are supplied by clients and are not verified identities. Review the application and requested permissions before allowing access. You can review or remove applications in OpenID Connect application management."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Callback URLs"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Client identifier"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Configure MCP authentication"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Configure authentication once, then connect using only the MCP URL."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Connect your MCP client to:"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "MCP authentication is ready. Compatible clients register automatically and open the sign-in and consent flow."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "MCP client authentication"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "MCP endpoint:"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Manage OpenID applications"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "One exact URL per line. HTTPS is required except for local loopback HTTP callbacks. Saving replaces this application's registered callback URLs."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Register MCP client"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Register the callback URLs supplied by your MCP client. This creates a public application using authorization code flow, PKCE, explicit consent, and the remote management scope."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Repair MCP authentication"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Shared authentication"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Start the connection from your MCP client to sign in; the MCP endpoint is not a browser sign-in page."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "The signed-in user still needs remote management and operation permissions. This action does not create or change the Pomi application."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "This MCP client's OAuth application is configured."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Update MCP configuration"
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "Use this identifier when configuring OAuth in your MCP client. Choose a separate identifier for each client application."
+msgstr ""
+
+#: Views/RemoteManagementMcp/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.RemoteManagementMcp.Index"
+msgid "You do not need to enter callback URLs for clients that support OAuth dynamic client registration. Each connecting client creates its own public OpenID application. Registration does not grant access: users must sign in, allow access, and have the required permissions."
 msgstr ""
 
 #. Format arguments: {0}: OpenIdConstants.Prefixes.Tenant

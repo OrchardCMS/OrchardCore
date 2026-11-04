@@ -138,7 +138,7 @@ msgstr ""
 
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
-msgid "The name is mandatory."
+msgid "The media profile setting is invalid."
 msgstr ""
 
 #: Controllers/MediaProfilesController.cs
@@ -154,6 +154,11 @@ msgstr ""
 #: Drivers/MediaApiSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Media.Drivers.MediaApiSettingsDisplayDriver"
 msgid "Cookie (default)"
+msgstr ""
+
+#: Drivers/MediaApiSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaApiSettingsDisplayDriver"
+msgid "Select Cookie or Bearer authentication."
 msgstr ""
 
 #. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
@@ -193,7 +198,22 @@ msgstr ""
 
 #: Endpoints/Api/UploadMediaEndpoint.cs
 msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "A file name is required."
+msgstr ""
+
+#: Endpoints/Api/UploadMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
 msgid "A file with this name already exists in the current folder."
+msgstr ""
+
+#: Endpoints/Api/CreateFolderEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "A folder name is required."
+msgstr ""
+
+#: Endpoints/Api/UploadMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "An error occurred while uploading the file."
 msgstr ""
 
 #: Endpoints/Api/CopyMediaEndpoint.cs
@@ -248,6 +268,28 @@ msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
 msgid "Error when moving files. Maybe they already exist on the target folder? Files on error: {0}"
 msgstr ""
 
+#: Endpoints/Api/MoveMediaListEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "Media names must not contain directory paths."
+msgstr ""
+
+#. Format arguments: {0}: mediaOptions.MaxFileSize
+#: Endpoints/Api/UploadMediaEndpoint.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "The file exceeds the maximum allowed size of {0} bytes."
+msgstr ""
+
+#: Endpoints/Api/UploadMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "The file name must not contain a directory path."
+msgstr ""
+
+#: Endpoints/Api/UploadMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "The normalized file name must not contain a directory path."
+msgstr ""
+
 #. Format arguments: {0}: extension, newExtension
 #: Endpoints/Api/CopyMediaEndpoint.cs
 #: Endpoints/Api/MoveMediaEndpoint.cs
@@ -260,6 +302,11 @@ msgstr ""
 #: Endpoints/Api/GetPermittedStorageEndpoint.cs
 msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
 msgid "Unspecified"
+msgstr ""
+
+#: Endpoints/Api/UploadMediaEndpoint.cs
+msgctxt "OrchardCore.Media.Endpoints.Api.MediaApiEndpoints"
+msgid "You do not have permission to manage this media path."
 msgstr ""
 
 #. Format arguments: {0}: rolesUrl
@@ -426,6 +473,46 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Media.Recipes.MediaStep"
 msgid "Media target path must be a relative file path without traversal segments: '{0}'"
+msgstr ""
+
+#: Recipes/MediaStepValidator.cs
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "A media step requires a 'Files' array."
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "File extension not allowed: '{0}'"
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "Media target path must be a relative file path without traversal segments: '{0}'"
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "The URL of '{0}' isn't fetched. The step silently skips the file if the request fails."
+msgstr ""
+
+#. Format arguments: {0}: file.SourcePath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "The file '{0}' doesn't exist in the recipe's files."
+msgstr ""
+
+#. Format arguments: {0}: file.TargetPath
+#: Recipes/MediaStepValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Recipes.MediaStepValidator"
+msgid "The file '{0}' has no 'Base64', 'SourcePath' or 'SourceUrl'. The step would skip it."
 msgstr ""
 
 #. Format arguments: {0}

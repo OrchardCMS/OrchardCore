@@ -15,6 +15,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication;
 
@@ -28,6 +29,7 @@ public sealed class AzureADStartup : StartupBase
         services.AddSingleton<IAzureADService, AzureADService>();
         services.AddRecipeExecutionStep<AzureADSettingsStep>();
 
+        services.AddScoped<ISiteSettingsSectionProvider, MicrosoftEntraIdSettingsSectionProvider>();
         services.AddSiteDisplayDriver<AzureADSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenuAAD>();
 

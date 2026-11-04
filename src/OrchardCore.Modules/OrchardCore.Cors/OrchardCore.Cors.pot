@@ -21,11 +21,14 @@ msgctxt "OrchardCore.Cors.AdminMenu"
 msgid "Settings"
 msgstr ""
 
-#. Format arguments: {0}: string.Join(", ", policyWarnings)
 #: Controllers/AdminController.cs
-#, csharp-format
 msgctxt "OrchardCore.Cors.Controllers.AdminController"
-msgid "Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {0} </strong><br />Refer to docs: <a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>."
+msgid "Provide a CORS policies array; use an empty array to remove policies."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Cors.Controllers.AdminController"
+msgid "Provide a valid CORS policies array."
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -246,6 +249,56 @@ msgstr ""
 #: Services/CorsJSLocalizer.cs
 msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
 msgid "The name of the policy."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "A policy object is required."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Allowed headers must be nonempty HTTP header-name tokens."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Credentials cannot be combined with any origin, including a literal '*' allowed origin."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Exposed headers must be nonempty HTTP header-name tokens."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Methods must be nonempty HTTP tokens."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Origins must be absolute HTTP or HTTPS origins without user information, a path, a trailing slash, query or fragment; '*' is allowed only without credentials."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Policy names must be unique."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Provide a policies array; use an empty array to remove all tenant policies."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Provide a policy name of at most 256 characters without surrounding whitespace or control characters."
+msgstr ""
+
+#: Services/CorsService.cs
+msgctxt "OrchardCore.Cors.Services.CorsService"
+msgid "Select at most one default policy."
 msgstr ""
 
 #: Views/Admin/Index.cshtml

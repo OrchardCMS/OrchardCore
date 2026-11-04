@@ -17,6 +17,7 @@ using OrchardCore.Seo.Indexes;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.Services;
 using OrchardCore.SeoMeta.Settings;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Seo;
 
@@ -40,6 +41,7 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<SeoPermissionProvider>();
         services.AddSiteDisplayDriver<RobotsSettingsDisplayDriver>();
+        services.AddScoped<ISiteSettingsSectionProvider, RobotsSettingsSectionProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IRobotsProvider, SiteSettingsRobotsProvider>();
     }

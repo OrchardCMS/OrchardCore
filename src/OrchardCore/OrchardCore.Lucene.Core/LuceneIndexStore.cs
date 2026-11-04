@@ -231,7 +231,14 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     }
 
     private string GetFullPath(string indexFullName)
-        => PathExtensions.Combine(_rootPath, indexFullName);
+    {
+        if (!LuceneIndexNameValidator.IsValid(indexFullName))
+        {
+            throw new ArgumentException("The Lucene index name must be a single valid file name.", nameof(indexFullName));
+        }
+
+        return PathExtensions.Combine(_rootPath, indexFullName);
+    }
 
     private FSDirectory CreateDirectory(string indexFullName)
     {

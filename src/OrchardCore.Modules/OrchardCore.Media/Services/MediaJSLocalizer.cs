@@ -10,6 +10,9 @@ namespace OrchardCore.Media.Services;
 /// </summary>
 public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocalizer
 {
+    /// <inheritdoc />
+    public IEnumerable<string> GetLocalizationGroups() => ["media-gallery"];
+
     /// <summary>
     /// This dictionary needs to be affected either here or
     /// in a .cshtml template for the po Extractor to find the strings to translate.

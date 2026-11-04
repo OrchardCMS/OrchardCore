@@ -72,6 +72,78 @@ msgctxt "OrchardCore.Email.Smtp.Services.SmtpEmailProviderBase"
 msgid "The SMTP Email Provider is disabled."
 msgstr ""
 
+#: Services/SmtpSettingsEditor.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "Select a valid delivery method."
+msgstr ""
+
+#: Services/SmtpSettingsEditor.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "Select a valid encryption method."
+msgstr ""
+
+#: Services/SmtpSettingsEditor.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "The Default Sender is a required field."
+msgstr ""
+
+#: Services/SmtpSettingsEditor.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "The Default Sender is invalid."
+msgstr ""
+
+#: Services/SmtpSettingsEditor.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "The pickup directory location is invalid."
+msgstr ""
+
+#: Services/SmtpSettingsEditor.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "The port must be between 0 and 65535."
+msgstr ""
+
+#: Services/SmtpSettingsEditor.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "The proxy port must be between 0 and 65535."
+msgstr ""
+
+#. Format arguments: {0}: "Host name"
+#: Services/SmtpSettingsEditor.cs
+#, csharp-format
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsEditor"
+msgid "The {0} field is required."
+msgstr ""
+
+#: Services/SmtpSettingsSectionProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsSectionProvider"
+msgid "A settings object is required."
+msgstr ""
+
+#: Services/SmtpSettingsSectionProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsSectionProvider"
+msgid "Do not set and clear the password in the same request."
+msgstr ""
+
+#: Services/SmtpSettingsSectionProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsSectionProvider"
+msgid "Enable the SMTP provider when updating its configuration."
+msgstr ""
+
+#: Services/SmtpSettingsSectionProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsSectionProvider"
+msgid "Provide a valid value of the documented type; null is not supported."
+msgstr ""
+
+#: Services/SmtpSettingsSectionProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsSectionProvider"
+msgid "Provide the password again or clear it when changing the host."
+msgstr ""
+
+#: Services/SmtpSettingsSectionProvider.cs
+msgctxt "OrchardCore.Email.Smtp.Services.SmtpSettingsSectionProvider"
+msgid "This property is not managed by the SMTP section."
+msgstr ""
+
 #: Views/SmtpSettings.Edit.cshtml
 msgctxt "OrchardCore.Email.Smtp.Views.SmtpSettings.Edit"
 msgid "Auto Select Encryption method"

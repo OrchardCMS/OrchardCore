@@ -20,15 +20,6 @@ msgstr ""
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "1 index has been rebuilt successfully."
-msgid_plural "{0} indexes have been rebuilt successfully."
-msgstr[0] ""
-msgstr[1] ""
-
-#. Format arguments: {0}: count
-#: Controllers/AdminController.cs
-#, csharp-format
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
 msgid "1 index has been removed successfully."
 msgid_plural "{0} indexes have been removed successfully."
 msgstr[0] ""
@@ -38,38 +29,14 @@ msgstr[1] ""
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "1 index has been reset successfully."
-msgid_plural "{0} indexes have been reset successfully."
+msgid "1 index operation was queued."
+msgid_plural "{0} index operations were queued."
 msgstr[0] ""
 msgstr[1] ""
-
-#. Format arguments: {0}: count
-#: Controllers/AdminController.cs
-#, csharp-format
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "1 index has been synchronized successfully."
-msgid_plural "{0} indexes have been synchronized successfully."
-msgstr[0] ""
-msgstr[1] ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "An error occurred while rebuilding the index."
-msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
 msgid "An index has been created successfully. The synchronizing process was triggered in the background."
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "An index has been rebuilt successfully. The synchronizing process was triggered in the background."
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "An index has been reset successfully. The synchronizing process was triggered in the background."
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -91,27 +58,19 @@ msgstr ""
 #: Controllers/AdminController.cs
 #, csharp-format
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "No index manager found to rebuild index for provider '{0}'."
+msgid "No index manager found to create index for provider '{0}'."
 msgstr ""
 
+#. Format arguments: {0}: indexProfile.ProviderName
 #: Controllers/AdminController.cs
+#, csharp-format
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "No index were rebuilt."
+msgid "No index manager found to delete index for provider '{0}'."
 msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
 msgid "No index were removed."
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "No index were reset."
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "No index were synchronized."
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -131,12 +90,12 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "The index was removed successfully."
+msgid "The index operation was queued."
 msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "The synchronizing process was triggered in the background."
+msgid "The index was removed successfully."
 msgstr ""
 
 #. Format arguments: {0}: indexProfile.ProviderName
@@ -180,31 +139,6 @@ msgstr ""
 #: Drivers/ContentIndexProfileDisplayDriver.cs
 msgctxt "OrchardCore.Indexing.Drivers.ContentIndexProfileDisplayDriver"
 msgid "At least one content type must be selected."
-msgstr ""
-
-#: Drivers/IndexProfileDisplayDriver.cs
-msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
-msgid "The index name is a required field."
-msgstr ""
-
-#: Drivers/IndexProfileDisplayDriver.cs
-msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
-msgid "The index name must be less than 255 characters."
-msgstr ""
-
-#: Drivers/IndexProfileDisplayDriver.cs
-msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
-msgid "The name is required field."
-msgstr ""
-
-#: Drivers/IndexProfileDisplayDriver.cs
-msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
-msgid "The name must be less than 255 characters."
-msgstr ""
-
-#: Drivers/IndexProfileDisplayDriver.cs
-msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
-msgid "There is already another index with the same name."
 msgstr ""
 
 #: Views/Admin/Create.cshtml

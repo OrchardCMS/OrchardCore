@@ -137,15 +137,25 @@ TheComingSoon theme is based on the [Start Bootstrap Coming Soon Theme](https://
 
 ### SaaS Recipe with TheTheme
 
-The Saas recipe includes a Software as a Service multi tenancy configuration.
+The SaaS recipe provides a production-ready multi-tenant starting point.
 
-It configures the site to use TheTheme, and you are then able to create Tenants
-using any of the other recipes.
+It configures the site to use TheTheme, enables
+Remote Management, and provisions the OpenID Connect and OpenAPI settings needed
+by the Pomi CLI. After setup, register the tenant and sign in directly:
 
-#### Saas Recipe Contents
+```bash
+pomi context add <name> <tenant-url> --current
+pomi login
+```
+
+You can then create additional tenants using any available setup recipe.
+
+#### SaaS Recipe Contents
 
 - Multi-tenancy feature
-- Razor home page and Layout with bootstrap and jQuery
+- TheTheme for the site
+- Remote Management discovery and API documentation
+- Authorization code and device login flows for the Pomi CLI
 
 ## Creating your own recipe
 

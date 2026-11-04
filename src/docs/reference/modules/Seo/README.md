@@ -55,3 +55,17 @@ SEO settings can be configured using the `Settings` recipe step:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDf96bg-mBU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IchtAdYQF7g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+## Remote robots.txt settings
+
+With Remote Management enabled, `pomi settings sections show/schema/update robots`
+exposes `allowAllAgents`, `disallowAdmin`, and `additionalRules`. It requires API
+bearer authentication, `AccessRemoteManagement`, and `ManageSeoSettings`. Omitted
+properties retain their values; `additionalRules: null` clears extra rules.
+The existing admin editor and public robots provider use the same settings.
+
+A physical `robots.txt` takes precedence. The section reports configuration
+ownership and becomes read-only while that file exists, so an update cannot claim
+to change an ineffective setting. Generated rules reflect saved settings without
+a tenant restart. Verify the public `/robots.txt` response, including the configured
+admin prefix. With Sitemaps enabled, `sitemaps-robots` controls sitemap entries.

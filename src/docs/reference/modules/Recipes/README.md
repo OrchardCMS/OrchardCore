@@ -4,6 +4,10 @@
 
 The `OrchardCore.Recipes` module allows you to automate Orchard Core tenant setup and configuration using JSON-based recipe files. Recipes can install features, set themes, create content types, provision content, and much more.
 
+## API reference
+
+See the [Recipe management API](../../api/recipes/README.md) for OpenAPI operations that list and execute available recipes.
+
 ---
 
 ## What is a Recipe?
@@ -77,6 +81,32 @@ public async Task ExecuteAsync(RecipeExecutionContext context)
 ```
 
 Alternatively, you can extend `NamedRecipeStepHandler` and implement the required abstract method, providing additional functionality for named steps.
+
+A step without a handler is skipped and the recipe still succeeds, so a misspelled name doesn't fail. To find this, `IRecipeValidator` checks a recipe without applying anything, which the [Recipes API](../../api/recipes/README.md#validate-a-recipe) and the [Deployment API](../../api/deployment/README.md#validate-a-package) expose:
+
+- A handler extending `NamedRecipeStepHandler` declares its step. One implementing `IRecipeStepHandler` directly should return the names of its steps from `StepNames`. When it doesn't, a step that no handler declares only gets a warning, since it may be the one processing it.
+- A step can have an optional `IRecipeStepValidator`, registered with `services.AddRecipeStepValidator<TValidator>()` next to the handler, which checks its properties and adds findings to the context. It is called for each step of this name, in the order of the recipe. It must not change anything, or evaluate a value for which `RecipeValidationContext.IsScript` returns `true`. A step without a validator is only checked for a handler and for its `[file:...]` scripts.
+
+```csharp
+public sealed class MyStepValidator : IRecipeStepValidator
+{
+    public string StepName => "MyStep";
+
+    public Task ValidateAsync(RecipeValidationContext context)
+    {
+        var step = context.Step.ToObject<MyStepModel>();
+
+        if (string.IsNullOrEmpty(step.Name))
+        {
+            context.AddError("my-step-no-name", "A name is required.");
+        }
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+A valid result doesn't guarantee that the execution succeeds, since a step can still fail on its data.
 
 ## Built-in Recipe Steps
 

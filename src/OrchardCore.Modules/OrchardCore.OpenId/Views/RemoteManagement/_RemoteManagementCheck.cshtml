@@ -1,0 +1,15 @@
+@model (Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString Label, bool IsConfigured)
+
+<tr>
+    <td>@Model.Label</td>
+    <td>
+        @if (Model.IsConfigured)
+        {
+            <span class="text-success"><i class="fa-solid fa-check" aria-hidden="true"></i> @T["Configured"]</span>
+        }
+        else
+        {
+            <span class="text-danger"><i class="fa-solid fa-xmark" aria-hidden="true"></i> @T["Action required"]</span>
+        }
+    </td>
+</tr>

@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "OpenId": {
+          "type": "object",
+          "properties": {
+            "Mcp": {
+              "type": "object",
+              "description": "Automatic OAuth registration of MCP clients. Requires the 'OrchardCore.OpenId.RemoteManagement.Mcp' feature.",
+              "properties": {
+                "AllowDynamicClientRegistration": {
+                  "type": "boolean",
+                  "description": "Whether MCP clients can register automatically and anonymously.",
+                  "default": true
+                },
+                "MaximumApplications": {
+                  "type": "integer",
+                  "description": "The count of automatically registered applications above which registration stops.",
+                  "default": 1000
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

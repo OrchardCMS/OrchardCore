@@ -97,7 +97,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
         }
     }
 
-    private sealed class MediaStepModel
+    internal sealed class MediaStepModel
     {
         /// <summary>
         /// Collection of <see cref="MediaStepFile"/> objects.
@@ -105,7 +105,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
         public MediaStepFile[] Files { get; set; }
     }
 
-    private sealed class MediaStepFile
+    internal sealed class MediaStepFile
     {
         /// <summary>
         /// Path where the content will be written.

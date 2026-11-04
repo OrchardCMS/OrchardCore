@@ -1,0 +1,12 @@
+{
+  "name": "orchardcore",
+  "owner": {
+    "name": "Orchard Core contributors"
+  },
+  "plugins": [
+    {
+      "name": "pomi",
+      "source": "./.agents/skills/pomi"
+    }
+  ]
+}

@@ -2,7 +2,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.Services;
 using OrchardCore.UrlRewriting.ViewModels;
@@ -67,24 +66,6 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             m => m.IsCaseInsensitive,
             m => m.QueryStringPolicy,
             m => m.RedirectType);
-
-        if (string.IsNullOrWhiteSpace(model.Pattern))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The Match URL Pattern is required."]);
-        }
-        else if (!PatternHelper.IsValidRegex(model.Pattern))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A valid Match URL Pattern is required."]);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.SubstitutionPattern))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Substitution URL Pattern is required."]);
-        }
-        else if (!PatternHelper.IsValidRegex(model.SubstitutionPattern))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["A valid Substitution URL Pattern is required."]);
-        }
 
         rule.Put(new UrlRedirectSourceMetadata()
         {

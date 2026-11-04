@@ -155,6 +155,7 @@ public sealed class AdminController : Controller
             Editor = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
+        await ValidateRuleAsync(rule);
         if (ModelState.IsValid)
         {
             await _rewriteRulesManager.SaveAsync(rule);
@@ -217,6 +218,7 @@ public sealed class AdminController : Controller
             Editor = await _rewriteRuleDisplayManager.UpdateEditorAsync(ruleToUpdate, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
+        await ValidateRuleAsync(ruleToUpdate);
         if (ModelState.IsValid)
         {
             await _rewriteRulesManager.SaveAsync(ruleToUpdate);
@@ -247,8 +249,6 @@ public sealed class AdminController : Controller
         }
 
         await _rewriteRulesManager.DeleteAsync(rule);
-
-        _shellReleaseManager.RequestRelease();
 
         await _notifier.SuccessAsync(H["Rule deleted successfully."]);
 
@@ -292,4 +292,17 @@ public sealed class AdminController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    private async Task ValidateRuleAsync(RewriteRule rule)
+    {
+        var result = await _rewriteRulesManager.ValidateAsync(rule);
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.ErrorMessage);
+        }
+        if (!result.Succeeded && result.Errors.Count == 0)
+        {
+            ModelState.AddModelError(string.Empty, S["The rule is invalid."]);
+        }
+    }
+
 }

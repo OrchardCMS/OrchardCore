@@ -14,43 +14,27 @@ namespace OrchardCore.Contents.Deployment.Download;
 [Feature("OrchardCore.Contents.Deployment.Download")]
 public sealed class DownloadController : Controller
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IContentManager _contentManager;
+    private readonly ContentExportService _exports;
 
     public DownloadController(
         IAuthorizationService authorizationService,
         IContentManager contentManager)
     {
-        _authorizationService = authorizationService;
-        _contentManager = contentManager;
+        _exports = new ContentExportService(contentManager, authorizationService);
     }
 
     [HttpGet]
     public async Task<IActionResult> Display(string contentItemId, bool latest = false)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
-        {
-            return Forbid();
-        }
-
-        var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
-
-        if (contentItem == null)
-        {
-            return NotFound();
-        }
-
-        // Export permission is required as the overriding permission.
-        // Requesting EditContent would allow custom permissions to deny access to this content item.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
-        {
-            return Forbid();
-        }
+        ContentItem contentItem;
+        try { contentItem = await _exports.GetAsync(contentItemId, latest, User); }
+        catch (UnauthorizedAccessException) { return Forbid(); }
+        if (contentItem is null) { return NotFound(); }
 
         var model = new DisplayJsonContentItemViewModel
         {
             ContentItem = contentItem,
-            ContentItemJson = JObject.FromObject(contentItem).ToString(),
+            ContentItemJson = ContentExportService.Serialize(contentItem).ToString(),
         };
 
         return View(model);
@@ -59,26 +43,12 @@ public sealed class DownloadController : Controller
     [HttpPost]
     public async Task<IActionResult> Download(string contentItemId, bool latest = false)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
-        {
-            return Forbid();
-        }
+        ContentItem contentItem;
+        try { contentItem = await _exports.GetAsync(contentItemId, latest, User); }
+        catch (UnauthorizedAccessException) { return Forbid(); }
+        if (contentItem is null) { return NotFound(); }
 
-        var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
-
-        if (contentItem == null)
-        {
-            return NotFound();
-        }
-
-        // Export permission is required as the overriding permission.
-        // Requesting EditContent would allow custom permissions to deny access to this content item.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
-        {
-            return Forbid();
-        }
-
-        var jItem = JObject.FromObject(contentItem);
+        var jItem = ContentExportService.Serialize(contentItem);
 
         return File(Encoding.UTF8.GetBytes(jItem.ToString()), MediaTypeNames.Application.Json, $"{contentItem.ContentItemId}.json");
     }

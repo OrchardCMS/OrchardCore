@@ -43,16 +43,6 @@ msgctxt "OrchardCore.Layers.Controllers.AdminController"
 msgid "The layer couldn't be deleted: you must remove any associated widgets first."
 msgstr ""
 
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Layers.Controllers.AdminController"
-msgid "The layer name already exists."
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Layers.Controllers.AdminController"
-msgid "The layer name is required."
-msgstr ""
-
 #: Controllers/LayerRuleController.cs
 msgctxt "OrchardCore.Layers.Controllers.LayerRuleController"
 msgid "Condition added successfully."
@@ -75,17 +65,7 @@ msgstr ""
 
 #: Drivers/LayerMetadataWelder.cs
 msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
-msgid "Layer is missing field."
-msgstr ""
-
-#: Drivers/LayerMetadataWelder.cs
-msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
 msgid "Title is required field."
-msgstr ""
-
-#: Drivers/LayerMetadataWelder.cs
-msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
-msgid "Zone is missing"
 msgstr ""
 
 #: GraphQL/LayerQueryObjectType.cs
@@ -154,7 +134,62 @@ msgstr ""
 #: Recipes/LayerStep.cs
 #, csharp-format
 msgctxt "OrchardCore.Layers.Recipes.LayerStep"
-msgid "The layer '{0}' is required."
+msgid "The layer '{0}' could not be updated."
+msgstr ""
+
+#: Services/LayerService.cs
+msgctxt "OrchardCore.Layers.Services.LayerService"
+msgid "The layer name already exists."
+msgstr ""
+
+#: Services/LayerService.cs
+msgctxt "OrchardCore.Layers.Services.LayerService"
+msgid "The layer name is required."
+msgstr ""
+
+#: Services/LayerService.cs
+msgctxt "OrchardCore.Layers.Services.LayerService"
+msgid "The layer name must have at most 256 characters, without surrounding whitespace or control characters."
+msgstr ""
+
+#: Services/LayerSettingsSectionProvider.cs
+msgctxt "OrchardCore.Layers.Services.LayerSettingsSectionProvider"
+msgid "A settings object is required."
+msgstr ""
+
+#: Services/LayerSettingsSectionProvider.cs
+msgctxt "OrchardCore.Layers.Services.LayerSettingsSectionProvider"
+msgid "Provide an array of strings; use an empty array to clear the zones."
+msgstr ""
+
+#: Services/LayerSettingsSectionProvider.cs
+msgctxt "OrchardCore.Layers.Services.LayerSettingsSectionProvider"
+msgid "This property is not managed by the layer zones settings section."
+msgstr ""
+
+#: Services/LayerWidgetService.cs
+msgctxt "OrchardCore.Layers.Services.LayerWidgetService"
+msgid "A widget placement is required."
+msgstr ""
+
+#: Services/LayerWidgetService.cs
+msgctxt "OrchardCore.Layers.Services.LayerWidgetService"
+msgid "Select a configured zone using its exact name."
+msgstr ""
+
+#: Services/LayerWidgetService.cs
+msgctxt "OrchardCore.Layers.Services.LayerWidgetService"
+msgid "Select an existing layer."
+msgstr ""
+
+#: Services/LayerWidgetService.cs
+msgctxt "OrchardCore.Layers.Services.LayerWidgetService"
+msgid "Select an existing widget with layer metadata when moving its position."
+msgstr ""
+
+#: Services/LayerWidgetService.cs
+msgctxt "OrchardCore.Layers.Services.LayerWidgetService"
+msgid "The position must be a finite number."
 msgstr ""
 
 #: Views/Admin/Create.cshtml

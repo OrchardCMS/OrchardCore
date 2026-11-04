@@ -41,6 +41,56 @@ msgctxt "OrchardCore.Security.SecurityPermissions"
 msgid "Manage Security Headers Settings"
 msgstr ""
 
+#: Services/SecuritySettingsEditor.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsEditor"
+msgid "A permissions policy directive requires a string value."
+msgstr ""
+
+#: Services/SecuritySettingsEditor.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsEditor"
+msgid "Directive names must start with a letter and contain only ASCII letters, digits or hyphens."
+msgstr ""
+
+#: Services/SecuritySettingsEditor.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsEditor"
+msgid "Select a valid referrer policy."
+msgstr ""
+
+#: Services/SecuritySettingsEditor.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsEditor"
+msgid "Use printable ASCII directive values without header control characters or directive separators."
+msgstr ""
+
+#: Services/SecuritySettingsSectionProvider.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsSectionProvider"
+msgid "A settings object is required."
+msgstr ""
+
+#: Services/SecuritySettingsSectionProvider.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsSectionProvider"
+msgid "Provide a directive object; an empty object removes the policy."
+msgstr ""
+
+#: Services/SecuritySettingsSectionProvider.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsSectionProvider"
+msgid "Provide a referrer policy name."
+msgstr ""
+
+#: Services/SecuritySettingsSectionProvider.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsSectionProvider"
+msgid "Provide a string directive value."
+msgstr ""
+
+#: Services/SecuritySettingsSectionProvider.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsSectionProvider"
+msgid "Security headers are owned by host configuration."
+msgstr ""
+
+#: Services/SecuritySettingsSectionProvider.cs
+msgctxt "OrchardCore.Security.Services.SecuritySettingsSectionProvider"
+msgid "This property is not managed by the security headers section."
+msgstr ""
+
 #: Views/ContentSecurityPolicySettings.Edit.cshtml
 msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
 msgid "Allows administrators to control resources the user agent is allowed to load for a given page."

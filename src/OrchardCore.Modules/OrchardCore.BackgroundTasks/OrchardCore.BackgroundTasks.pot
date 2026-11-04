@@ -38,7 +38,27 @@ msgstr ""
 
 #: Controllers/BackgroundTaskController.cs
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Lock expiration must be nonnegative."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Lock timeout must be nonnegative."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "Please select one or more tasks."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Provide a valid five-field cron expression."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Some tasks have invalid settings and could not be enabled."
 msgstr ""
 
 #: Controllers/BackgroundTaskController.cs
@@ -54,6 +74,16 @@ msgstr ""
 #: Controllers/BackgroundTaskController.cs
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "The task has been updated."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task has invalid settings and could not be enabled."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task setting is invalid."
 msgstr ""
 
 #: Controllers/BackgroundTaskController.cs

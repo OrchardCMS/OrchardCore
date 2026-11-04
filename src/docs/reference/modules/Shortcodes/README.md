@@ -6,6 +6,12 @@ Shortcodes are small pieces of code wrapped into \[brackets\] that can add some 
 
 Shortcodes can be implemented by enabling the Shortcode Templates feature or through code.
 
+## Management API
+
+The Shortcode Templates feature exposes [typed management endpoints](../../api/shortcode-templates/README.md)
+with generated `pomi shortcodes templates` commands and MCP tools. The API and admin editor use the
+same manager for validation, sanitized usage HTML and persistence.
+
 ## Shortcode Templates
 
 Shortcode templates with [Liquid](../Liquid/README.md) are created through the _Design -> Shortcodes_ menu.

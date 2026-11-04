@@ -30,6 +30,7 @@ public sealed class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentS
         step.Settings = [];
 
         await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
+        step.Settings = SiteSettingsDeploymentSelection.Normalize(step.Settings);
 
         return Edit(step, context);
     }

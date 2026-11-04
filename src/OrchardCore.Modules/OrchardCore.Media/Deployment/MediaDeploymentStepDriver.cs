@@ -45,12 +45,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
                                           x => x.DirectoryPaths,
                                           x => x.IncludeAll);
 
-        // Don't have the selected option if include all.
-        if (step.IncludeAll)
-        {
-            step.FilePaths = [];
-            step.DirectoryPaths = [];
-        }
+        (step.FilePaths, step.DirectoryPaths) = MediaDeploymentSelection.Normalize(step.IncludeAll, step.FilePaths, step.DirectoryPaths);
 
         return Edit(step, context);
     }

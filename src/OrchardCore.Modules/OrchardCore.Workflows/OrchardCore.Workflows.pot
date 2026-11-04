@@ -1061,6 +1061,76 @@ msgctxt "OrchardCore.Workflows.Services.WorkflowActivityPresetProvider"
 msgid "Workflows"
 msgstr ""
 
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "A workflow type must contain at least one activity."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "A workflow type must contain at least one start activity."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "A workflow type with the same identifier already exists with a different definition."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "A workflow type with the same identifier already exists."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "A workflow type with the same name already exists."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "Activity identifiers must be unique."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The activity name is required."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The destination activity must exist."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The source activity must exist."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The source outcome name is required."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The specified activity type does not exist."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The specified start activity does not exist."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The workflow type must be enabled before it can be executed."
+msgstr ""
+
+#: Services/WorkflowApiService.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowApiService"
+msgid "The workflow type name is required."
+msgstr ""
+
 #: Services/WorkflowDesignerModelBuilder.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowDesignerModelBuilder"
 msgid "Failed"

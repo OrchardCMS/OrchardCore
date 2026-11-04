@@ -21,6 +21,11 @@ msgctxt "OrchardCore.Search.AdminMenu"
 msgid "Site Search"
 msgstr ""
 
+#: Drivers/SearchSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Search.Drivers.SearchSettingsDisplayDriver"
+msgid "Choose an existing index profile."
+msgstr ""
+
 #: Controllers/SearchController.cs
 msgctxt "OrchardCore.Search.SearchController"
 msgid "No default search index has been configured."
@@ -36,6 +41,26 @@ msgstr ""
 #: SearchLocalizationSources.cs
 msgctxt "OrchardCore.Search.SearchLocalizationSources"
 msgid "Search Settings"
+msgstr ""
+
+#: Services/SearchSettingsSectionProvider.cs
+msgctxt "OrchardCore.Search.Services.SearchSettingsSectionProvider"
+msgid "A settings object is required."
+msgstr ""
+
+#: Services/SearchSettingsSectionProvider.cs
+msgctxt "OrchardCore.Search.Services.SearchSettingsSectionProvider"
+msgid "Choose an existing index profile."
+msgstr ""
+
+#: Services/SearchSettingsSectionProvider.cs
+msgctxt "OrchardCore.Search.Services.SearchSettingsSectionProvider"
+msgid "Provide a string or null to clear this value."
+msgstr ""
+
+#: Services/SearchSettingsSectionProvider.cs
+msgctxt "OrchardCore.Search.Services.SearchSettingsSectionProvider"
+msgid "This property is not managed by frontend search settings."
 msgstr ""
 
 #: Views/Items/SearchSettingsDeploymentStep.Fields.Summary.cshtml
@@ -110,6 +135,11 @@ msgstr ""
 
 #: Views/SearchSettings.Edit.cshtml
 msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "Page title"
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
 msgid "Placeholder"
 msgstr ""
 
@@ -126,4 +156,9 @@ msgstr ""
 #: Views/SearchSettings.Edit.cshtml
 msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
 msgid "The placeholder text to use in the search bar."
+msgstr ""
+
+#: Views/SearchSettings.Edit.cshtml
+msgctxt "OrchardCore.Search.Views.SearchSettings.Edit"
+msgid "The title to use for the search page."
 msgstr ""

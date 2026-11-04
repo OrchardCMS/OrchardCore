@@ -94,14 +94,14 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
 
         if (!root.TryGetProperty(ResilientPolymorphicJsonConverterFactory.TypeDiscriminatorPropertyName, out var typeProp))
         {
-            return DeserializeAsFallback(root, null);
+            return DeserializeAsFallback(root, null, options);
         }
 
         var discriminator = typeProp.GetString();
 
         if (discriminator is null || !_discriminatorToType.TryGetValue(discriminator, out var derivedType))
         {
-            return DeserializeAsFallback(root, discriminator);
+            return DeserializeAsFallback(root, discriminator, options);
         }
 
         return (T)root.Deserialize(derivedType, options);
@@ -145,7 +145,7 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
         writer.WriteEndObject();
     }
 
-    private T DeserializeAsFallback(JsonElement root, string discriminator)
+    private T DeserializeAsFallback(JsonElement root, string discriminator, JsonSerializerOptions options)
     {
         if (_fallbackType is null)
         {
@@ -154,7 +154,7 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
 
         // Deserialize into the fallback type. This populates base-type properties
         // (e.g., Id, Name) from the JSON automatically.
-        var fallback = (T)root.Deserialize(_fallbackType);
+        var fallback = (T)root.Deserialize(_fallbackType, options);
 
         if (fallback is IUnknownTypePlaceholder placeholder)
         {

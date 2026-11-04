@@ -48,22 +48,12 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
+msgid "The rule is invalid."
+msgstr ""
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
 msgid "Unable to find a rule-source that can handle the source '{Source}'."
-msgstr ""
-
-#: Drivers/RewriteRulesDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.RewriteRulesDisplayDriver"
-msgid "Name is required"
-msgstr ""
-
-#: Drivers/UrlRedirectRuleDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
-msgid "A valid Match URL Pattern is required."
-msgstr ""
-
-#: Drivers/UrlRedirectRuleDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
-msgid "A valid Substitution URL Pattern is required."
 msgstr ""
 
 #: Drivers/UrlRedirectRuleDisplayDriver.cs
@@ -96,26 +86,6 @@ msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
 msgid "Temporary Redirect (307)"
 msgstr ""
 
-#: Drivers/UrlRedirectRuleDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
-msgid "The Match URL Pattern is required."
-msgstr ""
-
-#: Drivers/UrlRedirectRuleDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
-msgid "The Substitution URL Pattern is required."
-msgstr ""
-
-#: Drivers/UrlRewriteRuleDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
-msgid "A valid Match URL Pattern is required."
-msgstr ""
-
-#: Drivers/UrlRewriteRuleDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
-msgid "A valid Substitution URL Pattern is required."
-msgstr ""
-
 #: Drivers/UrlRewriteRuleDisplayDriver.cs
 msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
 msgid "Append Query String from Original Request"
@@ -124,11 +94,6 @@ msgstr ""
 #: Drivers/UrlRewriteRuleDisplayDriver.cs
 msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
 msgid "Exclude Query String from Original Request"
-msgstr ""
-
-#: Drivers/UrlRewriteRuleDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
-msgid "The Substitution URL Pattern is required."
 msgstr ""
 
 #: Recipes/UrlRewritingStep.cs

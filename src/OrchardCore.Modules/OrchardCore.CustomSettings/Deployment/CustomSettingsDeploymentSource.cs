@@ -27,9 +27,11 @@ public sealed class CustomSettingsDeploymentSource
 
         foreach (var settingsType in settingsTypes)
         {
-            if (!await _customSettingsService.CanUserCreateSettingsAsync(settingsType))
+            if (!(result.User is null
+                ? await _customSettingsService.CanUserCreateSettingsAsync(settingsType)
+                : await _customSettingsService.CanUserCreateSettingsAsync(settingsType, result.User)))
             {
-                return;
+                throw new UnauthorizedAccessException("The initiating user cannot export the selected custom settings.");
             }
         }
 

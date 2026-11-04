@@ -22,6 +22,7 @@ public sealed class LimiterController : Controller
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
     private readonly INotifier _notifier;
     private readonly IRateLimitPolicyStore _policyStore;
+    private readonly RateLimitLimiterMutations _mutations;
     private readonly IServiceProvider _serviceProvider;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -40,6 +41,7 @@ public sealed class LimiterController : Controller
         _displayManager = displayManager;
         _notifier = notifier;
         _policyStore = policyStore;
+        _mutations = new RateLimitLimiterMutations(policyStore);
         _serviceProvider = serviceProvider;
         _updateModelAccessor = updateModelAccessor;
         H = htmlLocalizer;
@@ -58,7 +60,7 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
-        if (!CanModifyLimiters(policy))
+        if (!RateLimitLimiterMutations.CanModify(policy))
         {
             await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
             return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
@@ -103,7 +105,7 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
-        if (!CanModifyLimiters(policy))
+        if (!RateLimitLimiterMutations.CanModify(policy))
         {
             await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
             return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
@@ -134,9 +136,7 @@ public sealed class LimiterController : Controller
             return View(model);
         }
 
-        policy.Limiters.Add(limiter);
-
-        await _policyStore.UpdateAsync(policy);
+        await _mutations.SaveAsync(policy, limiter);
 
         await _notifier.SuccessAsync(H["Limiter added successfully."]);
 
@@ -157,7 +157,7 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
-        if (!CanModifyLimiters(policy))
+        if (!RateLimitLimiterMutations.CanModify(policy))
         {
             await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
             return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
@@ -189,7 +189,7 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
-        if (!CanModifyLimiters(policy))
+        if (!RateLimitLimiterMutations.CanModify(policy))
         {
             await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
             return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
@@ -208,7 +208,7 @@ public sealed class LimiterController : Controller
             return View(model);
         }
 
-        await _policyStore.UpdateAsync(policy);
+        await _mutations.SaveAsync(policy, originalLimiter);
 
         await _notifier.SuccessAsync(H["Limiter updated successfully."]);
 
@@ -229,14 +229,13 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
-        if (!CanModifyLimiters(policy))
+        if (!RateLimitLimiterMutations.CanModify(policy))
         {
             await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
             return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
         }
 
-        policy.Limiters.RemoveAll(x => string.Equals(x.Id, limiterId, StringComparison.Ordinal));
-        await _policyStore.UpdateAsync(policy);
+        await _mutations.DeleteAsync(policy, limiterId);
 
         await _notifier.SuccessAsync(H["Limiter removed successfully."]);
 
@@ -268,9 +267,6 @@ public sealed class LimiterController : Controller
 
     private async Task<RateLimitPolicy> GetEditablePolicyAsync(string policyId)
         => await _policyStore.FindByIdAsync(policyId, PolicyVersion.Current);
-
-    private static bool CanModifyLimiters(RateLimitPolicy policy)
-        => !(policy?.IsEnabled ?? false);
 
     private static string GetLimiterDocumentationUrl(string sourceName)
     {

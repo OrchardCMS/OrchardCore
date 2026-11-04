@@ -13,4 +13,10 @@ public class AllRolesDeploymentStep : DeploymentStep
 
     [JsonIgnore]
     public override LocalizationSource Category => CommonLocalizationSources.Security;
+
+    /// <summary>
+    /// Gets or sets the exact names of the roles to export. All of them are exported when it is <see langword="null"/> or empty.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string[] Names { get; set; }
 }

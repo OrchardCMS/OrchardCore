@@ -221,6 +221,116 @@ msgctxt "OrchardCore.ContentTypes.RecipeSteps.ContentDefinitionStep"
 msgid "Unable to add content-part to the '{0}' content-type. The part name cannot be null or empty."
 msgstr ""
 
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content field with the same name already exists with a different definition."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content part cannot contain the same field more than once."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content part with the same technical name already exists with a different definition."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content part with the same technical name already exists."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content type cannot contain the same part more than once."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content type with the same display name already exists."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content type with the same technical name already exists with a different definition."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "A content type with the same technical name already exists."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "Only attachable content parts can be added to a content type."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "Only reusable content parts can be renamed when attached to a content type."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The content field name in the request body must match the route name. To rename a content field, use a dedicated rename operation."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The content part name in the request body must match the route name. To rename a content part, use a dedicated rename operation."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The content type name in the request body must match the route name. To rename a content type, use a dedicated rename operation."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The display name is required."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The field type is required."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The part name is required."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The specified content field type does not exist."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The specified content part does not exist."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The technical name contains invalid characters."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The technical name is required."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The technical name is reserved."
+msgstr ""
+
+#: Services/ContentDefinitionApiService.cs
+msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionApiService"
+msgid "The technical name must start with a letter."
+msgstr ""
+
 #. Format arguments: {0}: name
 #: Services/ContentDefinitionService.cs
 #, csharp-format

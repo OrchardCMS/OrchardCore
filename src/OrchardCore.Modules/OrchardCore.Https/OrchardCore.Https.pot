@@ -41,6 +41,41 @@ msgctxt "OrchardCore.Https.Permissions"
 msgid "Manage HTTPS"
 msgstr ""
 
+#: Services/HttpsSettingsEditor.cs
+msgctxt "OrchardCore.Https.Services.HttpsSettingsEditor"
+msgid "Select a valid HSTS mode."
+msgstr ""
+
+#: Services/HttpsSettingsEditor.cs
+msgctxt "OrchardCore.Https.Services.HttpsSettingsEditor"
+msgid "The HTTPS port must be between 1 and 65535, or empty for automatic detection."
+msgstr ""
+
+#: Services/HttpsSettingsSectionProvider.cs
+msgctxt "OrchardCore.Https.Services.HttpsSettingsSectionProvider"
+msgid "A settings object is required."
+msgstr ""
+
+#: Services/HttpsSettingsSectionProvider.cs
+msgctxt "OrchardCore.Https.Services.HttpsSettingsSectionProvider"
+msgid "Provide a Boolean value; null does not reset this property."
+msgstr ""
+
+#: Services/HttpsSettingsSectionProvider.cs
+msgctxt "OrchardCore.Https.Services.HttpsSettingsSectionProvider"
+msgid "Provide an integer port or null for automatic detection."
+msgstr ""
+
+#: Services/HttpsSettingsSectionProvider.cs
+msgctxt "OrchardCore.Https.Services.HttpsSettingsSectionProvider"
+msgid "Select a valid HSTS mode by name: Disabled, Enabled or FromConfiguration."
+msgstr ""
+
+#: Services/HttpsSettingsSectionProvider.cs
+msgctxt "OrchardCore.Https.Services.HttpsSettingsSectionProvider"
+msgid "This property is not managed by the HTTPS settings section."
+msgstr ""
+
 #: Views/HttpsSettings.Edit.cshtml
 msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
 msgid "Determines whether HTTP Strict Transport Security (HSTS) headers are disabled by default, enabled explicitly, or follow the current environment."

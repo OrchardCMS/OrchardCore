@@ -181,9 +181,7 @@ public sealed class SitemapIndexController : Controller
         // Path validation may invalidate model state.
         if (ModelState.IsValid)
         {
-            sitemap.Name = model.Name;
-            sitemap.Enabled = model.Enabled;
-            sitemap.Path = model.Path;
+            SitemapMutations.Apply(sitemap, model.Name, model.Path, model.Enabled);
 
             indexSource.ContainedSitemapIds = model.ContainableSitemaps
                 .Where(m => m.IsChecked)
@@ -270,9 +268,7 @@ public sealed class SitemapIndexController : Controller
         // Path validation may invalidate model state.
         if (ModelState.IsValid)
         {
-            sitemap.Name = model.Name;
-            sitemap.Enabled = model.Enabled;
-            sitemap.Path = model.Path;
+            SitemapMutations.Apply(sitemap, model.Name, model.Path, model.Enabled);
 
             indexSource.ContainedSitemapIds = model.ContainableSitemaps
                 .Where(m => m.IsChecked)
@@ -327,7 +323,7 @@ public sealed class SitemapIndexController : Controller
             return NotFound();
         }
 
-        sitemap.Enabled = !sitemap.Enabled;
+        SitemapMutations.SetEnabled(sitemap, !sitemap.Enabled);
 
         await _sitemapManager.UpdateSitemapAsync(sitemap);
 

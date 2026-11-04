@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Localization;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -10,6 +12,7 @@ public class OpenIdApplicationSettings
     public string DisplayName { get; set; }
     public string RedirectUris { get; set; }
     public string PostLogoutRedirectUris { get; set; }
+    public string ApplicationType { get; set; }
     public string Type { get; set; }
     public string ConsentType { get; set; }
     public string ClientSecret { get; set; }
@@ -18,6 +21,7 @@ public class OpenIdApplicationSettings
     public bool AllowPasswordFlow { get; set; }
     public bool AllowClientCredentialsFlow { get; set; }
     public bool AllowAuthorizationCodeFlow { get; set; }
+    public bool AllowDeviceAuthorizationFlow { get; set; }
     public bool AllowRefreshTokenFlow { get; set; }
     public bool AllowHybridFlow { get; set; }
     public bool AllowImplicitFlow { get; set; }
@@ -32,19 +36,88 @@ internal static class OpenIdApplicationExtensions
 {
     internal static readonly string[] s_separator = [" ", ","];
 
-    public static async Task UpdateDescriptorFromSettings(this IOpenIdApplicationManager _applicationManager, OpenIdApplicationSettings model, object application = null)
+    internal static IEnumerable<ValidationResult> ValidateClientSettings(string clientType, string applicationType,
+        string clientSecret, IStringLocalizer S, bool isNew, bool wasPublic = false)
+    {
+        var isPublic = string.Equals(clientType, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase);
+        if (!string.IsNullOrEmpty(clientSecret) && isPublic)
+        {
+            yield return new ValidationResult(S["No client secret can be set for public applications."], [nameof(OpenIdApplicationSettings.ClientSecret)]);
+        }
+        else if (string.IsNullOrEmpty(clientSecret))
+        {
+            if (isNew && string.Equals(clientType, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
+            {
+                yield return new ValidationResult(S["The client secret is required for confidential applications."], [nameof(OpenIdApplicationSettings.ClientSecret)]);
+            }
+            else if (!isNew && wasPublic && !isPublic)
+            {
+                yield return new ValidationResult(S["Setting a new client secret is required."], [nameof(OpenIdApplicationSettings.ClientSecret)]);
+            }
+        }
+
+        if (string.Equals(applicationType, OpenIddictConstants.ApplicationTypes.Native, StringComparison.OrdinalIgnoreCase) && !isPublic)
+        {
+            yield return new ValidationResult(S["Native applications must be public clients."], [nameof(OpenIdApplicationSettings.Type)]);
+        }
+    }
+
+    public static async Task UpdateDescriptorFromSettings(this IOpenIdApplicationManager manager, OpenIdApplicationSettings model,
+        object application = null, CancellationToken cancellationToken = default)
+    {
+        var descriptor = await manager.BuildDescriptorFromSettingsAsync(model, application, cancellationToken);
+        if (application is null)
+        {
+            await manager.CreateAsync(descriptor, cancellationToken);
+            return;
+        }
+
+        await manager.UpdateWithValidationRollbackAsync(application,
+            () => manager.UpdateAsync(application, descriptor, cancellationToken), cancellationToken);
+    }
+
+    internal static async Task UpdateWithValidationRollbackAsync(this IOpenIdApplicationManager manager, object application,
+        Func<ValueTask> update, CancellationToken cancellationToken)
+    {
+        var original = new OpenIdApplicationDescriptor();
+        await manager.PopulateAsync(original, application, cancellationToken);
+        try
+        {
+            await update();
+        }
+        catch (OpenIddictExceptions.ValidationException)
+        {
+            // OpenIddict populates the tracked entity before validating the descriptor.
+            // Restore the previous values so rejected edits cannot contaminate readback.
+            await manager.PopulateAsync(application, original, CancellationToken.None);
+            throw;
+        }
+    }
+
+    internal static async Task<object> FindByClientIdForUpdateAsync(this IOpenIdApplicationManager manager, string clientId, CancellationToken cancellationToken)
+    {
+        var application = await manager.FindByClientIdAsync(clientId, cancellationToken);
+        // Natural-key lookup can return a cached object. Like the admin editor,
+        // load the store's tracked instance before mutating or deleting it.
+        return application is null ? null : await manager.FindByPhysicalIdAsync(
+            await manager.GetPhysicalIdAsync(application, cancellationToken), cancellationToken);
+    }
+
+    internal static async Task<OpenIdApplicationDescriptor> BuildDescriptorFromSettingsAsync(this IOpenIdApplicationManager _applicationManager,
+        OpenIdApplicationSettings model, object application = null, CancellationToken cancellationToken = default)
     {
         var descriptor = new OpenIdApplicationDescriptor();
 
         if (application != null)
         {
-            await _applicationManager.PopulateAsync(descriptor, application);
+            await _applicationManager.PopulateAsync(descriptor, application, cancellationToken);
         }
 
         descriptor.ClientId = model.ClientId;
         descriptor.ConsentType = model.ConsentType;
         descriptor.DisplayName = model.DisplayName;
         descriptor.ClientType = model.Type;
+        descriptor.ApplicationType = model.ApplicationType;
 
         if (!string.IsNullOrEmpty(model.ClientSecret))
         {
@@ -111,6 +184,15 @@ internal static class OpenIdApplicationExtensions
             descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
         }
 
+        if (model.AllowDeviceAuthorizationFlow)
+        {
+            descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.DeviceCode);
+        }
+        else
+        {
+            descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.DeviceCode);
+        }
+
         if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow || model.AllowImplicitFlow)
         {
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
@@ -123,13 +205,23 @@ internal static class OpenIdApplicationExtensions
         }
 
         if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow ||
-            model.AllowClientCredentialsFlow || model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
+            model.AllowClientCredentialsFlow || model.AllowDeviceAuthorizationFlow ||
+            model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
         {
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
         }
         else
         {
             descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Token);
+        }
+
+        if (model.AllowDeviceAuthorizationFlow)
+        {
+            descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.DeviceAuthorization);
+        }
+        else
+        {
+            descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.DeviceAuthorization);
         }
 
         if (model.AllowAuthorizationCodeFlow)
@@ -250,14 +342,6 @@ internal static class OpenIdApplicationExtensions
             descriptor.RedirectUris.Add(uri);
         }
 
-        if (application == null)
-        {
-            await _applicationManager.CreateAsync(descriptor);
-        }
-        else
-        {
-            await _applicationManager.UpdateAsync(application, descriptor);
-        }
-
+        return descriptor;
     }
 }

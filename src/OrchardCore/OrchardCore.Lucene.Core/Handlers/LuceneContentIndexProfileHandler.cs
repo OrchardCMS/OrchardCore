@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
@@ -32,7 +31,7 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
     }
 
     public override Task InitializingAsync(InitializingContext<IndexProfile> context)
-       => PopulateAsync(context.Model, context.Data);
+       => PopulateAsync(context.Model);
 
     public override Task CreatingAsync(CreatingContext<IndexProfile> context)
         => SetMappingsAsync(context.Model);
@@ -63,7 +62,7 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
         index.Put(LuceneMetadata);
     }
 
-    private async Task PopulateAsync(IndexProfile index, JsonNode data)
+    private async Task PopulateAsync(IndexProfile index)
     {
         if (!CanHandle(index))
         {
@@ -82,20 +81,6 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
         map.Fields = (await PopulateTypeMappingAsync(metadata)).ToArray();
 
         LuceneMetadata.IndexMappings = map;
-
-        var analyzerName = data[nameof(LuceneMetadata.AnalyzerName)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(analyzerName))
-        {
-            LuceneMetadata.AnalyzerName = analyzerName;
-        }
-
-        var storeSourceData = data[nameof(LuceneMetadata.StoreSourceData)]?.GetValue<bool>();
-
-        if (storeSourceData.HasValue)
-        {
-            LuceneMetadata.StoreSourceData = storeSourceData.Value;
-        }
 
         index.Put(LuceneMetadata);
 

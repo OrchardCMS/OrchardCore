@@ -29,3 +29,12 @@ else
         </div>
     </div>
 }
+
+<div class="ocat-wrapper" asp-validation-class-for="PageTitle">
+    <label asp-for="PageTitle" class="ocat-label">@T["Page title"]</label>
+    <div class="ocat-end">
+        <input asp-for="PageTitle" class="form-control" />
+        <span asp-validation-for="PageTitle"></span>
+        <span class="hint">@T["The title to use for the search page."]</span>
+    </div>
+</div>

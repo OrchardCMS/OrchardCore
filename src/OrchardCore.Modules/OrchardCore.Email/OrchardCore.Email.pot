@@ -51,6 +51,11 @@ msgctxt "OrchardCore.Email.Controllers.AdminController"
 msgid "Unable to send the message using the selected provider."
 msgstr ""
 
+#: Drivers/EmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Drivers.EmailSettingsDisplayDriver"
+msgid "Select an enabled email provider."
+msgstr ""
+
 #: Views/Admin/Test.cshtml
 msgctxt "OrchardCore.Email.Views.Admin.Test"
 msgid "Bcc"

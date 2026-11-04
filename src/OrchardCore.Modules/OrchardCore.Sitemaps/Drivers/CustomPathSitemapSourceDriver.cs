@@ -3,6 +3,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Drivers;
@@ -51,15 +52,9 @@ public sealed class CustomPathSitemapSourceDriver : DisplayDriver<SitemapSource,
         sitemap.ChangeFrequency = model.ChangeFrequency;
         sitemap.LastUpdate = DateTime.Now;
 
-        if (sitemap.Path?.IndexOfAny(CustomPathSitemapSource.InvalidCharactersForPath) > -1 || sitemap.Path?.IndexOf(' ') > -1 || sitemap.Path?.IndexOf("//") > -1)
+        foreach (var error in SitemapSourceValidation.Validate(sitemap))
         {
-            var invalidCharactersForMessage = string.Join(", ", CustomPathSitemapSource.InvalidCharactersForPath.Select(c => $"\"{c}\""));
-            context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
-        }
-
-        if (sitemap.Path?.Length > CustomPathSitemapSource.MaxPathLength)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Your path is too long. The path can only be up to {0} characters.", CustomPathSitemapSource.MaxPathLength]);
+            context.Updater.ModelState.AddModelError(Prefix, error.Key, S["The sitemap source setting is invalid."]);
         }
 
         return Edit(sitemap, context);

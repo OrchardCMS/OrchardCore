@@ -27,7 +27,7 @@ public sealed class AllQueriesDeploymentSource
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Queries",
-            ["Queries"] = JArray.FromObject(queries, _jsonSerializerOptions),
+            ["Queries"] = JArray.FromObject(queries.Where(query => DeploymentSelection.IsSelected(step.Names, query.Name)).ToArray(), _jsonSerializerOptions),
         });
     }
 }

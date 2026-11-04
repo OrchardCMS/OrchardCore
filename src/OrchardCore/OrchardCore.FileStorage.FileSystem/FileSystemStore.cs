@@ -272,6 +272,39 @@ public class FileSystemStore : IFileStore
         }
     }
 
+    public Task<bool> TryMoveFileAsync(string oldPath, string newPath)
+    {
+        try
+        {
+            var physicalOldPath = GetPhysicalPath(oldPath);
+            if (!File.Exists(physicalOldPath))
+            {
+                throw new FileStoreException($"Cannot move file '{oldPath}' because it does not exist.");
+            }
+
+            var physicalNewPath = GetPhysicalPath(newPath);
+            if (File.Exists(physicalNewPath) || Directory.Exists(physicalNewPath))
+            {
+                return Task.FromResult(false);
+            }
+
+            File.Move(physicalOldPath, physicalNewPath);
+            return Task.FromResult(true);
+        }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (IOException) when (File.Exists(GetPhysicalPath(newPath)) || Directory.Exists(GetPhysicalPath(newPath)))
+        {
+            return Task.FromResult(false);
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
+        }
+    }
+
     public Task CopyFileAsync(string srcPath, string dstPath)
     {
         try
@@ -297,6 +330,39 @@ public class FileSystemStore : IFileStore
         catch (FileStoreException)
         {
             throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.", ex);
+        }
+    }
+
+    public Task<bool> TryCopyFileAsync(string srcPath, string dstPath)
+    {
+        try
+        {
+            var physicalSrcPath = GetPhysicalPath(srcPath);
+            if (!File.Exists(physicalSrcPath))
+            {
+                throw new FileStoreException($"The file '{srcPath}' does not exist.");
+            }
+
+            var physicalDstPath = GetPhysicalPath(dstPath);
+            if (Directory.Exists(physicalDstPath))
+            {
+                return Task.FromResult(false);
+            }
+
+            File.Copy(physicalSrcPath, physicalDstPath);
+            return Task.FromResult(true);
+        }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (IOException) when (File.Exists(GetPhysicalPath(dstPath)) || Directory.Exists(GetPhysicalPath(dstPath)))
+        {
+            return Task.FromResult(false);
         }
         catch (Exception ex)
         {

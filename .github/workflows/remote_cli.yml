@@ -1,0 +1,147 @@
+name: Native CLI artifacts
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/remote_cli.yml'
+      - '.github/workflows/release_ci.yml'
+      - '.scripts/remote-management/*smoke.py'
+      - '.scripts/remote-management/*prepare-packages.py'
+      - 'src/OrchardCore.Cli/**'
+  workflow_call:
+    inputs:
+      version:
+        description: Release version; empty for main validation artifacts
+        type: string
+        default: ''
+permissions:
+  contents: read
+jobs:
+  version:
+    runs-on: ubuntu-24.04
+    outputs:
+      package_version: ${{ steps.version.outputs.package_version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate package staging
+        run: python3 .scripts/remote-management/test-prepare-packages.py
+      - name: Select a common package version
+        id: version
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          import xml.etree.ElementTree as ET
+          prefix = ET.parse('src/OrchardCore.Build/OrchardCore.Commons.props').find('.//{*}VersionPrefix').text
+          version = os.environ["RELEASE_VERSION"] or f"{prefix}-preview-native.{os.environ['GITHUB_RUN_NUMBER']}"
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f"package_version={version}\n")
+          print(f"Package version: {version}")
+          PYTHON
+
+  native:
+    needs: version
+    env:
+      CLI_PACKAGE_VERSION: ${{ needs.version.outputs.package_version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-24.04, rid: linux-x64 }
+          - { runner: ubuntu-24.04-arm, rid: linux-arm64 }
+          - { runner: windows-2025, rid: win-x64 }
+          - { runner: windows-11-arm, rid: win-arm64 }
+          - { runner: macos-15, rid: osx-arm64 }
+          - { runner: macos-15-intel, rid: osx-x64 }
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-dotnet
+      - name: CLI tests
+        run: dotnet test --project test/OrchardCore.Cli.Tests
+      - name: Publish NativeAOT
+        run: dotnet publish src/OrchardCore.Cli -c Release -r ${{ matrix.rid }} -o artifacts/native -p:TreatWarningsAsErrors=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/OrchardCMS/OrchardCore -p:RepositoryCommit=${{ github.sha }}
+      - name: Verify native binary and package
+        shell: pwsh
+        run: |
+          $python = if ($IsWindows) { 'python' } else { 'python3' }
+          & $python .scripts/remote-management/native-smoke.py artifacts/native ${{ matrix.rid }}
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $python .scripts/remote-management/human-output-smoke.py (Join-Path artifacts/native $(if ($IsWindows) { 'pomi.exe' } else { 'pomi' }))
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify confirmation flags
+        shell: pwsh
+        run: |
+          $python = if ($IsWindows) { 'python' } else { 'python3' }
+          & $python .scripts/remote-management/force-confirmation-smoke.py (Join-Path artifacts/native $(if ($IsWindows) { 'pomi.exe' } else { 'pomi' }))
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native GraphQL commands
+        shell: pwsh
+        run: |
+          $python = if ($IsWindows) { 'python' } else { 'python3' }
+          & $python .scripts/remote-management/graphql-native-smoke.py (Join-Path artifacts/native $(if ($IsWindows) { 'pomi.exe' } else { 'pomi' }))
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native device login QR output
+        shell: pwsh
+        run: |
+          $python = if ($IsWindows) { 'python' } else { 'python3' }
+          & $python .scripts/remote-management/device-qr-native-smoke.py (Join-Path artifacts/native $(if ($IsWindows) { 'pomi.exe' } else { 'pomi' }))
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Pack tool installer
+        run: dotnet pack src/OrchardCore.Cli -c Release -p:PackAsTool=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/OrchardCMS/OrchardCore -p:RepositoryCommit=${{ github.sha }} -p:TreatWarningsAsErrors=true -o artifacts/tool
+      - name: Pack NativeAOT tool implementation
+        run: dotnet pack src/OrchardCore.Cli -c Release -r ${{ matrix.rid }} -p:PackAsTool=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/OrchardCMS/OrchardCore -p:RepositoryCommit=${{ github.sha }} -p:TreatWarningsAsErrors=true -o artifacts/tool
+      - name: Verify tool installation and native execution
+        shell: pwsh
+        run: |
+          $python = if ($IsWindows) { 'python' } else { 'python3' }
+          & $python .scripts/remote-management/tool-smoke.py artifacts/tool ${{ matrix.rid }} $env:CLI_PACKAGE_VERSION
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload native archive
+        id: upload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pomi-${{ matrix.rid }}
+          path: |
+            artifacts/pomi-*
+            artifacts/native/verification.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Upload NativeAOT tool packages
+        id: upload-tool
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pomi-tool-${{ matrix.rid }}
+          path: artifacts/tool/*
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Add download link to job summary
+        shell: pwsh
+        env:
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+          TOOL_ARTIFACT_URL: ${{ steps.upload-tool.outputs.artifact-url }}
+          TARGET_RID: ${{ matrix.rid }}
+        run: |
+          @"
+          ### Native CLI: $env:TARGET_RID
+
+          [Download pomi-$env:TARGET_RID]($env:ARTIFACT_URL)
+
+          Built commit: $env:GITHUB_SHA
+
+          Contains the native archive, SHA-256 checksum, and verification record.
+          Extract the downloaded artifact, then the native archive inside it.
+
+          [Download NativeAOT .NET tool packages]($env:TOOL_ARTIFACT_URL)
+
+          Tool package version: $env:CLI_PACKAGE_VERSION
+
+          Extract the tool artifact and follow INSTALL.md. It contains both packages
+          needed to install OrchardCore.Cli using the .NET 10 SDK or later.
+          The installed pomi command is native and needs no separate .NET runtime.
+
+          GitHub sign-in is required. Artifacts are retained for 30 days.
+          "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

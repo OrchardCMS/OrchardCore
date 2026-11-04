@@ -16,6 +16,18 @@ public partial class TenantSetupOptions
     private bool? _isDefault;
 
     /// <summary>
+    /// Gets or sets the optional identifier of a new application for unattended administration.
+    /// Providing both credentials enables Remote Management CLI and its OpenID dependencies after setup.
+    /// </summary>
+    public string RemoteManagementClientId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the new application's secret. Supply through a secret configuration provider.
+    /// </summary>
+    public string RemoteManagementClientSecret { get; set; }
+
+
+    /// <summary>
     /// The Shell Name.
     /// </summary>
     public string ShellName { get; set; }
@@ -98,6 +110,11 @@ public partial class TenantSetupOptions
     /// <returns> The collection of errors. </returns>
     public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
+        if (string.IsNullOrWhiteSpace(RemoteManagementClientId) != string.IsNullOrWhiteSpace(RemoteManagementClientSecret))
+        {
+            yield return new ValidationResult("RemoteManagementClientId and RemoteManagementClientSecret must be supplied together.");
+        }
+
         if (string.IsNullOrEmpty(ShellName) || !TenantNameRegex().IsMatch(ShellName))
         {
             yield return new ValidationResult("ShellName Can not be empty and must contain characters only and no spaces.");
