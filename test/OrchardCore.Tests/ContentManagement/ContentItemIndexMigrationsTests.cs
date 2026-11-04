@@ -10,6 +10,10 @@ namespace OrchardCore.Tests.ContentManagement;
 
 public class ContentItemIndexMigrationsTests : IAsyncLifetime
 {
+    private const string ContentItemIdIndex = "IDX_ContentItemIndex_ContentItemId";
+    private const string ContentTypeIndex = "IDX_ContentItemIndex_ContentType";
+    private const string OwnerIndex = "IDX_ContentItemIndex_Owner";
+
     private IStore _store;
     private string _tempFilename;
 
@@ -44,8 +48,17 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
     {
         var version = await RunAsync(migrations => migrations.CreateAsync());
 
-        Assert.Equal(7, version);
-        Assert.Equal(["ContentItemId", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync());
+        Assert.Equal(8, version);
+        Assert.Equal(["ContentItemId", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync(ContentItemIdIndex));
+    }
+
+    [Fact]
+    public async Task CreateAsync_CreatesIndexesLedByFilters()
+    {
+        await RunAsync(migrations => migrations.CreateAsync());
+
+        Assert.Equal(["ContentType", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync(ContentTypeIndex));
+        Assert.Equal(["Owner", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync(OwnerIndex));
     }
 
     [Fact]
@@ -53,20 +66,34 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
     {
         // The table and indexes as a tenant at version 6 has them.
         await RunAsync(migrations => migrations.CreateAsync());
-        await using (var connection = _store.Configuration.ConnectionFactory.CreateConnection())
-        {
-            await connection.OpenAsync(TestContext.Current.CancellationToken);
-            await using var command = connection.CreateCommand();
-            command.CommandText = $"DROP INDEX {await GetIndexNameAsync()}";
-            await command.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
-        }
+        await DropIndexAsync(ContentItemIdIndex);
 
-        Assert.Empty(await GetIndexColumnsAsync());
+        Assert.Empty(await GetIndexColumnsAsync(ContentItemIdIndex));
 
         var version = await RunAsync(migrations => migrations.UpdateFrom6Async());
 
         Assert.Equal(7, version);
-        Assert.Equal("ContentItemId", (await GetIndexColumnsAsync()).FirstOrDefault());
+        Assert.Equal("ContentItemId", (await GetIndexColumnsAsync(ContentItemIdIndex)).FirstOrDefault());
+    }
+
+    [Fact]
+    public async Task UpdateFrom7Async_CreatesSameIndexesAsCreateAsync()
+    {
+        // The table and indexes as a tenant at version 7 has them.
+        await RunAsync(migrations => migrations.CreateAsync());
+        var contentTypeColumns = await GetIndexColumnsAsync(ContentTypeIndex);
+        var ownerColumns = await GetIndexColumnsAsync(OwnerIndex);
+        await DropIndexAsync(ContentTypeIndex);
+        await DropIndexAsync(OwnerIndex);
+
+        Assert.Empty(await GetIndexColumnsAsync(ContentTypeIndex));
+        Assert.Empty(await GetIndexColumnsAsync(OwnerIndex));
+
+        var version = await RunAsync(migrations => migrations.UpdateFrom7Async());
+
+        Assert.Equal(8, version);
+        Assert.Equal(contentTypeColumns, await GetIndexColumnsAsync(ContentTypeIndex));
+        Assert.Equal(ownerColumns, await GetIndexColumnsAsync(OwnerIndex));
     }
 
     private async Task<int> RunAsync(Func<ContentMigrations, Task<int>> step)
@@ -83,19 +110,28 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
         return version;
     }
 
-    private async Task<string> GetIndexNameAsync()
+    private async Task DropIndexAsync(string index)
     {
         await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
         await connection.OpenAsync(TestContext.Current.CancellationToken);
         await using var command = connection.CreateCommand();
-        command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'index' AND name LIKE '%IDX_ContentItemIndex_ContentItemId'";
+        command.CommandText = $"DROP INDEX {await GetIndexNameAsync(index)}";
+        await command.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
+    }
+
+    private async Task<string> GetIndexNameAsync(string index)
+    {
+        await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+        await connection.OpenAsync(TestContext.Current.CancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"SELECT name FROM sqlite_master WHERE type = 'index' AND name LIKE '%{index}'";
 
         return (string)await command.ExecuteScalarAsync(TestContext.Current.CancellationToken);
     }
 
-    private async Task<List<string>> GetIndexColumnsAsync()
+    private async Task<List<string>> GetIndexColumnsAsync(string index)
     {
-        var name = await GetIndexNameAsync();
+        var name = await GetIndexNameAsync(index);
         if (name is null)
         {
             return [];

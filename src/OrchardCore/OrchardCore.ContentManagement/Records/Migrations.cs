@@ -76,9 +76,10 @@ public sealed class Migrations : DataMigration
         );
 
         await CreateContentItemIdIndexAsync();
+        await CreateFilterIndexesAsync();
 
         // Shortcut other migration steps on new content definition schemas.
-        return 7;
+        return 8;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -242,6 +243,13 @@ public sealed class Migrations : DataMigration
         return 7;
     }
 
+    public async Task<int> UpdateFrom7Async()
+    {
+        await CreateFilterIndexesAsync();
+
+        return 8;
+    }
+
     // Every other index on ContentItemIndex leads with DocumentId, so a query by ContentItemId (IContentManager.GetAsync, for one
     // item or a batch) can't seek and scans an index instead. DocumentId is the join to Document; Published and Latest are what a
     // read by ID filters on.
@@ -253,4 +261,34 @@ public sealed class Migrations : DataMigration
                 "Published",
                 "Latest")
         );
+
+    // A filter on ContentType or Owner can't seek on the indexes that lead with DocumentId, so it scans an index or the table
+    // however few items it matches: the contents admin list and its count, GraphQL, pickers, sitemaps. The indexes that lead with
+    // DocumentId remain for the joins, such as from the Lists and Taxonomies index tables.
+    //
+    // Published and Latest come after DocumentId, read from the index without being part of the seek, for two reasons. One index
+    // then serves both of them, on a type or an owner. And with Latest before DocumentId, MySQL's estimates change for the default
+    // admin list, which matches almost every type: it starts from the Type index of Document instead, which takes twice as long.
+    //
+    // No date is added for sorting, as a paged list reads every match whatever the index: YesSql groups by document before it
+    // sorts. Author and DisplayText are left out: only the optional GraphQL where filters on Author, and DisplayText is filtered
+    // with Contains, which can't seek.
+    private async Task CreateFilterIndexesAsync()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ContentType",
+                "ContentType",
+                "DocumentId",
+                "Published",
+                "Latest")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_Owner",
+                "Owner",
+                "DocumentId",
+                "Published",
+                "Latest")
+        );
+    }
 }
