@@ -10,7 +10,7 @@ namespace OrchardCore.DynamicCache.Liquid;
 
 public class CacheExpiresSlidingTag
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(Expression argument, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -26,7 +26,7 @@ public class CacheExpiresSlidingTag
 
         if (input.Type == FluidValues.String)
         {
-            var stringValue = input.ToStringValue();
+            var stringValue = input.ToStringValue(context);
             if (!TimeSpan.TryParse(stringValue, out value))
             {
                 return Completion.Normal;
@@ -34,7 +34,7 @@ public class CacheExpiresSlidingTag
         }
         else
         {
-            var objectValue = input.ToObjectValue() as TimeSpan?;
+            var objectValue = input.ToObjectValue(context) as TimeSpan?;
 
             if (!objectValue.HasValue)
             {

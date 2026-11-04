@@ -1,22 +1,21 @@
 #if (AddPart)
-using Fluid;
 #endif
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-#if (AddPart)
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Liquid;
 using OrchardCore.Templates.Cms.Module.Drivers;
 using OrchardCore.Templates.Cms.Module.Handlers;
 using OrchardCore.Templates.Cms.Module.Models;
 using OrchardCore.Templates.Cms.Module.Settings;
-using OrchardCore.Templates.Cms.Module.ViewModels;
-#endif
 using OrchardCore.Modules;
+#if (AddPart)
+#endif
 
 namespace OrchardCore.Templates.Cms.Module;
 
@@ -25,11 +24,6 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
 #if (AddPart)
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<MyTestPartViewModel>();
-        });
-
         services.AddContentPart<MyTestPart>()
             .UseDisplayDriver<MyTestPartDisplayDriver>()
             .AddHandler<MyTestPartHandler>();

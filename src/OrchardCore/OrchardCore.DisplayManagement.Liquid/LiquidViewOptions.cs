@@ -7,6 +7,8 @@ namespace OrchardCore.DisplayManagement.Liquid;
 /// </summary>
 public class LiquidViewOptions
 {
+    private IFileProvider _fileProvider;
+
     /// <summary>
     /// Gets the sequence of <see cref="IFileProvider" /> instances used by <see cref="LiquidViewTemplate"/> to
     /// locate Liquid files.
@@ -16,5 +18,16 @@ public class LiquidViewOptions
     /// rooted at the application root.
     /// </remarks>
     public List<IFileProvider> FileProviders { get; } = [];
+
+    /// <summary>
+    /// Gets the <see cref="IFileProvider"/> locating Liquid files, which combines the <see cref="FileProviders"/>.
+    /// </summary>
+    public IFileProvider FileProvider => _fileProvider ??= FileProviders.Count switch
+    {
+        0 => new NullFileProvider(),
+        1 => FileProviders[0],
+        _ => new CompositeFileProvider(FileProviders),
+    };
+
     public List<Action<LiquidViewParser>> LiquidViewParserConfiguration { get; } = [];
 }

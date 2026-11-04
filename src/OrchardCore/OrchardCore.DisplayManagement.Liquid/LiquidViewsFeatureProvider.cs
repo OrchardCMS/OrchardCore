@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -18,7 +17,7 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
     private static List<string> s_sharedPaths;
     private static readonly object s_synLock = new();
 
-    public LiquidViewsFeatureProvider(IOptions<TemplateOptions> templateOptions)
+    public LiquidViewsFeatureProvider(IOptions<LiquidViewOptions> liquidViewOptions)
     {
         if (s_sharedPaths != null)
         {
@@ -31,7 +30,7 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
             {
                 s_sharedPaths = [];
 
-                var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
+                var filePaths = liquidViewOptions.Value.FileProvider.GetViewFilePaths(
                     Application.ModulesPath, [LiquidViewTemplate.ViewExtension],
                     LiquidViewTemplate.ViewsFolder);
 

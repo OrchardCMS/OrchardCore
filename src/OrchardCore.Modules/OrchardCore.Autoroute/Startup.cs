@@ -13,7 +13,6 @@ using OrchardCore.Autoroute.Routing;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
-using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -40,32 +39,33 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<AutoroutePartViewModel>();
-
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", (obj, context) =>
+            o.ConfigureMemberAccess(strategy =>
             {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, async (slug, context) =>
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", (obj, context) =>
                 {
-                    var autorouteEntries = context.Services.GetRequiredService<IAutorouteEntries>();
-                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-                    if (!slug.StartsWith('/'))
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (slug, context) =>
                     {
-                        slug = '/' + slug;
-                    }
+                        var autorouteEntries = context.Services.GetRequiredService<IAutorouteEntries>();
+                        var contentManager = context.Services.GetRequiredService<IContentManager>();
 
-                    (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+                        if (!slug.StartsWith('/'))
+                        {
+                            slug = '/' + slug;
+                        }
 
-                    if (found)
-                    {
-                        return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath), context.Options);
-                    }
+                        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
 
-                    return NilValue.Instance;
+                        if (found)
+                        {
+                            return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath), context.Options);
+                        }
+
+                        return NilValue.Instance;
+                    });
                 });
             });
         });
