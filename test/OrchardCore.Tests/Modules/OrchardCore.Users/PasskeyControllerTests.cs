@@ -442,6 +442,21 @@ public class PasskeyControllerTests
         Assert.Equal($"/{context.TenantName}/Security#two-factor", response.Headers.Location.ToString());
     }
 
+    [Fact]
+    public async Task Passkeys_WhenRequested_ReturnsNotFound()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
+        var client = CreateClient(context, out _);
+
+        await LoginWithPasswordAsync(client);
+
+        // Act
+        var response = await client.GetAsync("Passkeys", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
 
     [Fact]
     public async Task Login_WithRegisteredPasskey_SavesItsUsage()
