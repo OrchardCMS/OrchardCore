@@ -200,6 +200,17 @@ public class OwnedModuleEndpointMetadataTests
         Assert.True(metadata.LongRunning);
     }
 
+    [Fact]
+    public void Endpoints_RecipeExecution_HasNoRequiredBody()
+    {
+        var endpoint = CreateEndpoints()
+            .Single(endpoint => string.Equals(endpoint.RoutePattern.RawText?.TrimStart('/'), "api/recipes/{recipeId}:execute", StringComparison.Ordinal));
+
+        // Routing rejects a request without a content type, so clients send an empty object.
+        Assert.True(endpoint.Metadata.GetRequiredMetadata<IAcceptsMetadata>().IsOptional);
+        Assert.Equal("{}", endpoint.Metadata.GetRequiredMetadata<CliOperationMetadata>().DefaultJsonBody);
+    }
+
     private static void AssertOperation(
         IEnumerable<RouteEndpoint> endpoints,
         string route,

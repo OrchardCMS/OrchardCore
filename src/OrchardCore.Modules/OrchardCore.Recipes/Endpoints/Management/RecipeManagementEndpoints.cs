@@ -85,10 +85,11 @@ internal static class RecipeManagementEndpoints
                 Capability = RecipeManagementApiEndpointConventions.CapabilityName,
                 Arguments = { new CliArgumentMetadata("recipeId", 0) },
                 InputMode = CliInputMode.Json,
+                DefaultJsonBody = "{}",
                 RequiresConfirmation = true,
                 LongRunning = true,
             })
-            .Accepts<RecipeExecuteRequest>("application/json")
+            .Accepts<RecipeExecuteRequest>(isOptional: true, "application/json")
             .Produces<RecipeExecutionResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)

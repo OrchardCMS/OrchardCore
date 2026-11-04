@@ -197,6 +197,8 @@ recipes_folder.mkdir(parents=True, exist_ok=True)
         {'name': 'Feature', 'enable': [pending_feature]},
         {'name': 'NoSuchStep' + marker},
     ]}))
+(recipes_folder / f'{marker}-executed.recipe.json').write_text(json.dumps({
+    'name': marker + '-executed', 'displayName': 'Executed validation recipe', 'steps': [{'name': 'settings', 'SiteName': marker + '-executed'}]}))
 (recipes_folder / f'{marker}-no-steps.recipe.json').write_text(json.dumps({'name': marker + '-no-steps', 'displayName': 'No steps validation recipe'}))
 (recipes_folder / f'{marker}-malformed.recipe.json').write_text('{"name":"' + marker + '-malformed",')
 atexit.register(lambda: [path.unlink() for path in recipes_folder.glob(marker + '*')])
@@ -207,7 +209,7 @@ if not request(f'api/recipes?take=200&search={marker}')['items']:
     request('api/features/OrchardCore.RemoteManagement.Mcp:enable?force=true', 'POST')
 recipes = {recipe['name']: recipe['id'] for recipe in request(f'api/recipes?take=200&search={marker}')['items']}
 # A file that isn't valid JSON isn't harvested, so it can't be found to be validated.
-assert sorted(recipes) == sorted(marker + suffix for suffix in ('-valid', '-invalid', '-pending', '-no-steps')), sorted(recipes)
+assert sorted(recipes) == sorted(marker + suffix for suffix in ('-valid', '-invalid', '-pending', '-executed', '-no-steps')), sorted(recipes)
 
 valid_id, invalid_id, pending_id, no_steps_id = (recipes[marker + suffix] for suffix in ('-valid', '-invalid', '-pending', '-no-steps'))
 
@@ -370,5 +372,11 @@ with tempfile.TemporaryDirectory(prefix='recipe-validation-') as config_home:
     assert not unchanged, ('The import changed nothing in', unchanged, current)
     assert 'OrchardCore.Sitemaps' in applied['features'], 'The import changed no feature.'
     print('Importing the validated package changes the compared state.', flush=True)
+
+    # A recipe that takes no parameters runs without an input, for which Pomi sends an empty object.
+    executed = pomi('recipes', 'execute', recipes[marker + '-executed'], '--force')
+    assert executed['recipeName'] == marker + '-executed', executed
+    assert request('api/settings')['siteName'] == marker + '-executed', 'The recipe changed nothing.'
+    print('Executing a recipe without an input applies it.', flush=True)
 
 print('All recipe validation checks passed', flush=True)
