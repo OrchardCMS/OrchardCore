@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -11,6 +12,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Modules;
 
@@ -166,6 +168,9 @@ internal sealed class ModularBackgroundService : BackgroundService
                         return;
                     }
 
+                    using var activity = OrchardCoreTelemetry.StartTenantActivity($"Run background task {taskName}", tenant);
+                    activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.BackgroundTaskName, taskName);
+
                     var siteService = scope.ServiceProvider.GetService<ISiteService>();
                     if (siteService is not null)
                     {
@@ -204,6 +209,8 @@ internal sealed class ModularBackgroundService : BackgroundService
 
                     await handlers.InvokeAsync((handler, context, token) => handler.ExecutingAsync(context, token), context, stoppingToken, _logger);
 
+                    var startTimestamp = Stopwatch.GetTimestamp();
+
                     try
                     {
                         if (_logger.IsEnabled(LogLevel.Information))
@@ -214,6 +221,8 @@ internal sealed class ModularBackgroundService : BackgroundService
                         scheduler.Run();
                         await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
+                        RecordBackgroundTaskDuration(startTimestamp, tenant, taskName);
+
                         if (_logger.IsEnabled(LogLevel.Information))
                         {
                             _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
@@ -223,6 +232,8 @@ internal sealed class ModularBackgroundService : BackgroundService
                     {
                         _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         context.Exception = ex;
+                        OrchardCoreTelemetry.RecordException(activity, ex);
+                        RecordBackgroundTaskDuration(startTimestamp, tenant, taskName, ex);
 
                         await scope.HandleExceptionAsync(ex);
                     }
@@ -441,6 +452,16 @@ internal sealed class ModularBackgroundService : BackgroundService
                 _schedulers.TryRemove(key, out _);
             }
         }
+    }
+
+    private static void RecordBackgroundTaskDuration(long startTimestamp, string tenant, string taskName, Exception exception = null)
+    {
+        OrchardCoreTelemetry.RecordDuration(
+            OrchardCoreTelemetry.BackgroundTaskDuration,
+            startTimestamp,
+            tenant,
+            exception,
+            new KeyValuePair<string, object>(OrchardCoreTelemetryConstants.Attributes.BackgroundTaskName, taskName));
     }
 
     private static void SetBaseUrl(HttpContext context, string baseUrl)
