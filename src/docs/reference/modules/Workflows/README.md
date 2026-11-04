@@ -660,7 +660,7 @@ services.AddActivity<MyTask, MyTaskDisplayDriver>(activity => activity
     .Provides(WorkflowValueSource.Input, "Customer", "object", LocalizationSource.Create<Startup>("The customer of the order."), [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }]));
 ```
 
-A module that adds a Liquid value to `TemplateOptions.Scope`, or a JavaScript method with `IGlobalMethodProvider`, lists it in the **Global** or **Functions** group with an `IWorkflowGlobalValueProvider`. A field name can be a path, such as `Identity.Name`.
+A module that adds a global Liquid value with `TemplateOptionsBuilder.WithGlobalValue()`, or a JavaScript method with `IGlobalMethodProvider`, lists it in the **Global** or **Functions** group with an `IWorkflowGlobalValueProvider`. A field name can be a path, such as `Identity.Name`.
 
 ```csharp
 public sealed class StoreWorkflowGlobalValueProvider : IWorkflowGlobalValueProvider
@@ -871,9 +871,9 @@ await workflowManager.TriggerEventAsync("CustomTaskActivity", input);
 You may passing an instance of a custom object to the workflow's input by adding it to the input collection. If you are looking to use liquid to access the member of the custom object, you must register a member access strategy. The following example for defining a custom type.
 
 ```csharp
-services.Configure<TemplateOptions>(o =>
+services.Configure<TemplateOptionsBuilder>(o =>
 {
-    o.MemberAccessStrategy.Register<CustomDto>();
+    o.ConfigureMemberAccess(strategy => strategy.Register<CustomDto>());
 });
 ```
 
