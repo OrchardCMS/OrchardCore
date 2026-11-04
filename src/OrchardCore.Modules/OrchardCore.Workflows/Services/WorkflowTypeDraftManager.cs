@@ -368,7 +368,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             _session.Delete(draft);
         }
 
-        if (drafts.Any())
+        if (drafts.Count > 0)
         {
             await NotifyAsync(WorkflowTypeChangeKind.DraftDiscarded, workflowTypeId, 0);
         }

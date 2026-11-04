@@ -4,6 +4,7 @@ using AngleSharp.Html.Dom;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
@@ -28,7 +29,7 @@ public class ScriptTagTests : IDisposable
         var options = new ResourceManagementOptions();
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.js"),
@@ -59,7 +60,7 @@ public class ScriptTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.js"),
@@ -94,7 +95,7 @@ public class ScriptTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         // at=Inline triggers RenderLocalScript inline.
         // at=Unspecified also triggers rendering for anonymous scripts.
@@ -136,7 +137,7 @@ public class ScriptTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.js"),
@@ -167,7 +168,7 @@ public class ScriptTagTests : IDisposable
         var options = new ResourceManagementOptions();
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.js")
@@ -198,7 +199,7 @@ public class ScriptTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "bootstrap"),
@@ -230,7 +231,7 @@ public class ScriptTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-script"),
@@ -258,7 +259,7 @@ public class ScriptTagTests : IDisposable
         // Arrange
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-script"),
@@ -293,7 +294,7 @@ public class ScriptTagTests : IDisposable
 
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-script"),
@@ -326,7 +327,7 @@ public class ScriptTagTests : IDisposable
         // Arrange — When at is Unspecified, the named+src path only defines, does not register/render.
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("name", "my-script"),
@@ -369,8 +370,8 @@ public class ScriptTagTests : IDisposable
         );
 
         // Act — Register the same script twice.
-        await ScriptTag.WriteToAsync(arguments, new StringWriter(), null, context);
-        await ScriptTag.WriteToAsync(arguments, new StringWriter(), null, context);
+        await ScriptTag.WriteToAsync(arguments, new ViewBufferTextWriterContent(), null, context);
+        await ScriptTag.WriteToAsync(arguments, new ViewBufferTextWriterContent(), null, context);
 
         // Assert — Only one resource definition should exist (deduplication via src.ToLowerInvariant()).
         var requiredResources = resourceManager.GetRequiredResources("script");
@@ -388,7 +389,7 @@ public class ScriptTagTests : IDisposable
         var options = new ResourceManagementOptions();
         var resourceManager = CreateResourceManager(options);
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.js"),
@@ -411,7 +412,7 @@ public class ScriptTagTests : IDisposable
         // Arrange
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
+        var writer = new ViewBufferTextWriterContent();
 
         var arguments = CreateArguments(
             ("src", "~/app.js"),
@@ -447,7 +448,7 @@ public class ScriptTagTests : IDisposable
             .AddSingleton(resourceManager)
             .BuildServiceProvider();
 
-        return new LiquidTemplateContext(services, new TemplateOptions());
+        return new LiquidTemplateContext(services, TemplateOptions.Default);
     }
 
     private static List<FilterArgument> CreateArguments(params (string name, string value)[] args)
@@ -457,7 +458,7 @@ public class ScriptTagTests : IDisposable
 
     private async Task<IDocument> ParseHtmlAsync(HtmlContentBuilder content)
     {
-        using var writer = new StringWriter();
+        using var writer = new ViewBufferTextWriterContent();
 
         content.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
 

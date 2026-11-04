@@ -25,14 +25,14 @@ public class UsersByNameFilter : ILiquidFilter
         if (input.Type == FluidValues.Array)
         {
             // List of usernames
-            var normalizedUserNames = input.Enumerate(ctx)
-                .Select(x => _userManager.NormalizeName(x.ToStringValue()))
-                .ToArray();
+            var normalizedUserNames = await input.EnumerateAsync(ctx)
+                .Select(x => _userManager.NormalizeName(x.ToStringValue(ctx)))
+                .ToArrayAsync();
 
             return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.NormalizedUserName.IsIn(normalizedUserNames)).ListAsync(), ctx.Options);
         }
 
-        var userName = input.ToStringValue();
+        var userName = input.ToStringValue(ctx);
         var normalizedUserName = _userManager.NormalizeName(userName);
 
         return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync(), ctx.Options);

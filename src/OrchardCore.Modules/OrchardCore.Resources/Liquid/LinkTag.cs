@@ -9,7 +9,7 @@ namespace OrchardCore.Resources.Liquid;
 
 public class LinkTag
 {
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
         var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -29,28 +29,28 @@ public class LinkTag
             switch (argument.Name)
             {
                 case "src":
-                    src = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    src = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "rel":
-                    rel = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    rel = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "condition":
-                    condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "title":
-                    title = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    title = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "type":
-                    type = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "sizes":
-                    sizes = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    sizes = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "append_version":
-                    appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue();
+                    appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(context);
                     break;
                 default:
-                    (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
             }
         }

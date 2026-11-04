@@ -8,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class DefaultAnchorTag
 {
-    public static ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
         var anchorTags = services.GetRequiredService<IEnumerable<IAnchorTag>>();
@@ -17,7 +17,7 @@ public class DefaultAnchorTag
         {
             if (anchorTag.Match(argumentsList))
             {
-                return anchorTag.WriteToAsync(argumentsList, statements, writer, encoder, (LiquidTemplateContext)context);
+                return anchorTag.WriteToAsync(argumentsList, statements, output, encoder, (LiquidTemplateContext)context);
             }
         }
 

@@ -7,9 +7,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class AddWrappersTag
 {
-    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue(context);
 
         if (objectValue is IShape shape)
         {
@@ -17,7 +17,7 @@ public class AddWrappersTag
 
             if (wrappers.Type == FluidValues.String)
             {
-                var values = wrappers.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var values = wrappers.ToStringValue(context).Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var value in values)
                 {
@@ -26,9 +26,9 @@ public class AddWrappersTag
             }
             else if (wrappers.Type == FluidValues.Array)
             {
-                foreach (var value in wrappers.Enumerate(context))
+                await foreach (var value in wrappers.EnumerateAsync(context))
                 {
-                    shape.Metadata.Wrappers.Add(value.ToStringValue());
+                    shape.Metadata.Wrappers.Add(value.ToStringValue(context));
                 }
             }
         }

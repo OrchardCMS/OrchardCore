@@ -745,8 +745,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         {
             var strategy = scope.ServiceProvider.GetRequiredService<IOptions<TemplateOptions>>().Value.MemberAccessStrategy;
 
-            Assert.NotNull(strategy.GetAccessor(typeof(ContentEventContext), nameof(ContentEventContext.ContentType)));
-            Assert.NotNull(strategy.GetAccessor(typeof(WorkflowFaultModel), nameof(WorkflowFaultModel.ErrorMessage)));
+            Assert.NotNull(strategy.GetAccessor(typeof(ContentEventContext), nameof(ContentEventContext.ContentType), StringComparer.Ordinal));
+            Assert.NotNull(strategy.GetAccessor(typeof(WorkflowFaultModel), nameof(WorkflowFaultModel.ErrorMessage), StringComparer.Ordinal));
 
             return Task.CompletedTask;
         });
