@@ -1,5 +1,6 @@
 using Fluid;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.Liquid.Abstractions;
 
@@ -35,10 +36,16 @@ public sealed class FluidOptionsParser<TOptions> where TOptions : class
     {
         if (_templateContext == null)
         {
-            var templateOptions = new TemplateOptions();
+            var templateOptions = new TemplateOptionsBuilder()
+                .WithMemberAccessStrategy<AllowListMemberAccessStrategy>()
+                .ConfigureMemberAccess(strategy =>
+                {
+                    strategy.Register<ShellSettings>();
+                    strategy.Register<TOptions>();
+                })
+                .Build();
+
             _templateContext = new TemplateContext(templateOptions);
-            templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-            templateOptions.MemberAccessStrategy.Register<TOptions>();
             _templateContext.SetValue("ShellSettings", _shellSettings);
         }
 

@@ -6,13 +6,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class ShapeDisplayTypeTag
 {
-    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue(context);
 
         if (objectValue is IShape shape)
         {
-            var shapeDisplayType = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
+            var shapeDisplayType = (await arguments.Item2.EvaluateAsync(context)).ToStringValue(context);
             shape.Metadata.DisplayType = shapeDisplayType;
         }
 

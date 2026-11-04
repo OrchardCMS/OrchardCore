@@ -9,22 +9,23 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Liquid.Values;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
-public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
+public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptionsBuilder>
 {
     private readonly IHostEnvironment _hostEnvironment;
 
     public TemplateOptionsConfigurations(IHostEnvironment hostEnvironment) => _hostEnvironment = hostEnvironment;
 
-    public void Configure(TemplateOptions options)
+    public void Configure(TemplateOptionsBuilder options)
     {
-        options.ValueConverters.Add(x =>
+        options.AddValueConverter(x =>
         {
             if (x is Shape s)
             {
-                return new ObjectValue(s);
+                return ObjectValue.Create(s);
             }
             else if (x is IHtmlContent c)
             {
@@ -38,35 +39,38 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
             return null;
         });
 
-        options.MemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
-        options.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
-        options.MemberAccessStrategy.Register<ShapeMetadata>();
-        options.MemberAccessStrategy.Register<CultureInfo>();
+        options.WithGlobalValue("Culture", new CultureValue());
 
-        options.Scope.SetValue("Culture", new CultureValue());
+        options.WithGlobalValue("Environment", new HostingEnvironmentValue(_hostEnvironment));
 
-        options.Scope.SetValue("Environment", new HostingEnvironmentValue(_hostEnvironment));
+        options.WithGlobalValue("Request", new HttpRequestValue());
 
-        options.Scope.SetValue("Request", new HttpRequestValue());
+        options.WithGlobalValue("HttpContext", new HttpContextValue());
 
-        options.Scope.SetValue("HttpContext", new HttpContextValue());
+        options.WithGlobalValue("TrackingConsent", new TrackingConsentValue());
 
-        options.Scope.SetValue("TrackingConsent", new TrackingConsentValue());
-
-        options.MemberAccessStrategy.Register<FormCollection, FluidValue>((forms, name) =>
+        options.ConfigureMemberAccess(strategy =>
         {
-            if (name == "Keys")
+            strategy.Register<Shape>("*", new ShapeAccessor());
+            strategy.Register<ZoneHolding>("*", new ShapeAccessor());
+            strategy.Register<ShapeMetadata>();
+            strategy.Register<CultureInfo>();
+
+            strategy.Register<FormCollection, FluidValue>((forms, name) =>
             {
-                return new ArrayValue(forms.Keys.Select(x => new StringValue(x)).ToArray());
-            }
+                if (name == "Keys")
+                {
+                    return ArrayValue.Create(forms.Keys.Select(x => StringValue.Create(x)).ToArray());
+                }
 
-            return new StringValuesValue(forms[name]);
+                return new StringValuesValue(forms[name]);
+            });
+
+            strategy.Register<HttpContextItemsWrapper, object>((httpContext, name) => httpContext.Items[name]);
+            strategy.Register<QueryCollection, StringValues>((queries, name) => queries[name]);
+            strategy.Register<CookieCollectionWrapper, string>((cookies, name) => cookies.RequestCookieCollection[name]);
+            strategy.Register<HeaderDictionaryWrapper, StringValues>((headers, name) => headers.HeaderDictionary[name]);
+            strategy.Register<RouteValueDictionaryWrapper, object>((headers, name) => headers.RouteValueDictionary[name]);
         });
-
-        options.MemberAccessStrategy.Register<HttpContextItemsWrapper, object>((httpContext, name) => httpContext.Items[name]);
-        options.MemberAccessStrategy.Register<QueryCollection, StringValues>((queries, name) => queries[name]);
-        options.MemberAccessStrategy.Register<CookieCollectionWrapper, string>((cookies, name) => cookies.RequestCookieCollection[name]);
-        options.MemberAccessStrategy.Register<HeaderDictionaryWrapper, StringValues>((headers, name) => headers.HeaderDictionary[name]);
-        options.MemberAccessStrategy.Register<RouteValueDictionaryWrapper, object>((headers, name) => headers.RouteValueDictionary[name]);
     }
 }
