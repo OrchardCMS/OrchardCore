@@ -120,6 +120,12 @@ public sealed class AssistedTemplatesActionsTests : CmsTestBase, IClassFixture<C
         await Assertions.Expect(tree).ToContainTextAsync("Local template Content__Article");
         await Assertions.Expect(bodyPart).ToHaveCountAsync(0);
 
+        // A local template localizing a string renders, although the content item isn't rendered in a view.
+        await SaveTemplateAsync(page, $"{Prefix}/Admin/Templates/Edit/Content__Article", "{{ \"Localized text\" | t }}");
+        await page.GotoAndAssertOkAsync(inspector);
+        await Assertions.Expect(tree).ToContainTextAsync("Local template Content__Article");
+        await Assertions.Expect(page.Locator(".alert-warning")).ToHaveCountAsync(0);
+
         // The admin renders the content item with its own templates, and the admin theme.
         await page.GotoAndAssertOkAsync($"{inspector}&adminTemplates=true");
         await Assertions.Expect(tree).ToBeVisibleAsync();
