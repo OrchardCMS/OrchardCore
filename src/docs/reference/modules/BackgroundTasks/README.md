@@ -2,7 +2,7 @@
 
 This module provides tools to manage background tasks. This includes an admin UI to show which background tasks are registered, how they ran, and to control them.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/xgHO128P1bU?si=LVikavMH-lvYHQu8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/xgHO128P1bU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 After enabling the feature, you'll be able to manage background tasks under Tools → Background Tasks. This includes the following:
 
