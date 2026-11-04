@@ -34,7 +34,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
     {
         var id = LoremWords(1);
         var description = LoremWords(7);
-        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
+        var deps = LoremWords(5, distinct: true).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
         const bool enabledByDependencyOnly = default;
@@ -82,7 +82,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
         var id = LoremWords(1);
         var name = LoremWords(1);
         var description = LoremWords(7);
-        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
+        var deps = LoremWords(5, distinct: true).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
         const bool enabledByDependencyOnly = default;
@@ -133,7 +133,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
         var category = LoremWords(1);
         var priority = 1;
         var description = LoremWords(7);
-        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
+        var deps = LoremWords(5, distinct: true).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
         const bool enabledByDependencyOnly = default;
@@ -406,7 +406,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
     ]
     public virtual void Dependencies(char delim)
     {
-        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
+        var deps = LoremWords(5, distinct: true).Split(' ');
         var depString = string.Join(delim, deps);
 
         var listDelims = FeatureAttribute.ListDelimiters;

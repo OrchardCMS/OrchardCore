@@ -88,7 +88,7 @@ public class ThemeAttributeTests : ModuleAttributeTests<ThemeAttribute>
         var description = LoremWords(7);
         var author = LoremWords(2);
         var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
-        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
+        var deps = LoremWords(5, distinct: true).Split(' ');
         var website = LoremWebsiteUrl();
         var tags = LoremWords(5).Split(' ');
         const bool defaultTenant = default;
@@ -155,7 +155,7 @@ public class ThemeAttributeTests : ModuleAttributeTests<ThemeAttribute>
         var description = LoremWords(7);
         var author = LoremWords(2);
         var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
-        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
+        var deps = LoremWords(5, distinct: true).Split(' ');
         var website = LoremWebsiteUrl();
         var tags = LoremWords(5).Split(' ');
         const bool defaultTenant = default;
@@ -225,7 +225,7 @@ public class ThemeAttributeTests : ModuleAttributeTests<ThemeAttribute>
         var description = LoremWords(7);
         var author = LoremWords(2);
         var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
-        var deps = LoremWords(5).Split(' ').Distinct().ToArray();
+        var deps = LoremWords(5, distinct: true).Split(' ');
         var website = LoremWebsiteUrl();
         var tags = LoremWords(5).Split(' ');
         const bool defaultTenant = default;
