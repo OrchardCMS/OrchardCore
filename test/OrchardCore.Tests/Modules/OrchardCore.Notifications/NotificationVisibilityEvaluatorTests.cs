@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.Notifications;
 using OrchardCore.Notifications.Services;
@@ -99,15 +101,132 @@ public class NotificationVisibilityEvaluatorTests
     }
 
     [Fact]
-    public async Task FilterAsync_HandlerThrows_HidesTheBatch()
+    public async Task FilterAsync_HandlerAlwaysThrows_HidesAllWithLimitedCalls()
     {
+        var calls = 0;
+        var logger = new TestLogger();
         var evaluator = new NotificationVisibilityEvaluator(
-            [new BatchHandler(_ => throw new InvalidOperationException())],
-            NullLogger<NotificationVisibilityEvaluator>.Instance);
+            [
+                new BatchHandler(_ =>
+                {
+                    calls++;
 
-        var visible = await evaluator.FilterAsync([CreateNotification("1", null), CreateNotification("2", null)], _user, TestContext.Current.CancellationToken);
+                    throw new InvalidOperationException();
+                }),
+            ],
+            logger);
+
+        var visible = await evaluator.FilterAsync(CreateNotifications(100), _user, TestContext.Current.CancellationToken);
 
         Assert.Empty(visible);
+        Assert.Equal(9, calls);
+        Assert.True(evaluator.HasFailures);
+        Assert.Equal(LogLevel.Error, Assert.Single(logger.Entries).Level);
+    }
+
+    [Fact]
+    public async Task FilterAsync_HandlerThrowsForOneAmongMany_HidesItWithFewCallsAndLogsItsId()
+    {
+        var calls = 0;
+        var logger = new TestLogger();
+        var evaluator = new NotificationVisibilityEvaluator(
+            [
+                new BatchHandler(contexts =>
+                {
+                    calls++;
+
+                    if (contexts.Any(c => c.Notification.NotificationId == "73"))
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }),
+            ],
+            logger);
+
+        var visible = await evaluator.FilterAsync(CreateNotifications(100), _user, TestContext.Current.CancellationToken);
+
+        Assert.Equal(99, visible.Count);
+        Assert.DoesNotContain(visible, n => n.NotificationId == "73");
+        Assert.InRange(calls, 2, 15);
+        Assert.Contains("73", Assert.Single(logger.Entries).Message);
+    }
+
+    [Fact]
+    public async Task FilterAsync_HandlerThrowsOnce_HidesNothing()
+    {
+        var calls = 0;
+        var logger = new TestLogger();
+        var evaluator = new NotificationVisibilityEvaluator(
+            [
+                new BatchHandler(_ =>
+                {
+                    if (calls++ == 0)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }),
+            ],
+            logger);
+
+        var visible = await evaluator.FilterAsync(CreateNotifications(4), _user, TestContext.Current.CancellationToken);
+
+        Assert.Equal(4, visible.Count);
+        Assert.False(evaluator.HasFailures);
+        Assert.Equal(LogLevel.Warning, Assert.Single(logger.Entries).Level);
+    }
+
+    [Fact]
+    public async Task FilterAsync_HandlerThrowsAfterEarlierHandlerHidAll_DoesNotCallItAgain()
+    {
+        var calls = 0;
+        var evaluator = new NotificationVisibilityEvaluator(
+            [
+                new DelegateHandler(context => context.Hide()),
+                new BatchHandler(_ =>
+                {
+                    calls++;
+
+                    throw new InvalidOperationException();
+                }),
+            ],
+            NullLogger<NotificationVisibilityEvaluator>.Instance);
+
+        var visible = await evaluator.FilterAsync(CreateNotifications(50), _user, TestContext.Current.CancellationToken);
+
+        Assert.Empty(visible);
+        Assert.Equal(1, calls);
+        Assert.False(evaluator.HasFailures);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(3)]
+    public async Task FilterAsync_Cancelled_ThrowsWithoutKeepingADecision(int count)
+    {
+        using var source = new CancellationTokenSource();
+        var cancelled = false;
+        var logger = new TestLogger();
+        var evaluator = new NotificationVisibilityEvaluator(
+            [
+                new BatchHandler(_ =>
+                {
+                    if (!cancelled)
+                    {
+                        cancelled = true;
+                        source.Cancel();
+                        source.Token.ThrowIfCancellationRequested();
+                    }
+                }),
+            ],
+            logger);
+
+        var notifications = CreateNotifications(count);
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => evaluator.FilterAsync(notifications, _user, source.Token));
+
+        Assert.Empty(logger.Entries);
+        Assert.False(evaluator.HasFailures);
+        Assert.Equal(count, (await evaluator.FilterAsync(notifications, _user, TestContext.Current.CancellationToken)).Count);
     }
 
     [Fact]
@@ -140,6 +259,9 @@ public class NotificationVisibilityEvaluatorTests
         Assert.Equal(NotificationVisibility.Restricted, await evaluator.EvaluateAsync(notifications[2], _user, TestContext.Current.CancellationToken));
     }
 
+    private static List<Notification> CreateNotifications(int count)
+        => Enumerable.Range(1, count).Select(i => CreateNotification(i.ToString(CultureInfo.InvariantCulture), null)).ToList();
+
     private static Notification CreateNotification(string id, string type, string referenceId = null)
         => new()
         {
@@ -148,6 +270,21 @@ public class NotificationVisibilityEvaluatorTests
             ReferenceId = referenceId,
             UserId = "user1",
         };
+
+    private sealed class TestLogger : ILogger<NotificationVisibilityEvaluator>
+    {
+        public List<(LogLevel Level, string Message)> Entries { get; } = [];
+
+        public IDisposable BeginScope<TState>(TState state)
+            where TState : notnull
+            => null;
+
+        public bool IsEnabled(LogLevel logLevel)
+            => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            => Entries.Add((logLevel, formatter(state, exception)));
+    }
 
     private sealed class BatchHandler : INotificationVisibilityHandler
     {

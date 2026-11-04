@@ -328,7 +328,7 @@ A restricted notification always uses the default templates, not the [alternates
 
 The decisions are kept for the rest of the request. When no handler is registered, the notifications are counted and paged by the database as before.
 
-When a handler throws an exception, it is called again for each of these notifications on its own, so that a notification it fails on doesn't hide the others, for example those of other modules. The notifications for which it still throws are hidden, as their access could not be checked, and the exception is logged.
+When a handler throws an exception, it is called again with smaller groups of these notifications, so that a notification it fails on doesn't hide the others, for example those of other modules. The notifications for which it still throws are hidden, as their access could not be checked, and the exception is logged with their identifiers. The number of failed calls is limited: when a handler keeps failing, for example because a service it uses is down, the remaining notifications are hidden without calling it again.
 
 When a handler is registered, the unread count of the navbar is computed by evaluating the most recent unread notifications, up to `MaxEvaluatedUnreadNotifications` (100 by default). When the user has more, the count of those that are not hidden is followed by a plus sign, for example `100+`. Older notifications are not evaluated, so the navbar shows no unread notification when the most recent ones are all hidden. In the notification center, the hidden notifications are removed from the shown page, and its total count only excludes the hidden notifications of that page.
 

@@ -15,6 +15,12 @@ public interface INotificationVisibilityEvaluator
     bool HasHandlers { get; }
 
     /// <summary>
+    /// Gets whether notifications were hidden during this request because a <see cref="INotificationVisibilityHandler"/>
+    /// failed, so the user may have access to them. A result built from these decisions should not be kept for long.
+    /// </summary>
+    bool HasFailures { get; }
+
+    /// <summary>
     /// Gets the visibility of a notification for a user.
     /// </summary>
     /// <param name="notification">The notification.</param>
