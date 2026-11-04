@@ -37,9 +37,9 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<ListPartViewModel>();
+            o.ConfigureMemberAccess(strategy => strategy.Register<ListPartViewModel>());
         })
         .AddLiquidFilter<ListCountFilter>("list_count")
         .AddLiquidFilter<ListItemsFilter>("list_items")

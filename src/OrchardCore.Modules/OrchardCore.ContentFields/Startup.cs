@@ -14,6 +14,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Users;
@@ -29,30 +30,33 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddScoped<IJSLocalizer, ContentFieldsJSLocalizer>();
 
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<BooleanField>();
-            o.MemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
-            o.MemberAccessStrategy.Register<HtmlField>();
-            o.MemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
-            o.MemberAccessStrategy.Register<LinkField>();
-            o.MemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
-            o.MemberAccessStrategy.Register<NumericField>();
-            o.MemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
-            o.MemberAccessStrategy.Register<TextField>();
-            o.MemberAccessStrategy.Register<DisplayTextFieldViewModel>();
-            o.MemberAccessStrategy.Register<DateTimeField>();
-            o.MemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
-            o.MemberAccessStrategy.Register<DateField>();
-            o.MemberAccessStrategy.Register<DisplayDateFieldViewModel>();
-            o.MemberAccessStrategy.Register<TimeField>();
-            o.MemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
-            o.MemberAccessStrategy.Register<MultiTextField>();
-            o.MemberAccessStrategy.Register<DisplayMultiTextFieldViewModel>();
-            o.MemberAccessStrategy.Register<UserPickerField>();
-            o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
-            o.MemberAccessStrategy.Register<ContentPickerField>();
-            o.MemberAccessStrategy.Register<DisplayContentPickerFieldViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<BooleanField>();
+                strategy.Register<DisplayBooleanFieldViewModel>();
+                strategy.Register<HtmlField>();
+                strategy.Register<DisplayHtmlFieldViewModel>();
+                strategy.Register<LinkField>();
+                strategy.Register<DisplayLinkFieldViewModel>();
+                strategy.Register<NumericField>();
+                strategy.Register<DisplayNumericFieldViewModel>();
+                strategy.Register<TextField>();
+                strategy.Register<DisplayTextFieldViewModel>();
+                strategy.Register<DateTimeField>();
+                strategy.Register<DisplayDateTimeFieldViewModel>();
+                strategy.Register<DateField>();
+                strategy.Register<DisplayDateFieldViewModel>();
+                strategy.Register<TimeField>();
+                strategy.Register<DisplayTimeFieldViewModel>();
+                strategy.Register<MultiTextField>();
+                strategy.Register<DisplayMultiTextFieldViewModel>();
+                strategy.Register<UserPickerField>();
+                strategy.Register<DisplayUserPickerFieldViewModel>();
+                strategy.Register<ContentPickerField>();
+                strategy.Register<DisplayContentPickerFieldViewModel>();
+            });
         });
 
         // Boolean Field
@@ -187,11 +191,14 @@ public sealed class UserPickerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<UserPickerField>();
-            o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
-            o.MemberAccessStrategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<UserPickerField>();
+                strategy.Register<DisplayUserPickerFieldViewModel>();
+                strategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
+            });
         });
 
         services.AddContentField<UserPickerField>()

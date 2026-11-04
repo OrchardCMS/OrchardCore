@@ -36,13 +36,16 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<TaxonomyField>();
-            o.MemberAccessStrategy.Register<TaxonomyPartViewModel>();
-            o.MemberAccessStrategy.Register<TermPartViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<TaxonomyField>();
+                strategy.Register<TaxonomyPartViewModel>();
+                strategy.Register<TermPartViewModel>();
+                strategy.Register<DisplayTaxonomyFieldViewModel>();
+                strategy.Register<DisplayTaxonomyFieldTagsViewModel>();
+            });
         })
         .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
         .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");

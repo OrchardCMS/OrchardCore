@@ -11,6 +11,7 @@ using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Html;
@@ -21,7 +22,7 @@ public sealed class Startup : StartupBase
     {
         services.AddHtmlServices();
 
-        services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<HtmlBodyPartViewModel>());
+        services.Configure<TemplateOptionsBuilder>(o => o.ConfigureMemberAccess(strategy => strategy.Register<HtmlBodyPartViewModel>()));
 
         // Body Part
         services.AddContentPart<HtmlBodyPart>()

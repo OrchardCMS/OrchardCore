@@ -29,9 +29,9 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
+            o.ConfigureMemberAccess(strategy => strategy.Register<LocalizationPartViewModel>());
         })
         .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 

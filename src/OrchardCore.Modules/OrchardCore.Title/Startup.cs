@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Title.Drivers;
 using OrchardCore.Title.Handlers;
@@ -19,10 +20,13 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<TitlePartViewModel>();
-            o.MemberAccessStrategy.Register<TitlePartSettingsViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<TitlePartViewModel>();
+                strategy.Register<TitlePartSettingsViewModel>();
+            });
         });
 
         // Title Part

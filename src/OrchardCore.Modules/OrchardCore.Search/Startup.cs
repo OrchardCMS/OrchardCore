@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Liquid;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -55,11 +56,14 @@ public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-            o.MemberAccessStrategy.Register<SearchFormViewModel>();
-            o.MemberAccessStrategy.Register<SearchResultsViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<SearchIndexViewModel>();
+                strategy.Register<SearchFormViewModel>();
+                strategy.Register<SearchResultsViewModel>();
+            });
         });
     }
 }

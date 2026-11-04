@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Liquid;
 using OrchardCore.Templates.Cms.Module.Drivers;
 using OrchardCore.Templates.Cms.Module.Handlers;
 using OrchardCore.Templates.Cms.Module.Models;
@@ -25,9 +26,9 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
 #if (AddPart)
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<MyTestPartViewModel>();
+            o.ConfigureMemberAccess(strategy => strategy.Register<MyTestPartViewModel>());
         });
 
         services.AddContentPart<MyTestPart>()

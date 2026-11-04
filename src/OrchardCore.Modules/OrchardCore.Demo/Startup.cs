@@ -21,6 +21,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -119,9 +120,9 @@ public sealed class Startup : StartupBase
 
         services.AddTagHelpers(typeof(BazTagHelper).Assembly);
 
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<OrchardCore.Demo.ViewModels.TodoViewModel>();
+            o.ConfigureMemberAccess(strategy => strategy.Register<OrchardCore.Demo.ViewModels.TodoViewModel>());
         });
     }
 }

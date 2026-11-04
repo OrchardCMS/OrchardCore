@@ -71,55 +71,61 @@ public sealed class Startup : StartupBase
             o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, ContentItemTag.WriteToAsync));
         });
 
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<ContentItem>();
-            o.MemberAccessStrategy.Register<ContentEventContext>();
-            o.MemberAccessStrategy.Register<ContentElement>();
-            o.MemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
-            o.MemberAccessStrategy.Register<ContentTypePartDefinition>();
-            o.MemberAccessStrategy.Register<ContentPartFieldDefinition>();
-            o.MemberAccessStrategy.Register<ContentFieldDefinition>();
-            o.MemberAccessStrategy.Register<ContentPartDefinition>();
-
-            o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
-
-            o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", (obj, context) =>
+            o.ConfigureMemberAccess(strategy =>
             {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemId, context) =>
-                {
-                    var contentManager = context.Services.GetRequiredService<IContentManager>();
-
-                    return FluidValue.Create(await contentManager.GetAsync(contentItemId), context.Options);
-                });
+                strategy.Register<ContentItem>();
+                strategy.Register<ContentEventContext>();
+                strategy.Register<ContentElement>();
+                strategy.Register<ShapeViewModel<ContentItem>>();
+                strategy.Register<ContentTypePartDefinition>();
+                strategy.Register<ContentPartFieldDefinition>();
+                strategy.Register<ContentFieldDefinition>();
+                strategy.Register<ContentPartDefinition>();
             });
 
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemVersionId", (obj, context) =>
+            o.AddFilter("display_text", DisplayTextFilter.DisplayText);
+
+            o.WithGlobalValue("Content", ObjectValue.Create(new LiquidContentAccessor()));
+            o.ConfigureMemberAccess(strategy =>
             {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemVersionId, context) =>
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", (obj, context) =>
                 {
-                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-                    return FluidValue.Create(await contentManager.GetVersionAsync(contentItemVersionId), context.Options);
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemId, context) =>
+                    {
+                        var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                        return FluidValue.Create(await contentManager.GetAsync(contentItemId), context.Options);
+                    });
                 });
-            });
 
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", (obj, context) =>
-            {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, (name, context) =>
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemVersionId", (obj, context) =>
                 {
-                    return GetContentByHandleAsync(context, name, true);
-                });
-            });
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemVersionId, context) =>
+                    {
+                        var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                        return FluidValue.Create(await contentManager.GetVersionAsync(contentItemVersionId), context.Options);
+                    });
+                });
+
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", (obj, context) =>
+                {
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                    return new LiquidPropertyAccessor(liquidTemplateContext, (name, context) =>
+                    {
+                        return GetContentByHandleAsync(context, name, true);
+                    });
+                });
+
+                strategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
+            });
 
             static async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
             {

@@ -40,42 +40,45 @@ public sealed class Startup : StartupBase
         services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
         services.AddPermissionProvider<Permissions>();
 
-        services.Configure<TemplateOptions>(options =>
+        services.Configure<TemplateOptionsBuilder>(options =>
         {
-            options.Filters.AddFilter("t", LiquidViewFilters.Localize);
-            options.Filters.AddFilter("html_class", LiquidViewFilters.HtmlClass);
-            options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
+            options.AddFilter("t", LiquidViewFilters.Localize);
+            options.AddFilter("html_class", LiquidViewFilters.HtmlClass);
+            options.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
 
-            options.MemberAccessStrategy.Register<LiquidPartViewModel>();
-            options.MemberAccessStrategy.Register<LiquidField>();
-            options.MemberAccessStrategy.Register<LiquidFieldViewModel>();
+            options.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<LiquidPartViewModel>();
+                strategy.Register<LiquidField>();
+                strategy.Register<LiquidFieldViewModel>();
 
-            // Used to provide a factory to return a value based on a property name that is unknown at registration time.
-            options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+                // Used to provide a factory to return a value based on a property name that is unknown at registration time.
+                strategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
-            // When a property of a 'JsonObject' value is accessed, try to look into its properties.
-            options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
+                // When a property of a 'JsonObject' value is accessed, try to look into its properties.
+                strategy.Register<JsonObject, object>((source, name) => source[name]);
 
-            // When a property of a 'JsonDynamicObject' value is accessed, try to look into its properties.
-            options.MemberAccessStrategy.Register<JsonDynamicObject, object>((json, name) => json[name]);
+                // When a property of a 'JsonDynamicObject' value is accessed, try to look into its properties.
+                strategy.Register<JsonDynamicObject, object>((json, name) => json[name]);
+            });
 
             // Convert JToken to FluidValue
-            options.ValueConverters.Add(x =>
+            options.AddValueConverter(x =>
             {
                 return x switch
                 {
-                    JsonObject o => new ObjectValue(o),
-                    JsonDynamicObject o => new ObjectValue((JsonObject)o),
+                    JsonObject o => ObjectValue.Create(o),
+                    JsonDynamicObject o => ObjectValue.Create((JsonObject)o),
                     JsonValue o => o.GetObjectValue(),
                     JsonDynamicValue o => ((JsonValue)(o.Node)).GetObjectValue(),
-                    DateTime d => new ObjectValue(d),
+                    DateTime d => ObjectValue.Create(d),
                     _ => null
 
                 };
             });
 
-            options.Filters.AddFilter("json", JsonFilter.Json);
-            options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);
+            options.AddFilter("json", JsonFilter.Json);
+            options.AddFilter("jsonparse", JsonParseFilter.JsonParse);
         })
         .AddLiquidFilter<LocalTimeZoneFilter>("local")
         .AddLiquidFilter<UtcTimeZoneFilter>("utc")

@@ -14,10 +14,13 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<ContentItemViewModel>();
-            o.MemberAccessStrategy.Register<ContentPartViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<ContentItemViewModel>();
+                strategy.Register<ContentPartViewModel>();
+            });
         });
 
         services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();

@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Spatial.Drivers;
 using OrchardCore.Spatial.Fields;
@@ -29,10 +30,13 @@ public sealed class Startup : StartupBase
 
         // Registering both field types and shape types are necessary as they can
         // be accessed from inner properties.
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<GeoPointField>();
-            o.MemberAccessStrategy.Register<DisplayGeoPointFieldViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<GeoPointField>();
+                strategy.Register<DisplayGeoPointFieldViewModel>();
+            });
         });
     }
 }

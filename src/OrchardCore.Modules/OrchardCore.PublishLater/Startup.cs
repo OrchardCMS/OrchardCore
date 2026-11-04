@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Drivers;
 using OrchardCore.PublishLater.Indexes;
@@ -19,9 +20,9 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<PublishLaterPartViewModel>();
+            o.ConfigureMemberAccess(strategy => strategy.Register<PublishLaterPartViewModel>());
         });
 
         services
