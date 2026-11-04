@@ -80,7 +80,7 @@ See [Authentication](authentication/README.md) for the OpenID Connect endpoints 
 - JSON property names use the casing shown in request and response examples. They are generated from the shipped endpoint contracts.
 - The OpenAPI document carries a request and a response `example` on the main create operations: tenants, content items, users, roles, queries and OpenID applications. A password or client secret in an example is a placeholder that starts with `replace` in any casing. Replace it, as the example would otherwise create a resource with a publicly known credential.
 - Queries, roles, templates, layers, placements and shortcode templates can be exported one by one to a recipe when the Deployment feature is enabled, see their pages.
-- Send JSON request bodies with `Content-Type: application/json`.
+- Send JSON request bodies with `Content-Type: application/json`. A request with a body and no content type or another one, such as what `curl -d` sends without `-H`, doesn't match the route and returns an HTML `404`.
 - Binary upload operations document their required content type on their API page.
 - Collection operations that support paging use zero-based `skip` and a bounded `take`; their pages define the exact defaults and envelope.
 - Validation failures use the response representation documented for the operation. Do not assume that all modules return one global error shape.
