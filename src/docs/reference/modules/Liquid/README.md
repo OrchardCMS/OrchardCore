@@ -1266,10 +1266,9 @@ services.Configure<TemplateOptionsBuilder>(options =>
     // A converter called when a CLR object is converted to a Liquid value.
     options.AddValueConverter(x => x is Money money ? NumberValue.Create(money.Amount) : null);
 
-    // The members that templates can read.
+    // A member computed on demand, which doesn't have to exist on the type.
     options.ConfigureMemberAccess(strategy =>
     {
-        strategy.Register<Product>();
         strategy.Register<StoreAccessor, Product>("Featured", (obj, context) => GetFeaturedProduct(context));
     });
 });
@@ -1277,7 +1276,18 @@ services.Configure<TemplateOptionsBuilder>(options =>
 
 A type needing services to configure the options implements `IConfigureOptions<TemplateOptionsBuilder>`.
 
-Templates can only read the members of the types that are registered, which is enforced by `AllowListMemberAccessStrategy`. A type is registered with all its public properties and fields by the `Register<T>()` method of the `OrchardCore.Liquid` namespace. Member names are case-sensitive, and the registrations of the base types and interfaces of an object also apply to it.
+Templates can read the public properties and fields of any object reachable from their model, without registering its type. Member names are matched without considering their case, and the accessor of a custom registration takes precedence over them.
+
+!!! warning
+    A template can read everything that is reachable from its model, so don't expose a service or a secret in the model of a shape. To restrict what templates read from a type, register an accessor for all its members, like `User` and `Site` do:
+
+    ```csharp
+    options.ConfigureMemberAccess(strategy => strategy.Register<Account, FluidValue>((account, name, context) => name switch
+    {
+        nameof(Account.DisplayName) => StringValue.Create(account.DisplayName),
+        _ => NilValue.Instance,
+    }));
+    ```
 
 Custom tags and blocks are registered on the `LiquidViewParser`, with `LiquidViewOptions.LiquidViewParserConfiguration`, and write to an `IFluidOutput`.
 
