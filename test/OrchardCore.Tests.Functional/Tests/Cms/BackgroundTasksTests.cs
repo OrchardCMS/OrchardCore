@@ -127,6 +127,47 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
     }
 
     [Fact]
+    public async Task Polling_AnswerOfAnotherServer_IsIgnored()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        var row = await GotoLoadedTaskRowAsync(page, SucceedingTestBackgroundTask.TaskName);
+        var runCount = await GetRunCountAsync(row);
+
+        var refreshes = 0;
+        page.Request += (_, request) =>
+        {
+            if (request.Headers.ContainsKey("x-background-tasks-refresh"))
+            {
+                refreshes++;
+            }
+        };
+
+        // The states of another server differ from the rendered ones, which refreshes the task when it isn't detected.
+        var polls = new TaskCompletionSource();
+        await page.RouteAsync("**/Admin/BackgroundTasks/States", route =>
+        {
+            polls.TrySetResult();
+
+            return route.FulfillAsync(new RouteFulfillOptions
+            {
+                Headers = new Dictionary<string, string> { ["X-Background-Tasks-Server"] = "other-server" },
+                ContentType = "application/json",
+                Body = $$"""[{ "name": "{{SucceedingTestBackgroundTask.TaskName}}", "status": "Idle", "runCount": {{runCount + 1}} }]""",
+            });
+        });
+
+        await polls.Task.WaitAsync(TimeSpan.FromMilliseconds(_runTimeout), TestContext.Current.CancellationToken);
+        await page.WaitForTimeoutAsync(1000);
+
+        Assert.Equal(0, refreshes);
+        await Assertions.Expect(row).ToHaveAttributeAsync("data-task-run-count", ToText(runCount));
+
+        await page.CloseAsync();
+    }
+
+    [Fact]
     public async Task BulkRunNow_SelectedTasks_RunsEachTask()
     {
         var page = await Fixture.CreatePageAsync();

@@ -13,8 +13,13 @@ const activeDelay = 2000;
 const maxActiveDelay = 10000;
 const idleDelay = 10000;
 
+// The polling only follows the server that rendered the page, as the execution state is kept in memory by each server.
+// The page is reloaded when that server no longer answers, for instance because it restarted with a new identifier.
+const maxOtherServerPolls = 30;
+
 const container = document.querySelector<HTMLElement>("[data-background-task-states-url]");
 const statesUrl = container?.dataset.backgroundTaskStatesUrl;
+const serverId = container?.dataset.backgroundTaskServer;
 
 const getSignature = (status: string | undefined, runCount: number | string | undefined) => `${status ?? ""}|${runCount ?? ""}`;
 
@@ -53,6 +58,12 @@ const refreshTasksAsync = async (root: HTMLElement, names: string[], addedNames:
     }
 
     const freshDocument = new DOMParser().parseFromString(await response.text(), "text/html");
+
+    // Another server answered, the next polling tries again as the signatures are still outdated.
+    if (freshDocument.querySelector<HTMLElement>("[data-background-task-server]")?.dataset.backgroundTaskServer !== serverId) {
+        return true;
+    }
+
     const currentTasks = getTaskElements(root);
     const freshTasks = getTaskElements(freshDocument);
 
@@ -104,6 +115,7 @@ if (container && statesUrl) {
     let delay = activeDelay;
     let timeout: number | undefined;
     let polling = false;
+    let otherServerPolls = 0;
     const otherTaskSignatures = new Map<string, string>();
 
     const schedule = () => {
@@ -132,7 +144,18 @@ if (container && statesUrl) {
                 credentials: "same-origin",
             });
 
-            if (response.ok) {
+            const respondingServerId = response.headers.get("X-Background-Tasks-Server");
+
+            if (respondingServerId && respondingServerId !== serverId) {
+                otherServerPolls++;
+
+                if (otherServerPolls >= maxOtherServerPolls) {
+                    window.location.reload();
+                    return;
+                }
+            } else if (response.ok) {
+                otherServerPolls = 0;
+
                 const states = (await response.json()) as BackgroundTaskStatusResponse[];
                 const currentTasks = getTaskElements(container);
 

@@ -1,3 +1,4 @@
+@using OrchardCore.BackgroundTasks.Controllers
 @using OrchardCore.Modules
 
 @inject IClock Clock
@@ -14,7 +15,7 @@
     </breadcrumb>
 </zone>
 
-<div data-background-task-states-url="@Url.Action("States")">
+<div data-background-task-states-url="@Url.Action("States")" data-background-task-server="@BackgroundTaskController.ServerId">
     <div data-task-name="@Model.Name" data-task-status="@state?.Status" data-task-run-count="@state?.RunCount" class="background-task-details">
 
         @* The actions are posted with the antiforgery token of the page. *@

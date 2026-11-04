@@ -1,12 +1,13 @@
 @using OrchardCore.Admin.Models
 @using OrchardCore.Admin
+@using OrchardCore.BackgroundTasks.Controllers
 @model BackgroundTaskIndexViewModel
 
 <zone Name="Title">
     <breadcrumb name="BackgroundTasks" title="@T["Background Tasks"]" />
 </zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="taskNames" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]" data-background-task-states-url="@Url.Action("States")">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="taskNames" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]" data-background-task-states-url="@Url.Action("States")" data-background-task-server="@BackgroundTaskController.ServerId">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />

@@ -28,6 +28,11 @@ public sealed class BackgroundTaskController : Controller
     // Sent by the admin pages to refresh the displayed tasks.
     private const string _refreshHeader = "X-Background-Tasks-Refresh";
 
+    // Tells the admin pages which server answered their polling, as the execution state is kept in memory by each server.
+    private const string _serverHeader = "X-Background-Tasks-Server";
+
+    internal static string ServerId { get; } = Guid.NewGuid().ToString("N");
+
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
     private readonly BackgroundTaskManager _backgroundTaskManager;
@@ -311,6 +316,8 @@ public sealed class BackgroundTaskController : Controller
         }
 
         var states = await GetStatesAsync();
+
+        Response.Headers[_serverHeader] = ServerId;
 
         return Json(states.Values.Select(state => new
         {
