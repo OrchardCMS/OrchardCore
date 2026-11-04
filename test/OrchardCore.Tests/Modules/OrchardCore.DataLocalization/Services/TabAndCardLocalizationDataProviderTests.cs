@@ -56,7 +56,7 @@ public sealed class TabAndCardLocalizationDataProviderTests
                 "TextField": [ { "place": "Parts:1#Content;1%Metadata" }, { "place": "Parts:2" } ],
                 "TitlePart": [ { "place": "Parts:0#SEO", "contentType": [ "Article" ] } ]
             }
-            """);
+            """, TestContext.Current.CancellationToken);
 
         try
         {

@@ -1,7 +1,9 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 
-namespace OrchardCore.Localization.Analyzers;
+#nullable enable
+
+namespace OrchardCore.DisplayManagement.SourceGenerators;
 
 /// <summary>
 /// The kind of placement value that a call sets.

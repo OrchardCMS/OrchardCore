@@ -5,7 +5,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 
-namespace OrchardCore.Localization.Analyzers;
+#nullable enable
+
+namespace OrchardCore.DisplayManagement.SourceGenerators;
 
 /// <summary>
 /// Generates the <c>PlacementCatalog</c> assembly attributes that list, for each type, the constant placement locations

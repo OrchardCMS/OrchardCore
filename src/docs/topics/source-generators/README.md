@@ -116,6 +116,28 @@ warning OCSG001: Type 'DebugSettingsViewModel' is sealed and does not implement 
 - Implement `IShape` on the model if it is intentionally a shape type.
 - Use a non-proxy pattern such as `View(...)`, `Copy(...)`, or `Dynamic(...)` when a proxy-backed shape is not required.
 
+### OCSG003: Placement location isn't a compile-time constant
+
+The tab and card names of the display drivers are listed for [translation with Data Localization](../../reference/modules/Placement/README.md#translating-tab-and-card-names) from a placement catalog that `OrchardCore.SourceGenerators` generates in each assembly. The catalog holds the constant locations of `ShapeResult.Location()` that have a tab or a card, the names of `PlacementLocationBuilder.Tab()` and `Card()`, and the locations declared with `[PlacementLocation]`. Conditional, coalesce and switch expressions of constants are read too.
+
+The `OCSG003` analyzer reports a location, or a tab or card name, that isn't a compile-time constant, since its names can't be listed:
+
+```csharp
+return View("ProfileTools_Edit", profile).Location(EditorLocation);
+```
+
+```text
+warning OCSG003: The placement location or name is not a compile-time constant, so its tab and card names cannot be listed for translation
+```
+
+A location built only from text without `#` or `%` and from numbers, such as `"Actions:40." + position`, has no tab or card and isn't reported, and neither are the members marked with `[SkipLocalizationExtraction]`.
+
+**Ways to fix it:**
+
+- Pass a constant.
+- Declare the possible locations on the driver with `[PlacementLocation]`, referencing the same constants. A type is covered by the declarations of its base types.
+- For names that come from data, list them with an `ITabAndCardNameContributor`, and disable the rule around the call with `#pragma warning disable OCSG003`.
+
 
 ## Real-World Examples
 

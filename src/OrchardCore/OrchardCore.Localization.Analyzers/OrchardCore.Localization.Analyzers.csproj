@@ -8,7 +8,7 @@
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <!-- Packed into the OrchardCore.Abstractions package, next to LocalizationSource, so that every consumer gets the rules. -->
     <IsPackable>false</IsPackable>
-    <Description>Roslyn analyzers for Orchard Core localization sources, and the generator of the placement catalogs that data localization lists tab and card names from.</Description>
+    <Description>Roslyn analyzers for Orchard Core localization sources.</Description>
   </PropertyGroup>
 
   <ItemGroup>

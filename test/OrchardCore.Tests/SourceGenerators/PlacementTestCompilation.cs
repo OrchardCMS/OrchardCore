@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Tests.Localization;
+namespace OrchardCore.Tests.SourceGenerators;
 
 #nullable enable
 

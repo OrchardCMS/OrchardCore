@@ -3,7 +3,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 
-namespace OrchardCore.Localization.Analyzers;
+#nullable enable
+
+namespace OrchardCore.DisplayManagement.SourceGenerators;
 
 /// <summary>
 /// Reports the placement locations, tab names and card names that <see cref="PlacementCatalogGenerator"/> can't read,
@@ -15,20 +17,20 @@ public sealed class PlacementLocationAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// The identifier of the diagnostic reported for a placement location or name that is not a compile-time constant.
     /// </summary>
-    public const string NonConstantPlacementDiagnosticId = "OCLOC105";
+    public const string NonConstantPlacementDiagnosticId = "OCSG003";
 
     private const string SkipAttributeMetadataName = "OrchardCore.Localization.SkipLocalizationExtractionAttribute";
-    private const string Category = "Localization";
-    private const string HelpLinkUri = "https://docs.orchardcore.net/en/latest/reference/modules/Localize/#analyzer-rules";
+    private const string Category = "Usage";
+    private const string HelpLinkUri = "https://docs.orchardcore.net/en/latest/topics/source-generators/#ocsg003-placement-location-isnt-a-compile-time-constant";
 
     private static readonly DiagnosticDescriptor s_nonConstantPlacementRule = new(
         NonConstantPlacementDiagnosticId,
-        "Placement location is not a constant",
+        "Placement location isn't a compile-time constant",
         "The placement location or name is not a compile-time constant, so its tab and card names cannot be listed for translation",
         Category,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "The tab and card names of placement locations are listed for translation from the constants read at build time. Pass a constant, or declare the possible locations on the type with [PlacementLocation], referencing the same constants. For names that come from data, list them with an ITabAndCardNameContributor and disable the rule around the call with #pragma warning disable OCLOC105.",
+        description: "The tab and card names of placement locations are listed for translation from the constants read at build time. Pass a constant, or declare the possible locations on the type with [PlacementLocation], referencing the same constants. For names that come from data, list them with an ITabAndCardNameContributor and disable the rule around the call with #pragma warning disable OCSG003.",
         helpLinkUri: HelpLinkUri);
 
     /// <inheritdoc />

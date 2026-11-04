@@ -87,9 +87,9 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
                     var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
                     model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
                 })
-#pragma warning disable OCLOC105 // The tab is named after the settings type, CustomUserSettingsTabAndCardNameContributor lists these names.
+#pragma warning disable OCSG003 // The tab is named after the settings type, CustomUserSettingsTabAndCardNameContributor lists these names.
                 .Location($"Content:10#{contentTypeDefinition.DisplayName}")
-#pragma warning restore OCLOC105
+#pragma warning restore OCSG003
                 .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
                 .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
         }
