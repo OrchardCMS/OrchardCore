@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Indexes;
@@ -14,6 +15,10 @@ namespace OrchardCore.Notifications.Drivers;
 
 public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 {
+    // How long the navbar can be cached when a visibility handler failed: long enough not to call
+    // a failing handler on every page, and short enough to show the hidden notifications soon after it recovers.
+    private static readonly TimeSpan _failedEvaluationCacheDuration = TimeSpan.FromMinutes(1);
+
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly INotificationVisibilityEvaluator _visibilityEvaluator;
@@ -53,6 +58,11 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                 if (_visibilityEvaluator.HasHandlers)
                 {
                     await PopulateVisibleAsync(model, userId, user);
+
+                    if (_visibilityEvaluator.HasFailures)
+                    {
+                        LimitCacheDuration((IShape)model);
+                    }
 
                     return;
                 }
@@ -99,6 +109,16 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
             Dynamic("UserNotificationNavbarResources")
                 .Location(OrchardCoreConstants.DisplayType.Detail, "Content:9")
                 .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:9"));
+    }
+
+    private static void LimitCacheDuration(IShape shape)
+    {
+        var cacheContext = shape.Metadata.Cache();
+
+        if (cacheContext != null && !(cacheContext.ExpiresAfter < _failedEvaluationCacheDuration))
+        {
+            cacheContext.WithExpiryAfter(_failedEvaluationCacheDuration);
+        }
     }
 
     // The hidden notifications are neither shown nor counted, so the unread notifications are evaluated
