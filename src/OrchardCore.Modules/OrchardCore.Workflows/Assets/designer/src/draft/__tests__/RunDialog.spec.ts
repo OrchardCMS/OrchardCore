@@ -42,6 +42,21 @@ describe("RunDialog", () => {
         document.body.innerHTML = "";
     });
 
+    it.each(["😀", "e\u0301", "🇺🇸", "👩‍💻"])("keeps whole graphemes when the response preview cuts %s", async (element) => {
+        const prefix = "a".repeat(4999);
+        const { wrapper } = await setup(httpRun, {
+            getLatestInstance: vi.fn().mockResolvedValue({}),
+            generateHttpUrl: vi.fn().mockResolvedValue("/invoke"),
+            sendHttpRequest: vi.fn().mockResolvedValue({ status: 200, body: prefix + element + "more" }),
+        });
+
+        await wrapper.get("form").trigger("submit");
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=run-response-body]").text()).toBe(prefix + "…");
+        wrapper.unmount();
+    });
+
     it("run_WorkflowStartedByWorkflow_RunsWithTheTypedInputsAndShowsTheResult", async () => {
         const run = vi.fn().mockResolvedValue({ instanceId: 12, instanceUrl: "/instances/12", status: "Finished", outputs: { doubled: 42 } });
         const { wrapper } = await setup(inputsRun, { run });
