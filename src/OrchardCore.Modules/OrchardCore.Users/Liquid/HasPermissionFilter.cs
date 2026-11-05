@@ -20,12 +20,12 @@ public class HasPermissionFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        if (input.ToObjectValue() is LiquidUserAccessor)
+        if (input.ToObjectValue(ctx) is LiquidUserAccessor)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (user != null && arguments.Count > 0)
             {
-                var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
+                var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue(ctx);
 
                 if (string.IsNullOrWhiteSpace(permissionName))
                 {
@@ -36,7 +36,7 @@ public class HasPermissionFilter : ILiquidFilter
 
                 if (arguments.Count > 1)
                 {
-                    var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
+                    var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue(ctx);
 
                     if (resource != null)
                     {

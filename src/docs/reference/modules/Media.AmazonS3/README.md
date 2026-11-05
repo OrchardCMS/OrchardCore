@@ -49,6 +49,8 @@ The following configuration values are used by default and can be customized:
 Refer also to the [Configuration Section](../Configuration/README.md),
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
+When the configuration is missing or invalid, an error is logged and the tenant keeps using the local file storage.
+
 There are two hosting options: inside and outside AWS Cloud.
 In case you are hosting Orchard Core inside AWS (EC2, EKS, etc.) you need to configure only `BucketName` and you may delete or comment out the other sections.
 
@@ -250,10 +252,10 @@ The following configuration values are used by default and can be customized:
   "OrchardCore": {
     "Media": {
       "AmazonS3": {
+        "Region": "eu-central-1",
+        "Profile": "default",
+        "ProfilesLocation": "",
         "ImageCache": {
-          "Region": "eu-central-1",
-          "Profile": "default",
-          "ProfilesLocation": "",
           "Credentials": {
             "SecretKey": "",
             "AccessKey": ""
@@ -268,6 +270,8 @@ The following configuration values are used by default and can be customized:
   }
 }
 ```
+
+The AWS settings such as `Region` are read from the `Media:AmazonS3` section, as well as `Credentials` when the `ImageCache` section doesn't define them. The image cache can be active without the media store, which only becomes active once its own `BucketName` is set.
 
 !!! note
     Templating the configuration and configuring a bucket per tenant, as well as using a local emulator work the same way as for Amazon S3 Media Storage; follow its documentation above.

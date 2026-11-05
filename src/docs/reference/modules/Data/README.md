@@ -57,6 +57,7 @@ Orchard Core binds the `OrchardCore:YesSql` configuration section to `YesSqlOpti
 | `QueryGatingEnabled` | `true` | Coalesces identical concurrent query work so YesSql executes it once and shares the result. |
 | `EnableThreadSafetyChecks` | `false` | Enables checks that help diagnose concurrent use of a YesSql session. |
 | `IsolationLevel` | `ReadCommitted` | Sets the default transaction isolation level passed to the configured provider. |
+| `IncludeQueryTextInTelemetry` | `false` | Adds the SQL text to the spans of the commands, in `db.query.text`, when the `YesSql` telemetry is collected. See [Other libraries](../OpenTelemetry/README.md#other-libraries). Raw SQL fragments given to a query are included as they are, so they can expose data to the receiver of the telemetry. |
 
 Configure these values through any supported tenant configuration source. For example:
 
@@ -67,7 +68,8 @@ Configure these values through any supported tenant configuration source. For ex
       "CommandsPageSize": 1000,
       "QueryGatingEnabled": true,
       "EnableThreadSafetyChecks": false,
-      "IsolationLevel": "ReadCommitted"
+      "IsolationLevel": "ReadCommitted",
+      "IncludeQueryTextInTelemetry": false
     }
   }
 }

@@ -21,13 +21,13 @@ public class TaxonomyTermsFilter : ILiquidFilter
         string taxonomyContentItemId = null;
         string[] termContentItemIds = null;
 
-        if (input.Type == FluidValues.Object && input.ToObjectValue() is TaxonomyField field)
+        if (input.Type == FluidValues.Object && input.ToObjectValue(ctx) is TaxonomyField field)
         {
             taxonomyContentItemId = field.TaxonomyContentItemId;
             termContentItemIds = field.TermContentItemIds;
         }
         else if (input.Type == FluidValues.Object
-            && input.ToObjectValue() is JsonObject jobj
+            && input.ToObjectValue(ctx) is JsonObject jobj
             && jobj.ContainsKey(nameof(TaxonomyField.TermContentItemIds))
             && jobj.ContainsKey(nameof(TaxonomyField.TaxonomyContentItemId)))
         {
@@ -36,8 +36,8 @@ public class TaxonomyTermsFilter : ILiquidFilter
         }
         else if (input.Type == FluidValues.Array)
         {
-            taxonomyContentItemId = arguments.At(0).ToStringValue();
-            termContentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+            taxonomyContentItemId = arguments.At(0).ToStringValue(ctx);
+            termContentItemIds = await input.EnumerateAsync(ctx).Select(x => x.ToStringValue(ctx)).ToArrayAsync();
         }
         else
         {

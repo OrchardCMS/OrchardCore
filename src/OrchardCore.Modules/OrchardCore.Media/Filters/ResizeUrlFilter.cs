@@ -26,7 +26,7 @@ public class ResizeUrlFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
-        var url = input.ToStringValue();
+        var url = input.ToStringValue(context);
 
         // Profile is a named argument only.
         var profile = arguments["profile"];
@@ -40,7 +40,7 @@ public class ResizeUrlFilter : ILiquidFilter
 
         if (!profile.IsNil())
         {
-            mediaCommands.SetCommands(await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue()));
+            mediaCommands.SetCommands(await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue(context)));
         }
 
         width = useNamed ? arguments["width"] : arguments.At(0);
@@ -52,7 +52,7 @@ public class ResizeUrlFilter : ILiquidFilter
         bgcolor = useNamed ? arguments["bgcolor"] : arguments.At(6);
         autoorient = useNamed ? arguments["autoorient"] : arguments.At(7);
 
-        ApplyMediaCommands(mediaCommands, width, height, mode, quality, format, anchor, bgcolor, autoorient);
+        ApplyMediaCommands(mediaCommands, width, height, mode, quality, format, anchor, bgcolor, autoorient, context);
 
         var resizedUrl = QueryHelpers.AddQueryString(url, mediaCommands.GetValues());
 
@@ -61,39 +61,39 @@ public class ResizeUrlFilter : ILiquidFilter
             resizedUrl = _mediaTokenService.AddTokenToPath(resizedUrl);
         }
 
-        return new StringValue(resizedUrl);
+        return StringValue.Create(resizedUrl);
     }
 
-    private static void ApplyMediaCommands(MediaCommands mediaCommands, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor, FluidValue autoorient)
+    private static void ApplyMediaCommands(MediaCommands mediaCommands, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor, FluidValue autoorient, LiquidTemplateContext context)
     {
         if (!width.IsNil())
         {
-            mediaCommands.Width = width.ToStringValue();
+            mediaCommands.Width = width.ToStringValue(context);
         }
 
         if (!height.IsNil())
         {
-            mediaCommands.Height = height.ToStringValue();
+            mediaCommands.Height = height.ToStringValue(context);
         }
 
         if (!mode.IsNil())
         {
-            mediaCommands.ResizeMode = mode.ToStringValue();
+            mediaCommands.ResizeMode = mode.ToStringValue(context);
         }
 
         if (!format.IsNil())
         {
-            mediaCommands.Format = format.ToStringValue();
+            mediaCommands.Format = format.ToStringValue(context);
         }
 
         if (!quality.IsNil())
         {
-            mediaCommands.Quality = quality.ToStringValue();
+            mediaCommands.Quality = quality.ToStringValue(context);
         }
 
         if (!anchorValue.IsNil())
         {
-            var obj = anchorValue.ToObjectValue();
+            var obj = anchorValue.ToObjectValue(context);
 
             if (obj is not Anchor anchor)
             {
@@ -112,12 +112,12 @@ public class ResizeUrlFilter : ILiquidFilter
 
         if (!bgcolor.IsNil())
         {
-            mediaCommands.BackgroundColor = bgcolor.ToStringValue();
+            mediaCommands.BackgroundColor = bgcolor.ToStringValue(context);
         }
 
         if (!autoorient.IsNil())
         {
-            mediaCommands.AutoOrient = autoorient.ToStringValue();
+            mediaCommands.AutoOrient = autoorient.ToStringValue(context);
         }
     }
 }

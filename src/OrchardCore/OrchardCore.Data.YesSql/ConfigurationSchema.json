@@ -24,6 +24,11 @@
               "default": false,
               "description": "Whether to enable checks that help diagnosing the concurrent use of a YesSql session."
             },
+            "IncludeQueryTextInTelemetry": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the spans of the database commands emitted by YesSql include their SQL text. Raw SQL fragments given to a query are included as they are."
+            },
             "IsolationLevel": {
               "type": "string",
               "enum": [

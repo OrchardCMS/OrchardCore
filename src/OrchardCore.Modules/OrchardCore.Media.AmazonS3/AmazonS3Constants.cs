@@ -6,6 +6,7 @@ internal static class AmazonS3Constants
     {
         public const string BucketNameIsEmpty = "BucketName is required attribute for S3 storage.";
         public const string RegionAndServiceUrlAreEmpty = "Region or ServiceURL is a required attribute for S3 storage.";
+        public const string AwsOptionsAreInvalid = "The AWS options of the S3 storage are invalid.";
     }
 
     internal static class AwsCredentialParamNames
