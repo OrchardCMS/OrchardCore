@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,8 +37,10 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var azureOptions = new AzureSignalROptions().BindConfiguration(_configuration);
-        var validationErrors = azureOptions.Validate();
+        var azureOptions = new AzureSignalROptions();
+        var validationErrors = azureOptions.TryBindConfiguration(_configuration)
+            ? azureOptions.Validate()
+            : [new ValidationResult("The 'SignalR:Azure' section is invalid.")];
 
         if (validationErrors.Any())
         {

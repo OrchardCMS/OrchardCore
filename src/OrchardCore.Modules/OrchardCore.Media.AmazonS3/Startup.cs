@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Amazon;
 using Amazon.S3;
@@ -43,8 +44,10 @@ public sealed class Startup : Modules.StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger);
-        var validationErrors = storeOptions.Validate().ToList();
+        var storeOptions = new AwsStorageOptions();
+        var validationErrors = storeOptions.TryBindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger)
+            ? storeOptions.Validate().ToList()
+            : [new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid)];
         var stringBuilder = new StringBuilder();
 
         if (validationErrors.Count > 0)
@@ -161,8 +164,10 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
     {
         services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _configuration, _logger);
-        var validationErrors = storeOptions.Validate().ToList();
+        var storeOptions = new AwsStorageOptions();
+        var validationErrors = storeOptions.TryBindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _configuration, _logger)
+            ? storeOptions.Validate().ToList()
+            : [new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid)];
         var stringBuilder = new StringBuilder();
 
         if (validationErrors.Count > 0)
@@ -208,10 +213,11 @@ public sealed class MediaAmazonS3TusStartup : Modules.StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions();
 
         // Only replace the default local store if the media store is active, as it provides the client and the bucket.
-        if (!storeOptions.Validate().Any())
+        if (storeOptions.TryBindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger) &&
+            !storeOptions.Validate().Any())
         {
             services.Replace(ServiceDescriptor.Singleton<ITusTempStore, S3TusTempStore>());
         }

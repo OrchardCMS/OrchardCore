@@ -142,26 +142,74 @@ public sealed class AmazonS3StartupTests
     }
 
     [Fact]
-    public void BindConfiguration_MalformedOption_FailsValidation()
+    public void ConfigureServices_ImageCacheMalformedOption_DoesNotRegisterClient()
+    {
+        // Arrange
+        var configuration = BuildShellConfiguration(new Dictionary<string, string>
+        {
+            [$"{Section}:Region"] = "us-east-1",
+            [$"{Section}:Timeout"] = "malformed",
+            [$"{Section}:ImageCache:BucketName"] = "image-cache",
+        });
+
+        var services = new ServiceCollection();
+
+        // Act
+        new MediaAmazonS3ImageCacheStartup(configuration, NullLogger<MediaAmazonS3ImageCacheStartup>.Instance).ConfigureServices(services);
+
+        // Assert
+        Assert.DoesNotContain(services, descriptor => descriptor.ServiceType == typeof(IAmazonS3));
+        Assert.DoesNotContain(services, descriptor => descriptor.ServiceType == typeof(IResizedImageCache));
+    }
+
+    [Fact]
+    public void ConfigureServices_MalformedOption_KeepsDefaultTusStore()
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>
         {
             [$"{Section}:Region"] = "us-east-1",
             [$"{Section}:BucketName"] = "media",
-            [$"{Section}:Credentials:AccessKey"] = "malformed",
+            [$"{Section}:Timeout"] = "malformed",
         });
 
+        var services = new ServiceCollection();
+        services.AddSingleton(Mock.Of<ITusTempStore>());
+
         // Act
-        var options = new AwsStorageOptions().BindConfiguration(Section, LegacySection, configuration, NullLogger.Instance);
+        new MediaAmazonS3TusStartup(configuration, NullLogger<MediaAmazonS3TusStartup>.Instance).ConfigureServices(services);
 
         // Assert
+        Assert.DoesNotContain(services, descriptor => descriptor.ImplementationType == typeof(S3TusTempStore));
+    }
+
+    [Theory]
+    [InlineData("Timeout")]
+    [InlineData("CreateBucket")]
+    [InlineData("Credentials:AccessKey")]
+    public void TryBindConfiguration_MalformedOption_ReturnsFalseAndFailsValidation(string option)
+    {
+        // Arrange
+        var configuration = BuildShellConfiguration(new Dictionary<string, string>
+        {
+            [$"{Section}:Region"] = "us-east-1",
+            [$"{Section}:BucketName"] = "media",
+            [$"{Section}:{option}"] = "malformed",
+        });
+
+        var options = new AwsStorageOptions();
+
+        // Act
+        var result = options.TryBindConfiguration(Section, LegacySection, configuration, NullLogger.Instance);
+
+        // Assert
+        Assert.False(result);
         Assert.Null(options.AwsOptions);
         Assert.Single(options.Validate());
     }
 
     [Fact]
-    public void BindConfiguration_ImageCacheWithoutCredentials_UsesCredentialsOfParentSection()
+    public void TryBindConfiguration_ImageCacheWithoutCredentials_UsesCredentialsOfParentSection()
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>
@@ -172,26 +220,31 @@ public sealed class AmazonS3StartupTests
             [$"{Section}:ImageCache:BucketName"] = "image-cache",
         });
 
+        var options = new AwsStorageOptions();
+
         // Act
-        var options = new AwsStorageOptions().BindConfiguration($"{Section}:ImageCache", $"{LegacySection}_ImageSharp_Cache", configuration, NullLogger.Instance);
+        var result = options.TryBindConfiguration($"{Section}:ImageCache", $"{LegacySection}_ImageSharp_Cache", configuration, NullLogger.Instance);
 
         // Assert
+        Assert.True(result);
         Assert.NotNull(options.AwsOptions.Credentials);
         Assert.Empty(options.Validate());
     }
 
     [Fact]
-    public void Validate_WithoutConfiguration_OnlyReportsBucketName()
+    public void TryBindConfiguration_WithoutConfiguration_OnlyReportsBucketName()
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>());
+        var options = new AwsStorageOptions();
 
         // Act
-        var options = new AwsStorageOptions().BindConfiguration(Section, LegacySection, configuration, NullLogger.Instance);
+        var result = options.TryBindConfiguration(Section, LegacySection, configuration, NullLogger.Instance);
 
         // Assert
-        var result = Assert.Single(options.Validate());
-        Assert.Contains("BucketName", result.ErrorMessage);
+        Assert.True(result);
+        var error = Assert.Single(options.Validate());
+        Assert.Contains("BucketName", error.ErrorMessage);
     }
 
     private static ShellConfiguration BuildShellConfiguration(Dictionary<string, string> settings)

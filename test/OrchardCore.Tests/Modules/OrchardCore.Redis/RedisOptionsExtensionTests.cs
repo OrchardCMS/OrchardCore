@@ -10,7 +10,7 @@ public sealed class RedisOptionsExtensionTests
     [Theory]
     [InlineData("Redis")]
     [InlineData("OrchardCore_Redis")]
-    public void BindConfiguration_ValidConfiguration_BindsOptions(string section)
+    public void TryBindConfiguration_ValidConfiguration_BindsOptions(string section)
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>
@@ -20,10 +20,13 @@ public sealed class RedisOptionsExtensionTests
             [$"{section}:AllowAdmin"] = "true",
         });
 
+        var options = new RedisOptions();
+
         // Act
-        var options = new RedisOptions().BindConfiguration(configuration, NullLogger.Instance);
+        var result = options.TryBindConfiguration(configuration, NullLogger.Instance);
 
         // Assert
+        Assert.True(result);
         Assert.Equal(ValidConfiguration, options.Configuration);
         Assert.Equal("prefix:", options.InstancePrefix);
         Assert.True(options.ConfigurationOptions.AllowAdmin);
@@ -31,7 +34,7 @@ public sealed class RedisOptionsExtensionTests
     }
 
     [Fact]
-    public void BindConfiguration_SectionAndLegacySection_UsesValuesOfSection()
+    public void TryBindConfiguration_SectionAndLegacySection_UsesValuesOfSection()
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>
@@ -41,10 +44,13 @@ public sealed class RedisOptionsExtensionTests
             ["OrchardCore_Redis:InstancePrefix"] = "legacy:",
         });
 
+        var options = new RedisOptions();
+
         // Act
-        var options = new RedisOptions().BindConfiguration(configuration, NullLogger.Instance);
+        var result = options.TryBindConfiguration(configuration, NullLogger.Instance);
 
         // Assert
+        Assert.True(result);
         Assert.Equal(ValidConfiguration, options.Configuration);
         Assert.Equal("legacy:", options.InstancePrefix);
     }
@@ -53,7 +59,7 @@ public sealed class RedisOptionsExtensionTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void BindConfiguration_MissingConfiguration_FailsValidationWithoutLogging(string value)
+    public void TryBindConfiguration_MissingConfiguration_FailsValidationWithoutLogging(string value)
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>
@@ -62,11 +68,13 @@ public sealed class RedisOptionsExtensionTests
         });
 
         var logger = new Mock<ILogger<RedisOptionsExtensionTests>>();
+        var options = new RedisOptions();
 
         // Act
-        var options = new RedisOptions().BindConfiguration(configuration, logger.Object);
+        var result = options.TryBindConfiguration(configuration, logger.Object);
 
         // Assert
+        Assert.True(result);
         Assert.Null(options.ConfigurationOptions);
         Assert.Single(options.Validate());
         logger.Verify(l => l.Log(
@@ -78,7 +86,7 @@ public sealed class RedisOptionsExtensionTests
     [InlineData("Configuration", "unknownKeyword=value")]
     [InlineData("AllowAdmin", "malformed")]
     [InlineData("DisableCertificateVerification", "malformed")]
-    public void BindConfiguration_InvalidValue_LogsErrorAndFailsValidation(string key, string value)
+    public void TryBindConfiguration_InvalidValue_ReturnsFalseAndLogsError(string key, string value)
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>
@@ -88,13 +96,14 @@ public sealed class RedisOptionsExtensionTests
         });
 
         var logger = new Mock<ILogger<RedisOptionsExtensionTests>>();
+        var options = new RedisOptions();
 
         // Act
-        var options = new RedisOptions().BindConfiguration(configuration, logger.Object);
+        var result = options.TryBindConfiguration(configuration, logger.Object);
 
         // Assert
+        Assert.False(result);
         Assert.Null(options.ConfigurationOptions);
-        Assert.Single(options.Validate());
         logger.Verify(l => l.Log(
             LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(),
             It.IsNotNull<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);

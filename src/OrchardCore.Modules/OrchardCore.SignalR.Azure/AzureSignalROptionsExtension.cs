@@ -16,13 +16,13 @@ internal static class AzureSignalROptionsExtension
         }
     }
 
-    public static AzureSignalROptions BindConfiguration(this AzureSignalROptions options, IShellConfiguration shellConfiguration)
+    public static bool TryBindConfiguration(this AzureSignalROptions options, IShellConfiguration shellConfiguration)
     {
         var section = shellConfiguration.GetSection(ConfigurationSection);
 
         options.ConnectionString = section.GetValue<string>(nameof(options.ConnectionString));
         options.ApplicationName = section.GetValue<string>(nameof(options.ApplicationName));
 
-        return options;
+        return true;
     }
 }

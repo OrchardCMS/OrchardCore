@@ -7,7 +7,7 @@ using OrchardCore.FileStorage.AmazonS3;
 
 namespace OrchardCore.Media.AmazonS3;
 
-public static class AwsStorageOptionsExtension
+internal static class AwsStorageOptionsExtension
 {
     public static IEnumerable<ValidationResult> Validate(this AwsStorageOptionsBase options)
     {
@@ -29,22 +29,29 @@ public static class AwsStorageOptionsExtension
         }
     }
 
-    public static AwsStorageOptionsBase BindConfiguration(this AwsStorageOptionsBase options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
-        => options.BindConfiguration(shellConfiguration.GetSection(configSection), shellConfiguration, logger);
+    /// <summary>
+    /// Binds the options from a configuration section. A missing section leaves the options unset, and a value that
+    /// can't be bound leaves <see cref="AwsStorageOptionsBase.AwsOptions"/> <see langword="null"/>, both failing the
+    /// validation.
+    /// </summary>
+    /// <returns><see langword="false"/> if a configured value can't be bound, after logging the error.</returns>
+    public static bool TryBindConfiguration(this AwsStorageOptionsBase options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
+        => options.TryBindConfiguration(shellConfiguration.GetSection(configSection), shellConfiguration, logger);
 
     /// <summary>
     /// Binds the options from a configuration section that is still supported under a legacy name, the values of the
     /// section winning over the same values of the legacy section.
     /// </summary>
-    public static AwsStorageOptionsBase BindConfiguration(this AwsStorageOptionsBase options, string configSection, string legacyConfigSection, IShellConfiguration shellConfiguration, ILogger logger)
-        => options.BindConfiguration(shellConfiguration.GetSectionCompat(configSection, legacyConfigSection), shellConfiguration, logger);
+    /// <returns><see langword="false"/> if a configured value can't be bound, after logging the error.</returns>
+    public static bool TryBindConfiguration(this AwsStorageOptionsBase options, string configSection, string legacyConfigSection, IShellConfiguration shellConfiguration, ILogger logger)
+        => options.TryBindConfiguration(shellConfiguration.GetSectionCompat(configSection, legacyConfigSection), shellConfiguration, logger);
 
-    private static AwsStorageOptionsBase BindConfiguration(this AwsStorageOptionsBase options, IConfigurationSection section, IShellConfiguration shellConfiguration, ILogger logger)
+    private static bool TryBindConfiguration(this AwsStorageOptionsBase options, IConfigurationSection section, IShellConfiguration shellConfiguration, ILogger logger)
     {
 
         if (!section.Exists())
         {
-            return options;
+            return true;
         }
 
         try
@@ -87,8 +94,10 @@ public static class AwsStorageOptionsExtension
             logger.LogCritical(ex, "Failed to configure AWS options.");
 
             options.AwsOptions = null;
+
+            return false;
         }
 
-        return options;
+        return true;
     }
 }
