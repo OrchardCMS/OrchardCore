@@ -18,10 +18,13 @@ namespace OrchardCore.Modules;
 
 internal sealed class ModularBackgroundService : BackgroundService
 {
-    private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers = new();
+    // The idle time before running a task requested on demand, which bounds how often a request can trigger the service.
+    private static readonly TimeSpan _requestedRunIdleTime = TimeSpan.FromSeconds(1);
+
     private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens = new();
 
     private readonly IShellHost _shellHost;
+    private readonly BackgroundTaskMonitor _monitor;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly BackgroundServiceOptions _options;
     private readonly ILogger _logger;
@@ -29,12 +32,14 @@ internal sealed class ModularBackgroundService : BackgroundService
 
     public ModularBackgroundService(
         IShellHost shellHost,
+        BackgroundTaskMonitor monitor,
         IHttpContextAccessor httpContextAccessor,
         IOptions<BackgroundServiceOptions> options,
         ILogger<ModularBackgroundService> logger,
         IClock clock)
     {
         _shellHost = shellHost;
+        _monitor = monitor;
         _httpContextAccessor = httpContextAccessor;
         _options = options.Value;
         _logger = logger;
@@ -83,6 +88,10 @@ internal sealed class ModularBackgroundService : BackgroundService
             var pollingDelay = Task.Delay(_options.PollingTime, stoppingToken);
             try
             {
+                // Reset the signal before checking the schedulers to run, so that a run requested from now
+                // is either picked up by this iteration or shortens the wait before the next one.
+                _monitor.ResetRunRequested();
+
                 var runningShells = GetRunningShells();
                 await UpdateAsync(previousShells, runningShells, stoppingToken);
                 await RunAsync(runningShells, stoppingToken);
@@ -220,6 +229,7 @@ internal sealed class ModularBackgroundService : BackgroundService
 
                         scheduler.Run();
                         await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
+                        scheduler.Complete(BackgroundTaskRunResult.Succeeded);
 
                         RecordBackgroundTaskDuration(startTimestamp, tenant, taskName);
 
@@ -230,6 +240,12 @@ internal sealed class ModularBackgroundService : BackgroundService
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
+                        scheduler.Complete(
+                            ex is OperationCanceledException && stoppingToken.IsCancellationRequested
+                                ? BackgroundTaskRunResult.Canceled
+                                : BackgroundTaskRunResult.Failed,
+                            ex);
+
                         _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         context.Exception = ex;
                         OrchardCoreTelemetry.RecordException(activity, ex);
@@ -314,10 +330,9 @@ internal sealed class ModularBackgroundService : BackgroundService
                 foreach (var task in tasks)
                 {
                     var taskName = task.GetTaskName();
-                    var tenantTaskName = tenant + taskName;
-                    if (!_schedulers.TryGetValue(tenantTaskName, out var scheduler))
+                    if (!_monitor.Schedulers.TryGetValue((tenant, taskName), out var scheduler))
                     {
-                        _schedulers[tenantTaskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock);
+                        _monitor.Schedulers[(tenant, taskName)] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock, _options.MaxRecentRuns);
                     }
 
                     scheduler.TimeZone = timeZone;
@@ -340,7 +355,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                     }
 
                     settings ??= task.GetDefaultSettings();
-                    if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule, StringComparison.Ordinal))
+                    if (scheduler.Released || !string.Equals(scheduler.Settings.Schedule, settings.Schedule, StringComparison.Ordinal))
                     {
                         scheduler.ReferenceTime = referenceTime;
                     }
@@ -360,8 +375,16 @@ internal sealed class ModularBackgroundService : BackgroundService
     {
         try
         {
-            await Task.Delay(_options.MinimumIdleTime, stoppingToken);
-            await pollingDelay;
+            // A run requested on demand doesn't wait for the end of the polling time nor of the minimum idle time.
+            var minimumIdleTime = Task.Delay(_options.MinimumIdleTime, stoppingToken);
+            await Task.WhenAny(Task.WhenAll(minimumIdleTime, pollingDelay), _monitor.RunRequested);
+            stoppingToken.ThrowIfCancellationRequested();
+
+            // It only waits for a shorter idle time, so that it starts promptly.
+            if (!minimumIdleTime.IsCompleted)
+            {
+                await Task.Delay(_requestedRunIdleTime, stoppingToken);
+            }
         }
         catch (OperationCanceledException)
         {
@@ -376,7 +399,7 @@ internal sealed class ModularBackgroundService : BackgroundService
 
     private string[] GetShellsToRun(IEnumerable<(string Tenant, long UtcTicks)> shells)
     {
-        var tenantsToRun = _schedulers
+        var tenantsToRun = _monitor.Schedulers
             .Where(scheduler => scheduler.Value.CanRun())
             .Select(scheduler => scheduler.Value.Tenant)
             .Distinct()
@@ -423,17 +446,17 @@ internal sealed class ModularBackgroundService : BackgroundService
         return runningTenants.Where(tenant => tenantsToUpdate.Contains(tenant)).ToArray();
     }
 
-    private BackgroundTaskScheduler[] GetSchedulersToRun(string tenant) => _schedulers
+    private BackgroundTaskScheduler[] GetSchedulersToRun(string tenant) => _monitor.Schedulers
         .Where(scheduler => scheduler.Value.Tenant == tenant && scheduler.Value.CanRun())
         .Select(scheduler => scheduler.Value)
         .ToArray();
 
     private void UpdateSchedulers(string[] tenants, Action<BackgroundTaskScheduler> action)
     {
-        var keys = _schedulers.Where(kv => tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
+        var keys = _monitor.Schedulers.Where(kv => tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
         foreach (var key in keys)
         {
-            if (_schedulers.TryGetValue(key, out var scheduler))
+            if (_monitor.Schedulers.TryGetValue(key, out var scheduler))
             {
                 action(scheduler);
             }
@@ -442,14 +465,14 @@ internal sealed class ModularBackgroundService : BackgroundService
 
     private void CleanSchedulers(string tenant, IEnumerable<IBackgroundTask> tasks)
     {
-        var validKeys = tasks.Select(task => tenant + task.GetTaskName()).ToArray();
+        var validKeys = tasks.Select(task => (tenant, task.GetTaskName())).ToArray();
 
-        var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
+        var keys = _monitor.Schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
         foreach (var key in keys)
         {
             if (!validKeys.Contains(key))
             {
-                _schedulers.TryRemove(key, out _);
+                _monitor.Schedulers.TryRemove(key, out _);
             }
         }
     }

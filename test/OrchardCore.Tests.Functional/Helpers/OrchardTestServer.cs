@@ -177,6 +177,9 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // check runs independently of page navigation timing).
         || (record.Category == "OrchardCore.OpenId.Configuration.OpenIdClientConfiguration"
             && record.Message.Contains("The OpenID client settings are invalid"))
+        // The background tasks tests run a task that fails on purpose to check how its error is shown.
+        || (record.Category == "OrchardCore.Modules.ModularBackgroundService"
+            && record.Message.Contains(Tests.Cms.FailingTestBackgroundTask.TaskName))
         // The Transient failure activity of the WorkflowsSample test module faults its instance on purpose.
         || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
             && record.Exception is WorkflowsSample.TransientFailureException)
