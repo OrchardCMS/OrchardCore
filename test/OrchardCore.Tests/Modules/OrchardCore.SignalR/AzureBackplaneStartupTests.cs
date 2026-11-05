@@ -111,11 +111,8 @@ public sealed class AzureBackplaneStartupTests
     [InlineData(" ")]
     public void TryBindConfiguration_WithoutConnectionString_FailsValidation(string connectionString)
     {
-        // Arrange
-        var options = new AzureSignalROptions();
-
         // Act
-        var result = options.TryBindConfiguration(BuildShellConfiguration(connectionString));
+        var result = BuildShellConfiguration(connectionString).TryBindConfiguration(out var options);
 
         // Assert
         Assert.True(result);
@@ -134,10 +131,8 @@ public sealed class AzureBackplaneStartupTests
             })
             .Build();
 
-        var options = new AzureSignalROptions();
-
         // Act
-        var result = options.TryBindConfiguration(new ShellConfiguration(configuration));
+        var result = new ShellConfiguration(configuration).TryBindConfiguration(out var options);
 
         // Assert
         Assert.True(result);

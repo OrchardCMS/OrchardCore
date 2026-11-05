@@ -1,4 +1,6 @@
 using Amazon.S3;
+using Fluid;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Media;
@@ -187,7 +189,7 @@ public sealed class AmazonS3StartupTests
     [InlineData("Timeout")]
     [InlineData("CreateBucket")]
     [InlineData("Credentials:AccessKey")]
-    public void TryBindConfiguration_MalformedOption_ReturnsFalseAndFailsValidation(string option)
+    public void TryBindConfiguration_MalformedOption_ReturnsFalseAndLogsError(string option)
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>
@@ -197,15 +199,17 @@ public sealed class AmazonS3StartupTests
             [$"{Section}:{option}"] = "malformed",
         });
 
-        var options = new AwsStorageOptions();
+        var logger = new ListLogger();
 
         // Act
-        var result = options.TryBindConfiguration(Section, LegacySection, configuration, NullLogger.Instance);
+        var result = configuration.TryBindConfiguration<AwsStorageOptions>(Section, LegacySection, logger, out var options);
 
         // Assert
         Assert.False(result);
-        Assert.Null(options.AwsOptions);
-        Assert.Single(options.Validate());
+        Assert.Null(options);
+        var entry = Assert.Single(logger.Entries);
+        Assert.Equal(LogLevel.Critical, entry.Level);
+        Assert.NotNull(entry.Exception);
     }
 
     [Fact]
@@ -220,10 +224,8 @@ public sealed class AmazonS3StartupTests
             [$"{Section}:ImageCache:BucketName"] = "image-cache",
         });
 
-        var options = new AwsStorageOptions();
-
         // Act
-        var result = options.TryBindConfiguration($"{Section}:ImageCache", $"{LegacySection}_ImageSharp_Cache", configuration, NullLogger.Instance);
+        var result = configuration.TryBindConfiguration<AwsMediaImageCacheOptions>($"{Section}:ImageCache", $"{LegacySection}_ImageSharp_Cache", NullLogger.Instance, out var options);
 
         // Assert
         Assert.True(result);
@@ -236,10 +238,9 @@ public sealed class AmazonS3StartupTests
     {
         // Arrange
         var configuration = BuildShellConfiguration(new Dictionary<string, string>());
-        var options = new AwsStorageOptions();
 
         // Act
-        var result = options.TryBindConfiguration(Section, LegacySection, configuration, NullLogger.Instance);
+        var result = configuration.TryBindConfiguration<AwsStorageOptions>(Section, LegacySection, NullLogger.Instance, out var options);
 
         // Assert
         Assert.True(result);
@@ -247,8 +248,151 @@ public sealed class AmazonS3StartupTests
         Assert.Contains("BucketName", error.ErrorMessage);
     }
 
+    [Fact]
+    public void Configure_ValidConfiguration_SetsOptions()
+    {
+        // Arrange
+        var configuration = BuildShellConfiguration(new Dictionary<string, string>
+        {
+            [$"{Section}:Region"] = "us-east-1",
+            [$"{Section}:BucketName"] = "{{ ShellSettings.Name }}-media",
+            [$"{Section}:BasePath"] = "{{ ShellSettings.Name }}/Media",
+            [$"{Section}:CreateBucket"] = "true",
+            [$"{Section}:RemoveBucket"] = "true",
+        });
+
+        var optionsConfiguration = new AwsStorageOptionsConfiguration(
+            new FluidParser(),
+            configuration,
+            new ShellSettings { Name = "tenant1" },
+            NullLogger<AwsStorageOptionsConfiguration>.Instance);
+
+        var options = new AwsStorageOptions();
+
+        // Act
+        optionsConfiguration.Configure(options);
+
+        // Assert
+        Assert.Equal("tenant1-media", options.BucketName);
+        Assert.Equal("tenant1/Media", options.BasePath);
+        Assert.True(options.CreateBucket);
+        Assert.True(options.RemoveBucket);
+        Assert.Equal("us-east-1", options.AwsOptions.Region.SystemName);
+        Assert.Empty(options.Validate());
+    }
+
+    [Fact]
+    public void Configure_ImageCacheValidConfiguration_SetsOptions()
+    {
+        // Arrange
+        var configuration = BuildShellConfiguration(new Dictionary<string, string>
+        {
+            [$"{Section}:Region"] = "us-east-1",
+            [$"{Section}:ImageCache:BucketName"] = "{{ ShellSettings.Name }}-image-cache",
+            [$"{Section}:ImageCache:BasePath"] = "{{ ShellSettings.Name }}/ImageCache",
+            [$"{Section}:ImageCache:CreateBucket"] = "true",
+            [$"{Section}:ImageCache:RemoveBucket"] = "true",
+        });
+
+        var optionsConfiguration = new AwsMediaImageCacheOptionsConfiguration(
+            new FluidParser(),
+            configuration,
+            new ShellSettings { Name = "tenant1" },
+            NullLogger<AwsStorageOptionsConfiguration>.Instance);
+
+        var options = new AwsMediaImageCacheOptions();
+
+        // Act
+        optionsConfiguration.Configure(options);
+
+        // Assert
+        Assert.Equal("tenant1-image-cache", options.BucketName);
+        Assert.Equal("tenant1/ImageCache", options.BasePath);
+        Assert.True(options.CreateBucket);
+        Assert.True(options.RemoveBucket);
+        Assert.Equal("us-east-1", options.AwsOptions.Region.SystemName);
+        Assert.Empty(options.Validate());
+    }
+
+    [Theory]
+    [InlineData("Timeout")]
+    [InlineData("CreateBucket")]
+    [InlineData("Credentials:AccessKey")]
+    public void Configure_MalformedOption_FailsValidation(string option)
+    {
+        // Arrange
+        var configuration = BuildShellConfiguration(new Dictionary<string, string>
+        {
+            [$"{Section}:Region"] = "us-east-1",
+            [$"{Section}:BucketName"] = "media",
+            [$"{Section}:{option}"] = "malformed",
+        });
+
+        var optionsConfiguration = new AwsStorageOptionsConfiguration(
+            new FluidParser(),
+            configuration,
+            new ShellSettings { Name = "tenant1" },
+            NullLogger<AwsStorageOptionsConfiguration>.Instance);
+
+        var options = new AwsStorageOptions();
+
+        // Act
+        optionsConfiguration.Configure(options);
+
+        // Assert
+        Assert.Null(options.BucketName);
+        Assert.Null(options.AwsOptions);
+        var error = Assert.Single(options.Validate());
+        Assert.Equal(AmazonS3Constants.ValidationMessages.BucketNameIsEmpty, error.ErrorMessage);
+    }
+
+    [Theory]
+    [InlineData("Timeout")]
+    [InlineData("ImageCache:CreateBucket")]
+    public void Configure_ImageCacheMalformedOption_FailsValidation(string option)
+    {
+        // Arrange
+        var configuration = BuildShellConfiguration(new Dictionary<string, string>
+        {
+            [$"{Section}:Region"] = "us-east-1",
+            [$"{Section}:ImageCache:BucketName"] = "image-cache",
+            [$"{Section}:{option}"] = "malformed",
+        });
+
+        var optionsConfiguration = new AwsMediaImageCacheOptionsConfiguration(
+            new FluidParser(),
+            configuration,
+            new ShellSettings { Name = "tenant1" },
+            NullLogger<AwsStorageOptionsConfiguration>.Instance);
+
+        var options = new AwsMediaImageCacheOptions();
+
+        // Act
+        optionsConfiguration.Configure(options);
+
+        // Assert
+        Assert.Null(options.BucketName);
+        Assert.Null(options.AwsOptions);
+        var error = Assert.Single(options.Validate());
+        Assert.Equal(AmazonS3Constants.ValidationMessages.BucketNameIsEmpty, error.ErrorMessage);
+    }
+
     private static ShellConfiguration BuildShellConfiguration(Dictionary<string, string> settings)
         => new(new ConfigurationBuilder()
             .AddInMemoryCollection(settings)
             .Build());
+
+    private sealed class ListLogger : ILogger
+    {
+        public List<(LogLevel Level, Exception Exception)> Entries { get; } = [];
+
+        public IDisposable BeginScope<TState>(TState state)
+            where TState : notnull
+            => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            => Entries.Add((logLevel, exception));
+    }
 }

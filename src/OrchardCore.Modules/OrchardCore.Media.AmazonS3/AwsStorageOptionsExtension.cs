@@ -23,31 +23,24 @@ internal static class AwsStorageOptionsExtension
                 yield return new ValidationResult(AmazonS3Constants.ValidationMessages.RegionAndServiceUrlAreEmpty);
             }
         }
-        else if (!string.IsNullOrWhiteSpace(options.BucketName))
-        {
-            yield return new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid);
-        }
     }
 
     /// <summary>
-    /// Binds the options from a configuration section. A missing section leaves the options unset, and a value that
-    /// can't be bound leaves <see cref="AwsStorageOptionsBase.AwsOptions"/> <see langword="null"/>, both failing the
-    /// validation.
-    /// </summary>
-    /// <returns><see langword="false"/> if a configured value can't be bound, after logging the error.</returns>
-    public static bool TryBindConfiguration(this AwsStorageOptionsBase options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
-        => options.TryBindConfiguration(shellConfiguration.GetSection(configSection), shellConfiguration, logger);
-
-    /// <summary>
     /// Binds the options from a configuration section that is still supported under a legacy name, the values of the
-    /// section winning over the same values of the legacy section.
+    /// section winning over the same values of the legacy section. When neither section exists, the options are left
+    /// unset, which fails the validation.
     /// </summary>
+    /// <typeparam name="TOptions">The type of the options to bind.</typeparam>
+    /// <param name="options">The bound options, or <see langword="null"/> if a configured value can't be bound.</param>
     /// <returns><see langword="false"/> if a configured value can't be bound, after logging the error.</returns>
-    public static bool TryBindConfiguration(this AwsStorageOptionsBase options, string configSection, string legacyConfigSection, IShellConfiguration shellConfiguration, ILogger logger)
-        => options.TryBindConfiguration(shellConfiguration.GetSectionCompat(configSection, legacyConfigSection), shellConfiguration, logger);
+    public static bool TryBindConfiguration<TOptions>(this IShellConfiguration shellConfiguration, string configSection, string legacyConfigSection, ILogger logger, out TOptions options)
+        where TOptions : AwsStorageOptionsBase, new()
+        => shellConfiguration.TryBindConfiguration(shellConfiguration.GetSectionCompat(configSection, legacyConfigSection), logger, out options);
 
-    private static bool TryBindConfiguration(this AwsStorageOptionsBase options, IConfigurationSection section, IShellConfiguration shellConfiguration, ILogger logger)
+    private static bool TryBindConfiguration<TOptions>(this IShellConfiguration shellConfiguration, IConfigurationSection section, ILogger logger, out TOptions options)
+        where TOptions : AwsStorageOptionsBase, new()
     {
+        options = new TOptions();
 
         if (!section.Exists())
         {
@@ -89,11 +82,11 @@ internal static class AwsStorageOptionsExtension
         }
         catch (Exception ex)
         {
-            // A malformed value shouldn't prevent the tenant from starting: without AWS options the validation fails
-            // and the features using these options keep the local file storage.
+            // A malformed value shouldn't prevent the tenant from starting: the features using these options keep the
+            // local file storage.
             logger.LogCritical(ex, "Failed to configure AWS options.");
 
-            options.AwsOptions = null;
+            options = null;
 
             return false;
         }

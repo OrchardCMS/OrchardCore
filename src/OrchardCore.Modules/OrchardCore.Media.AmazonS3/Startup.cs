@@ -44,8 +44,7 @@ public sealed class Startup : Modules.StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions();
-        var validationErrors = storeOptions.TryBindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger)
+        var validationErrors = _configuration.TryBindConfiguration<AwsStorageOptions>(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _logger, out var storeOptions)
             ? storeOptions.Validate().ToList()
             : [new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid)];
         var stringBuilder = new StringBuilder();
@@ -164,8 +163,7 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
     {
         services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions();
-        var validationErrors = storeOptions.TryBindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _configuration, _logger)
+        var validationErrors = _configuration.TryBindConfiguration<AwsMediaImageCacheOptions>(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _logger, out var storeOptions)
             ? storeOptions.Validate().ToList()
             : [new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid)];
         var stringBuilder = new StringBuilder();
@@ -213,10 +211,8 @@ public sealed class MediaAmazonS3TusStartup : Modules.StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var storeOptions = new AwsStorageOptions();
-
         // Only replace the default local store if the media store is active, as it provides the client and the bucket.
-        if (storeOptions.TryBindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger) &&
+        if (_configuration.TryBindConfiguration<AwsStorageOptions>(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _logger, out var storeOptions) &&
             !storeOptions.Validate().Any())
         {
             services.Replace(ServiceDescriptor.Singleton<ITusTempStore, S3TusTempStore>());

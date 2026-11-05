@@ -37,8 +37,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var azureOptions = new AzureSignalROptions();
-        var validationErrors = azureOptions.TryBindConfiguration(_configuration)
+        var validationErrors = _configuration.TryBindConfiguration(out var azureOptions)
             ? azureOptions.Validate()
             : [new ValidationResult("The 'SignalR:Azure' section is invalid.")];
 

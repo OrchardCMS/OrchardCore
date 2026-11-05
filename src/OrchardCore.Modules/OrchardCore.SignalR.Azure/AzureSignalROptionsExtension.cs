@@ -16,8 +16,10 @@ internal static class AzureSignalROptionsExtension
         }
     }
 
-    public static bool TryBindConfiguration(this AzureSignalROptions options, IShellConfiguration shellConfiguration)
+    public static bool TryBindConfiguration(this IShellConfiguration shellConfiguration, out AzureSignalROptions options)
     {
+        options = new AzureSignalROptions();
+
         var section = shellConfiguration.GetSection(ConfigurationSection);
 
         options.ConnectionString = section.GetValue<string>(nameof(options.ConnectionString));

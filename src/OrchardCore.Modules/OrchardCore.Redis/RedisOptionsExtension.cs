@@ -29,9 +29,12 @@ internal static class RedisOptionsExtension
     /// Binds the options from the <c>Redis</c> configuration section. A missing configuration leaves
     /// <see cref="RedisOptions.ConfigurationOptions"/> <see langword="null"/>, which fails the validation.
     /// </summary>
+    /// <param name="options">The bound options, or <see langword="null"/> if a configured value can't be bound.</param>
     /// <returns><see langword="false"/> if a configured value can't be bound, after logging the error.</returns>
-    public static bool TryBindConfiguration(this RedisOptions options, IShellConfiguration shellConfiguration, ILogger logger)
+    public static bool TryBindConfiguration(this IShellConfiguration shellConfiguration, ILogger logger, out RedisOptions options)
     {
+        options = new RedisOptions();
+
         // The 'OrchardCore_Redis' section is deprecated and will be removed in a future major version, use 'Redis' instead.
         var section = shellConfiguration.GetSectionCompat("Redis", "OrchardCore_Redis");
 
@@ -64,6 +67,8 @@ internal static class RedisOptionsExtension
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to configure the Redis options.");
+
+            options = null;
 
             return false;
         }

@@ -32,10 +32,9 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var redisOptions = new RedisOptions();
-        var validationErrors = redisOptions.TryBindConfiguration(_configuration, _logger)
+        var validationErrors = _configuration.TryBindConfiguration(_logger, out var redisOptions)
             ? redisOptions.Validate()
-            : [new ValidationResult("The 'Configuration' string is invalid.")];
+            : [new ValidationResult("The 'Redis' section is invalid.")];
 
         if (validationErrors.Any())
         {

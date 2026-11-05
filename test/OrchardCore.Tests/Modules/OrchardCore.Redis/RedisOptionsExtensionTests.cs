@@ -20,10 +20,8 @@ public sealed class RedisOptionsExtensionTests
             [$"{section}:AllowAdmin"] = "true",
         });
 
-        var options = new RedisOptions();
-
         // Act
-        var result = options.TryBindConfiguration(configuration, NullLogger.Instance);
+        var result = configuration.TryBindConfiguration(NullLogger.Instance, out var options);
 
         // Assert
         Assert.True(result);
@@ -44,10 +42,8 @@ public sealed class RedisOptionsExtensionTests
             ["OrchardCore_Redis:InstancePrefix"] = "legacy:",
         });
 
-        var options = new RedisOptions();
-
         // Act
-        var result = options.TryBindConfiguration(configuration, NullLogger.Instance);
+        var result = configuration.TryBindConfiguration(NullLogger.Instance, out var options);
 
         // Assert
         Assert.True(result);
@@ -68,10 +64,9 @@ public sealed class RedisOptionsExtensionTests
         });
 
         var logger = new Mock<ILogger<RedisOptionsExtensionTests>>();
-        var options = new RedisOptions();
 
         // Act
-        var result = options.TryBindConfiguration(configuration, logger.Object);
+        var result = configuration.TryBindConfiguration(logger.Object, out var options);
 
         // Assert
         Assert.True(result);
@@ -96,14 +91,13 @@ public sealed class RedisOptionsExtensionTests
         });
 
         var logger = new Mock<ILogger<RedisOptionsExtensionTests>>();
-        var options = new RedisOptions();
 
         // Act
-        var result = options.TryBindConfiguration(configuration, logger.Object);
+        var result = configuration.TryBindConfiguration(logger.Object, out var options);
 
         // Assert
         Assert.False(result);
-        Assert.Null(options.ConfigurationOptions);
+        Assert.Null(options);
         logger.Verify(l => l.Log(
             LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(),
             It.IsNotNull<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
