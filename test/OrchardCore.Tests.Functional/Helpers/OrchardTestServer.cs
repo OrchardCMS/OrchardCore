@@ -98,7 +98,12 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector, postgresConnectionString);
+        var address = GetListeningAddress(app);
+
+        // Warm up the setup page before Playwright's first navigation triggers lazy tenant initialization.
+        await WarmUpAsync(address, loggerProvider.Collector, healthPath: "/", timeoutSeconds: 90);
+
+        return new OrchardTestServer(app, address, loggerProvider.Collector, postgresConnectionString);
     }
 
     public static async Task<OrchardTestServer> StartMvcAsync(string contentRoot, string appDataPath)
