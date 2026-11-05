@@ -33,7 +33,7 @@ public sealed class Startup : StartupBase
             return;
         }
 
-        if (!TryRegisterBackplane(services))
+        if (!RegisterBackplane(services))
         {
             _logger.LogError(
                 "The '{Feature}' feature is enabled but not active as the '{OtherFeature}' backplane is already registered. Enable only one SignalR backplane per tenant.",
@@ -50,7 +50,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<SignalRRedisOptions>, SignalRRedisOptionsConfiguration>();
     }
 
-    private static bool TryRegisterBackplane(IServiceCollection services)
+    private static bool RegisterBackplane(IServiceCollection services)
     {
         if (services.Any(descriptor =>
             descriptor.IsKeyedService &&

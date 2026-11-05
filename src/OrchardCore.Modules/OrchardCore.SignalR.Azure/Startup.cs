@@ -37,16 +37,16 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         var azureOptions = new AzureSignalROptions().BindConfiguration(_configuration);
-        var validationErrors = azureOptions.Validate().ToList();
+        var validationErrors = azureOptions.Validate();
 
-        if (validationErrors.Count > 0)
+        if (validationErrors.Any())
         {
             _logger.LogWarning(
                 "The '{Feature}' feature is enabled but not active: {Errors}",
                 AzureBackplaneFeature,
                 string.Join(' ', validationErrors.Select(error => error.ErrorMessage)));
         }
-        else if (!TryRegisterBackplane(services))
+        else if (!RegisterBackplane(services))
         {
             _logger.LogError(
                 "The '{Feature}' feature is enabled but not active as the '{OtherFeature}' backplane is already registered. Enable only one SignalR backplane per tenant.",
@@ -79,7 +79,7 @@ public sealed class Startup : StartupBase
         return $"{applicationName}_{tenantHash}";
     }
 
-    private static bool TryRegisterBackplane(IServiceCollection services)
+    private static bool RegisterBackplane(IServiceCollection services)
     {
         if (services.Any(descriptor =>
             descriptor.IsKeyedService &&

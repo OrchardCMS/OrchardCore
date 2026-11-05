@@ -32,9 +32,9 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         var redisOptions = new RedisOptions().BindConfiguration(_configuration, _logger);
-        var validationErrors = redisOptions.Validate().ToList();
+        var validationErrors = redisOptions.Validate();
 
-        if (validationErrors.Count > 0)
+        if (validationErrors.Any())
         {
             _logger.LogError("'Redis' features are not active on tenant '{TenantName}': {Errors}", _tenant, string.Join(' ', validationErrors.Select(error => error.ErrorMessage)));
 
