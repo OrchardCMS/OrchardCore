@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Redis;
 using AzureSignalRStartup = OrchardCore.SignalR.Azure.Startup;
+using SignalRRedisStartup = OrchardCore.SignalR.Redis.Startup;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.SignalR;
 
@@ -42,6 +44,31 @@ public sealed class AzureBackplaneStartupTests
 
         // Assert
         Assert.Contains(services, IsAzureSignalRService);
+    }
+
+    [Fact]
+    public void ConfigureServices_WithRedisBackplane_DoesNotRegisterAzureSignalRAndLogsError()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddSingleton(Mock.Of<IRedisService>());
+
+        new SignalRRedisStartup(NullLogger<SignalRRedisStartup>.Instance).ConfigureServices(services);
+
+        var logger = new Mock<ILogger<AzureSignalRStartup>>();
+        var startup = new AzureSignalRStartup(
+            BuildShellConfiguration("Endpoint=https://tenant.service.signalr.net;AccessKey=abc123;Version=1.0;"),
+            CreateShellSettings(),
+            logger.Object);
+
+        // Act
+        startup.ConfigureServices(services);
+
+        // Assert
+        Assert.DoesNotContain(services, IsAzureSignalRService);
+        logger.Verify(l => l.Log(
+            LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(),
+            It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
     }
 
     [Fact]

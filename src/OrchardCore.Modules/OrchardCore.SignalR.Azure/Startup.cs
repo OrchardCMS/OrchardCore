@@ -51,9 +51,17 @@ public sealed class Startup : StartupBase
             return;
         }
 
-        _logger.LogInformation("The Azure SignalR Service backplane is enabled.");
+        if (!TryRegisterBackplane(services))
+        {
+            _logger.LogError(
+                "The '{Feature}' feature is enabled but not active as the '{OtherFeature}' backplane is already registered. Enable only one SignalR backplane per tenant.",
+                AzureBackplaneFeature,
+                RedisBackplaneFeature);
 
-        EnsureNoBackplaneIsRegistered(services);
+            return;
+        }
+
+        _logger.LogInformation("The Azure SignalR Service backplane is enabled.");
 
         services
             .AddSignalR()
@@ -78,16 +86,17 @@ public sealed class Startup : StartupBase
         return $"{applicationName}_{tenantHash}";
     }
 
-    private static void EnsureNoBackplaneIsRegistered(IServiceCollection services)
+    private static bool TryRegisterBackplane(IServiceCollection services)
     {
         if (services.Any(descriptor =>
             descriptor.IsKeyedService &&
             string.Equals(descriptor.ServiceKey as string, BackplaneRegistrationKey, StringComparison.Ordinal)))
         {
-            throw new InvalidOperationException(
-                $"The '{AzureBackplaneFeature}' and '{RedisBackplaneFeature}' features cannot be enabled together.");
+            return false;
         }
 
         services.AddKeyedSingleton<object>(BackplaneRegistrationKey, new object());
+
+        return true;
     }
 }

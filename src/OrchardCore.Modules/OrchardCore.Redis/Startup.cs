@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Caching.Distributed;
@@ -60,15 +61,17 @@ public sealed class Startup : StartupBase
                 options.ConfigurationOptions = configurationOptions;
                 options.InstancePrefix = instancePrefix;
             });
+
+            services.AddSingleton<IRedisService, RedisService>();
+            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
         }
         catch (Exception e)
         {
             _logger.LogError(e, "'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid.", _tenant);
-            return;
+
+            services.TryAddSingleton<IRedisService, NullRedisService>();
         }
 
-        services.AddSingleton<IRedisService, RedisService>();
-        services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
         services.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
     }
 
@@ -83,7 +86,7 @@ public sealed class RedisCacheStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddSingleton<IDistributedCache, RedisCacheWrapper>(sp =>
             {
@@ -101,7 +104,7 @@ public sealed class RedisBusStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddSingleton<IMessageBus, RedisBus>();
         }
@@ -113,7 +116,7 @@ public sealed class RedisLockStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddSingleton<IDistributedLock, RedisLock>();
         }
@@ -125,7 +128,7 @@ public sealed class RedisDataProtectionStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
         }
