@@ -1,0 +1,5 @@
+@model NotificationViewModel
+
+@using System.Globalization
+
+<time class="notification-meta-item" datetime="@Model.Notification.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)" title="@await DisplayAsync(await New.DateTime(Utc: Model.Notification.CreatedUtc, Format: "g"))">@await DisplayAsync(await New.Timespan(Utc: Model.Notification.CreatedUtc))</time>
