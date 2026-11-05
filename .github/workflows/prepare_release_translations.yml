@@ -1,0 +1,69 @@
+name: Prepare Release Translations
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Existing stable translation version on NuGet.org (can be reused for an OC patch release)
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: prepare-release-translations-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.repository == 'OrchardCMS/OrchardCore'
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Check release branch and credentials
+      shell: pwsh
+      env:
+        TARGET_BRANCH: ${{ github.ref_name }}
+        PR_TOKEN: ${{ secrets.TRANSLATIONS_PR_TOKEN }}
+      run: |
+        if ($env:GITHUB_REF_TYPE -ne 'branch' -or
+            ($env:TARGET_BRANCH -notlike 'release/*' -and $env:TARGET_BRANCH -notlike 'release-prep/*')) {
+            throw 'Run this workflow on a release/* or release-prep/* branch, not main or a tag.'
+        }
+        if ([string]::IsNullOrWhiteSpace($env:PR_TOKEN)) {
+            throw 'Configure TRANSLATIONS_PR_TOKEN with contents and pull requests write access so the update PR triggers CI.'
+        }
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+    - uses: ./.github/actions/setup-dotnet
+    - name: Validate and select stable translations
+      shell: pwsh
+      env:
+        TRANSLATIONS_VERSION: ${{ inputs.version }}
+      run: ./.github/scripts/Test-TranslationsPackage.ps1 -Version $env:TRANSLATIONS_VERSION -UpdateReference
+    - name: Open translation update pull request
+      id: pull-request
+      uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+      with:
+        token: ${{ secrets.TRANSLATIONS_PR_TOKEN }}
+        base: ${{ github.ref_name }}
+        branch: automation/translations-${{ github.ref_name }}
+        add-paths: Directory.Packages.props
+        commit-message: Select stable translations ${{ inputs.version }}
+        title: Select stable translations ${{ inputs.version }}
+        body: |
+          <!--- Please make sure that you're familiar with our contribution guidelines before submitting a pull request: https://docs.orchardcore.net/en/latest/contributing/. -->
+
+          Selects OrchardCore.Translations.All ${{ inputs.version }} for ${{ github.ref_name }}.
+
+          Validation: `.github/scripts/Test-TranslationsPackage.ps1 -Version ${{ inputs.version }} -UpdateReference` passed.
+          The meta-package and all its dependencies were restored from NuGet.org into an isolated package cache,
+          with stable, matching translation versions verified before updating the reference.
+
+          Review translation suitability and merge this PR before creating the Orchard Core release tag.
+    - name: Report pull request
+      env:
+        PR_URL: ${{ steps.pull-request.outputs.pull-request-url }}
+      run: |
+        if [ -n "$PR_URL" ]; then
+          echo "Review the translation update: $PR_URL" >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "The branch already references the selected stable translations; no update PR is needed." >> "$GITHUB_STEP_SUMMARY"
+        fi

@@ -37,6 +37,7 @@ assignees: ''
 
 ## Step 3: Validation
 
+- [ ] **Check Translations**: Reuse the release branch's stable translation package if it remains suitable. To select a different published stable version, run **Prepare Release Translations** on the release or release-preparation branch and merge its update PR before tagging. See [translation package release preparation](../../src/docs/reference/modules/Localize/README.md#selecting-translations-for-a-release).
 - [ ] **Check Functionality**: Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the latest preview version generated in the previous step (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file). Ensure the samples work as expected.
 - [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed. At this point, the versions of these pages in the version branch (e.g., `release-prep/2.1.1`), should contain the version number of the upcoming version.
   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
@@ -59,6 +60,7 @@ assignees: ''
 **Merge to `main`**: After releasing the new version, merge the release branch into the main branch to ensure `main` contains all administrative changes.
 
 - [ ] Create a pull request from the release branch (e.g., `release/2.1`) into `main`.
+- [ ] Preserve `main`'s preview `OrchardCore.Translations.All` reference in `Directory.Packages.props`; do not replace it with the stable release reference.
 - [ ] Resolve any merge conflicts using external tools (e.g., Fork) to avoid auto-merging `main` into the release branch. **Important**: DO NOT resolve conflicts using GitHub's interface; that will automatically merge `main` into the release branch, which must be avoided.
 - [ ] Merge the PR if all checks pass. If there are merge conflicts, then you'll need to merge to `main` manually using the following steps:
   1. Fetch the latest changes from the Git repository.

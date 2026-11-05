@@ -9,6 +9,66 @@ It also supports plural forms.
 
 The localization files for the different cultures are available on [Crowdin](https://crowdin.com/project/orchard-core).
 
+### Translation package updates
+
+`OrchardCore.Application.Cms.Targets` includes `OrchardCore.Translations.All`. Its version is managed in
+`Directory.Packages.props`. On `main`, Renovate tracks the latest `3.0.0-preview-*` package from Cloudsmith,
+independently of the normal weekly dependency schedule and 15-day update delay. These packages contain
+translations for OC `main`, despite the `3.0.0` version prefix. When the translations repository changes its
+preview version scheme, update the translation-specific `allowedVersions` rule in `renovate.json5`.
+
+The reference uses an exact NuGet version range (`[version]`), not a floating version. New previews arrive
+through a dedicated PR, which can automerge after the required checks pass. "Latest" therefore means the latest
+version detected and merged by Renovate, not a different version on every restore. Old previews can be removed
+from the feed; keep the update PRs moving rather than relying on an old development commit indefinitely.
+
+The repository's `NuGet.config` permits only `OrchardCore.Translations.*` packages from Cloudsmith. Stable
+translations can also be restored from NuGet.org; other dependencies use NuGet.org.
+
+### Selecting translations for a release
+
+Translation publication and Crowdin review remain in
+[OrchardCore.Translations](https://github.com/OrchardCMS/OrchardCore.Translations). Orchard Core does not publish
+translation packages or change that repository's versioning.
+
+Before creating an OC release tag:
+
+1. Review the translations for the release's source catalogs and publish a stable translation package in the
+   translations repository, if needed. An OC patch release may reuse a compatible existing stable package;
+   the translation version does not have to equal the OC version.
+2. Run **Prepare Release Translations** from the Actions tab. Select the intended `release/*` or
+   `release-prep/*` branch and enter the existing stable translation version, for example `3.0.0`.
+   The workflow must be present on that branch as well as the default branch.
+3. The workflow restores the meta-package and all dependencies from NuGet.org using an isolated package
+   cache. It rejects missing packages, prereleases, and mismatched culture-package versions, then opens or
+   updates a PR pinning the selected version in `Directory.Packages.props`.
+4. Review and merge the PR before tagging the OC release. If the branch already references the selected exact
+   version, no PR is needed.
+
+**One-time workflow setup:** add the repository Actions secret `TRANSLATIONS_PR_TOKEN`, using a fine-grained
+personal access token with **Contents: read and write** and **Pull requests: read and write** access to
+OrchardCore. Ensure the token has any required organization approval and renew it before it expires.
+A separate token is required because PRs created with `GITHUB_TOKEN` do not trigger the normal PR checks.
+Do not configure this secret with `GITHUB_TOKEN`.
+
+The release CI repeats the stable-package validation before building and disables Cloudsmith for the release
+build. It fails instead of substituting stable translations automatically. To perform the same validation
+locally, run:
+
+```powershell
+./.github/scripts/Test-TranslationsPackage.ps1
+```
+
+To select an already-published stable version locally:
+
+```powershell
+./.github/scripts/Test-TranslationsPackage.ps1 -Version 3.0.0 -UpdateReference
+```
+
+When merging a release branch back to `main`, preserve `main`'s preview translation reference rather than
+replacing it with the release's stable reference. Renovate does not downgrade a stable version to its
+prereleases. Translation previews remain disabled for release branches.
+
 ## PO files locations
 
 PO files are found at these locations:
