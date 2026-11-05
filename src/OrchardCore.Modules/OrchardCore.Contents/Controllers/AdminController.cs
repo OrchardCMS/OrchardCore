@@ -231,23 +231,34 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var pager = new Pager(pagerParameters, pagerOptions.Value);
 
-        var itemsPerPage = pagerOptions.Value.MaxPagedCount > 0
-            ? pagerOptions.Value.MaxPagedCount
-            : await query.CountAsync();
+        var maxPagedCount = pagerOptions.Value.MaxPagedCount;
 
-        var pagerShape = await shapeFactory.PagerAsync(pager, itemsPerPage, options.RouteValues);
+        var totalItemCount = maxPagedCount > 0
+            ? maxPagedCount
+            : await query.CountAsync();
 
         // Load items so that loading handlers are invoked.
         var pageOfContentItems = await query.Skip(pager.GetStartIndex())
             .Take(pager.PageSize)
             .ListAsync(_contentManager);
 
+        var contentItemsCount = pageOfContentItems.Count();
+
+        // The items aren't counted when a maximum is set, but no item comes after a page that isn't full,
+        // so that page tells where the list ends.
+        if (maxPagedCount > 0 && contentItemsCount < pager.PageSize)
+        {
+            totalItemCount = Math.Min(pager.GetStartIndex() + contentItemsCount, maxPagedCount);
+        }
+
+        var pagerShape = await shapeFactory.PagerAsync(pager, totalItemCount, options.RouteValues);
+
         // Populate options pager summary values.
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + pageOfContentItems.Count() - 1;
-        options.ContentItemsCount = pageOfContentItems.Count();
-        options.TotalItemCount = itemsPerPage;
+        options.EndIndex = startIndex + contentItemsCount - 1;
+        options.ContentItemsCount = contentItemsCount;
+        options.TotalItemCount = totalItemCount;
 
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
