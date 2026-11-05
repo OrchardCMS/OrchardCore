@@ -294,7 +294,7 @@ product(where: {amount_gt: 10}) {
 }
 ```
 
-If the `PricePart` is collaped with prevent field name collision option enabled:
+If the `PricePart` is collapsed with prevent field name collision option enabled:
 
 ```graphql
 product(where: {priceAmount_gt: 10}) {
