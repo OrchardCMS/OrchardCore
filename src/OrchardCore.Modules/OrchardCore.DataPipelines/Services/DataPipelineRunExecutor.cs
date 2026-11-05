@@ -161,7 +161,9 @@ public sealed class DataPipelineRunExecutor
 
             var execution = _executor.ExecuteAsync(queued.Definition, context, observer);
 
-            while (await Task.WhenAny(execution, Task.Delay(_progressInterval)) != execution)
+            using var delayCancellation = new CancellationTokenSource();
+
+            while (await Task.WhenAny(execution, Task.Delay(_progressInterval, delayCancellation.Token)) != execution)
             {
                 await UpdateAsync(runId, run =>
                 {
@@ -176,6 +178,8 @@ public sealed class DataPipelineRunExecutor
                     return true;
                 });
             }
+
+            delayCancellation.Cancel();
 
             result = await execution;
 

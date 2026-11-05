@@ -15,7 +15,7 @@ public class AbsoluteUrlFilter : ILiquidFilter
     }
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
-        var relativePath = input.ToStringValue();
+        var relativePath = input.ToStringValue(context);
 
         if (string.IsNullOrWhiteSpace(relativePath))
         {

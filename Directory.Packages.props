@@ -21,11 +21,11 @@
     <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.28.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
-    <PackageVersion Include="Cyqwel" Version="0.4.0" />
+    <PackageVersion Include="Cyqwel" Version="0.5.0" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.27" />
     <PackageVersion Include="FluentFTP" Version="55.1.0" />
-    <PackageVersion Include="Fluid.Core" Version="2.40.0" />
+    <PackageVersion Include="Fluid.Core" Version="3.0.0-beta.9" />
     <PackageVersion Include="GraphQL" Version="8.8.5" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.5" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.5" />
@@ -34,7 +34,7 @@
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="10.11.0" />
-    <PackageVersion Include="Parlot" Version="1.5.12" />
+    <PackageVersion Include="Parlot" Version="2.2.1" />
     <PackageVersion Include="libphonenumber-csharp" Version="9.0.41" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00018" />
@@ -64,10 +64,14 @@
     <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.7.2" />
     <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.7.2" />
     <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.7.2" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.19.0" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.18.0" />
-    <PackageVersion Include="Shortcodes" Version="1.3.6" />
+    <PackageVersion Include="Shortcodes" Version="1.4.0" />
     <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="NetVips" Version="3.2.0" />
     <PackageVersion Include="NetVips.Native" Version="8.18.7" />
@@ -80,11 +84,11 @@
     <PackageVersion Include="Testcontainers.Azurite" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.LocalStack" Version="4.16.0" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.2" />
-    <PackageVersion Include="YesSql" Version="6.0.0" />
-    <PackageVersion Include="YesSql.Abstractions" Version="6.0.0" />
-    <PackageVersion Include="YesSql.Core" Version="6.0.0" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="6.0.0" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="6.0.0" />
+    <PackageVersion Include="YesSql" Version="6.1.0" />
+    <PackageVersion Include="YesSql.Abstractions" Version="6.1.0" />
+    <PackageVersion Include="YesSql.Core" Version="6.1.0" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="6.1.0" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="6.1.0" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <!-- Microsoft.CodeAnalysis packages must be equal to or lower than the version supported by the Roslyn 

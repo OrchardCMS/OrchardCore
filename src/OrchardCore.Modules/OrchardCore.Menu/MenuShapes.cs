@@ -333,7 +333,7 @@ public class MenuShapes : ShapeTableProvider
 
             if (nextIsUpper)
             {
-                result.Append(c.ToString().ToUpper());
+                result.Append(char.ToUpperInvariant(c));
             }
             else
             {

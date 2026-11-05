@@ -287,6 +287,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Navigation.Core/OrchardCore.Navigation.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Notifications.Abstractions/OrchardCore.Notifications.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Notifications.Core/OrchardCore.Notifications.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.OpenTelemetry/OrchardCore.OpenTelemetry.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.OpenApi.Core/OrchardCore.OpenApi.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.OpenId.Core/OrchardCore.OpenId.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Queries.Abstractions/OrchardCore.Queries.Abstractions.csproj" />

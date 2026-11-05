@@ -19,7 +19,7 @@ public class AnchorTag : IAnchorTag
         return true;
     }
 
-    public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+    public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, LiquidTemplateContext context)
     {
         var services = context.Services;
         var viewContext = context.ViewContext;
@@ -43,19 +43,19 @@ public class AnchorTag : IAnchorTag
         {
             switch (argument.Name)
             {
-                case "action": action = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "controller": controller = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "area": area = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "page": page = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "page_handler": pageHandler = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "fragment": fragment = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "host": host = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "protocol": protocol = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "route": route = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "action": action = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "controller": controller = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "area": area = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "page": page = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "page_handler": pageHandler = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "fragment": fragment = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "host": host = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "protocol": protocol = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "route": route = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
 
                 case "all_route_data":
 
-                    var objectValue = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
+                    var objectValue = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context);
 
                     if (objectValue is IFluidIndexable allRouteData)
                     {
@@ -66,26 +66,26 @@ public class AnchorTag : IAnchorTag
                             bool success = allRouteData.TryGetValue(key, out FluidValue fluidValue);
                             if (success && fluidValue is StringValue)
                             {
-                                routeValues.Add(key, fluidValue.ToStringValue());
+                                routeValues.Add(key, fluidValue.ToStringValue(context));
                             }
                         }
                     }
 
                     break;
 
-                case "href": href = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "href": href = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
 
                 default:
 
                     if (argument.Name.StartsWith("route_"))
                     {
                         routeValues ??= [];
-                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     }
                     else
                     {
                         customAttributes ??= [];
-                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     }
 
                     break;
@@ -183,11 +183,11 @@ public class AnchorTag : IAnchorTag
             }
         }
 
-        tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(tagBuilder.RenderStartTag(), (HtmlEncoder)encoder);
 
         if (statements != null && statements.Count > 0)
         {
-            var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+            var completion = await statements.RenderStatementsAsync(output, encoder, context);
 
             if (completion != Completion.Normal)
             {
@@ -195,7 +195,7 @@ public class AnchorTag : IAnchorTag
             }
         }
 
-        tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(tagBuilder.RenderEndTag(), (HtmlEncoder)encoder);
 
         return Completion.Normal;
     }

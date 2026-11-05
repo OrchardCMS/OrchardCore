@@ -21,7 +21,7 @@ public class UsersByIdFilter : ILiquidFilter
     {
         if (input.Type == FluidValues.Dictionary)
         {
-            if (input.ToObjectValue() is IFluidIndexable values)
+            if (input.ToObjectValue(ctx) is IFluidIndexable values)
             {
                 var items = new Dictionary<long, string>();
 
@@ -29,7 +29,7 @@ public class UsersByIdFilter : ILiquidFilter
                 {
                     if (long.TryParse(key, out var id) && values.TryGetValue(key, out var value))
                     {
-                        items.Add(id, value.ToStringValue());
+                        items.Add(id, value.ToStringValue(ctx));
                     }
                 }
 
@@ -50,12 +50,12 @@ public class UsersByIdFilter : ILiquidFilter
         if (input.Type == FluidValues.Array)
         {
             // List of user ids
-            var userIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+            var userIds = await input.EnumerateAsync(ctx).Select(x => x.ToStringValue(ctx)).ToArrayAsync();
 
             return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(), ctx.Options);
         }
 
-        var userId = input.ToStringValue();
+        var userId = input.ToStringValue(ctx);
 
         return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(), ctx.Options);
     }

@@ -50,7 +50,7 @@ public sealed class Migrations : DataMigration
         {
             var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
 
-            if (!contentItemVersions.Any())
+            if (contentItemVersions.Count == 0)
             {
                 // No more content item version to process
                 break;

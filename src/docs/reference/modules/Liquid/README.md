@@ -1250,6 +1250,75 @@ For custom evaluation that needs the same model and localization scope, use `Liq
 
 The caller is responsible for resolving the view context. Passing `null` initializes the Liquid context without entering a child scope or setting `Model` and `ViewLocalizer`; this supports non-view evaluation outside an HTTP request.
 
+## Extending Liquid from a module
+
+A module configures Liquid through `TemplateOptionsBuilder`. The `TemplateOptions` of a tenant are immutable and are built once from it, when they are first used, and are read from `IOptions<TemplateOptions>`.
+
+```csharp
+services.Configure<TemplateOptionsBuilder>(options =>
+{
+    // A filter without dependencies. A filter that needs services implements 'ILiquidFilter' and is registered with 'services.AddLiquidFilter<T>("name")'.
+    options.AddFilter("shout", (input, arguments, context) => StringValue.Create(input.ToStringValue(context).ToUpperInvariant()));
+
+    // A value available in all the templates.
+    options.WithGlobalValue("Store", ObjectValue.Create(new StoreAccessor()));
+
+    // A converter called when a CLR object is converted to a Liquid value.
+    options.AddValueConverter(x => x is Money money ? NumberValue.Create(money.Amount) : null);
+
+    // A member computed on demand, which doesn't have to exist on the type.
+    options.ConfigureMemberAccess(strategy =>
+    {
+        strategy.Register<StoreAccessor, Product>("Featured", (obj, context) => GetFeaturedProduct(context));
+    });
+});
+```
+
+A type needing services to configure the options implements `IConfigureOptions<TemplateOptionsBuilder>`.
+
+Templates can read the public properties and fields of any object reachable from their model, without registering its type. Member names are matched without considering their case, and the accessor of a custom registration takes precedence over them.
+
+!!! warning
+    A template can read everything that is reachable from its model, so don't expose a service or a secret in the model of a shape. To restrict what templates read from a type, register an accessor for all its members, like `User` and `Site` do:
+
+    ```csharp
+    options.ConfigureMemberAccess(strategy => strategy.Register<Account, FluidValue>((account, name, context) => name switch
+    {
+        nameof(Account.DisplayName) => StringValue.Create(account.DisplayName),
+        _ => NilValue.Instance,
+    }));
+    ```
+
+Custom tags and blocks are registered on the `LiquidViewParser`, with `LiquidViewOptions.LiquidViewParserConfiguration`, and write to an `IFluidOutput`.
+
+```csharp
+services.Configure<LiquidViewOptions>(options => options.LiquidViewParserConfiguration.Add(parser =>
+{
+    parser.RegisterParserTag("product_link", parser.ArgumentsListParser, ProductLinkTag.WriteToAsync);
+}));
+
+public static class ProductLinkTag
+{
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> arguments, IFluidOutput output, TextEncoder encoder, TemplateContext context)
+    {
+        var name = (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue(context);
+
+        // Writes some text.
+        output.Write(encoder.Encode(name));
+
+        // Writes an 'IHtmlContent'.
+        output.Write(new HtmlString("<hr />"), (HtmlEncoder)encoder);
+
+        // Gets a 'TextWriter' for a component that renders to a writer.
+        var writer = output.AsTextWriter();
+
+        return Completion.Normal;
+    }
+}
+```
+
+`IFluidOutput` buffers what is written to it. The `Write()` overload that accepts an `IHtmlContent` and `AsTextWriter()` are extension methods of the `OrchardCore.Liquid` namespace, which don't allocate anything when a template is rendered as an `IHtmlContent`.
+
 ## CREDITS
 
 ### Fluid
