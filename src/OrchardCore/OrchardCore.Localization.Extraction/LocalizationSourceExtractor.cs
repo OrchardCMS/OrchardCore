@@ -60,6 +60,7 @@ internal sealed class LocalizationSourceExtractor
             var operation = model.GetOperation(node, cancellationToken);
             var source = operation is null ? null : GetSource(operation);
             IOperation? plural = null;
+            IOperation? count = null;
             List<string?>? formatArguments = null;
             var deferred = false;
             if (operation is IInvocationOperation localize && IsDeferredLocalize(localize))
@@ -81,6 +82,7 @@ internal sealed class LocalizationSourceExtractor
 
                 source = ResolveSource(argument, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
                 plural = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "plural")?.Value;
+                count = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "count")?.Value;
                 formatArguments = CSharpLocalizationExtractor.GetFormatArguments(invocation.Arguments, plural: true);
                 if (source is null)
                 {
@@ -143,8 +145,15 @@ internal sealed class LocalizationSourceExtractor
                 AddDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", node);
             }
 
+            PluralRange? range = null;
+            if (formatArguments is not null)
+            {
+                var call = node.GetLocation().GetMappedLineSpan();
+                range = CSharpLocalizationExtractor.GetPluralRange(operation, count, _catalog, _options.GetSource(call.Path, call.StartLinePosition.Line + 1));
+            }
+
             var span = (deferred ? source.Syntax : node).GetLocation().GetMappedLineSpan();
-            _catalog.Add(context, key, pluralText, _options.GetSource(span.Path, span.StartLinePosition.Line + 1), CSharpLocalizationExtractor.GetComment(node), formatArguments, notes);
+            _catalog.Add(context, key, pluralText, _options.GetSource(span.Path, span.StartLinePosition.Line + 1), CSharpLocalizationExtractor.GetComment(node), formatArguments, notes, range);
             if (plural is not null)
             {
                 var declaration = source.Syntax.GetLocation().GetMappedLineSpan();
