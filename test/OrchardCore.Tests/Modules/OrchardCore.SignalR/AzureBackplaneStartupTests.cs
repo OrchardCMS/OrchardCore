@@ -1,3 +1,4 @@
+using Microsoft.Azure.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -5,7 +6,9 @@ using Moq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Redis;
+using OrchardCore.SignalR.Azure;
 using AzureSignalRStartup = OrchardCore.SignalR.Azure.Startup;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using SignalRRedisStartup = OrchardCore.SignalR.Redis.Startup;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.SignalR;
@@ -47,6 +50,37 @@ public sealed class AzureBackplaneStartupTests
     }
 
     [Fact]
+    public void ConfigureServices_WithApplicationName_ConfiguresServiceOptions()
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["SignalR:Azure:ConnectionString"] = "Endpoint=https://tenant.service.signalr.net;AccessKey=abc123;Version=1.0;",
+                ["SignalR:Azure:ApplicationName"] = "Application",
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configuration);
+
+        var startup = new AzureSignalRStartup(
+            new ShellConfiguration(configuration),
+            CreateShellSettings(),
+            NullLogger<AzureSignalRStartup>.Instance);
+
+        // Act
+        startup.ConfigureServices(services);
+
+        using var serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<ServiceOptions>>().Value;
+
+        // Assert
+        Assert.Equal("Endpoint=https://tenant.service.signalr.net;AccessKey=abc123;Version=1.0;", options.ConnectionString);
+        Assert.Equal(AzureSignalRStartup.CreateApplicationName("Application", "Default"), options.ApplicationName);
+    }
+
+    [Fact]
     public void ConfigureServices_WithRedisBackplane_DoesNotRegisterAzureSignalRAndLogsError()
     {
         // Arrange
@@ -69,6 +103,40 @@ public sealed class AzureBackplaneStartupTests
         logger.Verify(l => l.Log(
             LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(),
             It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void BindConfiguration_WithoutConnectionString_FailsValidation(string connectionString)
+    {
+        // Act
+        var options = new AzureSignalROptions().BindConfiguration(BuildShellConfiguration(connectionString));
+
+        // Assert
+        Assert.Single(options.Validate());
+    }
+
+    [Fact]
+    public void BindConfiguration_WithConnectionString_BindsOptions()
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["SignalR:Azure:ConnectionString"] = "Endpoint=https://tenant.service.signalr.net;AccessKey=abc123;Version=1.0;",
+                ["SignalR:Azure:ApplicationName"] = "Application",
+            })
+            .Build();
+
+        // Act
+        var options = new AzureSignalROptions().BindConfiguration(new ShellConfiguration(configuration));
+
+        // Assert
+        Assert.Equal("Endpoint=https://tenant.service.signalr.net;AccessKey=abc123;Version=1.0;", options.ConnectionString);
+        Assert.Equal("Application", options.ApplicationName);
+        Assert.Empty(options.Validate());
     }
 
     [Fact]

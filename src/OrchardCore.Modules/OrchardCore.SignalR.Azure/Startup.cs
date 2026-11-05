@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
@@ -18,7 +17,6 @@ public sealed class Startup : StartupBase
 {
     private const string AzureBackplaneFeature = "OrchardCore.SignalR.Azure";
     private const string BackplaneRegistrationKey = "OrchardCore.SignalR.Backplane";
-    private const string ConfigurationSection = "SignalR:Azure";
     private const string DefaultApplicationName = "OrchardCore";
     private const string RedisBackplaneFeature = "OrchardCore.SignalR.Redis";
 
@@ -38,40 +36,35 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var configurationSection = _configuration.GetSection(ConfigurationSection);
-        var connectionString = configurationSection.GetValue<string>("ConnectionString");
+        var azureOptions = new AzureSignalROptions().BindConfiguration(_configuration);
+        var validationErrors = azureOptions.Validate().ToList();
 
-        if (string.IsNullOrEmpty(connectionString))
+        if (validationErrors.Count > 0)
         {
             _logger.LogWarning(
-                "The '{Feature}' feature is enabled but '{Section}:ConnectionString' is not configured.",
+                "The '{Feature}' feature is enabled but not active: {Errors}",
                 AzureBackplaneFeature,
-                ConfigurationSection);
-
-            return;
+                string.Join(' ', validationErrors.Select(error => error.ErrorMessage)));
         }
-
-        if (!TryRegisterBackplane(services))
+        else if (!TryRegisterBackplane(services))
         {
             _logger.LogError(
                 "The '{Feature}' feature is enabled but not active as the '{OtherFeature}' backplane is already registered. Enable only one SignalR backplane per tenant.",
                 AzureBackplaneFeature,
                 RedisBackplaneFeature);
-
-            return;
         }
+        else
+        {
+            _logger.LogInformation("The Azure SignalR Service backplane is enabled.");
 
-        _logger.LogInformation("The Azure SignalR Service backplane is enabled.");
-
-        services
-            .AddSignalR()
-            .AddAzureSignalR(options =>
-            {
-                options.ConnectionString = connectionString;
-                options.ApplicationName = CreateApplicationName(
-                    configurationSection.GetValue<string>("ApplicationName"),
-                    _shellSettings.Name);
-            });
+            services
+                .AddSignalR()
+                .AddAzureSignalR(options =>
+                {
+                    options.ConnectionString = azureOptions.ConnectionString;
+                    options.ApplicationName = CreateApplicationName(azureOptions.ApplicationName, _shellSettings.Name);
+                });
+        }
     }
 
     internal static string CreateApplicationName(string applicationName, string tenantName)
