@@ -5,9 +5,7 @@
 @* A passkey is a two-factor method as soon as the user has one, so this only reports it. The passkeys are added in their own section of the Security page. *@
 @if (Model.IsEnabled)
 {
-    <span class="badge text-bg-success fs-6 fw-normal" title="@T["The passkeys below can confirm it's you after you log in with your password."]">
-        <i class="fa-solid fa-check" aria-hidden="true"></i> @T["Ready"]
-    </span>
+    <div class="btn btn-sm btn-success disabled">@T["Ready"]</div>
 
     return;
 }

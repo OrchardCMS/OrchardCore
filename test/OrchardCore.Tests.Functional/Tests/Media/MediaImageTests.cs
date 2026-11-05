@@ -18,8 +18,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
 
-        var count = await page.Locator("img[src*='/media/']").CountAsync();
-        Assert.True(count > 0, "Expected at least one media image on the blog homepage.");
+        Assert.Contains("/media/", await GetMastheadImageUrlAsync(page));
 
         await page.CloseAsync();
     }
@@ -30,9 +29,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
 
-        // Get a media image URL. Use img.src (fully-qualified) for navigation.
-        var src = await page.Locator("img[src*='/media/']").First
-            .EvaluateAsync<string>("img => img.src");
+        var src = await GetMastheadImageUrlAsync(page);
 
         // Strip existing query params so we can add our own supported size.
         var pathOnly = src.Contains('?') ? src[..src.IndexOf('?')] : src;
@@ -53,23 +50,12 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
 
-        // Collect src attributes of images that already have resize parameters.
-        var srcs = await page.Locator("img[src*='/media/'][src*='width=']")
-            .EvaluateAllAsync<string[]>("imgs => imgs.map(img => img.getAttribute('src')).filter(Boolean)");
+        var src = await GetMastheadImageUrlAsync(page);
 
         await page.CloseAsync();
 
-        if (srcs.Length == 0)
-        {
-            // The current theme doesn't use resize tag helpers on the home page; skip.
-            return;
-        }
-
-        foreach (var src in srcs)
-        {
-            Assert.True(src.Contains("token=", StringComparison.Ordinal),
-                $"Image URL rendered with resize params must include a security token: {src}");
-        }
+        Assert.Contains("width=", src);
+        Assert.Contains("token=", src);
     }
 
     [Fact]
@@ -78,29 +64,16 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
 
-        // Collect fully-qualified URLs of images with resize + token.
-        var srcs = await page.Locator("img[src*='/media/'][src*='width='][src*='token=']")
-            .EvaluateAllAsync<string[]>("imgs => imgs.map(img => img.src)");
+        var src = await GetMastheadImageUrlAsync(page);
+
+        var response = await page.GotoAsync(src);
+
+        Assert.NotNull(response);
+        Assert.True(response!.Ok,
+            $"Expected resized image URL to return HTTP 200, got {response.Status}: {src}");
+        Assert.StartsWith("image/", response.Headers.GetValueOrDefault("content-type", ""));
 
         await page.CloseAsync();
-
-        if (srcs.Length == 0)
-        {
-            // Theme doesn't render tokenized resize URLs on this page; skip.
-            return;
-        }
-
-        foreach (var src in srcs.Take(3))
-        {
-            var imgPage = await Fixture.CreatePageAsync();
-            var response = await imgPage.GotoAsync(src);
-            Assert.NotNull(response);
-            Assert.True(response!.Ok,
-                $"Expected resized image URL to return HTTP 200, got {response.Status}: {src}");
-            Assert.True(response.Headers.GetValueOrDefault("content-type", "").StartsWith("image/", StringComparison.OrdinalIgnoreCase),
-                $"Expected image content-type for {src}");
-            await imgPage.CloseAsync();
-        }
     }
 
     [Fact]
@@ -109,8 +82,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
 
-        var src = await page.Locator("img[src*='/media/']").First
-            .EvaluateAsync<string>("img => img.src");
+        var src = await GetMastheadImageUrlAsync(page);
 
         var pathOnly = src.Contains('?') ? src[..src.IndexOf('?')] : src;
 
@@ -124,4 +96,9 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
 
         await page.CloseAsync();
     }
+
+    // The Blog theme shows its media image as the background of the masthead, not in an 'img' element.
+    // The computed value is 'url("...")', with a fully-qualified URL to navigate to.
+    private static Task<string> GetMastheadImageUrlAsync(IPage page)
+        => page.Locator("header.masthead").EvaluateAsync<string>("header => getComputedStyle(header).backgroundImage.slice(5, -2)");
 }

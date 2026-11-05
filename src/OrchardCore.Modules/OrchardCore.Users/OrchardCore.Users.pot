@@ -1741,11 +1741,6 @@ msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Passkey.Actions"
 msgid "Ready"
 msgstr ""
 
-#: Views/Items/TwoFactorMethod.Passkey.Actions.cshtml
-msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Passkey.Actions"
-msgid "The passkeys below can confirm it's you after you log in with your password."
-msgstr ""
-
 #: Views/Items/TwoFactorMethod.Passkey.Content.cshtml
 msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Passkey.Content"
 msgid "Passkey"

@@ -403,7 +403,7 @@ public class PasskeyControllerTests
 
         // Without a passkey, the method tells the user how to set it up.
         Assert.Contains("Add a passkey below to use passkeys as a two-factor method.", page);
-        Assert.DoesNotContain("Ready", page);
+        Assert.DoesNotContain(">Ready</div>", page);
     }
 
     [Fact]
@@ -421,7 +421,7 @@ public class PasskeyControllerTests
         var page = await client.GetStringAsync("Security", TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.Contains("Ready", page);
+        Assert.Contains(">Ready</div>", page);
         Assert.DoesNotContain("Add a passkey below to use passkeys as a two-factor method.", page);
     }
 
@@ -440,6 +440,22 @@ public class PasskeyControllerTests
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal($"/{context.TenantName}/Security#two-factor", response.Headers.Location.ToString());
+    }
+
+    [Fact]
+    public async Task Passkeys_WhenRequested_ReturnsNotFound()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(UserConstants.Features.AuthenticatorApp);
+        var client = CreateClient(context, out _);
+
+        await LoginWithPasswordAsync(client);
+
+        // Act
+        var response = await client.GetAsync("Passkeys", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
