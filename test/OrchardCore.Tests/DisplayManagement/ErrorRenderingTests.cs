@@ -12,6 +12,14 @@ namespace OrchardCore.Tests.DisplayManagement;
 
 public class ErrorRenderingTests
 {
+    [Fact]
+    public async Task AddAsync_PositionWrapper_ThrowsNotSupportedException()
+    {
+        var wrapper = (IShape)PositionWrapper.TryWrap(new HtmlString("Rendered zone"), "");
+
+        await Assert.ThrowsAsync<NotSupportedException>(async () => await wrapper.AddAsync(new Shape(), ""));
+    }
+
     [Theory]
     [InlineData("Content")]
     [InlineData("LaterZone")]
