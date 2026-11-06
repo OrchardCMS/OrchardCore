@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Apis using the GraphQL Specification.",
+    Dependencies = ["OrchardCore.Navigation"],
     Category = "Api"
 )]
