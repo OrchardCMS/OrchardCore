@@ -94,8 +94,9 @@ const antiforgeryFieldName = "__RequestVerificationToken";
 const getAntiforgeryToken = (element: HTMLElement): string =>
     element.closest("form")?.querySelector<HTMLInputElement>(`input[name="${antiforgeryFieldName}"]`)?.value ?? "";
 
-// Fetches the options from the URL of the element.
-const fetchOptions = async <T>(element: HTMLElement): Promise<T> => {
+// Fetches the options from the URL of the element. A request that is aborted before its response arrives
+// doesn't store its ceremony state, which would replace the state of a newer request.
+const fetchOptions = async <T>(element: HTMLElement, signal?: AbortSignal): Promise<T> => {
     const body = new FormData();
     body.append(antiforgeryFieldName, getAntiforgeryToken(element));
 
@@ -103,6 +104,7 @@ const fetchOptions = async <T>(element: HTMLElement): Promise<T> => {
         method: "POST",
         body,
         credentials: "same-origin",
+        signal,
     });
 
     if (!response.ok) {
@@ -175,7 +177,7 @@ const initLogin = (container: HTMLElement): void => {
     };
 
     const requestCredential = async (mediation?: CredentialMediationRequirement, signal?: AbortSignal): Promise<PublicKeyCredential | null> => {
-        const options = parseRequestOptions(await fetchOptions<RequestOptionsJson>(container));
+        const options = parseRequestOptions(await fetchOptions<RequestOptionsJson>(container, signal));
 
         // A newer request may have started while the options were loading.
         if (signal?.aborted) {
