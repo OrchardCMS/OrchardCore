@@ -11,8 +11,8 @@ public static class IndexingPermissions
 
     public static readonly Permission ManageIndexes = new("ManageIndexes", LocalizationSource.Create("Manage Indexes", typeof(IndexingPermissions)));
 
-    private static readonly Permission s_indexPermissionTemplate =
-        new("QueryIndex_{0}", "Query '{0}' Index", [ManageIndexes, QuerySearchIndex]);
+    private static readonly PermissionTemplate s_indexPermissionTemplate =
+        new("QueryIndex_{0}", LocalizationSource.Create("Query '{0}' Index", typeof(IndexingPermissions)), ManageIndexes, QuerySearchIndex);
 
     private static readonly ConcurrentDictionary<string, Permission> s_permissions = [];
 
@@ -20,9 +20,8 @@ public static class IndexingPermissions
     {
         ArgumentNullException.ThrowIfNull(indexProfile);
 
-        return s_permissions.GetOrAdd(indexProfile.Id, indexId => new Permission(
-            string.Format(s_indexPermissionTemplate.Name, indexProfile.Name),
-            string.Format(s_indexPermissionTemplate.Description.Value, indexProfile.Name),
-            s_indexPermissionTemplate.ImpliedBy));
+        return s_permissions.GetOrAdd(
+            indexProfile.Id,
+            _ => s_indexPermissionTemplate.CreateDynamicPermission(indexProfile.Name));
     }
 }

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The minimum Roslyn version the extraction is compiled against. Its runtime assets are excluded so that
+         SdkAssemblyResolver binds the process to the Roslyn and Razor compiler of the .NET SDK that drives the build.
+         Every project that runs the extraction in process must exclude them as well. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" ExcludeAssets="runtime" />
+    <PackageReference Include="Fluid.Core" />
+  </ItemGroup>
+</Project>

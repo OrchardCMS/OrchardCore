@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Zones;
@@ -28,11 +29,11 @@ public class LayoutTagTests
             .AddSingleton(new ViewContextAccessor { ViewContext = new ViewContext { HttpContext = httpContext, View = Mock.Of<IView>() } })
             .BuildServiceProvider();
 
-        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var context = new LiquidTemplateContext(services, TemplateOptions.Default);
 
         // Act
-        await LayoutTag.WriteToAsync(new LiteralExpression(new StringValue("Layout__Landing")), TextWriter.Null, NullEncoder.Default, context);
-        await LayoutTag.WriteToAsync(new LiteralExpression(new StringValue("Layout__Landing")), TextWriter.Null, NullEncoder.Default, context);
+        await LayoutTag.WriteToAsync(new LiteralExpression(StringValue.Create("Layout__Landing")), new ViewBufferTextWriterContent(), NullEncoder.Default, context);
+        await LayoutTag.WriteToAsync(new LiteralExpression(StringValue.Create("Layout__Landing")), new ViewBufferTextWriterContent(), NullEncoder.Default, context);
 
         // Assert
         Assert.Equal(["Layout__Landing"], layout.Metadata.Alternates);

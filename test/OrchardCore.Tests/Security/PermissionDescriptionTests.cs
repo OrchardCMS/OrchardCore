@@ -10,6 +10,7 @@ namespace OrchardCore.Tests.Security;
 public class PermissionDescriptionTests
 {
     [Fact]
+    [Obsolete("Remove these when the corresponding constructor is removed.")]
     public void Constructor_WithStringDescription_CreatesDescriptionWithoutContext()
     {
         // Act
@@ -21,6 +22,7 @@ public class PermissionDescriptionTests
     }
 
     [Fact]
+    [Obsolete("Remove these when the corresponding constructor is removed.")]
     public void Constructor_WithNullStringDescription_HasNoDescription()
     {
         // Act
@@ -100,9 +102,9 @@ public class PermissionDescriptionTests
     [Fact]
     public void CreateDynamicPermission_FromTemplate_KeepsContextFreeFormattedDescription()
     {
-        var template = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.EditContent);
-
-        var permission = ContentTypePermissionsHelper.CreateDynamicPermission(template, "Widget");
+        var permission = ContentTypePermissionsHelper.CreateDynamicPermissionOf(
+            CommonPermissions.EditContent.Name,
+            "Widget");
 
         Assert.Equal("Edit_Widget", permission.Name);
         Assert.Equal("Edit Widget for others", permission.Description.Value);

@@ -1,0 +1,247 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.BackgroundTasks\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.BackgroundTasks.AdminMenu"
+msgid "Background Tasks"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.BackgroundTasks.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Disable"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Disabled"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Enable"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Enabled"
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "Please select one or more tasks."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task has been disabled."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task has been enabled."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The task has been updated."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The tasks have been disabled."
+msgstr ""
+
+#: Controllers/BackgroundTaskController.cs
+msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
+msgid "The tasks have been enabled."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.BackgroundTasks.Permissions"
+msgid "Manage background tasks"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Advanced"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Background Tasks"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Edit Task Settings"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Ignored if there is no distributed lock feature enabled."
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Invalid lock expiration value in the advanced tab"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Invalid lock timeout value in the advanced tab"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Lock expiration (ms)"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Lock timeout (ms)"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Properties"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Reset Schedule"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Schedule"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "The task schedule as a cron expression."
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Title"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Use Tenant Pipeline"
+msgstr ""
+
+#: Views/BackgroundTask/Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
+msgid "Whether or not the tenant pipeline should be built to configure endpoints and then executed to allow route urls generation in the background."
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "<strong>Nothing here!</strong> There are no background tasks for the moment."
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Background Tasks"
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "Title"
+msgstr ""
+
+#: Views/BackgroundTask/Index.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Buttons.SummaryAdmin"
+msgid "Disable"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Buttons.SummaryAdmin"
+msgid "Enable"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
+msgid "Enabled"
+msgstr ""
+
+#: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
+msgid "Status"
+msgstr ""
+
+#: Views/BackgroundTasksFilters.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTasksFilters"
+msgid "Filter by status"
+msgstr ""
+
+#: Views/BackgroundTasksFilters.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTasksFilters"
+msgid "Status"
+msgstr ""

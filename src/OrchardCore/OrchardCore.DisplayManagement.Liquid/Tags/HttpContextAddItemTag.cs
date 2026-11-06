@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class HttpContextAddItemTag
 {
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> expressions, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> expressions, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -19,7 +19,7 @@ public class HttpContextAddItemTag
         {
             foreach (var argument in expressions)
             {
-                httpContext.Items[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
+                httpContext.Items[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context);
             }
         }
         return Completion.Normal;

@@ -65,8 +65,8 @@ public class PermissionHandlerHelperTests
     {
         // Arrange
         var level2 = new Permission("Implicit2");
-        var level1 = new Permission("Implicit1", "Foo", new[] { level2 });
-        var required = new Permission("Required", "Foo", new[] { level1 });
+        var level1 = PermissionHelpers.Create("Implicit1", "Foo", level2);
+        var required = PermissionHelpers.Create("Required", "Foo", level1);
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required);
 
@@ -124,14 +124,17 @@ public class PermissionHandlerHelperTests
 
     private static RolesPermissionsHandler CreatePermissionHandler(params Role[] roles)
     {
-        var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+        var lookupNormalizer = new UpperInvariantLookupNormalizer();
+        var roleStore = new Mock<IRoleStore<IRole>>();
 
         foreach (var role in roles)
         {
-            roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
+            roleStore
+                .Setup(m => m.FindByNameAsync(lookupNormalizer.NormalizeName(role.RoleName), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(role);
         }
 
         var permissionGrantingService = new DefaultPermissionGrantingService();
-        return new RolesPermissionsHandler(roleManager.Object, permissionGrantingService);
+        return new RolesPermissionsHandler(roleStore.Object, lookupNormalizer, permissionGrantingService);
     }
 }

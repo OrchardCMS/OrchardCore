@@ -1,7 +1,7 @@
 @model NotifyUserTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="UserNames">
-    <label asp-for="UserNames" class="ocat-label">@T["User names"]</label>
+    <label asp-for="UserNames" class="ocat-label ocat-label-required">@T["User names"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="UserNames" class="form-control" />
         <span asp-validation-for="UserNames"></span>

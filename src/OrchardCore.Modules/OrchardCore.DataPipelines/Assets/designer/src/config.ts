@@ -7,6 +7,10 @@ export interface DesignerUrls {
     library: string;
     save?: string | null;
     addStep?: string | null;
+    // GET lists the data sets the user may read; POST { revision, dataSet, x, y } adds a "Read a data source" step
+    // that reads one.
+    dataSets?: string | null;
+    addDataSource?: string | null;
     // GET ?stepId= renders the step editor; POST ?stepId=&revision= applies it (multipart form).
     editor?: string | null;
     // GET renders the pipeline settings form; POST ?revision= applies it (multipart form).

@@ -84,8 +84,7 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         ContentTypeDefinition contentTypeDefinition,
         string userId = null)
     {
-        var template = ContentTypePermissionsHelper.ConvertToDynamicPermission(basePermission);
-        var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(template, contentTypeDefinition);
+        var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermissionOf(basePermission, contentTypeDefinition);
 
         return _authorizationService.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition, userId);
     }

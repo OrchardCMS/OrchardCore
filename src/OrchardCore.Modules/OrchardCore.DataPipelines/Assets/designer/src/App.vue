@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import type { DesignerConfig } from "./config";
 import { DesignerApiError, type DesignerApi } from "./api/designerApi";
-import type { DesignIssue, DesignerVersion, Library, PortKind } from "./api/types";
+import type { AddStepResult, DesignIssue, DesignerDataSet, DesignerVersion, Library, PortKind } from "./api/types";
 import { designerStore, type DesignerStore } from "./state/designerStore";
 import { addNodeCommand } from "./state/commands";
 import { findOutput } from "./state/ports";
@@ -18,6 +18,7 @@ import ConflictDialog from "@bloom/designer/draft/ConflictDialog.vue";
 import PublishDialog from "@bloom/designer/draft/PublishDialog.vue";
 import DraftBanner from "@bloom/designer/draft/DraftBanner.vue";
 import VersionsDialog from "./draft/VersionsDialog.vue";
+import DataSetPicker from "./dataSets/DataSetPicker.vue";
 import { formatDateTime } from "@bloom/designer/core/formatDateTime";
 import { decidePublish, hasErrors, type PublishDecision } from "@bloom/designer/draft/publishDecision";
 import { issueTarget, issueTitle } from "./panel/issues";
@@ -52,6 +53,12 @@ const issueTitleOf = (issue: DesignIssue) => issueTitle(state.nodes, issue);
 const busy = ref(false);
 const bannerDismissed = ref(false);
 const versionsOpen = ref(false);
+
+// The "Read a data source" step starts from its data set: the dialog of the data sets adds the step once one is chosen,
+// at a position, or in a free spot of the visible canvas. The step's editor uses the same dialog to change the data set.
+const DATA_SOURCE_STEP = "DataSource";
+type DataSetRequest = { mode: "add"; position: Point | null } | { mode: "change"; current: string | null; choose: (value: string) => void };
+const dataSetRequest = ref<DataSetRequest | null>(null);
 
 // A version page shows a published version: nothing can be edited.
 const isVersionPage = computed(() => props.config.mode === "version");
@@ -276,9 +283,15 @@ const loadLibrary = async () => {
  * output when `connectFrom` is set. The step is created on the server first, so it has an id and settings; the canvas
  * change is undoable.
  */
-const addStep = async (type: string, position: Point, connectFrom: { stepId: string; port: string } | null = null): Promise<string | null> => {
+const addStep = (type: string, position: Point, connectFrom: { stepId: string; port: string } | null = null): Promise<string | null> =>
+    addStepWith((revision) => props.api.addStep({ revision, type, x: snap(position.x), y: snap(position.y), connectFrom }));
+
+/**
+ * Adds the step the server creates with `request`, and selects and opens it.
+ */
+const addStepWith = async (request: (revision: number) => Promise<AddStepResult>): Promise<string | null> => {
     try {
-        const result = await mutate((revision) => props.api.addStep({ revision, type, x: snap(position.x), y: snap(position.y), connectFrom }));
+        const result = await mutate(request);
 
         props.store.execute(addNodeCommand(props.store.graph, result.node, result.connection));
         props.store.registerServerNode(result.node, result.revision, result.issues);
@@ -349,13 +362,75 @@ const onQuickAddCancel = () => {
 };
 
 // A dropped card is placed under the pointer, its header centered on it.
-const onDropStep = (type: string, point: Point) => addStep(type, { x: point.x - NODE_WIDTH / 2, y: point.y - 16 });
+const onDropStep = (type: string, point: Point) => {
+    const position = { x: point.x - NODE_WIDTH / 2, y: point.y - 16 };
+
+    if (type === DATA_SOURCE_STEP && canAddDataSource.value) {
+        dataSetRequest.value = { mode: "add", position };
+
+        return;
+    }
+
+    return addStep(type, position);
+};
 
 // A clicked card is placed in the middle of the visible part of the canvas.
 const onAddStep = (type: string) => {
+    if (type === DATA_SOURCE_STEP && canAddDataSource.value) {
+        dataSetRequest.value = { mode: "add", position: null };
+
+        return;
+    }
+
     const center = canvas.value?.visibleCenter() ?? { x: NODE_WIDTH, y: DEFAULT_NODE_HEIGHT };
 
     return addStep(type, { x: center.x - NODE_WIDTH / 2, y: center.y - DEFAULT_NODE_HEIGHT / 2 });
+};
+
+const canAddDataSource = computed(
+    () =>
+        !readOnly.value &&
+        !!props.config.urls.addDataSource &&
+        !!props.config.urls.dataSets &&
+        (library.value?.categories ?? []).some((category) => category.steps.some((step) => step.name === DATA_SOURCE_STEP)),
+);
+
+// Several data sources can be added, such as to join them: a new one goes to a free spot of the visible canvas.
+const freeSpotInView = (): Point => {
+    const center = canvas.value?.visibleCenter() ?? { x: NODE_WIDTH, y: DEFAULT_NODE_HEIGHT };
+    const rects = state.nodes.map((node) => nodeRect(node, canvas.value?.layoutOf(node.id)));
+
+    return findFreeSpot({ x: center.x - NODE_WIDTH / 2, y: center.y - DEFAULT_NODE_HEIGHT / 2 }, { width: NODE_WIDTH, height: DEFAULT_NODE_HEIGHT }, rects);
+};
+
+const onDataSetPicked = async (dataSet: DesignerDataSet) => {
+    const request = dataSetRequest.value;
+    dataSetRequest.value = null;
+
+    if (request?.mode === "change") {
+        request.choose(dataSet.value);
+
+        return;
+    }
+
+    if (request?.mode === "add") {
+        const position = request.position ?? freeSpotInView();
+
+        await addStepWith((revision) => props.api.addDataSource({ revision, dataSet: dataSet.value, x: snap(position.x), y: snap(position.y) }));
+    }
+};
+
+// The editor of a "Read a data source" step asks for its data set with a "dp:choose-data-set" event, see
+// data-pipelines-editors.js.
+const onChooseDataSet = (event: Event) => {
+    const detail = (event as CustomEvent<{ current?: string | null; choose?: (value: string) => void }>).detail;
+
+    if (!detail?.choose || !props.config.urls.dataSets || readOnly.value) {
+        return;
+    }
+
+    event.preventDefault();
+    dataSetRequest.value = { mode: "change", current: detail.current || null, choose: detail.choose };
 };
 
 /**
@@ -536,6 +611,7 @@ const startRun = async () => {
 
 onMounted(async () => {
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("dp:choose-data-set", onChooseDataSet);
     window.addEventListener("beforeunload", onBeforeUnload);
     state.currentUserId = props.config.currentUserId ?? null;
 
@@ -577,6 +653,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
     document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("dp:choose-data-set", onChooseDataSet);
     window.removeEventListener("beforeunload", onBeforeUnload);
     autosave.stop();
     tracker?.stop();
@@ -618,6 +695,18 @@ defineExpose({ canvas, panel, stepPanel, addStep, autosave, publish, discard, st
             </template>
 
             <template v-if="!readOnly && !loading && !loadError">
+                <button
+                    v-if="canAddDataSource"
+                    type="button"
+                    class="btn btn-sm btn-outline-primary text-nowrap"
+                    :title="t('AddDataSourceHint', 'Adds a step that reads a data set, such as content items, users or query results.')"
+                    data-cy="toolbar-add-data-source"
+                    @click="dataSetRequest = { mode: 'add', position: null }"
+                >
+                    <i class="fa-solid fa-database" aria-hidden="true"></i>
+                    {{ t("AddDataSource", "Add a data source") }}
+                </button>
+
                 <SaveStatusIndicator
                     :status="state.saveStatus"
                     :has-draft="state.hasDraft"
@@ -819,6 +908,13 @@ defineExpose({ canvas, panel, stepPanel, addStep, autosave, publish, discard, st
             :can-restore="!!config.urls.restore"
             @close="versionsOpen = false"
             @restore="restoreVersion"
+        />
+        <DataSetPicker
+            v-if="dataSetRequest && config.urls.dataSets"
+            :load="api.getDataSets"
+            :current="dataSetRequest.mode === 'change' ? dataSetRequest.current : null"
+            @pick="onDataSetPicked"
+            @close="dataSetRequest = null"
         />
         <PublishDialog
             v-if="publishDialog"

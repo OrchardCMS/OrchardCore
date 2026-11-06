@@ -35,8 +35,13 @@ const applying = ref(false);
 const invalid = ref(false);
 const dirty = ref(false);
 const loadFailed = ref(false);
+const saved = ref(false);
+
+// How long the Apply button shows that the changes were saved.
+const SAVED_FEEDBACK_DURATION = 1800;
 
 let timer: ReturnType<typeof setTimeout> | undefined;
+let savedTimer: ReturnType<typeof setTimeout> | undefined;
 let pending: Promise<boolean> | null = null;
 let syncing = false;
 let loadToken = 0;
@@ -44,6 +49,13 @@ let loadToken = 0;
 // A field marked with the reload attribute changes the form itself (for example the content type a source reads,
 // whose fields it lists): the form is loaded again once the change is applied.
 let reloadWhenApplied = false;
+
+// The Apply button turns into a green "Saved!" for a moment, so the user sees the changes were kept.
+const showSaved = () => {
+    clearTimeout(savedTimer);
+    saved.value = true;
+    savedTimer = setTimeout(() => (saved.value = false), SAVED_FEEDBACK_DURATION);
+};
 
 const clearContent = () => {
     if (content.value && content.value.childNodes.length > 0) {
@@ -158,28 +170,42 @@ const onChange = (event: Event) => {
     }
 
     dirty.value = true;
+    saved.value = false;
     clearTimeout(timer);
-    timer = setTimeout(() => void apply(), props.autoApplyDelay);
+    timer = setTimeout(() => void applyAndShow(), props.autoApplyDelay);
 };
 
 const onInput = () => {
     dirty.value = true;
+    saved.value = false;
+};
+
+const applyAndShow = async () => {
+    if (await apply()) {
+        showSaved();
+    }
 };
 
 const onSubmit = (event: Event) => {
     event.preventDefault();
 
     if (!syncing) {
-        void apply();
+        void applyAndShow();
     }
 };
 
-watch(() => props.formKey, reload);
+watch(() => props.formKey, () => {
+    clearTimeout(savedTimer);
+    saved.value = false;
+
+    return reload();
+});
 
 onMounted(reload);
 
 onBeforeUnmount(() => {
     clearTimeout(timer);
+    clearTimeout(savedTimer);
     clearContent();
 });
 
@@ -222,8 +248,18 @@ defineExpose({
                 <span class="ocd-form-status" role="status" aria-live="polite">
                     <template v-if="applying">{{ t("Applying", "Applying…") }}</template>
                     <span v-else-if="invalid" class="text-danger">{{ t("FormHasErrors", "Fix the errors to apply the changes.") }}</span>
+                    <span v-else-if="saved" class="visually-hidden">{{ t("AppliedFeedback", "Saved!") }}</span>
                 </span>
-                <button type="submit" class="btn btn-sm btn-primary" :disabled="applying" data-cy="panel-apply">{{ t("Apply", "Apply") }}</button>
+                <button
+                    type="submit"
+                    class="btn btn-sm ocd-form-apply"
+                    :class="saved ? 'btn-success' : 'btn-primary'"
+                    :disabled="applying"
+                    data-cy="panel-apply"
+                >
+                    <template v-if="saved"><i class="fa-solid fa-check me-1" aria-hidden="true"></i>{{ t("AppliedFeedback", "Saved!") }}</template>
+                    <template v-else>{{ t("Apply", "Apply") }}</template>
+                </button>
             </div>
         </form>
     </div>

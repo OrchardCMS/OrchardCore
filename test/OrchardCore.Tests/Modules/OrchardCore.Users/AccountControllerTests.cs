@@ -487,7 +487,8 @@ public class AccountControllerTests
         // Act
         HttpResponseMessage response = null;
 
-        for (var i = 0; i < 4; i++)
+        // The registration allows 20 attempts per minute per IP address.
+        for (var i = 0; i < 21; i++)
         {
             var model = new RegisterViewModel()
             {
@@ -537,7 +538,8 @@ public class AccountControllerTests
         // Act
         HttpResponseMessage response = null;
 
-        for (var i = 0; i < 11; i++)
+        // The login allows 100 attempts per minute per IP address.
+        for (var i = 0; i < 101; i++)
         {
             response = await context.Client.SendAsync(await CreateLoginRequestMessageAsync("missing-user", "Password1!", loginGet), TestContext.Current.CancellationToken);
         }

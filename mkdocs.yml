@@ -307,6 +307,7 @@ nav:
               - Modules: reference/modules/Modules/README.md
               - OpenApi: reference/modules/OpenApi/README.md
               - OpenId: reference/modules/OpenId/README.md
+              - OpenTelemetry: reference/modules/OpenTelemetry/README.md
               - Permissions: reference/modules/Security/Permissions.md
               - Razor Helpers: reference/modules/Razor/README.md
               - Rate Limits: reference/modules/RateLimits/README.md
@@ -317,6 +318,7 @@ nav:
               - Roles: reference/modules/Roles/README.md
               - Sanitizer: reference/modules/Sanitizer/README.md
               - Scripting: reference/modules/Scripting/README.md
+              - Secrets: reference/modules/Secrets/README.md
               - Security: reference/modules/Security/README.md
               - Setup: reference/modules/Setup/README.md
               - Shells: reference/modules/Shells/README.md

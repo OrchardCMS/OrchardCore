@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.ReverseProxy\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Reverse Proxy"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.ReverseProxy.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.ReverseProxy.DeploymentStartup"
+msgid "Exports the Reverse Proxy settings."
+msgstr ""
+
+#: Startup.cs
+msgctxt "OrchardCore.ReverseProxy.DeploymentStartup"
+msgid "Reverse Proxy settings"
+msgstr ""
+
+#: Drivers/ReverseProxySettingsDisplayDriver.cs
+msgctxt "OrchardCore.ReverseProxy.Drivers.ReverseProxySettingsDisplayDriver"
+msgid "The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.ReverseProxy.Permissions"
+msgid "Manage Reverse Proxy Settings"
+msgstr ""
+
+#: Views/ReverseProxySettings.Edit.cshtml
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Current request value;"
+msgstr ""
+
+#. Format arguments: {0}: "https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.0"
+#: Views/ReverseProxySettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Documentation available at: {0}"
+msgstr ""
+
+#: Views/ReverseProxySettings.Edit.cshtml
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-For"
+msgstr ""
+
+#: Views/ReverseProxySettings.Edit.cshtml
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-Host"
+msgstr ""
+
+#: Views/ReverseProxySettings.Edit.cshtml
+msgctxt "OrchardCore.ReverseProxy.Views.ReverseProxySettings.Edit"
+msgid "Enables the forwarding of the HTTP header X-Forwarded-Proto"
+msgstr ""

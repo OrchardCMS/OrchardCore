@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Indexing.Core.Recipes;
 using OrchardCore.Localization;
@@ -6,15 +7,13 @@ namespace OrchardCore.Indexing.Core.Deployments;
 
 public sealed class RebuildIndexDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = LocalizationSource.Create<RebuildIndexDeploymentStep>("Indexing");
-    private static readonly LocalizationSource s_title = LocalizationSource.Create<RebuildIndexDeploymentStep>("Rebuild Indexes");
+    public override string Name => RebuildIndexStep.Key;
 
-    public RebuildIndexDeploymentStep()
-    {
-        Name = RebuildIndexStep.Key;
-        Category = s_category;
-        Title = s_title;
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => IndexingLocalizationSources.Indexing;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => IndexingLocalizationSources.RebuildIndexes;
 
     public bool IncludeAll { get; set; }
 

@@ -17,9 +17,25 @@ public class Workflow
     public string WorkflowTypeId { get; set; }
 
     /// <summary>
+    /// The <see cref="WorkflowTypeVersion.VersionId"/> of the version this instance started on, and resumes on.
+    /// Instances created before workflow types had versions have none, and resume on the current definition.
+    /// </summary>
+    public string WorkflowTypeVersionId { get; set; }
+
+    /// <summary>
     /// The correlation ID can be used to resume workflows that are associated with specific objects, such as content items.
     /// </summary>
     public string CorrelationId { get; set; }
+
+    /// <summary>
+    /// The <see cref="WorkflowId"/> of the workflow instance that runs this one as an activity, if any.
+    /// </summary>
+    public string ParentWorkflowId { get; set; }
+
+    /// <summary>
+    /// The activity of the parent instance (<see cref="ParentWorkflowId"/>) that runs this one.
+    /// </summary>
+    public string ParentActivityId { get; set; }
 
     /// <summary>
     /// Serialized state of the workflow.
@@ -28,6 +44,12 @@ public class Workflow
 
     public WorkflowStatus Status { get; set; }
     public string FaultMessage { get; set; }
+
+    /// <summary>
+    /// The next attempt of the task this faulted instance is retried from, by the task's
+    /// <see cref="ActivityRetryPolicy"/>, if any.
+    /// </summary>
+    public WorkflowPendingRetry PendingRetry { get; set; }
 
     /// <summary>
     /// The timeout in milliseconds to acquire a lock before resuming this workflow instance.

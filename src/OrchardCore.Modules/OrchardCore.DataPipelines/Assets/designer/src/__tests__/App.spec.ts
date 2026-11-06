@@ -192,4 +192,105 @@ describe("App", () => {
         expect(postEditor).toHaveBeenCalledWith("filter", 0, expect.any(FormData));
         expect(store.state.connections.map((connection) => connection.targetStepId)).toEqual(["filter"]);
     });
+
+    describe("data sources", () => {
+        const dataSourceLibrary = {
+            categories: library.categories.map((category) =>
+                category.category === "Source"
+                    ? { ...category, steps: [{ ...category.steps[0], name: "DataSource", displayText: "Read a data source" }, ...category.steps] }
+                    : category,
+            ),
+        };
+
+        const dataSets = {
+            dataSets: [
+                { value: "Contents::BlogPost", displayName: "Blog Post", description: "The posts.", source: "Content items" },
+                { value: "Users::Users", displayName: "Users", description: "One row per user.", source: "Users" },
+            ],
+        };
+
+        const dataSourceConfig = { urls: { ...urls, dataSets: "/ds", addDataSource: "/ads" } };
+
+        const createDataSourceApi = (overrides: Partial<Record<keyof DesignerApi, unknown>> = {}) =>
+            createApi({
+                getLibrary: vi.fn().mockResolvedValue(dataSourceLibrary),
+                getDataSets: vi.fn().mockResolvedValue(dataSets),
+                addDataSource: vi.fn().mockResolvedValue({ revision: 1, node: createNode("users", { category: "Source", inputs: [] }), connection: null, issues: [] }),
+                addStep: vi.fn(),
+                ...overrides,
+            });
+
+        const dialog = () => document.querySelector<HTMLElement>("[data-cy=data-set-picker]");
+
+        const choose = async (value: string) => {
+            document.querySelector<HTMLButtonElement>(`[data-cy="data-set-${value}"] [data-cy=data-set-choose]`)!.click();
+            await flushPromises();
+        };
+
+        it("toolbar_AddDataSource_AddsAStepThatReadsTheChosenDataSet", async () => {
+            const api = createDataSourceApi();
+            const { wrapper, store } = mountApp(api, dataSourceConfig);
+            await flushPromises();
+
+            await wrapper.get("[data-cy=toolbar-add-data-source]").trigger("click");
+            await flushPromises();
+
+            expect(dialog()?.textContent).toContain("Add a data source");
+            expect(dialog()?.textContent).toContain("One row per user.");
+
+            await choose("Users::Users");
+
+            expect(api.addDataSource.mock.calls[0][0]).toMatchObject({ revision: 0, dataSet: "Users::Users" });
+            expect(api.addStep).not.toHaveBeenCalled();
+            expect(store.getNode("users")).toBeDefined();
+            expect(store.state.canUndo).toBe(true);
+            expect(dialog()).toBeNull();
+        });
+
+        it("startPicker_ReadADataSource_OpensTheDialogFirst", async () => {
+            const api = createDataSourceApi({ getDefinition: vi.fn().mockResolvedValue({ ...createDefinition(), nodes: [], connections: [] }) });
+            const { wrapper, store } = mountApp(api, dataSourceConfig);
+            await flushPromises();
+
+            await wrapper.get("[data-cy=start-picker-DataSource]").trigger("click");
+            await flushPromises();
+
+            expect(dialog()).not.toBeNull();
+
+            document.querySelector<HTMLButtonElement>("[data-cy=data-set-picker-cancel]")!.click();
+            await flushPromises();
+
+            expect(dialog()).toBeNull();
+            expect(api.addDataSource).not.toHaveBeenCalled();
+            expect(api.addStep).not.toHaveBeenCalled();
+            expect(store.state.nodes).toEqual([]);
+        });
+
+        it("editorRequest_ChooseDataSet_ChangesTheDataSetOfTheEditor", async () => {
+            const api = createDataSourceApi();
+            mountApp(api, dataSourceConfig);
+            await flushPromises();
+
+            const chosen: string[] = [];
+            const event = new CustomEvent("dp:choose-data-set", { bubbles: true, cancelable: true, detail: { current: "Contents::BlogPost", choose: (value: string) => chosen.push(value) } });
+            document.body.dispatchEvent(event);
+            await flushPromises();
+
+            expect(event.defaultPrevented).toBe(true);
+            expect(dialog()?.textContent).toContain("Change the data set");
+            expect(document.querySelector("[data-cy='data-set-Contents::BlogPost'] [data-cy=data-set-choose]")).toBeNull();
+
+            await choose("Users::Users");
+
+            expect(chosen).toEqual(["Users::Users"]);
+            expect(api.addDataSource).not.toHaveBeenCalled();
+        });
+
+        it("toolbar_NoDataSetsEndpoint_HasNoAddDataSourceButton", async () => {
+            const { wrapper } = mountApp(createDataSourceApi());
+            await flushPromises();
+
+            expect(wrapper.find("[data-cy=toolbar-add-data-source]").exists()).toBe(false);
+        });
+    });
 });

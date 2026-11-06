@@ -33,8 +33,15 @@
         <span class="hint">@T["The position order of this link in the admin menu."]</span>
     </div>
 
-    <div class="mb-3">
-        <div class="btn-group mb-1">
+    <div class="action-bar-bottom">
+        <div class="btn-group"
+             role="group"
+             aria-label="@T["Save actions"]"
+             data-action-group="oc-admin-menu-node-save-action"
+             data-action-default="save"
+             data-label-default="@T["Save"]"
+             data-action-alt="SaveAndContinue"
+             data-label-alt="@T["Save and continue"]">
             <button class="btn btn-success save" type="submit" name="submit" value="save">@T["Save"]</button>
             <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="visually-hidden">@T["Toggle Dropdown"]</span>
@@ -44,7 +51,7 @@
             </div>
         </div>
 
-        <a class="btn btn-danger delete"
+        <a class="btn btn-danger delete action-bar-secondary"
            asp-action="Delete"
            asp-controller="Node"
            asp-route-id="@Model.AdminMenuId"

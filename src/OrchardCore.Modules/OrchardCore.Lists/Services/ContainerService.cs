@@ -77,7 +77,7 @@ public class ContainerService : IContainerService
         var contanerContentItemsQuery = _session.QueryIndex<ContentItemIndex>(x => x.ContentType == contentType && (x.Published || x.Latest));
         var containerContentItems = await contanerContentItemsQuery.ListAsync();
 
-        if (!containerContentItems.Any())
+        if (containerContentItems.Count == 0)
         {
             return;
         }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using NCrontab;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -9,28 +10,34 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Timers;
 
-public class TimerEvent : EventActivity
+public class TimerEvent : EventActivity, IActivityProvidedValues, IActivityDescription
 {
     public static string EventName => nameof(TimerEvent);
 
     private readonly IClock _clock;
     private readonly ISiteService _siteService;
     private readonly ILogger _logger;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public TimerEvent(IClock clock, ISiteService siteService, ILogger<TimerEvent> logger, IStringLocalizer<TimerEvent> localizer)
+    public TimerEvent(IClock clock, ISiteService siteService, ILogger<TimerEvent> logger, IStringLocalizerFactory localizerFactory, IStringLocalizer<TimerEvent> localizer)
     {
         _clock = clock;
         _siteService = siteService;
         _logger = logger;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
     public override string Name => EventName;
 
-    public override LocalizedString DisplayText => S["Timer Event"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<TimerEvent>("Timer Event");
 
-    public override LocalizedString Category => S["Background"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Background;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public string CronExpression
     {
@@ -48,6 +55,20 @@ public class TimerEvent : EventActivity
     {
         get => GetProperty<DateTime?>();
         set => SetProperty(value);
+    }
+
+    private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("string", LocalizationSource.Create<TimerEvent>("The text TimerEvent."))];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
+
+    public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        // The timer starts when the workflow starts waiting on it, not when the background task first looks at it, so the
+        // first run of the task after the timer is due resumes the workflow, and a run before that has nothing to save.
+        StartedUtc ??= _clock.UtcNow;
+
+        return base.Execute(workflowContext, activityContext);
     }
 
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

@@ -4,7 +4,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="SelectedContentTypeNames">
     <label asp-for="SelectedContentTypeNames" class="ocat-label">@T["Content Types"]</label>
     <div class="ocat-end">
-        @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.SelectedContentTypeNames, htmlName = Html.NameFor(m => m.SelectedContentTypeNames) })
+        @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.SelectedContentTypeNames, htmlName = Html.NameFor(m => m.SelectedContentTypeNames), displayMode = "Picker" })
         <span asp-validation-for="SelectedContentTypeNames"></span>
         <span class="hint">@T["Select any content types to filter on."]</span>
     </div>

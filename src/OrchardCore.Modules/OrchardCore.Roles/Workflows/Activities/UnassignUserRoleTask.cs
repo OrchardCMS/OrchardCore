@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -10,24 +11,30 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Roles.Workflows.Activities;
 
-public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
+public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>, IActivityDescription
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IUserService _userService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public UnassignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<UnassignUserRoleTask> localizer)
+    public UnassignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<UnassignUserRoleTask> localizer)
     {
         _userManager = userManager;
         _userService = userService;
         _expressionEvaluator = expressionvaluator;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Unassign User Role Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UnassignUserRoleTask>("Unassign User Role Task");
 
-    public override LocalizedString Category => S["User"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.User;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> UserName
     {

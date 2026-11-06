@@ -27,6 +27,9 @@ public class CacheScopeManagerTests
         sut.EnterScope(scopeD);
 
         sut.ExitScope();
+
+        // Every scope has been exited, so there is nothing left to exit.
+        Assert.Throws<InvalidOperationException>(sut.ExitScope);
     }
 
     [Fact]

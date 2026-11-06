@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.UrlRewriting.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Handlers/RewriteRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.RewriteRuleHandler"
+msgid "Rule name is required"
+msgstr ""
+
+#: Handlers/RewriteRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.RewriteRuleHandler"
+msgid "Source name is required"
+msgstr ""
+
+#: Handlers/UrlRedirectRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
+msgid "A valid Match URL Pattern is required."
+msgstr ""
+
+#: Handlers/UrlRedirectRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
+msgid "A valid Substitution URL Pattern is required."
+msgstr ""
+
+#: Handlers/UrlRedirectRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
+msgid "The Match URL Pattern is required."
+msgstr ""
+
+#: Handlers/UrlRedirectRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRedirectRuleHandler"
+msgid "The Substitution URL Pattern is required."
+msgstr ""
+
+#: Handlers/UrlRewriteRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
+msgid "A valid Match URL Pattern is required."
+msgstr ""
+
+#: Handlers/UrlRewriteRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
+msgid "A valid Substitution URL Pattern is required."
+msgstr ""
+
+#: Handlers/UrlRewriteRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
+msgid "The Match URL Pattern is required."
+msgstr ""
+
+#: Handlers/UrlRewriteRuleHandler.cs
+msgctxt "OrchardCore.UrlRewriting.Handlers.UrlRewriteRuleHandler"
+msgid "The Substitution URL Pattern is required."
+msgstr ""
+
+#: Services/UrlRedirectRuleSource.cs
+msgctxt "OrchardCore.UrlRewriting.Services.UrlRedirectRuleSource"
+msgid "Redirect"
+msgstr ""
+
+#: Services/UrlRedirectRuleSource.cs
+msgctxt "OrchardCore.UrlRewriting.Services.UrlRedirectRuleSource"
+msgid "URL Redirect Rule"
+msgstr ""
+
+#: Services/UrlRewriteRuleSource.cs
+msgctxt "OrchardCore.UrlRewriting.Services.UrlRewriteRuleSource"
+msgid "Rewrite"
+msgstr ""
+
+#: Services/UrlRewriteRuleSource.cs
+msgctxt "OrchardCore.UrlRewriting.Services.UrlRewriteRuleSource"
+msgid "URL Rewrite Rule"
+msgstr ""
+
+#: UrlRewritingPermissions.cs
+msgctxt "OrchardCore.UrlRewriting.UrlRewritingPermissions"
+msgid "Manage URLs rewriting rules"
+msgstr ""

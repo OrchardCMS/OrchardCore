@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -7,21 +8,22 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class PublishContentTask : ContentTask
+public class PublishContentTask : ContentTask, IActivityDescription
 {
     public PublishContentTask(
         IContentManager contentManager,
         IWorkflowScriptEvaluator scriptEvaluator,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<PublishContentTask> localizer)
-        : base(contentManager, scriptEvaluator, localizer)
+        : base(contentManager, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
     public override string Name => nameof(PublishContentTask);
 
-    public override LocalizedString DisplayText => S["Publish Content Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<PublishContentTask>("Publish Content Task");
 
-    public override LocalizedString Category => S["Content"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Published"], S["Noop"]);

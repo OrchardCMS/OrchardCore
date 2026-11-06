@@ -1,0 +1,140 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Media.Azure\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.Azure.AdminMenu"
+msgid "Azure Blob Options"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.Azure.AdminMenu"
+msgid "Media"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.Azure.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Filters/MediaGalleryCapabilitiesFilter.cs
+msgctxt "OrchardCore.Media.Azure.Filters.MediaGalleryCapabilitiesFilter"
+msgid "This site's Azure Storage account has Hierarchical Namespace (ADLS Gen2) enabled. The current Media Library has not been fully verified against Gen2 storage yet; some behavior may be affected. Full support is coming with the next Media Library update — until then, prefer a Gen1 (flat-namespace) storage account for this site."
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Media.Azure.Permissions"
+msgid "View Azure Media Options"
+msgstr ""
+
+#: Services/MediaBlobContainerTenantEvents.cs
+msgctxt "OrchardCore.Media.Azure.Services.MediaBlobContainerTenantEvents"
+msgid "Error during Azure Media Storage blob item removal."
+msgstr ""
+
+#. Format arguments: {0}: _options.ContainerName
+#: Services/MediaBlobContainerTenantEvents.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Azure.Services.MediaBlobContainerTenantEvents"
+msgid "Failed to remove the Azure Media Storage Container '{0}'."
+msgstr ""
+
+#: Services/MediaBlobContainerTenantEvents.cs
+msgctxt "OrchardCore.Media.Azure.Services.MediaBlobContainerTenantEvents"
+msgid "File removal process failed on file {ItemName}."
+msgstr ""
+
+#. Format arguments: {0}: _options.ContainerName
+#: Services/MediaBlobContainerTenantEvents.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Azure.Services.MediaBlobContainerTenantEvents"
+msgid "Unable to remove the Azure Media Storage Container '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: _options.ContainerName
+#: Services/MediaBlobImageCacheTenantEvents.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Azure.Services.MediaBlobImageCacheTenantEvents"
+msgid "Failed to remove the Azure Media Image Cache Container '{0}'."
+msgstr ""
+
+#. Format arguments: {0}: _options.ContainerName
+#: Services/MediaBlobImageCacheTenantEvents.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.Azure.Services.MediaBlobImageCacheTenantEvents"
+msgid "Unable to remove the Azure Media Image Cache Container '{0}'."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Azure Blob storage is configured with appsettings.json."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Azure Blob storage options"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Base Path"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Configured"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Connection String"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Container Name"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Create Container"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Not Configured"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Remove Container"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Remove Files From Base Path"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "See documentation"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Whether a blob container is created on startup if it does not exist."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Whether a blob container is removed on tenant deletion if it exists."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
+msgid "Whether only the media files under the base path are removed on tenant deletion."
+msgstr ""

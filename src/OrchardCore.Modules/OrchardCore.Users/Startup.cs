@@ -280,8 +280,10 @@ public sealed class RateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
-            options.AddRouteRateLimit(RateLimitRouteNames.ResendEmailConfirmation, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.EmailConfirmation, 2, TimeSpan.FromMinutes(1)));
+            // Users who sign in are anonymous, so these attempts can only be counted per IP address. The limit leaves room for
+            // the many users of an office who share an IP address, as the account lockout already protects each account.
+            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResendEmailConfirmation, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.EmailConfirmation, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetEmailConfirmationUser));
         });
     }
 }
@@ -289,7 +291,7 @@ public sealed class RateLimitsStartup : StartupBase
 [Feature(UserConstants.Features.ExternalAuthentication)]
 public sealed class ExternalAuthenticationStartup : StartupBase
 {
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
 
     private UserOptions _userOptions;
 
@@ -314,7 +316,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
             pattern: _userOptions.ExternalLoginsUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
@@ -340,8 +342,9 @@ public sealed class ExternalAuthenticationRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3));
-            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
+            // These limits share the budgets of the registration and login pages, so they must use the same values.
+            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
         });
     }
 }
@@ -385,45 +388,45 @@ public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
-            o.Filters.AddFilter("user_id", UserFilters.UserId);
+            o.AddFilter("has_claim", UserFilters.HasClaim);
+            o.AddFilter("user_id", UserFilters.UserId);
 
-            o.MemberAccessStrategy.Register<ClaimsPrincipal>();
-            o.MemberAccessStrategy.Register<ClaimsIdentity>();
-
-            o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
-            o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+            o.WithGlobalValue("User", ObjectValue.Create(new LiquidUserAccessor()));
+            o.ConfigureMemberAccess(strategy =>
             {
-                var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
-                if (user != null)
+                strategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+                {
+                    var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
+                    if (user != null)
+                    {
+                        return name switch
+                        {
+                            nameof(ClaimsPrincipal.Identity) => ObjectValue.Create(user.Identity),
+                            _ => NilValue.Instance
+                        };
+                    }
+
+                    return NilValue.Instance;
+                });
+
+                strategy.Register<User, FluidValue>((user, name, context) =>
                 {
                     return name switch
                     {
-                        nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
+                        nameof(User.UserId) => StringValue.Create(user.UserId ?? string.Empty),
+                        nameof(User.UserName) => StringValue.Create(user.UserName ?? string.Empty),
+                        nameof(User.NormalizedUserName) => StringValue.Create(user.NormalizedUserName ?? string.Empty),
+                        nameof(User.Email) => StringValue.Create(user.Email ?? string.Empty),
+                        nameof(User.NormalizedEmail) => StringValue.Create(user.NormalizedEmail ?? string.Empty),
+                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.RoleNames) => ArrayValue.Create(user.RoleNames.Select(x => StringValue.Create(x)).ToArray()),
+                        nameof(User.Properties) => ObjectValue.Create(user.Properties),
                         _ => NilValue.Instance
                     };
-                }
-
-                return NilValue.Instance;
-            });
-
-            o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
-            {
-                return name switch
-                {
-                    nameof(User.UserId) => new StringValue(user.UserId),
-                    nameof(User.UserName) => new StringValue(user.UserName),
-                    nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
-                    nameof(User.Email) => new StringValue(user.Email),
-                    nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
-                    nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
-                    nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
-                    nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x)).ToArray()),
-                    nameof(User.Properties) => new ObjectValue(user.Properties),
-                    _ => NilValue.Instance
-                };
+                });
             });
         })
        .AddLiquidFilter<UsersByIdFilter>("users_by_id")
@@ -481,11 +484,6 @@ public sealed class ChangeEmailStartup : StartupBase
             .AddTransient<ChangeEmailTokenProvider>()
             .AddOptions<ChangeEmailTokenProviderOptions>();
 
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
-        });
-
         services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
         services.AddNavigationProvider<ChangeEmailAdminMenu>();
         services.AddDisplayDriver<UserMenu, ChangeEmailUserMenuDisplayDriver>();
@@ -498,7 +496,7 @@ public sealed class ChangeEmailDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailSettings, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
     }
 }
 
@@ -512,11 +510,6 @@ public sealed class RegistrationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        });
-
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
@@ -573,7 +566,7 @@ public sealed class RegistrationRateLimitsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3)));
+            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20)));
     }
 }
 
@@ -601,11 +594,6 @@ public sealed class ResetPasswordStartup : StartupBase
         services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
             .AddTransient<PasswordResetTokenProvider>()
             .AddOptions<PasswordResetTokenProviderOptions>();
-
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
-        });
 
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
         services.AddNavigationProvider<ResetPasswordAdminMenu>();
@@ -668,8 +656,8 @@ public sealed class ResetPasswordRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
-            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
         });
     }
 }
