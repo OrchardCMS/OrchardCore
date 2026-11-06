@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
@@ -31,8 +32,9 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var redisOptions = new RedisOptions().BindConfiguration(_configuration, _logger);
-        var validationErrors = redisOptions.Validate();
+        var validationErrors = _configuration.TryBindConfiguration(_logger, out var redisOptions)
+            ? redisOptions.Validate()
+            : [new ValidationResult("The 'Redis' section is invalid.")];
 
         if (validationErrors.Any())
         {
