@@ -7,6 +7,7 @@ using OrchardCore.Contents;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Shell;
 using YesSql;
 using YesSql.Filters.Nodes;
 using YesSql.Filters.Query;
@@ -40,6 +41,7 @@ public class DefaultContentsAdminListQueryServiceTests
             services,
             [],
             Options.Create(options),
+            new ShellSettings(),
             NullLogger<DefaultContentsAdminListQueryService>.Instance);
 
         var filterResult = CreateFilterResult();
