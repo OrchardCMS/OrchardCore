@@ -1,5 +1,6 @@
 using System.Text;
 using OrchardCore.Localization;
+using OrchardCore.Localization.PortableObject;
 
 namespace OrchardCore.Tests.Localization;
 
@@ -168,6 +169,45 @@ public class PluralRuleDescriptorTests
         Assert.Null(descriptor);
     }
 
+    [Theory]
+    [MemberData(nameof(RuleIndexes))]
+    public void GetDescription_Untranslated_EqualsDescription(int ruleIndex)
+    {
+        var factory = CreateLocalizerFactory("en");
+
+        using var scope = CultureScope.Create(CultureInfo.InvariantCulture, CultureInfo.GetCultureInfo("en"));
+
+        foreach (var form in DefaultPluralRuleProvider.Rules[ruleIndex].Forms)
+        {
+            Assert.Equal(form.Description, form.GetDescription(factory));
+        }
+    }
+
+    [Fact]
+    public void GetDescription_Translated_ComposesTranslatedSourcesAndCultureNumbers()
+    {
+        var factory = CreateLocalizerFactory(
+            "de",
+            Translation("Ends in {0}", "Endet auf {0}"),
+            Translation("{0}-{1}", "{0} bis {1}"),
+            Translation("{0}, except {1}", "{0}, außer {1}"),
+            Translation("Multiple of {0}", "Vielfaches von {0}"),
+            Translation("Exactly {0}", "Genau {0}"),
+            Translation("{0} or {1}", "{0} oder {1}"));
+
+        Assert.True(DefaultPluralRuleProvider.TryGetRuleDescriptor(CultureInfo.GetCultureInfo("pl"), out var polish));
+        Assert.True(DefaultPluralRuleProvider.TryGetRuleDescriptor(CultureInfo.GetCultureInfo("fr"), out var french));
+
+        using (CultureScope.Create("de"))
+        {
+            Assert.Equal("Endet auf 2 bis 4, außer 12 bis 14", polish.Forms[1].GetDescription(factory));
+            Assert.Equal("Genau 0 oder 1", french.Forms[0].GetDescription(factory));
+            Assert.Equal("Vielfaches von 1.000.000, außer 0", french.Forms[2].GetDescription(factory));
+
+            // The untranslated description doesn't depend on the current culture.
+            Assert.Equal("Multiple of 1,000,000, except 0", french.Forms[2].Description);
+        }
+    }
     [Fact]
     public void Docs_PluralRules_MatchDescriptors()
     {
@@ -194,6 +234,25 @@ public class PluralRuleDescriptorTests
 
     // Every count below 120,000, covering all the endings of up to five digits, the multiples of 1,000 below 10,000,000,
     // the multiples of 1,000,000, the extreme values, and the negation of all of them.
+    private static CultureDictionaryRecord Translation(string key, string translation)
+        => new(key, "OrchardCore.Localization.PluralLocalizationSources", [translation]);
+
+    private static PortableObjectStringLocalizerFactory CreateLocalizerFactory(string cultureName, params CultureDictionaryRecord[] records)
+    {
+        var dictionary = new CultureDictionary(cultureName, PluralizationRule.English);
+        dictionary.MergeTranslations(records);
+
+        var localizationManager = new Mock<ILocalizationManager>();
+        localizationManager
+            .Setup(manager => manager.GetDictionary(It.Is<CultureInfo>(culture => culture.Name == cultureName)))
+            .Returns(dictionary);
+
+        return new PortableObjectStringLocalizerFactory(
+            localizationManager.Object,
+            Options.Create(new RequestLocalizationOptions()),
+            NullLogger<PortableObjectStringLocalizerFactory>.Instance);
+    }
+
     private static IEnumerable<int> GetValidationCounts()
     {
         var counts = new List<int>();

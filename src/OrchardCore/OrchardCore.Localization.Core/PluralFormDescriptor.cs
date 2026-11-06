@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+
 namespace OrchardCore.Localization;
 
 /// <summary>
@@ -24,7 +26,8 @@ public sealed class PluralFormDescriptor
     public PluralCondition Condition { get; }
 
     /// <summary>
-    /// Gets the human-readable description of the counts selecting this form.
+    /// Gets the untranslated human-readable description of the counts selecting this form. Use
+    /// <see cref="GetDescription(IStringLocalizerFactory)"/> to get a translated description.
     /// </summary>
     public string Description => Condition.Description;
 
@@ -32,4 +35,11 @@ public sealed class PluralFormDescriptor
     /// Gets example counts selecting this form, computed by evaluating the runtime <see cref="PluralizationRuleDelegate"/>.
     /// </summary>
     public IReadOnlyList<int> Examples { get; }
+
+    /// <summary>
+    /// Returns the description of the counts selecting this form, translated with the current UI culture.
+    /// </summary>
+    /// <param name="stringLocalizerFactory">The factory creating the localizer of the description.</param>
+    public string GetDescription(IStringLocalizerFactory stringLocalizerFactory)
+        => Condition.GetDescription(stringLocalizerFactory);
 }

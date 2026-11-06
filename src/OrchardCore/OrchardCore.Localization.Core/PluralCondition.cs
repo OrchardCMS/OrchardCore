@@ -1,4 +1,6 @@
 using System.Globalization;
+using Microsoft.Extensions.Localization;
+using Sources = OrchardCore.Localization.PluralLocalizationSources;
 
 namespace OrchardCore.Localization;
 
@@ -6,9 +8,10 @@ namespace OrchardCore.Localization;
 /// Describes, in a human-readable and evaluable way, which counts select a plural form of a <see cref="PluralRuleDescriptor"/>.
 /// </summary>
 /// <remarks>
-/// The <see cref="Description"/> is built from the same building blocks as <see cref="IsMatch(int)"/>, so that the text
-/// can be validated against the runtime <see cref="PluralizationRuleDelegate"/>. Like the CLDR operands, conditions apply
-/// to the absolute value of the count.
+/// The description is built from the same building blocks as <see cref="IsMatch(int)"/>, so that the text can be
+/// validated against the runtime <see cref="PluralizationRuleDelegate"/>. Each building block is a localizable
+/// <see cref="LocalizationSource"/>, so the description can be translated with <see cref="GetDescription(IStringLocalizerFactory)"/>.
+/// Like the CLDR operands, conditions apply to the absolute value of the count.
 /// </remarks>
 public sealed class PluralCondition
 {
@@ -26,31 +29,43 @@ public sealed class PluralCondition
     private readonly Func<long, bool> _predicate;
     private readonly Kind _kind;
 
-    // The values without their prefix, e.g. "12-14" for "Ends in 12-14", used to shorten combined descriptions.
-    private readonly IReadOnlyList<string> _values;
+    // Renders the description, as a sentence or inline within another description.
+    private readonly Func<DescriptionRenderer, bool, string> _render;
 
-    private PluralCondition(string description, Func<long, bool> predicate, Kind kind, IReadOnlyList<string> values = null)
+    // Renders the values without their prefix, e.g. "12-14" for "Ends in 12-14", used to shorten combined descriptions.
+    private readonly Func<DescriptionRenderer, IReadOnlyList<string>> _values;
+
+    private readonly Lazy<string> _description;
+
+    private PluralCondition(
+        Func<DescriptionRenderer, bool, string> render,
+        Func<long, bool> predicate,
+        Kind kind,
+        Func<DescriptionRenderer, IReadOnlyList<string>> values = null)
     {
-        Description = description;
+        _render = render;
         _predicate = predicate;
         _kind = kind;
         _values = values;
+        _description = new(() => _render(DescriptionRenderer.Invariant, false));
     }
 
     /// <summary>
     /// Gets a condition matching every count, for a rule with a single plural form.
     /// </summary>
-    public static PluralCondition All { get; } = new("All counts", static _ => false, Kind.Remaining);
+    public static PluralCondition All { get; } = new((r, _) => r.Format(Sources.AllCounts), static _ => false, Kind.Remaining);
 
     /// <summary>
     /// Gets a condition matching the counts that are not matched by any other form of the rule.
     /// </summary>
-    public static PluralCondition Remaining { get; } = new("All remaining counts", static _ => false, Kind.Remaining);
+    public static PluralCondition Remaining { get; } = new((r, _) => r.Format(Sources.AllRemainingCounts), static _ => false, Kind.Remaining);
 
     /// <summary>
-    /// Gets the human-readable description of the condition, e.g. "Ends in 2-4, except 12-14".
+    /// Gets the untranslated human-readable description of the condition, e.g. "Ends in 2-4, except 12-14", with the
+    /// numbers formatted with the invariant culture. Use <see cref="GetDescription(IStringLocalizerFactory)"/> to
+    /// get a translated description.
     /// </summary>
-    public string Description { get; }
+    public string Description => _description.Value;
 
     /// <summary>
     /// Gets whether the condition matches the counts that are not matched by any other form of the rule.
@@ -66,9 +81,14 @@ public sealed class PluralCondition
         EnsureValues(values);
 
         var copy = values.ToArray();
-        var texts = copy.Select(v => FormatNumber(v)).ToArray();
 
-        return new($"Exactly {JoinAlternatives(texts)}", n => copy.Contains(n), Kind.Exactly, texts);
+        IReadOnlyList<string> Texts(DescriptionRenderer r) => copy.Select(r.Number).ToArray();
+
+        return new(
+            (r, inline) => r.Format(inline ? Sources.ExactlyInline : Sources.Exactly, r.List(Texts(r))),
+            n => copy.Contains(n),
+            Kind.Exactly,
+            Texts);
     }
 
     /// <summary>
@@ -80,7 +100,10 @@ public sealed class PluralCondition
     {
         EnsureRange(min, max, long.MaxValue);
 
-        return new($"From {FormatNumber(min)} to {FormatNumber(max)}", n => n >= min && n <= max, Kind.Range);
+        return new(
+            (r, inline) => r.Format(inline ? Sources.BetweenInline : Sources.Between, r.Number(min), r.Number(max)),
+            n => n >= min && n <= max,
+            Kind.Range);
     }
 
     /// <summary>
@@ -102,7 +125,7 @@ public sealed class PluralCondition
 
         var copy = values.ToArray();
 
-        return CreateEnding(copy.Select(v => FormatDigits(v, digits)).ToArray(), n => copy.Contains(n % modulo));
+        return CreateEnding(r => copy.Select(v => r.Digits(v, digits)).ToArray(), n => copy.Contains(n % modulo));
     }
 
     /// <summary>
@@ -118,7 +141,9 @@ public sealed class PluralCondition
 
         EnsureRange(min, max, modulo - 1);
 
-        return CreateEnding([$"{FormatDigits(min, digits)}-{FormatDigits(max, digits)}"], n => n % modulo >= min && n % modulo <= max);
+        return CreateEnding(
+            r => [r.Format(Sources.DigitsRange, r.Digits(min, digits), r.Digits(max, digits))],
+            n => n % modulo >= min && n % modulo <= max);
     }
 
     /// <summary>
@@ -129,7 +154,10 @@ public sealed class PluralCondition
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(divisor);
 
-        return new($"Multiple of {FormatNumber(divisor)}", n => n % divisor == 0, Kind.Multiple);
+        return new(
+            (r, inline) => r.Format(inline ? Sources.MultipleOfInline : Sources.MultipleOf, r.Number(divisor)),
+            n => n % divisor == 0,
+            Kind.Multiple);
     }
 
     /// <summary>
@@ -143,10 +171,13 @@ public sealed class PluralCondition
         // "Ends in 0 or 11-19" reads better than "Ends in 0, or ends in 11-19".
         if (_kind == Kind.Ending && other._kind == Kind.Ending)
         {
-            return CreateEnding([.. _values, .. other._values], n => _predicate(n) || other._predicate(n));
+            return CreateEnding(r => [.. _values(r), .. other._values(r)], n => _predicate(n) || other._predicate(n));
         }
 
-        return new($"{Description}, or {LowerFirst(other.Description)}", n => _predicate(n) || other._predicate(n), Kind.Composite);
+        return new(
+            (r, inline) => r.Format(Sources.Or, _render(r, inline), other._render(r, true)),
+            n => _predicate(n) || other._predicate(n),
+            Kind.Composite);
     }
 
     /// <summary>
@@ -157,7 +188,10 @@ public sealed class PluralCondition
     {
         EnsureCombinable(this, other);
 
-        return new($"{Description} and {LowerFirst(other.Description)}", n => _predicate(n) && other._predicate(n), Kind.Composite);
+        return new(
+            (r, inline) => r.Format(Sources.And, _render(r, inline), other._render(r, true)),
+            n => _predicate(n) && other._predicate(n),
+            Kind.Composite);
     }
 
     /// <summary>
@@ -175,13 +209,27 @@ public sealed class PluralCondition
             (_kind == Kind.Ending && exclusion._kind == Kind.Ending) ||
             (_kind is Kind.Range or Kind.Multiple && exclusion._kind == Kind.Exactly);
 
-        var excluded = isShort
-            ? JoinAlternatives(exclusion._values)
-            : LowerFirst(exclusion.Description);
+        var source = _kind == Kind.Exception ? Sources.AndExcept : Sources.Except;
 
-        var separator = _kind == Kind.Exception ? ", and except " : ", except ";
+        return new(
+            (r, inline) => r.Format(
+                source,
+                _render(r, inline),
+                isShort ? r.List(exclusion._values(r)) : exclusion._render(r, true)),
+            n => _predicate(n) && !exclusion._predicate(n),
+            Kind.Exception);
+    }
 
-        return new($"{Description}{separator}{excluded}", n => _predicate(n) && !exclusion._predicate(n), Kind.Exception);
+    /// <summary>
+    /// Returns the description of the condition translated with the current UI culture, with the numbers formatted
+    /// with the current culture.
+    /// </summary>
+    /// <param name="stringLocalizerFactory">The factory creating the localizer of the description.</param>
+    public string GetDescription(IStringLocalizerFactory stringLocalizerFactory)
+    {
+        ArgumentNullException.ThrowIfNull(stringLocalizerFactory);
+
+        return _render(new DescriptionRenderer(stringLocalizerFactory, CultureInfo.CurrentCulture), false);
     }
 
     /// <summary>
@@ -194,8 +242,12 @@ public sealed class PluralCondition
     /// <inheritdoc />
     public override string ToString() => Description;
 
-    private static PluralCondition CreateEnding(IReadOnlyList<string> values, Func<long, bool> predicate)
-        => new($"Ends in {JoinAlternatives(values)}", predicate, Kind.Ending, values);
+    private static PluralCondition CreateEnding(Func<DescriptionRenderer, IReadOnlyList<string>> values, Func<long, bool> predicate)
+        => new(
+            (r, inline) => r.Format(inline ? Sources.EndsInInline : Sources.EndsIn, r.List(values(r))),
+            predicate,
+            Kind.Ending,
+            values);
 
     private static long GetModulo(int digits)
     {
@@ -240,15 +292,44 @@ public sealed class PluralCondition
         }
     }
 
-    private static string FormatNumber(long value) => value.ToString("N0", CultureInfo.InvariantCulture);
+    // Formats the localization sources and numbers of a description, translated when a factory is provided.
+    private sealed class DescriptionRenderer
+    {
+        public static readonly DescriptionRenderer Invariant = new(null, CultureInfo.InvariantCulture);
 
-    private static string FormatDigits(long value, int digits) => value.ToString(new string('0', digits), CultureInfo.InvariantCulture);
+        private readonly IStringLocalizerFactory _factory;
+        private readonly CultureInfo _culture;
 
-    private static string JoinAlternatives(IReadOnlyList<string> texts)
-        => texts.Count == 1
-            ? texts[0]
-            : $"{string.Join(", ", texts.Take(texts.Count - 1))} or {texts[^1]}";
+        public DescriptionRenderer(IStringLocalizerFactory factory, CultureInfo culture)
+        {
+            _factory = factory;
+            _culture = culture;
+        }
 
-    private static string LowerFirst(string text)
-        => string.Concat(char.ToLowerInvariant(text[0]).ToString(), text.AsSpan(1));
+        public string Format(LocalizationSource source, params string[] arguments)
+            => _factory is null
+                ? string.Format(CultureInfo.InvariantCulture, source.Value, arguments)
+                : _factory.Localize(source, arguments).Value;
+
+        public string Number(long value) => value.ToString("N0", _culture);
+
+        public string Digits(long value, int digits) => value.ToString(new string('0', digits), _culture);
+
+        public string List(IReadOnlyList<string> texts)
+        {
+            if (texts.Count == 1)
+            {
+                return texts[0];
+            }
+
+            var head = texts[0];
+
+            for (var i = 1; i < texts.Count - 1; i++)
+            {
+                head = Format(Sources.ListSeparator, head, texts[i]);
+            }
+
+            return Format(Sources.ListLast, head, texts[^1]);
+        }
+    }
 }

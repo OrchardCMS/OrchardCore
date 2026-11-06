@@ -356,6 +356,8 @@ For nonnegative integer counts, matching PO headers are:
 
 The tables below list, for each built-in rule, the cultures registered with it and the condition selecting each translation index, in index order. A culture that isn't listed uses the rule of its closest listed parent culture. The tables are generated from the `PluralRuleDescriptor` metadata, available through `DefaultPluralRuleProvider.Rules` and `DefaultPluralRuleProvider.TryGetRuleDescriptor()`. The examples are computed by evaluating the runtime rules, and automated tests validate the conditions against the rules. Like the rules, the conditions apply to the absolute value of the count, and an ending such as `01` includes leading zeros, so it matches 1 and 101 but not 11.
 
+The `Description` of a form is the untranslated English text shown in the tables. To display it in another language, call `GetDescription(IStringLocalizerFactory)` on the `PluralFormDescriptor` or `PluralCondition`: the description is composed from localizable sources whose PO context is `OrchardCore.Localization.PluralLocalizationSources`, and its numbers are formatted with the current culture.
+
 <!-- plural-rules:start -->
 **1 form:** `ay`, `bm`, `bo`, `dz`, `hnj`, `id`, `ig`, `ii`, `in`, `ja`, `jbo`, `jv`, `jw`, `kde`, `kea`, `km`, `ko`, `lkt`, `lo`, `ms`, `my`, `nqo`, `osa`, `sah`, `ses`, `sg`, `su`, `th`, `to`, `tpi`, `tt`, `wo`, `yo`, `yue`, `zh`
 
