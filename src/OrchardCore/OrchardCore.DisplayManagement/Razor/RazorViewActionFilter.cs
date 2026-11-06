@@ -16,7 +16,8 @@ namespace OrchardCore.DisplayManagement.Razor;
 /// </summary>
 public sealed class RazorViewActionFilter : IAsyncViewActionFilter
 {
-    private static readonly object s_layoutResetKey = new();
+    private static readonly object s_exceptionFeatureKey = new();
+    private static readonly object s_statusCodeFeatureKey = new();
 
     public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -64,17 +65,30 @@ public sealed class RazorViewActionFilter : IAsyncViewActionFilter
 
         var services = context.HttpContext.RequestServices;
 
-        if ((context.HttpContext.Features.Get<IExceptionHandlerFeature>() is not null ||
-             context.HttpContext.Features.Get<IStatusCodeReExecuteFeature>() is not null) &&
-            !context.HttpContext.Items.ContainsKey(s_layoutResetKey))
+        var exceptionFeature = context.HttpContext.Features.Get<IExceptionHandlerFeature>();
+        var statusCodeFeature = context.HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+        var items = context.HttpContext.Items;
+
+        if ((exceptionFeature is not null &&
+             !ReferenceEquals(items[s_exceptionFeatureKey], exceptionFeature)) ||
+            (statusCodeFeature is not null &&
+             !ReferenceEquals(items[s_statusCodeFeatureKey], statusCodeFeature)))
         {
-            context.HttpContext.Items[s_layoutResetKey] = true;
-        
+            if (exceptionFeature is not null)
+            {
+                items[s_exceptionFeatureKey] = exceptionFeature;
+            }
+
+            if (statusCodeFeature is not null)
+            {
+                items[s_statusCodeFeatureKey] = statusCodeFeature;
+            }
+
             if (services.GetService<ILayoutAccessor>() is LayoutAccessor layoutAccessor)
             {
                 layoutAccessor.ResetLayout();
             }
-        
+
             razorViewFeature.ThemeLayout = null;
             services.GetService<IPageTitleBuilder>()?.Clear();
         }
