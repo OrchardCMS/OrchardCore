@@ -24,11 +24,11 @@ public sealed class OpenIdValidationSettingsStep : NamedRecipeStepHandler
         var model = context.Step.ToObject<OpenIdValidationSettingsStepModel>();
         var settings = await _validationService.LoadSettingsAsync();
 
-        settings.Tenant = model.Tenant;
-        settings.MetadataAddress = !string.IsNullOrEmpty(model.MetadataAddress) ? new Uri(model.MetadataAddress, UriKind.Absolute) : null;
-        settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
-        settings.Audience = model.Audience;
-        settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
+        settings.Tenant = model.OpenIdValidationSettings.Tenant;
+        settings.MetadataAddress = model.OpenIdValidationSettings.MetadataAddress;
+        settings.Authority = model.OpenIdValidationSettings.Authority;
+        settings.Audience = model.OpenIdValidationSettings.Audience;
+        settings.DisableTokenTypeValidation = model.OpenIdValidationSettings.DisableTokenTypeValidation;
 
         await _validationService.UpdateSettingsAsync(settings);
     }

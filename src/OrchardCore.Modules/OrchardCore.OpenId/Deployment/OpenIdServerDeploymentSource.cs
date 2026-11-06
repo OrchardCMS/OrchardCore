@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment;
 
@@ -19,7 +20,7 @@ public sealed class OpenIdServerDeploymentSource
     {
         var settings = await _openIdServerService.GetSettingsAsync();
 
-        var settingsModel = new OpenIdServerSettingsStepModel
+        var settingsModel = new OpenIdServerSettingsRecipeModel
         {
             AccessTokenFormat = settings.AccessTokenFormat,
             Authority = settings.Authority?.AbsoluteUri,
@@ -59,8 +60,8 @@ public sealed class OpenIdServerDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = "OpenIdServerSettings",
-            ["OpenIdServerSettings"] = JObject.FromObject(settingsModel),
+            ["name"] = nameof(OpenIdServerSettings),
+            [nameof(OpenIdServerSettings)] = JObject.FromObject(settingsModel),
         });
     }
 }
