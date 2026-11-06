@@ -1,0 +1,42 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdClientRegistrationIndexViewModel
+
+<zone Name="Title">
+    <breadcrumb name="OpenIdClientRegistrations" title="@T["Client Registrations"]" />
+</zone>
+
+<form asp-action="Index" method="get">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-2">
+                <div class="col">
+                    <label for="search-text" class="visually-hidden">@T["Search"]</label>
+                    <div class="input-group">
+                        <input id="search-text" name="searchText" value="@Model.SearchText" class="form-control" placeholder="@T["Search"]" type="search" autocomplete="off" />
+                        <button type="submit" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="col-auto d-flex gap-1">
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchText))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary">@T["Clear"]</a>
+                    }
+                    <a asp-action="Create" class="btn btn-secondary create" role="button">@T["New registration"]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@* The rows and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+<admin-list name="OpenIdClientRegistrations" context="Model.List"
+            show-select-all="false"
+            empty-message="@T["<strong>Nothing here!</strong> There are no client registrations at the moment. The identity provider configured in the OpenID Connect client settings is always available."]">
+    <admin-list-list item-css-class="list-group-item" />
+    <admin-list-grid>
+        <admin-list-column name="DisplayName" position="10" title="@T["Display name"]" />
+        <admin-list-column name="Name" position="20" title="@T["Name"]" width="auto" />
+        <admin-list-column name="Authority" position="30" title="@T["Authority"]" width="auto" />
+        <admin-list-column type="Actions" title="@T["Actions"]" />
+    </admin-list-grid>
+</admin-list>

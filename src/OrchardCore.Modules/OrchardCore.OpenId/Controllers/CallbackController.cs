@@ -28,7 +28,7 @@ public class CallbackController : Controller
         var response = HttpContext.GetOpenIddictClientResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,
@@ -72,7 +72,7 @@ public class CallbackController : Controller
         // names as the Microsoft ASP.NET Core OIDC client: when both a frontchannel
         // and a backchannel token exist, the backchannel one is always preferred.
         var registration = await _service.GetClientRegistrationByIdAsync(result.Principal.FindFirstValue(Claims.Private.RegistrationId));
-        if (registration.Properties.TryGetValue(nameof(OpenIdClientSettings), out var settings) &&
+        if (registration.Properties.TryGetValue(OpenIdConstants.Client.SettingsProperty, out var settings) &&
             settings is OpenIdClientSettings { StoreExternalTokens: true })
         {
             List<AuthenticationToken> tokens = [];
@@ -138,7 +138,7 @@ public class CallbackController : Controller
         var response = HttpContext.GetOpenIddictClientResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,
@@ -163,7 +163,7 @@ public class CallbackController : Controller
 
             // Otherwise, return the user agent to the static URI attached to the client registration if it it managed by Orchard.
             var registration = await _service.GetClientRegistrationByIdAsync(result.Principal.FindFirstValue(Claims.Private.RegistrationId));
-            if (registration.Properties.TryGetValue(nameof(OpenIdClientSettings), out var settings) &&
+            if (registration.Properties.TryGetValue(OpenIdConstants.Client.SettingsProperty, out var settings) &&
                 settings is OpenIdClientSettings { SignedOutRedirectUri: { Length: > 0 } uri })
             {
                 return Redirect(uri);

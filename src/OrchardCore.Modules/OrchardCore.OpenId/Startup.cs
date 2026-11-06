@@ -76,6 +76,7 @@ public sealed class ClientStartup : StartupBase
     {
         services.AddNavigationProvider<ClientAdminMenu>();
         services.AddScoped<IJSLocalizer, OpenIdJSLocalizer>();
+
         services.AddOpenIddict()
             .AddClient(options =>
             {
@@ -85,18 +86,27 @@ public sealed class ClientStartup : StartupBase
                 options.UseWebProviders();
             });
 
-        services.AddNavigationProvider<ClientAdminMenu>();
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
+        services.TryAddSingleton<IOpenIdClientRegistrationService, OpenIdClientRegistrationService>();
+        services.TryAddSingleton<OpenIdClientRegistrationFactory>();
+        services.TryAddSingleton<OpenIdClientRegistrationResolver>();
+
+        // The registration of the site settings comes first, so it keeps its provider name over another provider.
+        services.AddOpenIdClientRegistrationProvider<SiteOpenIdClientRegistrationProvider>();
+        services.AddOpenIdClientRegistrationProvider<StoredOpenIdClientRegistrationProvider>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.AddSiteDisplayDriver<OpenIdClientSettingsDisplayDriver>();
+        services.AddDisplayDriver<OpenIdClientRegistration, OpenIdClientRegistrationDisplayDriver>();
 
         services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
+        services.AddRecipeExecutionStep<OpenIdClientRegistrationsStep>();
+        services.AddDeployment<OpenIdClientRegistrationsDeploymentSource, OpenIdClientRegistrationsDeploymentStep, OpenIdClientRegistrationsDeploymentStepDriver>();
 
         // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
         // registering the client ASP.NET Core handler. Yet, it MUST NOT be registered at this stage
-        // as it is lazily registered by OpenIdClientConfiguration only after checking the OpenID client
-        // settings are valid and can be safely used in this tenant without causing runtime exceptions.
+        // as it is lazily registered by OpenIdClientConfiguration only after checking a valid client
+        // registration exists and can be safely used in this tenant without causing runtime exceptions.
         // To prevent that, the initializer is manually removed from the services collection of the tenant.
         services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictClientAspNetCoreConfiguration>();
 
@@ -108,43 +118,43 @@ public sealed class ClientStartup : StartupBase
         services.TryAdd(OpenIdChallengeEventHandler.Descriptor.ServiceDescriptor);
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
-        if (settings is null)
+        // Note: the resolver is registered as a singleton service and thus can be
+        // safely used with the non-scoped/root service provider available at this stage.
+        var registrations = await serviceProvider.GetRequiredService<OpenIdClientRegistrationResolver>().GetRegistrationsAsync();
+
+        // The redirection and post-logout redirection endpoints of all the registrations are handled by the
+        // callback controller. Several registrations can share an endpoint, as OpenIddict resolves the
+        // registration of a callback from its state token.
+        var index = 0;
+
+        foreach (var uri in registrations
+            .Where(registration => registration.RedirectUri is { IsAbsoluteUri: false })
+            .Select(registration => registration.RedirectUri.OriginalString)
+            .Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            return;
+            routes.MapAreaControllerRoute(
+                name: $"OpenIdClient.LogInCallback.{index++}",
+                areaName: typeof(Startup).Namespace,
+                pattern: uri,
+                defaults: new { controller = "Callback", action = "LogInCallback" }
+            );
         }
 
-        // Note: the redirection and post-logout redirection endpoints use the same default values
-        // as the Microsoft ASP.NET Core OpenID Connect handler, for compatibility reasons.
-        routes.MapAreaControllerRoute(
-            name: "Callback.LogInCallback",
-            areaName: typeof(Startup).Namespace,
-            pattern: settings.CallbackPath ?? "signin-oidc",
-            defaults: new { controller = "Callback", action = "LogInCallback" }
-        );
+        index = 0;
 
-        routes.MapAreaControllerRoute(
-            name: "Callback.LogOutCallback",
-            areaName: typeof(Startup).Namespace,
-            pattern: settings.SignedOutCallbackPath ?? "signout-callback-oidc",
-            defaults: new { controller = "Callback", action = "LogOutCallback" }
-        );
-
-        async Task<OpenIdClientSettings> GetClientSettingsAsync()
+        foreach (var uri in registrations
+            .Where(registration => registration.PostLogoutRedirectUri is { IsAbsoluteUri: false })
+            .Select(registration => registration.PostLogoutRedirectUri.OriginalString)
+            .Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            // Note: the OpenID client service is registered as a singleton service and thus can be
-            // safely used with the non-scoped/root service provider available at this stage.
-            var service = serviceProvider.GetRequiredService<IOpenIdClientService>();
-
-            var configuration = await service.GetSettingsAsync();
-            if ((await service.ValidateSettingsAsync(configuration)).Any(result => result != ValidationResult.Success))
-            {
-                return null;
-            }
-
-            return configuration;
+            routes.MapAreaControllerRoute(
+                name: $"OpenIdClient.LogOutCallback.{index++}",
+                areaName: typeof(Startup).Namespace,
+                pattern: uri,
+                defaults: new { controller = "Callback", action = "LogOutCallback" }
+            );
         }
     }
 }

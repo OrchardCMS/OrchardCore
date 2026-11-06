@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.OpenId.Settings
+
+@model ShapeViewModel<OpenIdClientRegistration>
+
+<a asp-action="Edit" asp-controller="ClientRegistration" asp-route-area="OrchardCore.OpenId" asp-route-name="@Model.Value.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-action="Delete" asp-controller="ClientRegistration" asp-route-area="OrchardCore.OpenId" asp-route-name="@Model.Value.Name" class="delete btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>

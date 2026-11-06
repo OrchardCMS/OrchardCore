@@ -12,7 +12,6 @@ public sealed class ClientAdminMenu : AdminNavigationProvider
         { "groupId", "OrchardCore.OpenId.Client" },
     };
 
-
     internal readonly IStringLocalizer S;
 
     public ClientAdminMenu(IStringLocalizer<ClientAdminMenu> stringLocalizer)
@@ -27,6 +26,11 @@ public sealed class ClientAdminMenu : AdminNavigationProvider
                 .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
                     .Add(S["Authentication Client"], S["Authentication Client"].PrefixPosition(), client => client
                         .Action("Index", "Admin", s_clientRouteValues)
+                        .Permission(OpenIdPermissions.ManageClientSettings)
+                        .LocalNav()
+                    )
+                    .Add(S["Client Registrations"], S["Client Registrations"].PrefixPosition(), registrations => registrations
+                        .Action("Index", "ClientRegistration", "OrchardCore.OpenId")
                         .Permission(OpenIdPermissions.ManageClientSettings)
                         .LocalNav()
                     )

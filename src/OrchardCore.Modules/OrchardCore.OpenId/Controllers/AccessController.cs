@@ -57,7 +57,7 @@ public sealed class AccessController : Controller
         var response = HttpContext.GetOpenIddictServerResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,
@@ -212,7 +212,7 @@ public sealed class AccessController : Controller
         var response = HttpContext.GetOpenIddictServerResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,
@@ -283,7 +283,7 @@ public sealed class AccessController : Controller
         var response = HttpContext.GetOpenIddictServerResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,
@@ -309,7 +309,7 @@ public sealed class AccessController : Controller
         var response = HttpContext.GetOpenIddictServerResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,
@@ -366,7 +366,7 @@ public sealed class AccessController : Controller
         var response = HttpContext.GetOpenIddictServerResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,
@@ -394,7 +394,7 @@ public sealed class AccessController : Controller
         var response = HttpContext.GetOpenIddictServerResponse();
         if (response is not null)
         {
-            return View("Error", new ErrorViewModel
+            return View("OpenIdError", new ErrorViewModel
             {
                 Error = response.Error,
                 ErrorDescription = response.ErrorDescription,

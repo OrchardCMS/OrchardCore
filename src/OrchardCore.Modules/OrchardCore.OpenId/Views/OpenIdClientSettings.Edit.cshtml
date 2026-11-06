@@ -1,6 +1,5 @@
 @using OpenIddict.Abstractions
 @using OrchardCore.OpenId.ViewModels
-@using Microsoft.IdentityModel.Protocols.OpenIdConnect
 @model OpenIdClientSettingsViewModel
 
 @{
@@ -143,12 +142,34 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper collapse openid-client-secret" asp-validation-class-for="ClientSecret">
-        <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
-        <div class="ocat-end">
-            <secret-input asp-for="ClientSecret" secret-name="@OpenIdConstants.SecretNames.ClientSecret" />
-            <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
+    @* The client secret and the signing key are only used by the flows that call the token endpoint. *@
+    <div class="collapse openid-client-secret">
+        <div class="ocat-wrapper" asp-validation-class-for="ClientSecret">
+            <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
+            <div class="ocat-end">
+                <secret-input asp-for="ClientSecret" secret-name="@OpenIdConstants.SecretNames.ClientSecret" />
+                <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
+            </div>
         </div>
+
+        @if (Model.SecretsEnabled)
+        {
+            <div class="ocat-wrapper" asp-validation-class-for="SigningKeySecretName">
+                <label asp-for="SigningKeySecretName" class="ocat-label">@T["Signing Key"]</label>
+                <div class="ocat-end">
+                    @await Component.InvokeAsync("SelectSecret", new
+                    {
+                        secretTypes = new[] { "RsaKeySecret", "X509Secret" },
+                        selectedSecret = Model.SigningKeySecretName,
+                        htmlId = Html.IdFor(m => m.SigningKeySecretName),
+                        htmlName = Html.NameFor(m => m.SigningKeySecretName),
+                        required = false,
+                    })
+                    <span asp-validation-for="SigningKeySecretName"></span>
+                    <span class="hint">@T["Optional. An RSA key or X.509 certificate secret used to sign the client assertions sent to the identity provider ({0} client authentication), when the identity provider supports them.", "private_key_jwt"]</span>
+                </div>
+            </div>
+        }
     </div>
 </div>
 
@@ -183,9 +204,9 @@
     <div class="ocat-wrapper" asp-validation-class-for="ResponseMode">
         <label asp-for="ResponseMode" class="ocat-label">@T["Response Mode"]</label>
         <div class="ocat-end">
-            <select asp-for="ResponseMode" class="form-select openid-response-mode" data-form-post-value="@OpenIdConnectResponseMode.FormPost">
-                <option id="@OpenIdConnectResponseMode.FormPost" value="@OpenIdConnectResponseMode.FormPost">@T[OpenIdConnectResponseMode.FormPost]</option>
-                <option id="@OpenIdConnectResponseMode.Query" value="@OpenIdConnectResponseMode.Query" class="openid-response-mode-query">@T[OpenIdConnectResponseMode.Query]</option>
+            <select asp-for="ResponseMode" class="form-select openid-response-mode" data-form-post-value="@OpenIddictConstants.ResponseModes.FormPost">
+                <option id="@OpenIddictConstants.ResponseModes.FormPost" value="@OpenIddictConstants.ResponseModes.FormPost">@T[OpenIddictConstants.ResponseModes.FormPost]</option>
+                <option id="@OpenIddictConstants.ResponseModes.Query" value="@OpenIddictConstants.ResponseModes.Query" class="openid-response-mode-query">@T[OpenIddictConstants.ResponseModes.Query]</option>
             </select>
             <span asp-validation-for="ResponseMode"></span>
             <span class="hint">@T["Configure Response Mode. Click <a href=\"{0}\" target=\"_blank\">here</a> for more info.", "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse"]</span>

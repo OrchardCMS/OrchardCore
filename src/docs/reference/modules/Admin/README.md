@@ -742,6 +742,7 @@ The columns of a list are declared in its rendering view.
 | `MediaProfiles` | `MediaProfileEntry` | `OrchardCore.Media` |
 | `Notifications` | `Notification` | `OrchardCore.Notifications` |
 | `OpenIdApplications` | `OpenIdApplicationEntry` | `OrchardCore.OpenId` |
+| `OpenIdClientRegistrations` | `OpenIdClientRegistration` | `OrchardCore.OpenId` |
 | `OpenIdScopes` | `OpenIdScopeEntry` | `OrchardCore.OpenId` |
 | `Placements` | `ShapePlacement` | `OrchardCore.Placements` |
 | `Queries` | `Query` | `OrchardCore.Queries` |

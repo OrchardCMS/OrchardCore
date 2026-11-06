@@ -17,6 +17,13 @@ public class OpenIdClientSettings
     /// </summary>
     public string ClientSecretSecretName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of the secret of the Secrets module containing the RSA key or the X.509 certificate
+    /// used to sign the client assertions sent to the identity provider (<c>private_key_jwt</c> client authentication).
+    /// When set, the client authenticates with signed assertions when the identity provider supports them.
+    /// </summary>
+    public string SigningKeySecretName { get; set; }
+
     public string CallbackPath { get; set; }
     public string SignedOutRedirectUri { get; set; }
     public string SignedOutCallbackPath { get; set; }

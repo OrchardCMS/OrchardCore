@@ -170,12 +170,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
             && record.Message.Contains("Connection processing ended abnormally"))
         || (record.Category == "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware"
             && record.Exception?.ToString().Contains("Cannot create directory '_Users") == true)
-        // Fires exactly once, on the first request after a test enables
-        // OrchardCore.OpenId.Client, before that test's setup code gets a chance to save
-        // valid settings - inherent to exercising this feature at all in a test, not a
-        // product regression (OpenIdClientConfiguration's background settings-validity
-        // check runs independently of page navigation timing).
-        || (record.Category == "OrchardCore.OpenId.Configuration.OpenIdClientConfiguration"
+        // Fires when a test saves incomplete OpenID client settings, which are ignored until
+        // they are valid - inherent to exercising this feature in a test, not a product
+        // regression. Empty settings, as right after enabling the feature, don't log it.
+        || (record.Category == "OrchardCore.OpenId.Services.SiteOpenIdClientRegistrationProvider"
             && record.Message.Contains("The OpenID client settings are invalid"))
         // The background tasks tests run a task that fails on purpose to check how its error is shown.
         || (record.Category == "OrchardCore.Modules.ModularBackgroundService"

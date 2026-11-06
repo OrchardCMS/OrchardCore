@@ -1,0 +1,18 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdClientRegistrationEditorViewModel
+
+<zone Name="Title">
+    <breadcrumb name="OpenIdClientRegistrationsEdit" title="@T["Edit '{0}' client registration", Model.DisplayName]">
+        <breadcrumb-item id="OpenIdClientRegistrations" action="Index" controller="ClientRegistration" area="OrchardCore.OpenId" permission="@OpenIdPermissions.ManageClientSettings.Name">@T["Client Registrations"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<form asp-action="Edit" asp-route-name="@Model.Name" method="post" class="no-multisubmit">
+    @Html.ValidationSummary(true)
+    @await DisplayAsync(Model.Editor)
+
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-action="Index">@T["Cancel"]</a>
+    </div>
+</form>

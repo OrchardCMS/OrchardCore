@@ -286,9 +286,17 @@ A sample of Token Validation Settings recipe step:
 
 ## OIDC Client
 
-Authenticates users from an external OpenID Connect identity provider.
+Authenticates users from external OpenID Connect identity providers, with the [OpenIddict client](https://documentation.openiddict.com/).
 If the site allows new users to register, a local user and the external login are linked.
 If an "email" claim is received, and a local user is found, then the external login is linked to that account, after authenticating.
+
+A tenant can connect to several identity providers:
+
+- The identity provider configured in the client settings of the site, under **Settings → OpenID Connect → Authentication Client**. Its authentication scheme, also the login provider of the linked user accounts, is `OpenIdConnect`.
+- The additional client registrations managed under **Settings → OpenID Connect → Client Registrations**, see [Client Registrations](#client-registrations).
+- The registrations added by other features through an `IOpenIdClientRegistrationProvider`, e.g. with the OpenIddict web providers, see [Adding Client Registrations from Code](#adding-client-registrations-from-code).
+
+Each identity provider is listed on the login page with its display name.
 
 ### OpenId Configuration
 
@@ -299,7 +307,7 @@ Available settings are:
 - Display Name: Display name of the IdP. It is shown in the login form.
 - Authority: Authority to use when making OpenIdConnect calls.
 - ClientId: The `client_id` part of the query.
-- CallbackPath: The request path within the application's base path where the user agent will be returned after sign out from the identity provider. See `post_logout_redirect_uri` from <http://openid.net/specs/openid-connect-session-1_0.html#RedirectionAfterLogout>
+- CallbackPath: The path, relative to the tenant, where the identity provider returns the user agent after signing in. Defaults to `/signin-oidc`. Register the matching absolute URI, e.g. `https://www.example.com/signin-oidc`, as a redirect URI of the client in the identity provider.
 - SignedOut CallbackPath: the callback endpoint for signout. Defaults to `/signout-callback-oidc`.
 - SignedOut Redirect Uri: The URI where the user agent will be redirected to after application is signed out from the identity provider. The redirect will happen after the `SignedOutCallbackPath` is invoked.
 - Scopes: Extra scopes except openid and profile.
@@ -313,7 +321,8 @@ Available settings are:
   - Implicit Authentication Flow (see: <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest>)
     - Use `id_token` response type (example: <http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample>)
     - Use `id_token token` response type (example: <http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample>)
-- Client Secret: It is used with one of the 'confidential' flows, code or hybrid.
+- Client Secret: It is used with one of the 'confidential' flows, code or hybrid. It can be typed in, or selected from the [Secrets](../Secrets/README.md) module.
+- Signing Key: Shown while the Secrets feature is enabled. An optional `RsaKeySecret` or `X509Secret` secret used to sign the client assertions sent to the identity provider, to authenticate the client with `private_key_jwt` instead of the client secret when the identity provider supports it. The identity provider needs the public key of the secret, e.g. from its certificate.
 
 A sample of OpenID Connect Client Settings recipe step:
 
@@ -322,7 +331,7 @@ A sample of OpenID Connect Client Settings recipe step:
       "name": "OpenIdClientSettings",
       "Authority": "http://localhost:44300/t1",
       "DisplayName": "Orchard (t1) IdP",
-      "ClientId": "orchard_t2", 
+      "ClientId": "orchard_t2",
       "CallbackPath": "/signin-oidc",
       "SignedOutCallbackPath": "/signout-callback-oidc",
       "Scopes": "email phone",
@@ -331,6 +340,96 @@ A sample of OpenID Connect Client Settings recipe step:
       "ClientSecret": "secret"
 }
 ```
+
+The `ClientSecret` is given in plain text and stored encrypted. When it's omitted, the current client secret is kept. Instead of a `ClientSecret`, `ClientSecretSecretName` can reference a secret of the Secrets module, and `SigningKeySecretName` the secret holding the key that signs the client assertions.
+
+### Client Registrations
+
+The **Settings → OpenID Connect → Client Registrations** page lists the additional identity providers of the tenant. A registration has the same settings as the client settings of the site, and a unique **Name**, made of letters, digits, dashes and underscores. The name is the authentication scheme of the registration and the login provider of the user accounts linked to it, so it can't be changed once the registration is created.
+
+The callback paths of a registration default to `/signin-oidc-{name}` and `/signout-callback-oidc-{name}`, with its name in lowercase, e.g. `/signin-oidc-partner` for a registration named `Partner`.
+
+The client registrations are imported with the `OpenIdClientRegistrations` recipe step, which adds or updates each registration by its name, with the same properties as the `OpenIdClientSettings` step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "OpenIdClientRegistrations",
+      "Registrations": [
+        {
+          "Name": "Partner",
+          "DisplayName": "Partner IdP",
+          "Authority": "https://idp.partner.com/",
+          "ClientId": "orchard",
+          "ClientSecretSecretName": "Partner.ClientSecret",
+          "Scopes": "email profile",
+          "ResponseType": "code",
+          "ResponseMode": "form_post",
+          "StoreExternalTokens": false
+        }
+      ]
+    }
+  ]
+}
+```
+
+The **OpenID Client Registrations** deployment step exports the registrations. The client secrets are encrypted with the keys of the tenant, so they are never exported: an imported registration keeps the client secret it already has, and secrets stored in the Secrets module are referenced by their names.
+
+### Adding Client Registrations from Code
+
+A feature can add client registrations to the OpenID Connect client, e.g. to connect to one of the more than 100 [OpenIddict web providers](https://documentation.openiddict.com/integrations/web-providers), by implementing `IOpenIdClientRegistrationProvider` and registering it with `AddOpenIdClientRegistrationProvider<T>()`. The client feature registers an authentication scheme and the callback endpoints of each registration.
+
+```csharp
+public sealed class GitHubRegistrationProvider : IOpenIdClientRegistrationProvider
+{
+    private readonly ISiteService _siteService;
+
+    public GitHubRegistrationProvider(ISiteService siteService)
+    {
+        _siteService = siteService;
+    }
+
+    public async Task<IEnumerable<OpenIddictClientRegistration>> GetRegistrationsAsync()
+    {
+        var settings = await _siteService.GetSettingsAsync<MyGitHubSettings>();
+
+        if (string.IsNullOrEmpty(settings.ClientId))
+        {
+            return [];
+        }
+
+        return
+        [
+            new OpenIddictClientRegistration
+            {
+                ProviderType = OpenIddictClientWebIntegrationConstants.ProviderTypes.GitHub,
+                ProviderSettings = new OpenIddictClientWebIntegrationSettings.GitHub(),
+                ProviderName = "GitHubOidc",
+                ProviderDisplayName = "GitHub",
+                ClientId = settings.ClientId,
+                ClientSecret = settings.ClientSecret,
+                RedirectUri = new Uri("signin-github-oidc", UriKind.Relative),
+            },
+        ];
+    }
+}
+```
+
+```csharp
+[RequireFeatures(OpenIdConstants.Features.Client)]
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddOpenIdClientRegistrationProvider<GitHubRegistrationProvider>();
+    }
+}
+```
+
+- Providers are singletons, invoked once when the tenant builds its OpenIddict client options. Release the tenant, with `IShellReleaseManager.RequestRelease()`, when the data a provider reads changes.
+- The `ProviderName` is the authentication scheme of the registration and must be unique. When two registrations share it, the first one is kept, in feature order.
+- Use a relative `RedirectUri` and `PostLogoutRedirectUri`, without a leading `/`, so they are resolved against the base path of the tenant.
 
 ## Settings Recipe Step
 
@@ -432,6 +531,8 @@ All OpenID Connect settings can be configured using the generic `Settings` recip
 | `Authority`             | String | The authority URL of the OpenID Connect provider. **Required.**                                                                  |
 | `ClientId`              | String | The client identifier. **Required.**                                                                                             |
 | `ClientSecret`          | String | The client secret.                                                                                                               |
+| `ClientSecretSecretName` | String | The name of the secret of the Secrets module holding the client secret. It takes precedence over `ClientSecret`.               |
+| `SigningKeySecretName`  | String | The name of the `RsaKeySecret` or `X509Secret` secret used to sign the client assertions (`private_key_jwt`).                     |
 | `CallbackPath`          | String | The callback path where the user-agent will be returned.                                                                         |
 | `SignedOutCallbackPath` | String | The callback path after sign-out.                                                                                                |
 | `SignedOutRedirectUri`  | String | The URI to redirect to after sign-out.                                                                                           |

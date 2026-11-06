@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.OpenId.Settings
+
+@model ShapeViewModel<OpenIdClientRegistration>
+
+@if (Model.Value.Authority is not null)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@Model.Value.Authority.AbsoluteUri">
+        <i class="fa-solid fa-globe text-secondary" aria-hidden="true"></i> @Model.Value.Authority.Authority
+    </span>
+}

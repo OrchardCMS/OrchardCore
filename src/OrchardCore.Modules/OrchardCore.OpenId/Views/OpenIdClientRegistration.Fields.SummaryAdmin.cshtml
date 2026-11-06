@@ -1,0 +1,6 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.OpenId.Settings
+
+@model ShapeViewModel<OpenIdClientRegistration>
+
+<a asp-action="Edit" asp-controller="ClientRegistration" asp-route-area="OrchardCore.OpenId" asp-route-name="@Model.Value.Name">@(Model.Value.DisplayName ?? Model.Value.Name)</a>

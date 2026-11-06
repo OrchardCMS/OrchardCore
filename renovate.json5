@@ -143,10 +143,13 @@
             ],
         },
         {
-            // Microsoft.Identity.Web and the OpenIddict packages depend on the
-            // Microsoft.IdentityModel.* packages so we need to update them together.
+            // Microsoft.Identity.Web and the OpenIddict packages depend on the Microsoft.IdentityModel.* packages,
+            // and Microsoft.Identity.Web on Microsoft.AspNetCore.Authentication.OpenIdConnect, which stay pinned
+            // transitively in Directory.Packages.props. So, we need to update them together.
             groupName: 'Identity packages',
             matchPackageNames: [
+                'Microsoft.AspNetCore.Authentication.OpenIdConnect',
+                'Microsoft.IdentityModel.Protocols.OpenIdConnect',
                 'Microsoft.Identity.Web',
                 '/^OpenIddict.*$/',
             ],

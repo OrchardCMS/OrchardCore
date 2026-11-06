@@ -1,0 +1,18 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdClientRegistrationNameViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label @(Model.IsNew ? "ocat-label-required" : null)">@T["Name"]</label>
+    <div class="ocat-end">
+        @if (Model.IsNew)
+        {
+            <input asp-for="Name" class="form-control" autofocus />
+        }
+        else
+        {
+            <input asp-for="Name" class="form-control" readonly />
+        }
+        <span asp-validation-for="Name"></span>
+        <span class="hint">@T["The unique name of the registration, made of letters, digits, dashes and underscores. It identifies the identity provider of the user accounts linked to it, so it can't be changed once the registration is created. The default callback paths are '{0}' and '{1}'.", "/signin-oidc-{name}", "/signout-callback-oidc-{name}"]</span>
+    </div>
+</div>

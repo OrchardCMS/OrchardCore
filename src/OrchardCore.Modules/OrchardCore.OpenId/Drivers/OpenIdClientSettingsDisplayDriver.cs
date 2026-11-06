@@ -1,27 +1,20 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Drivers;
 
 public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenIdClientSettings>
 {
-    private static readonly char[] s_separator = [' ', ','];
-
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -64,43 +57,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
         return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
         {
-            model.DisplayName = settings.DisplayName;
-            model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
-            model.Authority = settings.Authority?.AbsoluteUri;
-            model.CallbackPath = settings.CallbackPath;
-            model.ClientId = settings.ClientId;
-            model.ClientSecret = SecretInputViewModel.Create(settings.ClientSecret, settings.ClientSecretSecretName);
-            model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
-            model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
-            model.ResponseMode = settings.ResponseMode;
-            model.StoreExternalTokens = settings.StoreExternalTokens;
-
-            if (settings.ResponseType == OpenIdConnectResponseType.Code)
-            {
-                model.UseCodeFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdToken)
-            {
-                model.UseCodeIdTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdTokenToken)
-            {
-                model.UseCodeIdTokenTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.CodeToken)
-            {
-                model.UseCodeTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
-            {
-                model.UseIdTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.IdTokenToken)
-            {
-                model.UseIdTokenTokenFlow = true;
-            }
-
-            model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
+            OpenIdClientSettingsEditor.Populate(model, settings, _serviceProvider);
         }).Location("Content:2")
         .OnGroup(SettingsGroupId);
     }
@@ -116,90 +73,16 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         var model = new OpenIdClientSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        model.Scopes ??= string.Empty;
+        await OpenIdClientSettingsEditor.UpdateAsync(
+            model,
+            settings,
+            context.Updater.ModelState,
+            Prefix,
+            _serviceProvider,
+            _dataProtectionProvider,
+            S);
 
-        settings.DisplayName = model.DisplayName;
-        settings.Scopes = model.Scopes.Split(s_separator, StringSplitOptions.RemoveEmptyEntries);
-        settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
-        settings.CallbackPath = model.CallbackPath;
-        settings.ClientId = model.ClientId;
-        settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
-        settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
-        settings.ResponseMode = model.ResponseMode;
-        settings.StoreExternalTokens = model.StoreExternalTokens;
-
-        var useClientSecret = true;
-
-        if (model.UseCodeFlow)
-        {
-            settings.ResponseType = OpenIdConnectResponseType.Code;
-        }
-        else if (model.UseCodeIdTokenFlow)
-        {
-            settings.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-        }
-        else if (model.UseCodeIdTokenTokenFlow)
-        {
-            settings.ResponseType = OpenIdConnectResponseType.CodeIdTokenToken;
-        }
-        else if (model.UseCodeTokenFlow)
-        {
-            settings.ResponseType = OpenIdConnectResponseType.CodeToken;
-        }
-        else if (model.UseIdTokenFlow)
-        {
-            settings.ResponseType = OpenIdConnectResponseType.IdToken;
-            useClientSecret = false;
-        }
-        else if (model.UseIdTokenTokenFlow)
-        {
-            settings.ResponseType = OpenIdConnectResponseType.IdTokenToken;
-            useClientSecret = false;
-        }
-        else
-        {
-            settings.ResponseType = OpenIdConnectResponseType.None;
-            useClientSecret = false;
-        }
-
-        try
-        {
-            settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
-                ? []
-                : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
-        }
-        catch
-        {
-            context.Updater.ModelState.AddModelError(Prefix, S["The parameters are written in an incorrect format."]);
-        }
-
-        if (useClientSecret)
-        {
-            var clientSecret = await model.ClientSecret.UpdateAsync(new SecretInputUpdateContext(
-                _serviceProvider,
-                _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration)),
-                context.Updater.ModelState,
-                $"{Prefix}.{nameof(model.ClientSecret)}")
-            {
-                ProtectedValue = settings.ClientSecret,
-                SecretName = settings.ClientSecretSecretName,
-            });
-
-            if (clientSecret.Succeeded)
-            {
-                settings.ClientSecret = clientSecret.ProtectedValue;
-                settings.ClientSecretSecretName = clientSecret.SecretName;
-            }
-        }
-
-        foreach (var result in await _clientService.ValidateSettingsAsync(settings))
-        {
-            if (result != ValidationResult.Success)
-            {
-                var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
-            }
-        }
+        OpenIdClientSettingsEditor.AddErrors(await _clientService.ValidateSettingsAsync(settings), context.Updater.ModelState, Prefix);
 
         _shellReleaseManager.RequestRelease();
 

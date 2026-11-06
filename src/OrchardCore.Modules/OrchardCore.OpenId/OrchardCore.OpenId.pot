@@ -52,6 +52,11 @@ msgid "Authorization Server"
 msgstr ""
 
 #: ClientAdminMenu.cs
+msgctxt "OrchardCore.OpenId.ClientAdminMenu"
+msgid "Client Registrations"
+msgstr ""
+
+#: ClientAdminMenu.cs
 #: ServerAdminMenu.cs
 msgctxt "OrchardCore.OpenId.ClientAdminMenu"
 msgid "OpenID Connect"
@@ -93,6 +98,21 @@ msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
 msgid "There are no registered services to provide roles."
 msgstr ""
 
+#: Controllers/ClientRegistrationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ClientRegistrationController"
+msgid "The client registration has been created successfully."
+msgstr ""
+
+#: Controllers/ClientRegistrationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ClientRegistrationController"
+msgid "The client registration has been deleted successfully."
+msgstr ""
+
+#: Controllers/ClientRegistrationController.cs
+msgctxt "OrchardCore.OpenId.Controllers.ClientRegistrationController"
+msgid "The client registration has been updated successfully."
+msgstr ""
+
 #: Controllers/ScopeController.cs
 msgctxt "OrchardCore.OpenId.Controllers.ScopeController"
 msgid "The name is already taken by another scope."
@@ -130,8 +150,8 @@ msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSecretMigrationDisplayDriver"
 msgid "OpenID Connect: Client secret"
 msgstr ""
 
-#: Drivers/OpenIdClientSettingsDisplayDriver.cs
-msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSettingsDisplayDriver"
+#: Drivers/OpenIdClientSettingsEditor.cs
+msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSettingsEditor"
 msgid "The parameters are written in an incorrect format."
 msgstr ""
 
@@ -158,6 +178,45 @@ msgstr ""
 #: OpenIdLocalizationSources.cs
 msgctxt "OrchardCore.OpenId.OpenIdLocalizationSources"
 msgid "OpenID Connect"
+msgstr ""
+
+#. Format arguments: {0}: RecipeStepName
+#: Recipes/OpenIdClientRegistrationsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Recipes.OpenIdClientRegistrationsStep"
+msgid "A client registration of the {0} step has no name."
+msgstr ""
+
+#. Format arguments: {0}: item.Name; {1}: string.Join(" ", errors)
+#: Recipes/OpenIdClientRegistrationsStep.cs
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Recipes.OpenIdClientRegistrationsStep"
+msgid "The client registration '{0}' is invalid: {1}"
+msgstr ""
+
+#: Services/OpenIdClientRegistrationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientRegistrationService"
+msgid "The client identifier is required."
+msgstr ""
+
+#: Services/OpenIdClientRegistrationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientRegistrationService"
+msgid "The display name is required."
+msgstr ""
+
+#: Services/OpenIdClientRegistrationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientRegistrationService"
+msgid "The name is already used by another authentication provider."
+msgstr ""
+
+#: Services/OpenIdClientRegistrationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientRegistrationService"
+msgid "The name is required."
+msgstr ""
+
+#: Services/OpenIdClientRegistrationService.cs
+msgctxt "OrchardCore.OpenId.Services.OpenIdClientRegistrationService"
+msgid "The name must start with a letter and contain only letters, digits, dashes and underscores."
 msgstr ""
 
 #: Services/OpenIdClientService.cs
@@ -192,7 +251,7 @@ msgstr ""
 
 #: Services/OpenIdClientService.cs
 msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
-msgid "Unknown response type ."
+msgid "Unknown response type."
 msgstr ""
 
 #. Format arguments: {0}: "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"
@@ -433,11 +492,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.OpenId.Views.Access.Authorize"
 msgid "Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})"
-msgstr ""
-
-#: Views/Access/Error.cshtml
-msgctxt "OrchardCore.OpenId.Views.Access.Error"
-msgid "Ooooops, something went really bad! :("
 msgstr ""
 
 #: Views/Access/Logout.cshtml
@@ -994,6 +1048,123 @@ msgctxt "OrchardCore.OpenId.Views.Application.Index"
 msgid "Search"
 msgstr ""
 
+#: Views/ClientRegistration/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/ClientRegistration/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Create"
+msgid "Client Registrations"
+msgstr ""
+
+#: Views/ClientRegistration/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Create"
+msgid "New client registration"
+msgstr ""
+
+#: Views/ClientRegistration/Create.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/ClientRegistration/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/ClientRegistration/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Edit"
+msgid "Client Registrations"
+msgstr ""
+
+#. Format arguments: {0}: Model.DisplayName
+#: Views/ClientRegistration/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Edit"
+msgid "Edit '{0}' client registration"
+msgstr ""
+
+#: Views/ClientRegistration/Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "<strong>Nothing here!</strong> There are no client registrations at the moment. The identity provider configured in the OpenID Connect client settings is always available."
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "Authority"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "Clear"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "Client Registrations"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "Display name"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "New registration"
+msgstr ""
+
+#: Views/ClientRegistration/Index.cshtml
+msgctxt "OrchardCore.OpenId.Views.ClientRegistration.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Items/OpenIdClientRegistrationsDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdClientRegistrationsDeploymentStep.Edit"
+msgid "OpenID Client Registrations"
+msgstr ""
+
+#: Views/Items/OpenIdClientRegistrationsDeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdClientRegistrationsDeploymentStep.Edit"
+msgid "The client secrets are not exported. The target site keeps its own client secrets, and secrets stored in the Secrets module are referenced by their name."
+msgstr ""
+
+#: Views/Items/OpenIdClientRegistrationsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdClientRegistrationsDeploymentStep.Summary"
+msgid "Adds the OpenID Connect client registrations to the plan."
+msgstr ""
+
+#: Views/Items/OpenIdClientRegistrationsDeploymentStep.Summary.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdClientRegistrationsDeploymentStep.Summary"
+msgid "OpenID Client Registrations"
+msgstr ""
+
+#: Views/Items/OpenIdClientRegistrationsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdClientRegistrationsDeploymentStep.Thumbnail"
+msgid "Exports the OpenID Connect client registrations, without their client secrets."
+msgstr ""
+
+#: Views/Items/OpenIdClientRegistrationsDeploymentStep.Thumbnail.cshtml
+msgctxt "OrchardCore.OpenId.Views.Items.OpenIdClientRegistrationsDeploymentStep.Thumbnail"
+msgid "OpenID Client Registrations"
+msgstr ""
+
 #: Views/Items/OpenIdServerDeploymentStep.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Items.OpenIdServerDeploymentStep.Edit"
 msgid "OpenID Server Settings"
@@ -1052,6 +1223,33 @@ msgstr ""
 #: Views/OpenIdApplicationEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdApplicationEntry.Buttons.SummaryAdmin"
 msgid "Edit"
+msgstr ""
+
+#: Views/OpenIdClientRegistration.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientRegistration.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/OpenIdClientRegistration.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientRegistration.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/OpenIdClientRegistration.DefaultTags.SummaryAdmin.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientRegistration.DefaultTags.SummaryAdmin"
+msgid "Name"
+msgstr ""
+
+#: Views/OpenIdClientRegistrationName.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientRegistrationName.Edit"
+msgid "Name"
+msgstr ""
+
+#. Format arguments: {0}: "/signin-oidc-{name}"; {1}: "/signout-callback-oidc-{name}"
+#: Views/OpenIdClientRegistrationName.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientRegistrationName.Edit"
+msgid "The unique name of the registration, made of letters, digits, dashes and underscores. It identifies the identity provider of the user accounts linked to it, so it can't be changed once the registration is created. The default callback paths are '{0}' and '{1}'."
 msgstr ""
 
 #. Format arguments: {0}: "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"
@@ -1178,6 +1376,13 @@ msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
 msgid "OK"
 msgstr ""
 
+#. Format arguments: {0}: "private_key_jwt"
+#: Views/OpenIdClientSettings.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Optional. An RSA key or X.509 certificate secret used to sign the client assertions sent to the identity provider ({0} client authentication), when the identity provider supports them."
+msgstr ""
+
 #: Views/OpenIdClientSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
 msgid "Parameter Name"
@@ -1218,6 +1423,11 @@ msgstr ""
 #: Views/OpenIdClientSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
 msgid "SignedOut Redirect Uri"
+msgstr ""
+
+#: Views/OpenIdClientSettings.Edit.cshtml
+msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
+msgid "Signing Key"
 msgstr ""
 
 #: Views/OpenIdClientSettings.Edit.cshtml
@@ -1835,6 +2045,11 @@ msgstr ""
 #: Views/ServerConfiguration/Index.cshtml
 msgctxt "OrchardCore.OpenId.Views.ServerConfiguration.Index"
 msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
+msgstr ""
+
+#: Views/Shared/OpenIdError.cshtml
+msgctxt "OrchardCore.OpenId.Views.Shared.OpenIdError"
+msgid "Ooooops, something went really bad! :("
 msgstr ""
 
 #: Views/ValidationConfiguration/Index.cshtml

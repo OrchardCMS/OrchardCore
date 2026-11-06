@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Services;
 
@@ -75,11 +75,11 @@ public class OpenIdClientService : IOpenIdClientService
                 nameof(settings.ResponseType),
             }));
         }
-        else if (settings.ResponseType != OpenIdConnectResponseType.Code && settings.ResponseType != OpenIdConnectResponseType.CodeIdToken &&
-            settings.ResponseType != OpenIdConnectResponseType.CodeIdTokenToken && settings.ResponseType != OpenIdConnectResponseType.CodeToken &&
-            settings.ResponseType != OpenIdConnectResponseType.IdToken && settings.ResponseType != OpenIdConnectResponseType.IdTokenToken)
+        else if (settings.ResponseType is not (OpenIdConstants.Client.ResponseTypes.Code or OpenIdConstants.Client.ResponseTypes.CodeIdToken
+            or OpenIdConstants.Client.ResponseTypes.CodeIdTokenToken or OpenIdConstants.Client.ResponseTypes.CodeToken
+            or OpenIdConstants.Client.ResponseTypes.IdToken or OpenIdConstants.Client.ResponseTypes.IdTokenToken))
         {
-            results.Add(new ValidationResult(S["Unknown response type ."], new[]
+            results.Add(new ValidationResult(S["Unknown response type."], new[]
             {
                 nameof(settings.ResponseType),
             }));
@@ -92,8 +92,7 @@ public class OpenIdClientService : IOpenIdClientService
                 nameof(settings.ResponseMode),
             }));
         }
-        else if (settings.ResponseMode != OpenIdConnectResponseMode.FormPost && settings.ResponseMode != OpenIdConnectResponseMode.Fragment &&
-            settings.ResponseMode != OpenIdConnectResponseMode.Query)
+        else if (settings.ResponseMode is not (ResponseModes.FormPost or ResponseModes.Fragment or ResponseModes.Query))
         {
             results.Add(new ValidationResult(S["Unknown response mode."], new[]
             {
