@@ -10,6 +10,8 @@ _The Layer needs to be saved first to reveal the Rule option._
 
 When you add a widget into a zone, you must also select a Layer to associate the widget with. The widget is displayed if the Layer's corresponding display rule evaluates to true.
 
+When a request is re-executed to display an error page, layer rules are evaluated for that page. Previously added layer widgets are replaced, without duplicating widgets or removing unrelated zone content.
+
 ![Add widget.](./assets/add-widget.png)
 
 You can select the checkbox next to each Layer in order to highlight the associated Widgets on the left.

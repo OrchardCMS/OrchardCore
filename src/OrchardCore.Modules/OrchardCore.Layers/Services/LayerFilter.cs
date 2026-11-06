@@ -11,6 +11,7 @@ using OrchardCore.Contents;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Documents;
 using OrchardCore.Layers.Handlers;
@@ -24,6 +25,7 @@ namespace OrchardCore.Layers.Services;
 public sealed class LayerFilter : IAsyncResultFilter
 {
     private const string WidgetsKey = "OrchardCore.Layers.LayerFilter:AllWidgets";
+    private const string LayerWidgetName = "OrchardCore.Layers.LayerFilter:Widget";
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ILayoutAccessor _layoutAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -64,6 +66,24 @@ public sealed class LayerFilter : IAsyncResultFilter
         // Should only run on the front-end for a full view
         if (context.IsViewOrPageResult() && !AdminAttribute.IsApplied(context.HttpContext))
         {
+            var layout = await _layoutAccessor.GetLayoutAsync();
+
+            // Re-execution can reuse the layout, but must reevaluate layers for the new path.
+            foreach (var property in layout.Properties)
+            {
+                if (property.Value is Shape zone && zone.HasItems)
+                {
+                    var items = zone.Items;
+                    for (var i = items.Count - 1; i >= 0; i--)
+                    {
+                        if (items[i] is WidgetWrapper wrapper && wrapper.Metadata.Name == LayerWidgetName)
+                        {
+                            zone.Remove(LayerWidgetName);
+                        }
+                    }
+                }
+            }
+
             // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
             // In this case don't render Layers.
             var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
@@ -95,7 +115,6 @@ public sealed class LayerFilter : IAsyncResultFilter
 
             var layers = (await _layerService.GetLayersAsync()).Layers;
 
-            var layout = await _layoutAccessor.GetLayoutAsync();
             var updater = _modelUpdaterAccessor.ModelUpdater;
 
             // The display state of a layer is only evaluated once, even if it holds multiple widgets.
@@ -153,6 +172,7 @@ public sealed class LayerFilter : IAsyncResultFilter
                         widget.Zone);
 
                     wrapper.Metadata.Alternates.AddRange(cachedAlternates);
+                    wrapper.Metadata.Name = LayerWidgetName;
 
                     var contentZone = layout.Zones[widget.Zone];
 
