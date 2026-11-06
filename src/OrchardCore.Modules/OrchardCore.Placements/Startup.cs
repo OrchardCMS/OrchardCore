@@ -54,6 +54,15 @@ public class FileContentDefinitionStartup : StartupBase
     }
 }
 
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ITabAndCardNameContributor, PlacementsTabAndCardNameContributor>();
+    }
+}
+
 [RequireFeatures("OrchardCore.Deployment")]
 public class DeploymentStartup : StartupBase
 {

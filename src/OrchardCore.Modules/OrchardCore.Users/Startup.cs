@@ -19,6 +19,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -692,6 +693,16 @@ public sealed class CustomUserSettingsStartup : StartupBase
                 ShowVersionable = false,
             });
         });
+    }
+}
+
+[Feature("OrchardCore.Users.CustomUserSettings")]
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class CustomUserSettingsDataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ITabAndCardNameContributor, CustomUserSettingsTabAndCardNameContributor>();
     }
 }
 

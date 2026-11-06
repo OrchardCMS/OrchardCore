@@ -4,6 +4,7 @@ using OrchardCore.DataLocalization.Liquid;
 using OrchardCore.DataLocalization.Recipes;
 using OrchardCore.DataLocalization.Services;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Liquid;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
@@ -36,5 +37,9 @@ public class Startup : StartupBase
 
         services.AddDataLocalization();
         services.AddSingleton<IDataTranslationProvider, DataTranslationProvider>();
+
+        services.AddScoped<ILocalizationDataProvider, TabAndCardLocalizationDataProvider>();
+        services.AddScoped<ITabAndCardNameContributor, PlacementCatalogTabAndCardNameContributor>();
+        services.AddScoped<ITabAndCardNameContributor, PlacementFileTabAndCardNameContributor>();
     }
 }
