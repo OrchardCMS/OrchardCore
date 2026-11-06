@@ -1,0 +1,16 @@
+@using OrchardCore.Tenants.ViewModels
+
+@model ShellSettingsEntryActivityViewModel
+
+@if (Model.IsAwake)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Last request on {0}: {1}", Model.NodeName, (object)(await DisplayAsync(await New.DateTime(Utc: Model.LastRequestUtc, Format: "g")))]">
+        <i class="fa-solid fa-sun text-warning" aria-hidden="true"></i> @T["Awake"]
+    </span>
+}
+else
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["No request pipeline on {0}, it is built on the next request of this tenant to this node.", Model.NodeName]">
+        <i class="fa-solid fa-moon text-secondary" aria-hidden="true"></i> @T["Asleep"]
+    </span>
+}

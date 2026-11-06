@@ -1,5 +1,6 @@
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Drivers;
@@ -10,6 +11,13 @@ namespace OrchardCore.Tenants.Drivers;
 /// </summary>
 public sealed class ShellSettingsEntryDisplayDriver : DisplayDriver<ShellSettingsEntry>
 {
+    private readonly IShellHost _shellHost;
+
+    public ShellSettingsEntryDisplayDriver(IShellHost shellHost)
+    {
+        _shellHost = shellHost;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(ShellSettingsEntry entry, BuildDisplayContext context)
     {
         return CombineAsync(
@@ -37,6 +45,14 @@ public sealed class ShellSettingsEntryDisplayDriver : DisplayDriver<ShellSetting
             View("ShellSettingsEntry_State_SummaryAdmin", entry)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "State:5")
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "State:5"),
+            Initialize<ShellSettingsEntryActivityViewModel>("ShellSettingsEntryActivity_SummaryAdmin", model =>
+            {
+                _shellHost.TryGetShellContext(entry.Name, out var shellContext);
+                model.Update(shellContext, global::System.Environment.MachineName);
+            })
+                .RenderWhen(() => Task.FromResult(entry.ShellSettings.IsRunning()))
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Activity:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Activity:5"),
             View("ShellSettingsEntry_Buttons_SummaryAdmin", entry)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5")

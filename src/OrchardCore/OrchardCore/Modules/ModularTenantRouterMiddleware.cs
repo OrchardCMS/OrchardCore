@@ -36,6 +36,9 @@ public class ModularTenantRouterMiddleware
             httpContext.Request.Path = remainingPath;
         }
 
+        // Used to release the tenants that are idle.
+        shellContext.LastRequestTimeUtc = DateTime.UtcNow;
+
         // Do we need to rebuild the pipeline?
         if (!shellContext.HasPipeline())
         {

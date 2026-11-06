@@ -2,6 +2,10 @@
 
 The `Tenants` module allows you to manage tenants from the admin.
 
+## Tenant activity
+
+The tenants admin list shows whether each running tenant is awake or asleep on the node serving this page. A tenant is awake once its request pipeline has been built by a request, which is released when the tenant is reloaded or when it stays idle with [Tenant Clustering](../ReverseProxy/TenantClusters.md). Each node only knows its own tenants, so with several nodes a tenant running on another node is shown as asleep.
+
 ## Static File Provider Feature
 
 This feature registers a file provider for each tenant in order to serve custom files per tenant, even if they have the same names.

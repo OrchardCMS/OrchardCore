@@ -51,6 +51,12 @@
                         @await DisplayAsync(Model.State)
                     </div>
                 }
+                @if (Model.Activity != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.Activity)
+                    </div>
+                }
                 @if (Model.Meta != null)
                 {
                     <div class="metadata me-1">
