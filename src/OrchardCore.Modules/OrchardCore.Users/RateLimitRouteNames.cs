@@ -6,6 +6,8 @@ internal static class RateLimitRouteNames
 
     internal const string Login = "Login";
 
+    internal const string PasskeyLogin = "PasskeyLogin";
+
     internal const string LoginWithRecoveryCode = nameof(Controllers.TwoFactorAuthenticationController.LoginWithRecoveryCode);
 
     internal const string LoginWithTwoFactorAuthentication = nameof(Controllers.TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication);

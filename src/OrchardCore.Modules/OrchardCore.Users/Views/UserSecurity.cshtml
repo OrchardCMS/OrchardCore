@@ -1,0 +1,10 @@
+@if (Model.Content == null)
+{
+    <div class="alert alert-info text-center">@T["There are no security settings to manage."]</div>
+
+    return;
+}
+
+<div class="d-flex flex-column gap-4">
+    @await DisplayAsync(Model.Content)
+</div>
