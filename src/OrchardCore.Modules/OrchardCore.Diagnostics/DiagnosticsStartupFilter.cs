@@ -23,10 +23,16 @@ public sealed class DiagnosticsStartupFilter : IStartupFilter
         {
             if (!_hostEnvironment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler(new ExceptionHandlerOptions
+                {
+                    ExceptionHandlingPath = "/Error",
+                    CreateScopeForErrors = true,
+                });
             }
 
-            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            app.UseStatusCodePagesWithReExecute(
+                "/Error/{0}",
+                createScopeForStatusCodePages: true);
 
             app.Use(async (context, next) =>
             {

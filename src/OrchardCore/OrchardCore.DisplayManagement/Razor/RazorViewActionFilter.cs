@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Diagnostics;
-using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell;
@@ -16,9 +14,6 @@ namespace OrchardCore.DisplayManagement.Razor;
 /// </summary>
 public sealed class RazorViewActionFilter : IAsyncViewActionFilter
 {
-    private static readonly object s_exceptionFeatureKey = new();
-    private static readonly object s_statusCodeFeatureKey = new();
-
     public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         static async Task Awaited(Task task, ActionExecutionDelegate next)
@@ -65,34 +60,6 @@ public sealed class RazorViewActionFilter : IAsyncViewActionFilter
 
         var services = context.HttpContext.RequestServices;
 
-        var exceptionFeature = context.HttpContext.Features.Get<IExceptionHandlerFeature>();
-        var statusCodeFeature = context.HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
-        var items = context.HttpContext.Items;
-
-        if ((exceptionFeature is not null &&
-             !ReferenceEquals(items[s_exceptionFeatureKey], exceptionFeature)) ||
-            (statusCodeFeature is not null &&
-             !ReferenceEquals(items[s_statusCodeFeatureKey], statusCodeFeature)))
-        {
-            if (exceptionFeature is not null)
-            {
-                items[s_exceptionFeatureKey] = exceptionFeature;
-            }
-
-            if (statusCodeFeature is not null)
-            {
-                items[s_statusCodeFeatureKey] = statusCodeFeature;
-            }
-
-            if (services.GetService<ILayoutAccessor>() is LayoutAccessor layoutAccessor)
-            {
-                layoutAccessor.ResetLayout();
-            }
-
-            razorViewFeature.ThemeLayout = null;
-            services.GetService<IPageTitleBuilder>()?.Clear();
-        }
-
         if (razorViewFeature.Site is null)
         {
             var shellSettings = services.GetService<ShellSettings>();
@@ -113,22 +80,21 @@ public sealed class RazorViewActionFilter : IAsyncViewActionFilter
             }
         }
 
-        if (razorViewFeature.ThemeLayout is null)
+        // The feature survives re-execution, but the layout belongs to the current service scope.
+        var layoutAccessor = services.GetService<ILayoutAccessor>();
+        razorViewFeature.ThemeLayout = null;
+
+        if (layoutAccessor is not null)
         {
-            var layoutAccessor = services.GetService<ILayoutAccessor>();
+            var layoutAccessorTask = layoutAccessor.GetLayoutAsync();
 
-            if (layoutAccessor is not null)
+            if (!layoutAccessorTask.IsCompletedSuccessfully)
             {
-                var layoutAccessorTask = layoutAccessor.GetLayoutAsync();
-
-                if (!layoutAccessorTask.IsCompletedSuccessfully)
-                {
-                    // Must go async - execute remaining operations sequentially
-                    return AwaitedLayout(razorViewFeature, services, layoutAccessorTask);
-                }
-
-                razorViewFeature.ThemeLayout = layoutAccessorTask.Result;
+                // Must go async - execute remaining operations sequentially
+                return AwaitedLayout(razorViewFeature, services, layoutAccessorTask);
             }
+
+            razorViewFeature.ThemeLayout = layoutAccessorTask.Result;
         }
 
         // Step 3: Theme
@@ -159,15 +125,13 @@ public sealed class RazorViewActionFilter : IAsyncViewActionFilter
         {
             razorViewFeature.Site = await getSiteSettingsTask;
 
-            // Continue with layout
-            if (razorViewFeature.ThemeLayout is null)
-            {
-                var layoutAccessor = services.GetService<ILayoutAccessor>();
+            // Continue with the layout for the current service scope.
+            var layoutAccessor = services.GetService<ILayoutAccessor>();
+            razorViewFeature.ThemeLayout = null;
 
-                if (layoutAccessor is not null)
-                {
-                    razorViewFeature.ThemeLayout = await layoutAccessor.GetLayoutAsync();
-                }
+            if (layoutAccessor is not null)
+            {
+                razorViewFeature.ThemeLayout = await layoutAccessor.GetLayoutAsync();
             }
 
             // Continue with theme

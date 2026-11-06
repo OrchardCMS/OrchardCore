@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Razor;
 
 namespace OrchardCore.DisplayManagement.Theming;
 
@@ -21,35 +22,52 @@ public class ThemeLayout : Razor.RazorPage<dynamic>
 
         if (ThemeLayout != null)
         {
-            // Then is added to the Content zone of the Layout shape.
-            await ThemeLayout.Zones["Content"].AddAsync(body);
-
-            // Pre-render all shapes and replace the zone content with it.
-            ThemeLayout.Zones["Content"] = PositionWrapper.TryWrap(await DisplayAsync(ThemeLayout.Zones["Content"]), "") as IShape;
-
-            // Render each layout zone.
-            foreach (var zone in ThemeLayout.Properties.ToArray())
+            try
             {
-                if (zone.Value is IShape shape)
+                // Then is added to the Content zone of the Layout shape.
+                await ThemeLayout.Zones["Content"].AddAsync(body);
+
+                // Pre-render all shapes and replace the zone content with it.
+                ThemeLayout.Zones["Content"] = PositionWrapper.TryWrap(await DisplayAsync(ThemeLayout.Zones["Content"]), "") as IShape;
+
+                // Render each layout zone.
+                foreach (var zone in ThemeLayout.Properties.ToArray())
                 {
-                    // Check if the shape is null or empty.
-                    if (shape.IsNullOrEmpty())
+                    if (zone.Value is IShape shape)
                     {
-                        continue;
-                    }
+                        // Check if the shape is null or empty.
+                        if (shape.IsNullOrEmpty())
+                        {
+                            continue;
+                        }
 
-                    // Check if the shape is pre-rendered.
-                    if (shape is IHtmlContent)
-                    {
-                        continue;
-                    }
+                        // Check if the shape is pre-rendered.
+                        if (shape is IHtmlContent)
+                        {
+                            continue;
+                        }
 
-                    ThemeLayout.Zones[zone.Key] = PositionWrapper.TryWrap(await DisplayAsync(shape), "") as IShape;
+                        ThemeLayout.Zones[zone.Key] = PositionWrapper.TryWrap(await DisplayAsync(shape), "") as IShape;
+                    }
                 }
-            }
 
-            // Finally we render the Layout Shape's HTML to the page's output.
-            Write(await DisplayAsync(ThemeLayout));
+                // Finally we render the Layout Shape's HTML to the page's output.
+                Write(await DisplayAsync(ThemeLayout));
+            }
+            catch (Exception)
+            {
+                // A partially rendered layout cannot be reused.
+                var feature = Context.Features.Get<RazorViewFeature>();
+
+                if (feature is not null)
+                {
+                    feature.ThemeLayout = null;
+                }
+
+                ThemeLayout = null;
+
+                throw;
+            }
         }
         else
         {
