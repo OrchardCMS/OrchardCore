@@ -5,6 +5,9 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Users.Indexes;
 
+/// <summary>
+/// Maps each passkey of a user, to find the user who owns a passkey.
+/// </summary>
 public class UserByPasskeyIndex : MapIndex
 {
     /// <summary>
@@ -28,6 +31,9 @@ public class UserByPasskeyIndex : MapIndex
     }
 }
 
+/// <summary>
+/// Creates a <see cref="UserByPasskeyIndex"/> entry for each passkey of a user.
+/// </summary>
 public class UserByPasskeyIndexProvider : IndexProvider<User>
 {
     public override void Describe(DescribeContext<User> context)
