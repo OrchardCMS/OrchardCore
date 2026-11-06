@@ -95,7 +95,7 @@ public sealed class WorkflowExecutionData
 
         truncated = text.Length > MaxValueLength;
 
-        return truncated ? text[..MaxValueLength] + Ellipsis : text;
+        return truncated ? TextHelper.Truncate(text, MaxValueLength) + Ellipsis : text;
     }
 }
 

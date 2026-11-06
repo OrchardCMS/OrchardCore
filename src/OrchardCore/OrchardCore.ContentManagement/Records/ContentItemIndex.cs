@@ -49,22 +49,22 @@ public class ContentItemIndexProvider : IndexProvider<ContentItem>
 
                 if (contentItemIndex.ContentType?.Length > ContentItemIndex.MaxContentTypeSize)
                 {
-                    contentItemIndex.ContentType = contentItem.ContentType[..ContentItemIndex.MaxContentTypeSize];
+                    contentItemIndex.ContentType = TextHelper.Truncate(contentItem.ContentType, ContentItemIndex.MaxContentTypeSize);
                 }
 
                 if (contentItemIndex.Owner?.Length > ContentItemIndex.MaxOwnerSize)
                 {
-                    contentItemIndex.Owner = contentItem.Owner[..ContentItemIndex.MaxOwnerSize];
+                    contentItemIndex.Owner = TextHelper.Truncate(contentItem.Owner, ContentItemIndex.MaxOwnerSize);
                 }
 
                 if (contentItemIndex.Author?.Length > ContentItemIndex.MaxAuthorSize)
                 {
-                    contentItemIndex.Author = contentItem.Author[..ContentItemIndex.MaxAuthorSize];
+                    contentItemIndex.Author = TextHelper.Truncate(contentItem.Author, ContentItemIndex.MaxAuthorSize);
                 }
 
                 if (contentItemIndex.DisplayText?.Length > ContentItemIndex.MaxDisplayTextSize)
                 {
-                    contentItemIndex.DisplayText = contentItem.DisplayText[..ContentItemIndex.MaxDisplayTextSize];
+                    contentItemIndex.DisplayText = TextHelper.Truncate(contentItem.DisplayText, ContentItemIndex.MaxDisplayTextSize);
                 }
 
                 return contentItemIndex;
