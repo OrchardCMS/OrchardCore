@@ -3754,6 +3754,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "szepeviktor",
+      "name": "Viktor Szépe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/952007?v=4",
+      "profile": "https://github.com/szepeviktor/debian-server-tools/blob/master/CV.md",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
