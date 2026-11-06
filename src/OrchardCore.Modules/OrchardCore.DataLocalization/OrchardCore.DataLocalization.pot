@@ -26,6 +26,50 @@ msgctxt "OrchardCore.DataLocalization.Controllers.AdminController"
 msgid "Translations saved successfully."
 msgstr ""
 
+#. Format arguments: {0}: exception.Message
+#: Controllers/UiTranslationsController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Invalid PO import: {0}"
+msgstr ""
+
+#: Controllers/UiTranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Invalid translation request."
+msgstr ""
+
+#. Format arguments: {0}: exception.Message
+#: Controllers/UiTranslationsController.cs
+#, csharp-format
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Invalid translation: {0}"
+msgstr ""
+
+#: Controllers/UiTranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Select a PO file no larger than 2 MB."
+msgstr ""
+
+#: Controllers/UiTranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Select a configured supported culture."
+msgstr ""
+
+#: Controllers/UiTranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Select an authorized configured culture."
+msgstr ""
+
+#: Controllers/UiTranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Translations imported successfully."
+msgstr ""
+
+#: Controllers/UiTranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgid "Translations saved successfully."
+msgstr ""
+
 #: DataLocalizationLocalizationSources.cs
 msgctxt "OrchardCore.DataLocalization.DataLocalizationLocalizationSources"
 msgid "Internationalization"
@@ -36,9 +80,34 @@ msgctxt "OrchardCore.DataLocalization.Recipes.TranslationsStep"
 msgid "The 'translations' property is required."
 msgstr ""
 
+#: UiLocalizationAdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.UiLocalizationAdminMenu"
+msgid "Localization"
+msgstr ""
+
+#: UiLocalizationAdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.UiLocalizationAdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: UiLocalizationAdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.UiLocalizationAdminMenu"
+msgid "UI Translations"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Actions"
+msgstr ""
+
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "All Categories"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "All assemblies"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -48,12 +117,37 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Assembly"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Auto-save"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Available placeholders:"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Category"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Close"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Collapse all"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -68,6 +162,21 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Expand all"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Export overrides"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Failed to import translations."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Failed to load translations."
 msgstr ""
 
@@ -78,7 +187,27 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Import"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Import overrides"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Import overrides…"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Loading..."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Missing"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -98,7 +227,32 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Overrides are plain text. HTML is encoded when displayed. Supply every plural form, or restore fallback."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "PO file"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Plural:"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Restore fallback"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Save"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Save (Ctrl+S)"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -113,7 +267,32 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Select a PO file no larger than 2 MB."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Source metadata"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Statistics"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Supply every required plural form, or restore fallback."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translated"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -123,12 +302,47 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translation for count"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translation progress"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translations imported successfully."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Translations saved successfully."
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "UI Translations"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "UTF-8 PO file, up to 2 MB. The entire file is validated before saving. Empty translations remove overrides."
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Unsaved"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Unsaved changes"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "You have read-only access to UI translations. Contact an administrator to request edit permissions."
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -143,12 +357,14 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
-msgid "strings"
+msgid "translated"
 msgstr ""
 
+#. Format arguments: {0}; {1}; {2}
 #: Views/Admin/Index.cshtml
+#, csharp-format
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
-msgid "translated"
+msgid "{0} of {1} strings shown, {2} translated"
 msgstr ""
 
 #: Views/Admin/Statistics.cshtml
