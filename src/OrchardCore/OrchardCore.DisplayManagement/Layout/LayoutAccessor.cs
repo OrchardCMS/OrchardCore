@@ -19,6 +19,11 @@ public class LayoutAccessor : ILayoutAccessor
         _shapeFactory = shapeFactory;
     }
 
+    public void ResetLayout()
+    {
+        _layout = null;
+    }
+
     public Task<IZoneHolding> GetLayoutAsync()
     {
         if (_layout != null)
